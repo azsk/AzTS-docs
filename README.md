@@ -1,4 +1,4 @@
-### IMPORTANT NOTE: Recently we have observed some issues related to AzTS setup due to which function apps inside AzTS setup lack function definition. If you are also facing the same issue, you need to re-run [setup command](Readme.md#setting-up-tenant-security-solution---step-by-step) with same parameter.
+### IMPORTANT NOTE: Recently we have observed some issues related to AzTS setup due to which function apps inside AzTS setup lack function definition. If you are also facing the same issue, you need to re-run [setup command](00a-Setup#setting-up-azure-tenant-security-solution---step-by-step) with same parameter.
 ----------------------------------------------
 
 > The Azure Tenant Security Solution (AzTS) was created by the Core Services Engineering & Operations (CSEO) division at Microsoft, to help accelerate Microsoft IT's adoption of Azure. We have shared AzTS and its documentation with the community to provide guidance for rapidly scanning, deploying and operationalizing cloud resources, across the different stages of DevOps, while maintaining controls on security and governance.
@@ -7,12 +7,9 @@
 
 
 ### Contents
-- [Overview](Readme.md#overview)
-- [Why Azure Tenant Security Solution?](Readme.md#why-tenant-security-solution)
-- [Setting up Azure Tenant Security Solution - Step by Step](Readme.md#setting-up-tenant-security-solution---step-by-step)
-- [Tenant Security Solution - under the covers (how it works)](Readme.md#tenant-security-solution---under-the-covers-how-it-works)
-- [Create compliance and monitoring solutions](Readme.md#create-security-compliance-monitoring-solutions)
-- [Feedback](Readme.md#feedback)
+- [Overview](README.md#overview)
+- [Why Azure Tenant Security Solution?](README.md#why-azure-tenant-security-solution)
+- [Feedback](README.md#feedback)
 
 -----------------------------------------------------------------
 ## Overview 

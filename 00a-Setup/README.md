@@ -2,7 +2,7 @@
 In this section, we will walk through the steps of setting up AzTS Solution.
 
 
-**Note:** You can download execution script present [here](https://github.com/azsk/DevOpsKit-docs/raw/users/TenantSecurity/13-Tenant%20Security%20Solution%20Setup/Scripts/ExecutionScript.ps1) which has all commands mentioned in below steps
+**Note:** You can download execution script present [here](../Scripts/ExecutionScript.ps1?raw=1) which has all commands mentioned in below steps
 
 
 Setup is divided into five steps:
