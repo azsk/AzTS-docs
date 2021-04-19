@@ -9,7 +9,7 @@ The diagram below depicts a high level overview of the hybrid solution:
 
 ![Internals](../Images/12_TenantSetupInternals.png)
 
-[Back to top…](Readme.md#contents)
+[Back to top…](README.md#tenant-security-solution---under-the-covers-how-it-works)
 
 # Create security compliance monitoring solutions
 Once you have an Tenant Security setup running smoothly with multiple subscriptions across your org, you will need a solution that provides visibility of security compliance for all the subscriptions across your org. This will help you drive compliance/risk governance initiatives for your organization. 
@@ -146,4 +146,4 @@ The report contains 3 tabs. There is an overall/summary view of compliance, a de
 
 ![Publish PBIX report](../Images/13_TSS_OrgPolicy_PBI_OrgMetadata_LA_8.png)
 
-[Back to top…](Readme.md#contents)
+[Back to top…](README.md#tenant-security-solution---under-the-covers-how-it-works)
