@@ -1,5 +1,5 @@
 
-# PowerShell tips for new AzSK Users
+# PowerShell tips for new PowerShell Users
 
 <!--	
 -   Use PS ISE

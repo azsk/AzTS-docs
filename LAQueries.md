@@ -27,7 +27,7 @@ AzSK_ControlResults_CL
 
 ```
 
-![Log Analytics Visualization: Query Logs](../Images/13_TSS_LAWS_Query_Logs.png)
+![Log Analytics Visualization: Query Logs](/Images/13_TSS_LAWS_Query_Logs.png)
 
 The query computes control scan result of the control scanned by the toolkit. There is a filter in the top right, which gives the easy option to select time ranges. This can be done via code as well.
 

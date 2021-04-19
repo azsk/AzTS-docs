@@ -118,7 +118,7 @@ CD "<LocalExtractedFolderPath>\Deploy"
 
 ```
 
-[Back to top…](Readme.md#contents)
+[Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
 **5. Run Setup Command** 
 
