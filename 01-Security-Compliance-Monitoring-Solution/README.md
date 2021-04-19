@@ -67,7 +67,7 @@ In this section we shall create a PowerBI report locally within PowerBI Desktop 
 
 ![capture Workspace ID](../Images/13_TSS_LAWS_AgentManagement.png)
 
-**(b)** Download and copy the PowerBI template file from [here](https://github.com/azsk/DevOpsKit-docs/raw/master/13-Tenant%20Security%20Solution%20Setup/TemplateFiles/TenantSecurityReport.pbit) (for Gov subs use template from [here](https://github.com/azsk/DevOpsKit-docs/raw/master/13-Tenant%20Security%20Solution%20Setup/TemplateFiles/TenantSecurityReport.Gov.pbit)) to your local machine.
+**(b)** Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityReport.pbit) (for Gov subs use template from [here](../TemplateFiles/TenantSecurityReport.Gov.pbit)) to your local machine.
 
 **(c)** Open the template (.pbit) file using PowerBI Desktop, provide the LA Workspace ID and click on 'Load' as shown below:
 
