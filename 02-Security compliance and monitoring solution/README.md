@@ -116,11 +116,11 @@ The report contains 3 tabs. There is an overall/summary view of compliance, a de
 
 [b1] Click on Publish
 
-![Publish PBIX report](../Images/07_OrgPolicy_PBI_OrgMetadata_AI_18.PNG)
+![Publish PBIX report](../Images/07_OrgPolicy_PBI_OrgMetadata_AI_18.png)
 
 [b2] Select destination workspace
 
-![Publish PBIX report](../Images/07_OrgPolicy_PBI_OrgMetadata_AI_19.PNG)
+![Publish PBIX report](../Images/07_OrgPolicy_PBI_OrgMetadata_AI_19.png)
 
 [b3] Click on "Open [Report Name] in Power BI" 
 
