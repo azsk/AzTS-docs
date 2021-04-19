@@ -30,9 +30,9 @@ In this step you will prepare the data file which will be fed to the PowerBI das
 
 > Note: You may want to create a small CSV file with just a few subscriptions for a trial pass and then update it with the full subscription list for your org after getting everything working end-to-end.
 
-A sample template for the CSV file is [here](https://raw.githubusercontent.com/azsk/DevOpsKit-docs/users/TenantSecurity/13-Tenant%20Security%20Solution%20Setup/TemplateFiles/OrgMapping.csv):
+A sample template for the CSV file is [here](TemplateFiles/OrgMapping.csv):
 
-![Org-Sub metadata json](../Images/07_OrgPolicy_PBI_OrgMetadata.PNG) 
+![Org-Sub metadata json](../Images/07_OrgPolicy_PBI_OrgMetadata.png) 
 
 The table below describes the different columns in the CSV file and their intent.
 
