@@ -29,7 +29,7 @@ building your PowerShell expertise. Before you know, you will start feeling the 
 using AzSK or any other Azure PowerShell modules will become a breeze.
 
 ### List of Tips
-- [Use the PowerShell ISE](GettingStarted_PowerShellTipsAzSK.md#use-the-powershell-ise)  
+- [Use the PowerShell ISE](00b-Getting-Started-PowerShell-Tips#use-the-powershell-ise)  
 - ['Run Selection' is your friend](GettingStarted_PowerShellTipsAzSK.md#run-selection-is-your-friend)
 - [Save your scripts!](GettingStarted_PowerShellTipsAzSK.md#save-your-scripts)
 - [Use 'Auto Complete'](GettingStarted_PowerShellTipsAzSK.md#use-auto-complete)
