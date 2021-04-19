@@ -29,21 +29,21 @@ building your PowerShell expertise. Before you know, you will start feeling the 
 using AzSK or any other Azure PowerShell modules will become a breeze.
 
 ### List of Tips
-- [Use the PowerShell ISE](00b-Getting-Started-PowerShell-Tips#use-the-powershell-ise)  
-- ['Run Selection' is your friend](GettingStarted_PowerShellTipsAzSK.md#run-selection-is-your-friend)
-- [Save your scripts!](GettingStarted_PowerShellTipsAzSK.md#save-your-scripts)
-- [Use 'Auto Complete'](GettingStarted_PowerShellTipsAzSK.md#use-auto-complete)
-- [Use backtick for long command lines](GettingStarted_PowerShellTipsAzSK.md#use-backtick-for-long-commands)
-- [Explore available commands](GettingStarted_PowerShellTipsAzSK.md#explore-available-commands)
-- [Use Get-Help](GettingStarted_PowerShellTipsAzSK.md#use-get-help)
-- [Avoid module version conflicts](GettingStarted_PowerShellTipsAzSK.md#avoid-module-version-conflicts)
-- [Use variables effectively](GettingStarted_PowerShellTipsAzSK.md#use-variables-effectively)  
-- [Strings - single or double quote?](GettingStarted_PowerShellTipsAzSK.md#strings---single-or-double-quote)  
-- [Listing your subscriptions](GettingStarted_PowerShellTipsAzSK.md#listing-your-subscriptions)  
-- [Switching to another subscription](GettingStarted_PowerShellTipsAzSK.md#switching-to-another-subscription) 
-- [Comparison operators are different!](GettingStarted_PowerShellTipsAzSK.md#comparison-operators-are-different)
-- [A few handy loops](GettingStarted_PowerShellTipsAzSK.md#a-few-handy-loops)  
-- [To match or to like?](GettingStarted_PowerShellTipsAzSK.md#to--match-or-to--like) 
+- [Use the PowerShell ISE](README.md#use-the-powershell-ise)  
+- ['Run Selection' is your friend](README.md#run-selection-is-your-friend)
+- [Save your scripts!](README.md#save-your-scripts)
+- [Use 'Auto Complete'](README.md#use-auto-complete)
+- [Use backtick for long command lines](README.md#use-backtick-for-long-commands)
+- [Explore available commands](README.md#explore-available-commands)
+- [Use Get-Help](README.md#use-get-help)
+- [Avoid module version conflicts](README.md#avoid-module-version-conflicts)
+- [Use variables effectively](README.md#use-variables-effectively)  
+- [Strings - single or double quote?](README.md#strings---single-or-double-quote)  
+- [Listing your subscriptions](README.md#listing-your-subscriptions)  
+- [Switching to another subscription](README.md#switching-to-another-subscription) 
+- [Comparison operators are different!](README.md#comparison-operators-are-different)
+- [A few handy loops](README.md#a-few-handy-loops)  
+- [To match or to like?](README.md#to--match-or-to--like) 
 
 ----------------------------------------------------------------
 
@@ -70,7 +70,7 @@ from a functionality standpoint, there are some distinct advantages of using the
 ![00_PS_ISEScriptPane](../Images/00_PS_ISE_Script_Pane.png)  
 
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### Use 'CurrentUser' mode
@@ -83,7 +83,7 @@ attempts to change something in the local PS setup (e.g., installing a new PS mo
 privilege. However, even in those situations, you can specify the "-Scope CurrentUser" parameter to tell PS that you intend to make
 that change only for the current user. Note that the AzSK "iwr" install script uses "-Scope CurrentUser" by default.
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### 'Run Selection' is your friend!
@@ -112,7 +112,7 @@ initialize some large object or to output a JSON object to a CSV file)
 - you can literally 'control the flow' of your script. You can run some selection and then choose to run another selection which 
 is several lines of code above or below the current selection (or even in another script file altogether). This can be very handy when debugging. 
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### Save your scripts!
@@ -125,7 +125,7 @@ before you know, you will be sitting on a mini treasure of *your own* PowerShell
 This is why, when you use the ISE, always  use the script pane for most of your work. Each time you make net progress, hit 'Save'. Make sure
 you organize scripts in an easy to find folder (e.g., \Desktop\PSScripts) and name script files aptly (e.g., AzSKCmds.ps1, MyAzCmds.ps1, etc.).
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### Use 'Auto Complete'
@@ -151,7 +151,7 @@ Note that intrinsically PS is case-insensitive (i.e., the exact case you use for
 it is very possible that the target objects you operate on using PS commands (e.g., an Azure storage account or an HDInsight resource) 
 may themselves be case-sensitive (for e.g., a storage account name has to be all lower case). 
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### Use backtick for long commands
@@ -173,7 +173,7 @@ Install-AzSKContinuousAssurance `
                     -LAWSSharedKey 'O1qaz2wsx3edc4rfv5tgb.........9olp0plofA=='
 ```
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### Explore Available Commands
 Here are some quick tricks to help you explore various commands in AzSK (and also in other modules).
@@ -247,7 +247,7 @@ Cmdlet          Backup-AzKeyVaultManagedStorageAccount             4.1.0      Az
 Cmdlet          Backup-AzKeyVaultSecret                            4.1.0      Az.KeyVault  
 ```
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### Use Get-Help
 You can use the 'Get-Help' command to get help about any command. Usually specifying the "-Detailed" parameter is a good idea. 
@@ -288,7 +288,7 @@ PARAMETERS
 ...
 ...
 ```
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### Avoid Module Version Conflicts
@@ -382,7 +382,7 @@ An easy remedy for this is to ensure that the correct version of Az gets loaded 
 2) Else, run any AzSK command (e.g., Get-AzSKSubscriptionSecurityStatus). This will trigger the Azure login flow and cause the correct Az to get loaded.
 3) Else, explicitly load the Az version required for AzSK (currently it is 1.1.0) using 'Import-Module Az -Version 1.1' first thing in a new session.
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### Listing your subscriptions
 A lot of AzSK commands need you to specify subscription ID. To get the subscription ID for any particular subscription
@@ -431,7 +431,7 @@ If we were interested only in the name and tenant id in *list* format, we would 
 The "| FT" and "| FL" options are very handy in many other situations. We will see some more examples below.
 
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### Switching to another subscription
 
@@ -459,7 +459,7 @@ Name               Account            SubscriptionName        Environment       
 MSFT-SRA-04        abc@contoso.com    Subsctiption1           AzureCloud              72f988bf-86f1-41af-91ab-2d7cd01...
 ```
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### Use variables effectively
 You can avoid repetition of scripts by putting commonly needed values in variables at the top of your scripts. You can then use
@@ -497,7 +497,7 @@ Get-AzSKSubscriptionSecurityStatus -SubscriptionId $subId
 Get-AzSKAzureServicesSecurityStatus -SubscriptionId $subId
 ```
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### Strings - single or double quote?
 Like most programming/scripting languages, when you specify a string value in PS, you are expected to use quotes. However, you may have
@@ -528,7 +528,7 @@ $message =
 Write-Host $message
 ```
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 
 ### Comparison operators are different!
@@ -552,7 +552,7 @@ if ($proc.HandleCount -gt 10000) {Write-Host $proc.Name ": Too many handles..."}
 OUTLOOK : Too many handles...
 ```
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### A few handy loops
 Although PS supports the standard 'for' and 'while' loops, it allows using the '%' operator as a handy shortcut.
@@ -624,7 +624,7 @@ Get-AzResourceGroup | ? ResourceGroupName -match 'rg'
 # Can also be written like this:
 Get-AzResourceGroup | ? {$_.ResourceGroupName -match 'rg'}
 ```
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
 ### To '-match' or to '-like'?
 PowerShell has extremely powerful string operators. At some point you will want to run some logic based on a string
@@ -663,5 +663,5 @@ character before and zero or more instances of the letter 'e'.
 A note of caution that the 'contains' operator is supposed to be used for arrays. (E.g., if an array of strings contains a 
 particular string.)  
 
-[Back to top...](GettingStarted_PowerShellTipsAzSK.md#list-of-tips)
+[Back to top...](README.md#list-of-tips)
 <!-------------------------------------------------------------------------------------------------->
