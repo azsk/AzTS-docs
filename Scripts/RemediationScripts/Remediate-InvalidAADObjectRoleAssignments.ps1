@@ -113,10 +113,14 @@ function Remove-AzTSInvalidAADAccounts
         
     Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
 
-    #  Getting all role assignments of subscription.
+    # Getting all role assignments of subscription.
     $currentRoleAssignmentList = Get-AzRoleAssignment -IncludeClassicAdministrators  
+
+    # 
+    $classicRoleAssignments = $currentRoleAssignmentList | Where-Object {[string]::IsNullOrWhiteSpace($_.ObjectId)};
+
     # filter-out classic admins
-    $currentRoleAssignmentList = $currentRoleAssignmentList | where {$_.ObjectId -ne [Guid]::Empty};
+    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
     $distinctObjectIds = @();
 
     # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
@@ -195,6 +199,17 @@ function Remove-AzTSInvalidAADAccounts
 
     $invalidAADObjectIds = $distinctObjectIds | Where-Object { $_ -notin $activeIdentities}
 
+    # get list of all invalid classic role assignments followed by principal name.
+    $invalidClassicRoles = @();
+     
+    $classicRoleAssignments | ForEach-Object { 
+                $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
+                if (($userDetails | Measure-Object).Count -eq 0 ) 
+                {
+                    $invalidClassicRoles += $_ 
+                }
+            } #'mprabhu@microsoft.com'
+
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
 
@@ -211,7 +226,7 @@ function Remove-AzTSInvalidAADAccounts
     }
 
 
-    if(($invalidAADObjectRoleAssignments | Measure-Object).Count -le 0)
+    if(($invalidAADObjectRoleAssignments | Measure-Object).Count -le 0 )
     {
         Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
         exit;
@@ -221,11 +236,23 @@ function Remove-AzTSInvalidAADAccounts
         Write-Host "Found [$(($invalidAADObjectRoleAssignments | Measure-Object).Count)] invalid roleassingments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }    
 
-    # Safe Check: Taking backup of active identities    
+    if(($invalidClassicRoles | Measure-Object).Count -gt 0 )
+    {
+        Write-Host "Found [$(($invalidClassicRoles | Measure-Object).Count)] invalid classic roleassingments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+    }  
+
+    # Safe Check: Taking backup of invalid identities.   
     if ($invalidAADObjectRoleAssignments.length -gt 0)
     {
         Write-Host "Taking backup of roleassignments that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
         $invalidAADObjectRoleAssignments | ConvertTo-json | out-file "$($folderpath)\InvalidRoleAssignments.json"       
+    }
+
+    # Safe Check: Taking backup of invalid classic role assignments.    
+    if ($invalidClassicRoles.length -gt 0)
+    {
+        Write-Host "Taking backup of invalid classic roleassignments that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+        $invalidClassicRoles | ConvertTo-json | out-file "$($folderpath)\InvalidClassicRoleAssignments.json"       
     }
 
     if(-not $Force)
@@ -239,11 +266,11 @@ function Remove-AzTSInvalidAADAccounts
         }
     }
    
-
     Write-Host "Step 5 of 5: Clean up invalid object guids for Subscription [$($SubscriptionId)]..."
     # Start deletion of all Invalid AAD ObjectGuids.
     Write-Host "Starting to delete invalid AAD object guid role assignments..." -ForegroundColor Cyan
-    $invalidAADObjectRoleAssignments | Remove-AzRoleAssignment -Verbose
+    #$invalidAADObjectRoleAssignments | Remove-AzRoleAssignment -Verbose
+    #$invalidClassicRoles | Remove-AzRoleAssignment -Verbose
     Write-Host "Completed deleting Invalid AAD ObjectGuids role assignments." -ForegroundColor Green    
 }
 
@@ -254,7 +281,12 @@ function Restore-AzTSInvalidAADAccounts
         $SubscriptionId,       
 
         [string]
-        $RollbackFilePath     
+        $RollbackFilePath,
+
+        [switch]
+        $ClassicRoleAssignment
+        
+     
     )
 
     Write-Host "======================================================"
@@ -306,21 +338,35 @@ function Restore-AzTSInvalidAADAccounts
     }
     $backedUpRoleAssingments = Get-Content -Raw -Path $RollbackFilePath | ConvertFrom-Json     
 
-    Write-Host "Step 3 of 3: Restore role assingments [$($SubscriptionId)]..."
-    $backedUpRoleAssingments | ForEach-Object {
-        $roleAssignment = $_;
-        New-AzRoleAssignment -ObjectId $roleAssignment.ObjectId -Scope $roleAssignment.Scope -RoleDefinitionName $roleAssignment.RoleDefinitionName -ErrorAction SilentlyContinue | Out-Null;
-    }    
+    if (!$ClassicRoleAssignment)
+    {
+        Write-Host "Step 3 of 3: Restore role assingments [$($SubscriptionId)]..."
+        $backedUpRoleAssingments | ForEach-Object {
+            $roleAssignment = $_;
+            New-AzRoleAssignment -ObjectId $roleAssignment.ObjectId -Scope $roleAssignment.Scope -RoleDefinitionName $roleAssignment.RoleDefinitionName -ErrorAction SilentlyContinue | Out-Null;
+        }  
+    }
+    else
+    {
+        Write-Host "Step 3 of 3: Restore role assingments [$($SubscriptionId)]..."
+        $backedUpRoleAssingments | ForEach-Object {
+            $roleAssignment = $_;
+            New-AzRoleAssignment -SignInName $roleAssignment.SignInName -Scope /subscriptions/$($SubscriptionId) -RoleDefinitionName $roleAssignment.RoleDefinitionName -ErrorAction SilentlyContinue | Out-Null;
+        }  
+    }
+      
     Write-Host "Completed restoring role assignments." -ForegroundColor Green
 }
 
 # ***************************************************** #
 
 # Function calling with parameters.
-Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>')  -Force:$false -PerformPreReqCheck: $true
+Remove-AzTSInvalidAADAccounts -SubscriptionId 'abb5301a-22a4-41f9-9e5f-99badff261f8'  -Force:$false -PerformPreReqCheck: $true
+
+
 <# command to rollback changes. 
 Copy the rollback file path from the Remediation Script output
-Restore-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\InvalidAADAccounts\InvalidRoleAssignments.json"
+Restore-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\InvalidAADAccounts\<File_Name>.json" -ClassicRoleAssignment: $true
 Note: You can only rollback valid role assignments.
 #>
 
