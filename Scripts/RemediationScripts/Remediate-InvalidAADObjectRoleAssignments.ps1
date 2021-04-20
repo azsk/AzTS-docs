@@ -116,7 +116,7 @@ function Remove-AzTSInvalidAADAccounts
     # Getting all role assignments of subscription.
     $currentRoleAssignmentList = Get-AzRoleAssignment -IncludeClassicAdministrators  
 
-    # 
+    # Getting all classic role assignments.
     $classicRoleAssignments = $currentRoleAssignmentList | Where-Object {[string]::IsNullOrWhiteSpace($_.ObjectId)};
 
     # filter-out classic admins
@@ -208,7 +208,7 @@ function Remove-AzTSInvalidAADAccounts
                 {
                     $invalidClassicRoles += $_ 
                 }
-            } #'mprabhu@microsoft.com'
+            } 
 
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
@@ -269,8 +269,8 @@ function Remove-AzTSInvalidAADAccounts
     Write-Host "Step 5 of 5: Clean up invalid object guids for Subscription [$($SubscriptionId)]..."
     # Start deletion of all Invalid AAD ObjectGuids.
     Write-Host "Starting to delete invalid AAD object guid role assignments..." -ForegroundColor Cyan
-    #$invalidAADObjectRoleAssignments | Remove-AzRoleAssignment -Verbose
-    #$invalidClassicRoles | Remove-AzRoleAssignment -Verbose
+    $invalidAADObjectRoleAssignments | Remove-AzRoleAssignment -Verbose
+    $invalidClassicRoles | Remove-AzRoleAssignment -Verbose
     Write-Host "Completed deleting Invalid AAD ObjectGuids role assignments." -ForegroundColor Green    
 }
 
