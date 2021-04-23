@@ -1,5 +1,12 @@
 function Pre_requisites
 {
+    <#
+    .SYNOPSIS
+    This command would check pre requisities modules.
+    .DESCRIPTION
+    This command would check pre requisities modules to perform remediation.
+	#>
+
     Write-Host "Required modules are: Az.Resources, AzureAD, Az.Account" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
     $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts)
@@ -8,18 +15,18 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'Az.Accounts')
     {
         Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
-        Install-Module -Name Az.Accounts -Scope CurrentUser
+        Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
-        Write-Host "Az.Resources module is available." -ForegroundColor Green
+        Write-Host "Az.Accounts module is available." -ForegroundColor Green
     }
 
     # Checking if 'Az.Resources' module is available or not.
     if($availableModules.Name -notcontains 'Az.Resources')
     {
         Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
-        Install-Module -Name Az.Resources -Scope CurrentUser
+        Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
@@ -30,7 +37,7 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'AzureAD')
     {
         Write-Host "Installing module AzureAD..." -ForegroundColor Yellow
-        Install-Module -Name AzureAD -Scope CurrentUser
+        Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
@@ -40,6 +47,21 @@ function Pre_requisites
 
 function Remove-AzTSInvalidAADAccounts
 {
+    <#
+    .SYNOPSIS
+    This command would help in remediating 'Azure_Subscription_AuthZ_Remove_Deprecated_Accounts' control.
+    .DESCRIPTION
+    This command would help in remediating 'Azure_Subscription_AuthZ_Remove_Deprecated_Accounts' control.
+    .PARAMETER SubscriptionId
+        Enter subscription id on which remediation need to perform.
+    .PARAMETER ObjectIds
+        Enter objectIds of invalid AAD accounts.
+    .Parameter Force
+        Enter force parameter value to remove non ad identities
+    .PARAMETER PerformPreReqCheck
+        Perform pre requisities check to ensure all required module to perform remedition operation is available.
+    #>
+
     param (
         [string]
         $SubscriptionId,
@@ -60,9 +82,17 @@ function Remove-AzTSInvalidAADAccounts
 
     if($PerformPreReqCheck)
     {
-       Write-Host "Checking for pre-requisites..."
-       Pre_requisites
-       Write-Host "------------------------------------------------------"
+        try 
+        {
+            Write-Host "Checking for pre-requisites..."
+            Pre_requisites
+            Write-Host "------------------------------------------------------"     
+        }
+        catch 
+        {
+            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+            break
+        }
     }
 
     # Connect to AzAccount
@@ -90,7 +120,7 @@ function Remove-AzTSInvalidAADAccounts
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        exit;
+        break;
     }
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
@@ -99,7 +129,7 @@ function Remove-AzTSInvalidAADAccounts
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or User Access Administrator" -ForegroundColor Yellow
-        exit;
+        break;
     }
 
     # Safe Check: saving the current login user object id to ensure we dont remove this during the actual removal
@@ -113,10 +143,17 @@ function Remove-AzTSInvalidAADAccounts
         
     Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
 
-    #  Getting all role assignments of subscription.
+    # Getting all role assignments of subscription.
     $currentRoleAssignmentList = Get-AzRoleAssignment -IncludeClassicAdministrators  
+
+    # Excluding MG scoped role assignment
+    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
+    
+    # Getting all classic role assignments.
+    $classicRoleAssignments = $currentRoleAssignmentList | Where-Object {[string]::IsNullOrWhiteSpace($_.ObjectId)};
+
     # filter-out classic admins
-    $currentRoleAssignmentList = $currentRoleAssignmentList | where {$_.ObjectId -ne [Guid]::Empty};
+    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
     $distinctObjectIds = @();
 
     # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
@@ -138,7 +175,7 @@ function Remove-AzTSInvalidAADAccounts
             else
             {
                 Write-Host "Warning: Dont pass empty string array in the ObjectIds param. If you dont want to use the param, just remove while executing the command" -ForegroundColor Yellow
-                exit;
+                break;
             }  
         }
     }        
@@ -176,9 +213,9 @@ function Remove-AzTSInvalidAADAccounts
         # Safe Check 
         if(($subActiveIdentities | Measure-Object).Count -le 0)
         {
-            #if the active identities count has come as Zero, then API might have failed.  Print Warning and abort the execution
+            # If the active identities count has come as Zero, then API might have failed.  Print Warning and abort the execution
             Write-Host "Warning: Graph API hasnt returned any active account. Current principal dont have access to Graph or Graph API is throwing error. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
-            exit;
+            break;
         }
 
         $activeIdentities += $subActiveIdentities.ObjectId
@@ -195,133 +232,111 @@ function Remove-AzTSInvalidAADAccounts
 
     $invalidAADObjectIds = $distinctObjectIds | Where-Object { $_ -notin $activeIdentities}
 
+    # get list of all invalid classic role assignments followed by principal name.
+    $invalidClassicRoles = @();
+     
+    $classicRoleAssignments | ForEach-Object { 
+                $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
+                if (($userDetails | Measure-Object).Count -eq 0 ) 
+                {
+                    $invalidClassicRoles += $_ 
+                }
+            } 
+
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
 
-    #checking the RBAC permissions for current user. Current users need to be Owner/UAA/Co-admin to delete role assignments.
-    <#$currentRole = @()
-    $currentRole = $currentRoleAssignmentList | Where-Object { $_.SignInName -eq $currentSub.Account -and $_.Scope -eq "/subscriptions/$($SubscriptionId)"} | Select-Object RoleDefinitionName
-    #>
-    
     # Safe Check: Check whether the current user accountId is part of Invalid AAD ObjectGuids List 
     if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -eq $currentLoginUserObjectId} | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the Invalid AAD ObjectGuids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
-        exit;
+        break;
     }
 
 
-    if(($invalidAADObjectRoleAssignments | Measure-Object).Count -le 0)
+    if(($invalidAADObjectRoleAssignments | Measure-Object).Count -le 0 )
     {
-        Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
-        exit;
+        Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. exiting the process." -ForegroundColor Cyan
+        break;
     }
     else
     {
-        Write-Host "Found [$(($invalidAADObjectRoleAssignments | Measure-Object).Count)] invalid roleassingments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$(($invalidAADObjectRoleAssignments | Measure-Object).Count)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }    
 
-    # Safe Check: Taking backup of active identities    
+    if(($invalidClassicRoles | Measure-Object).Count -gt 0 )
+    {
+        Write-Host "Found [$(($invalidClassicRoles | Measure-Object).Count)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+    }  
+
+    # Safe Check: Taking backup of invalid identities.   
     if ($invalidAADObjectRoleAssignments.length -gt 0)
     {
-        Write-Host "Taking backup of roleassignments that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
         $invalidAADObjectRoleAssignments | ConvertTo-json | out-file "$($folderpath)\InvalidRoleAssignments.json"       
+    }
+
+    # Safe Check: Taking backup of invalid classic role assignments.    
+    if ($invalidClassicRoles.length -gt 0)
+    {
+        $invalidClassicRoles | ConvertTo-json | out-file "$($folderpath)\InvalidClassicRoleAssignments.json"       
     }
 
     if(-not $Force)
     {
-        Write-Host "Do you want to delete the above listed role assignment? " -ForegroundColor Yellow -NoNewline
+        Write-Host "Note: Once deprecated role assignments deleted. It can not be restore." -ForegroundColor Yellow
+        Write-Host "Do you want to delete the above listed role assignment?" -ForegroundColor Yellow -NoNewline
         $UserInput = Read-Host -Prompt "(Y|N)"
 
         if($UserInput -ne "Y")
         {
-            exit;
+            break;
         }
     }
    
-
     Write-Host "Step 5 of 5: Clean up invalid object guids for Subscription [$($SubscriptionId)]..."
     # Start deletion of all Invalid AAD ObjectGuids.
     Write-Host "Starting to delete invalid AAD object guid role assignments..." -ForegroundColor Cyan
-    $invalidAADObjectRoleAssignments | Remove-AzRoleAssignment -Verbose
-    Write-Host "Completed deleting Invalid AAD ObjectGuids role assignments." -ForegroundColor Green    
-}
 
-function Restore-AzTSInvalidAADAccounts
-{
-    param (
-        [string]
-        $SubscriptionId,       
-
-        [string]
-        $RollbackFilePath     
-    )
-
-    Write-Host "======================================================"
-    Write-Host "Starting with removal of invalid AAD object guids from subscriptions..."
-    Write-Host "------------------------------------------------------"
-    
-    $isContextSet = Get-AzContext
-    if ([string]::IsNullOrEmpty($isContextSet))
-    {       
-        Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
-        Write-Host "Connected to AzAccount" -ForegroundColor Green
+    $isRemoved = $true
+    $invalidAADObjectRoleAssignments | ForEach-Object {
+        try 
+        {
+            Remove-AzRoleAssignment $_ 
+            $_ | Select-Object -Property "Scope", "RoleDefinitionName", "ObjectId"    
+        }
+        catch
+        {
+            $isRemoved = $false
+            Write-Host "Not able to remove invalid role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
+        }
     }
 
-    # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
+    $invalidClassicRoles | ForEach-Object {
+        try 
+        {
+            Remove-AzRoleAssignment $_ 
+            $_ | Select-Object -Property "Scope", "RoleDefinitionName"    
+        }
+        catch
+        {
+            $isRemoved = $false
+            Write-Host "Not able to remove invalid classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
+        }
+    }
 
-    
-
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
-    Write-Host "------------------------------------------------------"
-    Write-Host "Starting with Subscription [$($SubscriptionId)]..."
-
-
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
-
-    # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
-    if($currentSub.Account.Type -ne "User")
+    if($isRemoved)
     {
-        Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        exit;
+        Write-Host "Completed deleting Invalid AAD ObjectGuids role assignments." -ForegroundColor Green
     }
-
-    # Safe Check: Current user need to be either UAA or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
+    else 
     {
-        Write-Host "Warning: This script can only be run by an Owner or User Access Administrator" -ForegroundColor Yellow
-        exit;
+        Write-Host "`n"
+        Write-Host "Not able to successfully delete Invalid AAD ObjectGuids role assignments." -ForegroundColor Red
     }
-
-    Write-Host "Step 2 of 3: Check for presence of rollback file for Subscription: [$($SubscriptionId)]..."
-
-    if (-not (Test-Path -Path $RollbackFilePath))
-    {
-        Write-Host "Warning: Rollback file is not found. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor Yellow
-        exit;        
-    }
-    $backedUpRoleAssingments = Get-Content -Raw -Path $RollbackFilePath | ConvertFrom-Json     
-
-    Write-Host "Step 3 of 3: Restore role assingments [$($SubscriptionId)]..."
-    $backedUpRoleAssingments | ForEach-Object {
-        $roleAssignment = $_;
-        New-AzRoleAssignment -ObjectId $roleAssignment.ObjectId -Scope $roleAssignment.Scope -RoleDefinitionName $roleAssignment.RoleDefinitionName -ErrorAction SilentlyContinue | Out-Null;
-    }    
-    Write-Host "Completed restoring role assignments." -ForegroundColor Green
 }
 
 # ***************************************************** #
-
-# Function calling with parameters.
-Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>')  -Force:$false -PerformPreReqCheck: $true
-<# command to rollback changes. 
-Copy the rollback file path from the Remediation Script output
-Restore-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\InvalidAADAccounts\InvalidRoleAssignments.json"
-Note: You can only rollback valid role assignments.
+<#
+Function calling with parameters.
+Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>') -Force:$false -PerformPreReqCheck: $true
 #>
-
-
