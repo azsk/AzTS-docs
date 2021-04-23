@@ -108,7 +108,7 @@ function Remove-AzTSInvalidAADAccounts
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
 
     
-
+    Write-Host "Note: `n Exclude check to remove invalid role assignments at MG scope." -ForegroundColor Yellow
     Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
