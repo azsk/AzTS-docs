@@ -129,7 +129,7 @@ function Remove-AzTSInvalidAADAccounts
 
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
     {
-        Write-Host "Warning: This script can only be run by an Owner or User Access Administrator" -ForegroundColor Yellow
+        Write-Host "Warning: This script can only be run by an Owner/User Access Administrator/Contributor." -ForegroundColor Yellow
         break;
     }
 

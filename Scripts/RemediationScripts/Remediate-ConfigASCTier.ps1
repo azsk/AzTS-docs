@@ -103,7 +103,7 @@ function Set-ConfigASCTier
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for Subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
@@ -370,7 +370,7 @@ function Remove-ConfigASCTier
                     break      
                 }
 
-                Write-Host "Roll back operation successfully performed." -ForegroundColor Green
+                Write-Host "Rollback operation successfully performed." -ForegroundColor Green
                 Write-Host "======================================================"
             }
             else 

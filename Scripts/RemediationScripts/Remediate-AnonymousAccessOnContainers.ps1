@@ -173,7 +173,7 @@ function Remove-AnonymousAccessOnContainers
             }
             catch
             {
-                Write-Host "Valid resource group and resource name not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Valid resource group or resource name not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
         }
