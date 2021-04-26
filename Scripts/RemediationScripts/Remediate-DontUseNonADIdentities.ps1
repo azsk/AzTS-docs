@@ -370,7 +370,6 @@ function Restore-AzTSNonAADAccountsRBAC
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
 
-    Write-Host "Note: `n Skip restoring Non AAD identities having 'CoAdministrator' role assignments." -ForegroundColor Yellow
     Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
     Write-Host "------------------------------------------------------"
@@ -435,31 +434,15 @@ function Restore-AzTSNonAADAccountsRBAC
             }
             else 
             {
-                Remove-AzRoleAssignment $_ -ErrorAction SilentlyContinue
-                $_ | Select-Object -Property "DisplayName", "SignInName", "Scope"
+                $roleAssignment = $_;
+                New-AzRoleAssignment -ObjectId $roleAssignment.ObjectId -Scope $roleAssignment.Scope -RoleDefinitionName $roleAssignment.RoleDefinitionName -ErrorAction SilentlyContinue | Out-Null;    
+                $roleAssignment | Select-Object -Property "DisplayName", "SignInName", "Scope"
             }
         }
         catch
         {
-            $isRemoved = $false
-            Write-Host "Error occurred while removing role assignments for Non AAD identities. ErrorMessage [$($_)]" -ForegroundColor Red
-        }
-    }
-
-
-
-
-    $backedUpRoleAssingments | ForEach-Object {
-        try
-        {
-            $roleAssignment = $_;
-            New-AzRoleAssignment -ObjectId $roleAssignment.ObjectId -Scope $roleAssignment.Scope -RoleDefinitionName $roleAssignment.RoleDefinitionName -ErrorAction SilentlyContinue | Out-Null;    
-            $roleAssignment | Select-Object -Property "DisplayName", "SignInName", "Scope"
-        }
-        catch 
-        {
             $isRestored = $false
-            Write-Host "Error occurred while restoring role assignments for Non AAD identities. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while adding role assignments for Non AAD identities. ErrorMessage [$($_)]" -ForegroundColor Red
         }
     }
     
