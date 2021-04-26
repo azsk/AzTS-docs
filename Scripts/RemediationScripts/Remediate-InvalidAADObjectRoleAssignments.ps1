@@ -126,10 +126,11 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
+    
+    $requiredRoleDefinitionName = @("Owner", "ServiceAdministrator","CoAdministrator","AccountAdministrator","ServiceAdministrator;AccountAdministrator","ServiceAdministrator;AccountAdministrator" ,"CoAdministrator;AccountAdministrator","AccountAdministrator;ServiceAdministrator")
+    if(($currentLoginRoleAssignments | Where { $_ -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
-        Write-Host "Warning: This script can only be run by an Owner/User Access Administrator/Contributor." -ForegroundColor Yellow
+        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         break;
     }
 
