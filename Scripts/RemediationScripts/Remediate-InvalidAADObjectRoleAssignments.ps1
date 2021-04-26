@@ -128,7 +128,7 @@ function Remove-AzTSInvalidAADAccounts
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
     
     $requiredRoleDefinitionName = @("Owner", "ServiceAdministrator","CoAdministrator","AccountAdministrator","ServiceAdministrator;AccountAdministrator","ServiceAdministrator;AccountAdministrator" ,"CoAdministrator;AccountAdministrator","AccountAdministrator;ServiceAdministrator")
-    if(($currentLoginRoleAssignments | Where { $_ -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         break;
