@@ -258,7 +258,7 @@ function Restore-AzTSInvalidAADAccounts
     )
 
     Write-Host "======================================================"
-    Write-Host "Starting with removal of invalid AAD object guids from subscriptions..."
+    Write-Host "Starting with restoring of valid AAD object guids from subscriptions..."
     Write-Host "------------------------------------------------------"
     
     $isContextSet = Get-AzContext
