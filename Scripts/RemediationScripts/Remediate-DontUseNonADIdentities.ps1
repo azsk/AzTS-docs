@@ -137,9 +137,32 @@ function Remove-AzTSNonAADAccountsRBAC
     $classicAssignments = [ClassicRoleAssignments]::new()
     $headers = $classicAssignments.GetAuthHeader()
     $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
-    $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
-     # Renaming property name
-    $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}
+    if($null -ne $res)
+    {
+        $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+        # Renaming property name
+        $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}, ObjectId
+    }
+    
+    # Get object id of classic role assignment
+    $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
+    
+    if(($currentRoleAssignmentList | Measure-Object).Count -gt 0)
+    {
+        $currentRoleAssignmentList | Where-Object { [string]::IsNullOrWhiteSpace($_.ObjectId) } | ForEach-Object { 
+           $classicRoleAssignment = $_
+           $signInName = $classicRoleAssignment.SignInName.Replace("#","%23")
+           $url = [string]::Format($getObjectsByUserPrincipalNameAPIString, $signInName, $signInName)
+           $header = [AzureADGraph]::new().GetAuthHeader()
+           $adGraphResponse = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers $header -Method Get
+
+           if($adGraphResponse -ne $null)
+           {
+                $adGraphResponse = $adGraphResponse.Content | ConvertFrom-Json
+                $classicRoleAssignment.ObjectId = $adGraphResponse.value.objectId
+           }
+        }
+    }
     
     $distinctRoleAssignmentList = @();
 
@@ -203,24 +226,41 @@ function Remove-AzTSNonAADAccountsRBAC
     }
     #>
     
-    # Defining regex to filter Non AAD Identities 
-    $NonADIdentitiesPatterns = @( "(.)*#ext(.)*" )
-
-    # Defining regex to filter allowed Non AAD Identities
-    $ApprovedNonADIndentitiesPatterns = @( "(.)*_sas.msft.net#ext#@microsoft.onmicrosoft.com" )
-
-    # Creating regex to filter Non AAD Account
-    $NonADIdentitiesPattern = (('^' + (($NonADIdentitiesPatterns | foreach {[regex]::escape($_)}) -join '|') + '$')) -replace '[\\]',''
-
-    # Filtering Non AAD Identities
-    $liveAccountsRoleAssignments = [array]($distinctRoleAssignmentList | Where-Object {$_.SignInName -and $_.SignInName.ToLower() -imatch $NonADIdentitiesPattern} )
-
-    # Exclude exempted patterns for non AAD identities
-    if( ($liveAccountsRoleAssignments | Measure-Object).Count -gt 0 -and ($ApprovedNonADIndentitiesPatterns | Measure-Object).Count -ne 0)
+    # Find guest accounts from role assignments list
+    $GuestAccountsObjectId = @()
+    $getObjectsByObjectIdsBetaAPIUrl = "https://graph.microsoft.com/beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState"
+    if( ($distinctRoleAssignmentList | Measure-Object).Count -gt 0)
     {
-        $ApprovedNonADIndentitiesPattern = (('^' + (($ApprovedNonADIndentitiesPatterns | foreach {[regex]::escape($_)}) -join '|') + '$')) -replace '[\\]',''
-        $liveAccountsRoleAssignments = [array]($liveAccountsRoleAssignments | Where-Object {$_.SignInName -and $_.SignInName.ToLower() -inotmatch $ApprovedNonADIndentitiesPattern} )
-    }	
+        # Adding batch of 1000
+        for( $i = 0; $i -lt $distinctRoleAssignmentList.Length; $i = $i + 1000)
+        {
+            if($i + 1000 -lt $distinctRoleAssignmentList.Length)
+            {
+                $endRange = $i + 1000
+            }
+            else
+            {
+                $endRange = $distinctRoleAssignmentList.Length - 1;
+            }
+
+            $subRange = $distinctRoleAssignmentList[$i..$endRange]
+
+            $ObjectIds = @($subRange.ObjectId | Select -Unique)
+            $header = [MicrosoftGraph]::new().GetAuthHeader()
+            $body = @{
+                        "ids"= @($ObjectIds);
+                        "types"=@("user");
+                    } | ConvertTo-Json
+            $adGraphJsonResponse = Invoke-WebRequest -UseBasicParsing -Uri $getObjectsByObjectIdsBetaAPIUrl -Headers $header -Method Post -Body $body
+            if( $null -ne $adGraphJsonResponse)
+            {
+                $adGraphResponse = $adGraphJsonResponse.Content | ConvertFrom-Json
+                $GuestAccountsObjectId += $adGraphResponse.value | Where-Object { $_.userType -eq "Guest" } | Select -ExpandProperty Id
+            }
+        } 
+    }
+
+    $liveAccountsRoleAssignments = @($distinctRoleAssignmentList | Where-Object { $GuestAccountsObjectId -contains $_.ObjectId })
 
     # Safe Check: Check whether the current user accountId is part of Invalid AAD ObjectGuids List 
     if(($liveAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
@@ -426,7 +466,7 @@ function Restore-AzTSNonAADAccountsRBAC
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
                 $headers = $classicAssignments.GetAuthHeader()
-                $res += $classicAssignments.PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
+                $res = $classicAssignments.PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
                 if($res.StatusCode -eq 202 -or $res.StatusCode -eq 200)
                 {
                     $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
@@ -454,6 +494,66 @@ function Restore-AzTSNonAADAccountsRBAC
     {
         Write-Host "`n"
         Write-Host "Not able to successfully restore role assignments for Non AAD identities." -ForegroundColor Red   
+    }
+}
+
+class AzureADGraph
+{
+    [PSObject] GetAuthHeader()
+    {
+        [psobject] $headers = $null
+        try 
+        {
+            $resourceAppIdUri = "https://graph.windows.net"
+            $rmContext = Get-AzContext
+            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
+            $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+            $rmContext.Account,
+            $rmContext.Environment,
+            $rmContext.Tenant,
+            [System.Security.SecureString] $null,
+            "Never",
+            $null,
+            $resourceAppIdUri); 
+
+            $header = "Bearer " + $authResult.AccessToken
+            $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+        }
+        catch 
+        {
+            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+        }
+        return($headers)
+    }
+}
+
+class MicrosoftGraph
+{
+    [PSObject] GetAuthHeader()
+    {
+        [psobject] $headers = $null
+        try 
+        {
+            $resourceAppIdUri = "https://graph.microsoft.com"
+            $rmContext = Get-AzContext
+            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
+            $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+            $rmContext.Account,
+            $rmContext.Environment,
+            $rmContext.Tenant,
+            [System.Security.SecureString] $null,
+            "Never",
+            $null,
+            $resourceAppIdUri); 
+
+            $header = "Bearer " + $authResult.AccessToken
+            $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+        }
+        catch 
+        {
+            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+        }
+        return($headers)
     }
 }
 
@@ -515,7 +615,7 @@ class ClassicRoleAssignments
             
             # API to get classic role assignments
             $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
-            $content = ConvertFrom-Json $response.Content
+            $content = $response
         }
         catch
         {
@@ -534,7 +634,7 @@ class ClassicRoleAssignments
             
             # API to get classic role assignments
             $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -Body $body -UseBasicParsing
-            $content = ConvertFrom-Json $response.Content
+            $content = $response
         }
         catch
         {
