@@ -254,8 +254,6 @@ function Remove-AzTSInvalidAADAccounts
                 }
             }
 
-    $invalidClassicRoles += $classicRoleAssignments[10]; 
-
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
 
