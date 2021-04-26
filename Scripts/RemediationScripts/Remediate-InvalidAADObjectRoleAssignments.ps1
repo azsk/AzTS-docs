@@ -252,7 +252,9 @@ function Remove-AzTSInvalidAADAccounts
                 {
                     $invalidClassicRoles += $_ 
                 }
-            } 
+            }
+
+    $invalidClassicRoles += $classicRoleAssignments[10]; 
 
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
@@ -264,21 +266,29 @@ function Remove-AzTSInvalidAADAccounts
         break;
     }
 
+    # Getting count of invalid account
+    $invalidAADObjectRoleAssignmentsCount = ($invalidAADObjectRoleAssignments | Measure-Object).Count
+    $invalidClassicRolesCount = ($invalidClassicRoles | Measure-Object).Count
 
-    if(($invalidAADObjectRoleAssignments | Measure-Object).Count -le 0 )
+    if(($invalidAADObjectRoleAssignmentsCount -eq 0) -and ($invalidClassicRolesCount -eq 0))
+    {
+        Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process."
+        break;
+    }
+
+    if($invalidAADObjectRoleAssignmentsCount -le 0 )
     {
         Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
-        break;
     }
     else
     {
-        Write-Host "Found [$(($invalidAADObjectRoleAssignments | Measure-Object).Count)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$($invalidAADObjectRoleAssignmentsCount)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }    
 
-    if(($invalidClassicRoles | Measure-Object).Count -gt 0 )
+    if($invalidClassicRolesCount -gt 0 )
     {
-        Write-Host "Found [$(($invalidClassicRoles | Measure-Object).Count)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
-    }  
+        Write-Host "Found [$($invalidClassicRolesCount)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+    }
 
     # Safe Check: Taking backup of invalid identities.   
     if ($invalidAADObjectRoleAssignments.length -gt 0)
@@ -416,7 +426,7 @@ class ClassicRoleAssignments
             
             # API to get classic role assignments
             $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
-            $content = ConvertFrom-Json $response.Content
+            $content = $response
         }
         catch
         {
