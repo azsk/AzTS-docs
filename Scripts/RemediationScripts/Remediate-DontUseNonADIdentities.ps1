@@ -242,12 +242,12 @@ function Remove-AzTSNonADIdentities
     $getObjectsByObjectIdsBetaAPIUrl = "https://graph.microsoft.com/beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState"
     if( ($distinctRoleAssignmentList | Measure-Object).Count -gt 0)
     {
-        # Adding batch of 1000
-        for( $i = 0; $i -lt $distinctRoleAssignmentList.Length; $i = $i + 1000)
+        # Adding batch of 900
+        for( $i = 0; $i -lt $distinctRoleAssignmentList.Length; $i = $i + 900)
         {
-            if($i + 1000 -lt $distinctRoleAssignmentList.Length)
+            if($i + 900 -lt $distinctRoleAssignmentList.Length)
             {
-                $endRange = $i + 1000
+                $endRange = $i + 900
             }
             else
             {
