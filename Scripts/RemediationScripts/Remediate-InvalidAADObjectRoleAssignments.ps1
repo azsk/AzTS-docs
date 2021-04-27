@@ -127,7 +127,7 @@ function Remove-AzTSInvalidAADAccounts
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
     
-    $requiredRoleDefinitionName = @("Owner", "ServiceAdministrator","CoAdministrator","AccountAdministrator","ServiceAdministrator;AccountAdministrator","ServiceAdministrator;AccountAdministrator" ,"CoAdministrator;AccountAdministrator","AccountAdministrator;ServiceAdministrator")
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
@@ -145,15 +145,6 @@ function Remove-AzTSInvalidAADAccounts
         
     Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
 
-    # Getting all role assignments of subscription.
-    $currentRoleAssignmentList = Get-AzRoleAssignment  
-
-    # Excluding MG scoped role assignment
-    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
-    
-    # Getting all permanent role assignments.
-    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
-
     # Getting all classic role assignments.
     $classicAssignments = $null
     $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
@@ -170,10 +161,16 @@ function Remove-AzTSInvalidAADAccounts
 
     # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
     $distinctObjectIds += $currentLoginUserObjectId;
-
-    
     if(($ObjectIds | Measure-Object).Count -eq 0)
     {
+        # Getting all role assignments of subscription.
+        $currentRoleAssignmentList = Get-AzRoleAssignment
+
+        # Excluding MG scoped role assignment
+        $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
+        
+        # Getting all permanent role assignments.
+        $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
         $currentRoleAssignmentList | select -Unique -Property 'ObjectId' | ForEach-Object { $distinctObjectIds += $_.ObjectId }
     }
     else
@@ -231,20 +228,11 @@ function Remove-AzTSInvalidAADAccounts
         }
 
         $activeIdentities += $subActiveIdentities.ObjectId
-    } 
-
-    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
-    if (Test-Path -Path $folderPath)
-    {
-        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\InvalidAADAccounts\"
-        New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
-
-    Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."    
 
     $invalidAADObjectIds = $distinctObjectIds | Where-Object { $_ -notin $activeIdentities}
 
-    # get list of all invalid classic role assignments followed by principal name.
+    # Get list of all invalid classic role assignments followed by principal name.
     $invalidClassicRoles = @();
      
     $classicRoleAssignments | ForEach-Object { 
@@ -287,6 +275,15 @@ function Remove-AzTSInvalidAADAccounts
     if($invalidClassicRolesCount -gt 0 )
     {
         Write-Host "Found [$($invalidClassicRolesCount)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+    }
+    
+    Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."    
+
+    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    if (Test-Path -Path $folderPath)
+    {
+        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\InvalidAADAccounts\"
+        New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
     # Safe Check: Taking backup of invalid identities.   
