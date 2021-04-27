@@ -91,7 +91,7 @@ function Set-ConfigASCTier
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
@@ -140,7 +140,7 @@ function Set-ConfigASCTier
         try 
         {
             Register-AzResourceProvider -ProviderNamespace $reqProviderName
-            while((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Registered")
+            while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Registered") | Measure-Object).Count -gt 0)
             {
                 # Checking threshold time limit to avoid getting into infinite loop
                 if($thresholdTimeLimit -ge 300)
@@ -207,7 +207,7 @@ function Set-ConfigASCTier
         {
             Write-Host "Setting [$($reqASCTier)] pricing tier..."
             $nonCompliantASCTierResourcetype | ForEach-Object {
-                (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqASCTier) | Select-Object -Property Id, Name, PricingTier
+                (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqASCTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
             }
         }
         catch 
@@ -277,7 +277,7 @@ function Remove-ConfigASCTier
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
@@ -308,8 +308,6 @@ function Remove-ConfigASCTier
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         break;
     }
-
-    Write-Host "`n"
     Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for Subscription [$($SubscriptionId)]..."
  
     # Array to store resource context
@@ -333,51 +331,67 @@ function Remove-ConfigASCTier
         {
             Write-Host "Configuring ASC tier as per remediation log on subscription [$($SubscriptionId)]..."
             
-            # Checking current registration state of provider i.e. 'Microsoft.Security' on subscription.
-            $isProviderRegister = (((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -eq "Registered") | Measure-Object).Count -gt 0
-            if([System.Convert]::ToBoolean($remediatedLog.IsProviderRegister) -eq $isProviderRegister)
-            {
-                Write-Host "[$($reqProviderName)] provider registration state is same as before executing remediation script." -ForegroundColor Green
-            }
-            else 
-            {
-                # when current provider registration state and before executing remediation script is not same.
-                # That means while doing remediation it got registered, to perform rollback we need to unregister it
-                Write-Host "$reqProviderName provider name was registered before executing remediation script, performing rollback."
-                Write-Host "$reqProviderName unregistering..."
-                try 
-                {
-                    Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
-                }
-                catch 
-                {
-                    Write-Host "Error Occured while unregistering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
-                }
-                Write-Host "$reqProviderName provider successfully unregistered." -ForegroundColor Green
-            }
-
             if($null -ne $remediatedLog.NonCompliantASCType -and ($remediatedLog.NonCompliantASCType | Measure-Object).Count -gt 0)
             {
                 try 
                 {
                     $remediatedLog.NonCompliantASCType | ForEach-Object {
                         (Set-AzSecurityPricing -Name $_.Name -PricingTier $_.PricingTier) | Select-Object -Property Id, Name, PricingTier
-                    }    
+                    }
                 }
                 catch 
                 {
                     Write-Host "Error occurred while performing rollback operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
                     break      
                 }
-
-                Write-Host "Rollback operation successfully performed." -ForegroundColor Green
-                Write-Host "======================================================"
             }
             else 
             {
-                Write-Host "No non-compliant ASC type found to perform rollback operation." -ForegroundColor Green
+                Write-Host "No non-compliant ASC type found to perform rollback operation." -ForegroundColor Green                
+            }
+
+            Write-Host "`n"
+            # Checking current registration state of provider i.e. 'Microsoft.Security' on subscription.
+            $isProviderRegister = (((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -eq "Registered") | Measure-Object).Count -gt 0
+            if([System.Convert]::ToBoolean($remediatedLog.IsProviderRegister) -eq $isProviderRegister)
+            {
+                Write-Host "[$($reqProviderName)] provider registration state is same as before executing remediation script." -ForegroundColor Green
+                Write-Host "Rollback operation successfully performed." -ForegroundColor Green
                 Write-Host "======================================================"
-                break                
+                break;
+            }
+            else 
+            {
+                # when current provider registration state and before executing remediation script is not same.
+                # That means while doing remediation it got registered, to perform rollback we need to unregister it
+                Write-Host "$reqProviderName provider name was registered before executing remediation script, performing rollback."
+                Write-Host "$reqProviderName unregistering...[It takes 2-3 min to get unregistered]..."
+                try 
+                {
+                    Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
+                    while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Unregistered") | Measure-Object).Count -gt 0)
+                    {
+                        # Checking threshold time limit to avoid getting into infinite loop
+                        if($thresholdTimeLimit -ge 300)
+                        {
+                            Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time then expected, Aborting process..." -ForegroundColor Red
+                            throw [System.ArgumentException] ($_)
+                        }
+                        Start-Sleep -Seconds 30
+                        Write-Host "$reqProviderName unregistering..." -ForegroundColor Yellow
+
+                        # Incrementing threshold time limit by 30 sec in every iteration
+                        $thresholdTimeLimit = $thresholdTimeLimit + 30
+                    }
+                }
+                catch 
+                {
+                    Write-Host "Error Occured while unregistering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
+                    break;
+                }
+                Write-Host "$reqProviderName provider successfully unregistered." -ForegroundColor Green
+                Write-Host "Rollback operation successfully performed." -ForegroundColor Green
+                Write-Host "======================================================"
             }
         }
         else 

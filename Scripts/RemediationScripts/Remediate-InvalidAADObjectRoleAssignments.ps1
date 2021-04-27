@@ -126,10 +126,11 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
+    
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
-        Write-Host "Warning: This script can only be run by an Owner/User Access Administrator/Contributor." -ForegroundColor Yellow
+        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         break;
     }
 
@@ -144,25 +145,32 @@ function Remove-AzTSInvalidAADAccounts
         
     Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
 
-    # Getting all role assignments of subscription.
-    $currentRoleAssignmentList = Get-AzRoleAssignment -IncludeClassicAdministrators  
-
-    # Excluding MG scoped role assignment
-    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
-    
     # Getting all classic role assignments.
-    $classicRoleAssignments = $currentRoleAssignmentList | Where-Object {[string]::IsNullOrWhiteSpace($_.ObjectId)};
+    $classicAssignments = $null
+    $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+    $method = "Get"
+    $classicAssignments = [ClassicRoleAssignments]::new()
+    $headers = $classicAssignments.GetAuthHeader()
+    $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+    
+     # Renaming property name
+    $classicRoleAssignments = $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}
 
-    # Getting all permanent role assignments.
-    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
     $distinctObjectIds = @();
 
     # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
     $distinctObjectIds += $currentLoginUserObjectId;
-
-    
     if(($ObjectIds | Measure-Object).Count -eq 0)
     {
+        # Getting all role assignments of subscription.
+        $currentRoleAssignmentList = Get-AzRoleAssignment
+
+        # Excluding MG scoped role assignment
+        $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
+        
+        # Getting all permanent role assignments.
+        $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
         $currentRoleAssignmentList | select -Unique -Property 'ObjectId' | ForEach-Object { $distinctObjectIds += $_.ObjectId }
     }
     else
@@ -220,20 +228,11 @@ function Remove-AzTSInvalidAADAccounts
         }
 
         $activeIdentities += $subActiveIdentities.ObjectId
-    } 
-
-    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
-    if (Test-Path -Path $folderPath)
-    {
-        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\InvalidAADAccounts\"
-        New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
-
-    Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."    
 
     $invalidAADObjectIds = $distinctObjectIds | Where-Object { $_ -notin $activeIdentities}
 
-    # get list of all invalid classic role assignments followed by principal name.
+    # Get list of all invalid classic role assignments followed by principal name.
     $invalidClassicRoles = @();
      
     $classicRoleAssignments | ForEach-Object { 
@@ -242,7 +241,7 @@ function Remove-AzTSInvalidAADAccounts
                 {
                     $invalidClassicRoles += $_ 
                 }
-            } 
+            }
 
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
@@ -254,22 +253,39 @@ function Remove-AzTSInvalidAADAccounts
         break;
     }
 
+    # Getting count of invalid account
+    $invalidAADObjectRoleAssignmentsCount = ($invalidAADObjectRoleAssignments | Measure-Object).Count
+    $invalidClassicRolesCount = ($invalidClassicRoles | Measure-Object).Count
 
-    if(($invalidAADObjectRoleAssignments | Measure-Object).Count -le 0 )
+    if(($invalidAADObjectRoleAssignmentsCount -eq 0) -and ($invalidClassicRolesCount -eq 0))
+    {
+        Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process."
+        break;
+    }
+
+    if($invalidAADObjectRoleAssignmentsCount -le 0 )
     {
         Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
-        break;
     }
     else
     {
-        Write-Host "Found [$(($invalidAADObjectRoleAssignments | Measure-Object).Count)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$($invalidAADObjectRoleAssignmentsCount)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }    
 
-    if(($invalidClassicRoles | Measure-Object).Count -gt 0 )
+    if($invalidClassicRolesCount -gt 0 )
     {
-        Write-Host "Found [$(($invalidClassicRoles | Measure-Object).Count)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
-    }  
+        Write-Host "Found [$($invalidClassicRolesCount)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+    }
+     
+    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    if (Test-Path -Path $folderPath)
+    {
+        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\InvalidAADAccounts\"
+        New-Item -ItemType Directory -Path $folderPath | Out-Null
+    }
 
+    Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."  
+    
     # Safe Check: Taking backup of invalid identities.   
     if ($invalidAADObjectRoleAssignments.length -gt 0)
     {
@@ -312,11 +328,24 @@ function Remove-AzTSInvalidAADAccounts
         }
     }
 
+    # Deleting deprecated account having classic role assignment.
     $invalidClassicRoles | ForEach-Object {
         try 
         {
-            Remove-AzRoleAssignment $_ 
-            $_ | Select-Object -Property "Scope", "RoleDefinitionName"    
+            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.Scope.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+            {
+                $armUri = "https://management.azure.com" + $_.Scope + "?api-version=2015-06-01"
+                $method = "Delete"
+                $classicAssignments = $null
+                $classicAssignments = [ClassicRoleAssignments]::new()
+                $headers = $classicAssignments.GetAuthHeader()
+                $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
+
+                if($res.StatusCode -eq 202 -or $res.StatusCode -eq 200)
+                {
+                    $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
+                }
+            } 
         }
         catch
         {
@@ -335,6 +364,75 @@ function Remove-AzTSInvalidAADAccounts
         Write-Host "Not able to successfully delete invalid AAD ObjectGuids role assignments." -ForegroundColor Red
     }
 }
+
+class ClassicRoleAssignments
+{
+    [PSObject] GetAuthHeader()
+    {
+        [psobject] $headers = $null
+        try 
+        {
+            $resourceAppIdUri = "https://management.core.windows.net/"
+            $rmContext = Get-AzContext
+            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
+            $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+            $rmContext.Account,
+            $rmContext.Environment,
+            $rmContext.Tenant,
+            [System.Security.SecureString] $null,
+            "Never",
+            $null,
+            $resourceAppIdUri); 
+
+            $header = "Bearer " + $authResult.AccessToken
+            $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+        }
+        catch 
+        {
+            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+        }
+        return($headers)
+    }
+
+    [PSObject] GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    {
+        $content = $null
+        try
+        {
+            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::$method
+            
+            # API to get classic role assignments
+            $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
+            $content = ConvertFrom-Json $response.Content
+        }
+        catch
+        {
+            Write-Host "Error occured while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+        }
+        
+        return($content)
+    }
+
+    [PSObject] DeleteClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    {
+        $content = $null
+        try
+        {
+            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::$method
+            
+            # API to get classic role assignments
+            $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
+            $content = $response
+        }
+        catch
+        {
+            Write-Host "Error occured while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+        }
+        
+        return($content)
+    }
+}
+
 
 # ***************************************************** #
 <#
