@@ -45,7 +45,7 @@
     }
 }
 
-function Remove-AzTSNonAADAccountsRBAC
+function Remove-AzTSNonADIdentities
 {
     <#
     .SYNOPSIS
@@ -77,7 +77,7 @@ function Remove-AzTSNonAADAccountsRBAC
     )
 
     Write-Host "======================================================"
-    Write-Host "Starting with removal of Non AAD Identities from subscriptions..."
+    Write-Host "Starting with removal of Non-AD Identities from subscriptions..."
     Write-Host "------------------------------------------------------"
 
     if($PerformPreReqCheck)
@@ -107,7 +107,7 @@ function Remove-AzTSNonAADAccountsRBAC
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
 
-    Write-Host "Note: `n 1. Exclude check to remediate PIM assignment for external identities due to insufficient privilege. `n 2. Exclude check to remediate external identities at MG scope." -ForegroundColor Yellow
+    Write-Host "Note: `n 1. Exclude checking PIM assignment for external identities due to insufficient privilege. `n 2. Exclude checking external identities at MG scope." -ForegroundColor Yellow
     Write-Host "------------------------------------------------------"
 
     Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
@@ -276,33 +276,33 @@ function Remove-AzTSNonAADAccountsRBAC
     # Safe Check: Check whether the current user accountId is part of Invalid AAD ObjectGuids List 
     if(($liveAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
     {
-        Write-Host "Warning: Current User account is found as part of the Non AAD Account. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
+        Write-Host "Warning: Current User account is found as part of the Non-AD Account. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
         break;
     }
 
     if(($liveAccountsRoleAssignments | Measure-Object).Count -le 0)
     {
-        Write-Host "No Non AAD identities found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
+        Write-Host "No Non-AD identities found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
         break;
     }
     else
     {
-        Write-Host "Found [$(($liveAccountsRoleAssignments | Measure-Object).Count)] Non AAD role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$(($liveAccountsRoleAssignments | Measure-Object).Count)] Non-AD role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
 
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
     if (Test-Path -Path $folderPath)
     {
-        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\NonAADAccounts\"
+        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\NonADIdentities\"
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    # Safe Check: Taking backup of Non AAD identities    
+    # Safe Check: Taking backup of Non-AD identities    
     if ($liveAccountsRoleAssignments.length -gt 0)
     {
-        Write-Host "Taking backup of role assignments for Non AAD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
-        $liveAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonAADAccountsRoleAssignments.json"       
-        Write-Host "Path: $($folderpath)NonAADAccountsRoleAssignments.json"
+        Write-Host "Taking backup of role assignments for Non-AD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+        $liveAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonADAccountsRoleAssignments.json"       
+        Write-Host "Path: $($folderpath)NonADAccountsRoleAssignments.json"
     }
 
     if(-not $Force)
@@ -317,10 +317,10 @@ function Remove-AzTSNonAADAccountsRBAC
     }
    
 
-    Write-Host "Step 3 of 3: Clean up Non AAD identities for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 3 of 3: Clean up Non-AD identities for Subscription [$($SubscriptionId)]..."
     
-    # Start deletion of all Non AAD identities.
-    Write-Host "Starting to delete role assignments for Non AAD identities..." -ForegroundColor Cyan
+    # Start deletion of all Non-AD identities.
+    Write-Host "Starting to delete role assignments for Non-AD identities..." -ForegroundColor Cyan
     
     $isRemoved = $true
     $liveAccountsRoleAssignments | ForEach-Object {
@@ -349,23 +349,23 @@ function Remove-AzTSNonAADAccountsRBAC
         catch
         {
             $isRemoved = $false
-            Write-Host "Error occurred while removing role assignments for Non AAD identities. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while removing role assignments for Non-AD identities. ErrorMessage [$($_)]" -ForegroundColor Red
         }
     }
 
     if($isRemoved)
     {
-        Write-Host "Completed deleting role assignments for Non AAD identities." -ForegroundColor Green
+        Write-Host "Completed deleting role assignments for Non-AD identities." -ForegroundColor Green
     }
     else 
     {
         Write-Host "`n"
-        Write-Host "Not able to successfully delete role assignments for Non AAD identities." -ForegroundColor Red
+        Write-Host "Not able to successfully delete role assignments for Non-AD identities." -ForegroundColor Red
     }    
 }
 
 
-function Restore-AzTSNonAADAccountsRBAC
+function Restore-AzTSNonADIdentities
 {
     <#
     .SYNOPSIS
@@ -392,7 +392,7 @@ function Restore-AzTSNonAADAccountsRBAC
     )
 
     Write-Host "======================================================"
-    Write-Host "Starting with restore role assignments for Non AAD identities from subscriptions..."
+    Write-Host "Starting with restore role assignments for Non-AD identities from subscriptions..."
     Write-Host "------------------------------------------------------"
     
     if($PerformPreReqCheck)
@@ -493,18 +493,18 @@ function Restore-AzTSNonAADAccountsRBAC
         catch
         {
             $isRestored = $false
-            Write-Host "Error occurred while adding role assignments for Non AAD identities. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while adding role assignments for Non-AD identities. ErrorMessage [$($_)]" -ForegroundColor Red
         }
     }
     
     if($isRestored)
     {
-        Write-Host "Completed restoring role assignments for Non AAD identities." -ForegroundColor Green
+        Write-Host "Completed restoring role assignments for Non-AD identities." -ForegroundColor Green
     }
     else 
     {
         Write-Host "`n"
-        Write-Host "Not able to successfully restore role assignments for Non AAD identities." -ForegroundColor Red   
+        Write-Host "Not able to successfully restore role assignments for Non-AD identities." -ForegroundColor Red   
     }
 }
 
@@ -659,9 +659,9 @@ class ClassicRoleAssignments
 # ***************************************************** #
 <#
 Function calling with parameters.
-Remove-AzTSNonAADAccountsRBAC -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>')  -Force:$false -PerformPreReqCheck: $true
+Remove-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>')  -Force:$false -PerformPreReqCheck: $true
 
 Function to rollback role assignments as per input remediated log
-Restore-AzTSNonAADAccountsRBAC -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\NonAADAccounts\NonAADAccountsRoleAssignments.json"
+Restore-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\NonAADAccounts\NonAADAccountsRoleAssignments.json"
 Note: You can only rollback valid role assignments.
 #>
