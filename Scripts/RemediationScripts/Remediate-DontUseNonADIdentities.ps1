@@ -7,7 +7,7 @@ function Pre_requisites
     This command would check pre requisities modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Resources, Az.Account" -ForegroundColor Cyan
+    Write-Host "Required modules are: Az.Resources, Az.Account, AzureAD" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
     $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts)
     
@@ -37,7 +37,7 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'AzureAD')
     {
         Write-Host "Installing module AzureAD..." -ForegroundColor Yellow
-        Install-Module -Name AzureAD -Scope CurrentUser
+        Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
@@ -55,9 +55,9 @@ function Remove-AzTSNonADIdentities
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER ObjectIds
-        Enter objectIds of non ad identities.
+        Enter objectIds of non-ad identities.
     .Parameter Force
-        Enter force parameter value to remove non ad identities
+        Enter force parameter value to remove non-ad identities
     .PARAMETER PerformPreReqCheck
         Perform pre requisities check to ensure all required module to perform rollback operation is available.
     #>
@@ -127,7 +127,7 @@ function Remove-AzTSNonADIdentities
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or User Access Administrator" -ForegroundColor Yellow
         break;
@@ -135,51 +135,52 @@ function Remove-AzTSNonADIdentities
     
     Write-Host "Step 2 of 3: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
 
-    #  Getting all role assignments from ARM source.
-    $currentRoleAssignmentList = Get-AzRoleAssignment 
-
-    # Excluding MG scoped role assignment
-    $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
-    
-    # API call to get classic role assignment
-    $classicAssignments = $null
-    $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-    $method = "Get"
-    $classicAssignments = [ClassicRoleAssignments]::new()
-    $headers = $classicAssignments.GetAuthHeader()
-    $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
-    if($null -ne $res)
-    {
-        $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
-        # Renaming property name
-        $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}, ObjectId
-    }
-    
-    # Get object id of classic role assignment
-    $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
-    
-    if(($currentRoleAssignmentList | Measure-Object).Count -gt 0)
-    {
-        $currentRoleAssignmentList | Where-Object { [string]::IsNullOrWhiteSpace($_.ObjectId) } | ForEach-Object { 
-           $classicRoleAssignment = $_
-           $signInName = $classicRoleAssignment.SignInName.Replace("#","%23")
-           $url = [string]::Format($getObjectsByUserPrincipalNameAPIString, $signInName, $signInName)
-           $header = [AzureADGraph]::new().GetAuthHeader()
-           $adGraphResponse = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers $header -Method Get
-
-           if($adGraphResponse -ne $null)
-           {
-                $adGraphResponse = $adGraphResponse.Content | ConvertFrom-Json
-                $classicRoleAssignment.ObjectId = $adGraphResponse.value.objectId
-           }
-        }
-    }
-    
     $distinctRoleAssignmentList = @();
 
-    # Getting role assignment and filtering service principal object type
+    # Getting role assignment
     if(($ObjectIds | Measure-Object).Count -eq 0)
     {
+        #  Getting all role assignments from ARM source.
+        $currentRoleAssignmentList = Get-AzRoleAssignment 
+
+        # Excluding MG scoped role assignment
+        $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
+        
+        # API call to get classic role assignment
+        $classicAssignments = $null
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        $method = "Get"
+        $classicAssignments = [ClassicRoleAssignments]::new()
+        $headers = $classicAssignments.GetAuthHeader()
+        $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+        if($null -ne $res)
+        {
+            $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+            # Renaming property name
+            $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}, ObjectId
+        }
+        
+        # Get object id of classic role assignment
+        $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
+        
+        if(($currentRoleAssignmentList | Measure-Object).Count -gt 0)
+        {
+            $currentRoleAssignmentList | Where-Object { [string]::IsNullOrWhiteSpace($_.ObjectId) } | ForEach-Object { 
+            $classicRoleAssignment = $_
+            $signInName = $classicRoleAssignment.SignInName.Replace("#","%23")
+            $url = [string]::Format($getObjectsByUserPrincipalNameAPIString, $signInName, $signInName)
+            $header = [AzureADGraph]::new().GetAuthHeader()
+            $adGraphResponse = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers $header -Method Get
+
+            if($adGraphResponse -ne $null)
+            {
+                    $adGraphResponse = $adGraphResponse.Content | ConvertFrom-Json
+                    $classicRoleAssignment.ObjectId = $adGraphResponse.value.objectId
+            }
+            }
+        }
+
+        # Filtering service principal object type
         $distinctRoleAssignmentList += $currentRoleAssignmentList | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) }
     }
     else
@@ -188,7 +189,8 @@ function Remove-AzTSNonADIdentities
           $objectId = $_;
            if(![string]::IsNullOrWhiteSpace($objectId))
             {
-                $distinctRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) }
+                # Filtering service principal object type
+                $distinctRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) -and !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/")}
             }
             else
             {
@@ -335,7 +337,7 @@ function Remove-AzTSNonADIdentities
                 $headers = $classicAssignments.GetAuthHeader()
                 $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
 
-                if($res.StatusCode -eq 202 -or $res.StatusCode -eq 200)
+                if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
                     $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
                 }
@@ -439,9 +441,9 @@ function Restore-AzTSNonADIdentities
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'CoAdministrator' -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
     {
-        Write-Host "Warning: This script can only be run by an Owner/CoAdministrator/User Access Administrator." -ForegroundColor Yellow
+        Write-Host "Warning: This script can only be run by an Owner or User Access Administrator." -ForegroundColor Yellow
         break;
     }
 
@@ -453,6 +455,13 @@ function Restore-AzTSNonADIdentities
         break;        
     }
     $backedUpRoleAssingments = Get-Content -Raw -Path $RollbackFilePath | ConvertFrom-Json     
+
+    # Checking if no assignments found in given json file
+    if(($backedUpRoleAssingments | Measure-Object).count -eq 0)
+    {
+        Write-Host "No assignment found to perform rollback operation. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor Yellow
+        break;
+    }
 
     Write-Host "Step 3 of 3: Restore role assignments [$($SubscriptionId)]..."
     

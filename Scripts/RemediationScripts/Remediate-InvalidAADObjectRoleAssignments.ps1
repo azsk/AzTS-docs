@@ -100,12 +100,12 @@ function Remove-AzTSInvalidAADAccounts
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
+    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     
     Write-Host "Note: `n Exclude checking role assignments at MG scope." -ForegroundColor Yellow
@@ -145,24 +145,25 @@ function Remove-AzTSInvalidAADAccounts
         
     Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
 
-    # Getting all classic role assignments.
     $classicAssignments = $null
-    $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-    $method = "Get"
-    $classicAssignments = [ClassicRoleAssignments]::new()
-    $headers = $classicAssignments.GetAuthHeader()
-    $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
-    $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
-    
-     # Renaming property name
-    $classicRoleAssignments = $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}
-
     $distinctObjectIds = @();
 
     # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
     $distinctObjectIds += $currentLoginUserObjectId;
     if(($ObjectIds | Measure-Object).Count -eq 0)
     {
+        # Getting all classic role assignments.
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        $method = "Get"
+        $classicAssignments = [ClassicRoleAssignments]::new()
+        $headers = $classicAssignments.GetAuthHeader()
+        $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+        $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+        
+        # Renaming property name
+        $classicRoleAssignments = $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}
+
+    
         # Getting all role assignments of subscription.
         $currentRoleAssignmentList = Get-AzRoleAssignment
 
@@ -178,9 +179,10 @@ function Remove-AzTSInvalidAADAccounts
         $currentRoleAssignmentList = @()
         $ObjectIds | Foreach-Object {
           $objectId = $_;
-           if(![string]::IsNullOrWhiteSpace($objectId))
+          
+          if(![string]::IsNullOrWhiteSpace($objectId))
             {
-                $currentRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId
+                $currentRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/")}
                 $distinctObjectIds += $objectId
             }
             else
@@ -201,7 +203,7 @@ function Remove-AzTSInvalidAADAccounts
     catch
     {
         Write-Host "Connecting to Azure AD..."
-        Connect-AzureAD
+        Connect-AzureAD -ErrorAction Stop
     }   
 
     # Batching object ids in count of 900.
@@ -343,7 +345,7 @@ function Remove-AzTSInvalidAADAccounts
                 $headers = $classicAssignments.GetAuthHeader()
                 $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
 
-                if($res.StatusCode -eq 202 -or $res.StatusCode -eq 200)
+                if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
                     $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
                 }
