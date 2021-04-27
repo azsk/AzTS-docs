@@ -175,10 +175,12 @@ function Remove-AzTSInvalidAADAccounts
     }
     else
     {
+        $currentRoleAssignmentList = @()
         $ObjectIds | Foreach-Object {
           $objectId = $_;
            if(![string]::IsNullOrWhiteSpace($objectId))
             {
+                $currentRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId
                 $distinctObjectIds += $objectId
             }
             else
