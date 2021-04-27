@@ -100,12 +100,12 @@ function Remove-AzTSNonADIdentities
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
+    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     Write-Host "Note: `n 1. Exclude checking PIM assignment for external identities due to insufficient privilege. `n 2. Exclude checking external identities at MG scope." -ForegroundColor Yellow
     Write-Host "------------------------------------------------------"
@@ -271,23 +271,23 @@ function Remove-AzTSNonADIdentities
         } 
     }
 
-    $liveAccountsRoleAssignments = @($distinctRoleAssignmentList | Where-Object { $GuestAccountsObjectId -contains $_.ObjectId })
+    $externalAccountsRoleAssignments = @($distinctRoleAssignmentList | Where-Object { $GuestAccountsObjectId -contains $_.ObjectId })
 
     # Safe Check: Check whether the current user accountId is part of Invalid AAD ObjectGuids List 
-    if(($liveAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
+    if(($externalAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the Non-AD Account. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
         break;
     }
 
-    if(($liveAccountsRoleAssignments | Measure-Object).Count -le 0)
+    if(($externalAccountsRoleAssignments | Measure-Object).Count -le 0)
     {
         Write-Host "No Non-AD identities found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
         break;
     }
     else
     {
-        Write-Host "Found [$(($liveAccountsRoleAssignments | Measure-Object).Count)] Non-AD role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$(($externalAccountsRoleAssignments | Measure-Object).Count)] Non-AD role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
 
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
@@ -298,10 +298,10 @@ function Remove-AzTSNonADIdentities
     }
 
     # Safe Check: Taking backup of Non-AD identities    
-    if ($liveAccountsRoleAssignments.length -gt 0)
+    if ($externalAccountsRoleAssignments.length -gt 0)
     {
         Write-Host "Taking backup of role assignments for Non-AD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
-        $liveAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonADAccountsRoleAssignments.json"       
+        $externalAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonADAccountsRoleAssignments.json"       
         Write-Host "Path: $($folderpath)NonADAccountsRoleAssignments.json"
     }
 
@@ -323,7 +323,7 @@ function Remove-AzTSNonADIdentities
     Write-Host "Starting to delete role assignments for Non-AD identities..." -ForegroundColor Cyan
     
     $isRemoved = $true
-    $liveAccountsRoleAssignments | ForEach-Object {
+    $externalAccountsRoleAssignments | ForEach-Object {
         try
         {
             if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.Scope.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
@@ -414,12 +414,12 @@ function Restore-AzTSNonADIdentities
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
+    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
