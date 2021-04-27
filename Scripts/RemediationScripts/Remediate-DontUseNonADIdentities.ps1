@@ -32,6 +32,17 @@
     {
         Write-Host "Az.Resources module is available." -ForegroundColor Green
     }
+    
+    # Checking if 'AzureAD' module is available or not.
+    if($availableModules.Name -notcontains 'AzureAD')
+    {
+        Write-Host "Installing module AzureAD..." -ForegroundColor Yellow
+        Install-Module -Name AzureAD -Scope CurrentUser
+    }
+    else
+    {
+        Write-Host "AzureAD module is available." -ForegroundColor Green
+    }
 }
 
 function Remove-AzTSNonAADAccountsRBAC
