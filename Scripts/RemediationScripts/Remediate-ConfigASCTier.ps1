@@ -91,7 +91,7 @@ function Set-ConfigASCTier
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
@@ -277,7 +277,7 @@ function Remove-ConfigASCTier
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 

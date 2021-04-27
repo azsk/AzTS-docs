@@ -111,7 +111,7 @@ function Remove-AnonymousAccessOnContainers
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
     }
 
@@ -436,7 +436,7 @@ function Set-AnonymousAccessOnContainers
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 

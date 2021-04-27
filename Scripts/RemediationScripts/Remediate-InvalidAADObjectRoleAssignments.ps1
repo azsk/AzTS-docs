@@ -276,9 +276,7 @@ function Remove-AzTSInvalidAADAccounts
     {
         Write-Host "Found [$($invalidClassicRolesCount)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
-    
-    Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."    
-
+     
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
     if (Test-Path -Path $folderPath)
     {
@@ -286,6 +284,8 @@ function Remove-AzTSInvalidAADAccounts
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
+    Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."  
+    
     # Safe Check: Taking backup of invalid identities.   
     if ($invalidAADObjectRoleAssignments.length -gt 0)
     {
