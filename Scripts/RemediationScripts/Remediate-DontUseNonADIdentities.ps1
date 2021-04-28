@@ -107,10 +107,10 @@ function Remove-AzTSNonADIdentities
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
-    Write-Host "Note: `n 1. Exclude checking PIM assignment for external identities due to insufficient privilege. `n 2. Exclude checking external identities at MG scope." -ForegroundColor Yellow
+    Write-Host "Note: `n 1. Exclude checking PIM assignment for external identities due to insufficient privilege. `n 2. Exclude checking external identities at MG scope. `n 3. Checking only for user type assignments." -ForegroundColor Yellow
     Write-Host "------------------------------------------------------"
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
@@ -157,7 +157,7 @@ function Remove-AzTSNonADIdentities
         {
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
             # Renaming property name
-            $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}, ObjectId
+            $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='RoleId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='RoleAssignmentId'; E={$_.id }}, ObjectId
         }
         
         # Get object id of classic role assignment
@@ -328,9 +328,9 @@ function Remove-AzTSNonADIdentities
     $externalAccountsRoleAssignments | ForEach-Object {
         try
         {
-            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.Scope.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                $armUri = "https://management.azure.com" + $_.Scope + "?api-version=2015-06-01"
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
                 $method = "Delete"
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
@@ -339,7 +339,7 @@ function Remove-AzTSNonADIdentities
 
                 if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
-                    $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
+                    $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
                 }
             }
             else 
@@ -424,7 +424,7 @@ function Restore-AzTSNonADIdentities
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     Write-Host "------------------------------------------------------"
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
@@ -470,9 +470,9 @@ function Restore-AzTSNonADIdentities
     $backedUpRoleAssingments | ForEach-Object {
         try
         {
-            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.Scope.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                $armUri = "https://management.azure.com" + $_.Scope + "?api-version=2015-06-01"
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
                 $method = "PUT"
 
                 # Create body for making PUT request
@@ -489,7 +489,7 @@ function Restore-AzTSNonADIdentities
                 $res = $classicAssignments.PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
                 if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
-                    $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
+                    $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
                 }
             }
             else 
