@@ -526,7 +526,6 @@ class AzureADGraph
         {
             $resourceAppIdUri = "https://graph.windows.net"
             $rmContext = Get-AzContext
-            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
             $rmContext.Environment,
@@ -547,6 +546,7 @@ class AzureADGraph
     }
 }
 
+
 class MicrosoftGraph
 {
     [PSObject] GetAuthHeader()
@@ -556,7 +556,6 @@ class MicrosoftGraph
         {
             $resourceAppIdUri = "https://graph.microsoft.com"
             $rmContext = Get-AzContext
-            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
             $rmContext.Environment,
@@ -587,7 +586,6 @@ class ClassicRoleAssignments
         {
             $resourceAppIdUri = "https://management.core.windows.net/"
             $rmContext = Get-AzContext
-            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
             $rmContext.Environment,

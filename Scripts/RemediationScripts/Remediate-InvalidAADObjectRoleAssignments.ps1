@@ -239,14 +239,17 @@ function Remove-AzTSInvalidAADAccounts
     # Get list of all invalid classic role assignments followed by principal name.
     $invalidClassicRoles = @();
      
-    $classicRoleAssignments | ForEach-Object { 
-                $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
-                if (($userDetails | Measure-Object).Count -eq 0 ) 
-                {
-                    $invalidClassicRoles += $_ 
-                }
+    if(($classicRoleAssignments | Measure-Object).count -gt 0)
+    {
+        $classicRoleAssignments | ForEach-Object { 
+            $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
+            if (($userDetails | Measure-Object).Count -eq 0 ) 
+            {
+                $invalidClassicRoles += $_ 
             }
-
+        }
+    }
+    
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
 
@@ -378,7 +381,6 @@ class ClassicRoleAssignments
         {
             $resourceAppIdUri = "https://management.core.windows.net/"
             $rmContext = Get-AzContext
-            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
             $rmContext.Environment,
