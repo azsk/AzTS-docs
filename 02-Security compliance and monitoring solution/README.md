@@ -1,6 +1,15 @@
 > The Azure Tenant Security Solution (AzTS) was created by the Core Services Engineering & Operations (CSEO) division at Microsoft, to help accelerate Microsoft IT's adoption of Azure. We have shared AzTS and its documentation with the community to provide guidance for rapidly scanning, deploying and operationalizing cloud resources, across the different stages of DevOps, while maintaining controls on security and governance.
 <br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community..
 
+</br>
+
+# Security compliance and monitoring solution
+
+## Content
+
+- [Tenant Security Solution - under the covers (how it works)](Readme.md#tenant-security-solution---under-the-covers-how-it-works)
+- [Create cloud security compliance report for your org using PowerBI](Readme.md#create-security-compliance-monitoring-solutions)
+
 ## Tenant Security Solution - under the covers (how it works)
  Tenant Security Solution is built by extending what the DevOps Kit has been doing and leveraging the best of Azure native features. It is a hybrid model, which leverages the native Azure security capabilities like Azure Security Center (ASC), Azure Policies, etc., to evaluate the security controls and continue to leverage DevOps Kit scanning capabilities in the form of custom code controls to address any coverage gaps.  
 
