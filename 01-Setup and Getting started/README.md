@@ -202,14 +202,14 @@ Optionally, you can create AD application directly from Portal using steps provi
 # -----------------------------------------------------------------#
 # Step 1: Setup AD application for AzTS UI and API
 # -----------------------------------------------------------------#
-# OPTION 1: To use an existing AD application or provide a custom name for Azure AD application.
-$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -WebAPIAzureADAppName "<WebAPIAzureADAppName>" -UIAzureADAppName "<UIAzureADAppName>"
 
+# Add subscription id in which Azure Tenant Security Solution needs to be installed.
+$HostSubscriptionId = <HostSubscriptionId>
 
-# OPTION 2: Use the default naming convention.
-# <HostSubscriptionId>: Add subscription id in which Azure Tenant Security Solution needs to be installed.
-# <HostResourceGroupName>: Add resource group name in which Azure Tenant Security Solution needs to be installed.
-$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId "<HostSubscriptionId>" -ScanHostRGName "<HostResourceGroupName>"
+# Add resource group name in which Azure Tenant Security Solution needs to be installed.
+$HostResourceGroupName = <HostResourceGroupName>
+
+$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName
 
 
 # -----------------------------------------------------------------#
