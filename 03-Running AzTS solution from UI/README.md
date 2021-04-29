@@ -10,6 +10,7 @@
 
 - [Overview](README.md#overview)
 - [Prerequisite](README.md#prerequisite)
+- [Introduction to AzTS UI and video tutorial](README.md#introduction-to-azts-ui)
 - [FAQ](README.md#frequently-asked-questions)
 
 
@@ -21,24 +22,27 @@ Tenant reader solution provides a UI-based tool that can be used to perform on-d
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
 2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](README.md#2-verifying-that-tenant-security-solution-installation-is-complete).
+> **Note:**
+> 1. If you have been recently granted access, you either need to wait for the next scheduled scan to read the latest RBAC data or request an existing owner of a subscription to perform an ad hoc scan for the subscription using AzTS UI.
+>
 
+</br>
+
+## Introduction to AzTS UI
 
 The UI is fairly self-explanatory and also has a "Guided Tour" feature that should show you the basic usage workflow. We recommend that you create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
 
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
 
-> **Note:**
-> 1. If you have been recently granted access, you either need to wait for the next scheduled scan to read the latest RBAC data or request an existing owner of a subscription to perform an ad hoc scan for the subscription using AzTS UI.
->
-> </br>
+Learn more about AzTS UI from the following video tutorials.
 
-**Introduction about AzTS UI -** refer the video below:  
+- **Introduction about AzTS UI -** Click on the image below to open the video:  
 [![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Introduction_About_AzTS_UI.mp4)
 
-**How to scan subscription manually -** refer the video below: 
+- **How to scan subscription manually -** Click on the image below to open the video: 
 [![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Scan_Subscription_Manually.mp4)
 
-**How to export control scan logs in local machine -** refer the video below: 
+- **How to export control scan logs in local machine -** Click on the image below to open the video: 
 [![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Export_To_CSV.mp4)
 
 </br>
