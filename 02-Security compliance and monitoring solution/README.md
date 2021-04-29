@@ -7,8 +7,8 @@
 
 ## Content
 
-- [Tenant Security Solution - under the covers (how it works)](Readme.md#tenant-security-solution---under-the-covers-how-it-works)
-- [Create cloud security compliance report for your org using PowerBI](Readme.md#create-security-compliance-monitoring-solutions)
+- [Tenant Security Solution - under the covers (how it works)](README.md#tenant-security-solution---under-the-covers-how-it-works)
+- [Create cloud security compliance report for your org using PowerBI](README.md#create-security-compliance-monitoring-solutions)
 
 ## Tenant Security Solution - under the covers (how it works)
  Tenant Security Solution is built by extending what the DevOps Kit has been doing and leveraging the best of Azure native features. It is a hybrid model, which leverages the native Azure security capabilities like Azure Security Center (ASC), Azure Policies, etc., to evaluate the security controls and continue to leverage DevOps Kit scanning capabilities in the form of custom code controls to address any coverage gaps.  

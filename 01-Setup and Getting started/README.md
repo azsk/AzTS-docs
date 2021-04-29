@@ -460,7 +460,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 **Prerequisite:**
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
-2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](Readme.md#2-verifying-that-tenant-security-solution-installation-is-complete).
+2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](README.md#2-verifying-that-tenant-security-solution-installation-is-complete).
 
 **Note:** After the initial setup, AzTS UI can take upto 24 hours to reflect the scan result as it requires one full scan to complete.
 
@@ -472,7 +472,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 **b)** Open the URL is browser.
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
 
-[Back to top…](Readme.md#contents)
+[Back to top…](README.md#contents)
 ## 2. Log Analytics Visualization
 
 For understanding the collected data, use the querying and visualization capabilities provided by Log Analytics. 

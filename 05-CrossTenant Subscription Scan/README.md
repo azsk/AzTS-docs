@@ -12,7 +12,7 @@ There are two approaches to cover multiple tenant scan using AzTS Solution.
 ### Onboard AzTS Solution per Tenant
 
 This is straight forward approach. If you want to manage scanning of each Tenant separately, you can onboard AzTS solution per Tenant. 
-You will need to follow same [setup steps]((Readme.md#setting-up-tenant-security-solution---step-by-step)) for each Tenant. 
+You will need to follow same [setup steps]((README.md#setting-up-tenant-security-solution---step-by-step)) for each Tenant. 
 
 ### Use single AzTS setup to scan cross- and multi-tenant 
 
@@ -23,11 +23,11 @@ Follow below steps to onboard subscription from different tenants to AzTS scanni
 
 1. Setup AzTS Solution on host tenant subscription
 
-    Follow [setup steps]((Readme.md#setting-up-tenant-security-solution---step-by-step)) on host subscription. If you have already performed setup, you can skip this step. 
+    Follow [setup steps]((README.md#setting-up-tenant-security-solution---step-by-step)) on host subscription. If you have already performed setup, you can skip this step. 
 
 2. Get AzTS scanning MI principal id
    
-   In step 3 of [setup]((Readme.md#setting-up-tenant-security-solution---step-by-step)), we have created central scanning user managed identity. We will need to navigate to MI resource to get principal id. 
+   In step 3 of [setup]((README.md#setting-up-tenant-security-solution---step-by-step)), we have created central scanning user managed identity. We will need to navigate to MI resource to get principal id. 
 
    Go Azure Portal --> Subscription where central scanning MI resource created --> Click on MI Hosting RG --> Click on MI resource --> Copy object id 
 

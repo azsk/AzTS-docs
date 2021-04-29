@@ -8,9 +8,9 @@
 
 ## Content
 
-- [Overview](Readme.md#overview)
-- [Prerequisite](Readme.md#prerequisite)
-- [FAQ](Readme.md#frequently-asked-questions)
+- [Overview](README.md#overview)
+- [Prerequisite](README.md#prerequisite)
+- [FAQ](README.md#frequently-asked-questions)
 
 
 ## Overview
@@ -20,7 +20,7 @@ Tenant reader solution provides a UI-based tool that can be used to perform on-d
 ## Prerequisite
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
-2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](Readme.md#2-verifying-that-tenant-security-solution-installation-is-complete).
+2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](README.md#2-verifying-that-tenant-security-solution-installation-is-complete).
 
 
 The UI is fairly self-explanatory and also has a "Guided Tour" feature that should show you the basic usage workflow. We recommend that you create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
