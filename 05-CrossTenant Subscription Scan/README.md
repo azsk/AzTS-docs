@@ -4,9 +4,9 @@
 # Cross- and multi-Tenant AzTS Onboarding
 
 ### [Overview](Readme.md#Overview-1)
-- [ Onboard AzTS Solution per Tenant](Readme.md#setting-up-org-policy-1)
-- [Single AzTS setup to scan cross- and multi-tenant](Readme.md#setting-up-org-policy-1)
-- [ Onboard AzTS Solution per Tenant with central visibility for scan result](Readme.md#setting-up-org-policy-1)
+- [ Onboard AzTS Solution per Tenant](Readme.md#1-onboard-azts-solution-per-tenant)
+- [Single AzTS setup to scan cross- and multi-tenant](Readme.md#2-single-azts-setup-to-scan-cross--and-multi-tenant)
+- [ Onboard AzTS Solution per Tenant with central visibility for scan result](Readme.md#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result)
 
 
 
