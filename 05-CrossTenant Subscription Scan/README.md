@@ -4,7 +4,7 @@
 # Cross- and multi-Tenant AzTS Onboarding
 
 ### [Overview](#Overview-1)
-- [ Onboard AzTS Solution per Tenant]#1-onboard-azts-solution-per-tenant)
+- [Onboard AzTS Solution per Tenant](#1-onboard-azts-solution-per-tenant)
 - [Single AzTS setup to scan cross- and multi-tenant](#2-single-azts-setup-to-scan-cross--and-multi-tenant)
 - [ Onboard AzTS Solution per Tenant with central visibility for scan result](#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result)
 
@@ -22,9 +22,11 @@ Enterprise IT organizations creates multiple tenants to manage and deliver resou
 
 ## 1. Onboard AzTS Solution per Tenant
 
-If you want to manage scanning of each Tenant separately, you can onboard AzTS solution per Tenant. 
-You will need to follow same [setup steps]((../01-Setup%20and%20Getting%20started/Readme.md)) for each Tenant. 
+Standalone installation, scanning and reporting can be done by onboarding  AzTS solution per Tenant.
+You will need to follow [setup steps]((../01-Setup%20and%20Getting%20started/Readme.md)) for each Tenant. 
 
+
+Below diagram depicts high level flow for standlone setup.
 ![Internals](../Images/05-CrossTenant_StandaloneSetup.png)
 
 
