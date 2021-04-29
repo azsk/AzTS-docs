@@ -3,10 +3,10 @@
 
 # Cross- and multi-Tenant AzTS Onboarding
 
-### [Overview](Readme.md#Overview-1)
-- [ Onboard AzTS Solution per Tenant](Readme.md#1-onboard-azts-solution-per-tenant)
-- [Single AzTS setup to scan cross- and multi-tenant](Readme.md#2-single-azts-setup-to-scan-cross--and-multi-tenant)
-- [ Onboard AzTS Solution per Tenant with central visibility for scan result](Readme.md#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result)
+### [Overview](#Overview-1)
+- [ Onboard AzTS Solution per Tenant]#1-onboard-azts-solution-per-tenant)
+- [Single AzTS setup to scan cross- and multi-tenant](#2-single-azts-setup-to-scan-cross--and-multi-tenant)
+- [ Onboard AzTS Solution per Tenant with central visibility for scan result](#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result)
 
 
 
@@ -23,7 +23,7 @@ Enterprise IT organizations creates multiple tenants to manage and deliver resou
 ## 1. Onboard AzTS Solution per Tenant
 
 If you want to manage scanning of each Tenant separately, you can onboard AzTS solution per Tenant. 
-You will need to follow same [setup steps]((Readme.md#setting-up-tenant-security-solution---step-by-step)) for each Tenant. 
+You will need to follow same [setup steps]((../01-Setup%20and%20Getting%20started/Readme.md)) for each Tenant. 
 
 ![Internals](../Images/05-CrossTenant_StandaloneSetup.png)
 
@@ -37,18 +37,18 @@ Below diagram depicts high level flow for Azure Lighthouse approach
 
 ![Internals](../Images/05-CrossTenant_AzureLightHouse.png)
 
- >**Note:**  This approach has below limitations <br/>1. Azure Lighthouse delegated access is given at subscription level. Whenever  new subscription added into tenant, we need to provide delegated access on that sub <br/>2. Reader access using Azure Lighthouse can request API's that start with https://management.azure.com. However, requests that are handled by an instance of a resource type (such as Graph , RBAC details, Key Vault secrets access or storage data access) aren't supported with Azure Lighthouse. Due to this limitation, below AzTS controls will give false positive results<br/>* Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG <br/>* Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access<br/>* Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities<br/>* Azure_Subscription_AuthZ_Remove_Deprecated_Accounts 3. AzTS UI will not be accessible to non-hosting (in below diagram Y and Z) tenant users. 
+ >**Note:**  This approach has below limitations <br/>1. Azure Lighthouse delegated access is given at subscription level. Whenever  new subscription added into tenant, we need to provide delegated access on that sub <br/>2. Reader access using Azure Lighthouse can request API's that start with https://management.azure.com. However, requests that are handled by an instance of a resource type (such as Graph , RBAC details, Key Vault secrets access or storage data access) aren't supported with Azure Lighthouse. Due to this limitation, below AzTS controls will give false positive results<br/>* Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG <br/>* Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access<br/>* Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities<br/>* Azure_Subscription_AuthZ_Remove_Deprecated_Accounts <br/>3. AzTS UI will not be accessible to non-hosting (in below diagram Y and Z) tenant users. 
 
 
 Follow below steps to onboard subscription from different tenants to AzTS scanning
 
 1. Setup AzTS Solution on host tenant subscription
 
-    Follow [setup steps]((Readme.md#setting-up-tenant-security-solution---step-by-step)) on host subscription. If you have already performed setup, you can skip this step. 
+    Follow [setup steps]((../01-Setup%20and%20Getting%20started/Readme.md)) on host subscription. If you have already performed setup, you can skip this step. 
 
 2. Get AzTS scanning MI principal id
    
-   In step 3 of [setup]((Readme.md#setting-up-tenant-security-solution---step-by-step)), we have created central scanning user managed identity. We will need to navigate to MI resource to get principal id. 
+   In step 3 of [setup]((../01-Setup%20and%20Getting%20started/Readme.md)), we have created central scanning user managed identity. We will need to navigate to MI resource to get principal id. 
 
    Go Azure Portal --> Subscription where central scanning MI resource created --> Click on MI Hosting RG --> Click on MI resource --> Copy object id 
 
