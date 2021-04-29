@@ -96,17 +96,6 @@
            
         # Step 1: Setup AD application for AzTS UI and API
 
-            # OPTION 1: Use following command to use an existing AD application or provide a custom name for Azure AD application.
-            # Name of the Azure AD application to be used by AzTS API
-            $WebAPIAzureADAppName  = "<WebAPIAzureADAppName>" 
-
-            # Name of the Azure AD application to be used by AzTS UI
-            $UIAzureADAppName = "<UIAzureADAppName>"
-
-            $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -WebAPIAzureADAppName $WebAPIAzureADAppName -UIAzureADAppName $UIAzureADAppName
-            
-            
-            # OPTION 2: Use the default naming convention.
             # Subscription id in which Azure Tenant Security Solution needs to be installed.
             $HostSubscriptionId = "<HostSubscriptionId>" 
 
