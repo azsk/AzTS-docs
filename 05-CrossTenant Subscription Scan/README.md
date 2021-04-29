@@ -84,5 +84,5 @@ Below diagram depicts high level flow for Azure Lighthouse approach
 
 ![Internals](../Images/05-CrossTenant_CentralVisibility.png)
 
-Step to configure central repository will be available coming soon....
+Step to configure central repository will be available soon....
  
