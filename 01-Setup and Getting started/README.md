@@ -173,7 +173,7 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity -ScanIdentityObjectId $UserAssig
 
 ```
 > **Can you proceed without this step? What is the impact?** </br>
-Yes, you can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln to request on demand scan, view control failures etc.,
+Yes, you can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on demand scan, view control failures etc.,
 
 </br>
 
