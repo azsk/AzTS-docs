@@ -1,4 +1,3 @@
-﻿
 #****************** Prerequisite *****************
 
 # *** 1 of 6. Validate prerequisites on machine
