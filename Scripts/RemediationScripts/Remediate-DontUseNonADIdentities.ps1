@@ -115,7 +115,7 @@ function Remove-AzTSNonADIdentities
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
     if($currentSub.Account.Type -ne "User")
@@ -275,7 +275,7 @@ function Remove-AzTSNonADIdentities
 
     $externalAccountsRoleAssignments = @($distinctRoleAssignmentList | Where-Object { $GuestAccountsObjectId -contains $_.ObjectId })
 
-    # Safe Check: Check whether the current user accountId is part of Invalid AAD ObjectGuids List 
+    # Safe Check: Check whether the current user accountId is part of Invalid AAD Object guids List 
     if(($externalAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the Non-AD Account. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
@@ -302,7 +302,7 @@ function Remove-AzTSNonADIdentities
     # Safe Check: Taking backup of Non-AD identities    
     if ($externalAccountsRoleAssignments.length -gt 0)
     {
-        Write-Host "Taking backup of role assignments for Non-AD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+        Write-Host "Taking backup of role assignments for Non-AD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor Cyan
         $externalAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonADAccountsRoleAssignments.json"       
         Write-Host "Path: $($folderpath)NonADAccountsRoleAssignments.json"
     }
@@ -429,7 +429,7 @@ function Restore-AzTSNonADIdentities
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
     if($currentSub.Account.Type -ne "User")

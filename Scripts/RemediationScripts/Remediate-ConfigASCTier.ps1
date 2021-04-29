@@ -103,7 +103,7 @@ function Set-ConfigASCTier
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
@@ -288,10 +288,10 @@ function Remove-ConfigASCTier
 
     Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
-    Write-Host "Starting with Subscription [$($SubscriptionId)]..."
+    Write-Host "Starting with subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
@@ -308,7 +308,7 @@ function Remove-ConfigASCTier
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         break;
     }
-    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
  
     # Array to store resource context
     if (-not (Test-Path -Path $Path))

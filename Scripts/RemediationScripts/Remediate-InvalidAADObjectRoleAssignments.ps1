@@ -115,7 +115,7 @@ function Remove-AzTSInvalidAADAccounts
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 5: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 5: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
     if($currentSub.Account.Type -ne "User")
@@ -143,7 +143,7 @@ function Remove-AzTSInvalidAADAccounts
         $currentLoginUserObjectId = $currentLoginUserObjectIdArray[0].ObjectId;
     }
         
-    Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 2 of 5: Fetching all the role assignments for subscription [$($SubscriptionId)]..."
 
     $classicAssignments = $null
     $distinctObjectIds = @();
@@ -193,7 +193,7 @@ function Remove-AzTSInvalidAADAccounts
         }
     }        
     
-    Write-Host "Step 3 of 5: Resolving all the AAD ObjectGuids against Tenant. Number of distinctObjectGuids [$($distinctObjectIds.Count)]..."
+    Write-Host "Step 3 of 5: Resolving all the AAD Object guids against Tenant. Number of distinct object guids [$($distinctObjectIds.Count)]..."
     # Connect to Azure Active Directory.
     try
     {
@@ -253,10 +253,10 @@ function Remove-AzTSInvalidAADAccounts
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
 
-    # Safe Check: Check whether the current user accountId is part of invalid AAD ObjectGuids List 
+    # Safe Check: Check whether the current user accountId is part of invalid AAD Object guids List 
     if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -eq $currentLoginUserObjectId} | Measure-Object).Count -gt 0)
     {
-        Write-Host "Warning: Current User account is found as part of the invalid AAD ObjectGuids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
+        Write-Host "Warning: Current User account is found as part of the invalid AAD Object guids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
         break;
     }
 
@@ -276,12 +276,12 @@ function Remove-AzTSInvalidAADAccounts
     }
     else
     {
-        Write-Host "Found [$($invalidAADObjectRoleAssignmentsCount)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$($invalidAADObjectRoleAssignmentsCount)] invalid role assignments against invalid AAD object guids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }    
 
     if($invalidClassicRolesCount -gt 0 )
     {
-        Write-Host "Found [$($invalidClassicRolesCount)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$($invalidClassicRolesCount)] invalid classic role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
      
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
@@ -317,8 +317,8 @@ function Remove-AzTSInvalidAADAccounts
         }
     }
    
-    Write-Host "Step 5 of 5: Clean up invalid object guids for Subscription [$($SubscriptionId)]..."
-    # Start deletion of all invalid AAD ObjectGuids.
+    Write-Host "Step 5 of 5: Clean up invalid object guids for subscription [$($SubscriptionId)]..."
+    # Start deletion of all invalid AAD Object g4uids.
     Write-Host "Starting to delete invalid AAD object guid role assignments..." -ForegroundColor Cyan
 
     $isRemoved = $true
@@ -363,12 +363,12 @@ function Remove-AzTSInvalidAADAccounts
 
     if($isRemoved)
     {
-        Write-Host "Completed deleting invalid AAD ObjectGuids role assignments." -ForegroundColor Green
+        Write-Host "Completed deleting invalid AAD Object guids role assignments." -ForegroundColor Green
     }
     else 
     {
         Write-Host "`n"
-        Write-Host "Not able to successfully delete invalid AAD ObjectGuids role assignments." -ForegroundColor Red
+        Write-Host "Not able to successfully delete invalid AAD Object guids role assignments." -ForegroundColor Red
     }
 }
 
