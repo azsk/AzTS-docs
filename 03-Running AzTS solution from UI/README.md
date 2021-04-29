@@ -32,6 +32,15 @@ The UI is fairly self-explanatory and also has a "Guided Tour" feature that shou
 >
 > </br>
 
+**Introduction about AzTS UI -** refer the video below:  
+[![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Introduction_About_AzTS_UI.mp4)
+
+**How to scan subscription manually -** refer the video below: 
+[![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Scan_Subscription_Manually.mp4)
+
+**How to exxport control scan logs in local machine -** refer the video below: 
+[![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Export_To_CSV.mp4)
+
 </br>
 
 ### **Frequently Asked Questions**
