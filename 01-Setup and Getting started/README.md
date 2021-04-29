@@ -8,8 +8,8 @@
 </br>
 
 ##  Content
- - [Steps to install AzTS Solution](Readme.md#1-steps-to-install-AzTS-solution)
- - [Verifying that Tenant Security Solution installation is complete](Readme.md#2-verifying-that-tenant-security-solution-installation-is-complete)
+ - [Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
+ - [Verifying that Tenant Security Solution installation is complete](README.md#2-verifying-that-tenant-security-solution-installation-is-complete)
 
 </br>
 
