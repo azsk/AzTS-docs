@@ -100,22 +100,22 @@ function Remove-AzTSInvalidAADAccounts
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId
+    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     
-    Write-Host "Note: `n Exclude checking role assignments at MG scope." -ForegroundColor Yellow
+    Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking role assignments at MG scope. `n 3. Checking only for user type assignments." -ForegroundColor Yellow
     Write-Host "------------------------------------------------------"
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 5: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 5: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
     if($currentSub.Account.Type -ne "User")
@@ -143,26 +143,27 @@ function Remove-AzTSInvalidAADAccounts
         $currentLoginUserObjectId = $currentLoginUserObjectIdArray[0].ObjectId;
     }
         
-    Write-Host "Step 2 of 5: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 2 of 5: Fetching all the role assignments for subscription [$($SubscriptionId)]..."
 
-    # Getting all classic role assignments.
     $classicAssignments = $null
-    $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-    $method = "Get"
-    $classicAssignments = [ClassicRoleAssignments]::new()
-    $headers = $classicAssignments.GetAuthHeader()
-    $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
-    $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
-    
-     # Renaming property name
-    $classicRoleAssignments = $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='NameId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='Scope'; E={$_.id }}
-
     $distinctObjectIds = @();
 
     # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
     $distinctObjectIds += $currentLoginUserObjectId;
     if(($ObjectIds | Measure-Object).Count -eq 0)
     {
+        # Getting all classic role assignments.
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        $method = "Get"
+        $classicAssignments = [ClassicRoleAssignments]::new()
+        $headers = $classicAssignments.GetAuthHeader()
+        $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+        $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+        
+        # Renaming property name
+        $classicRoleAssignments = $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='RoleId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='RoleAssignmentId'; E={$_.id }}
+
+    
         # Getting all role assignments of subscription.
         $currentRoleAssignmentList = Get-AzRoleAssignment
 
@@ -175,10 +176,13 @@ function Remove-AzTSInvalidAADAccounts
     }
     else
     {
+        $currentRoleAssignmentList = @()
         $ObjectIds | Foreach-Object {
           $objectId = $_;
-           if(![string]::IsNullOrWhiteSpace($objectId))
+          
+          if(![string]::IsNullOrWhiteSpace($objectId))
             {
+                $currentRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/")}
                 $distinctObjectIds += $objectId
             }
             else
@@ -189,7 +193,7 @@ function Remove-AzTSInvalidAADAccounts
         }
     }        
     
-    Write-Host "Step 3 of 5: Resolving all the AAD ObjectGuids against Tenant. Number of distinctObjectGuids [$($distinctObjectIds.Count)]..."
+    Write-Host "Step 3 of 5: Resolving all the AAD Object guids against Tenant. Number of distinct object guids [$($distinctObjectIds.Count)]..."
     # Connect to Azure Active Directory.
     try
     {
@@ -199,7 +203,7 @@ function Remove-AzTSInvalidAADAccounts
     catch
     {
         Write-Host "Connecting to Azure AD..."
-        Connect-AzureAD
+        Connect-AzureAD -ErrorAction Stop
     }   
 
     # Batching object ids in count of 900.
@@ -235,21 +239,24 @@ function Remove-AzTSInvalidAADAccounts
     # Get list of all invalid classic role assignments followed by principal name.
     $invalidClassicRoles = @();
      
-    $classicRoleAssignments | ForEach-Object { 
-                $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
-                if (($userDetails | Measure-Object).Count -eq 0 ) 
-                {
-                    $invalidClassicRoles += $_ 
-                }
+    if(($classicRoleAssignments | Measure-Object).count -gt 0)
+    {
+        $classicRoleAssignments | ForEach-Object { 
+            $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
+            if (($userDetails | Measure-Object).Count -eq 0 ) 
+            {
+                $invalidClassicRoles += $_ 
             }
-
+        }
+    }
+    
     # Get list of all invalidAADObject guid assignments followed by object ids.
     $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
 
-    # Safe Check: Check whether the current user accountId is part of invalid AAD ObjectGuids List 
+    # Safe Check: Check whether the current user accountId is part of invalid AAD Object guids List 
     if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -eq $currentLoginUserObjectId} | Measure-Object).Count -gt 0)
     {
-        Write-Host "Warning: Current User account is found as part of the invalid AAD ObjectGuids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
+        Write-Host "Warning: Current User account is found as part of the invalid AAD Object guids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
         break;
     }
 
@@ -269,12 +276,12 @@ function Remove-AzTSInvalidAADAccounts
     }
     else
     {
-        Write-Host "Found [$($invalidAADObjectRoleAssignmentsCount)] invalid roleassignments against invalid AAD objectGuids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$($invalidAADObjectRoleAssignmentsCount)] invalid role assignments against invalid AAD object guids for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }    
 
     if($invalidClassicRolesCount -gt 0 )
     {
-        Write-Host "Found [$($invalidClassicRolesCount)] invalid classic roleassignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
+        Write-Host "Found [$($invalidClassicRolesCount)] invalid classic role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
      
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
@@ -310,8 +317,8 @@ function Remove-AzTSInvalidAADAccounts
         }
     }
    
-    Write-Host "Step 5 of 5: Clean up invalid object guids for Subscription [$($SubscriptionId)]..."
-    # Start deletion of all invalid AAD ObjectGuids.
+    Write-Host "Step 5 of 5: Clean up invalid object guids for subscription [$($SubscriptionId)]..."
+    # Start deletion of all invalid AAD Object g4uids.
     Write-Host "Starting to delete invalid AAD object guid role assignments..." -ForegroundColor Cyan
 
     $isRemoved = $true
@@ -332,18 +339,18 @@ function Remove-AzTSInvalidAADAccounts
     $invalidClassicRoles | ForEach-Object {
         try 
         {
-            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.Scope.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                $armUri = "https://management.azure.com" + $_.Scope + "?api-version=2015-06-01"
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
                 $method = "Delete"
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
                 $headers = $classicAssignments.GetAuthHeader()
                 $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
 
-                if($res.StatusCode -eq 202 -or $res.StatusCode -eq 200)
+                if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
-                    $_ | Select-Object -Property "SignInName", "Scope", "RoleDefinitionName"
+                    $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
                 }
             } 
         }
@@ -356,12 +363,12 @@ function Remove-AzTSInvalidAADAccounts
 
     if($isRemoved)
     {
-        Write-Host "Completed deleting invalid AAD ObjectGuids role assignments." -ForegroundColor Green
+        Write-Host "Completed deleting invalid AAD Object guids role assignments." -ForegroundColor Green
     }
     else 
     {
         Write-Host "`n"
-        Write-Host "Not able to successfully delete invalid AAD ObjectGuids role assignments." -ForegroundColor Red
+        Write-Host "Not able to successfully delete invalid AAD Object guids role assignments." -ForegroundColor Red
     }
 }
 
@@ -374,7 +381,6 @@ class ClassicRoleAssignments
         {
             $resourceAppIdUri = "https://management.core.windows.net/"
             $rmContext = Get-AzContext
-            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
             $rmContext.Environment,
