@@ -27,7 +27,7 @@ Setup is divided into six steps:
 2. Installing Az Modules
 3. Download and extract deployment package
 4. Setup scanning identity
-5. Integrating applications with Azure AD
+5. Create Azure AD application for secure authentication
 6. Run Setup Command
 
 **Step 1 of 6. Validate prerequisites on machine**  
@@ -160,7 +160,7 @@ $UserAssignedIdentity.PrincipalId
 |ResourceGroupName| Resource group name in which scanner MI needs to be created.|Yes|
 |Location| Location in which scanner MI needs to be created. For better performance, we recommend hosting the MI and resources setup using AzTS Soln installation command in one location.| Yes|
 |UserAssignedIdentityName| Name of the scanner MI.| Yes|
-|TargetSubscriptionIds| List of target subscription(s) that needs to be scanned by AzTS. This command assigns 'Reader' access to user-assigned managed identity on target subscriptions.|No|
+|TargetSubscriptionIds| List of target subscription id(s) that needs to be scanned by AzTS. This command assigns 'Reader' access to user-assigned managed identity on target subscriptions.|No|
 
 </br>
 
@@ -186,17 +186,9 @@ Yes, you can proceed without this step, however, the AzTS Soln will run with lim
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
-**Step 5 of 6. Integrating applications with Azure AD**
+**Step 5 of 6. Create Azure AD application for secure authentication**
 
-Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process. Use the PowerShell command below to perform the following operations:
-
-   1. Create Azure AD application for UI, if it does not exist. 
-   2. Create Azure AD application for backend API, if it does not exist. 
-   3. Update UI AD application redirection URL. 
-   4. Grant AD applications permission to request OAuth2.0 implicit flow access tokens. This is required for browser-based apps. 
-   5. Grant 'User.Read' permission to UI AD application. This permission is used to read logged in user's details such as name, email, and photo.
-
-Optionally, you can create AD application directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#permissions-required-for-registering-an-app) and then run the following PowerShell command to update the application.
+Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the ```Set-AzSKTenantSecurityADApplication``` PowerShell command below to configure the Azure AD applications. Optionally, you can create AD application directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#permissions-required-for-registering-an-app) and then run the this PowerShell command to update the applications.
 
 ``` Powershell
 # -----------------------------------------------------------------#
@@ -211,7 +203,6 @@ $HostResourceGroupName = <HostResourceGroupName>
 
 $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName
 
-
 # -----------------------------------------------------------------#
 # Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using below command. This will be used in AzTS Soln installation. 
 # -----------------------------------------------------------------#
@@ -219,6 +210,15 @@ $ADApplicationDetails.WebAPIAzureADAppId
 $ADApplicationDetails.UIAzureADAppId 
 
 ```
+The ```Set-AzSKTenantSecurityADApplication``` PowerShell command will perform the following operations:
+
+   1. Create Azure AD application for UI, if it does not exist. 
+   2. Create Azure AD application for backend API, if it does not exist. 
+   3. Update UI AD application redirection URL. 
+   4. Grant AD applications permission to request OAuth2.0 implicit flow access tokens. This is required for browser-based apps. 
+   5. Grant 'User.Read' permission to UI AD application. This permission is used to read logged in user's details such as name, email, and photo.
+
+
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
 **Step 6 of 6. Run Setup Command** 
@@ -348,7 +348,7 @@ The installation is complete with this step. The following steps will walk you t
 |UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | TRUE|
 |SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE | 
 |ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. Default value is false.|FALSE|
-|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaning fully on the highly used features. Default value is false.|FALSE|
+|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. Default value is false.|FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
@@ -378,8 +378,8 @@ ii) Verify below resources got created.
 |AzSK-AzTS-MetadataAggregator-xxxxx|Function App| Contains functions to get inventory (subscription, baseline controls and RBAC) and queue subscription for scan |
 |AzSK-AzTS-WorkItemProcessor-xxxxx|Function App | Contains function to scan subscription with baseline control |
 |AzSK-AzTS-WebApi-xxxxx|App Service| Contains API consumed by the AzTS user interface |
-|AzSK-AzTS-WebApp-xxxxx|App Service| Contains AzTS user interface which can used to view the scan result |
-|AzSK-AzTS-WebApp-xxxxx/Staging-xxxxx| App service slot| Staging slot created to prevent UI downtime during auto-update|
+|AzSK-AzTS-UI-xxxxx|App Service| Contains AzTS user interface which can used to view the scan result |
+|AzSK-AzTS-UI-xxxxx/Staging-xxxxx| App service slot| Staging slot created to prevent UI downtime during auto-update|
 |AzSK-AzTS-AutoUpdater-xxxxx|Function App | Contains function to scan automatically updater function apps and web service apps |
 |AzSK-AzTS-LAWorkspace-xxxxx|Log Analytics workspace| Used to store scan events, inventory, subscription scan progress details|
 |AzSK-AzTS-InternalMI|Managed Identity | Internal MI identity used to access LA workspace and storage for sending scan results|
@@ -412,8 +412,8 @@ ii) Verify below resources got created.
 |----|----|
 |ATS_1_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that has been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by the consecutive jobs.
 |ATS_2_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
-|ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
-|ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. IF there is nothing to process for the day, it would simply ignore the run.
+|ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
+|ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
 |ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management group will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ``` FeatureManagement__ManagementGroups : true ``` and ``` ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ``` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
 
  **ii) WorkItemProcessor Functions:** 
@@ -441,15 +441,28 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
  **iii) AutoUpdater Functions:** 
  
- Timer based function app to automatically update other function apps(Metadataaggregator and WorkItemProcessor) and azure web service app(UI and API). User has the option to configure AutoUpdater settings like isAutoUpdateOn(user wants to auto update with new releases), VersionType(user wants to install the latest release/stable release/specific version).
+ Timer based function app to automatically update other function apps(Metadataaggregator and WorkItemProcessor) and Azure web service app(UI and API). User has the option to configure AutoUpdater settings like isAutoUpdateOn(user wants to auto update with new releases), VersionType(user wants to install the latest release/stable release/specific version).
  
  AutoUpdater is a cron job which runs twice a day at 02:00 PM and 04:00 PM (UTC) to check for new release to update the apps. You can also manually trigger the AutoUpdater function if needed.
  Our AutoUpdater is robust enough to handle different configuration for each function apps or web service apps.
 
 > **Note:** If you want to install specific version for each different apps(or a specific version for all) follow the below steps,
-(i) Change the VersionType from **"stable/latest"** to the required version number eg., **"x.y.z"**,
-(ii) Manually trigger the AutoUpdate function app. You can view the console/monitor logs to see appropriate status of AutoUpdater function.
-(iii) After AutoUpdater function execution gets complete, you need to change **isAutoUpdateOn** to **false** through the app configuration setting for the apps where you want to keep custom version installed.
+>
+> </br>
+> (i) Change the VersionType from **"stable/latest"** to the required version number eg., **"x.y.z"** in Auto Updater App services app setting. To update the version, Go to AzSK-AzTS-AutoUpdater-xxxxx app service --> Configuration --> Add app setting ```HostEnvironmentDetails__AutoUpdateConfig__<Id>__VersionType``` and set value to the required version,
+> </br>
+> |App Service| App setting name |
+> |--|--|
+> |AzSK-AzTS-MetadataAggregator-f33ae|HostEnvironmentDetails__AutoUpdateConfig__0__VersionType|
+> |AzSK-AzTS-WorkItemProcessor-f33ae|HostEnvironmentDetails__AutoUpdateConfig__1__VersionType|
+> |AzSK-AzTS-WebApi-f33ae|HostEnvironmentDetails__AutoUpdateConfig__2__VersionType|
+> |AzSK-AzTS-UI-f33ae|HostEnvironmentDetails__AutoUpdateConfig__3__VersionType|
+>
+> </br>
+>
+> (ii) Manually trigger the AutoUpdate function app. You can view the console/monitor logs to see appropriate status of AutoUpdater function.
+> </br>
+> (iii) After AutoUpdater function execution gets complete, you need to change **isAutoUpdateOn** to **false** through the app configuration setting for the apps where you want to keep custom version installed.
 
 <br/>
 

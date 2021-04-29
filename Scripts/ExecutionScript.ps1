@@ -64,7 +64,7 @@
             $MIName = "<USER ASSIGNED IDENTITY NAME>"
             
             # List of target subscription(s) that needs to be scanned by AzTS.
-            # This command assigns 'Reader' access to user-assigned managed identity on target subscriptions. Add target subscriptionds in place of <SubIdx>
+            # This command assigns 'Reader' access to user-assigned managed identity on target subscriptions. Add target subscription id(s) in place of <SubIdx>
             $TargetSubscriptionIds = @("<SubId1>","<SubId2>","<SubId3>")
             
             # Step 1: Create user-assigned managed identity
@@ -91,7 +91,7 @@
             # By setting '-ScanIdentityHasGraphPermission' to $false, you are choosing to disable features dependent on Graph API.
             # Read more about this under the section "Step 4 of 6. Setting up scanning identity" in GitHub doc.
 
-# *** 5 of 6. Setup Azure AD application for AzTS UI and API
+# *** 5 of 6. Create Azure AD application for secure authentication
            
         # Step 1: Setup AD application for AzTS UI and API
 
