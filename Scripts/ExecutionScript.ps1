@@ -5,13 +5,24 @@
 
     $PSVersionTable
 
-# *** 2 of 6. Installing Az Modules
-    # Install Az Modules
+# *** 2 of 6. Installing required Az modules
+    # Install required Az modules
+    # Required versions: 
+    #   Az.Accounts >= 1.7.1
+    #   Az.Resources >= 1.10.0
+    #   Az.Storage >= 1.12.0
+    #   Az.ManagedServiceIdentity >= 0.7.3
+    #   Az.Monitor >= 1.5.0
     Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
     Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
     Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
     Install-Module -Name Az.ManagedServiceIdentity -AllowClobber -Scope CurrentUser -repository PSGallery
     Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSGallery
+
+    # Install AzureAd 
+    # Required version:
+    #   AzureAD >= 2.0.2.130
+    Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
 
 # **** 3 of 6. Download and extract deployment template
 
@@ -45,6 +56,7 @@
         Disconnect-AzureAD
 
         # Connect to AzureAD and AzAccount
+        # Note: Tenant Id *must* be specified when connecting to Azure AD
         Connect-AzAccount -Tenant <TenantId>
         Connect-AzureAD -TenantId <TenantId>
 

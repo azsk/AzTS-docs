@@ -18,41 +18,52 @@
 In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes.
 
 
-> _**Note:** You can download execution script present [here](../Scripts/ExecutionScript.ps1?raw=1) which has all commands mentioned in below steps_
+> _**Note:** You can download execution script present [here](../Scripts/ExecutionScript.ps1?raw=1) which has all commands mentioned in below steps._
 
 
-Setup is divided into six steps:
+This setup is divided into six steps:
 
-1. Validate prerequisites on machine
-2. Installing Az Modules
-3. Download and extract deployment package
-4. Setup scanning identity
-5. Create Azure AD application for secure authentication
-6. Run Setup Command
+1. [Validate prerequisites on machine](README.md)
+2. [Installing required Az modules](README.md#)
+3. [Download and extract deployment package](README.md#)
+4. [Setup scanning identity](README.md#)
+5. [Create Azure AD application for secure authentication](README.md#)
+6. [Run Setup Command](README.md#)
+
+Let's start!
 
 **Step 1 of 6. Validate prerequisites on machine**  
 
-  i) Installation steps are supported using following OS options: 	
+  1. a.  Installation steps are supported using following OS options: 	
 
-  - Windows 10
-  - Windows Server 2019
+      - Windows 10
+      - Windows Server 2019 
 
-  ii) PowerShell 5.0 or higher
+  </br>
+
+  1. b. PowerShell 5.0 or higher
   All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get basic understanding.
   Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
 
-  ![PowerShell Version](../Images/00_PS_Version.png)
+      ![PowerShell Version](../Images/00_PS_Version.png)
 
+</br>
 
-**Step 2 of 6. Installing Az Modules:**
+**Step 2 of 6. Installing required Az modules:**
 
 Az modules contains cmdlet to deploy Azure resources. These cmdlets is used to create AzTS scan solution resources with the help of ARM template.
 Install Az Powershell Modules using below command. 
 For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
 
 ``` Powershell
-# Install Az Modules
+# Install required Az modules
+# Required versions: 
+#   Az.Accounts >= 1.7.1
+#   Az.Resources >= 1.10.0
+#   Az.Storage >= 1.12.0
+#   Az.ManagedServiceIdentity >= 0.7.3
+#   Az.Monitor >= 1.5.0
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
@@ -63,6 +74,8 @@ Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSG
 
 ``` Powershell
 # Install AzureAd 
+# Required version:
+#   AzureAD >= 2.0.2.130
 Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
@@ -71,30 +84,32 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
  
  Deployment packages mainly contains 
  ARM template: Contains resource configuration details that needs to be created as part of setup
- Deployment setup script: Provides the cmdlet to run installation. 
+ Deployment setup script: Provides the cmdlet to run installation. <br/>
 
-i) Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. 
+3.a.    Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
 
-ii) Extract zip to local folder location
+3.b. Extract zip to local folder location <br/>
 
-iii) Unblock the content. Below command will help to unblock files. 
+3.c. Unblock the content. Below command will help to unblock files. <br/>
 
-``` PowerShell
-Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
-```
+  ``` PowerShell
+  Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
+  ```
 
-iv) Point current path to deployment folder and load AzTS setup script
-``` PowerShell
-# Point current path to extracted folder location and load setup script from deploy folder 
+3.d. Point current path to deployment folder and load AzTS setup script <br/>
 
-CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
-# Load AzTS Setup script in session
-. ".\AzTSSetup.ps1"
+  ``` PowerShell
+  # Point current path to extracted folder location and load setup script from deploy folder 
 
-# Note: Make sure you copy  '.' present at the start of line.
+  CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
-```
+  # Load AzTS Setup script in session
+  . ".\AzTSSetup.ps1"
+
+  # Note: Make sure you copy  '.' present at the start of line.
+
+  ```
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
@@ -111,7 +126,7 @@ To do the scanning, it requires a [User-assigned Managed Identity](https://docs.
 
 </br>
 
-Before creating user-assigned managed identity, please connect to AzureAD and AzAccount with the tenant Id where you want to use AzTS solution.
+Before creating user-assigned managed identity, please **connect to AzureAD and AzAccount with the tenant Id** where you want to use AzTS solution.
 
 ``` Powershell
 # Clear existing login, if any
@@ -120,12 +135,12 @@ Disconnect-AzAccount
 Disconnect-AzureAD
 
 # Connect to AzureAD and AzAccount
-
+# Note: Tenant Id *must* be specified when connecting to Azure AD
 Connect-AzAccount -Tenant <TenantId>
 Connect-AzureAD -TenantId <TenantId>
 ```
 
-**i) Create managed identity:** You can create user-assigned managed identity (MI) with below PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). This PowerShell command assigns 'Reader' access to user-assigned managed identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
+  **4.a. Create managed identity:** You can create user-assigned managed identity (MI) with below PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). This PowerShell command assigns 'Reader' access to user-assigned managed identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
 
 ``` Powershell
 # -----------------------------------------------------------------#
@@ -143,7 +158,10 @@ $UserAssignedIdentity = Set-AzSKTenantSecuritySolutionScannerIdentity `
 # Step 2: Save resource id and principal Id generated for user identity using below command. This will be used in AzTS Soln installation. 
 # -----------------------------------------------------------------#
 
+# Resource id of the user-assigned managed identity
 $UserAssignedIdentity.Id
+
+# Object id of the user-assigned managed identity
 $UserAssignedIdentity.PrincipalId 
 
 ```
@@ -164,11 +182,7 @@ $UserAssignedIdentity.PrincipalId
 
 </br>
 
-**ii) Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
-</br>
-
-**Note:** This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory.
-
+**4.b. Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
 </br>
 
 ``` Powershell
@@ -179,8 +193,14 @@ $UserAssignedIdentity.PrincipalId
 Grant-AzSKGraphPermissionToUserAssignedIdentity -ScanIdentityObjectId $UserAssignedIdentity.PrincipalId -AppPermissionsRequired @("PrivilegedAccess.Read.AzureResources", "Directory.Read.All")
 
 ```
-> **Can you proceed without this step? What is the impact?** </br>
-Yes, you can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on demand scan, view control failures etc.,
+
+
+> **Note:** 
+> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory._
+> 
+> 2. _You can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on demand scan, view control failures etc.,_
+>
+> </br>
 
 </br>
 
@@ -206,6 +226,7 @@ $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $Hos
 # -----------------------------------------------------------------#
 # Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using below command. This will be used in AzTS Soln installation. 
 # -----------------------------------------------------------------#
+
 $ADApplicationDetails.WebAPIAzureADAppId
 $ADApplicationDetails.UIAzureADAppId 
 
@@ -229,7 +250,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 **Note:** Setup may take upto 5 minutes to complete.
 
 
-i) Run installation command with required parameters. 
+6.a. Run installation command with required parameters. 
 
   ``` PowerShell
     # -----------------------------------------------------------------#
@@ -257,6 +278,7 @@ i) Run installation command with required parameters.
   # Step 3: Save internal user-assigned managed identity name generated using below command. This will be used to grant Graph permission to internal MI.
   # -----------------------------------------------------------------#
 
+# Name of the user-assigned managed identity created for internal operations
   $InternalIdentityName = $DeploymentResult.Outputs.internalMIName.Value
                   
   ```
@@ -279,30 +301,30 @@ i) Run installation command with required parameters.
 
 
 <#
-      For '-ScanIdentityId' parameter, 
+
+For '-ScanIdentityId' parameter, 
           (a) use value created for "$UserAssignedIdentity.Id" from prerequisite section step 4.
-                               OR
+                              OR
           (b) Run Set-AzSKTenantSecuritySolutionScannerIdentity command provided in step 4.
-                               OR
+                              OR
           (c) you can get this resources id by going into Azure Portal --> Subscription where user-assigned MI resource created --> MIHostingRG --> Click on MI resource --> Properties --> Copy ResourceId.
 
 #>
 
 <#
 
-      For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
+For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
           (a) use value created for "$ADApplicationDetails.WebAPIAzureADAppId" and "$ADApplicationDetails.UIAzureADAppId" respectively from step 5.
                                     OR
-          (b) Run Set-AzSKTenantSecurityADApplication command provided in step 4.
+          (b) Run Set-AzSKTenantSecurityADApplication command provided in step 5.
                                     OR
           (c) you can get this application ids by going into Azure Portal --> Azure Active Directory --> App registrations --> All applications --> Search the application by name --> Click on the AD application --> Overview --> Copy Application (client) ID.
 
 #>
 ```
 
-  3. **Grant privileged access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. The internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
+  6.b. **Grant privileged access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. The internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
   </br>
-  **Note:** This step requires admin consent. To complete this step, signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator.
 
   ``` PowerShell
       # Grant 'User.Read.All' permission to internal MI
@@ -314,21 +336,13 @@ i) Run installation command with required parameters.
 
   ```
 
-  > #### **Can you proceed without this step? What is the impact?** </br>
-  > Yes, you can proceed without this step.
-  > However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a group.
+  > **Note:** 
+  > 01. _This step requires admin consent. To complete this step, signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator._
+  > 
+  > 2. _You can proceed without this step.
+  > However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a group._
 
 </br>
-
-The installation is complete with this step. The following steps will walk you through the steps to validate the setup.
-
-</br>
-
-> **Note:** 
->
-> 1. Tenant Security Solution does not support customization of app service name.
->
-> 2. By default max timeout limit of function app is set to 9 minute. This can be modified based on requirement of your orgnization. To increase function timeout, you can upgrade to a higher App Service plan and use ``` AzureFunctionsJobHost__functionTimeout ``` app setting in App service to set the timeout value.
 
   Output looks like below
 
@@ -352,6 +366,19 @@ The installation is complete with this step. The following steps will walk you t
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
+
+
+> **Note:** 
+>
+> 1. Tenant Security Solution does not support customization of app service name.
+>
+> 2. By default max timeout limit of function app is set to 9 minute. This can be modified based on requirement of your orgnization. To increase function timeout, you can upgrade to a higher App Service plan and use ``` AzureFunctionsJobHost__functionTimeout ``` app setting in App service to set the timeout value.
+>
+> </br>
+
+</br>
+
+#### **Congratulations! Installation is complete with this step. The following section will walk you through the steps to validate the setup.**
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
