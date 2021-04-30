@@ -1,0 +1,7 @@
+## CDN
+
+| ControlId | Dependent Azure API(s) and Properties | Control spec-let |
+|-----------|-------------------------------------|------------------|
+| <b>ControlId:</b><br>Azure_CDN_DP_Enable_Https<br><b>DisplayName:</b><br>CDN endpoints must use HTTPS protocol while providing data to the client browser/machine or while fetching data from the origin server.<br><b>Description: </b><br> CDN endpoints must use HTTPS protocol while providing data to the client browser/machine or while fetching data from the origin server.| <b> ARM API used to list existing CDN endpoints: </b> <br> /subscriptions/{subscriptionId}/resourceGroups/{resourcegroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints? <br> api-version=2019-12-31 <br><b>Properties:</b><br> properties.isHttpAllowed <br> properties.isHttpsAllowed | <b>Passed: </b><br> CDN endpoints are configured with HTTPS protocol only or HTTP to HTTPs redirection rule. <br><b>Failed: </b><br> CDN endpoints are not configured with HTTPS protocol only or HTTP to HTTPs redirection rule. |
+
+
