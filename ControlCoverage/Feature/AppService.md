@@ -4,7 +4,3 @@
 |-----------|-------------------------------------|------------------|
 | <b>ControlId:</b><br>Azure_AppService_Config_Disable_Remote_Debugging<br><b>DisplayName:</b><br>Remote debugging should be turned off for App Service.<br><b>Description: </b><br> Ensure that only the most secure and up to date version of TLS is enabled on the API gateway. |<b> ARM API to get configuration of an App Service: </b> <br> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web? <br> api-version=2018-11-01 <br><b>Properties:</b><br> properties/remoteDebuggingEnabled| <b>Passed: </b><br>Remote debugging for resource is turned OFF.<br><b>Failed: </b><br>Remote debugging for resource is turned ON. |
 | <b>ControlId:</b><br>Azure_AppService_Config_Disable_Web_Sockets<br><b>DisplayName:</b><br>Web Sockets should be disabled for App Service. <br><b>Description: </b><br> Web Sockets should be disabled for App Service. | <b> ARM API to get configuration of an App Service: </b> <br> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?<br> api-version=2018-11-01 <br><b>Properties:</b><br> properties/webSocketsEnabled | <b>Passed: </b><br>Web sockets for resource  is disabled.<br><b>Failed: </b><br>Web sockets for resource  is enabled. |
-
-
-
-
