@@ -210,12 +210,14 @@ Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosti
 
 ![ProcessorWebjobs](../Images/12_TSS_Processor_WebJobs.png)
 
+> **Note:** Functions ATS_1_MGTreeProcessor and ATS_4_PolicyDefinitionProcessor are kept as disabled for now.
+
 |Function Name|Description|
 |----|----|
-|ATS_1_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that has been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by the consecutive jobs.
-|ATS_2_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
-|ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
-|ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. IF there is nothing to process for the day, it would simply ignore the run.
+|ATS_2_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that has been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by the consecutive jobs.
+|ATS_3_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
+|ATS_5_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
+|ATS_6_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. IF there is nothing to process for the day, it would simply ignore the run.
 
  **ii) WorkItemProcessor Functions:** 
  
@@ -228,17 +230,17 @@ Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosti
 
 Steps to trigger the functions
 
-Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosting RG --> Click on 'Functions' tab --> Select 'ATS_1_SubscriptionInvProcessor' --> Click on 'Code + Test' --> Click 'Test/Run' --> Click 'Run'
+Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosting RG --> Click on 'Functions' tab --> Select 'ATS_2_SubscriptionInvProcessor' --> Click on 'Code + Test' --> Click 'Test/Run' --> Click 'Run'
 
 Similarly, you can trigger below functions with 10 mins internval.
 
- * ATS_2_BaselineControlsInvProcessor
+ * ATS_3_BaselineControlsInvProcessor
 
- * ATS_3_SubscriptionRBACProcessor 
+ * ATS_5_SubscriptionRBACProcessor 
  
- * ATS_4_WorkItemScheduler 
+ * ATS_6_WorkItemScheduler 
 
-After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get autotrigged, start processing scan and push scan results in storage account and LA workspace. 
+After ATS_6_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get autotrigged, start processing scan and push scan results in storage account and LA workspace. 
 
  **iii) AutoUpdater Functions:** 
  
