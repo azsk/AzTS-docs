@@ -26,4 +26,4 @@ The AzTS Solution was created with the following explicit objectives (some of wh
 
 ## Feedback
 
-For any feedback contact us at: azsksupext@microsoft.com 
+For any feedback contact us at: aztssup@microsoft.com 
