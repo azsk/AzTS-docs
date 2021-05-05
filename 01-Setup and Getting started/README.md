@@ -95,7 +95,7 @@ New-AzRoleAssignment -ApplicationId $UserAssignedIdentity.ClientId -Scope "/subs
  ARM template: Contains resource configuration details that needs to be created as part of setup
  Deployment setup script: Provides the cmdlet to run installation. 
 
-i) Download deployment package zip from [here](https://github.com/azsk/DevOpsKit-docs/raw/users/TenantSecurity/13-Tenant%20Security%20Solution%20Setup/TemplateFiles/Deploy.zip) to your local machine.  
+i) Download deployment package zip from [here](../TemplateFiles/Deploy.zip?raw=1) to your local machine.  
 
 ii) Extract zip to local folder location
 
