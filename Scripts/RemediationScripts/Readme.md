@@ -5,6 +5,7 @@ In this section, we will walk through the steps of loading remediation script.
 
 Loading script in PowerShell session is divided into three steps:
 
+**1. Validate prerequisites on machine**  
   i) Installation steps are supported using following OS options: 	
 
   - Windows 10
