@@ -1,0 +1,5 @@
+## Cosmos DB
+
+| ControlId | Dependent Azure API(s) and Properties | Control spec |
+|-----------|-------------------------------------|------------------|
+| <b>ControlId:</b><br>Azure_CosmosDB_Enable_Adv_Threat_Protection<br><br><b>DisplayName:</b><br>Threat detection must be enabled for CosmosDB database.<br><br><b>Description: </b><br> Advanced Threat Protection should be enabled for Cosmos DB Accounts. |<b> ARM API to lists all the Cosmos DB under the subscription. </b> </br> /subscriptions/{0}/providers/Microsoft.Security/advancedThreatProtectionSettings/current?api-version=2017-08-01-preview <br><br><b>Properties:</b><br> AdvThreatProtection | <b>Scope: </b> Applies to all tiers of Cosmos DB. <br><br><b>Config: </b> NA<br><br> <b>Passed: </b><br> Advance Threat Protection (ATP) is enabled. <br><br> <b>Failed: </b><br> Advance Threat Protection (ATP) is not enabled. |
