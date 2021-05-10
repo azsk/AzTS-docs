@@ -32,7 +32,7 @@ This setup is divided into six steps:
 
 Let's start!
 
-**Step 1 of 6. Validate prerequisites on machine**  
+### **Step 1 of 6. Validate prerequisites on machine**  
 
   1. a.  Installation steps are supported using following OS options: 	
 
@@ -50,7 +50,7 @@ Let's start!
 
 </br>
 
-**Step 2 of 6. Installing required Az modules:**
+### **Step 2 of 6. Installing required Az modules**
 
 Az modules contains cmdlet to deploy Azure resources. These cmdlets is used to create AzTS scan solution resources with the help of ARM template.
 Install Az Powershell Modules using below command. 
@@ -80,7 +80,7 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 ```
 
 
-**Step 3 of 6. Download and extract deployment package**
+### **Step 3 of 6. Download and extract deployment package**
  
  Deployment packages mainly contains 
  ARM template: Contains resource configuration details that needs to be created as part of setup
@@ -113,7 +113,7 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
-**Step 4 of 6. Setup scanning identity**  
+### **Step 4 of 6. Setup scanning identity**  
 
 The AzTS setup basically provisions your subscriptions with the ability to do daily scans for security controls.
 To do the scanning, it requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) and 'Reader' access to  target subscriptions on which scan needs to be performed.
@@ -167,7 +167,7 @@ $UserAssignedIdentity.PrincipalId
 ```
 
 > **NOTE:**
-> 1. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using ```Install-AzSKTenantSecuritySolution``` cmdlet._
+> 1. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using `Install-AzSKTenantSecuritySolution` cmdlet._
 >
 > &nbsp;
 
@@ -206,9 +206,9 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity -ScanIdentityObjectId $UserAssig
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
-**Step 5 of 6. Create Azure AD application for secure authentication**
+### **Step 5 of 6. Create Azure AD application for secure authentication**
 
-Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the ```Set-AzSKTenantSecurityADApplication``` PowerShell command below to configure the Azure AD applications. Optionally, you can create AD application directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#permissions-required-for-registering-an-app) and then run the this PowerShell command to update the applications.
+Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications. Optionally, you can create AD application directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#permissions-required-for-registering-an-app) and then run the this PowerShell command to update the applications.
 
 ``` Powershell
 # -----------------------------------------------------------------#
@@ -231,7 +231,7 @@ $ADApplicationDetails.WebAPIAzureADAppId
 $ADApplicationDetails.UIAzureADAppId 
 
 ```
-The ```Set-AzSKTenantSecurityADApplication``` PowerShell command will perform the following operations:
+The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the following operations:
 
    1. Create Azure AD application for UI, if it does not exist. 
    2. Create Azure AD application for backend API, if it does not exist. 
@@ -242,7 +242,7 @@ The ```Set-AzSKTenantSecurityADApplication``` PowerShell command will perform th
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
-**Step 6 of 6. Run Setup Command** 
+### **Step 6 of 6. Run Setup Command** 
 
 This is the last step. You need to run install command present as part setup scription with host subscription id (sub where scanning infra resources will get created). 
 Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on subscrption where solution needs to be installed.
@@ -372,7 +372,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 >
 > 1. Tenant Security Solution does not support customization of app service name.
 >
-> 2. By default max timeout limit of function app is set to 9 minute. This can be modified based on requirement of your orgnization. To increase function timeout, you can upgrade to a higher App Service plan and use ``` AzureFunctionsJobHost__functionTimeout ``` app setting in App service to set the timeout value.
+> 2. By default max timeout limit of function app is set to 9 minute. This can be modified based on requirement of your orgnization. To increase function timeout, you can upgrade to a higher App Service plan and use ` AzureFunctionsJobHost__functionTimeout ` app setting in App service to set the timeout value.
 >
 > </br>
 
@@ -441,7 +441,7 @@ ii) Verify below resources got created.
 |ATS_2_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
 |ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
 |ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
-|ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management group will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ``` FeatureManagement__ManagementGroups : true ``` and ``` ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ``` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
+|ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management group will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
 
  **ii) WorkItemProcessor Functions:** 
  
@@ -473,22 +473,23 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
  AutoUpdater is a cron job which runs twice a day at 02:00 PM and 04:00 PM (UTC) to check for new release to update the apps. You can also manually trigger the AutoUpdater function if needed.
  Our AutoUpdater is robust enough to handle different configuration for each function apps or web service apps.
 
-> **Note:** If you want to install specific version for each different apps(or a specific version for all) follow the below steps,
+> **Note:** If you want to install specific version for each different apps (or a specific version for all) follow the below steps,
 >
+> (i) Change the VersionType from **"stable/latest"** to the required version number eg., **"x.y.z"** in Auto Updater App services app setting. To update the version, Go to AzSK-AzTS-AutoUpdater-xxxxx app service --> Configuration --> Add app setting `HostEnvironmentDetails__AutoUpdateConfig__<Id>__VersionType` and set value to the required version,
 > </br>
-> (i) Change the VersionType from **"stable/latest"** to the required version number eg., **"x.y.z"** in Auto Updater App services app setting. To update the version, Go to AzSK-AzTS-AutoUpdater-xxxxx app service --> Configuration --> Add app setting ```HostEnvironmentDetails__AutoUpdateConfig__<Id>__VersionType``` and set value to the required version,
-> </br>
+>
 > |App Service| App setting name |
 > |--|--|
-> |AzSK-AzTS-MetadataAggregator-f33ae|HostEnvironmentDetails__AutoUpdateConfig__0__VersionType|
-> |AzSK-AzTS-WorkItemProcessor-f33ae|HostEnvironmentDetails__AutoUpdateConfig__1__VersionType|
-> |AzSK-AzTS-WebApi-f33ae|HostEnvironmentDetails__AutoUpdateConfig__2__VersionType|
-> |AzSK-AzTS-UI-f33ae|HostEnvironmentDetails__AutoUpdateConfig__3__VersionType|
+> |AzSK-AzTS-MetadataAggregator-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__0__VersionType|
+> |AzSK-AzTS-WorkItemProcessor-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__1__VersionType|
+> |AzSK-AzTS-WebApi-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__2__VersionType|
+> |AzSK-AzTS-UI-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__3__VersionType|
 >
 > </br>
 >
 > (ii) Manually trigger the AutoUpdate function app. You can view the console/monitor logs to see appropriate status of AutoUpdater function.
 > </br>
+>
 > (iii) After AutoUpdater function execution gets complete, you need to change **isAutoUpdateOn** to **false** through the app configuration setting for the apps where you want to keep custom version installed.
 
 <br/>
