@@ -3,9 +3,10 @@ In this section, we will walk through the steps of loading remediation script.
 
 **Note:** You can download remediation script present [here](../RemediationScripts)
 
-Loading script in PowerShell session is divided into three steps:
+Loading script in PowerShell session is divided into four steps:
 
 **1. Validate prerequisites on machine**  
+
   i) Installation steps are supported using following OS options: 	
 
   - Windows 10
@@ -18,11 +19,22 @@ Loading script in PowerShell session is divided into three steps:
 
   ![PowerShell Version](../../Images/00_PS_Version.png)
 
-  **2. Download remediation script:**
+**2. Installing Az Modules:**
+
+Az modules contains cmdlet to connect to az account.
+Install Az Powershell Modules using below command. 
+For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
+
+``` Powershell
+# Install Az Modules
+Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
+```
+
+**3. Download remediation script:**
 
   i) Open GitHub page from [here](https://github.com/azsk/AzTS-docs/tree/main/Scripts/RemediationScripts) to download remediation script to your local machine.
 
-**3. Unblock downloaded remediation script:**
+**4. Unblock downloaded remediation script:**
 
 i) Unblock the content. Below command will help to unblock files
 
@@ -35,6 +47,9 @@ ii) Point current path to downloaded script folder location and load remediation
 # Point current path to location where script is downloaded and load script from folder
 
 CD "<RemediationScriptFilePath>"
+
+# Before loading remediation script in current session, please connect to AzAccount
+Connect-AzAccount
 
 # Load remediation script in session
 . ".\<RemediationScriptFileName>.ps1"
