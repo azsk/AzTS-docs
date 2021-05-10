@@ -1,3 +1,43 @@
+<##########################################
+
+# Overivew:
+    This script is used to remove deprecated/ghost AAD identities role assignments from subscription.
+
+ControlId: 
+    Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
+
+# Pre-requesites:
+    You will need owner or User Access Administrator role at subscription level.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get role assignments for the subscription and filter ghost/deprecated identities.
+
+    3. Taking backup of ghost/deprecated identities that are going to be removed using remediation script.
+
+    4. Clean up deprecated/ghost AAD object identities role assignments from subscription.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to remove all deprecated/ghost identities role assignments from subscription
+
+         Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+
+        2. Run below command, if you have deprecated/ghost identities list with you. You will get deprecated account list from AzTS UI status reason section.
+
+         Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Id_1>', '<Object_Id_2>') -PerformPreReqCheck: $true
+
+To know more about parameter execute below command:
+    Get-Help Remove-AzTSInvalidAADAccounts -Detailed
+
+########################################
+#>
+
 function Pre_requisites
 {
     <#

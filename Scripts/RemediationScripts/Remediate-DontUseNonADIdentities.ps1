@@ -1,3 +1,48 @@
+<##########################################
+
+# Overivew:
+    This script is used to remove external (guest) AD identities access on subscriptions.
+
+ControlId: 
+    Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+
+# Pre-requesites:
+    You will need owner or User Access Administrator role at subscription level.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get role assignments for the subscription and filter external/Non-Ad identities.
+
+    3. Taking backup of external/Non-Ad identities that are going to be removed using remediation script.
+
+    4. Clean up external/Non-Ad object identities role assignments from subscription.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to remove all external/Non-Ad identities role assignments from subscription
+
+         Remove-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+
+        2. Run below command, if you have external/Non-Ad identities list with you. You will get external/Non-Ad account list from AzTS UI status reason section.
+
+         Remove-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Id_1>', '<Object_Id_2>') -PerformPreReqCheck: $true
+
+    Note: 
+        To rollback changes made by remediation script, execute below command
+        Restore-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\NonAADAccounts\NonAADAccountsRoleAssignments.json" -PerformPreReqCheck: $true   
+
+To know more about parameter execute below command:
+    a. Get-Help Remove-AzTSNonADIdentities -Detailed
+    b. Get-Help Restore-AzTSNonADIdentities -Detailed
+
+########################################
+#>
+
 function Pre_requisites
 {
     <#
