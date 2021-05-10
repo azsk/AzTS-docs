@@ -1,3 +1,43 @@
+<##########################################
+
+# Overivew:
+    This script is used to config ASC tier on subscription.
+
+ControlId: 
+    Azure_Subscription_Config_ASC_Tier
+
+# Pre-requesites:
+    You will need owner or contributor role on subscription.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get list non-compliant ASC type from subscription.
+
+    3. Taking backup of non-compliant ASC type.
+
+    4. Register 'Microsoft.Security' provider and enable required tier for all non-compliant ASC type for subscription.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to config ASC tier for subscription
+
+        Set-ConfigASCTier -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+
+    Note: 
+        To rollback changes made by remediation script, execute below command
+        Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
+
+To know more about parameter execute:
+    a. Get-Help Remove-AnonymousAccessOnContainers -Detailed
+    b. Get-Help Set-AnonymousAccessOnContainers -Detailed
+
+########################################
+#>
 function Pre_requisites
 {
     <#
