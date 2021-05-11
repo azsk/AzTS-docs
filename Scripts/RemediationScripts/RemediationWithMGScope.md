@@ -19,15 +19,15 @@ Install-Module Az.Resources -Scope CurrentUser -AllowClobber -Repository PSGalle
 **2. Get subscription list under management group**
 
 ``` Powershell
-# Replace management group id value
-$managementGroupId = '<ManagementGroupId>'
+# Replace management group name
+$managementGroupName = '<ManagementGroupName>'
 
 # Array to store subscription list present under management group.
 $subList= @()
 
-function GetSubscriptionFromMG ($managementGroupId)
+function GetSubscriptionFromMG ($managementGroupName)
 {
-    $mgDetails = Get-AzManagementGroup -GroupName $managementGroupId -Expand -Recurse
+    $mgDetails = Get-AzManagementGroup -GroupName $managementGroupName -Expand -Recurse
     $mgDetails.Children | % {
     $mgDescendant =$_
 
@@ -43,7 +43,7 @@ function GetSubscriptionFromMG ($managementGroupId)
     return($subList)
 }
 
-$subList = GetSubscriptionFromMG $managementGroupId
+$subList = GetSubscriptionFromMG $managementGroupName
 ```
 
 **3. Execute remediation script with MG subscription list**
