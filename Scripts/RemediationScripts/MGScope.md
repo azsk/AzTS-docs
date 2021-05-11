@@ -1,7 +1,7 @@
 ## Execute remediation script using management group Id to fix failed controls of Azure Tenant Security Solution - Step by Step
 In this section, we will walk through the steps of executing remediation script using management group Id.
 
-**Note:** To execute remediation script using management group, user must have Owner access on MG scope.
+**Note:** To execute remediation script using management group, user must have owner access on MG scope.
 
 Executing script using management group Id is divided into three steps:
 
