@@ -1,11 +1,15 @@
-## Execute remediation script using management group Id to fix failed controls of Azure Tenant Security Solution - Step by Step
-In this section, we will walk through the steps of executing remediation script using management group Id.
+## Execute remediation script using management group
 
-**Note:** To execute remediation script using management group Id, user must have atleast reader access at MG scope (to fetch subscription list under MG scope).
+In this section, we will walk through the steps of executing remediation script using management group. 
 
-Executing script using management group Id is divided into three steps:
+**Note:** To execute remediation script using management group, user must have atleast reader access at MG scope (to fetch subscription list under MG scope) and Owner/Contributor/UAA role on target resources based on remediation to be applied.
 
-**1. Install pre-requisite module**
+Executing PowerShell scripts using management group is divided into three steps. 
+
+> If you are new to PowerShell, then you will find several useful tips in our [PowerShell tips for new Users](https://github.com/azsk/DevOpsKit-docs/tree/master/00b-Getting-Started) guide 
+> handy to accelerate your initial learning curve for PowerShell competencies needed to use AzSK effectively.
+
+**1. Install pre-requisite Azure PS module**
 
 ``` Powershell
 # Install Az.Resources module
@@ -13,6 +17,7 @@ Install-Module Az.Resources -Scope CurrentUser -AllowClobber -Repository PSGalle
 ```
 
 **2. Get subscription list under management group**
+
 ``` Powershell
 # Replace management group id value
 $managementGroupId = '<ManagementGroupId>'
@@ -51,7 +56,7 @@ $subList = GetSubscriptionFromMG $managementGroupId
 # Before loading remediation script in current session, please connect to AzAccount
 Connect-AzAccount
 
-# Load remediation script in session
+# Download and load remediation script in session. Script location: https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
 . ".\Remediate-InvalidAADObjectRoleAssignments.ps1"
 
 # Note: Make sure you copy  '.' present at the start of line.
