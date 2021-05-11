@@ -27,7 +27,7 @@ Below resource types can be checked for validating the security controls:
 |[ServiceFabric](Feature/ServiceFabric.md)|Microsoft.ServiceFabric/clusters|
 |[SQLServer](Feature/SQLServer.md)|Microsoft.Sql/servers|
 |[Storage](Feature/Storage.md)|Microsoft.Storage/storageAccounts|
-|[Subscription](Feature/SubscriptionCore.md)|
+|[Subscription](Feature/SubscriptionCore.md)|SubscriptionCore|
 |[TrafficManager](Feature/TrafficManager.md)|Microsoft.Network/trafficmanagerprofiles|
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
 |[VirtualNetwork](Feature/VirtualNetwork.md)|Microsoft.Network/virtualNetworks|
