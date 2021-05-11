@@ -1,7 +1,7 @@
 ## Execute remediation script using management group Id to fix failed controls of Azure Tenant Security Solution - Step by Step
 In this section, we will walk through the steps of executing remediation script using management group Id.
 
-**Note:** To execute remediation script using management group Id, user must have owner access at MG scope.
+**Note:** To execute remediation script using management group Id, user must have atleast reader access at MG scope (to fetch subscription list under MG scope).
 
 Executing script using management group Id is divided into three steps:
 
@@ -35,10 +35,10 @@ function GetSubscriptionFromMG ($managementGroupId)
         GetSubscriptionFromMG $mgDescendant.Name
     }
     }
+    return($subList)
 }
 
-# Get subList using management group Id
-GetSubscriptionFromMG $managementGroupId
+$subList = GetSubscriptionFromMG $managementGroupId
 ```
 
 **3. Execute remediation script with MG subscription list**
@@ -52,7 +52,7 @@ GetSubscriptionFromMG $managementGroupId
 Connect-AzAccount
 
 # Load remediation script in session
-. ".\<RemediationScriptFileName>.ps1"
+. ".\Remediate-InvalidAADObjectRoleAssignments.ps1"
 
 # Note: Make sure you copy  '.' present at the start of line.
 
