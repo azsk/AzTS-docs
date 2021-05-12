@@ -67,11 +67,13 @@ For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/pow
 #   Az.Storage >= 1.12.0
 #   Az.ManagedServiceIdentity >= 0.7.3
 #   Az.Monitor >= 1.5.0
+#   Az.OperationalInsights >= 1.3.4
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.ManagedServiceIdentity -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.OperationalInsights -AllowClobber -Scope CurrentUser -repository PSGallery
 
 ```
 
@@ -199,7 +201,7 @@ The `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command will perf
 # Grant Graph Permission to the user-assigned managed identity.
 # Required Permission: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.
 
-Grant-AzSKGraphPermissionToUserAssignedIdentity 
+Grant-AzSKGraphPermissionToUserAssignedIdentity `
                             -UserAssignedIdentityObjectId $UserAssignedIdentity.PrincipalId `
                             -MSGraphPermissionsRequired @("PrivilegedAccess.Read.AzureResources", "Directory.Read.All") `
                             -ADGraphPermissionsRequired @("Directory.Read.All") 
@@ -292,7 +294,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
   # -----------------------------------------------------------------#
 
 # Name of the user-assigned managed identity created for internal operations
-  $InternalIdentityName = $DeploymentResult.Outputs.internalMIName.Value
+  $InternalIdentityObjectId = $DeploymentResult.Outputs.internalMIObjectId.Value
                   
   ```
 
@@ -342,9 +344,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
   ``` PowerShell
       # Grant 'User.Read.All' permission to internal MI
       Grant-AzSKGraphPermissionToUserAssignedIdentity `
-                          -SubscriptionId "<HostingSubId>" `
-                          -ResourceGroupName "<HostingResourceGroupName>" `
-                          -IdentityName $InternalIdentityName `
+                          -UserAssignedIdentityObjectId  $InternalIdentityObjectId  `
                           -MSGraphPermissionsRequired @('User.Read.All')
 
   ```
