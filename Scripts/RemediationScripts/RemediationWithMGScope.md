@@ -63,7 +63,7 @@ Connect-AzAccount
 
 # Step 2: Execute script using MG subscription list
 
-# Note: Please perform descrete analysis before running remediation script using management groups.
+# Note: Please perform discrete analysis before running remediation script using management groups.
 $subList | %{
 Remove-AzTSInvalidAADAccounts -SubscriptionId $_.Name -PerformPreReqCheck: $true
 }
