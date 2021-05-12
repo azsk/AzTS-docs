@@ -30,4 +30,5 @@ Below resource types can be checked for validating the security controls:
 |[Subscription](Feature/SubscriptionCore.md)|SubscriptionCore|
 |[TrafficManager](Feature/TrafficManager.md)|Microsoft.Network/trafficmanagerprofiles|
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
+|[VMScaleSet](Feature/VMScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|
 |[VirtualNetwork](Feature/VirtualNetwork.md)|Microsoft.Network/virtualNetworks|
