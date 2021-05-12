@@ -20,7 +20,7 @@
 
 In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes.
 
-> _**Note:** You can use the execution script present in the [deployment package zip](../Scripts/ExecutionScript.ps1?raw=1) which has all commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tag in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
+> _**Note:** You can use the execution script present in the [deployment package zip](../TemplateFiles/DeploymentFiles.zip?raw=1) which has all commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tag in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
 This setup is divided into six steps:
 
