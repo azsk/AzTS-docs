@@ -551,7 +551,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
 
-2. Subscription scan should have completed for the day. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after the installation.
+2. Subscription scan should have completed for the day. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. You can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after the installation.
 
 **Steps to load AzTS UI:**
 
@@ -653,4 +653,14 @@ AzSK_ControlResults_CL
 
 You can use the on-demand scan command provided [here](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) with `-ForceFetch` flag.
 
-   
+<br>
+
+#### **On running AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."***
+
+This is probably happening because the user-assigned managed identity (internal MI) has been deleted from Azure Portal, but the role assignment of this MI is still present at resource group scope in which AzTS setup has been installed. The role assignment of a deleted identity looks like below,
+
+![FAQ_GhostIdentity](../Images/12_TSS_FAQ_RBACGhostAccount.png)
+
+To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in screenshot below) --> Select the identity and click on 'Remove'.
+
+After deleting the identity, you can run the installation command again.
