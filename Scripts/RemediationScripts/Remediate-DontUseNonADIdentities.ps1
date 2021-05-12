@@ -148,7 +148,7 @@ function Remove-AzTSNonADIdentities
         
         # API call to get classic role assignment
         $classicAssignments = $null
-        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators<br>?api-version=2015-06-01"
         $method = "Get"
         $classicAssignments = [ClassicRoleAssignments]::new()
         $headers = $classicAssignments.GetAuthHeader()
@@ -161,7 +161,7 @@ function Remove-AzTSNonADIdentities
         }
         
         # Get object id of classic role assignment
-        $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
+        $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users<br>?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
         
         if(($currentRoleAssignmentList | Measure-Object).Count -gt 0)
         {
@@ -222,7 +222,7 @@ function Remove-AzTSNonADIdentities
         $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
 
         # API to get eligible PIM assignment
-        $armUri = "https://management.azure.com/subscriptions/$($SubscriptionId)/providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01-preview"
+        $armUri = "https://management.azure.com/subscriptions/$($SubscriptionId)/providers/Microsoft.Authorization/roleEligibilityScheduleInstances<br>?api-version=2020-10-01-preview"
         $eligiblePIMRoleAssignments = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
         $res = ConvertFrom-Json $eligiblePIMRoleAssignments.Content
 
@@ -330,7 +330,7 @@ function Remove-AzTSNonADIdentities
         {
             if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "<br>?api-version=2015-06-01"
                 $method = "Delete"
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
@@ -472,7 +472,7 @@ function Restore-AzTSNonADIdentities
         {
             if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "<br>?api-version=2015-06-01"
                 $method = "PUT"
 
                 # Create body for making PUT request

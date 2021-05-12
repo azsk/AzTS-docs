@@ -10,7 +10,7 @@ function PostLAWSData([string] $workspaceId, [string] $sharedKey, $body, $logTyp
 				[int] $contentLength = $body.Length
 				[string] $signature = GetLAWSSignature $workspaceId  $sharedKey  $rfc1123date $contentLength $method $contentType $resource
 				$LADataCollectorAPI = ".ods.opinsights.azure.us"	
-				[string] $uri = "https://" + $workspaceId + $LADataCollectorAPI + $resource + "?api-version=2016-04-01"
+				[string] $uri = "https://" + $workspaceId + $LADataCollectorAPI + $resource + "<br>?api-version=2016-04-01"
 				[DateTime] $TimeStampField = [System.DateTime]::UtcNow
 				$headers = @{
 					"Authorization" = $signature;

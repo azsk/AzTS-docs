@@ -153,7 +153,7 @@ function Remove-AzTSInvalidAADAccounts
     if(($ObjectIds | Measure-Object).Count -eq 0)
     {
         # Getting all classic role assignments.
-        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators<br>?api-version=2015-06-01"
         $method = "Get"
         $classicAssignments = [ClassicRoleAssignments]::new()
         $headers = $classicAssignments.GetAuthHeader()
@@ -341,7 +341,7 @@ function Remove-AzTSInvalidAADAccounts
         {
             if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "<br>?api-version=2015-06-01"
                 $method = "Delete"
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
