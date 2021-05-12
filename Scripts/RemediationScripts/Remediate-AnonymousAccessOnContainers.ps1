@@ -1,4 +1,52 @@
-﻿function Pre_requisites
+﻿<##########################################
+
+# Overivew:
+    This script is used to remove anonymous access of storage account(s) containers that can lead to information disclosure.
+
+ControlId: 
+    Azure_Storage_AuthN_Dont_Allow_Anonymous
+
+# Pre-requesites:
+    You will need atleast contributor role on storage account(s) of subscription.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get anonymous access details of storage account(s).
+        a. For given storage account(s) present in input json file.
+                          ----OR----
+        b. For all storage account(s) present in subscription.
+
+    3. Taking backup of storage account(s) having anonymous access that are going to be remediate using remediation script.
+
+    4. Removing anonymous access from storage account(s) of subscription as per selected remediation type.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to remove anonymous access from all storage account(s) of subscription
+
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'
+
+        2. Run below command to remove anonymous access from given storage account(s) of subscription
+
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>'
+
+    Note: 
+        To rollback changes made by remediation script, execute below command
+        Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType '<EnableAnonymousAccessOnContainers>, <EnableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing Remediated log>'   
+
+To know more about parameter execute:
+    a. Get-Help Remove-AnonymousAccessOnContainers -Detailed
+    b. Get-Help Set-AnonymousAccessOnContainers -Detailed
+
+########################################
+#>
+
+function Pre_requisites
 {
     <#
     .SYNOPSIS
@@ -118,7 +166,7 @@ function Remove-AnonymousAccessOnContainers
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
@@ -443,7 +491,7 @@ function Set-AnonymousAccessOnContainers
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine) 
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 

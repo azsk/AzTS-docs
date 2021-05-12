@@ -1,3 +1,43 @@
+<##########################################
+
+# Overivew:
+    This script is used to config ASC tier on subscription.
+
+ControlId: 
+    Azure_Subscription_Config_ASC_Tier
+
+# Pre-requesites:
+    You will need owner or contributor role on subscription.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get list non-compliant ASC type from subscription.
+
+    3. Taking backup of non-compliant ASC type.
+
+    4. Register 'Microsoft.Security' provider and enable required tier for all non-compliant ASC type for subscription.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to config ASC tier for subscription
+
+        Set-ConfigASCTier -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+
+    Note: 
+        To rollback changes made by remediation script, execute below command
+        Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
+
+To know more about parameter execute:
+    a. Get-Help Remove-AnonymousAccessOnContainers -Detailed
+    b. Get-Help Set-AnonymousAccessOnContainers -Detailed
+
+########################################
+#>
 function Pre_requisites
 {
     <#
@@ -98,12 +138,12 @@ function Set-ConfigASCTier
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
@@ -286,12 +326,12 @@ function Remove-ConfigASCTier
 
     
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
-    Write-Host "Starting with Subscription [$($SubscriptionId)]..."
+    Write-Host "Starting with subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
@@ -308,7 +348,7 @@ function Remove-ConfigASCTier
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         break;
     }
-    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
  
     # Array to store resource context
     if (-not (Test-Path -Path $Path))
