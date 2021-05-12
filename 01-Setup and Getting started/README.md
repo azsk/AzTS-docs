@@ -438,11 +438,11 @@ Start-AzSKTenantSecuritySolutionOnDemandScan -SubscriptionId $HostSubscriptionId
 
 Below steps will help you to verify and understand different resources and functions created as part of setup along with purpose. This step can take up to 30 minutes. 
 
-**Step 1 of 3: Verify resources created as part of setup**
+#### **Step 1 of 3: Verify resources created as part of setup**
 
-i) In the Azure portal, Go to hosting subscription, select the scan host resource group that has been created during the setup.
+1.a) In the Azure portal, Go to hosting subscription, select the scan host resource group that has been created during the setup.
 
-ii) Verify below resources got created.
+1.b) Verify below resources got created.
 
   ![Resources](../Images/12_TSS_Resource_Group_1.png)	
   ![Resources](../Images/12_TSS_Resource_Group_2.png)	
@@ -471,9 +471,9 @@ ii) Verify below resources got created.
 
 <br/>
 
- **Step 2 of 3: Verify below Functions got created**
+#### **Step 2 of 3: Verify below Functions got created**
 
- **i) MetadataAggregator Functions:** 
+ **2.a) MetadataAggregator Functions:** 
 
 &nbsp;&nbsp;&nbsp;Metadata aggregator function performs two tasks: 
 1. Collects inventory required for scanning (Target subscription list to be scanned, baseline controls list and subscription RBAC details)
@@ -492,7 +492,7 @@ ii) Verify below resources got created.
 |ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
 |ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management group will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
 
- **ii) WorkItemProcessor Functions:** 
+ **2.b) WorkItemProcessor Functions:** 
  
  Read subscription list from queue and scan for baseline controls.
 
@@ -515,7 +515,7 @@ Similarly, you can trigger below functions with 10 mins internval.
 
 After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get autotrigged, start processing scan and push scan results in storage account and LA workspace. 
 
- **iii) AutoUpdater Functions:** 
+ **2.c) AutoUpdater Functions:** 
  
  Timer based function app to automatically update other function apps(Metadataaggregator and WorkItemProcessor) and Azure web service app(UI and API). User has the option to configure AutoUpdater settings like isAutoUpdateOn(user wants to auto update with new releases), VersionType(user wants to install the latest release/stable release/specific version).
  
@@ -545,7 +545,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
-**Steps 3 of 3: Verify AzTS UI is working as expected**
+#### **Steps 3 of 3: Verify AzTS UI is working as expected**
 
 **Prerequisite:**
 
@@ -555,10 +555,10 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
 **Steps to load AzTS UI:**
 
-  **a)** Copy the URL provided at the end of  ```Install-AzSKTenantSecuritySolution``` installation command (as shown below).
+  **3.a)** Copy the URL provided at the end of  ```Install-AzSKTenantSecuritySolution``` installation command (as shown below).
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIUrlPrintMessageInPSOutput.png) 
 
-**b)** Open the URL is browser.
+**3.b)** Open the URL is browser.
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
