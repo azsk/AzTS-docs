@@ -73,7 +73,7 @@ Install-Module -Name Az.ManagedServices -AllowClobber -Scope CurrentUser -reposi
 
 ```
 
-After access is provided to target subscription, next scheduled trigger will pick up subscription from cross tenant and perform scan. You can follow steps [here](../02-Security-compliance-and-monitoring-solution/ReadMe.md) to create security compliance dashboard.
+After access is provided to target subscription, next scheduled trigger will pick up subscription from cross tenant and perform scan. You can follow steps [here](../02-monitoring-security-using-azts/ReadMe.md) to create security compliance dashboard.
 
 
 ## 3. Onboard AzTS Solution per Tenant with central visibility for scan result

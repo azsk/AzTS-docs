@@ -7,28 +7,29 @@
  
 </br>
 
-##  Content
- - [Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
- - [Verifying that Tenant Security Solution installation is complete](README.md#2-verifying-that-tenant-security-solution-installation-is-complete)
+##  Index
+  - [Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
+  - [Manually trigger AzTS on-demand scan for entire tenant](README.md#)
+  - [Verifying that Tenant Security Solution installation is complete](README.md#3-verifying-that-tenant-security-solution-installation-is-complete)
+  - [Log Analytics visualization]()
+  - [FAQ]
 
 </br>
 
-## 1. Steps to install AzTS Solution
+## **1. Steps to install AzTS Solution**
 
 In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes.
 
-
-> _**Note:** You can download execution script present [here](../Scripts/ExecutionScript.ps1?raw=1) which has all commands mentioned in below steps._
-
+> _**Note:** You can use the execution script present in the [deployment package zip](../Scripts/ExecutionScript.ps1?raw=1) which has all commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tag in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
 This setup is divided into six steps:
 
-1. [Validate prerequisites on machine](README.md)
-2. [Installing required Az modules](README.md#)
-3. [Download and extract deployment package](README.md#)
-4. [Setup scanning identity](README.md#)
-5. [Create Azure AD application for secure authentication](README.md#)
-6. [Run Setup Command](README.md#)
+1. [Validate prerequisites on machine](README.md#step-1-of-6-validate-prerequisites-on-machine)
+2. [Installing required Az modules](README.md#step-2-of-6-installing-required-az-modules)
+3. [Download and extract deployment package](README.md#step-3-of-6-download-and-extract-deployment-package)
+4. [Setup scanning identity](README.md#step-4-of-6-setup-scanning-identity)
+5. [Create Azure AD application for secure authentication](README.md#step-5-of-6-create-azure-ad-application-for-secure-authentication)
+6. [Run Setup Command](README.md#step-6-of-6-run-setup-command)
 
 Let's start!
 
@@ -182,6 +183,14 @@ $UserAssignedIdentity.PrincipalId
 
 </br>
 
+The `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command will perform the following operations:
+
+1. Create a new user-assigned managed identity, if it does not exist.
+2. Assign 'Reader' role to the user-assigned managed identity at subscription scope.
+
+You can perform the above operations directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
+
+
 **4.b. Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
 </br>
 
@@ -190,7 +199,10 @@ $UserAssignedIdentity.PrincipalId
 # Grant Graph Permission to the user-assigned managed identity.
 # Required Permission: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.
 
-Grant-AzSKGraphPermissionToUserAssignedIdentity -ScanIdentityObjectId $UserAssignedIdentity.PrincipalId -AppPermissionsRequired @("PrivilegedAccess.Read.AzureResources", "Directory.Read.All")
+Grant-AzSKGraphPermissionToUserAssignedIdentity 
+                            -UserAssignedIdentityObjectId $UserAssignedIdentity.PrincipalId `
+                            -MSGraphPermissionsRequired @("PrivilegedAccess.Read.AzureResources", "Directory.Read.All") `
+                            -ADGraphPermissionsRequired @("Directory.Read.All") 
 
 ```
 
@@ -227,6 +239,7 @@ $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $Hos
 # Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using below command. This will be used in AzTS Soln installation. 
 # -----------------------------------------------------------------#
 
+# Azure AD application client (application) ids 
 $ADApplicationDetails.WebAPIAzureADAppId
 $ADApplicationDetails.UIAzureADAppId 
 
@@ -253,26 +266,26 @@ Setup will create infra resources and schedule daily security control scan on ta
 6.a. Run installation command with required parameters. 
 
   ``` PowerShell
-    # -----------------------------------------------------------------#
-    # Step 1: Set the context to hosting subscription
-    # -----------------------------------------------------------------#
-    Set-AzContext -SubscriptionId <HostingSubId>
+# -----------------------------------------------------------------#
+# Step 1: Set the context to hosting subscription
+# -----------------------------------------------------------------#
+Set-AzContext -SubscriptionId <HostingSubId>
 
-    # -----------------------------------------------------------------#
-    # Step 2: Run installation command.
-    # -----------------------------------------------------------------#
+# -----------------------------------------------------------------#
+# Step 2: Run installation command.
+# -----------------------------------------------------------------#
 
-    $DeploymentResult = Install-AzSKTenantSecuritySolution `
-                    -SubscriptionId <HostingSubId> `
-                    -ScanHostRGName <HostingResourceGroupName> `
-                    -Location <ResourceLocation> `
-                    -ScanIdentityId <ManagedIdentityResourceId> `
-                    -WebAPIAzureADAppId <WebAPIAzureADApplicationId> `
-                    -UIAzureADAppId <UIAzureADApplicationId> `
-                    -SendUsageTelemetry:$true `
-                    -ScanIdentityHasGraphPermission:$true `
-                    -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
-                    -Verbose
+$DeploymentResult = Install-AzSKTenantSecuritySolution `
+                -SubscriptionId <HostSubscriptionId> `
+                -ScanHostRGName <HostResourceGroupName> `
+                -Location <ResourceLocation> `
+                -ScanIdentityId <ManagedIdentityResourceId> `
+                -WebAPIAzureADAppId <WebAPIAzureADApplicationId> `
+                -UIAzureADAppId <UIAzureADApplicationId> `
+                -SendUsageTelemetry:$true `
+                -ScanIdentityHasGraphPermission:$true `
+                -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
+                -Verbose
 
   # -----------------------------------------------------------------#
   # Step 3: Save internal user-assigned managed identity name generated using below command. This will be used to grant Graph permission to internal MI.
@@ -332,19 +345,18 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
                           -SubscriptionId "<HostingSubId>" `
                           -ResourceGroupName "<HostingResourceGroupName>" `
                           -IdentityName $InternalIdentityName `
-                          -AppPermissionsRequired @('User.Read.All')
+                          -MSGraphPermissionsRequired @('User.Read.All')
 
   ```
 
   > **Note:** 
   > 01. _This step requires admin consent. To complete this step, signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator._
   > 
-  > 2. _You can proceed without this step.
-  > However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a group._
+  > 2. _You can proceed without this step. However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a security group._
 
 </br>
 
-  Output looks like below
+  Output looks like below,
 
   ![Resources](../Images/12_TSS_CommandOutput.png)
 
@@ -378,14 +390,50 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
 </br>
 
-#### **Congratulations! Installation is complete with this step. The following section will walk you through the steps to validate the setup.**
+### **Congratulations! Installation is complete with this step.**
+</br>
+
+###  **Next steps:**
+
+To view scan result in AzTS UI:
+1.  Copy AzTS UI link provided at the end of installation command.
+2. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete in order to load the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+
 
 [Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
 
 </br>
-</br>
 
-## 2. Verifying that Tenant Security Solution installation is complete
+## **2. Manually trigger AzTS on-demand scan for entire tenant**
+
+> **Note:** 
+> _AzTS has been designed to auto-trigger the scan once in every 24 hours._ 
+
+The following section will walk you through the steps to trigger AzTS scan manually post installation.
+
+### **Prerequisite**
+
+1. [Validate prerequisites on machine](README.md#step-1-of-6-validate-prerequisites-on-machine)
+2. [Installing required Az modules](README.md#step-2-of-6-installing-required-az-modules)
+3. [Download and extract deployment package](README.md#step-3-of-6-download-and-extract-deployment-package)
+
+### **Trigger on-demand scan**
+
+Run `Start-AzSKTenantSecuritySolutionOnDemandScan` command to start scan after the installation of AzTS Soln. Please note that after running this command, AzTS UI will available in the next 2 hours depending on the number of subscriptions to be scanned.
+
+```PowerShell
+# Subscription id in which Azure Tenant Security Solution has been installed.
+$HostSubscriptionId = "<HostSubscriptionId>"
+
+# Name of ResourceGroup in which Azure Tenant Security Solution has been installed.
+$HostResourceGroupName = "<HostResourceGroupName>"
+
+Start-AzSKTenantSecuritySolutionOnDemandScan -SubscriptionId $HostSubscriptionId `
+                                             -ScanHostRGName $HostResourceGroupName
+
+```
+
+## **3. Verifying that Tenant Security Solution installation is complete**
 
 Below steps will help you to verify and understand different resources and functions created as part of setup along with purpose. This step can take up to 30 minutes. 
 
@@ -501,9 +549,8 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 **Prerequisite:**
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
-2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](README.md#2-verifying-that-tenant-security-solution-installation-is-complete).
 
-**Note:** After the initial setup, AzTS UI can take upto 24 hours to reflect the scan result as it requires one full scan to complete.
+2. Subscription scan should have completed for the day. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after the installation.
 
 **Steps to load AzTS UI:**
 
@@ -514,7 +561,8 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
 
 [Back to top…](README.md#contents)
-## 2. Log Analytics Visualization
+
+## **4. Log Analytics Visualization**
 
 For understanding the collected data, use the querying and visualization capabilities provided by Log Analytics. 
 To start, go to **Log Analytics workspace** created during setup --> Select **Logs**. 
@@ -593,3 +641,13 @@ AzSK_ControlResults_CL
 | order by FailedCount desc 
 | take 10
 ```
+
+
+## FAQ
+
+
+#### How to grant graph permission from Azure Portal for AzTS Soln?
+
+1. Granting graph permission to central scanning user managed identity.
+
+   
