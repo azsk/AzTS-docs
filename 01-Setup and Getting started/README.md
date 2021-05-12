@@ -392,7 +392,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 **Congratulations! Installation is complete with this step.**
 </br>
 
-###  **Next steps:**
+**Next steps:**
 
 To view scan result in AzTS UI:
 1.  Copy AzTS UI link provided at the end of installation command.
