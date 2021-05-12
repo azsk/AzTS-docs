@@ -271,7 +271,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 # -----------------------------------------------------------------#
 # Step 1: Set the context to hosting subscription
 # -----------------------------------------------------------------#
-Set-AzContext -SubscriptionId <HostingSubId>
+Set-AzContext -SubscriptionId <HostSubscriptionId>
 
 # -----------------------------------------------------------------#
 # Step 2: Run installation command.
@@ -338,7 +338,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 #>
 ```
 
-  6.b. **Grant privileged access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. The internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
+  6.b. **Grant privileged access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
   </br>
 
   ``` PowerShell
@@ -387,10 +387,9 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 > 2. By default max timeout limit of function app is set to 9 minute. This can be modified based on requirement of your orgnization. To increase function timeout, you can upgrade to a higher App Service plan and use ` AzureFunctionsJobHost__functionTimeout ` app setting in App service to set the timeout value.
 >
 > </br>
+<br>
 
-</br>
-
-### **Congratulations! Installation is complete with this step.**
+**Congratulations! Installation is complete with this step.**
 </br>
 
 ###  **Next steps:**
