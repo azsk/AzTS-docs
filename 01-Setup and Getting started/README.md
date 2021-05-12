@@ -38,8 +38,8 @@ Let's start!
   1. a.  Installation steps are supported using following OS options: 	
 
       - Windows 10
-      - Windows Server 2019 
-
+      - Windows Server 2019
+  
   </br>
 
   1. b. PowerShell 5.0 or higher
@@ -57,7 +57,7 @@ Let's start!
 
 Az modules contains cmdlet to deploy Azure resources. These cmdlets is used to create AzTS scan solution resources with the help of ARM template.
 Install Az Powershell Modules using below command. 
-For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
+For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps).
 
 ``` Powershell
 # Install required Az modules
@@ -139,7 +139,7 @@ Disconnect-AzAccount
 Disconnect-AzureAD
 
 # Connect to AzureAD and AzAccount
-# Note: Tenant Id *must* be specified when connecting to Azure AD
+# Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
 Connect-AzAccount -Tenant <TenantId>
 Connect-AzureAD -TenantId <TenantId>
 ```
@@ -190,9 +190,6 @@ The `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command will perf
 
 1. Create a new user-assigned managed identity, if it does not exist.
 2. Assign 'Reader' role to the user-assigned managed identity at subscription scope.
-
-You can perform the above operations directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal).
-
 
 **4.b. Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
 </br>
