@@ -9,10 +9,10 @@
 
 ##  Index
   - [Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
-  - [Manually trigger AzTS on-demand scan for entire tenant](README.md#)
+  - [Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
   - [Verifying that Tenant Security Solution installation is complete](README.md#3-verifying-that-tenant-security-solution-installation-is-complete)
-  - [Log Analytics visualization]()
-  - [FAQ]
+  - [Log Analytics visualization](README.md#4-log-analytics-visualization)
+  - [FAQ](README.md#faq)
 
 </br>
 
@@ -51,6 +51,8 @@ Let's start!
 
 </br>
 
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
 ### **Step 2 of 6. Installing required Az modules**
 
 Az modules contains cmdlet to deploy Azure resources. These cmdlets is used to create AzTS scan solution resources with the help of ARM template.
@@ -80,6 +82,7 @@ Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSG
 Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 3 of 6. Download and extract deployment package**
  
@@ -112,7 +115,7 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
   ```
 
-[Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 4 of 6. Setup scanning identity**  
 
@@ -216,7 +219,7 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity
 
 </br>
 
-[Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 5 of 6. Create Azure AD application for secure authentication**
 
@@ -253,7 +256,7 @@ The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the fo
    5. Grant 'User.Read' permission to UI AD application. This permission is used to read logged in user's details such as name, email, and photo.
 
 
-[Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 6 of 6. Run Setup Command** 
 
@@ -400,7 +403,7 @@ To view scan result in AzTS UI:
 2. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete in order to load the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
 
 
-[Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 </br>
 
@@ -432,6 +435,8 @@ Start-AzSKTenantSecuritySolutionOnDemandScan -SubscriptionId $HostSubscriptionId
                                              -ScanHostRGName $HostResourceGroupName
 
 ```
+
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **3. Verifying that Tenant Security Solution installation is complete**
 
@@ -466,7 +471,7 @@ ii) Verify below resources got created.
 
 <br/>
 
-[Back to top…](README.md#setting-up-tenant-security-solution---step-by-step)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 <br/>
 
@@ -542,7 +547,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
 <br/>
 
-[Back to top…](Readme.md#contents)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 **Steps 3 of 3: Verify AzTS UI is working as expected**
 
@@ -560,7 +565,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 **b)** Open the URL is browser.
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
 
-[Back to top…](README.md#contents)
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **4. Log Analytics Visualization**
 
@@ -642,6 +647,7 @@ AzSK_ControlResults_CL
 | take 10
 ```
 
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## FAQ
 
