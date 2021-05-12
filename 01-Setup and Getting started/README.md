@@ -193,7 +193,7 @@ The `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command will perf
 1. Create a new user-assigned managed identity, if it does not exist.
 2. Assign 'Reader' role to the user-assigned managed identity at subscription scope.
 
-**4.b. Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
+**4.b. Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
 </br>
 
 ``` Powershell
@@ -210,7 +210,7 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity `
 
 
 > **Note:** 
-> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1). To run this script, you need to provide the object id of the user managed identity (scanner MI) created in this step._
+> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user managed identity (scanner MI) created in this step._
 > 
 > 2. _You can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on demand scan, view control failures etc.,_
 >
@@ -350,7 +350,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
   ```
 
   > **Note:** 
-  > 01. _This step requires admin consent. To complete this step, signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1). To run this script, you need to provide the object id of the user managed identity (internal MI) created in this step._
+  > 01. _This step requires admin consent. To complete this step, signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user managed identity (internal MI) created in this step._
   > 
   > 2. _You can proceed without this step. However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a security group._
 
