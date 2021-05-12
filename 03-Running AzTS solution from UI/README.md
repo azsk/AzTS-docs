@@ -33,20 +33,18 @@ Tenant reader solution provides a UI-based tool that can be used to perform on-d
 
 The UI is fairly self-explanatory and also has a "Guided Tour" feature that should show you the basic usage workflow. We recommend that you create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
 
-&nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
+[![UI](../Images/04_UI_Overview.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Introduction_About_AzTS_UI.mp4)
+
+## Video tutorials
 
 Learn more about AzTS UI from the following video tutorials.
 
-- **Introduction about AzTS UI -** Click on the image below to open the video:  
-[![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Introduction_About_AzTS_UI.mp4)
+### **How to scan subscription manually**
+[![UI](../Images/04_UI_SubmitForScan.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Scan_Subscription_Manually.mp4)
 
-- **How to scan subscription manually -** Click on the image below to open the video: 
-[![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Scan_Subscription_Manually.mp4)
+### **How to export control scan logs to local machine**
+[![UI](../Images/04_UI_ExportToCSV.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Export_To_CSV.mp4)
 
-- **How to export control scan logs in local machine -** Click on the image below to open the video: 
-[![UI](../Images/13_TSS_UIOverview.png)](https://aztsvideoforgithub.blob.core.windows.net/testvideocontainer/Ext_Export_To_CSV.mp4)
-
-</br>
 
 ### **Frequently Asked Questions**
 
