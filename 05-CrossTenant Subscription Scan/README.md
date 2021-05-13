@@ -23,7 +23,7 @@ Enterprise IT organizations creates multiple tenants to manage and deliver resou
 ## 1. Onboard AzTS Solution per Tenant
 
 Standalone installation, scanning and reporting can be done by onboarding  AzTS solution per Tenant.
-You will need to follow [setup steps]((../01-Setup%20and%20Getting%20started/Readme.md)) for each Tenant. 
+You will need to follow [setup steps](/01-Setup%20and%20getting%20started/README.md) for each Tenant. 
 
 
 Below diagram depicts high level flow for standlone setup.
@@ -46,11 +46,11 @@ Follow below steps to onboard subscription from different tenants to AzTS scanni
 
 1. Setup AzTS Solution on host tenant subscription
 
-    Follow [setup steps]((../01-Setup%20and%20Getting%20started/Readme.md)) on host subscription. If you have already performed setup, you can skip this step. 
+    Follow [setup steps](/01-Setup%20and%20getting%20started/README.md) on host subscription. If you have already performed setup, you can skip this step. 
 
 2. Get AzTS scanning MI principal id
    
-   In step 3 of [setup]((../01-Setup%20and%20Getting%20started/Readme.md)), we have created central scanning user managed identity. We will need to navigate to MI resource to get principal id. 
+   In step 3 of [setup](/01-Setup%20and%20getting%20started/README.md), we have created central scanning user managed identity. We will need to navigate to MI resource to get principal id. 
 
    Go Azure Portal --> Subscription where central scanning MI resource created --> Click on MI Hosting RG --> Click on MI resource --> Copy object id 
 

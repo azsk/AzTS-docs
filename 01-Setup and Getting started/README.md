@@ -7,7 +7,7 @@
  
 </br>
 
-##  Index
+##  On this page:
   - [Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
   - [Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
   - [Verifying that Tenant Security Solution installation is complete](README.md#3-verifying-that-tenant-security-solution-installation-is-complete)

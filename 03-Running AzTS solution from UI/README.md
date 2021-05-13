@@ -21,7 +21,7 @@ Tenant reader solution provides a UI-based tool that can be used to perform on-d
 ## Prerequisite
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
-2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](/01-Setup%20and%20Getting%20started/README.md#steps-3-of-3-verify-azts-ui-is-working-as-expected).
+2. Subscription scan should have completed for the day. The steps to validate this has been specified under [this section](/01-Setup%20and%20getting%20started/README.md#steps-3-of-3-verify-azts-ui-is-working-as-expected).
 
 > **Note:**
 > 1. If you have been recently granted access, you either need to wait for the next scheduled scan to read the latest RBAC data or request an existing owner of a subscription to perform an ad hoc scan for the subscription using AzTS UI.
