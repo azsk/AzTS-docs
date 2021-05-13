@@ -5,7 +5,7 @@
 # Azure Tenant Security Solution (AzTS) 
 
 
-### Contents
+### On this page:
 - [Overview](README.md#overview)
 - [Why Azure Tenant Security Solution?](README.md#why-azure-tenant-security-solution)
 - [Feedback](README.md#feedback)

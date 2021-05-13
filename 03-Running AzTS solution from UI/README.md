@@ -6,13 +6,14 @@
 
 # Running AzTS solution from UI
 
-## Content
+##  On this page:
 
 - [Overview](README.md#overview)
 - [Prerequisite](README.md#prerequisite)
 - [Introduction to AzTS UI and video tutorial](README.md#introduction-to-azts-ui)
 - [FAQ](README.md#frequently-asked-questions)
 
+-----------------
 
 ## Overview
 
