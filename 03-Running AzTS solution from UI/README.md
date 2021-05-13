@@ -38,7 +38,7 @@ The UI is fairly self-explanatory and also has a "Guided Tour" feature that shou
 
 ## Video tutorials
 
-Learn more about AzTS UI from the following video tutorials.
+Here are some additional video tutorials explaining the features provided by AzTS UI.
 
 ### **How to scan subscription manually**
 [![UI](../Images/04_UI_SubmitForScan.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Scan_Subscription_Manually.mp4)
