@@ -32,7 +32,7 @@ Tenant reader solution provides a UI-based tool that can be used to perform on-d
 
 ## Introduction to AzTS UI
 
-The UI is fairly self-explanatory and also has a "Guided Tour" feature that should show you the basic usage workflow. We recommend that you create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
+The UI is fairly self-explanatory and also has a "Guided Tour" feature that should show you the basic usage workflow. Learn more about AzTS UI from the following video tutorial.
 
 [![UI](../Images/04_UI_Overview.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Introduction_About_AzTS_UI.mp4)
 

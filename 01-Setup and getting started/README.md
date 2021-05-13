@@ -396,8 +396,9 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 **Next steps:**
 
 To view scan result in AzTS UI:
-1.  Copy AzTS UI link provided at the end of installation command.
-2. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete in order to load the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+1. Copy AzTS UI link provided at the end of installation command.
+2. We recommend to create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
+3. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete in order to load the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
 
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
@@ -441,9 +442,9 @@ Below steps will help you to verify and understand different resources and funct
 
 #### **Step 1 of 3: Verify resources created as part of setup**
 
-1.a) In the Azure portal, Go to hosting subscription, select the scan host resource group that has been created during the setup.
+**1.a.** In the Azure portal, Go to hosting subscription, select the scan host resource group that has been created during the setup.
 
-1.b) Verify below resources got created.
+**1.b.** Verify below resources got created.
 
   ![Resources](../Images/12_TSS_Resource_Group_1.png)	
   ![Resources](../Images/12_TSS_Resource_Group_2.png)	
@@ -474,7 +475,7 @@ Below steps will help you to verify and understand different resources and funct
 
 #### **Step 2 of 3: Verify below Functions got created**
 
- **2.a) MetadataAggregator Functions:** 
+ **2.a. MetadataAggregator Functions:** 
 
 &nbsp;&nbsp;&nbsp;Metadata aggregator function performs two tasks: 
 1. Collects inventory required for scanning (Target subscription list to be scanned, baseline controls list and subscription RBAC details)
@@ -493,7 +494,7 @@ Below steps will help you to verify and understand different resources and funct
 |ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
 |ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management group will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
 
- **2.b) WorkItemProcessor Functions:** 
+ **2.b. WorkItemProcessor Functions:** 
  
  Read subscription list from queue and scan for baseline controls.
 
@@ -516,7 +517,7 @@ Similarly, you can trigger below functions with 10 mins internval.
 
 After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get autotrigged, start processing scan and push scan results in storage account and LA workspace. 
 
- **2.c) AutoUpdater Functions:** 
+ **2.c. AutoUpdater Functions:** 
  
  Timer based function app to automatically update other function apps(Metadataaggregator and WorkItemProcessor) and Azure web service app(UI and API). User has the option to configure AutoUpdater settings like isAutoUpdateOn(user wants to auto update with new releases), VersionType(user wants to install the latest release/stable release/specific version).
  
@@ -556,11 +557,15 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
 **Steps to load AzTS UI:**
 
-  **3.a)** Copy the URL provided at the end of  ```Install-AzSKTenantSecuritySolution``` installation command (as shown below).
+  **3.a.** Use the URL provided at the end of  ```Install-AzSKTenantSecuritySolution``` installation command (as shown below). If required, you can run the installation command again to get this URL.
+
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIUrlPrintMessageInPSOutput.png) 
 
-**3.b)** Open the URL is browser.
-&nbsp;&nbsp;![UI](../Images/13_TSS_UIOverview.png) 
+**3.b.** Open the URL is browser.
+
+> _**Note:** We recommend creating a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)._
+
+&nbsp;&nbsp;<img src="../Images/13_TSS_UIOverview.png" width="80%">
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
@@ -662,6 +667,6 @@ This is probably happening because the user-assigned managed identity (internal 
 
 ![FAQ_GhostIdentity](../Images/12_TSS_FAQ_RBACGhostAccount.png)
 
-To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in screenshot below) --> Select the identity and click on 'Remove'.
+To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in screenshot) --> Select the identity and click on 'Remove'.
 
 After deleting the identity, you can run the installation command again.
