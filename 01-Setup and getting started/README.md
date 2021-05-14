@@ -285,6 +285,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -ScanIdentityId <ManagedIdentityResourceId> `
                 -WebAPIAzureADAppId <WebAPIAzureADApplicationId> `
                 -UIAzureADAppId <UIAzureADApplicationId> `
+                -CloudEnvironmentName AzureCloud `
                 -SendUsageTelemetry:$true `
                 -ScanIdentityHasGraphPermission:$true `
                 -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
@@ -310,6 +311,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                     -Location EastUS2 `
                     -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
                     -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
+                    -CloudEnvironmentName AzureCloud `
                     -SendUsageTelemetry:$true `
                     -ScanIdentityHasGraphPermission:$true `
                     -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
@@ -373,7 +375,8 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |Location|Location where all resources will get created |TRUE|
 |WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | TRUE |
 |UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | TRUE|
-|SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE | 
+|SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
+|CloudEnvironmentName| Name of the Azure  cloud where Azure Tenant solution will be deployed. Default value is AzureCloud |FALSE|
 |ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. Default value is false.|FALSE|
 |SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. Default value is false.|FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
