@@ -186,7 +186,7 @@ function Update-AZDefenderMMA
         Write-Host "--------------------------------------------"; 
         # 2)  Set auto provisioning for extensions in Azure Security Center. This script will set a single subscription for the current context
         Write-Host "Starting to update auto-provision settings to On" -ForegroundColor Cyan
-        Set-AzSecurityAutoProvisioningSetting -Name "default" -EnableAutoProvision
+        Set-AzSecurityAutoProvisioningSetting -Name "default" -EnableAutoProvision | Out-Null
         Write-Host "Completed updating auto-provision settings to On" -ForegroundColor Green
 
         Write-Host "Completed updating for SubscriptionId [$($SubscriptionId)]" -ForegroundColor Green
