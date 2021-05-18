@@ -21,14 +21,14 @@
 
 In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes.
 
-> _**Note:** You can use the execution script present in the [deployment package zip](../TemplateFiles/DeploymentFiles.zip?raw=1) which has all commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tag in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
+> _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tag in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
 This setup is divided into six steps:
 
 1. [Validate prerequisites on machine](README.md#step-1-of-6-validate-prerequisites-on-machine)
 2. [Installing required Az modules](README.md#step-2-of-6-installing-required-az-modules)
 3. [Download and extract deployment package](README.md#step-3-of-6-download-and-extract-deployment-package)
-4. [Setup scanning identity](README.md#step-4-of-6-setup-scanning-identity)
+4. [Setup central scanning managed identity](README.md#step-4-of-6-setup-central-scanning-managed-identity)
 5. [Create Azure AD application for secure authentication](README.md#step-5-of-6-create-azure-ad-application-for-secure-authentication)
 6. [Run Setup Command](README.md#step-6-of-6-run-setup-command)
 
@@ -69,16 +69,17 @@ For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/pow
 #   Az.ManagedServiceIdentity >= 0.7.3
 #   Az.Monitor >= 1.5.0
 #   Az.OperationalInsights >= 1.3.4
+#   Az.ApplicationInsights >= 1.0.3
+#   Az.Websites >= 1.6.0
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.ManagedServiceIdentity -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.OperationalInsights -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.ApplicationInsights -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Websites -AllowClobber -Scope CurrentUser -repository PSGallery
 
-```
-
-``` Powershell
 # Install AzureAd 
 # Required version:
 #   AzureAD >= 2.0.2.130
@@ -89,11 +90,13 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
 ### **Step 3 of 6. Download and extract deployment package**
  
- Deployment packages mainly contains 
- ARM template: Contains resource configuration details that needs to be created as part of setup
- Deployment setup script: Provides the cmdlet to run installation. <br/>
+ Deployment packages mainly contains:
+ 1. **ARM templates** which contains resource configuration details that needs to be created as part of setup.
+ 2.  **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
 
-3.a.    Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
+If you have already downloaded deployment package zip, skip to step (3.d).
+
+3.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
 
 3.b. Extract zip to local folder location <br/>
 
@@ -120,20 +123,20 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
-### **Step 4 of 6. Setup scanning identity**  
+### **Step 4 of 6. Setup central scanning managed identity**  
 
 The AzTS setup basically provisions your subscriptions with the ability to do daily scans for security controls.
-To do the scanning, it requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) and 'Reader' access to  target subscriptions on which scan needs to be performed.
+To do the scanning, it requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
 
 > _Note:_
-> 1. _If subscriptions are organized under [Management Groups](https://docs.microsoft.com/en-us/azure/governance/management-groups/overview) (MG), you can assign reader role for user-assigned identity using MG role assignment. For this you need to be 'Owner' on management group level to perform role assignment._
+> 1. _If subscriptions are organized under [Management Groups](https://docs.microsoft.com/en-us/azure/governance/management-groups/overview) (MG), you can assign reader role for central scanning identity using MG role assignment using [Azure Portal](https://docs.microsoft.com/en-us/azure/security-center/security-center-management-groups#assign-azure-roles-to-other-users). For this you need to be 'Owner' on management group level to perform role assignment._
 > 
 > 2. _All subscriptions and management groups fold up to the one root management group within the directory. To scan all the subscriptions in your tenant, you can assign reader role at root management group scope. Azure AD Global Administrators are the only users who can grant access at this scope._
 > 
 
 </br>
 
-Before creating user-assigned managed identity, please **connect to AzureAD and AzAccount with the tenant Id** where you want to use AzTS solution.
+Before creating central scanning user-assigned managed identity, please login to Azure Portal and Azure Active Directory (AD) where you want to use AzTS solution using the following PowerShell command.
 
 ``` Powershell
 # Clear existing login, if any
@@ -143,15 +146,19 @@ Disconnect-AzureAD
 
 # Connect to AzureAD and AzAccount
 # Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
-Connect-AzAccount -Tenant <TenantId>
-Connect-AzureAD -TenantId <TenantId>
+
+$TenantId = "<TenantId>"
+Connect-AzAccount -Tenant $TenantId
+Connect-AzureAD -TenantId $TenantId
 ```
 
-  **4.a. Create managed identity:** You can create user-assigned managed identity (MI) with below PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). This PowerShell command assigns 'Reader' access to user-assigned managed identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
+  **4.a. Create central scannner MI and grant 'Reader' permission on target subscriptions:** You can create user-assigned managed identity (MI) with below PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). This PowerShell command assigns 'Reader' access to user-assigned managed identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
+
+> **Note:** <br> _As a security best practice, we recommend creating central scanning identity in an isolated subscription with limited permission to secure access to this identity._
 
 ``` Powershell
 # -----------------------------------------------------------------#
-# Step 1: Create user-assigned managed identity
+# Step 1: Create central scanning user-assigned managed identity
 # -----------------------------------------------------------------#
 
 $UserAssignedIdentity = Set-AzSKTenantSecuritySolutionScannerIdentity `
@@ -173,11 +180,6 @@ $UserAssignedIdentity.PrincipalId
 
 ```
 
-> **NOTE:**
-> 1. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using `Install-AzSKTenantSecuritySolution` cmdlet._
->
-> &nbsp;
-
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
@@ -189,12 +191,7 @@ $UserAssignedIdentity.PrincipalId
 
 </br>
 
-The `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command will perform the following operations:
-
-1. Create a new user-assigned managed identity, if it does not exist.
-2. Assign 'Reader' role to the user-assigned managed identity at subscription scope.
-
-**4.b. Grant privileged access:** The scanner MI requires privileged permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM).
+**4.b. Grant MS Graph read access:** The scanner MI requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). This permission is required for evaluation of RBAC based controls in AzTS.
 </br>
 
 ``` Powershell
@@ -223,7 +220,15 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity `
 
 ### **Step 5 of 6. Create Azure AD application for secure authentication**
 
-Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications. Optionally, you can create AD application directly from Portal using steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal#permissions-required-for-registering-an-app) and then run the this PowerShell command to update the applications.
+Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications. If you do not have the permission to run this command, please contact your administrator to complete the setup using [this PowerShell script](../Scripts/ScriptToSetupAzureADApplicationForAzTSUI.ps1?raw=1). To run this script, you need to provide the subscription id and resource group name in which AzTS solution needs to be installed.
+
+The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the following operations:
+
+   1. Create Azure AD application for UI, if it does not exist. 
+   2. Create Azure AD application for backend API, if it does not exist. 
+   3. Update UI AD application redirection URL. 
+   4. Grant AD applications permission to request OAuth2.0 implicit flow access tokens. This is required for browser-based apps. 
+   5. Grant 'User.Read' permission to UI AD application. This permission is used to read logged in user's details such as name, email, and photo.
 
 ``` Powershell
 # -----------------------------------------------------------------#
@@ -247,14 +252,6 @@ $ADApplicationDetails.WebAPIAzureADAppId
 $ADApplicationDetails.UIAzureADAppId 
 
 ```
-The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the following operations:
-
-   1. Create Azure AD application for UI, if it does not exist. 
-   2. Create Azure AD application for backend API, if it does not exist. 
-   3. Update UI AD application redirection URL. 
-   4. Grant AD applications permission to request OAuth2.0 implicit flow access tokens. This is required for browser-based apps. 
-   5. Grant 'User.Read' permission to UI AD application. This permission is used to read logged in user's details such as name, email, and photo.
-
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
@@ -263,8 +260,11 @@ The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the fo
 This is the last step. You need to run install command present as part setup scription with host subscription id (sub where scanning infra resources will get created). 
 Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on subscrption where solution needs to be installed.
 
-**Note:** Setup may take upto 5 minutes to complete.
-
+> **Note:**
+> 1. _Setup may take upto 5 minutes to complete._
+> 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using `Install-AzSKTenantSecuritySolution` cmdlet._
+>
+> &nbsp;
 
 6.a. Run installation command with required parameters. 
 
