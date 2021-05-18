@@ -341,7 +341,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 #>
 ```
 
-  6.b. **Grant privileged access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
+  6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
   </br>
 
   ``` PowerShell
