@@ -53,5 +53,14 @@ Here are some additional video tutorials explaining the features provided by AzT
 
 **Q: Where can I find AzTS UI URL?**
 
+Please contact AzTS UI administrator for the link to the AzTS UI. If you are the administrator, follow the steps below to get UI's URL:
+
+**Using Azure Portal:**
+
+On Azure Portal, go to the resource group where AzTS Solution has been installed --> Go to AzSK-AzTS-UI-xxxxx App Service (here xxxxx represents the suffix added to the name of the App Service) --> From the 'Overview' section, copy the 'URL' of the UI.
+
+
+**Using PowerShell:**
+
 Link to the AzTS UI is provided at the end of installation command ```Install-AzSKTenantSecuritySolution``` (as shown below).
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIUrlPrintMessageInPSOutput.png)
