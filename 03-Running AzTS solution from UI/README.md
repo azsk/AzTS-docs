@@ -24,7 +24,7 @@ The AzTS solution provides a UI-based tool that can be used by dev-engineers to 
 ## Prerequisite
 
 1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
-2. If the AzTS solution has been installed recently, please follow the steps [here](/01-Setup%20and%20getting%20started/README.md#steps-3-of-3-verify-azts-ui-is-working-as-expected) to start the solution.
+2. If the AzTS solution has been installed recently, it can take up to 24 hours to reflect the scan result.
 
 > **Note:**
 > 1. If you have been recently granted access to a subscription, you would be able to view the scan result in UI after 24 hours because AzTS solution reads latest RBAC once in 24 hours.
