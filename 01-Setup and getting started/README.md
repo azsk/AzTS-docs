@@ -32,6 +32,8 @@ This setup is divided into six steps:
 5. [Create Azure AD application for secure authentication](README.md#step-5-of-6-create-azure-ad-application-for-secure-authentication)
 6. [Run Setup Command](README.md#step-6-of-6-run-setup-command)
 
+> _**Note**: You will need help of Azure Active Directory (AD) administrator in step 4, 5 and 6 to grant Microsoft.Graph permission._
+
 Let's start!
 
 ### **Step 1 of 6. Validate prerequisites on machine**  
@@ -208,7 +210,7 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity `
 
 
 > **Note:** 
-> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user managed identity (scanner MI) created in this step._
+> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user managed identity (scanner MI) created in **step 4.a**._
 > 
 > 2. _You can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on demand scan, view control failures etc.,_
 >
@@ -220,7 +222,7 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity `
 
 ### **Step 5 of 6. Create Azure AD application for secure authentication**
 
-Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications. If you do not have the permission to run this command, please contact your administrator to complete the setup using [this PowerShell script](../Scripts/ScriptToSetupAzureADApplicationForAzTSUI.ps1?raw=1). To run this script, you need to provide the subscription id and resource group name in which AzTS solution needs to be installed.
+Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications.
 
 The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the following operations:
 
@@ -229,6 +231,8 @@ The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the fo
    3. Update UI AD application redirection URL. 
    4. Grant AD applications permission to request OAuth2.0 implicit flow access tokens. This is required for browser-based apps. 
    5. Grant 'User.Read' permission to UI AD application. This permission is used to read logged in user's details such as name, email, and photo.
+
+> _**Note:** If you do not have the permission to run this command, please contact your administrator to complete the setup using [this PowerShell script](../Scripts/ScriptToSetupAzureADApplicationForAzTSUI.ps1?raw=1). To run this script, you need to provide the subscription id and resource group name in which AzTS solution needs to be installed._
 
 ``` Powershell
 # -----------------------------------------------------------------#
