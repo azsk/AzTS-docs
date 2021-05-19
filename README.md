@@ -21,7 +21,7 @@ The AzTS Solution was created with the following explicit objectives (some of wh
  * Speeding up our effort to transition to native features (being able to respond to changes in Azure more rapidly and deploy modifications to controls)
  * Enable incremental transition of our controls from custom code to Azure/ASC policy-based approach (using ASC/policy-based controls where available today and continue to migrate as more controls become available)
 
-[Back to top…](README.md#contents)
+[Back to top…](README.md#on-this-page)
 
 ## Feedback
 
