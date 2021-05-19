@@ -402,6 +402,9 @@ To view scan result in AzTS UI:
 1. Copy AzTS UI link provided at the end of installation command.
 2. We recommend to create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
 3. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete in order to load the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+4. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value is the Service Filter dropdown in UI. To add service mapping, follow the steps provided here: 
+    - [Step 1: Prepare your org-subscription mapping]()
+    - [Step 2: Upload your mapping to the Log Analytics (LA) workspace]() 
 
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)

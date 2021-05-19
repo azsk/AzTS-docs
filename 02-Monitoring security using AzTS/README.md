@@ -35,11 +35,11 @@ We will look at how a PowerBI-based compliance dashboard can be created and depl
 
 > Note: This is a one-time activity with tremendous leverage as you can use the resulting dashboard (example below) towards driving security governance activities over an extended period at your organization. 
 
-#### Step 0: Pre-requisites
+#### **Step 0: Pre-requisites**
 To create, edit and publish your compliance dashboard, you will need to install the latest version of PowerBI desktop on your local machine. Download it from [here](https://powerbi.microsoft.com/en-us/desktop/).
 
 
-#### Step 1: Prepare your org-subscription mapping
+#### **Step 1: Prepare your org-subscription mapping**
 In this step you will prepare the data file which will be fed to the PowerBI dashboard creation process as the mapping from subscription ids to the org hierarchy within your environment. The file is in a simple CSV form and should appear like the one below. 
 
 > Note: You may want to create a small CSV file with just a few subscriptions for a trial pass and then update it with the full subscription list for your org after getting everything working end-to-end.
@@ -50,38 +50,41 @@ A sample template for the CSV file is [here](../TemplateFiles/OrgMapping.csv):
 
 The table below describes the different columns in the CSV file and their intent.
 
-| ColumnName  | Description | Required? | Comments |
-| ---- | ---- | ---- |---- |
-| BGName | Name of business group (e.g., Finance, HR, Marketing, etc.) within your enterprise | Yes |  This you can consider as level 1 hierarchy for your enterprise | 
-| ServiceGroupName | Name of Service Line/ Business Unit within an organization | Yes |  This you can consider as level 2 hierarchy for your enterprise | 
-| SubscriptionId | Subscription Id belonging to a org/servicegroup | Yes |   | 
-| SubscriptionName | Subscription Name | Yes | This should match the actual subscription name. If it does not, then the actual name will be used  | 
-| IsActive | Use "Y" for Active Subscription and "N" for Inactive Subscription  | Yes | This will be used to filter active and inactive subscriptions | 
-| OwnerDetails | List of subscription owners separated by semi-colons (;)  | Yes | These are people accountable for security of the subscription  | 
+| ColumnName  | Description | Required?	|Comments|
+| ---- | ---- | ---- | ---- |
+| OrganizationName | Name of Organization(s) within your enterprise | No | This you can consider as level 1 hierarchy for your enterprise |
+| DivisionName | Name of Division(s) within your organization | No | This you can consider as level 2 hierarchy for your enterprise |
+| ServiceGroupName | Name of Service Line/ Business Unit within an organization | No | This you can consider as level 3 hierarchy for your enterprise |
+| TeamGroupName | Name of Team(s) within an organization | No | This you can consider as level 4 hierarchy for your enterprise |
+| ServiceName | Name of Service(s) within your organization | No | This you can consider as level 5 hierarchy for your enterprise |
+| SubscriptionId | Subscription Id belonging to a org/servicegroup | Yes |
+| SubscriptionName | Subscription Name | Yes |
+
+<br/>
 
 > **Note**: Ensure you follow the correct casing for all column names as shown in the table above. The 'out-of-box' PowerBI template is bound to these columns. If you need additional columns to represent your org hierarchy then you may need to modify the template/report as well.
 
 
-#### Step 2: Upload your mapping to the Log Analytics (LA) workspace
+#### **Step 2: Upload your mapping to the Log Analytics (LA) workspace**
 
 In this step you will import the data above into the LA workspace created during Tenant Security setup. 
 
- **(a)** Locate the LA resource that was created during Tenant Security setup in your subscription. This should be present under Tenant Security resource group. After selecting the LA resource, copy the Workspace ID from the portal as shown below:
+ **(a)** Locate the LA resource that was created during Tenant Security setup in your subscription. This should be present under Tenant Security resource group. After selecting the LA resource, copy the Workspace ID and primary key from the portal as shown below:
 
  ![capture Workspace ID](../Images/13_TSS_LAWS_AgentManagement.png)
  
- **(b)** To push org Mapping details, copy and execute the script available [here](../Scripts/AzTSPushOrgMappingEvents.ps1) (for Gov subs use script [here](../Scripts/AzTSPushOrgMappingEvents.Gov.ps1)) in Powershell.
+ **(b)** To push org Mapping details, copy and execute the script available [here](../Scripts/AzTSPushOrgMappingEvents.ps1) (for Gov subs use script [here](../Scripts/AzTSPushOrgMappingEvents.Gov.ps1)) in Powershell. You will need to replace the CSV path, Workspace ID, and primary key with its approriate value in this PowerShell script.
 
  > **Note**: Due to limitation of Log Analytics workspace, you will need to repeat this step every 90 days interval. 
 
-#### Step 3: Create a PowerBI report file
+#### **Step 3: Create a PowerBI report file**
 In this section we shall create a PowerBI report locally within PowerBI Desktop using the LA workspace from Tenant Security subscription as the datasource. We will start with a default (out-of-box) PowerBI template and configure it with settings specific to your environment.
 
 **(a)** Get the Workspace ID for your LA workspace from the portal as shown below:
 
 ![capture Workspace ID](../Images/13_TSS_LAWS_AgentManagement.png)
 
-**(b)** Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityReport.pbit) (for Gov subs use template from [here](../TemplateFiles/TenantSecurityReport.Gov.pbit)) to your local machine.
+**(b)** Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityReport.pbit?raw=1) (for Gov subs use template from [here](../TemplateFiles/TenantSecurityReport.Gov.pbit?raw=1)) to your local machine.
 
 **(c)** Open the template (.pbit) file using PowerBI Desktop, provide the LA Workspace ID and click on 'Load' as shown below:
 
@@ -106,7 +109,7 @@ The report contains 3 tabs. There is an overall/summary view of compliance, a de
 
 > Note: You can consider controlling access to the detailed view by business group.
 
-#### Step 4: Publish the PowerBI report to your enterprise PowerBI workspace
+#### **Step 4: Publish the PowerBI report to your enterprise PowerBI workspace**
 
 **(a)** Before publishing to the enterprise PowerBI instance, we need to update LA connection string across data tables in the PowerBI report. The steps to do this are as below:
 
