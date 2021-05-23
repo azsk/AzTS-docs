@@ -11,14 +11,14 @@ Executing PowerShell scripts using management group is divided into three steps.
 
 **1. Install pre-requisite Azure PS module**
 
-``` Powershell
+``` PowerShell
 # Install Az.Resources module
 Install-Module Az.Resources -Scope CurrentUser -AllowClobber -Repository PSGallery
 ```
 
 **2. Get subscription list under management group**
 
-``` Powershell
+``` PowerShell
 # Replace management group name
 $managementGroupName = '<ManagementGroupName>'
 
@@ -48,7 +48,7 @@ $subList = GetSubscriptionFromMG $managementGroupName
 
 **3. Execute remediation script with MG subscription list**
 
-``` Powershell
+``` PowerShell
 # Go to remediation section and select script. Here we will take example of deprecated account.
 
 # Step 1: Load remediation script in current session

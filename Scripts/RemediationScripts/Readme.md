@@ -22,10 +22,10 @@ Loading script in PowerShell session is divided into four steps:
 **2. Installing Az Modules:**
 
 Az modules contains cmdlet to connect to az account.
-Install Az Powershell Modules using below command. 
+Install Az PowerShell Modules using below command. 
 For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
 
-``` Powershell
+``` PowerShell
 # Install Az Modules
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 ```

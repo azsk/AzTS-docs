@@ -46,7 +46,7 @@ Let's start!
   </br>
 
   1. b. PowerShell 5.0 or higher
-  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get basic understanding.
+  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
   Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
 
@@ -58,11 +58,11 @@ Let's start!
 
 ### **Step 2 of 6. Installing required Az modules**
 
-Az modules contains cmdlet to deploy Azure resources. These cmdlets is used to create AzTS scan solution resources with the help of ARM template.
-Install Az Powershell Modules using below command. 
+Az modules contain cmdlet to deploy Azure resources. These cmdlets are used to create AzTS scan solution resources with the help of ARM template.
+Install Az PowerShell Modules using the below command. 
 For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps).
 
-``` Powershell
+``` PowerShell
 # Install required Az modules
 # Required versions: 
 #   Az.Accounts >= 1.7.1
@@ -92,17 +92,17 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
 ### **Step 3 of 6. Download and extract deployment package**
  
- Deployment packages mainly contains:
- 1. **ARM templates** which contains resource configuration details that needs to be created as part of setup.
+ Deployment package mainly contains:
+ 1. **ARM templates** which contains resource configuration details that need to be created as part of the setup.
  2.  **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
 
-If you have already downloaded deployment package zip, skip to step (3.d).
+If you have already downloaded the deployment package zip, directly go to step (3.d).
 
 3.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
 
-3.b. Extract zip to local folder location <br/>
+3.b. Extract zip to local folder location. <br/>
 
-3.c. Unblock the content. Below command will help to unblock files. <br/>
+3.c. Unblock the content. The below command will help to unblock files. <br/>
 
   ``` PowerShell
   Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
@@ -112,14 +112,14 @@ If you have already downloaded deployment package zip, skip to step (3.d).
 
 
   ``` PowerShell
-  # Point current path to extracted folder location and load setup script from deploy folder 
+  # Point current path to extracted folder location and load setup script from the deployment folder 
 
   CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
   # Load AzTS Setup script in session
   . ".\AzTSSetup.ps1"
 
-  # Note: Make sure you copy  '.' present at the start of line.
+  # Note: Make sure you copy  '.' present at the start of the line.
 
   ```
 
@@ -127,7 +127,7 @@ If you have already downloaded deployment package zip, skip to step (3.d).
 
 ### **Step 4 of 6. Setup central scanning managed identity**  
 
-The AzTS setup basically provisions your subscriptions with the ability to do daily scans for security controls.
+The AzTS setup provisions your subscriptions with the ability to do daily scans for security controls.
 To do the scanning, it requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
 
 > _Note:_
@@ -138,9 +138,9 @@ To do the scanning, it requires a [User-assigned Managed Identity](https://docs.
 
 </br>
 
-Before creating central scanning user-assigned managed identity, please login to Azure Portal and Azure Active Directory (AD) where you want to use AzTS solution using the following PowerShell command.
+Before creating central scanning user-assigned managed identity, please log in to Azure Portal and Azure Active Directory (AD) where you want to install the AzTS solution using the following PowerShell command.
 
-``` Powershell
+``` PowerShell
 # Clear existing login, if any
 
 Disconnect-AzAccount
@@ -154,11 +154,11 @@ Connect-AzAccount -Tenant $TenantId
 Connect-AzureAD -TenantId $TenantId
 ```
 
-  **4.a. Create central scannner MI and grant 'Reader' permission on target subscriptions:** You can create user-assigned managed identity (MI) with below PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). This PowerShell command assigns 'Reader' access to user-assigned managed identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
+  **4.a. Create central scanner MI and grant 'Reader' permission on target subscriptions:** You can create a user-assigned managed identity (scanner MI)  for centrally scanning subscriptions in your tenant using the following `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). The PowerShell command creates a user-assigned managed identity (scanner MI) and assigns 'Reader' access to this MI on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
 
 > **Note:** <br> _As a security best practice, we recommend creating central scanning identity in an isolated subscription with limited permission to secure access to this identity._
 
-``` Powershell
+``` PowerShell
 # -----------------------------------------------------------------#
 # Step 1: Create central scanning user-assigned managed identity
 # -----------------------------------------------------------------#
@@ -171,7 +171,7 @@ $UserAssignedIdentity = Set-AzSKTenantSecuritySolutionScannerIdentity `
                                                 -TargetSubscriptionIds @("<SubId1>","<SubId2>","<SubId3>")
 
 # -----------------------------------------------------------------#
-# Step 2: Save resource id and principal Id generated for user identity using below command. This will be used in AzTS Soln installation. 
+# Step 2: Save resource id and principal Id generated for user identity using the below command. This will be used in AzTS Soln installation. 
 # -----------------------------------------------------------------#
 
 # Resource id of the user-assigned managed identity
@@ -193,10 +193,10 @@ $UserAssignedIdentity.PrincipalId
 
 </br>
 
-**4.b. Grant MS Graph read access:** The scanner MI requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). This permission is required for evaluation of RBAC based controls in AzTS.
+**4.b. Grant MS Graph read access:** The scanner MI requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). This permission is required for the evaluation of RBAC based controls in AzTS.
 </br>
 
-``` Powershell
+``` PowerShell
 
 # Grant Graph Permission to the user-assigned managed identity.
 # Required Permission: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.
@@ -210,9 +210,9 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity `
 
 
 > **Note:** 
-> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user managed identity (scanner MI) created in **step 4.a**._
+> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) created in **step 4.a**._
 > 
-> 2. _You can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on demand scan, view control failures etc.,_
+> 2. _You can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on-demand scan, view control failures etc.,_
 >
 > </br>
 
@@ -222,7 +222,7 @@ Grant-AzSKGraphPermissionToUserAssignedIdentity `
 
 ### **Step 5 of 6. Create Azure AD application for secure authentication**
 
-Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications.
+Tenant reader solution provides a UI-based tool that can be used to perform on-demand scans to verify your fixes sooner, check reasons for control failures and view the latest scan results. This step is required to secure the login and authentication process from UI. Use the `Set-AzSKTenantSecurityADApplication` PowerShell command below to configure the Azure AD applications.
 
 The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the following operations:
 
@@ -234,7 +234,7 @@ The `Set-AzSKTenantSecurityADApplication` PowerShell command will perform the fo
 
 > _**Note:** If you do not have the permission to run this command, please contact your administrator to complete the setup using [this PowerShell script](../Scripts/ScriptToSetupAzureADApplicationForAzTSUI.ps1?raw=1). To run this script, you need to provide the subscription id and resource group name in which AzTS solution needs to be installed._
 
-``` Powershell
+``` PowerShell
 # -----------------------------------------------------------------#
 # Step 1: Setup AD application for AzTS UI and API
 # -----------------------------------------------------------------#
@@ -248,7 +248,7 @@ $HostResourceGroupName = <HostResourceGroupName>
 $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName
 
 # -----------------------------------------------------------------#
-# Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using below command. This will be used in AzTS Soln installation. 
+# Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using the below command. This will be used in AzTS Soln installation. 
 # -----------------------------------------------------------------#
 
 # Azure AD application client (application) ids 
@@ -261,12 +261,12 @@ $ADApplicationDetails.UIAzureADAppId
 
 ### **Step 6 of 6. Run Setup Command** 
 
-This is the last step. You need to run install command present as part setup scription with host subscription id (sub where scanning infra resources will get created). 
-Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on subscrption where solution needs to be installed.
+This is the last step. You need to run install command present as part setup script with host subscription id (sub where scanning infra resources will get created). 
+Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on the subscription where the solution needs to be installed.
 
 > **Note:**
-> 1. _Setup may take upto 5 minutes to complete._
-> 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using `Install-AzSKTenantSecuritySolution` cmdlet._
+> 1. _Setup may take up to 5 minutes to complete._
+> 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
 >
 > &nbsp;
 
@@ -296,7 +296,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -Verbose
 
   # -----------------------------------------------------------------#
-  # Step 3: Save internal user-assigned managed identity name generated using below command. This will be used to grant Graph permission to internal MI.
+  # Step 3: Save internal user-assigned managed identity name generated using the below command. This will be used to grant Graph permission to internal MI.
   # -----------------------------------------------------------------#
 
 # Name of the user-assigned managed identity created for internal operations
@@ -345,7 +345,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 #>
 ```
 
-  6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operation such access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose internal MI requires 'User.Read.All' permission.
+  6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission.
   </br>
 
   ``` PowerShell
@@ -357,7 +357,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
   ```
 
   > **Note:** 
-  > 01. _This step requires admin consent. To complete this step, signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user managed identity (internal MI) created in this step._
+  > 01. _This step requires admin consent. To complete this step, the signed-in user must be a member of one of the following administrator roles: </br> Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) created in this step._
   > 
   > 2. _You can proceed without this step. However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a security group._
 
@@ -380,9 +380,9 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | TRUE |
 |UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | TRUE|
 |SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
-|AzureEnvironmentName| Name of the Azure  cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
-|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. Default value is false.|FALSE|
-|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. Default value is false.|FALSE|
+|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
+|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
+|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
@@ -390,9 +390,9 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
 > **Note:** 
 >
-> 1. Tenant Security Solution does not support customization of app service name.
+> 1. Tenant Security Solution does not support customization of the App Service name.
 >
-> 2. By default max timeout limit of function app is set to 9 minute. This can be modified based on requirement of your orgnization. To increase function timeout, you can upgrade to a higher App Service plan and use ` AzureFunctionsJobHost__functionTimeout ` app setting in App service to set the timeout value.
+> 2. By default max timeout limit of function app is set to 9 minutes. This can be modified based on the requirement of your organization. To increase function timeout, you can upgrade to a higher App Service plan and use the `AzureFunctionsJobHost__functionTimeout` app setting in App Service to set the timeout value.
 >
 > </br>
 <br>
@@ -403,10 +403,10 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 **Next steps:**
 
 To view scan result in AzTS UI:
-1. Copy AzTS UI link provided at the end of installation command.
-2. We recommend to create a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
-3. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete in order to load the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
-4. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value is the Service Filter dropdown in UI. To add service mapping, follow the steps provided here: 
+1. Copy the AzTS UI link provided at the end of the installation command.
+2. We recommend creating a custom domain name for your UI. For steps to create a custom domain, refer to this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
+3. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete to show the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+4. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value in the Service Filter dropdown in AzTS UI. To add service mapping, follow the steps provided here: 
     - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
@@ -418,9 +418,9 @@ To view scan result in AzTS UI:
 ## **2. Manually trigger AzTS on-demand scan for entire tenant**
 
 > **Note:** 
-> _AzTS has been designed to auto-trigger the scan once in every 24 hours._ 
+> _AzTS has been designed to auto-trigger the scan once every 24 hours._ 
 
-The following section will walk you through the steps to trigger AzTS scan manually post installation.
+The following section will walk you through the steps to trigger AzTS scan manually post-installation.
 
 ### **Prerequisite**
 
@@ -430,7 +430,7 @@ The following section will walk you through the steps to trigger AzTS scan manua
 
 ### **Trigger on-demand scan**
 
-Run `Start-AzSKTenantSecuritySolutionOnDemandScan` command to start scan after the installation of AzTS Soln. Please note that after running this command, AzTS UI will available in the next 2 hours depending on the number of subscriptions to be scanned.
+Run the `Start-AzSKTenantSecuritySolutionOnDemandScan` command to start scan after the installation of AzTS Soln. Please note that after running this command, AzTS UI will available in the next 2 hours depending on the number of subscriptions to be scanned.
 
 ```PowerShell
 # Subscription id in which Azure Tenant Security Solution has been installed.
@@ -448,7 +448,7 @@ Start-AzSKTenantSecuritySolutionOnDemandScan -SubscriptionId $HostSubscriptionId
 
 ## **3. Verifying that Tenant Security Solution installation is complete**
 
-Below steps will help you to verify and understand different resources and functions created as part of setup along with purpose. This step can take up to 30 minutes. 
+The below steps will help you to verify and understand different resources and functions created as part of the setup along with purpose. This step can take up to 30 minutes. 
 
 #### **Step 1 of 3: Verify resources created as part of setup**
 
@@ -466,7 +466,7 @@ Below steps will help you to verify and understand different resources and funct
 |AzSK-AzTS-MetadataAggregator-xxxxx|Function App| Contains functions to get inventory (subscription, baseline controls and RBAC) and queue subscription for scan |
 |AzSK-AzTS-WorkItemProcessor-xxxxx|Function App | Contains function to scan subscription with baseline control |
 |AzSK-AzTS-WebApi-xxxxx|App Service| Contains API consumed by the AzTS user interface |
-|AzSK-AzTS-UI-xxxxx|App Service| Contains AzTS user interface which can used to view the scan result |
+|AzSK-AzTS-UI-xxxxx|App Service| Contains AzTS user interface which can be used to view the scan result |
 |AzSK-AzTS-UI-xxxxx/Staging-xxxxx| App service slot| Staging slot created to prevent UI downtime during auto-update|
 |AzSK-AzTS-AutoUpdater-xxxxx|Function App | Contains function to scan automatically updater function apps and web service apps |
 |AzSK-AzTS-LAWorkspace-xxxxx|Log Analytics workspace| Used to store scan events, inventory, subscription scan progress details|
@@ -498,11 +498,11 @@ Below steps will help you to verify and understand different resources and funct
 
 |Function Name|Description|
 |----|----|
-|ATS_1_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that has been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by the consecutive jobs.
+|ATS_1_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that have been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by consecutive jobs.
 |ATS_2_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
 |ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
-|ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default it would retry to scan for 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
-|ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management group will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
+|ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default, it would retry to scan 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
+|ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management groups will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
 
  **2.b. WorkItemProcessor Functions:** 
  
@@ -511,13 +511,13 @@ Below steps will help you to verify and understand different resources and funct
 ![SchedulerWebjobs](../Images/12_TSS_Scheduler_Webjobs.png)
 
 
-> **Note:** Functions are scheduled to run from UTC 00:00 time. You can also run the functions manually in sequence with an internval of 10 mins in each function trigger
+> **Note:** Functions are scheduled to run from UTC 00:00 time. You can also run the functions manually in sequence with an interval of 10 mins in each function trigger
 
 Steps to trigger the functions
 
 Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosting RG --> Click on 'Functions' tab --> Select 'ATS_1_SubscriptionInvProcessor' --> Click on 'Code + Test' --> Click 'Test/Run' --> Click 'Run'
 
-Similarly, you can trigger below functions with 10 mins internval.
+Similarly, you can trigger below functions with 10 mins interval.
 
  * ATS_2_BaselineControlsInvProcessor
 
@@ -525,33 +525,33 @@ Similarly, you can trigger below functions with 10 mins internval.
  
  * ATS_4_WorkItemScheduler 
 
-After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get autotrigged, start processing scan and push scan results in storage account and LA workspace. 
+After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get auto trigged, start processing scan and push scan results in Storage Account and LA workspace. 
 
  **2.c. AutoUpdater Functions:** 
  
- Timer based function app to automatically update other function apps(Metadataaggregator and WorkItemProcessor) and Azure web service app(UI and API). User has the option to configure AutoUpdater settings like isAutoUpdateOn(user wants to auto update with new releases), VersionType(user wants to install the latest release/stable release/specific version).
+ Timer-based function app to automatically update other function apps (Metadataaggregator and WorkItemProcessor) and Azure web service app(UI and API). User has the option to configure AutoUpdater settings like isAutoUpdateOn (user wants to auto-update with new releases), VersionType (user wants to install the latest release/stable release/specific version).
  
  AutoUpdater is a cron job which runs twice a day at 02:00 PM and 04:00 PM (UTC) to check for new release to update the apps. You can also manually trigger the AutoUpdater function if needed.
- Our AutoUpdater is robust enough to handle different configuration for each function apps or web service apps.
+ Our AutoUpdater is robust enough to handle different configuration for each function app or web service app.
 
-> **Note:** If you want to install specific version for each different apps (or a specific version for all) follow the below steps,
+> **Note:** If you want to install a specific version for each different apps (or a specific version for all) follow the below steps,
 >
-> (i) Change the VersionType from **"stable/latest"** to the required version number eg., **"x.y.z"** in Auto Updater App services app setting. To update the version, Go to AzSK-AzTS-AutoUpdater-xxxxx app service --> Configuration --> Add app setting `HostEnvironmentDetails__AutoUpdateConfig__<Id>__VersionType` and set value to the required version,
+> (i) Change the VersionType from **"stable/latest"** to the required version number eg., **"x.y.z"** in Auto Updater App services app setting. To update the version, go to AzSK-AzTS-AutoUpdater-xxxxx app service --> Configuration --> Add app setting `HostEnvironmentDetails__AutoUpdateConfig__<Id>__VersionType` and set value to the required version,
 > </br>
 >
-> |App Service| App setting name |
-> |--|--|
-> |AzSK-AzTS-MetadataAggregator-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__0__VersionType|
-> |AzSK-AzTS-WorkItemProcessor-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__1__VersionType|
-> |AzSK-AzTS-WebApi-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__2__VersionType|
-> |AzSK-AzTS-UI-xxxxx|HostEnvironmentDetails__AutoUpdateConfig__3__VersionType|
+> |App Service| Id| Example of app setting name |
+> |--|--|--|
+> |AzSK-AzTS-MetadataAggregator-xxxxx | 0 |HostEnvironmentDetails__AutoUpdateConfig__0__VersionType|
+> |AzSK-AzTS-WorkItemProcessor-xxxxx | 1 |HostEnvironmentDetails__AutoUpdateConfig__1__VersionType|
+> |AzSK-AzTS-WebApi-xxxxx | 2 |HostEnvironmentDetails__AutoUpdateConfig__2__VersionType|
+> |AzSK-AzTS-UI-xxxxx | 3 |HostEnvironmentDetails__AutoUpdateConfig__3__VersionType|
 >
 > </br>
 >
-> (ii) Manually trigger the AutoUpdate function app. You can view the console/monitor logs to see appropriate status of AutoUpdater function.
+> (ii) Manually trigger the AutoUpdate function app. You can view the console/monitor logs to see the appropriate status of the AutoUpdater function.
 > </br>
 >
-> (iii) After AutoUpdater function execution gets complete, you need to change **isAutoUpdateOn** to **false** through the app configuration setting for the apps where you want to keep custom version installed.
+> (iii) After AutoUpdater function execution gets complete, you need to change **isAutoUpdateOn** (`HostEnvironmentDetails__AutoUpdateConfig__<id>__IsAutoUpdateOn`) to **false** through the app configuration setting for the apps where you want to keep custom version installed.
 
 <br/>
 
@@ -573,7 +573,7 @@ After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkI
 
 **3.b.** Open the URL is browser.
 
-> _**Note:** We recommend creating a custom domain name for your UI. For steps to create custom domain, refer this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)._
+> _**Note:** We recommend creating a custom domain name for your UI. For steps to create a custom domain, refer to this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain)._
 
 &nbsp;&nbsp;<img src="../Images/13_TSS_UIOverview.png" width="80%">
 
@@ -665,18 +665,18 @@ AzSK_ControlResults_CL
 
 <br>
 
-#### **Today's AzTS scan has completed. How do I re-run full scan?**
+#### **Today's AzTS scan has completed. How do I re-run the full scan?**
 
 You can use the on-demand scan command provided [here](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) with `-ForceFetch` flag.
 
 <br>
 
-#### **On running AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."***
+#### **On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."***
 
-This is probably happening because the user-assigned managed identity (internal MI) has been deleted from Azure Portal, but the role assignment of this MI is still present at resource group scope in which AzTS setup has been installed. The role assignment of a deleted identity looks like below,
+This is probably happening because the user-assigned managed identity (internal MI) has been deleted from Azure Portal, but the role assignment of this MI is still present at the resource group scope in which the AzTS setup has been installed. The role assignment of a deleted identity looks like below,
 
 ![FAQ_GhostIdentity](../Images/12_TSS_FAQ_RBACGhostAccount.png)
 
-To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in screenshot) --> Select the identity and click on 'Remove'.
+To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in the screenshot) --> Select the identity and click on 'Remove'.
 
 After deleting the identity, you can run the installation command again.
