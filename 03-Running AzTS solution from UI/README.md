@@ -17,9 +17,9 @@
 
 ## Overview
 
-The Azure Tenant Security Solution (AzTS) from the DevOps Kit (AzSK) team can be used to obtain visibility to cloud subscriptions and resource configuration across multiple subscriptions in an enterprise environment. The AzTS is a logical progression of DevOps Kit which helps us move closer to an implementation of cloud security compliance solution using native security capabilities in Azure platform that are available today. Functionally, it is similar to running AzSK Continuous Assurance (CA) in central-scan mode.
+The Azure Tenant Security Solution (AzTS) from the DevOps Kit (AzSK) team can be used to obtain visibility to cloud subscriptions and resource configuration across multiple subscriptions in an enterprise environment. The AzTS is a logical progression of the DevOps Kit which helps us move closer to implementation of cloud security compliance solution using native security capabilities in the Azure platform that are available today. Functionally, it is similar to running AzSK Continuous Assurance (CA) in central-scan mode.
 
-The AzTS solution provides a UI-based tool that can be used by dev-engineers to perform on-demand scans to verify fixes sooner, check reasons for control failures and view latest scan results. This tool leverages your current subscription permissions to show you subscriptions that you have the ability to request scans for. 
+The AzTS solution provides a UI-based tool that can be used by dev-engineers to perform on-demand scans to verify fixes sooner, check reasons for control failures and view the latest scan results. This tool leverages your current subscription permissions to show you subscriptions that you have the ability to request scans for. 
 
 ## Prerequisite
 
@@ -27,7 +27,7 @@ The AzTS solution provides a UI-based tool that can be used by dev-engineers to 
 2. If the AzTS solution has been installed recently, it can take up to 24 hours to reflect the scan result.
 
 > **Note:**
-> 1. If you have been recently granted access to a subscription, you would be able to view the scan result in UI after 24 hours because AzTS solution reads latest RBAC once in 24 hours.
+> 1. If you have been recently granted access to a subscription, you would be able to view the scan result in UI after 24 hours because AzTS solution reads the latest RBAC once in 24 hours.
 >
 
 </br>
@@ -38,13 +38,13 @@ Azure Tenant Security (AzTS) UI tool is used to:
 
 - See compliance summary against each subscription.
 - Scan your subscription(s) manually.
-- Export control scan result in CSV.
+- Export control scan results to CSV.
 
 The UI is fairly self-explanatory and also has a "Guided Tour" feature that should show you the basic usage workflow. You can learn more about AzTS UI from the following video tutorials.
 
 ## Video tutorials
 
-To see basic introduction about AzTS UI, how it works and what are the functionality it is having, please refer the video below:
+To see a basic introduction about AzTS UI, how it works and what are the functionalities it is having, please refer to the video below:
 
 [![UI](../Images/04_UI_Overview.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Introduction_About_AzTS_UI.mp4)
 
@@ -63,7 +63,7 @@ Here are some additional video tutorials explaining the features provided by AzT
 
 **Q: Where can I find AzTS UI URL?**
 
-Please contact AzTS UI administrator for the link to the AzTS UI. If you are the administrator, follow the steps below to get UI's URL:
+Please contact the AzTS UI administrator for the link to the AzTS UI. If you are the administrator, follow the steps below to get UI's URL:
 
 **Using Azure Portal:**
 
@@ -72,5 +72,5 @@ On Azure Portal, go to the resource group where AzTS Solution has been installed
 
 **Using PowerShell:**
 
-Link to the AzTS UI is provided at the end of installation command ```Install-AzSKTenantSecuritySolution``` (as shown below).
+Link to the AzTS UI is provided at the end of the installation command ```Install-AzSKTenantSecuritySolution``` (as shown below).
 &nbsp;&nbsp;![UI](../Images/13_TSS_UIUrlPrintMessageInPSOutput.png)

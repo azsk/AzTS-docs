@@ -15,7 +15,7 @@
 ## Tenant Security Solution - under the covers (how it works)
  Tenant Security Solution is built by extending what the DevOps Kit has been doing and leveraging the best of Azure native features. It is a hybrid model, which leverages the native Azure security capabilities like Azure Security Center (ASC), Azure Policies, etc., to evaluate the security controls and continue to leverage DevOps Kit scanning capabilities in the form of custom code controls to address any coverage gaps.  
 
-It has been desinged to handle huge scales in highly performant and cost efficient manner.
+It has been designed to handle huge scales in highly performant and cost efficient manner.
 
 As a central team, you can run the scan at regular intervals and also empower your DevOps engineers to run the module independently to address control failures. 
 
@@ -73,7 +73,7 @@ In this step you will import the data above into the LA workspace created during
 
  ![capture Workspace ID](../Images/13_TSS_LAWS_AgentManagement.png)
  
- **(b)** To push org Mapping details, copy and execute the script available [here](../Scripts/AzTSPushOrgMappingEvents.ps1?raw=1) (for Gov subs use script [here](../Scripts/AzTSPushOrgMappingEvents.Gov.ps1?raw=1)) in Powershell. You will need to replace the CSV path, Workspace ID, and primary key with its approriate value in this PowerShell script.
+ **(b)** To push org Mapping details, copy and execute the script available [here](../Scripts/AzTSPushOrgMappingEvents.ps1?raw=1) (for Gov subs use script [here](../Scripts/AzTSPushOrgMappingEvents.Gov.ps1?raw=1)) in PowerShell. You will need to replace the CSV path, Workspace ID, and primary key with its appropriate value in this PowerShell script.
 
  > **Note**: Due to limitation of Log Analytics workspace, you will need to repeat this step every 90 days interval. 
 
