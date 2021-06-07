@@ -74,7 +74,5 @@ function Remove-AnonymousAccessOnContainers
     }
     $endTime = Get-Date
     $totalTime = ($endTime - $startTime)
-    # Write an information log with the current time.
-    Write-Host "$fn completed processing at $endTime"
     Write-Host "Runtime: $totalTime"
 }
