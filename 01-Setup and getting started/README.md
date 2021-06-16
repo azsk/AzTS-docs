@@ -680,3 +680,9 @@ This is probably happening because the user-assigned managed identity (internal 
 To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in the screenshot) --> Select the identity and click on 'Remove'.
 
 After deleting the identity, you can run the installation command again.
+
+<br>
+
+#### **While loading AzTS Setup Script, I am getting an error "File <local_folder_path>\DeploymentFiles\AzTSSetup.ps1 cannot be loaded. The file <local_folder_path>\DeploymentFiles\AzTSSetup.ps1 is not digitally signed. You cannot run this script on the current system."**
+
+You can use the command: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
