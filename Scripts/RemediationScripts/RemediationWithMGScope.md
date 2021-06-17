@@ -57,7 +57,7 @@ $subList = GetSubscriptionFromMG $managementGroupName
 Connect-AzAccount
 
 # Download and load remediation script in session. Script location: https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
-. ".\Remediate-InvalidAADObjectRoleAssignments.ps1"
+. ".\Remediate-Azure_Subscription_AuthZ_Remove_Deprecated_Accounts.ps1"
 
 # Note: Make sure you copy  '.' present at the start of line.
 
