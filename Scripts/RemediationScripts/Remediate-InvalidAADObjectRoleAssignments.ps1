@@ -161,7 +161,7 @@ function Remove-AzTSInvalidAADAccounts
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
@@ -171,7 +171,7 @@ function Remove-AzTSInvalidAADAccounts
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: saving the current login user object id to ensure we dont remove this during the actual removal
@@ -268,7 +268,7 @@ function Remove-AzTSInvalidAADAccounts
         {
             # If the active identities count has come as Zero, then API might have failed.  Print Warning and abort the execution
             Write-Host "Warning: Graph API hasnt returned any active account. Current principal dont have access to Graph or Graph API is throwing error. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
-            break;
+            return;
         }
 
         $activeIdentities += $subActiveIdentities.ObjectId
@@ -297,7 +297,7 @@ function Remove-AzTSInvalidAADAccounts
     if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -eq $currentLoginUserObjectId} | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the invalid AAD Object guids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Getting count of invalid account
@@ -307,7 +307,7 @@ function Remove-AzTSInvalidAADAccounts
     if(($invalidAADObjectRoleAssignmentsCount -eq 0) -and ($invalidClassicRolesCount -eq 0))
     {
         Write-Host "No invalid accounts found for the subscription [$($SubscriptionId)]. Exiting the process."
-        break;
+        return;
     }
 
     if($invalidAADObjectRoleAssignmentsCount -le 0 )
@@ -353,7 +353,7 @@ function Remove-AzTSInvalidAADAccounts
 
         if($UserInput -ne "Y")
         {
-            break;
+            return;
         }
     }
    
