@@ -136,7 +136,7 @@ function Remove-AnonymousAccessOnContainers
         Write-Host "Warning: Instead of disabling anonymous access on all containers of storage account, You can select to disable 'AllowBlobPublicAccess' at storage level." -ForegroundColor Yellow
         Write-Host "Please execute same command with 'DisableAllowBlobPublicAccessOnStorage' remediation type parameter to disable anonymous access at storage level."
         Write-Host $([Constants]::DoubleDashLine)
-        break; 
+        return; 
     }
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "Starting to remediation anonymous access on containers of storage account from subscription [$($SubscriptionId)]..."
@@ -200,7 +200,7 @@ function Remove-AnonymousAccessOnContainers
         if (-not (Test-Path -Path $Path))
         {
             Write-Host "Error: Json file containing storage account(s) detail not found for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-            break;        
+            return;        
         }
 
         # Fetching storage accounts details for remediation.
@@ -211,7 +211,7 @@ function Remove-AnonymousAccessOnContainers
         if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
         {
             Write-Host "No storage account(s) found in input json file for remedition." -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            return
         }
         $resourceDetails.ResourceDetails | ForEach-Object { 
             try
@@ -222,7 +222,7 @@ function Remove-AnonymousAccessOnContainers
             catch
             {
                 Write-Host "Valid resource group or resource name not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                break
+                return
             }
         }
     }
@@ -232,7 +232,7 @@ function Remove-AnonymousAccessOnContainers
     {
         Write-Host "Unable to fetch storage account." -ForegroundColor $([Constants]::MessageType.Error);
         Write-Host $([Constants]::DoubleDashLine)
-        break;
+        return;
     }
 
     switch ($RemediationType)
@@ -296,12 +296,12 @@ function Remove-AnonymousAccessOnContainers
                 {
                     Write-Host "No storage account found with enabled 'Allow Blob Public Access'." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::DoubleDashLine)
-                    break
+                    return
                 }
             }
             catch{
                 Write-Host "Error occured while remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                break
+                return
             }
         }
         "DisableAnonymousAccessOnContainers" 
@@ -397,7 +397,7 @@ function Remove-AnonymousAccessOnContainers
             catch
             {
                 Write-Host "Error occured while remediating control. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                break
+                return
             }
 
             # Creating the log file
@@ -428,7 +428,7 @@ function Remove-AnonymousAccessOnContainers
         Default {
 
             Write-Host "No valid remediation type selected." -ForegroundColor $([Constants]::MessageType.Error)
-            break;
+            return;
         }
     }
 }
