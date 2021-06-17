@@ -33,8 +33,8 @@ ControlId:
         Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
 
 To know more about parameter execute:
-    a. Get-Help Remove-AnonymousAccessOnContainers -Detailed
-    b. Get-Help Set-AnonymousAccessOnContainers -Detailed
+    a. Get-Help Set-ConfigASCTier -Detailed
+    b. Get-Help Remove-ConfigASCTier -Detailed
 
 ########################################
 #>
@@ -162,7 +162,7 @@ function Set-ConfigASCTier
     }
 
     # Declaring required ASC type and pricing tier
-    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines";
+    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $isProviderRegister = $true
