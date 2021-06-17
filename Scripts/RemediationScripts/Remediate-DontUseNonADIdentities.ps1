@@ -166,7 +166,7 @@ function Remove-AzTSNonADIdentities
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
@@ -175,7 +175,7 @@ function Remove-AzTSNonADIdentities
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or User Access Administrator" -ForegroundColor Yellow
-        break;
+        return;
     }
     
     Write-Host "Step 2 of 3: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
@@ -324,13 +324,13 @@ function Remove-AzTSNonADIdentities
     if(($externalAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the Non-AD Account. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
-        break;
+        return;
     }
 
     if(($externalAccountsRoleAssignments | Measure-Object).Count -le 0)
     {
         Write-Host "No Non-AD identities found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
-        break;
+        return;
     }
     else
     {
@@ -359,7 +359,7 @@ function Remove-AzTSNonADIdentities
 
         if($UserInput -ne "Y")
         {
-            break;
+            return;
         }
     }
    

@@ -149,7 +149,7 @@ function Set-ConfigASCTier
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: Current user need to be either Contributor or Owner for the subscription
@@ -158,7 +158,7 @@ function Set-ConfigASCTier
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Declaring required ASC type and pricing tier
@@ -198,7 +198,7 @@ function Set-ConfigASCTier
         catch 
         {
             Write-Host "Error Occured while registering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
-            break
+            return
         }
         Write-Host "$reqProviderName provider successfully registered." -ForegroundColor Green
     }
@@ -217,7 +217,7 @@ function Set-ConfigASCTier
     {
         Write-Host "[$($reqProviderName)] provider is already registered and there is no non-compliant ASC type. In this case remediation not required." -ForegroundColor Green
         Write-Host "======================================================"
-        break
+        return
     }
 
     # Creating data object for ASC type without 'Standard' pricing tier to export into json, it will help while doing rollback opeartion. 
@@ -253,7 +253,7 @@ function Set-ConfigASCTier
         catch 
         {
             Write-Host "Error occurred while setting $reqASCTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
-            break
+            return
         }
         Write-Host "Successfuly set [$($reqASCTier)] pricing tier for non-compliant ASC type." -ForegroundColor Green
         Write-Host "======================================================"
@@ -262,7 +262,7 @@ function Set-ConfigASCTier
     {
         Write-Host "Required ASC type compliant with [$($reqASCTier)] pricing tier." -ForegroundColor Green
         Write-Host "======================================================"
-        break   
+        return   
     }
 }
 
