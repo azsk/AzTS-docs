@@ -1,0 +1,32 @@
+{
+    "Version": "<version>",
+    "Description": "Specifies metadata about Remediation scripts",
+    "RemediationScriptsBaseUrl": "https://aka.ms",
+    "RemediationSpecification": [
+        {
+            "Azure_APIManagement_AuthN_Disable_Management_API": {
+                "DisableRemediation": "false",
+                "Filename": "<remediation-script-name>",
+                "RemediationScriptUrl": "<url-remediation-script-ps1>",
+                "StartCommand": "<start-command-with-args>"
+            }
+        },
+        {
+            "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme": {
+                "DisableRemediation": "true",
+                "Filename": "<remediation-script-name>",
+                "RemediationScriptUrl": "<url-remediation-script-ps1>",
+                "StartCommand": "<start-command-with-args>"
+            }
+        }, 
+
+        {
+            "Azure_Storage_AuthN_Dont_Allow_Anonymous": {
+                "DisableRemediation": "true",
+                "Filename": "<remediation-script-name>",
+                "RemediationScriptUrl": "<url-remediation-script-ps1>",
+                "StartCommand": "<start-command-with-args>"
+            }
+        }
+    ]
+}
