@@ -140,7 +140,7 @@ function Update-AZDefenderMMA
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: Current user need to be either Contributor or Owner for the subscription
@@ -149,7 +149,7 @@ function Update-AZDefenderMMA
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Check for valid regex patterns in a string and cast it into a boolean.
@@ -167,7 +167,7 @@ function Update-AZDefenderMMA
             $response = Read-Host "Do you want to continue with the Sub: [$($SubscriptionId)] ? (Y/N)"
             if($response -eq "N")
             {
-                break;                
+                return;                
             }
         }        
         Write-Host "Starting with updating defender plans to Standard" -ForegroundColor Cyan
