@@ -4,27 +4,12 @@
     "RemediationScriptsBaseUrl": "https://aka.ms",
     "RemediationSpecification": [
         {
-            "ControlId": "Azure_APIManagement_AuthN_Disable_Management_API",
-            "DisableRemediation": "false",
-            "Filename": "<remediation-script-name>",
-            "RemediationScriptUrl": "<url-remediation-script-ps1>",
-            "StartCommand": "<start-command-with-args>"
-
-        },
-        {
-            "ControlId": "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme",
-            "DisableRemediation": "true",
-            "Filename": "<remediation-script-name>",
-            "RemediationScriptUrl": "<url-remediation-script-ps1>",
-            "StartCommand": "<start-command-with-args>"
-        }, 
-
-        {
             "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
-            "DisableRemediation": "true",
-            "Filename": "<remediation-script-name>",
-            "RemediationScriptUrl": "<url-remediation-script-ps1>",
-            "StartCommand": "<start-command-with-args>"
+            "DisableRemediation": "false",
+            "Filename": "Remediate-AnonymousAccessOnContainers.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/'users/sachyutuni/feature/Auto-Remediation'/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
+            "LoadCommand": ". .\\\"Remediate-AnonymousAccessOnContainers.ps1\"",
+            "InitCommand": "Remove-AnonymousAccessOnContainers"
         }
     ]
 }
