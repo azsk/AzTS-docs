@@ -4,8 +4,27 @@
 # {
     # PARAMETER FailedControlsPath
     # Json file path which contain failed controls detail to remediate.
-    $files = @(Get-ChildItem JSONFiles\*.json)
+    $files = @(Get-ChildItem *.*)
+    $currentLocation = Get-Location
+    $remediationScriptsLocation = $currentLocation + "\RemediationScripts\"
+    new-item $remediationScriptsLocation -itemtype directory
     foreach ($file in $files) {
         Write-Host "Filename is [$($file)]" 
+        $JsonContent =  Get-content -path $file | ConvertFrom-Json
+        $SubscriptionId = $JsonContent.SubscriptionId
+        $uniqueControls = $JsonContent.UniqueControls
+        foreach ($uniqueControl in $uniqueControls){
+            if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.filename) )){
+                Invoke-WebRequest -Uri  $uniqueControl.url -OutFile filename
+            }
+            . "./"+$uniqueControl.filename
+            $commandString = $uniqueControl.init_command + "-FailedControlsPath" + $uniqueControl.filename
+            function runCommand($command) {
+                if ($command[0] -eq '"') { Invoke-Expression "& $command" }
+                else { Invoke-Expression $command }
+            }
+            runCommand($commandString)
+        }
+
     }
 # }
