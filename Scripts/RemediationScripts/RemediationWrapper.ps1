@@ -4,27 +4,28 @@
 # {
     # PARAMETER FailedControlsPath
     # Json file path which contain failed controls detail to remediate.
+    Connect-AzAccount
     $files = @(Get-ChildItem *.json)
-    $currentLocation = Get-Location
-    $remediationScriptsLocation = $currentLocation + "\RemediationScripts\"
-    new-item $remediationScriptsLocation -itemtype directory
+    #$currentLocation = Get-Location
     foreach ($file in $files) {
-        Write-Host "Filename is [$($file)]" 
+        #Write-Host "Filename is [$($file)]" 
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
-        $uniqueControls = $JsonContent.UniqueControls
+        $uniqueControls = $JsonContent.UniqueControlList
+	    # Write-Host "SubscriptionId is $($SubscriptionId)"
         foreach ($uniqueControl in $uniqueControls){
+            # Write-Host "URL is $($uniqueControl.url)"
             if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
                 Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
             }
-            . "./"+$uniqueControl.file_name
-            $commandString = $uniqueControl.init_command + "-FailedControlsPath" + $SubscriptionId + ".json"
+            . ("./"+$uniqueControl.file_name)
+            $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + $SubscriptionId + ".json" + "`'" 
+            # Write-Host "Command is $($commandString)"
             function runCommand($command) {
                 if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                 else { Invoke-Expression $command }
             }
             runCommand($commandString)
         }
-
     }
 # }
