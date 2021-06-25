@@ -15,7 +15,7 @@
         $uniqueControls = $JsonContent.UniqueControls
         foreach ($uniqueControl in $uniqueControls){
             if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.filename) )){
-                Invoke-WebRequest -Uri  $uniqueControl.url -OutFile filename
+                Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.filename
             }
             . "./"+$uniqueControl.filename
             $commandString = $uniqueControl.init_command + "-FailedControlsPath" + $uniqueControl.filename
