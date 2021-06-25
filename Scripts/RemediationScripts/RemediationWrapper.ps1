@@ -18,7 +18,7 @@
                 Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
             }
             . "./"+$uniqueControl.file_name
-            $commandString = $uniqueControl.init_command + "-FailedControlsPath" + $file
+            $commandString = $uniqueControl.init_command + "-FailedControlsPath" + $SubscriptionId + ".json"
             function runCommand($command) {
                 if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                 else { Invoke-Expression $command }
