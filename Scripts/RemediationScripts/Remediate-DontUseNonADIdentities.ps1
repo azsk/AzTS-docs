@@ -7,7 +7,7 @@ ControlId:
     Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
 
 # Pre-requesites:
-    You will need owner or User Access Administrator role at subscription level.
+    You will need Owner/User Access Administrator/CoAdministrator role at subscription level.
 
 # Steps performed by the script
     1. Install and validate pre-requesites to run the script for subscription.

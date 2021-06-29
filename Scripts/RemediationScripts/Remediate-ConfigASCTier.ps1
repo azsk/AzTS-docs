@@ -7,7 +7,7 @@ ControlId:
     Azure_Subscription_Config_ASC_Tier
 
 # Pre-requesites:
-    You will need owner or contributor role on subscription.
+    You will need Owner/User Access Administrator/Security Admin/CoAdministrator/Contributor role on subscription.
 
 # Steps performed by the script
     1. Install and validate pre-requesites to run the script for subscription.

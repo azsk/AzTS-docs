@@ -4,7 +4,7 @@
     This script is used to update azure subscriptions to enable azure defender and MMA on subscriptions.
 
 # Pre-requesites:
-    You will need owner or Contributor role at subscription level.
+    You will need Owner/User Access Administrator/CoAdministrator/Contributor role at subscription level.
 
 # Steps performed by the script
     1. Install and validate pre-requesites to run the script for subscription.
