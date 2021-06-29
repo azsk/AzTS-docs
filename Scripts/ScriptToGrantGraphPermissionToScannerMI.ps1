@@ -1,7 +1,7 @@
 <# ********************* Script execution guidance *******************
 
     .PREREQUISITE Permission
-        The signed-in user must be a member of one of the following administrator roles on Azure AD: Global Administrator, Privileged Role Administrator, Application Administrator or Cloud Application Administrator.
+        The signed-in user must be a member of one of the following administrator roles on Azure AD: Global Administrator or Privileged Role Administrator.
 
     .PREREQUISITE Install AzureAD module. (Required version: AzureAD >= 2.0.2.130)
         Example command: Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
