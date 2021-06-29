@@ -172,7 +172,7 @@ function Remove-AzTSNonADIdentities
     # Safe Check: Current user need to have one of the role listed in requiredRoleDefinitionName array for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators;
 
-    $requiredRoleDefinitionName = @("Owner", "User Access Administrator","Security Admin", "CoAdministrator")
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator", "CoAdministrator")
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
@@ -487,7 +487,7 @@ function Restore-AzTSNonADIdentities
     # Safe Check: Current user need to have one of the role listed in requiredRoleDefinitionName array for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators;
 
-    $requiredRoleDefinitionName = @("Owner", "User Access Administrator","Security Admin", "CoAdministrator")
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator", "CoAdministrator")
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
