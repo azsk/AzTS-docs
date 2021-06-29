@@ -484,13 +484,14 @@ function Restore-AzTSNonADIdentities
         break;
     }
 
-    # Safe Check: Current user need to be either UAA or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    # Safe Check: Current user need to have one of the role listed in requiredRoleDefinitionName array for the subscription
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators;
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator","Security Admin", "CoAdministrator")
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
-        Write-Host "Warning: This script can only be run by an Owner or User Access Administrator." -ForegroundColor Yellow
-        break;
+        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
+        return;
     }
 
     Write-Host "Step 2 of 3: Check for presence of rollback file for Subscription: [$($SubscriptionId)]..."
