@@ -152,12 +152,13 @@ function Set-ConfigASCTier
         return;
     }
 
-    # Safe Check: Current user need to be either Contributor or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    # Safe Check: Current user need to have one of the role listed in requiredRoleDefinitionName array for the subscription
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators;
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator", "Contributor", "Security Admin", "CoAdministrator")
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
-        Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
+        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         return;
     }
 

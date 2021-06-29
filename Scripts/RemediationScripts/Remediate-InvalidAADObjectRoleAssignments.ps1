@@ -164,16 +164,16 @@ function Remove-AzTSInvalidAADAccounts
         return;
     }
 
-    # Safe Check: Current user need to be either UAA or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    # Safe Check: Current user need to have one of the role listed in requiredRoleDefinitionName array for the subscription
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators;
     
-    $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
+    $requiredRoleDefinitionName = @("Owner", "User Access Administrator","Security Admin", "CoAdministrator")
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         return;
     }
-
+    
     # Safe Check: saving the current login user object id to ensure we dont remove this during the actual removal
     $currentLoginUserObjectIdArray = @()
     $currentLoginUserObjectId = "";
@@ -260,7 +260,7 @@ function Remove-AzTSInvalidAADAccounts
         }
 
         $subRange = $distinctObjectIds[$i..$endRange]
-
+        $subRange = @($subRange | Select -Unique)
         # Getting active identities from Azure Active Directory.
         $subActiveIdentities = Get-AzureADObjectByObjectId -ObjectIds $subRange
         # Safe Check 
