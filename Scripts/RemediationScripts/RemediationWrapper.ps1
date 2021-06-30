@@ -14,10 +14,11 @@
         $uniqueControls = $JsonContent.UniqueControlList
 	    # Write-Host "SubscriptionId is $($SubscriptionId)"
         foreach ($uniqueControl in $uniqueControls){
+            
             # Write-Host "URL is $($uniqueControl.url)"
-            if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
-                Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
-            }
+            # if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
+            #     Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
+            # }
             . ("./"+$uniqueControl.file_name)
             $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + $SubscriptionId + ".json" + "`'" 
             # Write-Host "Command is $($commandString)"

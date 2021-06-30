@@ -96,17 +96,22 @@ function Set-ConfigASCTier
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
         Perform pre requisities check to ensure all required module to perform rollback operation is available.
+    
+    .PARAMETER FailedControlsPath
     #>
-
     param (
+        # [string]
+        # [Parameter(Mandatory = $false, HelpMessage="Enter subscription id for remediation")]
+        # $SubscriptionId,
         [string]
-        [Parameter(Mandatory = $true, HelpMessage="Enter subscription id for remediation")]
-        $SubscriptionId,
-
-        [switch]
-        $PerformPreReqCheck
+        [Parameter(Mandatory = $true, HelpMessage="Json file path which contain failed control details")]
+        $FailedControlsPath
+        # [switch]
+        # $PerformPreReqCheck
     )
-
+    $controlForRemediation = Get-content -path $FailedControlsPath | ConvertFrom-Json
+    $SubscriptionId = $controlForRemediation.SubscriptionId
+    $PerformPreReqCheck = $true
     Write-Host "======================================================"
     Write-Host "Starting to remediate config ASC tier for subscription [$($SubscriptionId)]..."
     Write-Host "------------------------------------------------------"
