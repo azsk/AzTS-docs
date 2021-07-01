@@ -46,7 +46,51 @@ function GetSubscriptionFromMG ($managementGroupName)
 $subList = GetSubscriptionFromMG $managementGroupName
 ```
 
-**3. Execute remediation script with MG subscription list**
+**3. (Optional) Exclude subscription from remediation**
+``` PowerShell
+# Enter comma seperated subscriptionId to exclude from MG
+$subListToExclude = '<Enter comma seperated subscriptionId to exclude from MG>'
+
+# $subList is fetched subscription list present under MG name (SubList fetched from step 3)
+$subListToRemdiate = ExcludeSubscriptionFromMG -subList $subList -subListToExclude $subListToExclude
+
+function ExcludeSubscriptionFromMG()
+{
+    param (
+        [PSObject]
+        [Parameter(Mandatory = $true, HelpMessage="")]
+        $subList,
+
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage="Comma separated subscriptionId which need to exclude from remediation")]
+        $subListToExclude
+    )
+
+    $SubIdToExclude = @();
+	if(-not [string]::IsNullOrWhiteSpace($subListToExclude))
+	{
+		$SubIdToExclude += $subListToExclude.Split(',', [StringSplitOptions]::RemoveEmptyEntries) | 
+						Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+						ForEach-Object { $_.Trim() } |
+						Select-Object -Unique;
+            
+        if(($SubIdToExclude |Measure-Object).Count -gt 0)
+        {
+            $NonExistingSubId = $SubIdToExclude | Where-Object { $_ -notin $subList.Name }
+            $subList = $subList | Where-Object { $_.Name -notin $SubIdToExclude }   
+            if(($NonExistingSubId | Measure-Object).Count -gt 0 )
+			{
+				Write-Host "Warning: Did not find the following subscriptionId in given MG name for exclusion:" -ForegroundColor Yellow
+				Write-Host $(($NonExistingSubId) -join ",")
+			}	
+        }
+	}
+    return ($subList)
+}
+
+```
+
+**4. Execute remediation script with MG subscription list**
 
 ``` PowerShell
 # Go to remediation section and select script. Here we will take example of deprecated account.
@@ -64,7 +108,7 @@ Connect-AzAccount
 # Step 2: Execute script using MG subscription list
 
 # Note: Please perform discrete analysis before running remediation script using management groups.
-$subList | %{
+$subListToRemdiate | %{
 Remove-AzTSInvalidAADAccounts -SubscriptionId $_.Name -PerformPreReqCheck: $true
 }
 

@@ -113,6 +113,10 @@ function Remove-AnonymousAccessOnContainers
         Select remediation type to perform from drop down menu.
     .PARAMETER Path
         Json file path which contain failed controls detail to remediate.
+    .PARAMETER ExcludeResourceGroupNames
+        Resource group names which need to exclude from remediation.
+    .PARAMETER ExcludeResourceNames
+        Resource name which need to exclude from remediation.
     #>
 
     param (
@@ -127,7 +131,15 @@ function Remove-AnonymousAccessOnContainers
 
         [string]
         [Parameter(Mandatory = $false, HelpMessage="Json file path which contain storage account detail to remediate")]
-        $Path
+        $Path,
+
+        [string]
+		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name to exclude from remediation")]
+		$ExcludeResourceGroupNames,
+
+		[string]
+		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource name to exclude from remediation")]
+		$ExcludeResourceNames
     )
 
     if($RemediationType -eq "DisableAnonymousAccessOnContainers" -and [string]::IsNullOrWhiteSpace($Path))
@@ -150,7 +162,7 @@ function Remove-AnonymousAccessOnContainers
     }
     catch 
     {
-        Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+        Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
         break
     }
     
@@ -235,6 +247,25 @@ function Remove-AnonymousAccessOnContainers
         break;
     }
 
+    Write-Host "Total storage account: [$($totalStorageAccount)]"
+    # Resource name is named as storage account name in fetched storage accounts, it need to renmae as ResourceName as required from comman helper class
+    # Adding new ResourceName property and storageaccountname as property value
+    # Exclude resource/resource group
+    if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
+    {
+        $resourceContext | ForEach-Object {
+            $_ | Add-Member -NotePropertyName ResourceName -NotePropertyValue $_.StorageAccountName -ErrorAction SilentlyContinue
+        }
+    
+        # Apply resource or resource group exclusion logic
+    
+        $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
+        $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext)    
+    }
+
+    Write-Host "Total excluded storage account from remediation:" [$($totalStorageAccount - ($resourceContext | Measure-Object).Count)]
+    Write-Host "Total storage account to remediate: [$(($resourceContext | Measure-Object).Count)]"
+    
     switch ($RemediationType)
     {
         "DisableAllowBlobPublicAccessOnStorage"
@@ -258,7 +289,6 @@ function Remove-AnonymousAccessOnContainers
                 $totalStgWithEnableAllowBlobPublicAccess = ($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count
                 $totalStgWithDisableAllowBlobPublicAccess = ($stgWithDisableAllowBlobPublicAccess | Measure-Object).Count
     
-                Write-Host "Total storage account: [$($totalStorageAccount)]"
                 Write-Host "Storage account with enabled 'Allow Blob Public Access': [$($totalStgWithEnableAllowBlobPublicAccess)]"
                 Write-Host "Storage account with disabled 'Allow Blob Public Access': [$($totalStgWithDisableAllowBlobPublicAccess)]"
                 Write-Host "`n"
@@ -306,7 +336,6 @@ function Remove-AnonymousAccessOnContainers
         }
         "DisableAnonymousAccessOnContainers" 
         {
-            Write-Host "Found [$($totalStorageAccount)] storage account(s)..."
             Write-Host "`n"
             Write-Host "Warning: Selected remediation type will disable anonymous access for specific containers, provided in input json file." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "`n"
