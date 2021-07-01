@@ -89,7 +89,7 @@ function ExcludeSubscriptionFromMG
 }
 
 # $subList is fetched subscription list present under MG name (SubList fetched from step 3)
-$subListToRemdiate = ExcludeSubscriptionFromMG -subList $subList -subListToExclude $subListToExclude
+$subListToRemediate = ExcludeSubscriptionFromMG -subList $subList -subListToExclude $subListToExclude
 ```
 
 **4. Execute remediation script with MG subscription list**
@@ -110,7 +110,7 @@ Connect-AzAccount
 # Step 2: Execute script using MG subscription list
 
 # Note: Please perform discrete analysis before running remediation script using management groups.
-$subListToRemdiate | %{
+$subListToRemediate | %{
 Remove-AzTSInvalidAADAccounts -SubscriptionId $_.Name -PerformPreReqCheck: $true
 }
 
