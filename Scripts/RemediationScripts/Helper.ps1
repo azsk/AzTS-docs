@@ -53,13 +53,14 @@ class ResourceResolver
 		#First remove resource from the RGs specified in -ExcludeResourceGroupNames
 		if(($this.ExcludeResourceGroupNames | Measure-Object).Count )
 		{
+			$nonExistingRGS = @()
 			$matchingRGs= $this.ExcludeResourceGroupNames | Where-Object{$_ -in $Resources.ResourceGroupName}
-			$nonExistingRGS = $this.ExcludeResourceGroupNames | Where-Object{$_ -notin $matchingRGs}
+			$nonExistingRGS += $this.ExcludeResourceGroupNames | Where-Object{$_ -notin $matchingRGs}
 			if(($nonExistingRGS| Measure-Object).Count -gt 0)
 			{
 				#print the message saying these RGS provided in excludeRGS are not found
-				Write-Host "`nWarning: Did not find following resource groups requested for exclusion:	`n" -ForegroundColor Yellow
-				Write-Host $($nonExistingRGS -join ",")
+				Write-Host "Warning: Did not find following resource groups requested for exclusion:" -ForegroundColor Yellow
+				Write-Host $($nonExistingRGS -join ", ")
 				Write-Host `n
 			}
 
@@ -86,13 +87,14 @@ class ResourceResolver
 		if(($this.ExcludeResourceNames | Measure-Object).Count)
 		{
 			# check if resources specified in -xrns exist. If not then show a warning for those resources.
+			$NonExistingResource = @()
 			$ResourcesToExclude =$this.ExcludeResourceNames
-			$NonExistingResource = $this.ExcludeResourceNames | Where-Object { $_ -notin $Resources.ResourceName}
+			$NonExistingResource += $this.ExcludeResourceNames | Where-Object { $_ -notin $Resources.ResourceName}
 			if(($NonExistingResource | Measure-Object).Count -gt 0 )
 			{
 				$ResourcesToExclude = $this.ExcludeResourceNames | Where-Object{ $_ -notin $NonExistingResource }
-				Write-Host "`nWarning: Did not find the following resources requested for exclusion: `n" -ForegroundColor Yellow
-				Write-Host $(($NonExistingResource) -join ",")
+				Write-Host "Warning: Did not find the following resources requested for exclusion:" -ForegroundColor Yellow
+				Write-Host $(($NonExistingResource) -join ", ")
 				Write-Host `n
 			}	
 			

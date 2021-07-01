@@ -51,14 +51,14 @@ $subList = GetSubscriptionFromMG $managementGroupName
 # Enter comma seperated subscriptionId to exclude from MG
 $subListToExclude = '<Enter comma seperated subscriptionId to exclude from MG>'
 
-# $subList is fetched subscription list present under MG name (SubList fetched from step 3)
-$subListToRemdiate = ExcludeSubscriptionFromMG -subList $subList -subListToExclude $subListToExclude
+# Array to store subscription list to remediate.
+$subListToRemediate = @()
 
-function ExcludeSubscriptionFromMG()
+function ExcludeSubscriptionFromMG
 {
     param (
         [PSObject]
-        [Parameter(Mandatory = $true, HelpMessage="")]
+        [Parameter(Mandatory = $true, HelpMessage="Enter subscription list fetched from MG")]
         $subList,
 
         [string]
@@ -88,6 +88,8 @@ function ExcludeSubscriptionFromMG()
     return ($subList)
 }
 
+# $subList is fetched subscription list present under MG name (SubList fetched from step 3)
+$subListToRemdiate = ExcludeSubscriptionFromMG -subList $subList -subListToExclude $subListToExclude
 ```
 
 **4. Execute remediation script with MG subscription list**
