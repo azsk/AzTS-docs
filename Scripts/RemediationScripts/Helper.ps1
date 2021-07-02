@@ -123,7 +123,7 @@ class ResourceResolver
         Write-Host "Remediation summary: $($path)" -ForegroundColor Cyan
         if(Test-Path $path)
         {
-			$path = "$($path)\RemediationSummary.txt"
+			$path = "$($path)\RemediationLog.txt"
             Add-Content -Value $printMessage -Path $path
         }
     }

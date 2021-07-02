@@ -316,18 +316,20 @@ function Remove-AnonymousAccessOnContainers
                 {
                     # Creating the log file
                     
-                    Write-Host "Taking backup of storage account with enabled 'Allow Blob Public Access'. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Backing up config of storage accounts with enabled 'Allow Blob Public Access'. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
-                    Write-Host "Path: $($folderpath)\DisabledAllowBlobPublicAccess.json"     
+                    Write-Host "Please do not delete this file: " -ForegroundColor Yellow -NoNewline
+                    Write-Host "$($folderpath)\DisabledAllowBlobPublicAccess.json"     
                     Write-Host "`n"
                     Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s) from Subscription [$($SubscriptionId)]..."
+                    $stgWithEnableAllowBlobPublicAccess = $stgWithEnableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
                         {
                             $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false
                             if($output -ne $null)
                             {
-                                Write-Host "Disabled 'Allow Blob Public Access' of [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                                $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
                             }
                             else
                             {
@@ -366,6 +368,7 @@ function Remove-AnonymousAccessOnContainers
             {
                 $ContainersWithAnonymousAccessOnStorage = @();
                 $ContainersWithDisableAnonymousAccessOnStorage = @();
+                $resourceContext = $resourceContext | Sort-Object -Property "ResourceGroupName"
                 $resourceContext | ForEach-Object{
                     $flag = $true
                     $allContainers = @();
@@ -404,7 +407,7 @@ function Remove-AnonymousAccessOnContainers
                             # If successfully removed anonymous access from storage account's containers.
                             if($flag)
                             {
-                                Write-Host "Anonymous access has been disabled on containers of storage account [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update); 
+                                $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
                                 $item =  New-Object psobject -Property @{  
                                         SubscriptionId = $SubscriptionId
                                         ResourceGroupName = $_.ResourceGroupName
@@ -451,9 +454,10 @@ function Remove-AnonymousAccessOnContainers
             # Creating the log file
             if(($ContainersWithDisableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
             {
-                Write-Host "Taking backup of storage account details for Subscription: [$($SubscriptionId)] on which remediation is successfully performed. Please do not delete this file. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Backing up config of storage accounts details for Subscription: [$($SubscriptionId)] on which remediation is successfully performed. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                 $ContainersWithDisableAnonymousAccessOnStorage | ConvertTo-Json -Depth 10| Out-File "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
-                Write-Host "Path: $($folderPath)\ContainersWithDisableAnonymousAccess.json"
+                Write-Host "Please do not delete this file: " -ForegroundColor Yellow -NoNewline                
+                Write-Host "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
                 Write-Host $([Constants]::DoubleDashLine)
             }
 
@@ -474,6 +478,7 @@ function Remove-AnonymousAccessOnContainers
     }
     $resourceSummary += [Constants]::DoubleDashLine
     [ResourceResolver]::ExclusionSummary($resourceSummary, $folderPath)
+    # $resourceResolver.ExclusionSummary($resourceSummary, $folderPath)
 }
 
 # Script to rollback changes done by remediation script
@@ -579,8 +584,15 @@ function Set-AnonymousAccessOnContainers
                     $remediatedResourceLog | ForEach-Object {
                         try
                         {
-                            Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -StorageAccountName $_.StorageAccountName -AllowBlobPublicAccess $true | Out-Null
-                            Write-Host "Successfully performed rollback opeartion: Enabled 'Allow Blob Public Access' on storage account [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -StorageAccountName $_.StorageAccountName -AllowBlobPublicAccess $true
+                            if($output -ne $null)
+                            {
+                                $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}    
+                            }
+                            else
+                            {
+                                Write-Host "Skipping to enable 'Allow Blob Public Access' due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
+                            }
                         }
                         catch
                         {
