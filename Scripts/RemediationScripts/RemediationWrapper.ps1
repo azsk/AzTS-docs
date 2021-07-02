@@ -12,13 +12,14 @@
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
         $uniqueControls = $JsonContent.UniqueControlList
-	    # Write-Host "SubscriptionId is $($SubscriptionId)"
+	    #Write-Host "Remediating the Subscription : $($SubscriptionId)"
         foreach ($uniqueControl in $uniqueControls){
             
             # Write-Host "URL is $($uniqueControl.url)"
             # if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
             #     Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
             # }
+            #Write-Host "Remediating the control : $($uniqueControl.controlId)"
             . ("./"+$uniqueControl.file_name)
             $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + $SubscriptionId + ".json" + "`'" 
             # Write-Host "Command is $($commandString)"

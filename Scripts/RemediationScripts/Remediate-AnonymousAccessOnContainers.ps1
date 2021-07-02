@@ -302,6 +302,29 @@ function Remove-AnonymousAccessOnContainers
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
                     Write-Host "Path: $($folderpath)\DisabledAllowBlobPublicAccess.json"     
                     Write-Host "`n"
+                    
+                    #-------------------------------------------------------------------------------
+                    # Creating tracker file if doesn't exist
+                    $trackerFilePath = "tracker_" + $SubscriptionId +".json"
+                    if (-not(Test-Path -Path $trackerFilePath -PathType Leaf)) {
+                            try {
+                                $null = New-Item -ItemType File -Path $trackerFilePath -Force -ErrorAction Stop
+                                $JsonHashTable = @{}
+                                $JsonHashTable.Add("SubscriptionId",$SubscriptionId)
+                                $list = New-Object System.Collections.ArrayList
+                                $JsonHashTable.Add("UniqueControlList",$list)
+                                
+                                $JsonHashTable | ConvertTo-json -depth 100  | Out-File $trackerFilePath
+                            }
+                            catch {
+                                throw $_.Exception.Message
+                            }
+                    }
+                    
+                    $tracker =  Get-content -Raw -path $trackerFilePath | ConvertFrom-Json 
+
+                    #-------------------------------------------------------------------------------
+                    
                     Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s) from Subscription [$($SubscriptionId)]..."
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
@@ -309,6 +332,35 @@ function Remove-AnonymousAccessOnContainers
                             # Write-Host " Resource Group Name  is  [$($_.ResourceGroupName)]. Resource Name is [$($_.StorageAccountName)]. Count is [$(($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count)]"
                             Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false | Out-Null
                             Write-Host "Disabled 'Allow Blob Public Access' of [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                            
+                            # creating tracker information for resource----------------------------------------------
+                            
+                            $resourceTrackDetail =@{}
+                            $resourceTrackDetail.Add("ResourceGroupName",$_.ResourceGroupName)
+                            $resourceTrackDetail.Add("ResourceName",$_.StorageAccountName)
+
+                            $found = $false
+
+                            Write-Host "controlIds is :$controlIds" 
+                            ForEach ($controlObj in $tracker.UniqueControlList)
+                            {
+                                if ($controlObj.controlId -eq $controlIds)
+                                {
+                                    controlObj.FailedResourceList+=($resourceTrackDetail)  
+                                    $found = $true
+                                }
+                            }
+                            if ($found -eq $false){
+                                $controlObj = @{}
+                                $controlObj.Add("controlId",$controlIds)
+                                $resourceList = New-Object System.Collections.ArrayList
+                                $resourceList+=($resourceTrackDetail)
+                                $controlObj.Add("FailedResourceList",$resourceList)
+                                $tracker.UniqueControlList+=($controlObj)
+                            }
+
+                            $tracker | ConvertTo-json -depth 100  | Out-File $trackerFilePath
+
                         }
                         catch
                         {
