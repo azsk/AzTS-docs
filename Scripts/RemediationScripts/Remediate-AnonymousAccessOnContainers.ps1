@@ -248,6 +248,16 @@ function Remove-AnonymousAccessOnContainers
     }
 
     Write-Host "Total storage account: [$($totalStorageAccount)]"
+    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    if (Test-Path -Path $folderPath)
+    {
+        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
+        New-Item -ItemType Directory -Path $folderPath | Out-Null
+    }
+    $resourceSummary = @()
+    $resourceSummary += "Input resources for remediation: $($totalStorageAccount)"
+    $resourceSummary += "$($resourceContext | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object -Property "ResourceGroupName" |Format-Table |Out-String)"
+            
     # Resource name is named as storage account name in fetched storage accounts, it need to renmae as ResourceName as required from comman helper class
     # Adding new ResourceName property and storageaccountname as property value
     # Exclude resource/resource group
@@ -260,9 +270,16 @@ function Remove-AnonymousAccessOnContainers
         # Apply resource or resource group exclusion logic
     
         $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
-        $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext)    
+        $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext) 
+        
+        if($resourceResolver.printMessage -ne $null)
+        {
+            $resourceSummary += $([Constants]::SingleDashLine)
+            $resourceSummary += "Excluded resource/resource group summary: "
+            $resourceSummary += $resourceResolver.printMessage
+        }   
     }
-
+    
     Write-Host "Total excluded storage account from remediation:" [$($totalStorageAccount - ($resourceContext | Measure-Object).Count)]
     Write-Host "Total storage account to remediate: [$(($resourceContext | Measure-Object).Count)]"
     
@@ -291,19 +308,14 @@ function Remove-AnonymousAccessOnContainers
     
                 Write-Host "Storage account with enabled 'Allow Blob Public Access': [$($totalStgWithEnableAllowBlobPublicAccess)]"
                 Write-Host "Storage account with disabled 'Allow Blob Public Access': [$($totalStgWithDisableAllowBlobPublicAccess)]"
+
                 Write-Host "`n"
 
                 # Start remediation storage account with 'Allow Blob Public Access' enabled.
                 if ($totalStgWithEnableAllowBlobPublicAccess -gt 0)
                 {
                     # Creating the log file
-                    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
-                    if (Test-Path -Path $folderPath)
-                    {
-                        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
-                        New-Item -ItemType Directory -Path $folderPath | Out-Null
-                    }
-    
+                    
                     Write-Host "Taking backup of storage account with enabled 'Allow Blob Public Access'. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
                     Write-Host "Path: $($folderpath)\DisabledAllowBlobPublicAccess.json"     
@@ -312,8 +324,15 @@ function Remove-AnonymousAccessOnContainers
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
                         {
-                            Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false | Out-Null
-                            Write-Host "Disabled 'Allow Blob Public Access' of [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false
+                            if($output -ne $null)
+                            {
+                                Write-Host "Disabled 'Allow Blob Public Access' of [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                            }
+                            else
+                            {
+                                Write-Host "Skipping to disable 'Allow Blob Public Access' due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
+                            }
                         }
                         catch
                         {
@@ -430,13 +449,6 @@ function Remove-AnonymousAccessOnContainers
             }
 
             # Creating the log file
-            $folderPath = [Environment]::GetFolderPath("MyDocuments") 
-            if (Test-Path -Path $folderPath)
-            {
-                $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
-                New-Item -ItemType Directory -Path $folderPath | Out-Null
-            }
-
             if(($ContainersWithDisableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
             {
                 Write-Host "Taking backup of storage account details for Subscription: [$($SubscriptionId)] on which remediation is successfully performed. Please do not delete this file. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
@@ -460,6 +472,8 @@ function Remove-AnonymousAccessOnContainers
             break;
         }
     }
+    $resourceSummary += [Constants]::DoubleDashLine
+    [ResourceResolver]::ExclusionSummary($resourceSummary, $folderPath)
 }
 
 # Script to rollback changes done by remediation script

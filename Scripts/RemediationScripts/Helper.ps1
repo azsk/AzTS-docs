@@ -5,6 +5,7 @@ class ResourceResolver
 	[string[]] $ExcludeResourceNames=@();
 	[PSObject] $ExcludedResources=@();
 	[string[]] $ExcludeResourceGroupNames=@();
+	[string[]] $printMessage=@();
 	
 	# Indicates to fetch all resource groups
 	ResourceResolver([string] $subscriptionId):
@@ -74,15 +75,24 @@ class ResourceResolver
 					{
 						$this.ExcludeResourceNames = $this.ExcludeResourceNames | Where-Object {$_ -notin $coincidingResources.ResourceName}
 						$this.ExcludedResources += $coincidingResources
+						$this.printMessage += "Number of resources excluded due to excluding resource groups: $(($coincidingResources | Measure-Object).Count)"
+						$this.printMessage += "$($coincidingResources | Select-Object -Property "ResourceGroupName", "ResourceName"| Sort-Object |Format-Table |Out-String)"
+						
 						$matchingRGs = $matchingRGs | Where-Object { $_ -notin $coincidingResources.ResourceGroupName }
 					}
 				}
 
 				# If no coinciding resource found the need to exclude given resource group name
 				$this.ExcludedResources += $Resources| Where-Object{$_.ResourceGroupName -in $matchingRGs}
+                $this.printMessage += "Number of resource group excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
+                $this.printMessage += "ResourceGroupName"
+                $this.printMessage += "-----------------"				
+                $this.printMessage += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
+                $this.printMessage += "`n"
 			}
 		}
 		
+		$ExcludedRes = @();
 		#Remove resources specified in -ExcludeResourceNames
 		if(($this.ExcludeResourceNames | Measure-Object).Count)
 		{
@@ -98,10 +108,23 @@ class ResourceResolver
 				Write-Host `n
 			}	
 			
+			$ExcludedRes = $Resources | Where-Object{$_.ResourceName -in $ResourcesToExclude}
+			$this.printMessage += "Number of resources excluded explicitly: $(($ExcludedRes | Measure-Object).Count)"
+			$this.printMessage += "$($ExcludedRes | Select-Object -Property "ResourceGroupName", "ResourceName"| Sort-Object |Format-Table |Out-String)"
 			$this.ExcludedResources += $Resources | Where-Object{$_.ResourceName -in $ResourcesToExclude}
 		}
-			
+		
 		$ResourcesToRemediate = $Resources | Where-Object {$_ -notin $this.ExcludedResources}
 		return $ResourcesToRemediate
 	}
+
+    [void] static ExclusionSummary([PSObject] $printMessage, [string] $path)
+    {
+        Write-Host "Remediation summary: $($path)" -ForegroundColor Cyan
+        if(Test-Path $path)
+        {
+			$path = "$($path)\RemediationSummary.txt"
+            Add-Content -Value $printMessage -Path $path
+        }
+    }
 }
