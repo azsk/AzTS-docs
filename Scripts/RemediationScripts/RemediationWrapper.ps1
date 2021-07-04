@@ -36,4 +36,35 @@
             runCommand($commandString)
         }
     }
+
+    # display summary
+
+    $summaryTable = @()
+    foreach ($fname in $files) {
+        $failedSubsContent =  Get-content -path $fname | ConvertFrom-Json
+        $SubscriptionId = $failedSubsContent.SubscriptionId
+
+        $trackerPath = "TrackerFilesGenerated\tracker_"+ $SubscriptionId +".Json"
+        $trackerSubsContent =  Get-content -path $trackerPath | ConvertFrom-Json
+
+        
+        $failedUniqueControls = $failedSubsContent.UniqueControlList
+        $trackerUniqueControls = $trackerSubsContent.UniqueControlList
+
+        $countFailedControls = $failedUniqueControls.Count
+        $countTrackControls = $trackerUniqueControls.Count
+
+        $countFailedResources = 0
+        $countRemediatedResources = 0
+        
+        foreach ($uniqueControl in $failedUniqueControls){
+            $countFailedResources = $countFailedResources + $uniqueControl.FailedResourceList.Count
+        }
+        foreach ($uniqueControl in $trackerUniqueControls){
+            $countRemediatedResources = $countRemediatedResources + $uniqueControl.FailedResourceList.Count
+        }
+        $summaryTable += [pscustomobject]@{SubscriptionId = $SubscriptionId; FailedControls = $countFailedControls; RemediatedControls = $countTrackControls; FailedResources = $countFailedResources; RemediatedResources = $countRemediatedResources}
+    }
+
+    $summaryTable | Format-Table
 # }
