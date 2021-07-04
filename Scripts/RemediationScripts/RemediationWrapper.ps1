@@ -38,7 +38,9 @@
     }
 
     # display summary
-
+    Write-Host 
+    Write-Host 
+    Write-Host "REMEDIATION SUMMARY" 
     $summaryTable = @()
     foreach ($fname in $files) {
         $failedSubsContent =  Get-content -path $fname | ConvertFrom-Json
