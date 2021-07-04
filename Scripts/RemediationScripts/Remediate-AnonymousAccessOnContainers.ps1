@@ -329,7 +329,7 @@ function Remove-AnonymousAccessOnContainers
                         try
                         {
                             # Write-Host " Resource Group Name  is  [$($_.ResourceGroupName)]. Resource Name is [$($_.StorageAccountName)]. Count is [$(($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count)]"
-                            Write-Host "        Remediating this resource: Resource Group Name - " + $_.ResourceGroupName + " Resource Name - " +  $_.StorageAccountName
+                            Write-Host "        Remediating this resource: Resource Group Name - " $_.ResourceGroupName + " Resource Name - " $_.StorageAccountName
                             Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false | Out-Null
                             # Write-Host "Disabled 'Allow Blob Public Access' of [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
                             

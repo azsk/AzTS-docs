@@ -16,7 +16,7 @@
         $SubscriptionId = $JsonContent.SubscriptionId
         $uniqueControls = $JsonContent.UniqueControlList
         $countstr = [string]$count
-        $str =  "Remediating this Subscription : $($SubscriptionId)  " + $count + "/" + $totalCount
+        $str =  "Remediating this Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
 	    Write-Host $str
         foreach ($uniqueControl in $uniqueControls){
             
@@ -24,7 +24,7 @@
             # if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
             #     Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
             # }
-            Write-Host "    Remediating the control : $($uniqueControl.controlId)"
+            Write-Host "    Remediating this control : $($uniqueControl.controlId)"
             # Write-Host "Filename is $($uniqueControl.file_name)"
             . ("./" + "RemediationScripts\" + $uniqueControl.file_name)
             $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
