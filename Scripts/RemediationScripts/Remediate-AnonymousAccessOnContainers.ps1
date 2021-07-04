@@ -305,7 +305,7 @@ function Remove-AnonymousAccessOnContainers
                     
                     #-------------------------------------------------------------------------------
                     # Creating tracker file if doesn't exist
-                    $trackerFilePath = "tracker_" + $SubscriptionId +".json"
+                    $trackerFilePath = "TrackerFilesGenerated\tracker_" + $SubscriptionId +".json"
                     if (-not(Test-Path -Path $trackerFilePath -PathType Leaf)) {
                             try {
                                 $null = New-Item -ItemType File -Path $trackerFilePath -Force -ErrorAction Stop
@@ -313,7 +313,6 @@ function Remove-AnonymousAccessOnContainers
                                 $JsonHashTable.Add("SubscriptionId",$SubscriptionId)
                                 $list = New-Object System.Collections.ArrayList
                                 $JsonHashTable.Add("UniqueControlList",$list)
-                                
                                 $JsonHashTable | ConvertTo-json -depth 100  | Out-File $trackerFilePath
                             }
                             catch {

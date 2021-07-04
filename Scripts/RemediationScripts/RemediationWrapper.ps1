@@ -4,8 +4,8 @@
 # {
     # PARAMETER FailedControlsPath
     # Json file path which contain failed controls detail to remediate.
-    Connect-AzAccount
-    $files = @(Get-ChildItem *.json)
+    # Connect-AzAccount
+    $files = @(Get-ChildItem FailedControls\*.json)
     #$currentLocation = Get-Location
     foreach ($file in $files) {
         #Write-Host "Filename is [$($file)]" 
