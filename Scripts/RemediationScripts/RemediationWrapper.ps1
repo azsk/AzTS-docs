@@ -7,12 +7,17 @@
     # Connect-AzAccount
     $files = @(Get-ChildItem FailedControls\*.json)
     #$currentLocation = Get-Location
+    $count = 0
+    [string]$totalCount = $files.Length
     foreach ($file in $files) {
+        $count = $count + 1
         #Write-Host "Filename is [$($file)]" 
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
         $uniqueControls = $JsonContent.UniqueControlList
-	    #Write-Host "Remediating the Subscription : $($SubscriptionId)"
+        $countstr = [string]$count
+        $str =  "Remediating this Subscription : $($SubscriptionId)  " + $count + "/" + $totalCount
+	    Write-Host $str
         foreach ($uniqueControl in $uniqueControls){
             
             # Write-Host "URL is $($uniqueControl.url)"
@@ -20,8 +25,9 @@
             #     Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
             # }
             #Write-Host "Remediating the control : $($uniqueControl.controlId)"
-            . ("./"+$uniqueControl.file_name)
-            $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + $SubscriptionId + ".json" + "`'" 
+            # Write-Host "Filename is $($uniqueControl.file_name)"
+            . ("./" + "RemediationScripts\" + $uniqueControl.file_name)
+            $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
             # Write-Host "Command is $($commandString)"
             function runCommand($command) {
                 if ($command[0] -eq '"') { Invoke-Expression "& $command" }
