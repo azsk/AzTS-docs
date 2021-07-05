@@ -341,12 +341,11 @@ function Remove-AnonymousAccessOnContainers
 
                             $found = $false
 
-                            # Write-Host "controlIds is :$controlIds" 
                             ForEach ($controlObj in $tracker.UniqueControlList)
                             {
                                 if ($controlObj.controlId -eq $controlIds)
                                 {
-                                    controlObj.FailedResourceList+=($resourceTrackDetail)  
+                                    $controlObj.FailedResourceList+=($resourceTrackDetail)  
                                     $found = $true
                                 }
                             }
