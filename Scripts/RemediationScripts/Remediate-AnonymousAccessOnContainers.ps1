@@ -29,11 +29,11 @@ ControlId:
     Examples:
         1. Run below command to remove anonymous access from all storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' -ExcludeResourceGroupNames <Comma separated resource group name to exclude from remediation>
 
         2. Run below command to remove anonymous access from given storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>'
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>' -ExcludeResourceGroupNames <Comma separated resource group name to exclude from remediation>
 
     Note: 
         To rollback changes made by remediation script, execute below command
@@ -281,7 +281,7 @@ function Remove-AnonymousAccessOnContainers
     }
     
     Write-Host "Total excluded storage account from remediation:" [$($totalStorageAccount - ($resourceContext | Measure-Object).Count)]
-    Write-Host "Total storage account to remediate: [$(($resourceContext | Measure-Object).Count)]"
+    Write-Host "Checking config of storage account for remediation: [$(($resourceContext | Measure-Object).Count)]"
     
     switch ($RemediationType)
     {
@@ -477,8 +477,7 @@ function Remove-AnonymousAccessOnContainers
         }
     }
     $resourceSummary += [Constants]::DoubleDashLine
-    [ResourceResolver]::ExclusionSummary($resourceSummary, $folderPath)
-    # $resourceResolver.ExclusionSummary($resourceSummary, $folderPath)
+    [ResourceResolver]::RemediationSummary($resourceSummary, $folderPath)
 }
 
 # Script to rollback changes done by remediation script
@@ -718,13 +717,4 @@ class Constants
     static [string] $SingleDashLine    = "--------------------------------------------------------------------------------"
 }
 
-<#
 # ***************************************************** #
-
-# Function calling with parameters for remediation.
-Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>'
-
-# Function calling with parameters to rollback remediation changes.
-Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType '<EnableAnonymousAccessOnContainers>, <EnableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing Remediated log>'
-
-#>
