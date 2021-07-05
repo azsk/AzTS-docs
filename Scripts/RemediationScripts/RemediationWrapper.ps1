@@ -16,15 +16,16 @@
         $SubscriptionId = $JsonContent.SubscriptionId
         $uniqueControls = $JsonContent.UniqueControlList
         $countstr = [string]$count
-        $str =  "Remediating this Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
-	    Write-Host $str
+        $str =  "Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
+	    Write-Host
+        Write-Host $str -ForegroundColor $([Constants]::MessageType.Warning)
         foreach ($uniqueControl in $uniqueControls){
             
             # Write-Host "URL is $($uniqueControl.url)"
             # if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
             #     Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
             # }
-            Write-Host "    Remediating this control : $($uniqueControl.controlId)"
+            #Write-Host "    Control : $($uniqueControl.controlId)"
             # Write-Host "Filename is $($uniqueControl.file_name)"
             . ("./" + "RemediationScripts\" + $uniqueControl.file_name)
             $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
@@ -40,7 +41,12 @@
     # display summary
     Write-Host 
     Write-Host 
-    Write-Host "REMEDIATION SUMMARY" 
+    Set-PSReadLineOption -Colors @{
+        "Parameter"="#ff81f7"
+        "Command"="Blue"
+        "Error"=[ConsoleColor]::DarkRed
+    }
+    Write-Host "REMEDIATION SUMMARY"   -ForegroundColor $([Constants]::MessageType.Update)
     $summaryTable = @()
     foreach ($fname in $files) {
         $failedSubsContent =  Get-content -path $fname | ConvertFrom-Json
@@ -53,20 +59,34 @@
         $failedUniqueControls = $failedSubsContent.UniqueControlList
         $trackerUniqueControls = $trackerSubsContent.UniqueControlList
 
-        $countFailedControls = $failedUniqueControls.Count
-        $countTrackControls = $trackerUniqueControls.Count
-
-        $countFailedResources = 0
-        $countRemediatedResources = 0
+        foreach ($controlObj in $failedUniqueControls)
+        {
+            foreach ($trackerControlObj in $trackerUniqueControls)
+            {
+                if ($controlObj.controlId -eq $trackerControlObj.controlId)
+                {
+                    $countFailedResources = $controlObj.FailedResourceList.Count
+                    $countRemediatedResources = $trackerControlObj.FailedResourceList.Count
+                    $summaryTable += [pscustomobject]@{SubscriptionId = $SubscriptionId; ControlId = $controlObj.controlId; FailedResources = $countFailedResources; RemediatedResources = $countRemediatedResources}
+                }
+            }
+        }
+       
         
-        foreach ($uniqueControl in $failedUniqueControls){
-            $countFailedResources = $countFailedResources + $uniqueControl.FailedResourceList.Count
-        }
-        foreach ($uniqueControl in $trackerUniqueControls){
-            $countRemediatedResources = $countRemediatedResources + $uniqueControl.FailedResourceList.Count
-        }
-        $summaryTable += [pscustomobject]@{SubscriptionId = $SubscriptionId; FailedControls = $countFailedControls; RemediatedControls = $countTrackControls; FailedResources = $countFailedResources; RemediatedResources = $countRemediatedResources}
     }
 
     $summaryTable | Format-Table
 # }
+class Constants
+{
+    static [Hashtable] $MessageType = @{
+        Error = [System.ConsoleColor]::Red
+        Warning = [System.ConsoleColor]::Yellow
+        Info = [System.ConsoleColor]::Cyan
+        Update = [System.ConsoleColor]::Green
+	    Default = [System.ConsoleColor]::White
+    }
+
+    static [string] $DoubleDashLine    = "================================================================================"
+    static [string] $SingleDashLine    = "--------------------------------------------------------------------------------"
+}
