@@ -48,8 +48,8 @@ $subList = GetSubscriptionFromMG $managementGroupName
 
 **3. (Optional) Exclude subscription from remediation**
 ``` PowerShell
-# Enter comma seperated subscriptionId to exclude from MG
-$subListToExclude = '<Enter comma seperated subscriptionId to exclude from MG>'
+# Enter comma separated subscriptionId to be exclude from MG
+$subListToExclude = '<Enter comma separated subscriptionId to be exclude from MG>'
 
 # Array to store subscription list to remediate.
 $subListToRemediate = @()
@@ -62,7 +62,7 @@ function ExcludeSubscriptionFromMG
         $subList,
 
         [string]
-        [Parameter(Mandatory = $true, HelpMessage="Comma separated subscriptionId which need to exclude from remediation")]
+        [Parameter(Mandatory = $true, HelpMessage="Comma separated subscriptionId which need to be exclude from remediation")]
         $subListToExclude
     )
 
@@ -81,7 +81,7 @@ function ExcludeSubscriptionFromMG
             if(($NonExistingSubId | Measure-Object).Count -gt 0 )
 			{
 				Write-Host "Warning: Did not find the following subscriptionId in given MG name for exclusion:" -ForegroundColor Yellow
-				Write-Host $(($NonExistingSubId) -join ",")
+				Write-Host $(($NonExistingSubId) -join ", ")
 			}	
         }
 	}

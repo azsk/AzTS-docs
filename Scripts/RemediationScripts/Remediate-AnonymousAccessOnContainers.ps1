@@ -29,11 +29,11 @@ ControlId:
     Examples:
         1. Run below command to remove anonymous access from all storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' -ExcludeResourceGroupNames <Comma separated resource group name to exclude from remediation>
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' -ExcludeResourceGroupNames <Comma separated resource group name to be exclude from remediation>
 
         2. Run below command to remove anonymous access from given storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>' -ExcludeResourceGroupNames <Comma separated resource group name to exclude from remediation>
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>' -ExcludeResourceGroupNames <Comma separated resource group name to be exclude from remediation>
 
     Note: 
         To rollback changes made by remediation script, execute below command
@@ -55,35 +55,35 @@ function Pre_requisites
     This command would check pre requisities modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Account, Az.Resources, Az.Storage" -ForegroundColor Cyan
+    Write-Host "Required modules are: Az.Account, Az.Resources, Az.Storage" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking for required modules..."
     $availableModules = $(Get-Module -ListAvailable Az.Resources, Az.Accounts,Az.Storage)
     
     # Checking if 'Az.Accounts' module is available or not.
     if($availableModules.Name -notcontains 'Az.Accounts')
     {
-        Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
+        Write-Host "Installing module Az.Accounts..." -ForegroundColor $([Constants]::MessageType.Warning)
         Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
-        Write-Host "Az.Accounts module is available." -ForegroundColor Green
+        Write-Host "Az.Accounts module is available." -ForegroundColor $([Constants]::MessageType.Update)
     }
     
     # Checking if 'Az.Storage' module with required version is available or not.
     if($availableModules.Name -notcontains 'Az.Storage')
     {
-        Write-Host "Installing module Az.Storage..." -ForegroundColor Yellow
+        Write-Host "Installing module Az.Storage..." -ForegroundColor $([Constants]::MessageType.Warning)
         Install-Module -Name Az.Storage -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
-        Write-Host "Az.Storage module is available." -ForegroundColor Green
+        Write-Host "Az.Storage module is available." -ForegroundColor $([Constants]::MessageType.Update)
         $currentModule = $availableModules | Where-Object { $_.Name -eq "Az.Storage" }
         $currentModuleVersion = ($currentModule.Version  | measure -Maximum).Maximum -as [string]
         if([version]('{0}.{1}.{2}' -f $currentModuleVersion.split('.')) -lt [version]('{0}.{1}.{2}' -f "3.5.0".split('.')))
         {
-            Write-Host "Updating module Az.Storage..." -ForegroundColor Yellow
+            Write-Host "Updating module Az.Storage..." -ForegroundColor $([Constants]::MessageType.Update)
             Update-Module -Name "Az.Storage"
         }
     }
@@ -91,12 +91,12 @@ function Pre_requisites
     # Checking if 'Az.Resources' module is available or not.
     if($availableModules.Name -notcontains 'Az.Resources')
     {
-        Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
+        Write-Host "Installing module Az.Resources..." -ForegroundColor $([Constants]::MessageType.Warning)
         Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
-        Write-Host "Az.Resources module is available." -ForegroundColor Green
+        Write-Host "Az.Resources module is available." -ForegroundColor $([Constants]::MessageType.Update)
     }
 }
 
@@ -114,9 +114,9 @@ function Remove-AnonymousAccessOnContainers
     .PARAMETER Path
         Json file path which contain failed controls detail to remediate.
     .PARAMETER ExcludeResourceGroupNames
-        Resource group names which need to exclude from remediation.
+        Resource group names which need to be exclude from remediation.
     .PARAMETER ExcludeResourceNames
-        Resource name which need to exclude from remediation.
+        Resource name which need to be exclude from remediation.
     #>
 
     param (
@@ -134,18 +134,18 @@ function Remove-AnonymousAccessOnContainers
         $Path,
 
         [string]
-		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name to exclude from remediation")]
+		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name to be exclude from remediation")]
 		$ExcludeResourceGroupNames,
 
 		[string]
-		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource name to exclude from remediation")]
+		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource name to be exclude from remediation")]
 		$ExcludeResourceNames
     )
 
     if($RemediationType -eq "DisableAnonymousAccessOnContainers" -and [string]::IsNullOrWhiteSpace($Path))
     {
         Write-Host "`n"
-        Write-Host "Warning: Instead of disabling anonymous access on all containers of storage account, You can select to disable 'AllowBlobPublicAccess' at storage level." -ForegroundColor Yellow
+        Write-Host "Warning: Instead of disabling anonymous access on all containers of storage account, You can select to disable 'AllowBlobPublicAccess' at storage level." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Please execute same command with 'DisableAllowBlobPublicAccessOnStorage' remediation type parameter to disable anonymous access at storage level."
         Write-Host $([Constants]::DoubleDashLine)
         break; 
@@ -162,7 +162,7 @@ function Remove-AnonymousAccessOnContainers
     }
     catch 
     {
-        Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+        Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
         break
     }
     
@@ -258,7 +258,7 @@ function Remove-AnonymousAccessOnContainers
     $resourceSummary += "Input resources for remediation: $($totalStorageAccount)"
     $resourceSummary += "$($resourceContext | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object -Property "ResourceGroupName" |Format-Table |Out-String)"
             
-    # Resource name is named as storage account name in fetched storage accounts, it need to renmae as ResourceName as required from comman helper class
+    # Resource name is named as storage account name in fetched storage accounts, it need to rename as ResourceName as required from comman helper class
     # Adding new ResourceName property and storageaccountname as property value
     # Exclude resource/resource group
     if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
@@ -318,7 +318,7 @@ function Remove-AnonymousAccessOnContainers
                     
                     Write-Host "Backing up config of storage accounts with enabled 'Allow Blob Public Access'. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
-                    Write-Host "Please do not delete this file: " -ForegroundColor Yellow -NoNewline
+                    Write-Host "Please do not delete this file: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                     Write-Host "$($folderpath)\DisabledAllowBlobPublicAccess.json"     
                     Write-Host "`n"
                     Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s) from Subscription [$($SubscriptionId)]..."
@@ -456,7 +456,7 @@ function Remove-AnonymousAccessOnContainers
             {
                 Write-Host "Backing up config of storage accounts details for Subscription: [$($SubscriptionId)] on which remediation is successfully performed. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                 $ContainersWithDisableAnonymousAccessOnStorage | ConvertTo-Json -Depth 10| Out-File "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
-                Write-Host "Please do not delete this file: " -ForegroundColor Yellow -NoNewline                
+                Write-Host "Please do not delete this file: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline                
                 Write-Host "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
                 Write-Host $([Constants]::DoubleDashLine)
             }
@@ -532,7 +532,7 @@ function Set-AnonymousAccessOnContainers
     {       
         Write-Host "Connecting to AzAccount..."
         Connect-AzAccount -ErrorAction Stop
-        Write-Host "Connected to AzAccount" -ForegroundColor Green
+        Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
     }
 
     # Setting context for current subscription.
@@ -664,7 +664,7 @@ function Set-AnonymousAccessOnContainers
 
                                     if($flag)
                                     {
-                                        Write-Host "Successfully performed rollback opeartion: Anonymous access has been enabled on containers of storage [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)s;
+                                        Write-Host "Successfully performed rollback opeartion: Anonymous access has been enabled on containers of storage [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update);
                                     }
                                     else 
                                     {

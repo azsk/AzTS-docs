@@ -45,7 +45,7 @@ class ResourceResolver
 	hidden [PSObject] ApplyResourceFilter([PSobject] $Resources)
 	{	
 		#First remove resource from the RGs specified in -ExcludeResourceGroupNames
-		if(($this.ExcludeResourceGroupNames | Measure-Object).Count )
+		if(($this.ExcludeResourceGroupNames | Measure-Object).Count -gt 0)
 		{
 			$nonExistingRGS = @()
 			$matchingRGs= $this.ExcludeResourceGroupNames | Where-Object{$_ -in $Resources.ResourceGroupName}
@@ -53,7 +53,7 @@ class ResourceResolver
 			if(($nonExistingRGS| Measure-Object).Count -gt 0)
 			{
 				#print the message saying these RGS provided in excludeRGS are not found
-				Write-Host "Warning: Did not find following resource groups requested for exclusion:" -ForegroundColor Yellow
+				Write-Host "Warning: Did not find the following resource groups requested for exclusion:" -ForegroundColor Yellow
 				Write-Host $($nonExistingRGS -join ", ")
 				Write-Host `n
 			}
@@ -87,7 +87,7 @@ class ResourceResolver
 		
 		$ExcludedRes = @();
 		#Remove resources specified in -ExcludeResourceNames
-		if(($this.ExcludeResourceNames | Measure-Object).Count)
+		if(($this.ExcludeResourceNames | Measure-Object).Count -gt 0)
 		{
 			# Non existing resource found in -ExcludeResourceNames switch.
 			$NonExistingResource = @()
