@@ -23,7 +23,7 @@ Install-Module Az.Resources -Scope CurrentUser -AllowClobber -Repository PSGalle
 $managementGroupName = '<ManagementGroupName>'
 
 # Array to store subscription list present under management group.
-$subList= @()
+$subscriptionToRemediate= @()
 
 function GetSubscriptionFromMG ($managementGroupName)
 {
@@ -33,63 +33,60 @@ function GetSubscriptionFromMG ($managementGroupName)
 
     if($mgDescendant.Type -eq "/subscriptions")
     {
-        $subList += $mgDescendant
+        $subscriptionToRemediate += $mgDescendant
     }
     elseif ($mgDescendant.Type -eq "/providers/Microsoft.Management/managementGroups")
     {
         GetSubscriptionFromMG $mgDescendant.Name
     }
     }
-    return($subList)
+    return($subscriptionToRemediate)
 }
 
-$subList = GetSubscriptionFromMG $managementGroupName
+$subscriptionToRemediate = GetSubscriptionFromMG $managementGroupName
 ```
 
 **3. (Optional) Exclude subscription from remediation**
 ``` PowerShell
-# Enter comma separated subscriptionId to be exclude from MG
-$subListToExclude = '<Enter comma separated subscriptionId to be exclude from MG>'
-
-# Array to store subscription list to remediate.
-$subListToRemediate = @()
+# Enter comma separated subscriptionId to be excluded from MG
+$subscriptionToExclude = '<Enter comma separated subscription to be excluded from MG>'
 
 function ExcludeSubscriptionFromMG
 {
     param (
         [PSObject]
         [Parameter(Mandatory = $true, HelpMessage="Enter subscription list fetched from MG")]
-        $subList,
+        $subscriptions,
 
         [string]
-        [Parameter(Mandatory = $true, HelpMessage="Comma separated subscriptionId which need to be exclude from remediation")]
-        $subListToExclude
+        [Parameter(Mandatory = $true, HelpMessage="Comma separated subscription which need to be excluded from remediation")]
+        $subscriptionToExclude
     )
 
-    $SubIdToExclude = @();
-	if(-not [string]::IsNullOrWhiteSpace($subListToExclude))
+    $subToExclude = @();
+	if(-not [string]::IsNullOrWhiteSpace($subscriptionToExclude))
 	{
-		$SubIdToExclude += $subListToExclude.Split(',', [StringSplitOptions]::RemoveEmptyEntries) | 
+		$subToExclude += $subscriptionToExclude.Split(',', [StringSplitOptions]::RemoveEmptyEntries) | 
 						Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
 						ForEach-Object { $_.Trim() } |
 						Select-Object -Unique;
             
-        if(($SubIdToExclude |Measure-Object).Count -gt 0)
+        if(($subToExclude |Measure-Object).Count -gt 0)
         {
-            $NonExistingSubId = $SubIdToExclude | Where-Object { $_ -notin $subList.Name }
-            $subList = $subList | Where-Object { $_.Name -notin $SubIdToExclude }   
-            if(($NonExistingSubId | Measure-Object).Count -gt 0 )
+            $SubscriptionNotPresent = $subToExclude | Where-Object { $_ -notin $subscriptions.Name }
+            $subscriptions = $subscriptions | Where-Object { $_.Name -notin $subToExclude }   
+            if(($SubscriptionNotPresent | Measure-Object).Count -gt 0 )
 			{
-				Write-Host "Warning: Did not find the following subscriptionId in given MG name for exclusion:" -ForegroundColor Yellow
-				Write-Host $(($NonExistingSubId) -join ", ")
+				Write-Host "Warning: Following subscription not found in given MG name for exclusion:" -ForegroundColor Yellow
+				Write-Host $(($SubscriptionNotPresent) -join ", ")
 			}	
         }
 	}
-    return ($subList)
+    return ($subscriptions)
 }
 
-# $subList is fetched subscription list present under MG name (SubList fetched from step 3)
-$subListToRemediate = ExcludeSubscriptionFromMG -subList $subList -subListToExclude $subListToExclude
+# $subscription is fetched subscription list present under MG name (subscription fetched from step 3)
+$subscriptionToRemediate = ExcludeSubscriptionFromMG -subscriptions $subscriptionToRemediate -subscriptionToExclude $subscriptionToExclude
 ```
 
 **4. Execute remediation script with MG subscription list**
@@ -110,7 +107,7 @@ Connect-AzAccount
 # Step 2: Execute script using MG subscription list
 
 # Note: Please perform discrete analysis before running remediation script using management groups.
-$subListToRemediate | %{
+$subscriptionToRemediate | %{
 Remove-AzTSInvalidAADAccounts -SubscriptionId $_.Name -PerformPreReqCheck: $true
 }
 

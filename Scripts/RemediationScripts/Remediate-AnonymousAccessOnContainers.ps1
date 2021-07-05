@@ -17,7 +17,7 @@ ControlId:
                           ----OR----
         b. For all storage account(s) present in subscription.
 
-    3. Taking backup of storage account(s) having anonymous access that are going to be remediate using remediation script.
+    3. Taking backup of storage account(s) having anonymous access that are going to be remediated using remediation script.
 
     4. Removing anonymous access from storage account(s) of subscription as per selected remediation type.
 
@@ -29,11 +29,11 @@ ControlId:
     Examples:
         1. Run below command to remove anonymous access from all storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' -ExcludeResourceGroupNames <Comma separated resource group name to be exclude from remediation>
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' -ExcludeResourceGroupNames <Comma separated resource group name to be excluded from remediation>
 
         2. Run below command to remove anonymous access from given storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>' -ExcludeResourceGroupNames <Comma separated resource group name to be exclude from remediation>
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>' -ExcludeResourceGroupNames <Comma separated resource group name to be excluded from remediation>
 
     Note: 
         To rollback changes made by remediation script, execute below command
@@ -114,9 +114,9 @@ function Remove-AnonymousAccessOnContainers
     .PARAMETER Path
         Json file path which contain failed controls detail to remediate.
     .PARAMETER ExcludeResourceGroupNames
-        Resource group names which need to be exclude from remediation.
+        Resource group names which need to be excluded from remediation.
     .PARAMETER ExcludeResourceNames
-        Resource name which need to be exclude from remediation.
+        Resource name which need to be excluded from remediation.
     #>
 
     param (
@@ -134,11 +134,11 @@ function Remove-AnonymousAccessOnContainers
         $Path,
 
         [string]
-		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name to be exclude from remediation")]
+		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name to be excluded from remediation")]
 		$ExcludeResourceGroupNames,
 
 		[string]
-		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource name to be exclude from remediation")]
+		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource name to be excluded from remediation")]
 		$ExcludeResourceNames
     )
 
@@ -272,11 +272,11 @@ function Remove-AnonymousAccessOnContainers
         $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
         $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext) 
         
-        if($resourceResolver.printMessage -ne $null)
+        if($resourceResolver.messageToPrint -ne $null)
         {
             $resourceSummary += $([Constants]::SingleDashLine)
             $resourceSummary += "Excluded resource/resource group summary: "
-            $resourceSummary += $resourceResolver.printMessage
+            $resourceSummary += $resourceResolver.messageToPrint
         }   
     }
     
@@ -316,7 +316,7 @@ function Remove-AnonymousAccessOnContainers
                 {
                     # Creating the log file
                     
-                    Write-Host "Backing up config of storage accounts with enabled 'Allow Blob Public Access'. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Backing up config of storage accounts with public access'. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
                     Write-Host "Please do not delete this file: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                     Write-Host "$($folderpath)\DisabledAllowBlobPublicAccess.json"     
@@ -333,12 +333,12 @@ function Remove-AnonymousAccessOnContainers
                             }
                             else
                             {
-                                Write-Host "Skipping to disable 'Allow Blob Public Access' due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
+                                Write-Host "Skipping remediation due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
                             }
                         }
                         catch
                         {
-                            Write-Host "Skipping to disable 'Allow Blob Public Access' due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Skipping to disable remediation due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                         }
                     }
                     Write-Host $([Constants]::DoubleDashLine)
@@ -590,12 +590,12 @@ function Set-AnonymousAccessOnContainers
                             }
                             else
                             {
-                                Write-Host "Skipping to enable 'Allow Blob Public Access' due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
+                                Write-Host "Skipping remediation due to insufficient access [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
                             }
                         }
                         catch
                         {
-                            Write-Host "Skipping to enable 'Allow Blob Public Access' due to insufficient access or exception occured [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Skipping remediation due to insufficient access or exception occured [Name]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                         }
                     }
                     Write-Host $([Constants]::DoubleDashLine)
