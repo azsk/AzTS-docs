@@ -680,3 +680,60 @@ This is probably happening because the user-assigned managed identity (internal 
 To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in the screenshot) --> Select the identity and click on 'Remove'.
 
 After deleting the identity, you can run the installation command again.
+
+<br> 
+
+#### **The AzTS subscription scan is getting terminated due to function timeout. How do I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
+
+AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three function apps which are as follows:
+1. AzSK-AzTS-MetadataAggregator-xxxxx
+2. AzSK-AzTS-WorkItemProcessor-xxxxx
+3. AzSK-AzTS-AutoUpdater-xxxxx
+
+These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
+
+In this case, we recommend upgrading to a Premium plan in which the run duration defaults to 30 minutes to prevent function timeout. In addition to this, you can modify the function timeout value using Function App Service configuration.
+
+Following are steps to upgrade pricing tier and change function timeout value.
+
+1. Edit **'AzTSDeploymentTemplate.json'** which is downloaded along with the installation script in [this step](README.md#step-3-of-6-download-and-extract-deployment-package).
+
+    1.a. Change 'defaultValue' of 'skuName' parameter to desired function app hosting plan id, for example, P1V2. You can read more about the hosting plans [here](https://azure.microsoft.com/en-in/pricing/details/app-service/windows/).
+
+    ![FAQ_UpdateFuncHostingPlan_In_ARMTemplate](../Images/01_TSS_FAQ_UpdateFuncHostingPlan_In_ARMTemplate.png)
+
+    1.b. Increase the function timeout value of the function app which is impacted using the setting `AzureFunctionsJobHost__functionTimeout`. In this example we are increasing the timeout value of 'AzSK-AzTS-WorkItemProcessor-xxxxx' to 1 hour.
+
+    ![FAQ_FuncTimeout_In_ARMTemplate](../Images/01_TSS_FAQ_FuncTimeout_In_ARMTemplate.png)
+    
+2. If not already logged in, use the following command to login to Azure using PowerShell.
+
+    ```PowerShell
+      # Clear existing login, if any
+
+      Disconnect-AzAccount
+
+      # Connect to AzureAD and AzAccount
+      # Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+
+      $TenantId = "<TenantId>"
+      Connect-AzAccount -Tenant $TenantId
+
+    ```
+3. Reload the setup script downloaded along with the installation script in [this step](README.md#step-3-of-6-download-and-extract-deployment-package).
+
+
+    ``` PowerShell
+    # Point current path to extracted folder location and load setup script from the deployment folder 
+
+    CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+    # Load AzTS Setup script in session
+    . ".\AzTSSetup.ps1"
+
+    # Note: Make sure you copy  '.' present at the start of the line.
+
+    ```
+
+4. Finally, run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) using the steps provided [here](README.md#step-6-of-6-run-setup-command).
+    
