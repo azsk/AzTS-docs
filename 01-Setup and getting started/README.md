@@ -700,7 +700,7 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 
     ![FAQ_UpdateFuncHostingPlan_In_ARMTemplate](../Images/01_TSS_FAQ_UpdateFuncHostingPlan_In_ARMTemplate.png)
 
-    1.b. Increase the function timeout value of the function app which is impacted using the setting `AzureFunctionsJobHost__functionTimeout`. In this example we are increasing the timeout value of 'AzSK-AzTS-WorkItemProcessor-xxxxx' to 1 hour.
+    1.b. Increase the function timeout value using the setting `AzureFunctionsJobHost__functionTimeout`. In this example we are increasing the timeout value of 'AzSK-AzTS-WorkItemProcessor-xxxxx' to 1 hour.
 
     ![FAQ_FuncTimeout_In_ARMTemplate](../Images/01_TSS_FAQ_FuncTimeout_In_ARMTemplate.png)
     
