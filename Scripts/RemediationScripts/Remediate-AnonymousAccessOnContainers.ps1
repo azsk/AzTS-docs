@@ -316,7 +316,7 @@ function Remove-AnonymousAccessOnContainers
                 {
                     # Creating the log file
                     
-                    Write-Host "Backing up config of storage accounts with public access'. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Backing up config of storage accounts details. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
                     Write-Host "Please do not delete this file: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                     Write-Host "$($folderpath)\DisabledAllowBlobPublicAccess.json"     
