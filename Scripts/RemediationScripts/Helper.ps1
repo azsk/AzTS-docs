@@ -54,7 +54,7 @@ class ResourceResolver
 			{
 				#print the message saying these RGS provided in excludeRGS are not found
 				Write-Host "Warning: Following resource groups requested for exclusion not found in subscription:" -ForegroundColor Yellow
-				Write-Host $($nonExistingRGS -join ", ")
+				Write-Host $nonExistingRGS
 				Write-Host `n
 			}
 
@@ -97,7 +97,7 @@ class ResourceResolver
 			{
 				$ResourcesToExclude = $this.ExcludeResourceNames | Where-Object{ $_ -notin $NonExistingResource }
 				Write-Host "Warning: Following resources requested for exclusion not found in subscription:" -ForegroundColor Yellow
-				Write-Host $(($NonExistingResource) -join ", ")
+				Write-Host $NonExistingResource
 				Write-Host `n
 			}	
 			
