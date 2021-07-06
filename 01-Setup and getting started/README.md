@@ -683,7 +683,7 @@ After deleting the identity, you can run the installation command again.
 
 <br> 
 
-#### **The AzTS subscription scan is getting terminated due to function timeout. How do I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
+#### **The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
 
 AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three function apps which are as follows:
 1. AzSK-AzTS-MetadataAggregator-xxxxx
