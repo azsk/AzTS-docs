@@ -690,15 +690,13 @@ AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three f
 2. AzSK-AzTS-WorkItemProcessor-xxxxx
 3. AzSK-AzTS-AutoUpdater-xxxxx
 
-These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
+These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about the hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
 
-In this case, we recommend upgrading to a Premium plan in which the run duration defaults to 30 minutes to prevent function timeout. In addition to this, you can modify the function timeout value using Function App Service configuration.
-
-Following are steps to upgrade pricing tier and change function timeout value.
+In this case, we recommend you to upgrade the Function app hosting plan (pricing tier) which will give you the flexibility to increase the function timeout value. Following steps will guide you on how to upgrade pricing tier and change function timeout value for AzTS setup.
 
 1. Edit **'AzTSDeploymentTemplate.json'** which is downloaded along with the installation script in [this step](README.md#step-3-of-6-download-and-extract-deployment-package).
 
-    1.a. Change 'defaultValue' of 'skuName' parameter to desired function app hosting plan id, for example, P1V2. You can read more about the hosting plans [here](https://azure.microsoft.com/en-in/pricing/details/app-service/windows/).
+    1.a. To update function app hosting plan or pricing tier, change the 'defaultValue' of 'skuName' parameter to the required plan, for example, EP3 (ref. screenshot below). You can read more about the pricing details [here](https://azure.microsoft.com/en-us/pricing/details/functions/).
 
     ![FAQ_UpdateFuncHostingPlan_In_ARMTemplate](../Images/01_TSS_FAQ_UpdateFuncHostingPlan_In_ARMTemplate.png)
 
