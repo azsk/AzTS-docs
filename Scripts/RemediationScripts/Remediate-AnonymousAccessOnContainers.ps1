@@ -1,16 +1,16 @@
 ﻿<##########################################
 
-# Overivew:
+# Overview:
     This script is used to remove anonymous access of storage account(s) containers that can lead to information disclosure.
 
 ControlId: 
     Azure_Storage_AuthN_Dont_Allow_Anonymous
 
-# Pre-requesites:
+# Pre-requisites:
     You will need atleast contributor role on storage account(s) of subscription.
 
 # Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+    1. Install and validate pre-requisites to run the script for subscription.
 
     2. Get anonymous access details of storage account(s).
         a. For given storage account(s) present in input json file.
@@ -29,11 +29,11 @@ ControlId:
     Examples:
         1. Run below command to remove anonymous access from all storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' -ExcludeResourceGroupNames <Comma separated resource group name to be excluded from remediation>
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' [-ExcludeResourceGroupNames <Comma separated resource group name to be excluded from remediation>] [-ExcludeResourceNames <Comma separated resource name to be excluded from remediation>]
 
         2. Run below command to remove anonymous access from given storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account(s) detail>' -ExcludeResourceGroupNames <Comma separated resource group name to be excluded from remediation>
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account(s) detail>' [-ExcludeResourceGroupNames <Comma separated resource group name to be excluded from remediation>] [-ExcludeResourceNames <Comma separated resource name to be excluded from remediation>]
 
     Note: 
         To rollback changes made by remediation script, execute below command
@@ -257,9 +257,9 @@ function Remove-AnonymousAccessOnContainers
     $resourceSummary = @()
     $resourceSummary += "Input resources for remediation: $($totalStorageAccount)"
     $resourceSummary += "$($resourceContext | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object -Property "ResourceGroupName" |Format-Table |Out-String)"
-            
-    # Resource name is named as storage account(s) name in fetched storage accounts, it need to rename as ResourceName as required from comman helper class
-    # Adding new ResourceName property and storageaccountname as property value
+        
+
+    # Adding property 'resourceName' which will contain storage account name and being used by common helper method
     # Exclude resource/resource group
     if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
     {

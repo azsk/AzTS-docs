@@ -60,17 +60,22 @@ class ResourceResolver
 
 			if(($matchingRGs| Measure-Object).Count -gt 0 )
 			{
-				# Check if given exclude resource name belongs from one of the given resource group name
+				# Check if given exclude resource name belongs in one of the given resource group name
 				if(($this.ExcludeResourceNames | Measure-Object).Count)
 				{
 					$coincidingResources = $Resources | Where-Object {$_.ResourceName -in $this.ExcludeResourceNames -and $_.ResourceGroupName -in $matchingRGs}
 					if(($coincidingResources| Measure-Object).Count -gt 0)
 					{
+						# Updating ExcludeResourceNames with non-coinciding resources
 						$this.ExcludeResourceNames = $this.ExcludeResourceNames | Where-Object {$_ -notin $coincidingResources.ResourceName}
+						
+						# Adding coinciding resources in ExcludedResources
+						# ExcludedResources contain list of resources which are requested to exclude
 						$this.ExcludedResources += $coincidingResources
 						$this.messageToPrint += "Number of resources excluded due to excluding resource groups: $(($coincidingResources | Measure-Object).Count)"
 						$this.messageToPrint += "$($coincidingResources | Select-Object -Property "ResourceGroupName", "ResourceName"| Sort-Object |Format-Table |Out-String)"
 						
+						# Updating matchingRGs with RGs of non-coinciding resources
 						$matchingRGs = $matchingRGs | Where-Object { $_ -notin $coincidingResources.ResourceGroupName }
 					}
 				}
@@ -89,9 +94,10 @@ class ResourceResolver
 		#Remove resources specified in -ExcludeResourceNames
 		if(($this.ExcludeResourceNames | Measure-Object).Count -gt 0)
 		{
-			# Non existing resource found in -ExcludeResourceNames switch.
 			$NonExistingResource = @()
 			$ResourcesToExclude =$this.ExcludeResourceNames
+			
+			# Checking ExcludeResourceNames are existing in subscription or not
 			$NonExistingResource += $this.ExcludeResourceNames | Where-Object { $_ -notin $Resources.ResourceName}
 			if(($NonExistingResource | Measure-Object).Count -gt 0 )
 			{
