@@ -693,18 +693,8 @@ AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three f
 These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about the hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
 
 In this case, we recommend you to upgrade the Function app hosting plan (pricing tier) which will give you the flexibility to increase the function timeout value. Following steps will guide you on how to upgrade pricing tier and change function timeout value for AzTS setup.
-
-1. Edit **'AzTSDeploymentTemplate.json'** which is downloaded along with the installation script in [this step](README.md#step-3-of-6-download-and-extract-deployment-package).
-
-    1.a. To update function app hosting plan or pricing tier, change the 'defaultValue' of 'skuName' parameter to the required plan, for example, EP3 (ref. screenshot below). You can read more about the pricing details [here](https://azure.microsoft.com/en-us/pricing/details/functions/).
-
-    ![FAQ_UpdateFuncHostingPlan_In_ARMTemplate](../Images/01_TSS_FAQ_UpdateFuncHostingPlan_In_ARMTemplate.png)
-
-    1.b. Increase the function timeout value using the setting `AzureFunctionsJobHost__functionTimeout`. In this example we are increasing the timeout value of 'AzSK-AzTS-WorkItemProcessor-xxxxx' to 1 hour.
-
-    ![FAQ_FuncTimeout_In_ARMTemplate](../Images/01_TSS_FAQ_FuncTimeout_In_ARMTemplate.png)
     
-2. If not already logged in, use the following command to login to Azure using PowerShell.
+1. Use `Update-AzFunctionAppPlan` cmdlet to update pricing tier. You can read more about the pricing details [here](https://azure.microsoft.com/en-us/pricing/details/functions/).
 
     ```PowerShell
       # Clear existing login, if any
@@ -717,21 +707,26 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
       $TenantId = "<TenantId>"
       Connect-AzAccount -Tenant $TenantId
 
+      # Install module, if not already installed
+      # Az.Functions >= 4.8.0
+
+      Install-Module -Name Az.Functions -AllowClobber -Scope CurrentUser -repository PSGallery
+
+      # Import module
+
+      Import-Module -Name Az.Functions
+
+      # Update app service pricing tier
+
+      # AppServicePlanName: Your Function App Service plan (in the Azure portal, go to the AzTS Host RG > select one of function apps, say 'AzSK-AzTS-WorkItemProcessor-xxxxx' > Under the Overview section, copy name of the 'App Service Plan'.)
+      # In this example, we are updating service plan to EP2.
+      
+      Update-AzFunctionAppPlan -ResourceGroupName <AzTSScanHostRG> `
+                                 -Name <AppServicePlanName> `
+                                 -Sku EP2
+
     ```
-3. Reload the setup script downloaded along with the installation script in [this step](README.md#step-3-of-6-download-and-extract-deployment-package).
 
+4. To increase the function timeout value, go your function app (say, 'AzSK-AzTS-WorkItemProcessor-xxxxx'), under Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
 
-    ``` PowerShell
-    # Point current path to extracted folder location and load setup script from the deployment folder 
-
-    CD "<LocalExtractedFolderPath>\DeploymentFiles"
-
-    # Load AzTS Setup script in session
-    . ".\AzTSSetup.ps1"
-
-    # Note: Make sure you copy  '.' present at the start of the line.
-
-    ```
-
-4. Finally, run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) using the steps provided [here](README.md#step-6-of-6-run-setup-command).
-    
+  > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
