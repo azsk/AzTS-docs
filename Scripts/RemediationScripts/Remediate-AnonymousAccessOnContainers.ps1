@@ -259,8 +259,7 @@ function Remove-AnonymousAccessOnContainers
     $resourceSummary += "$($resourceContext | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object -Property "ResourceGroupName" |Format-Table |Out-String)"
         
 
-    # Adding property 'resourceName' which will contain storage account name and being used by common helper method
-    # Exclude resource/resource group
+    # Adding property 'ResourceName' which will contain storage account name and being used by common helper method
     if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
     {
         $resourceContext | ForEach-Object {
