@@ -706,3 +706,52 @@ To update the telemetry prefrences, go to resource group where AzTS solution has
 
   - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
   - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+<br> 
+
+#### **The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
+
+AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three function apps which are as follows:
+1. AzSK-AzTS-MetadataAggregator-xxxxx
+2. AzSK-AzTS-WorkItemProcessor-xxxxx
+3. AzSK-AzTS-AutoUpdater-xxxxx
+
+These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about the hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
+
+In this case, we recommend you to upgrade the Function app hosting plan (pricing tier) which will give you the flexibility to increase the function timeout value. Following steps will guide you on how to upgrade pricing tier and change function timeout value for AzTS setup.
+    
+1. To update pricing tier, run `Update-AzFunctionAppPlan` cmdlet as shown below. You can read more about pricing details of function app [here](https://azure.microsoft.com/en-us/pricing/details/functions/).
+
+    ```PowerShell
+      # 1. Clear existing login, if any
+
+      Disconnect-AzAccount
+
+      # 2. Connect to AzureAD and AzAccount
+      # Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+
+      $TenantId = "<TenantId>"
+      Connect-AzAccount -Tenant $TenantId
+
+      # 3. Install module, if not already installed
+      # Az.Functions >= 4.8.0
+
+      Install-Module -Name Az.Functions -AllowClobber -Scope CurrentUser -repository PSGallery
+
+      # 4. Import module
+
+      Import-Module -Name Az.Functions
+
+      # 5. Update app service pricing tier
+
+      # AppServicePlanName: Your Function App Service plan (in the Azure portal, go to the AzTS Host RG > select one of function apps, say 'AzSK-AzTS-WorkItemProcessor-xxxxx' > Under the Overview section, copy name of the 'App Service Plan'.)
+      # In this example, we are updating service plan to EP2.
+
+      Update-AzFunctionAppPlan -ResourceGroupName <AzTSScanHostRG> `
+                                 -Name <AppServicePlanName> `
+                                 -Sku EP2
+
+    ```
+
+4. To increase function timeout, go to your function app (say, you want to increase timeout value for 'AzSK-AzTS-WorkItemProcessor-xxxxx'. This app contains function to scan subscription with baseline control.) > Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
+
+  > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
