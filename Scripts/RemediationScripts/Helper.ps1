@@ -122,7 +122,7 @@ class ResourceResolver
         if(Test-Path $path)
         {
 			$path = "$($path)\RemediationLog.txt"
-            Add-Content -Value $messageToPrint -Path $path
+            		Add-Content -Value $messageToPrint -Path $path
         }
     }
 }
