@@ -53,7 +53,9 @@ class ResourceResolver
 			if(($nonExistingRGS| Measure-Object).Count -gt 0)
 			{
 				#print the message saying these RGS provided in excludeRGS are not found
-				Write-Host "Warning: Following resource groups requested for exclusion not found in subscription:" -ForegroundColor Yellow
+				Write-Host "Warning: Following resource group(s) requested for exclusion not found in subscription:" -ForegroundColor Yellow
+				Write-Host "ResourceGroupName"
+                Write-Host "-----------------"
 				Write-Host $nonExistingRGS
 				Write-Host `n
 			}
@@ -82,7 +84,7 @@ class ResourceResolver
 
 				# If no coinciding resource found then need to exclude given resource group name
 				$this.ExcludedResources += $Resources| Where-Object{$_.ResourceGroupName -in $matchingRGs}
-                $this.messageToPrint += "Number of resource group excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
+                $this.messageToPrint += "Number of resource group(s) excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
                 $this.messageToPrint += "ResourceGroupName"
                 $this.messageToPrint += "-----------------"				
                 $this.messageToPrint += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
@@ -102,7 +104,9 @@ class ResourceResolver
 			if(($NonExistingResource | Measure-Object).Count -gt 0 )
 			{
 				$ResourcesToExclude = $this.ExcludeResourceNames | Where-Object{ $_ -notin $NonExistingResource }
-				Write-Host "Warning: Following resources requested for exclusion not found in subscription:" -ForegroundColor Yellow
+				Write-Host "Warning: Following resource(s) requested for exclusion not found in subscription:" -ForegroundColor Yellow
+				Write-Host "ResourceName"
+                Write-Host "------------"
 				Write-Host $NonExistingResource
 				Write-Host `n
 			}	

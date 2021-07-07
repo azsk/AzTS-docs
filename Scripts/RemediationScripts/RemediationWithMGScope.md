@@ -78,6 +78,8 @@ function ExcludeSubscriptionFromMG
             if(($SubscriptionNotPresent | Measure-Object).Count -gt 0 )
 			{
 				Write-Host "Warning: Following subscription not found in given MG name for exclusion:" -ForegroundColor Yellow
+                Write-Host "Subscription"
+                write-host "------------"
 				Write-Host $SubscriptionNotPresent
 			}	
         }
