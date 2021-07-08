@@ -151,7 +151,7 @@ function Remove-AnonymousAccessOnContainers
         break; 
     }
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "Starting to remediation anonymous access on containers of storage account(s) from subscription [$($SubscriptionId)]..."
+    Write-Host "Starting to remediate anonymous access on containers of storage account(s) from subscription [$($SubscriptionId)]..."
     Write-Host $([Constants]::SingleDashLine)
     
     try 
@@ -187,8 +187,7 @@ function Remove-AnonymousAccessOnContainers
     Write-Host "`n" 
 
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..."
-    Write-Host "`n"
-
+    
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
     {
@@ -196,6 +195,8 @@ function Remove-AnonymousAccessOnContainers
         break;
     }
     
+    Write-Host "Successfully validated" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "`n"
     Write-Host "Fetching storage account(s)..."
     
     # Array to store resource context
@@ -290,6 +291,7 @@ function Remove-AnonymousAccessOnContainers
             {
                 $stgWithEnableAllowBlobPublicAccess = @()
                 $stgWithDisableAllowBlobPublicAccess = @()
+                $skippedStorageAccountFromRemediation = @()
                 $resourceContext | ForEach-Object {
                     if(($null -eq $_.allowBlobPublicAccess) -or ($_.allowBlobPublicAccess))
                     {
@@ -315,32 +317,52 @@ function Remove-AnonymousAccessOnContainers
                 {
                     # Creating the log file
                     
-                    Write-Host "Backing up config of storage account(s) details. Without this file you won't be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Backing up config of storage account(s) details. Please do not delete this file without this file you won't be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
-                    Write-Host "Please do not delete this file: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                    Write-Host "$($folderpath)\DisabledAllowBlobPublicAccess.json"     
+                    Write-Host "Path: $($folderpath)\DisabledAllowBlobPublicAccess.json"     
                     Write-Host "`n"
                     Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s)..."
                     $stgWithEnableAllowBlobPublicAccess = $stgWithEnableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
                         {
-                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false
+                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false -ErrorAction SilentlyContinue
                             if($output -ne $null)
                             {
                                 $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
                             }
                             else
                             {
-                                Write-Host "Skipping remediation due to insufficient access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
+                                $item =  New-Object psobject -Property @{  
+                                    StorageAccountName = $_.StorageAccountName                
+                                    ResourceGroupName = $_.ResourceGroupName
+                                }
+
+                                $skippedStorageAccountFromRemediation += $item
                             }
                         }
                         catch
                         {
-                            Write-Host "Skipping remediation due to insufficient access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                            $item =  New-Object psobject -Property @{  
+                                StorageAccountName = $_.StorageAccountName                
+                                ResourceGroupName = $_.ResourceGroupName
+                            }
+                            $skippedStorageAccountFromRemediation += $item
                         }
                     }
-                    Write-Host $([Constants]::DoubleDashLine)
+
+                    Write-Host "`n"
+                    if(($skippedStorageAccountFromRemediation | Measure-Object).Count -eq 0)
+                    {
+                        Write-Host "Successfully disabled 'Allow Blob Public Access'." -ForegroundColor $([Constants]::MessageType.Update)
+                    }
+                    else 
+                    {
+                        Write-Host "Remediation was not successful on the following storage account(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+                        $skippedStorageAccountFromRemediation | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
+                        $resourceSummary += "Remediation was not successful on following storage account(s), due to insufficient permission"
+                        $resourceSummary += "$($skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table |Out-String)"
+                    }
                 }
                 else
                 {
@@ -453,10 +475,9 @@ function Remove-AnonymousAccessOnContainers
             # Creating the log file
             if(($ContainersWithDisableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
             {
-                Write-Host "Backing up config of storage account(s) details for subscription: [$($SubscriptionId)] on which remediation is successfully performed. Without this file you won't be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Backing up config of storage account(s) details for subscription: [$($SubscriptionId)] on which remediation is successfully performed. Please do not delete this file without this file you won't be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                 $ContainersWithDisableAnonymousAccessOnStorage | ConvertTo-Json -Depth 10| Out-File "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
-                Write-Host "Please do not delete this file: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline                
-                Write-Host "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
+                Write-Host "Path: $($folderPath)\ContainersWithDisableAnonymousAccess.json"
                 Write-Host $([Constants]::DoubleDashLine)
             }
 
@@ -477,6 +498,7 @@ function Remove-AnonymousAccessOnContainers
     }
     $resourceSummary += [Constants]::DoubleDashLine
     [ResourceResolver]::RemediationSummary($resourceSummary, $folderPath)
+    Write-Host $([Constants]::DoubleDashLine)
 }
 
 # Script to rollback changes done by remediation script
@@ -552,7 +574,7 @@ function Set-AnonymousAccessOnContainers
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
         break;
     }
-    
+    Write-Host "Successfully validated" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "`n"
     Write-Host "Fetching remediation log to perform rollback operation on containers of storage account(s) from subscription [$($SubscriptionId)]..."
  
@@ -582,19 +604,19 @@ function Set-AnonymousAccessOnContainers
                     $remediatedResourceLog | ForEach-Object {
                         try
                         {
-                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -StorageAccountName $_.StorageAccountName -AllowBlobPublicAccess $true
+                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -StorageAccountName $_.StorageAccountName -AllowBlobPublicAccess $true -ErrorAction SilentlyContinue
                             if($output -ne $null)
                             {
                                 $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}    
                             }
                             else
                             {
-                                Write-Host "Skipping remediation due to insufficient access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
+                                Write-Host "Skipping rollback due to insufficient access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)                                
                             }
                         }
                         catch
                         {
-                            Write-Host "Skipping remediation due to insufficient access or exception occured [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Skipping rollback due to insufficient access or exception occured [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                         }
                     }
                     Write-Host $([Constants]::DoubleDashLine)
@@ -652,7 +674,7 @@ function Set-AnonymousAccessOnContainers
                                     $containerWithAnonymousAccess | ForEach-Object {
                                         try
                                         {
-                                            Set-AzStorageContainerAcl -Name $_.Name -Permission $_.PublicAccess -Context $context | Out-Null
+                                            Set-AzStorageContainerAcl -Name $_.Name -Permission $_.PublicAccess -Context $context -ErrorAction SilentlyContinue | Out-Null
                                         }
                                         catch
                                         {

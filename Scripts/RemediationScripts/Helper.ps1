@@ -84,11 +84,19 @@ class ResourceResolver
 
 				# If no coinciding resource found then need to exclude given resource group name
 				$this.ExcludedResources += $Resources| Where-Object{$_.ResourceGroupName -in $matchingRGs}
+<<<<<<< HEAD
                 $this.messageToPrint += "Number of resource group(s) excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
                 $this.messageToPrint += "ResourceGroupName"
                 $this.messageToPrint += "-----------------"				
                 $this.messageToPrint += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
                 $this.messageToPrint += "`n"
+=======
+				$this.messageToPrint += "Number of resource group excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
+				$this.messageToPrint += "ResourceGroupName"
+				$this.messageToPrint += "-----------------"				
+				$this.messageToPrint += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
+				$this.messageToPrint += "`n"
+>>>>>>> a3a95304837b04499750db56d7a6ba57f5c5a829
 			}
 		}
 		
@@ -125,8 +133,8 @@ class ResourceResolver
         Write-Host "Remediation summary: $($path)" -ForegroundColor Cyan
         if(Test-Path $path)
         {
-			$path = "$($path)\RemediationLog.txt"
-            Add-Content -Value $messageToPrint -Path $path
+		$path = "$($path)\RemediationLog.txt"
+            	Add-Content -Value $messageToPrint -Path $path
         }
     }
 }
