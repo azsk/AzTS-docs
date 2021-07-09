@@ -340,7 +340,7 @@ For '-ScanIdentityId' parameter,
 #>
 
 <#
-Note: UIAzureADAppId and WebAPIAzureADAppId is manadatory if you are enabling AzTSUI
+Note: UIAzureADAppId and WebAPIAzureADAppId is mandatory if you are enabling AzTSUI
 For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
           (a) use value created for "$ADApplicationDetails.WebAPIAzureADAppId" and "$ADApplicationDetails.UIAzureADAppId" respectively from step 5.
                                     OR
