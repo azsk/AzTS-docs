@@ -290,13 +290,15 @@ function Remove-AnonymousAccessOnContainers
                 # Start remediation storage account with 'Allow Blob Public Access' enabled.
                 if ($totalStgWithEnableAllowBlobPublicAccess -gt 0)
                 {
+                    $folderPath = "Rollback\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
+                    New-Item -ItemType Directory -Path $folderPath | Out-Null
                     # Creating the log file
-                    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
-                    if (Test-Path -Path $folderPath)
-                    {
-                        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
-                        New-Item -ItemType Directory -Path $folderPath | Out-Null
-                    }
+                    # $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+                    # if (Test-Path -Path $folderPath)
+                    # {
+                    #     $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
+                    #     New-Item -ItemType Directory -Path $folderPath | Out-Null
+                    # }
     
                     # Write-Host "Taking backup of storage account with enabled 'Allow Blob Public Access'. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $stgWithEnableAllowBlobPublicAccess | ConvertTo-json | out-file "$($folderpath)\DisabledAllowBlobPublicAccess.json"  
