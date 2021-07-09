@@ -20,21 +20,28 @@
 	    Write-Host
         Write-Host $str -ForegroundColor $([Constants]::MessageType.Warning)
         foreach ($uniqueControl in $uniqueControls){
-            
-            # Write-Host "URL is $($uniqueControl.url)"
-            # if(-Not( Test-Path ($remediationScriptsLocation + $uniqueControl.file_name) )){
-            #     Invoke-WebRequest -Uri  $uniqueControl.url -OutFile  $uniqueControl.file_name
-            # }
-            #Write-Host "    Control : $($uniqueControl.controlId)"
-            # Write-Host "Filename is $($uniqueControl.file_name)"
-            . ("./" + "RemediationScripts\" + $uniqueControl.file_name)
-            $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
-            # Write-Host "Command is $($commandString)"
-            function runCommand($command) {
-                if ($command[0] -eq '"') { Invoke-Expression "& $command" }
-                else { Invoke-Expression $command }
+            $remediate = $true
+            if(Test-Path ($trackerPath) ){
+                $trackerUniqueControls = $trackerFileContent.UniqueControlList
+                foreach($uniqueControlTracker in $trackerUniqueControls){
+                    if($uniqueControlTracker.controlId -eq $uniqueControl.controlId ){
+                        if( ($uniqueControl.FailedResourceList.Length -eq $uniqueControlTracker.FailedResourceList.Length)){
+                            $remediate = $false
+                        }
+                    }
+                }
             }
-            runCommand($commandString)
+            if($remediate){
+                . ("./" + "RemediationScripts\" + $uniqueControl.file_name)
+                $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
+                # Write-Host "Command is $($commandString)"
+                function runCommand($command) {
+                    if ($command[0] -eq '"') { Invoke-Expression "& $command" }
+                    else { Invoke-Expression $command }
+                }
+                runCommand($commandString)
+            }
+            
         }
     }
 
