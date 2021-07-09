@@ -16,9 +16,10 @@
         $SubscriptionId = $JsonContent.SubscriptionId
         $uniqueControls = $JsonContent.UniqueControlList
         $countstr = [string]$count
+        $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId)
         $str =  "Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
-	    Write-Host
         Write-Host $str -ForegroundColor $([Constants]::MessageType.Warning)
+        
         foreach ($uniqueControl in $uniqueControls){
             $remediate = $true
             if(Test-Path ($trackerPath) ){
