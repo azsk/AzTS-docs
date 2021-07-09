@@ -1,3 +1,43 @@
+<##########################################
+
+# Overivew:
+    This script is used to config ASC tier on subscription.
+
+ControlId: 
+    Azure_Subscription_Config_ASC_Tier
+
+# Pre-requesites:
+    You will need owner or contributor role on subscription.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get list non-compliant ASC type from subscription.
+
+    3. Taking backup of non-compliant ASC type.
+
+    4. Register 'Microsoft.Security' provider and enable required tier for all non-compliant ASC type for subscription.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to config ASC tier for subscription
+
+        Set-ConfigASCTier -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+
+    Note: 
+        To rollback changes made by remediation script, execute below command
+        Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
+
+To know more about parameter execute:
+    a. Get-Help Set-ConfigASCTier -Detailed
+    b. Get-Help Remove-ConfigASCTier -Detailed
+
+########################################
+#>
 function Pre_requisites
 {
     <#
@@ -55,7 +95,7 @@ function Set-ConfigASCTier
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform roll back operation is available.
+        Perform pre requisities check to ensure all required module to perform rollback operation is available.
     #>
 
     param (
@@ -91,38 +131,38 @@ function Set-ConfigASCTier
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: Current user need to be either Contributor or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' } | Measure-Object).Count -le 0)
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Declaring required ASC type and pricing tier
-    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines";
+    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $isProviderRegister = $true
@@ -140,7 +180,7 @@ function Set-ConfigASCTier
         try 
         {
             Register-AzResourceProvider -ProviderNamespace $reqProviderName
-            while((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Registered")
+            while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Registered") | Measure-Object).Count -gt 0)
             {
                 # Checking threshold time limit to avoid getting into infinite loop
                 if($thresholdTimeLimit -ge 300)
@@ -158,7 +198,7 @@ function Set-ConfigASCTier
         catch 
         {
             Write-Host "Error Occured while registering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
-            break
+            return
         }
         Write-Host "$reqProviderName provider successfully registered." -ForegroundColor Green
     }
@@ -177,10 +217,10 @@ function Set-ConfigASCTier
     {
         Write-Host "[$($reqProviderName)] provider is already registered and there is no non-compliant ASC type. In this case remediation not required." -ForegroundColor Green
         Write-Host "======================================================"
-        break
+        return
     }
 
-    # Creating data object for ASC type without 'Standard' pricing tier to export into json, it will help while doing roll back opeartion. 
+    # Creating data object for ASC type without 'Standard' pricing tier to export into json, it will help while doing rollback opeartion. 
     $nonCompliantASCResource =  New-Object psobject -Property @{
             SubscriptionId = $SubscriptionId 
             IsProviderRegister = $isProviderRegister
@@ -207,13 +247,13 @@ function Set-ConfigASCTier
         {
             Write-Host "Setting [$($reqASCTier)] pricing tier..."
             $nonCompliantASCTierResourcetype | ForEach-Object {
-                (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqASCTier) | Select-Object -Property Id, Name, PricingTier
+                (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqASCTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
             }
         }
         catch 
         {
             Write-Host "Error occurred while setting $reqASCTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
-            break
+            return
         }
         Write-Host "Successfuly set [$($reqASCTier)] pricing tier for non-compliant ASC type." -ForegroundColor Green
         Write-Host "======================================================"
@@ -222,7 +262,7 @@ function Set-ConfigASCTier
     {
         Write-Host "Required ASC type compliant with [$($reqASCTier)] pricing tier." -ForegroundColor Green
         Write-Host "======================================================"
-        break   
+        return   
     }
 }
 
@@ -237,16 +277,16 @@ function Remove-ConfigASCTier
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform roll back operation is available.
+        Perform pre requisities check to ensure all required module to perform rollback operation is available.
     #>
 
     param (
         [string]
-        [Parameter(Mandatory = $true, HelpMessage="Enter subscription id to perform roll back operation")]
+        [Parameter(Mandatory = $true, HelpMessage="Enter subscription id to perform rollback operation")]
         $SubscriptionId,
 
         [string]
-        [Parameter(Mandatory = $true, HelpMessage="Json file path which contain logs generated by remediation script to roll back remediation changes")]
+        [Parameter(Mandatory = $true, HelpMessage="Json file path which contain logs generated by remediation script to rollback remediation changes")]
         $Path,
 
         [switch]
@@ -254,7 +294,7 @@ function Remove-ConfigASCTier
     )
 
     Write-Host "======================================================"
-    Write-Host "Starting to roll back operation to config ASC tier for subscription [$($SubscriptionId)]..."
+    Write-Host "Starting to rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
     Write-Host "------------------------------------------------------"
 
     if($PerformPreReqCheck)
@@ -277,7 +317,7 @@ function Remove-ConfigASCTier
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount
+        Connect-AzAccount -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
@@ -286,12 +326,12 @@ function Remove-ConfigASCTier
 
     
 
-    Write-Host "Metadata Details: `n SubscriptionId: [$($SubscriptionId)] `n AccountName: [$($currentSub.Account.Id)] `n AccountType: [$($currentSub.Account.Type)]"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
-    Write-Host "Starting with Subscription [$($SubscriptionId)]..."
+    Write-Host "Starting with subscription [$($SubscriptionId)]..."
 
 
-    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] have the required permissions to run the script for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
@@ -308,9 +348,7 @@ function Remove-ConfigASCTier
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         break;
     }
-
-    Write-Host "`n"
-    Write-Host "Step 2 of 3: Fetching remediation log to perform roll back operation to config ASC tier for Subscription [$($SubscriptionId)]..."
+    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
  
     # Array to store resource context
     if (-not (Test-Path -Path $Path))
@@ -324,72 +362,88 @@ function Remove-ConfigASCTier
     $reqProviderName = "Microsoft.Security"
     $remediatedLog = Get-Content -Raw -Path $Path | ConvertFrom-Json
 
-    Write-Host "Step 3 of 3: Performing roll back operation to config ASC tier for subscription [$($SubscriptionId)]..."
+    Write-Host "Step 3 of 3: Performing rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
         
-    # Performing roll back operation
+    # Performing rollback operation
     try
     {
         if(($remediatedLog | Measure-Object).Count -gt 0)
         {
             Write-Host "Configuring ASC tier as per remediation log on subscription [$($SubscriptionId)]..."
             
-            # Checking current registration state of provider i.e. 'Microsoft.Security' on subscription.
-            $isProviderRegister = (((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -eq "Registered") | Measure-Object).Count -gt 0
-            if([System.Convert]::ToBoolean($remediatedLog.IsProviderRegister) -eq $isProviderRegister)
-            {
-                Write-Host "[$($reqProviderName)] provider registration state is same as before executing remediation script." -ForegroundColor Green
-            }
-            else 
-            {
-                # when current provider registration state and before executing remediation script is not same.
-                # That means while doing remediation it got registered, to perform roll back we need to unregister it
-                Write-Host "$reqProviderName provider name was registered before executing remediation script, performing roll back."
-                Write-Host "$reqProviderName unregistering..."
-                try 
-                {
-                    Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
-                }
-                catch 
-                {
-                    Write-Host "Error Occured while unregistering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
-                }
-                Write-Host "$reqProviderName provider successfully unregistered." -ForegroundColor Green
-            }
-
             if($null -ne $remediatedLog.NonCompliantASCType -and ($remediatedLog.NonCompliantASCType | Measure-Object).Count -gt 0)
             {
                 try 
                 {
                     $remediatedLog.NonCompliantASCType | ForEach-Object {
                         (Set-AzSecurityPricing -Name $_.Name -PricingTier $_.PricingTier) | Select-Object -Property Id, Name, PricingTier
-                    }    
+                    }
                 }
                 catch 
                 {
-                    Write-Host "Error occurred while performing roll back operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
+                    Write-Host "Error occurred while performing rollback operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
                     break      
                 }
-
-                Write-Host "Roll back operation successfully performed." -ForegroundColor Green
-                Write-Host "======================================================"
             }
             else 
             {
-                Write-Host "No non-compliant ASC type found to perform roll back operation." -ForegroundColor Green
+                Write-Host "No non-compliant ASC type found to perform rollback operation." -ForegroundColor Green                
+            }
+
+            Write-Host "`n"
+            # Checking current registration state of provider i.e. 'Microsoft.Security' on subscription.
+            $isProviderRegister = (((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -eq "Registered") | Measure-Object).Count -gt 0
+            if([System.Convert]::ToBoolean($remediatedLog.IsProviderRegister) -eq $isProviderRegister)
+            {
+                Write-Host "[$($reqProviderName)] provider registration state is same as before executing remediation script." -ForegroundColor Green
+                Write-Host "Rollback operation successfully performed." -ForegroundColor Green
                 Write-Host "======================================================"
-                break                
+                break;
+            }
+            else 
+            {
+                # when current provider registration state and before executing remediation script is not same.
+                # That means while doing remediation it got registered, to perform rollback we need to unregister it
+                Write-Host "$reqProviderName provider name was registered before executing remediation script, performing rollback."
+                Write-Host "$reqProviderName unregistering...[It takes 2-3 min to get unregistered]..."
+                try 
+                {
+                    Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
+                    while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Unregistered") | Measure-Object).Count -gt 0)
+                    {
+                        # Checking threshold time limit to avoid getting into infinite loop
+                        if($thresholdTimeLimit -ge 300)
+                        {
+                            Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time then expected, Aborting process..." -ForegroundColor Red
+                            throw [System.ArgumentException] ($_)
+                        }
+                        Start-Sleep -Seconds 30
+                        Write-Host "$reqProviderName unregistering..." -ForegroundColor Yellow
+
+                        # Incrementing threshold time limit by 30 sec in every iteration
+                        $thresholdTimeLimit = $thresholdTimeLimit + 30
+                    }
+                }
+                catch 
+                {
+                    Write-Host "Error Occured while unregistering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
+                    break;
+                }
+                Write-Host "$reqProviderName provider successfully unregistered." -ForegroundColor Green
+                Write-Host "Rollback operation successfully performed." -ForegroundColor Green
+                Write-Host "======================================================"
             }
         }
         else 
         {
-            Write-Host "ASC tier details not found to perform roll back operation."
+            Write-Host "ASC tier details not found to perform rollback operation."
             Write-Host "======================================================"
             break
         }
     }
     catch
     {
-        Write-Host "Error occurred while performing roll back operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
+        Write-Host "Error occurred while performing rollback operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
         break
     }
 }
@@ -399,7 +453,7 @@ function Remove-ConfigASCTier
 # Function calling with parameters for remediation.
 Set-ConfigASCTier -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
 
-# Function calling with parameters to roll back remediation changes.
+# Function calling with parameters to rollback remediation changes.
 Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
 #>
 
