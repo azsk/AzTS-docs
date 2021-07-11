@@ -69,7 +69,7 @@ Install-Module -Name Az.ManagedServices -AllowClobber -Scope CurrentUser -reposi
 #  2.2 Provide reader access using 
     $managedServiceDefinition = New-AzManagedServicesDefinition -Name "AzTS Scanner Managed Servcie" -Description "AzTS Scanning MI Access" -ManagedByTenantId "<HostTenantId>" -PrincipalId "<CentralScanningMIPrincipalId>" -RoleDefinitionId "acdd72a7-3385-48ef-bd42-f606fba81ae7" 
     #"acdd72a7-3385-48ef-bd42-f606fba81ae7" is reader role defination id
-    New-AzManagedServicesAssignment -RegistrationDefinitionResourceId $managedServiceDefinition.Id
+    New-AzManagedServicesAssignment -RegistrationDefinitionId $managedServiceDefinition.Id
 
 ```
 
