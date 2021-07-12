@@ -290,7 +290,7 @@ function Remove-AnonymousAccessOnContainers
                 # Start remediation storage account with 'Allow Blob Public Access' enabled.
                 if ($totalStgWithEnableAllowBlobPublicAccess -gt 0)
                 {
-                    $folderPath = "Rollback\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
+                    $folderPath = "Rollback\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\Azure_Storage_AuthN_Dont_Allow_Anonymous"
                     New-Item -ItemType Directory -Path $folderPath | Out-Null
                     # Creating the log file
                     # $folderPath = [Environment]::GetFolderPath("MyDocuments") 
