@@ -9,13 +9,7 @@
             "Filename": "Remediate-AnonymousAccessOnContainers.ps1",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/'users/sachyutuni/feature/Auto-Remediation'/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
             "LoadCommand": ". .\\\"Remediate-AnonymousAccessOnContainers.ps1\"",
-            "InitCommand": "Remove-AnonymousAccessOnContainers",
-            "RollbackMetadata":
-                {
-                    "RollbackCommand": "Set-AnonymousAccessOnContainers",
-                    "Argument1": "SubscriptionId",
-                    "Argument2": "RollBackType"
-                }
+            "InitCommand": "Remove-AnonymousAccessOnContainers"
         },
         {
             "ControlId":"Azure_Subscription_Config_ASC_Tier",
@@ -23,12 +17,7 @@
             "Filename": "Remediate-ConfigASCTier.ps1",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/'users/sachyutuni/feature/Auto-Remediation'/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
             "LoadCommand": ". .\\\"Remediatie-ConfigASCTier.ps1\"",
-            "InitCommand": "Set-ConfigASCTier",
-            "RollbackMetadata":
-                {
-                    "RollbackCommand": "Remove-ConfigASCTier",
-                    "Argument1": "SubscriptionId"
-                }
+            "InitCommand": "Set-ConfigASCTier"
         }
     ]
 }
