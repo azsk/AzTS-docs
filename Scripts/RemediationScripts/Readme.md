@@ -50,7 +50,7 @@ If you have already downloaded the remediation package zip, directly go to step 
 ``` PowerShell
 # Point current path to location where script is downloaded and load script from folder
 
-CD "<LocalExtractedFolderPath>\RemediationScripts"
+CD "<LocalExtractedFolderPath>"
 
 # Before loading remediation script in current session, please connect to AzAccount
 Connect-AzAccount
