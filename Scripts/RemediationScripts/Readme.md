@@ -5,7 +5,7 @@ In this section, we will walk through the steps of loading remediation script.
 
 Loading script in PowerShell session is divided into four steps:
 
-**1. Validate prerequisites on machine**  
+### **Step 1 of 4. Validate prerequisites on machine**  
 
   i) Installation steps are supported using following OS options: 	
 
@@ -19,7 +19,7 @@ Loading script in PowerShell session is divided into four steps:
 
   ![PowerShell Version](../../Images/00_PS_Version.png)
 
-**2. Installing Az Modules:**
+### **Step 2 of 4. Installing Az Modules:**
 
 Az modules contains cmdlet to connect to az account.
 Install Az PowerShell Modules using below command. 
@@ -29,24 +29,28 @@ For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/pow
 # Install Az Modules
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
+### **Step 3 of 4. Download and extract remediation package**
+ 
+ Deployment package mainly contains:
+ 1. **RemediationScripts** which contains powershell scripts to remediate AzTS controls.
 
-**3. Download remediation script:**
+If you have already downloaded the deployment package zip, directly go to step (3.d).
 
-  i) Open GitHub page from [here](https://github.com/azsk/AzTS-docs/tree/main/Scripts/RemediationScripts) to download remediation script to your local machine.
+3.a. Download deployment package zip from [here](../TemplateFiles/RemediationScripts.zip?raw=1) to your local machine. </br>
 
-**4. Unblock downloaded remediation script:**
+3.b. Extract zip to local folder location. <br/>
 
-i) Unblock the content. Below command will help to unblock files
+3.c. Unblock the content. The below command will help to unblock files. <br/>
 
-``` PowerShell
-Get-ChildItem -Path "<Remediation script folder path>" -Recurse |  Unblock-File 
-```
+  ``` PowerShell
+  Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
+  ```
 
-ii) Point current path to downloaded script folder location and load remediation script in PowerShell session
+3.d. Point current path to downloaded script folder location and load remediation script in PowerShell session
 ``` PowerShell
 # Point current path to location where script is downloaded and load script from folder
 
-CD "<RemediationScriptFilePath>"
+CD "<LocalExtractedFolderPath>\RemediationScripts"
 
 # Before loading remediation script in current session, please connect to AzAccount
 Connect-AzAccount
@@ -55,5 +59,8 @@ Connect-AzAccount
 . ".\<RemediationScriptFileName>.ps1"
 
 # Note: Make sure you copy  '.' present at the start of line.
-
 ```
+
+**Step 4 of 4. Execute remediation scripts:**
+
+After completing above mentioned steps, need to open remediation script in PowerShell and take help from commented section of remediation scripts (contains overview, Pre-requesites, Steps performed by the script, Command to execute) to execute it.
