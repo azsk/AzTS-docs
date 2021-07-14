@@ -244,6 +244,9 @@ if($files.Length -gt 0){
             Write-Host "Please enter either y or n"
         }
     }
+    else{
+        Write-Host "Please enter either y or n"
+    }
 }
 else{
     Write-Host "Proceeding to start the remediation of all the resources selected."
