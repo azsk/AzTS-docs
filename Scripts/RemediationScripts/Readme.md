@@ -1,7 +1,7 @@
 ## Load remediation script to fix failed controls of Azure Tenant Security Solution - Step by Step
 In this section, we will walk through the steps of loading remediation script.
 
-**Note:** You can download remediation script present [here](../RemediationScripts)
+**Note:** You can download remediation script present [here](../../TemplateFiles/RemediationScripts.zip?raw=1)
 
 Loading script in PowerShell session is divided into four steps:
 
