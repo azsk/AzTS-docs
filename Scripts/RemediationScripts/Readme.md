@@ -31,12 +31,12 @@ Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PS
 ```
 ### **Step 3 of 4. Download and extract remediation package**
  
- Deployment package mainly contains:
+ Remediation package mainly contains:
  1. **RemediationScripts** which contains powershell scripts to remediate AzTS controls.
 
-If you have already downloaded the deployment package zip, directly go to step (3.d).
+If you have already downloaded the remediation package zip, directly go to step (3.d).
 
-3.a. Download deployment package zip from [here](../TemplateFiles/RemediationScripts.zip?raw=1) to your local machine. </br>
+3.a. Download remediation package zip from [here](../../TemplateFiles/RemediationScripts.zip?raw=1) to your local machine. </br>
 
 3.b. Extract zip to local folder location. <br/>
 
@@ -63,4 +63,4 @@ Connect-AzAccount
 
 **Step 4 of 4. Execute remediation scripts:**
 
-After completing above mentioned steps, need to open remediation script in PowerShell and take help from commented section of remediation scripts (contains overview, Pre-requesites, Steps performed by the script, Command to execute) to execute it.
+After completing above mentioned steps, need to open remediation script in PowerShell and take help from commented section of remediation scripts (contains overview, pre-requesites, steps performed by the script, command to execute) to execute it.
