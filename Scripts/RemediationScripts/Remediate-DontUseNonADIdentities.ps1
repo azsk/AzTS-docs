@@ -162,7 +162,7 @@ function Remove-AzTSNonADIdentities
 
     Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
-    # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
+    # Safe Check: Checking whether the current account is of type User.
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
