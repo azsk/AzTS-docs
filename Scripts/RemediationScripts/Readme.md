@@ -63,4 +63,4 @@ Connect-AzAccount
 
 **Step 4 of 4. Execute remediation scripts:**
 
-After completing above mentioned steps, need to open remediation script in PowerShell and take help from commented section of remediation scripts (contains overview, pre-requesites, steps performed by the script, command to execute) to execute it.
+After completing above mentioned steps, open remediation script in PowerShell and follow instructions as per comments present in each scripts.
