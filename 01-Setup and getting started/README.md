@@ -683,6 +683,33 @@ After deleting the identity, you can run the installation command again.
 
 <br> 
 
+#### **While installing AzTS solution I have provided my prefrences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my prefrences now?**
+
+To update the telemetry prefrences, go to resource group where AzTS solution has been installed --> AzSK-AzTS-AutoUpdater-XXXXX --> Configuration --> Change the values of below listed configurations:
+
+- AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel
+
+  - All --> To opt in for both, Anonymized AzTS usage data and Organization/team contact details.
+  - Anonymous --> To opt in for only Anonymized AzTS usage data.
+  - Onboarding --> To opt in for only Organization/team contact details.
+  - None --> To opt out of both, Anonymized AzTS usage data and Organization/team contact details.
+
+- OnboardingDetails\_\_Organization
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your organization in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_Division
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your division(division within your organization) in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_ContactEmailAddressList
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+<br> 
+
 #### **The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
 
 AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three function apps which are as follows:
