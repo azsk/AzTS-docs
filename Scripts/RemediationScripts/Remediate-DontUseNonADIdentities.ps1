@@ -47,9 +47,9 @@ function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
+    This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Resources, Az.Account, AzureAD" -ForegroundColor Cyan
@@ -104,7 +104,7 @@ function Remove-AzTSNonADIdentities
     .Parameter Force
         Enter force parameter value to remove non-ad identities
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
     #>
 
     param (
@@ -424,7 +424,7 @@ function Restore-AzTSNonADIdentities
     .PARAMETER RollbackFilePath
         Json file path which containing remediation log to perform rollback operation.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
 	#>
 
     param (
