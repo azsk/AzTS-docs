@@ -4,7 +4,7 @@
     This script is used to config ASC tier on subscription.
 
 ControlId: 
-    Azure_Subscription_Config_ASC_Tier
+    Azure_Subscription_Config_ASC_Defender
 
 # Pre-requesites:
     You will need owner or contributor role on subscription.
@@ -89,9 +89,9 @@ function Set-ConfigASCTier
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
@@ -271,9 +271,9 @@ function Remove-ConfigASCTier
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
