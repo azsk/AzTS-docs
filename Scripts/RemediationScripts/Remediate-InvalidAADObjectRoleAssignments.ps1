@@ -1,7 +1,7 @@
 <##########################################
 
 # Overivew:
-    This script is used to remove deprecated/ghost AAD identities role assignments from subscription.
+    This script is used to remove deprecated/stale(invalid) AAD identities role assignments from subscription.
 
 ControlId: 
     Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
@@ -12,11 +12,11 @@ ControlId:
 # Steps performed by the script
     1. Install and validate pre-requesites to run the script for subscription.
 
-    2. Get role assignments for the subscription and filter ghost/deprecated identities.
+    2. Get role assignments for the subscription and filter deprecated/stale(invalid) identities.
 
-    3. Taking backup of ghost/deprecated identities that are going to be removed using remediation script.
+    3. Taking backup of deprecated/stale(invalid) identities that are going to be removed using remediation script.
 
-    4. Clean up deprecated/ghost AAD object identities role assignments from subscription.
+    4. Clean up deprecated/stale(invalid) AAD object identities role assignments from subscription.
 
 # Step to execute script:
     Download and load remediation script in PowerShell session and execute below command.
@@ -24,11 +24,11 @@ ControlId:
 
 # Command to execute:
     Examples:
-        1. Run below command to remove all deprecated/ghost identities role assignments from subscription
+        1. Run below command to remove all deprecated/stale(invalid) identities role assignments from subscription
 
          Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
 
-        2. Run below command, if you have deprecated/ghost identities list with you. You will get deprecated account list from AzTS UI status reason section.
+        2. Run below command, if you have deprecated/stale(invalid) identities list with you. You will get deprecated/stale(invalid) object id (UserName) from AzTS UI status reason section.
 
          Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Id_1>', '<Object_Id_2>') -PerformPreReqCheck: $true
 
@@ -42,9 +42,9 @@ function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
+    This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Resources, AzureAD, Az.Account" -ForegroundColor Cyan
@@ -99,7 +99,7 @@ function Remove-AzTSInvalidAADAccounts
     .Parameter Force
         Enter force parameter value to remove non ad identities
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform remedition operation is available.
+        Perform pre requisites check to ensure all required module to perform remedition operation is available.
     #>
 
     param (
@@ -358,7 +358,7 @@ function Remove-AzTSInvalidAADAccounts
     }
    
     Write-Host "Step 5 of 5: Clean up invalid object guids for subscription [$($SubscriptionId)]..."
-    # Start deletion of all invalid AAD Object g4uids.
+    # Start deletion of all invalid AAD Object guids.
     Write-Host "Starting to delete invalid AAD object guid role assignments..." -ForegroundColor Cyan
 
     $isRemoved = $true

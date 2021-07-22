@@ -42,9 +42,9 @@ function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
+    This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Resources, Az.Security, Az.Accounts" -ForegroundColor Cyan
@@ -95,7 +95,7 @@ function Set-ConfigASCTier
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
     #>
 
     param (
@@ -277,7 +277,7 @@ function Remove-ConfigASCTier
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation need to perform.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
     #>
 
     param (

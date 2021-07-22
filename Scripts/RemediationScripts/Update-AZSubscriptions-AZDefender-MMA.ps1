@@ -31,9 +31,9 @@ function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
+    This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Resources, Az.Security, Az.Accounts" -ForegroundColor Cyan
@@ -84,7 +84,7 @@ function Update-AZDefenderMMA
     .PARAMETER SubscriptionId
         Enter subscription id on which update need to perform.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform update operation is available.
+        Perform pre requisites check to ensure all required module to perform update operation is available.
     .PARAMETER interactiveMode
         Specifies whether this should be executed in interactive mode.
         Accepted vaules are: 1, true, yes, on, enabled.
