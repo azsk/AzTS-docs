@@ -293,11 +293,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -SendUsageTelemetry:$true `
                 -ScanIdentityHasGraphPermission:$true `
                 -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
-                -EnableAutoUpdater `
-                -EnableAzTSUI `
                 -Verbose
-
-  
 
   # -----------------------------------------------------------------#
   # Step 3: Save internal user-assigned managed identity name generated using the below command. This will be used to grant Graph permission to internal MI.
@@ -317,14 +313,12 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                     -ScanHostRGName AzSK-AzTS-Solution-RG `
                     -ScanIdentityId '/subscriptions/bbbe2e73-fc26-492b-9ef4-adec8560c4fe/resourceGroups/TenantReaderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/TenantReaderUserIdentity' `
                     -Location EastUS2 `
-                    -EnableAzTSUI `
-                    -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
                     -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
+                    -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
                     -AzureEnvironmentName AzureCloud `
                     -SendUsageTelemetry:$true `
                     -ScanIdentityHasGraphPermission:$true `
                     -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
-                    -EnableAutoUpdater `
                     -Verbose
 
 
@@ -340,7 +334,7 @@ For '-ScanIdentityId' parameter,
 #>
 
 <#
-Note: UIAzureADAppId and WebAPIAzureADAppId is mandatory if you are enabling AzTSUI
+
 For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
           (a) use value created for "$ADApplicationDetails.WebAPIAzureADAppId" and "$ADApplicationDetails.UIAzureADAppId" respectively from step 5.
                                     OR
@@ -350,27 +344,6 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
 #>
 ```
-
-**Parameter details:**
-
-|Param Name|Description|Required?
-|----|----|----|
-|SubscriptionId|Hosting subscription id where Azure Tenant solution will be deployed |TRUE|
-|ScanHostRGName| Name of ResourceGroup where setup resources will be created |TRUE|
-|ScanIdentityId| Resource id of user managed identity used to scan subscriptions  |TRUE|
-|Location|Location where all resources will get created |TRUE|
-|WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | FALSE |
-|UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | FALSE|
-|SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
-|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
-|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
-|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
-|EnableAutoUpdater | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
-|EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
-|Verbose| Switch used to output detailed log |FALSE|
-
-</br>
-
 
   6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission.
   </br>
@@ -396,6 +369,23 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
 
 
+**Parameter details:**
+
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId|Hosting subscription id where Azure Tenant solution will be deployed |TRUE|
+|ScanHostRGName| Name of ResourceGroup where setup resources will be created |TRUE|
+|ScanIdentityId| Resource id of user managed identity used to scan subscriptions  |TRUE|
+|Location|Location where all resources will get created |TRUE|
+|WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | TRUE |
+|UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | TRUE|
+|SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
+|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
+|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
+|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
+|Verbose| Switch used to output detailed log |FALSE|
+
+</br>
 
 
 > **Note:** 
@@ -691,6 +681,33 @@ To remove role assignment, go to resource group where AzTS solution has been ins
 
 After deleting the identity, you can run the installation command again.
 
+<br> 
+
+#### **While installing AzTS solution I have provided my prefrences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my prefrences now?**
+
+To update the telemetry prefrences, go to resource group where AzTS solution has been installed --> AzSK-AzTS-AutoUpdater-XXXXX --> Configuration --> Change the values of below listed configurations:
+
+- AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel
+
+  - All --> To opt in for both, Anonymized AzTS usage data and Organization/team contact details.
+  - Anonymous --> To opt in for only Anonymized AzTS usage data.
+  - Onboarding --> To opt in for only Organization/team contact details.
+  - None --> To opt out of both, Anonymized AzTS usage data and Organization/team contact details.
+
+- OnboardingDetails\_\_Organization
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your organization in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_Division
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your division(division within your organization) in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_ContactEmailAddressList
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
 <br> 
 
 #### **The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
