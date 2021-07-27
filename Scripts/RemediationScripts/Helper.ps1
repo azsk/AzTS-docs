@@ -56,8 +56,8 @@ class ResourceResolver
 				Write-Host "Warning: Following resource group(s) requested for exclusion not found in subscription:" -ForegroundColor Yellow
 				Write-Host "ResourceGroupName"
                 Write-Host "-----------------"
-				Write-Host $nonExistingRGS
-				Write-Host `n
+                Write-Host "$($nonExistingRGS -join "`n")"
+                Write-Host "`n"
 			}
 
 			if(($matchingRGs| Measure-Object).Count -gt 0 )
@@ -84,20 +84,12 @@ class ResourceResolver
 
 				# If no coinciding resource found then need to exclude given resource group name
 				$this.ExcludedResources += $Resources| Where-Object{$_.ResourceGroupName -in $matchingRGs}
-<<<<<<< HEAD
                 $this.messageToPrint += "Number of resource group(s) excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
                 $this.messageToPrint += "ResourceGroupName"
                 $this.messageToPrint += "-----------------"				
                 $this.messageToPrint += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
                 $this.messageToPrint += "`n"
-=======
-				$this.messageToPrint += "Number of resource group excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
-				$this.messageToPrint += "ResourceGroupName"
-				$this.messageToPrint += "-----------------"				
-				$this.messageToPrint += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
-				$this.messageToPrint += "`n"
->>>>>>> a3a95304837b04499750db56d7a6ba57f5c5a829
-			}
+				}
 		}
 		
 		$ExcludedRes = @();
@@ -115,12 +107,12 @@ class ResourceResolver
 				Write-Host "Warning: Following resource(s) requested for exclusion not found in subscription:" -ForegroundColor Yellow
 				Write-Host "ResourceName"
                 Write-Host "------------"
-				Write-Host $NonExistingResource
-				Write-Host `n
+                Write-Host "$($NonExistingResource -join "`n")"
+                Write-Host "`n"
 			}	
 			
 			$ExcludedRes = $Resources | Where-Object{$_.ResourceName -in $ResourcesToExclude}
-			$this.messageToPrint += "Number of resources excluded explicitly: $(($ExcludedRes | Measure-Object).Count)"
+			$this.messageToPrint += "Number of resources excsluded explicitly: $(($ExcludedRes | Measure-Object).Count)"
 			$this.messageToPrint += "$($ExcludedRes | Select-Object -Property "ResourceGroupName", "ResourceName"| Sort-Object |Format-Table |Out-String)"
 			$this.ExcludedResources += $ExcludedRes
 		}

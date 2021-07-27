@@ -80,7 +80,8 @@ function ExcludeSubscriptionFromMG
 				Write-Host "Warning: Following subscription not found in given MG name for exclusion:" -ForegroundColor Yellow
                 Write-Host "Subscription"
                 write-host "------------"
-				Write-Host $SubscriptionNotPresent
+                Write-Host "$($SubscriptionNotPresent -join "`n")"
+                Write-Host "`n"
 			}	
         }
 	}
