@@ -53,37 +53,38 @@ $subscriptionToExclude = '<Enter comma separated subscription to be excluded fro
 
 function ExcludeSubscriptionFromMG
 {
-    param (
-        [PSObject]
-        [Parameter(Mandatory = $true, HelpMessage="Enter subscription list fetched from MG")]
-        $subscriptions,
+	param 
+	(
+	[PSObject]
+	[Parameter(Mandatory = $true, HelpMessage="Enter subscription list fetched from MG")]
+	$subscriptions,
 
-        [string]
-        [Parameter(Mandatory = $true, HelpMessage="Comma separated subscription which need to be excluded from remediation")]
-        $subscriptionToExclude
-    )
+	[string]
+	[Parameter(Mandatory = $true, HelpMessage="Comma separated subscription which need to be excluded from remediation")]
+	$subscriptionToExclude
+	)
 
-    $subToExclude = @();
+	$subToExclude = @();
 	if(-not [string]::IsNullOrWhiteSpace($subscriptionToExclude))
 	{
 		$subToExclude += $subscriptionToExclude.Split(',', [StringSplitOptions]::RemoveEmptyEntries) | 
 						Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
 						ForEach-Object { $_.Trim() } |
 						Select-Object -Unique;
-            
-        if(($subToExclude |Measure-Object).Count -gt 0)
-        {
-            $SubscriptionNotPresent = $subToExclude | Where-Object { $_ -notin $subscriptions.Name }
-            $subscriptions = $subscriptions | Where-Object { $_.Name -notin $subToExclude }   
-            if(($SubscriptionNotPresent | Measure-Object).Count -gt 0 )
+
+		if(($subToExclude |Measure-Object).Count -gt 0)
+		{
+			$SubscriptionNotPresent = $subToExclude | Where-Object { $_ -notin $subscriptions.Name }
+			$subscriptions = $subscriptions | Where-Object { $_.Name -notin $subToExclude }   
+			if(($SubscriptionNotPresent | Measure-Object).Count -gt 0 )
 			{
 				Write-Host "Warning: Following subscription not found in given MG name for exclusion:" -ForegroundColor Yellow
-                Write-Host "Subscription"
-                write-host "------------"
-                Write-Host "$($SubscriptionNotPresent -join "`n")"
-                Write-Host "`n"
+				Write-Host "Subscription"
+				write-host "------------"
+				Write-Host "$($SubscriptionNotPresent -join "`n")"
+				Write-Host "`n"
 			}	
-        }
+		}
 	}
     return ($subscriptions)
 }
