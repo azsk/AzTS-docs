@@ -117,7 +117,7 @@ function Remove-AzTSInvalidAADAccounts
         $Force,
 
         [switch]
-        $PerformPreReqCheck,
+        $PerformPreReqCheck
 
         [switch]
         $dryrun
@@ -581,5 +581,10 @@ class ASCDeprecatedAccounts
 # ***************************************************** #
 <#
 Function calling with parameters.
+<<<<<<< HEAD
 Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>') -Force:$false -PerformPreReqCheck: $true -dryrun
 #>
+=======
+Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>') -Force:$false -PerformPreReqCheck: $true --dry-run:$true
+#>
+>>>>>>> 6546aa31249a58417a367903b51654a1b418524c
