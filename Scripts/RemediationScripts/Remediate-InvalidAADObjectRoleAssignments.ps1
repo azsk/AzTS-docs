@@ -117,7 +117,7 @@ function Remove-AzTSInvalidAADAccounts
         $Force,
 
         [switch]
-        $PerformPreReqCheck
+        $PerformPreReqCheck,
 
         [switch]
         $dryrun
