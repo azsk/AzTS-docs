@@ -100,9 +100,9 @@ function Remove-AzTSInvalidAADAccounts
         Enter objectIds of invalid AAD accounts.
     .Parameter Force
         Enter force parameter value to remove non ad identities
-    .PARAMETER PerformPreReqCheck
+    .PARAMETER PerformPreReqCheck,
         Perform pre requisites check to ensure all required module to perform remedition operation is available.
-    .PARAMETER --dry-run
+    .PARAMETER Dryrun
         Run pre-script before actual remediating the subscription
     #>
 
@@ -117,10 +117,10 @@ function Remove-AzTSInvalidAADAccounts
         $Force,
 
         [switch]
-        $PerformPreReqCheck
+        $PerformPreReqCheck,
 
         [switch]
-        $dryrun # TODO: testing
+        $dryrun
     )
 
     Write-Host "======================================================"
@@ -179,6 +179,10 @@ function Remove-AzTSInvalidAADAccounts
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         return;
+    }
+    else
+    {
+        Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
     }
 
     # Safe Check: saving the current login user object id to ensure we dont remove this during the actual removal
@@ -254,13 +258,8 @@ function Remove-AzTSInvalidAADAccounts
 
     if (![string]::IsNullOrWhiteSpace($ascDeprecatedAccountResponseAsString))
     {
-        Write-Host "Found [$($ascDeprecatedAccountCount)] deprecated account(s) reported by Azure Security Center(ASC)."
         $ascDeprecatedAccountList = $ascDeprecatedAccountResponseAsString.Split(",").Trim("`"")
         $ascDeprecatedAccountList | Out-String
-    }
-    else
-    {
-        Write-Host "No deprecated account found reported by Azure Security Center(ASC)."
     }
 
     Write-Host "Step 3 of 5: Resolving all the AAD Object guids against Tenant. Number of distinct object guids [$($distinctObjectIds.Count)]..."
@@ -335,9 +334,14 @@ function Remove-AzTSInvalidAADAccounts
     $invalidClassicRolesCount = ($invalidClassicRoles | Measure-Object).Count
     $ascDeprecatedRolesCount = ($ascDeprecatedAccountList | Measure-Object).Count
 
-    $ascDeprecatedAccountList | ForEach-Object {
-        $ascDeprecatedRoleAssignmentList += Get-AzRoleAssignment -ObjectId $_
+    $ascDeprecatedRoleAssignmentList = @();
+    if ($ascDeprecatedRolesCount -gt 0)
+    {
+        $ascDeprecatedAccountList | ForEach-Object {
+            $ascDeprecatedRoleAssignmentList += Get-AzRoleAssignment -ObjectId $_
+        }
     }
+    
 
     if(($invalidAADObjectRoleAssignmentsCount -eq 0) -and ($invalidClassicRolesCount -eq 0) -and ($ascDeprecatedRolesCount -eq 0))
     {
@@ -345,11 +349,7 @@ function Remove-AzTSInvalidAADAccounts
         return;
     }
 
-    if($ascDeprecatedRolesCount -le 0 )
-    {
-        Write-Host "No deprecated accounts found reported by Azure Security Center(ASC) for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
-    }
-    else
+    if($ascDeprecatedRolesCount -gt 0 )
     {
         Write-Host "Found [$($ascDeprecatedRolesCount)] deprecated account role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
@@ -396,8 +396,8 @@ function Remove-AzTSInvalidAADAccounts
     }
      
     # Safe Check: Exporting all role assignments in CSV file.
-    $invalidAADObjectRoleAssignments | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv"
-    $invalidClassicRoles | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force
+    $invalidAADObjectRoleAssignments | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -NoTypeInformation
+    $invalidClassicRoles | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force 
     $ascDeprecatedRoleAssignmentList | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force
 
     if(-not $dryrun)       
@@ -484,7 +484,7 @@ function Remove-AzTSInvalidAADAccounts
     }
     else
     {
-        Write-Host "Validate all role assignments that are going to remediate using this script at [$($folderPath)]..."
+        Write-Host "Validate all role assignments that are going to remediate using this script at [$($folderPath)]..." -ForegroundColor Green
         return;
     }    
 }
@@ -581,5 +581,5 @@ class ASCDeprecatedAccounts
 # ***************************************************** #
 <#
 Function calling with parameters.
-Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>') -Force:$false -PerformPreReqCheck: $true --dry-run:$true
+Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>') -Force:$false -PerformPreReqCheck: $true -dryrun
 #>
