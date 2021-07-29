@@ -99,7 +99,7 @@ function Remove-AzTSInvalidAADAccounts
     .PARAMETER ObjectIds
         Enter objectIds of invalid AAD accounts.
     .Parameter Force
-        Enter force parameter value to remove non ad identities
+        Enter force parameter value to remove deprecated/stale identity's role assignment.
     .PARAMETER PerformPreReqCheck,
         Perform pre requisites check to ensure all required module to perform remedition operation is available.
     .PARAMETER DryRun
