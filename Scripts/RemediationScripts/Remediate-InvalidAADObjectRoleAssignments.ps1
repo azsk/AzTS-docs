@@ -102,7 +102,7 @@ function Remove-AzTSInvalidAADAccounts
         Enter force parameter value to remove non ad identities
     .PARAMETER PerformPreReqCheck,
         Perform pre requisites check to ensure all required module to perform remedition operation is available.
-    .PARAMETER Dryrun
+    .PARAMETER DryRun
         Run pre-script before actual remediating the subscription
     #>
 
@@ -120,7 +120,7 @@ function Remove-AzTSInvalidAADAccounts
         $PerformPreReqCheck,
 
         [switch]
-        $dryrun
+        $DryRun
     )
 
     Write-Host "======================================================"
@@ -392,7 +392,7 @@ function Remove-AzTSInvalidAADAccounts
     $invalidClassicRoles | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force 
     $ascDeprecatedRoleAssignmentList | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force
 
-    if(-not $dryrun)       
+    if(-not $DryRun)       
     {
         if(-not $Force)
         {
@@ -574,5 +574,5 @@ class ASCDeprecatedAccounts
 # ***************************************************** #
 <#
 Function calling with parameters.
-Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Ids>') -Force:$false -PerformPreReqCheck: $true -dryrun
+Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' [-ObjectIds @('<Object_Ids>')] -Force:$false -PerformPreReqCheck: $true [-DryRun: $true]
 #>
