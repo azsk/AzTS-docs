@@ -149,6 +149,9 @@ function Disable-RemoteDesktopAccess
     Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
     Write-Host "Starting with subscription [$($SubscriptionId)]..."
+    Write-Host "`n"
+    Write-Host "*** To disable RDP access user must have atleast contributor access on cloud service(s) of Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "`n" 
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..."
     
     # Safe Check: Checking whether the current account is of type User
@@ -158,15 +161,6 @@ function Disable-RemoteDesktopAccess
         break;
     }
     
-    # Safe Check: Current user need to be co-administrator for the subscription
-    $currentLoginRoleAssignments = Get-azroleassignment -Scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators | Where-Object { $_.SignInName -eq $currentSub.Account.Id }
-    $requiredRoleDefinitionName = @("CoAdministrator")
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
-    {
-        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
-        return;
-    }
-
     Write-Host "Successfully validated" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "`t"
     Write-Host "Fetching cloud service(s)..."
