@@ -10,7 +10,7 @@ DisplayName:
     Remote Desktop (RDP) access must be disabled on cloud service roles.    
 
 # Pre-requisites:
-    You will need co-administrator role on subscription.
+    You will need atleast contributor role on cloud service(s) of subscription.
 
 # Steps performed by the script
     1. Install and validate pre-requisites to run the script.
@@ -46,63 +46,44 @@ To know more about parameter execute:
 function Pre_requisites
 {
     <#
-    .SYNOPSIS
-    This command would check pre requisites modules.
-    .DESCRIPTION
-    This command would check pre requisites modules to perform remediation.
+        .SYNOPSIS
+        This command would check pre requisites modules.
+        .DESCRIPTION
+        This command would check pre requisites modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Account, Az.Resources, Azure" -ForegroundColor Cyan
+    # List of required modules
+    $requiredModule = @("Az.Resources", "Az.Accounts", "Azure")
+    Write-Host "Required modules are: $($requiredModule -join ', ')" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
-    $availableModules = $(Get-Module -ListAvailable Az.Resources, Az.Accounts, Azure)
-    
-    # Checking if 'Az.Accounts' module is available or not.
-    if($availableModules.Name -notcontains 'Az.Accounts')
-    {
-        Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
-        Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery'
-    }
-    else
-    {
-        Write-Host "Az.Accounts module is available." -ForegroundColor Green
-    }
-    
-    # Checking if 'Az.Resources' module is available or not.
-    if($availableModules.Name -notcontains 'Az.Resources')
-    {
-        Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
-        Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
-    }
-    else
-    {
-        Write-Host "Az.Resources module is available." -ForegroundColor Green
-    }
+    $availableModules = $(Get-Module -ListAvailable $requiredModule)
 
-    # Checking if 'Azure' module with required version is available or not.
-    if($availableModules.Name -notcontains 'Azure')
-    {
-        Write-Host "Installing module Azure..." -ForegroundColor Yellow
-        Install-Module -Name Azure -Scope CurrentUser -Repository 'PSGallery'
-    }
-    else
-    {
-        Write-Host "Azure module is available." -ForegroundColor Green
+    # Checking if required module is available in user machine
+    $requiredModule | ForEach-Object {
+        if($availableModules.Name -notcontains $_)
+        {
+            Write-Host "Installing module $($_)..." -ForegroundColor Yellow
+            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery'
+        }
+        else {
+            Write-Host "$($_) module is available." -ForegroundColor Green
+        }
     }
 }
 
 function Disable-RemoteDesktopAccess
 {
     <#
-    .SYNOPSIS
-    This command would help in remediating 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
-    .DESCRIPTION
-    This command would help in remediating 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
-    .PARAMETER SubscriptionId
-        Enter subscription id on which remediation need to perform.
-    .PARAMETER Path
-        Json file path which contain failed controls detail to remediate.
-    .Parameter Force
-        To disable RDP access forcefully.
+        .SYNOPSIS
+        This command would help in remediating 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
+        .DESCRIPTION
+        This command would help in remediating 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
+        .PARAMETER SubscriptionId
+            Enter subscription id on which remediation need to perform.
+        .PARAMETER Path
+            Json file path which contain failed controls detail to remediate.
+        .Parameter Force
+            To disable RDP access forcefully.
     #>
 
     param (
@@ -146,6 +127,9 @@ function Disable-RemoteDesktopAccess
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -Force -ErrorAction Stop
     Select-AzureSubscription -SubscriptionId $($SubscriptionId) -ErrorAction Stop
+    
+    Write-Host "Note: `n Cloud services on which RDP was enabled, during the deployment will not be remediated." -ForegroundColor Yellow
+    Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
     Write-Host "Starting with subscription [$($SubscriptionId)]..."
@@ -215,7 +199,7 @@ function Disable-RemoteDesktopAccess
     }
 
     Write-Host "Total cloud service(s): [$($totalCloudService)]"
-    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    $folderPath = [Environment]::GetFolderPath("LocalApplicationData") 
     if (Test-Path -Path $folderPath)
     {
         $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableRemoteDesktopAccess"
@@ -232,11 +216,20 @@ function Disable-RemoteDesktopAccess
         # Checking cloud service(s) with enabled RDP acccess
         $resources |  ForEach-Object {
             $resource = $_
-            $rdpExtensions = $()
-            $cloudServiceExtension = Get-AzureServiceRemoteDesktopExtension -ServiceName $_.Name -ErrorAction SilentlyContinue
+            $rdpExtensions = @()
             
-            $rdpExtensions += $cloudServiceExtension | Where-Object { ($null -ne $_) -and ($_.Extension -like "*RDP*") }
+            # Fetching cloud service(s) slot i.e. Staging, Production 
+            $cloudServiceSlots = Get-AzResource -ResourceGroupName $resource.ResourceGroupName -Name $resource.Name -ResourceType "$resourceType/slots" -ApiVersion "2016-04-01"
+            $cloudServiceSlotsName = $cloudServiceSlots.Name | sort -Unique
             
+            # Checking RDP extension on each slots
+            $cloudServiceSlotsName | ForEach-Object {
+                $slot = $_
+                $cloudServiceExtension = Get-AzureServiceRemoteDesktopExtension -ServiceName $resource.Name -Slot $slot -ErrorAction SilentlyContinue
+                $rdpExtensions += $cloudServiceExtension | Where-Object { ($null -ne $_) -and ($_.Extension -like "*RDP*") } | select @{N='Slot'; E={$slot}}, @{N='UserName'; E={$_.UserName}}, @{N='Role'; E={$_.Role}}, @{N='Id'; E={$_.Id}}
+            }
+            
+            # Checking RDP extension is present on cloud service(s)
             if(($rdpExtensions | Measure-Object).Count -gt 0)
             {
                 $item =  New-Object psobject -Property @{  
@@ -290,21 +283,27 @@ function Disable-RemoteDesktopAccess
             try 
             {
                 $cloudServiceWithEnabledRDPAccess | ForEach-Object {
-                    # Disabling RDP access at service level
-                    $output = $_.RDPExtensionDetails | Remove-AzureServiceRemoteDesktopExtension -ServiceName $_.CloudServiceName -ErrorAction SilentlyContinue
+                    $serviceName = $_.CloudServiceName
+                    $rgName = $_.ResourceGroupName
                     
-                    if($null -ne $output)
+                    # Disabling RDP access
+                    $_.RDPExtensionDetails | ForEach-Object {
+                        $output = Remove-AzureServiceRemoteDesktopExtension -ServiceName $serviceName -Slot $_.Slot -Role $_.Role -ErrorAction SilentlyContinue
+                        if($null -eq $output -and $output.OperationStatus -ine "Succeeded")
+                        {
+                            $item =  New-Object psobject -Property @{  
+                                CloudServiceName = $serviceName                
+                                ResourceGroupName = $rgName
+                            }
+    
+                            $skippedCloudServiceFromRemediation += $item
+                            break;
+                        }
+                    }
+
+                    if(($skippedCloudServiceFromRemediation | Measure-Object).Count -eq 0)
                     {
                         $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.CloudServiceName};Label="CloudServiceName"} | Sort-Object | Format-Table | Out-String
-                    }
-                    else
-                    {
-                        $item =  New-Object psobject -Property @{  
-                            CloudServiceName = $_.CloudServiceName                
-                            ResourceGroupName = $_.ResourceGroupName
-                        }
-    
-                        $skippedCloudServiceFromRemediation += $item
                     }
                 }
             }
@@ -331,7 +330,7 @@ function Disable-RemoteDesktopAccess
 
     if(($skippedCloudServiceFromRemediation | Measure-Object).Count -eq 0)
     {
-        Write-Host "Successfully disabled RDP access on cloud service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Successfully disabled RDP access from cloud service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else 
     {
