@@ -277,7 +277,7 @@ function Disable-RemoteDesktopAccess
             # Asking user to verify logs and select 'Y' to proceed
             if(-not $Force)
             {
-                Write-Host "Do you want to disable RDP access on above listed cloud service(s)?" -ForegroundColor Yellow -NoNewline
+                Write-Host "Do you want to disable RDP access from cloud service(s) listed in above path?" -ForegroundColor Yellow -NoNewline
                 $UserInput = Read-Host -Prompt "(Y|N)"
                 if($UserInput -ne "Y")
                 {
