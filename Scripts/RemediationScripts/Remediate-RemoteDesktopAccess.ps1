@@ -128,7 +128,7 @@ function Disable-RemoteDesktopAccess
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -Force -ErrorAction Stop
     Select-AzureSubscription -SubscriptionId $($SubscriptionId) -ErrorAction Stop
     
-    Write-Host "Note: `n Cloud services on which RDP was enabled, during the deployment will not be remediated." -ForegroundColor Yellow
+    Write-Host "Note: `n Cloud services on which RDP was enabled, during the deployment will not be remediated(For now these need to be remediated via azure portal)." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
@@ -270,7 +270,7 @@ function Disable-RemoteDesktopAccess
             # Asking user to verify logs and select 'Y' to proceed
             if(-not $Force)
             {
-                Write-Host "Do you want to disable RDP access from cloud service(s) listed in above path?" -ForegroundColor Yellow -NoNewline
+                Write-Host "Rollback script is not available.`nDo you want to disable RDP access from cloud service(s) listed in above path?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 $UserInput = Read-Host -Prompt "(Y|N)"
                 if($UserInput -ne "Y")
                 {
