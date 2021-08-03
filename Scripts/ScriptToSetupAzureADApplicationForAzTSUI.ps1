@@ -28,7 +28,16 @@ $SubscriptionId = ""
 # Resource group name in which Azure Tenant Security Solution needs to be installed.
 $ScanHostRGName = ""
 
+# Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+$AzureEnvironmentName = ""
+
 # ************** End: Initialize required parameters ******************** #
+
+# Standard configuration
+$AzureEnvironmentAppServiceURI = @{
+    "AzureCloud" = "https://{0}.azurewebsites.net";
+    "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
+}
 
 # Load helper functions
 
@@ -169,8 +178,8 @@ try
     Write-Host "Updating Azure AD application registration..." -ForegroundColor Cyan
     $identifierUri = 'api://{0}' -f $webUIApp.AppId
     $replyUris = New-Object Collections.Generic.List[string]
-    $replyUris.Add(('https://{0}.azurewebsites.net' -f $UIAzureADAppName));
-    $replyUris.Add(('https://{0}.azurewebsites.net/auth.html' -f $UIAzureADAppName));
+    $replyUris.Add(($AzureEnvironmentAppServiceURI.$AzureEnvironmentName -f $UIAzureADAppName));
+    $replyUris.Add($([string]::Join("/", $([string]::Format($AzureEnvironmentAppServiceURI.$AzureEnvironmentName, $UIAzureADAppName)), "auth.html")));
     Set-AzureADApplication -ObjectId $webUIApp.ObjectId -ReplyUrls $replyUris -IdentifierUris $identifierUri -Oauth2AllowImplicitFlow $true
     
     $identifierUri = 'api://{0}' -f $webApi.AppId

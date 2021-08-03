@@ -245,7 +245,10 @@ $HostSubscriptionId = <HostSubscriptionId>
 # Add resource group name in which Azure Tenant Security Solution needs to be installed.
 $HostResourceGroupName = <HostResourceGroupName>
 
-$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName
+# Add Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+$AzureEnvironmentName = <AzureEnvironmentName>
+
+$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName -AzureEnvironmentName $AzureEnvironmentName
 
 # -----------------------------------------------------------------#
 # Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using the below command. This will be used in AzTS Soln installation. 
