@@ -481,12 +481,12 @@ function Remove-AzTSInvalidAADAccounts
 
         if($isRemoved)
         {
-            Write-Host "Completed deleting invalid AAD Object guids role assignments." -ForegroundColor Green
+            Write-Host "Completed deleting deprecated/invalid AAD Object guids role assignments." -ForegroundColor Green
         }
         else 
         {
             Write-Host "`n"
-            Write-Host "Not able to successfully delete invalid AAD Object guids role assignments." -ForegroundColor Red
+            Write-Host "Not able to successfully delete deprecated/invalid AAD Object guids role assignments." -ForegroundColor Red
         }
     }
     else
@@ -595,4 +595,7 @@ Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>'
                                 [-DryRun: $true] 
                                 [-FilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\InvalidAADAccounts\DeprecatedIdentitiesRoleAssignments.csv"]
 
+Note: 
+    1. Set '-DryRun' as '$true' for pre-check, if you want to validate role assignments before remediation.
+    2. If you want to perform remediation only for DryRun output, use '-FilePath' parameter and set '-DryRun' as 'False'.  
 #>
