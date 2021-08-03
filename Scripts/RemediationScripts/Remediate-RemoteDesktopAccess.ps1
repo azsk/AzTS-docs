@@ -348,7 +348,7 @@ class Constants
         Warning = [System.ConsoleColor]::Yellow
         Info = [System.ConsoleColor]::Cyan
         Update = [System.ConsoleColor]::Green
-	    Default = [System.ConsoleColor]::White
+	Default = [System.ConsoleColor]::White
     }
 
     static [string] $DoubleDashLine    = "================================================================================"
