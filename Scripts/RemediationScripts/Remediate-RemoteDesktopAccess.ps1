@@ -128,7 +128,7 @@ function Disable-RemoteDesktopAccess
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -Force -ErrorAction Stop
     Select-AzureSubscription -SubscriptionId $($SubscriptionId) -ErrorAction Stop
     
-    Write-Host "Note: `n Cloud services on which RDP was enabled, during the deployment will not be remediated(For now these need to be remediated via azure portal)." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "Note: `n Cloud services on which RDP was enabled, during the deployment will not be remediated(These need to be remediated via azure portal)." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
@@ -288,6 +288,8 @@ function Disable-RemoteDesktopAccess
                     
                     # Disabling RDP access
                     $_.RDPExtensionDetails | ForEach-Object {
+                        
+                        # TODO: Add 'UninstallConfiguration' switch to remove extension configurations associated with the service 
                         $output = Remove-AzureServiceRemoteDesktopExtension -ServiceName $serviceName -Slot $_.Slot -Role $_.Role -ErrorAction SilentlyContinue
                         if($null -eq $output -and $output.OperationStatus -ine "Succeeded")
                         {
