@@ -203,7 +203,7 @@ function Remove-AzTSInvalidAADAccounts
         $currentLoginUserObjectId = $currentLoginUserObjectIdArray[0].ObjectId;
     }
 
-    if(($FilePath | Measure-Object).Count -eq 0)
+    if([String]::IsNullOrWhiteSpace($FilePath))
     { 
         Write-Host "Step 2 of 5: Fetching all the role assignments for subscription [$($SubscriptionId)]..."
 
