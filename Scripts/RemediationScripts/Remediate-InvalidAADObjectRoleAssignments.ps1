@@ -588,5 +588,11 @@ class ASCDeprecatedAccounts
 # ***************************************************** #
 <#
 Function calling with parameters.
-Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' [-ObjectIds @('<Object_Ids>')] -Force:$false -PerformPreReqCheck: $true [-DryRun: $true] [-FilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\InvalidAADAccounts\DeprecatedIdentitiesRoleAssignments.csv"]
+Remove-AzTSInvalidAADAccounts -SubscriptionId '<Sub_Id>' 
+                                [-ObjectIds @('<Object_Ids>')] 
+                                -Force:$false 
+                                -PerformPreReqCheck: $true 
+                                [-DryRun: $true] 
+                                [-FilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\InvalidAADAccounts\DeprecatedIdentitiesRoleAssignments.csv"]
+
 #>
