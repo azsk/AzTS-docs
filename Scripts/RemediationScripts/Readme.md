@@ -12,8 +12,9 @@ Loading script in PowerShell session is divided into four steps:
   - Windows 10
   - Windows Server 2019
 
-  ii) PowerShell 5.0 or higher
-  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get basic understanding.
+  ii) PowerShell 5.0 or higher:
+
+  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](https://github.com/azsk/DevOpsKit-docs/blob/master/00b-Getting-Started/GettingStarted_PowerShellTipsAzSK.md) to get basic understanding.
   Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.)
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).
 
@@ -21,7 +22,7 @@ Loading script in PowerShell session is divided into four steps:
 
 ### **Step 2 of 4. Installing Az Modules:**
 
-Az modules contains cmdlet to connect to az account.
+Az modules contain cmdlet to connect to az account.
 Install Az PowerShell Modules using below command. 
 For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
 
@@ -34,7 +35,7 @@ Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PS
  Remediation package mainly contains:
  1. **RemediationScripts** which contains powershell scripts to remediate AzTS controls.
 
-If you have already downloaded the remediation package zip, directly go to step (3.d).
+If you have already downloaded the remediation package zip, you can start from step (3.d).
 
 3.a. Download remediation package zip from [here](../../TemplateFiles/RemediationScripts.zip?raw=1) to your local machine. </br>
 
