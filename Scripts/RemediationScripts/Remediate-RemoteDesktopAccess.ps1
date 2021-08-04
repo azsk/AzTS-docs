@@ -280,12 +280,13 @@ function Disable-RemoteDesktopAccess
             
             Write-Host "`t"
             Write-Host "Disabling RDP access on [$($totalCloudServiceWithEnableRDPAccess)] cloud service(s)..."
-            try 
+             try 
             {
                 $cloudServiceWithEnabledRDPAccess | ForEach-Object {
                     $serviceName = $_.CloudServiceName
                     $rgName = $_.ResourceGroupName
-                    
+                    $isServiceRemediated = $true
+
                     # Disabling RDP access
                     $_.RDPExtensionDetails | ForEach-Object {
                         
@@ -297,13 +298,14 @@ function Disable-RemoteDesktopAccess
                                 CloudServiceName = $serviceName                
                                 ResourceGroupName = $rgName
                             }
-    
+
+                            $isServiceRemediated = $false
                             $skippedCloudServiceFromRemediation += $item
                             break;
                         }
                     }
 
-                    if(($skippedCloudServiceFromRemediation | Measure-Object).Count -eq 0)
+                    if($isServiceRemediated)
                     {
                         $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.CloudServiceName};Label="CloudServiceName"} | Sort-Object | Format-Table | Out-String
                     }
