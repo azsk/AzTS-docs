@@ -93,9 +93,9 @@ function Set-ConfigAzureDefender
     .DESCRIPTION
     This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .PARAMETER SubscriptionId
-        Enter subscription id on which remediation need to perform.
+        Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisites check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required modules to perform remediation operation are available.
     #>
 
     param (
@@ -161,7 +161,7 @@ function Set-ConfigAzureDefender
         return;
     }
 
-    # Declaring required ASC type and pricing tier
+    # Declaring required resource types and pricing tier
     $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
@@ -203,24 +203,24 @@ function Set-ConfigAzureDefender
         Write-Host "$reqProviderName provider successfully registered." -ForegroundColor Green
     }
 
-    Write-Host "Step 2 of 3: Checking [$($reqASCTier)] pricing tier for [$($reqASCTierResourceTypes -join ", ")] ASC type..."
+    Write-Host "Step 2 of 3: Checking [$($reqASCTier)] pricing tier for [$($reqASCTierResourceTypes -join ", ")] resource types..."
     $nonCompliantASCTierResourcetype = @()
     $nonCompliantASCTierResourcetype = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqASCTier -and $reqASCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
 
     $nonCompliantASCTypeCount = ($nonCompliantASCTierResourcetype | Measure-Object).Count
 
-    Write-Host "Found [$($nonCompliantASCTypeCount)] ASC type without [$($reqASCTier)]"
+    Write-Host "Found [$($nonCompliantASCTypeCount)] resource types without [$($reqASCTier)]"
     Write-Host "[NonCompliantASCType]: [$($nonCompliantASCTierResourcetype.Name -join ", ")]"
 
-    # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant ASC type found) then no need to execute below steps.
+    # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant resource types are found) then no need to execute below steps.
     if($isProviderRegister -and ($nonCompliantASCTypeCount -eq 0))
     {
-        Write-Host "[$($reqProviderName)] provider is already registered and there is no non-compliant ASC type. In this case remediation not required." -ForegroundColor Green
+        Write-Host "[$($reqProviderName)] provider is already registered and there are no non-compliant resource types. In this case, remediation is not required." -ForegroundColor Green
         Write-Host "======================================================"
         return
     }
 
-    # Creating data object for ASC type without 'Standard' pricing tier to export into json, it will help while doing rollback operation. 
+    # Creating data object for resource types without 'Standard' pricing tier to export into json, it will help while doing rollback operation. 
     $nonCompliantASCResource =  New-Object psobject -Property @{
             SubscriptionId = $SubscriptionId 
             IsProviderRegister = $isProviderRegister
@@ -235,7 +235,7 @@ function Set-ConfigAzureDefender
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    Write-Host "Step 3 of 3: Taking backup of ASC type without [Standard] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won''t be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+    Write-Host "Step 3 of 3: Taking backup of resource types without [$($reqASCTier)] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won''t be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
     $nonCompliantASCResource | ConvertTo-json | out-file "$($folderpath)\NonCompliantASCType.json"  
     Write-Host "Path: $($folderpath)\NonCompliantASCType.json"     
     Write-Host "`n"
@@ -275,9 +275,9 @@ function Remove-ConfigAzureDefender
     .DESCRIPTION
     This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .PARAMETER SubscriptionId
-        Enter subscription id on which remediation need to perform.
+        Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisites check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required modules to perform rollback operation are available.
     #>
 
     param (
@@ -357,7 +357,7 @@ function Remove-ConfigAzureDefender
         break;        
     }
 
-    # Declaring required ASC type and pricing tier
+    # Declaring required resource types and pricing tier
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $remediatedLog = Get-Content -Raw -Path $Path | ConvertFrom-Json
