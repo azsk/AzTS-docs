@@ -152,7 +152,7 @@ function Set-ConfigAzureDefender
         return;
     }
 
-    # Safe Check: Current user need to be either Contributor or Owner for the subscription
+    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
@@ -185,7 +185,7 @@ function Set-ConfigAzureDefender
                 # Checking threshold time limit to avoid getting into infinite loop
                 if($thresholdTimeLimit -ge 300)
                 {
-                    Write-Host "Error occurred while registering [$($reqProviderName)] provider. It is taking more time then expected, Aborting process..." -ForegroundColor Red
+                    Write-Host "Error occurred while registering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor Red
                     throw [System.ArgumentException] ($_)
                 }
                 Start-Sleep -Seconds 30
@@ -235,7 +235,7 @@ function Set-ConfigAzureDefender
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    Write-Host "Step 3 of 3: Taking backup of resource types without [$($reqASCTier)] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won''t be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+    Write-Host "Step 3 of 3: Taking backup of resource types without [$($reqASCTier)] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won't be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
     $nonCompliantASCResource | ConvertTo-json | out-file "$($folderpath)\NonCompliantASCType.json"  
     Write-Host "Path: $($folderpath)\NonCompliantASCType.json"     
     Write-Host "`n"
@@ -414,7 +414,7 @@ function Remove-ConfigAzureDefender
                         # Checking threshold time limit to avoid getting into infinite loop
                         if($thresholdTimeLimit -ge 300)
                         {
-                            Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time then expected, Aborting process..." -ForegroundColor Red
+                            Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor Red
                             throw [System.ArgumentException] ($_)
                         }
                         Start-Sleep -Seconds 30
