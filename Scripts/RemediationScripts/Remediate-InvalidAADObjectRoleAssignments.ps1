@@ -6,7 +6,7 @@
 ControlId: 
     Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
 DisplayName:
-    Remove deprecated accounts from your subscription(s)
+    Remove Orphaned accounts from your subscription(s).
 
 # Pre-requesites:
     You will need owner or User Access Administrator role at subscription level.
