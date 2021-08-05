@@ -272,7 +272,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 > **Note:**
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
-> 3. _To install AzTS setup with VNet integration, uncomment switch `-EnableVnetIntegration` and then run the installation command `Install-AzSKTenantSecuritySolution`._ To know more about VNet Integration refer to this [FAQ](README.md#Why-should-I-integrate-my-AzTS-solution-setup-with-VNet?).
+> 3. _To install AzTS setup with **VNet integration**, uncomment switch `-EnableVnetIntegration` and then run the installation command `Install-AzSKTenantSecuritySolution`._ To know more about VNet Integration refer to this [FAQ](README.md#why-should-i-integrate-my-azts-solution-setup-with-vnet).
 >
 > &nbsp;
 
