@@ -35,7 +35,7 @@ We will look at how a PowerBI-based compliance dashboard can be created and depl
 
 > **Note**: This is a one-time activity with tremendous leverage as you can use the resulting dashboard (example below) towards driving security governance activities over an extended period at your organization.
 >
->**As of now this feature is not supported with AzTS solution integrated to VNet.** 
+>**As of now this feature is not supported for AzTS setup integrated to VNet.** 
 
 #### **Step 0: Pre-requisites**
 To create, edit and publish your compliance dashboard, you will need to install the latest version of PowerBI desktop on your local machine. Download it from [here](https://powerbi.microsoft.com/en-us/desktop/).
