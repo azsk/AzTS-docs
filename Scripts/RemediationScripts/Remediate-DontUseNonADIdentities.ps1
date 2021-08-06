@@ -47,9 +47,9 @@ function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
+    This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Resources, Az.Account, AzureAD" -ForegroundColor Cyan
@@ -104,7 +104,7 @@ function Remove-AzTSNonADIdentities
     .Parameter Force
         Enter force parameter value to remove non-ad identities
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
     #>
 
     param (
@@ -162,7 +162,7 @@ function Remove-AzTSNonADIdentities
 
     Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
-    # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
+    # Safe Check: Checking whether the current account is of type User.
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
@@ -424,7 +424,7 @@ function Restore-AzTSNonADIdentities
     .PARAMETER RollbackFilePath
         Json file path which containing remediation log to perform rollback operation.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
 	#>
 
     param (

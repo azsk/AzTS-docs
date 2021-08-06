@@ -1,22 +1,22 @@
 <##########################################
 
-# Overivew:
-    This script is used to config ASC tier on subscription.
+# Overview:
+    This script is used to configure Azure Defender on subscription.
 
-ControlId: 
-    Azure_Subscription_Config_ASC_Tier
+# ControlId:
+    Azure_Subscription_Config_ASC_Defender
 
-# Pre-requesites:
-    You will need owner or contributor role on subscription.
+# Pre-requisites:
+    You will need Owner or Contributor role on subscription.
 
-# Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+# Steps performed by the script:
+    1. Install and validate pre-requisites to run the script for subscription.
 
-    2. Get list non-compliant ASC type from subscription.
+    2. Get the list of resource types that do not have Azure Defender plan enabled, from subscription.
 
-    3. Taking backup of non-compliant ASC type.
+    3. Take a backup of these non-compliant resource types.
 
-    4. Register 'Microsoft.Security' provider and enable required tier for all non-compliant ASC type for subscription.
+    4. Register 'Microsoft.Security' provider and enable Azure Defender plan for all non-compliant resource types for subscription.
 
 # Step to execute script:
     Download and load remediation script in PowerShell session and execute below command.
@@ -24,17 +24,17 @@ ControlId:
 
 # Command to execute:
     Examples:
-        1. Run below command to config ASC tier for subscription
+        1. Run below command to configure Azure Defender for subscription
 
-        Set-ConfigASCTier -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+        Set-ConfigAzureDefender -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
 
     Note: 
         To rollback changes made by remediation script, execute below command
-        Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
+        Remove-ConfigAzureDefender -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
 
 To know more about parameter execute:
-    a. Get-Help Set-ConfigASCTier -Detailed
-    b. Get-Help Remove-ConfigASCTier -Detailed
+    a. Get-Help Set-ConfigAzureDefender -Detailed
+    b. Get-Help Remove-ConfigAzureDefender -Detailed
 
 ########################################
 #>
@@ -42,10 +42,10 @@ function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
-	#>
+    This command would check pre requisites modules to perform remediation.
+    #>
 
     Write-Host "Required modules are: Az.Resources, Az.Security, Az.Accounts" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
@@ -85,17 +85,17 @@ function Pre_requisites
     }
 }
 
-function Set-ConfigASCTier
+function Set-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .PARAMETER SubscriptionId
-        Enter subscription id on which remediation need to perform.
+        Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required modules to perform remediation operation are available.
     #>
 
     param (
@@ -108,7 +108,7 @@ function Set-ConfigASCTier
     )
 
     Write-Host "======================================================"
-    Write-Host "Starting to remediate config ASC tier for subscription [$($SubscriptionId)]..."
+    Write-Host "Starting to configure Azure Defender for subscription [$($SubscriptionId)]..."
     Write-Host "------------------------------------------------------"
 
     if($PerformPreReqCheck)
@@ -121,7 +121,7 @@ function Set-ConfigASCTier
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
             break
         }
     }
@@ -152,7 +152,7 @@ function Set-ConfigASCTier
         return;
     }
 
-    # Safe Check: Current user need to be either Contributor or Owner for the subscription
+    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
@@ -161,7 +161,7 @@ function Set-ConfigASCTier
         return;
     }
 
-    # Declaring required ASC type and pricing tier
+    # Declaring required resource types and pricing tier
     $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
@@ -185,7 +185,7 @@ function Set-ConfigASCTier
                 # Checking threshold time limit to avoid getting into infinite loop
                 if($thresholdTimeLimit -ge 300)
                 {
-                    Write-Host "Error occurred while registering [$($reqProviderName)] provider. It is taking more time then expected, Aborting process..." -ForegroundColor Red
+                    Write-Host "Error occurred while registering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor Red
                     throw [System.ArgumentException] ($_)
                 }
                 Start-Sleep -Seconds 30
@@ -197,30 +197,30 @@ function Set-ConfigASCTier
         }
         catch 
         {
-            Write-Host "Error Occured while registering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while registering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
             return
         }
         Write-Host "$reqProviderName provider successfully registered." -ForegroundColor Green
     }
 
-    Write-Host "Step 2 of 3: Checking [$($reqASCTier)] pricing tier for [$($reqASCTierResourceTypes -join ", ")] ASC type..."
+    Write-Host "Step 2 of 3: Checking [$($reqASCTier)] pricing tier for [$($reqASCTierResourceTypes -join ", ")] resource types..."
     $nonCompliantASCTierResourcetype = @()
     $nonCompliantASCTierResourcetype = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqASCTier -and $reqASCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
 
     $nonCompliantASCTypeCount = ($nonCompliantASCTierResourcetype | Measure-Object).Count
 
-    Write-Host "Found [$($nonCompliantASCTypeCount)] ASC type without [$($reqASCTier)]"
+    Write-Host "Found [$($nonCompliantASCTypeCount)] resource types without [$($reqASCTier)]"
     Write-Host "[NonCompliantASCType]: [$($nonCompliantASCTierResourcetype.Name -join ", ")]"
 
-    # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant ASC type found) then no need to execute below steps.
+    # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant resource types are found) then no need to execute below steps.
     if($isProviderRegister -and ($nonCompliantASCTypeCount -eq 0))
     {
-        Write-Host "[$($reqProviderName)] provider is already registered and there is no non-compliant ASC type. In this case remediation not required." -ForegroundColor Green
+        Write-Host "[$($reqProviderName)] provider is already registered and there are no non-compliant resource types. In this case, remediation is not required." -ForegroundColor Green
         Write-Host "======================================================"
         return
     }
 
-    # Creating data object for ASC type without 'Standard' pricing tier to export into json, it will help while doing rollback opeartion. 
+    # Creating data object for resource types without 'Standard' pricing tier to export into json, it will help while doing rollback operation. 
     $nonCompliantASCResource =  New-Object psobject -Property @{
             SubscriptionId = $SubscriptionId 
             IsProviderRegister = $isProviderRegister
@@ -231,11 +231,11 @@ function Set-ConfigASCTier
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
     if (Test-Path -Path $folderPath)
     {
-        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\ConfigASCTier"
+        $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\ConfigAzureDefender"
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    Write-Host "Step 3 of 3: Taking backup of ASC type without [Standard] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you wont be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+    Write-Host "Step 3 of 3: Taking backup of resource types without [$($reqASCTier)] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won't be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
     $nonCompliantASCResource | ConvertTo-json | out-file "$($folderpath)\NonCompliantASCType.json"  
     Write-Host "Path: $($folderpath)\NonCompliantASCType.json"     
     Write-Host "`n"
@@ -255,29 +255,29 @@ function Set-ConfigASCTier
             Write-Host "Error occurred while setting $reqASCTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
             return
         }
-        Write-Host "Successfuly set [$($reqASCTier)] pricing tier for non-compliant ASC type." -ForegroundColor Green
+        Write-Host "Successfully set [$($reqASCTier)] pricing tier for non-compliant resource types." -ForegroundColor Green
         Write-Host "======================================================"
     }
     else
     {
-        Write-Host "Required ASC type compliant with [$($reqASCTier)] pricing tier." -ForegroundColor Green
+        Write-Host "Required resource types compliant with [$($reqASCTier)] pricing tier." -ForegroundColor Green
         Write-Host "======================================================"
         return   
     }
 }
 
 
-function Remove-ConfigASCTier
+function Remove-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Tier' control.
+    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
     .PARAMETER SubscriptionId
-        Enter subscription id on which remediation need to perform.
+        Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required modules to perform rollback operation are available.
     #>
 
     param (
@@ -294,7 +294,7 @@ function Remove-ConfigASCTier
     )
 
     Write-Host "======================================================"
-    Write-Host "Starting to rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
+    Write-Host "Starting to rollback operation to configure Azure Defender for subscription [$($SubscriptionId)]..."
     Write-Host "------------------------------------------------------"
 
     if($PerformPreReqCheck)
@@ -307,7 +307,7 @@ function Remove-ConfigASCTier
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
             break
         }
     }
@@ -348,7 +348,7 @@ function Remove-ConfigASCTier
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         break;
     }
-    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
+    Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to configure Azure Defender for subscription [$($SubscriptionId)]..."
  
     # Array to store resource context
     if (-not (Test-Path -Path $Path))
@@ -357,19 +357,19 @@ function Remove-ConfigASCTier
         break;        
     }
 
-    # Declaring required ASC type and pricing tier
+    # Declaring required resource types and pricing tier
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $remediatedLog = Get-Content -Raw -Path $Path | ConvertFrom-Json
 
-    Write-Host "Step 3 of 3: Performing rollback operation to config ASC tier for subscription [$($SubscriptionId)]..."
+    Write-Host "Step 3 of 3: Performing rollback operation to configure Azure Defender for subscription [$($SubscriptionId)]..."
         
     # Performing rollback operation
     try
     {
         if(($remediatedLog | Measure-Object).Count -gt 0)
         {
-            Write-Host "Configuring ASC tier as per remediation log on subscription [$($SubscriptionId)]..."
+            Write-Host "Configuring Azure Defender as per remediation log on subscription [$($SubscriptionId)]..."
             
             if($null -ne $remediatedLog.NonCompliantASCType -and ($remediatedLog.NonCompliantASCType | Measure-Object).Count -gt 0)
             {
@@ -381,13 +381,13 @@ function Remove-ConfigASCTier
                 }
                 catch 
                 {
-                    Write-Host "Error occurred while performing rollback operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
+                    Write-Host "Error occurred while performing rollback operation to configure Azure Defender. ErrorMessage [$($_)]" -ForegroundColor Red 
                     break      
                 }
             }
             else 
             {
-                Write-Host "No non-compliant ASC type found to perform rollback operation." -ForegroundColor Green                
+                Write-Host "No non-compliant resource types found to perform rollback operation." -ForegroundColor Green                
             }
 
             Write-Host "`n"
@@ -414,7 +414,7 @@ function Remove-ConfigASCTier
                         # Checking threshold time limit to avoid getting into infinite loop
                         if($thresholdTimeLimit -ge 300)
                         {
-                            Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time then expected, Aborting process..." -ForegroundColor Red
+                            Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor Red
                             throw [System.ArgumentException] ($_)
                         }
                         Start-Sleep -Seconds 30
@@ -426,7 +426,7 @@ function Remove-ConfigASCTier
                 }
                 catch 
                 {
-                    Write-Host "Error Occured while unregistering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
+                    Write-Host "Error occurred while unregistering $reqProviderName provider. ErrorMessage [$($_)]" -ForegroundColor Red
                     break;
                 }
                 Write-Host "$reqProviderName provider successfully unregistered." -ForegroundColor Green
@@ -436,14 +436,14 @@ function Remove-ConfigASCTier
         }
         else 
         {
-            Write-Host "ASC tier details not found to perform rollback operation."
+            Write-Host "Azure Defender details not found to perform rollback operation."
             Write-Host "======================================================"
             break
         }
     }
     catch
     {
-        Write-Host "Error occurred while performing rollback operation to configure ASC tier. ErrorMessage [$($_)]" -ForegroundColor Red 
+        Write-Host "Error occurred while performing rollback operation to configure Azure Defender. ErrorMessage [$($_)]" -ForegroundColor Red 
         break
     }
 }
@@ -451,10 +451,8 @@ function Remove-ConfigASCTier
 <#
 # ***************************************************** #
 # Function calling with parameters for remediation.
-Set-ConfigASCTier -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+Set-ConfigAzureDefender -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
 
 # Function calling with parameters to rollback remediation changes.
-Remove-ConfigASCTier -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
+Remove-ConfigAzureDefender -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
 #>
-
-

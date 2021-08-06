@@ -245,7 +245,10 @@ $HostSubscriptionId = <HostSubscriptionId>
 # Add resource group name in which Azure Tenant Security Solution needs to be installed.
 $HostResourceGroupName = <HostResourceGroupName>
 
-$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName
+# Add Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+$AzureEnvironmentName = <AzureEnvironmentName>
+
+$ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName -AzureEnvironmentName $AzureEnvironmentName
 
 # -----------------------------------------------------------------#
 # Step 2: Save WebAPIAzureADAppId and UIAzureADAppId generated for Azure AD application using the below command. This will be used in AzTS Soln installation. 
@@ -293,7 +296,11 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -SendUsageTelemetry:$true `
                 -ScanIdentityHasGraphPermission:$true `
                 -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
+                -EnableAutoUpdater `
+                -EnableAzTSUI `
                 -Verbose
+
+  
 
   # -----------------------------------------------------------------#
   # Step 3: Save internal user-assigned managed identity name generated using the below command. This will be used to grant Graph permission to internal MI.
@@ -313,12 +320,14 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                     -ScanHostRGName AzSK-AzTS-Solution-RG `
                     -ScanIdentityId '/subscriptions/bbbe2e73-fc26-492b-9ef4-adec8560c4fe/resourceGroups/TenantReaderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/TenantReaderUserIdentity' `
                     -Location EastUS2 `
-                    -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
+                    -EnableAzTSUI `
                     -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
+                    -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
                     -AzureEnvironmentName AzureCloud `
                     -SendUsageTelemetry:$true `
                     -ScanIdentityHasGraphPermission:$true `
                     -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
+                    -EnableAutoUpdater `
                     -Verbose
 
 
@@ -334,7 +343,7 @@ For '-ScanIdentityId' parameter,
 #>
 
 <#
-
+Note: UIAzureADAppId and WebAPIAzureADAppId is mandatory if you are enabling AzTSUI
 For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
           (a) use value created for "$ADApplicationDetails.WebAPIAzureADAppId" and "$ADApplicationDetails.UIAzureADAppId" respectively from step 5.
                                     OR
@@ -344,6 +353,27 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
 #>
 ```
+
+**Parameter details:**
+
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId|Hosting subscription id where Azure Tenant solution will be deployed |TRUE|
+|ScanHostRGName| Name of ResourceGroup where setup resources will be created |TRUE|
+|ScanIdentityId| Resource id of user managed identity used to scan subscriptions  |TRUE|
+|Location|Location where all resources will get created |TRUE|
+|WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | FALSE |
+|UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | FALSE|
+|SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
+|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
+|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
+|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
+|EnableAutoUpdater | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
+|EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
+|Verbose| Switch used to output detailed log |FALSE|
+
+</br>
+
 
   6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission.
   </br>
@@ -369,23 +399,6 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
 
 
-**Parameter details:**
-
-|Param Name|Description|Required?
-|----|----|----|
-|SubscriptionId|Hosting subscription id where Azure Tenant solution will be deployed |TRUE|
-|ScanHostRGName| Name of ResourceGroup where setup resources will be created |TRUE|
-|ScanIdentityId| Resource id of user managed identity used to scan subscriptions  |TRUE|
-|Location|Location where all resources will get created |TRUE|
-|WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | TRUE |
-|UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | TRUE|
-|SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
-|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
-|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
-|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
-|Verbose| Switch used to output detailed log |FALSE|
-
-</br>
 
 
 > **Note:** 
@@ -680,3 +693,80 @@ This is probably happening because the user-assigned managed identity (internal 
 To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in the screenshot) --> Select the identity and click on 'Remove'.
 
 After deleting the identity, you can run the installation command again.
+
+<br> 
+
+#### **While installing AzTS solution I have provided my prefrences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my prefrences now?**
+
+To update the telemetry prefrences, go to resource group where AzTS solution has been installed --> AzSK-AzTS-AutoUpdater-XXXXX --> Configuration --> Change the values of below listed configurations:
+
+- AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel
+
+  - All --> To opt in for both, Anonymized AzTS usage data and Organization/team contact details.
+  - Anonymous --> To opt in for only Anonymized AzTS usage data.
+  - Onboarding --> To opt in for only Organization/team contact details.
+  - None --> To opt out of both, Anonymized AzTS usage data and Organization/team contact details.
+
+- OnboardingDetails\_\_Organization
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your organization in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_Division
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your division(division within your organization) in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_ContactEmailAddressList
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+<br> 
+
+#### **The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
+
+AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three function apps which are as follows:
+1. AzSK-AzTS-MetadataAggregator-xxxxx
+2. AzSK-AzTS-WorkItemProcessor-xxxxx
+3. AzSK-AzTS-AutoUpdater-xxxxx
+
+These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about the hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
+
+In this case, we recommend you to upgrade the Function app hosting plan (pricing tier) which will give you the flexibility to increase the function timeout value. Following steps will guide you on how to upgrade pricing tier and change function timeout value for AzTS setup.
+    
+1. To update pricing tier, run `Update-AzFunctionAppPlan` cmdlet as shown below. You can read more about pricing details of function app [here](https://azure.microsoft.com/en-us/pricing/details/functions/).
+
+    ```PowerShell
+      # 1. Clear existing login, if any
+
+      Disconnect-AzAccount
+
+      # 2. Connect to AzureAD and AzAccount
+      # Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+
+      $TenantId = "<TenantId>"
+      Connect-AzAccount -Tenant $TenantId
+
+      # 3. Install module, if not already installed
+      # Az.Functions >= 4.8.0
+
+      Install-Module -Name Az.Functions -AllowClobber -Scope CurrentUser -repository PSGallery
+
+      # 4. Import module
+
+      Import-Module -Name Az.Functions
+
+      # 5. Update app service pricing tier
+
+      # AppServicePlanName: Your Function App Service plan (in the Azure portal, go to the AzTS Host RG > select one of function apps, say 'AzSK-AzTS-WorkItemProcessor-xxxxx' > Under the Overview section, copy name of the 'App Service Plan'.)
+      # In this example, we are updating service plan to EP2.
+
+      Update-AzFunctionAppPlan -ResourceGroupName <AzTSScanHostRG> `
+                                 -Name <AppServicePlanName> `
+                                 -Sku EP2
+
+    ```
+
+4. To increase function timeout, go to your function app (say, you want to increase timeout value for 'AzSK-AzTS-WorkItemProcessor-xxxxx'. This app contains function to scan subscription with baseline control.) > Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
+
+  > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
