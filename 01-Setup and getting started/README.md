@@ -327,7 +327,6 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                     -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
                     -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
                     -AzureEnvironmentName AzureCloud `
-                    -SendUsageTelemetry:$true `
                     -ScanIdentityHasGraphPermission:$true `
                     -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
                     -EnableAutoUpdater `
@@ -370,7 +369,6 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
 |AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
 |ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
-|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
 |EnableAutoUpdater | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
 |EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
