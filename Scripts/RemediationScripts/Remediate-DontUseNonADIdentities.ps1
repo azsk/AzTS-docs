@@ -1,10 +1,55 @@
+<##########################################
+
+# Overivew:
+    This script is used to remove external (guest) AD identities access on subscriptions.
+
+ControlId: 
+    Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+
+# Pre-requesites:
+    You will need owner or User Access Administrator role at subscription level.
+
+# Steps performed by the script
+    1. Install and validate pre-requesites to run the script for subscription.
+
+    2. Get role assignments for the subscription and filter external/Non-Ad identities.
+
+    3. Taking backup of external/Non-Ad identities that are going to be removed using remediation script.
+
+    4. Clean up external/Non-Ad object identities role assignments from subscription.
+
+# Step to execute script:
+    Download and load remediation script in PowerShell session and execute below command.
+    To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+
+# Command to execute:
+    Examples:
+        1. Run below command to remove all external/Non-Ad identities role assignments from subscription
+
+         Remove-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+
+        2. Run below command, if you have external/Non-Ad identities list with you. You will get external/Non-Ad account list from AzTS UI status reason section.
+
+         Remove-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -ObjectIds @('<Object_Id_1>', '<Object_Id_2>') -PerformPreReqCheck: $true
+
+    Note: 
+        To rollback changes made by remediation script, execute below command
+        Restore-AzTSNonADIdentities -SubscriptionId '<Sub_Id>' -RollbackFilePath "<user Documents>\AzTS\Remediation\Subscriptions\<subscriptionId>\<JobDate>\NonAADAccounts\NonAADAccountsRoleAssignments.json" -PerformPreReqCheck: $true   
+
+To know more about parameter execute below command:
+    a. Get-Help Remove-AzTSNonADIdentities -Detailed
+    b. Get-Help Restore-AzTSNonADIdentities -Detailed
+
+########################################
+#>
+
 function Pre_requisites
 {
     <#
     .SYNOPSIS
-    This command would check pre requisities modules.
+    This command would check pre requisites modules.
     .DESCRIPTION
-    This command would check pre requisities modules to perform remediation.
+    This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Resources, Az.Account, AzureAD" -ForegroundColor Cyan
@@ -59,7 +104,7 @@ function Remove-AzTSNonADIdentities
     .Parameter Force
         Enter force parameter value to remove non-ad identities
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
     #>
 
     param (
@@ -117,11 +162,11 @@ function Remove-AzTSNonADIdentities
 
     Write-Host "Step 1 of 3: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
-    # Safe Check: Checking whether the current account is of type User and also grant the current user as UAA for the sub to support fallback
+    # Safe Check: Checking whether the current account is of type User.
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
-        break;
+        return;
     }
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
@@ -130,7 +175,7 @@ function Remove-AzTSNonADIdentities
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "User Access Administrator" } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner or User Access Administrator" -ForegroundColor Yellow
-        break;
+        return;
     }
     
     Write-Host "Step 2 of 3: Fetching all the role assignments for Subscription [$($SubscriptionId)]..."
@@ -279,13 +324,13 @@ function Remove-AzTSNonADIdentities
     if(($externalAccountsRoleAssignments | where { $currentLoginRoleAssignments.ObjectId -contains $_.ObjectId } | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the Non-AD Account. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
-        break;
+        return;
     }
 
     if(($externalAccountsRoleAssignments | Measure-Object).Count -le 0)
     {
         Write-Host "No Non-AD identities found for the subscription [$($SubscriptionId)]. Exiting the process." -ForegroundColor Cyan
-        break;
+        return;
     }
     else
     {
@@ -314,7 +359,7 @@ function Remove-AzTSNonADIdentities
 
         if($UserInput -ne "Y")
         {
-            break;
+            return;
         }
     }
    
@@ -379,7 +424,7 @@ function Restore-AzTSNonADIdentities
     .PARAMETER RollbackFilePath
         Json file path which containing remediation log to perform rollback operation.
     .PARAMETER PerformPreReqCheck
-        Perform pre requisities check to ensure all required module to perform rollback operation is available.
+        Perform pre requisites check to ensure all required module to perform rollback operation is available.
 	#>
 
     param (
