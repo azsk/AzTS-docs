@@ -272,7 +272,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 > **Note:**
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
-> 3. _To install AzTS setup with **VNet integration**, use switch `-EnableVnetIntegration` and then run the installation command `Install-AzSKTenantSecuritySolution`._ To know more about VNet Integration refer to this [FAQ](README.md#why-should-i-integrate-my-azts-solution-setup-with-vnet).
+> 3. _To install AzTS setup with **VNet integration**, run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._ To know more about VNet Integration refer to this [FAQ](README.md#why-should-i-integrate-my-azts-solution-setup-with-vnet).
 >
 > &nbsp;
 
@@ -450,7 +450,7 @@ The following section will walk you through the steps to trigger AzTS scan manua
 Run the `Start-AzSKTenantSecuritySolutionOnDemandScan` command to start scan after the installation of AzTS Soln. Please note that after running this command, AzTS UI will available in the next 2 hours depending on the number of subscriptions to be scanned.
 
 > **Note:** 
-> _If your AzTS solution is integrated to VNet, in that case use switch `-EnableVnetIntegration` and then run `Start-AzSKTenantSecuritySolutionOnDemandScan` command to trigger AzTS scan._
+> _If your AzTS solution is integrated to VNet, in that case, to trigger AzTS scan, run `Start-AzSKTenantSecuritySolutionOnDemandScan` command with `-EnableVnetIntegration` switch._
 
 
 ```PowerShell
@@ -539,7 +539,7 @@ The below steps will help you to verify and understand different resources and f
 |ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
 |ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default, it would retry to scan 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
 |ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management groups will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
-|ATS_7_InitiateOnDemandProcessing| Responsible to queue MetadataAggregator's functions (ATS_1_SubscriptionInvProcessor, ATS_2_BaselineControlsInvProcessor, ATS_3_SubscriptionRBACProcessor, ATS_4_WorkItemScheduler) for processing. **Note**: This feature is only available if the AzTS solution is integrated to VNet.
+|ATS_7_InitiateOnDemandProcessing| Responsible to queue MetadataAggregator's functions (ATS_1_SubscriptionInvProcessor, ATS_2_BaselineControlsInvProcessor, ATS_3_SubscriptionRBACProcessor, ATS_4_WorkItemScheduler) for processing. **Note**: This function will only be available if premium tier pricing plan is used for the function app. Also this function is available by default for AzTS solution with VNet integration, as the pricing plan used here is premium tier.
 
  **2.b. WorkItemProcessor Functions:** 
  
@@ -564,7 +564,7 @@ Similarly, you can trigger below functions with 10 mins interval.
 
 After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get auto trigged, start processing scan and push scan results in Storage Account and LA workspace. 
 
-> **Note:** If AzTS solution is integrated to VNet, you cannot run the functions manually. To trigger all the required functions run [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command with switch `-EnableVnetIntegration`.
+> **Note:** If AzTS solution is integrated to VNet, you cannot run the functions manually. To trigger all the required functions run [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command with `-EnableVnetIntegration` switch.
 
  **2.c. AutoUpdater Functions:** 
  
