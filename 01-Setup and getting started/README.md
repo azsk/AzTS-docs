@@ -272,7 +272,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 > **Note:**
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
-> 3. _To install AzTS setup with **VNet integration**, run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._ To know more about VNet Integration refer to this [FAQ](README.md#why-should-i-integrate-my-azts-solution-setup-with-vnet).
+> 3. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._
 >
 > &nbsp;
 
@@ -795,11 +795,3 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 
   > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
 <br> 
-
-  #### **Why should I integrate my AzTS solution setup with VNet?**
-
-1. Integrating AzTS solution with VNet, ensures that all critical backend resources like - storage account, log analytics workspace, function apps etc. are not accessible over public network.
-
-2. It ensures that all inbound communication to backend resources are routed through private network (Vnet).
-
-3. It also ensures that all resources in a VNet can communicate securely with each other and keeps all the traffic inside the Microsoft Azure backbone network.
