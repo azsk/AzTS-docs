@@ -65,14 +65,15 @@ For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/pow
 ``` PowerShell
 # Install required Az modules
 # Required versions: 
-#   Az.Accounts >= 1.7.1
+#   Az.Accounts >= 2.5.1
 #   Az.Resources >= 1.10.0
-#   Az.Storage >= 1.12.0
+#   Az.Storage >= 2.0.0
 #   Az.ManagedServiceIdentity >= 0.7.3
 #   Az.Monitor >= 1.5.0
 #   Az.OperationalInsights >= 1.3.4
 #   Az.ApplicationInsights >= 1.0.3
 #   Az.Websites >= 1.6.0
+#   Az.Network  >= 2.5.0
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
@@ -81,6 +82,7 @@ Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSG
 Install-Module -Name Az.OperationalInsights -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.ApplicationInsights -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Websites -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Network -AllowClobber -Scope CurrentUser -repository PSGallery
 
 # Install AzureAd 
 # Required version:
@@ -270,6 +272,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 > **Note:**
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
+> 3. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._
 >
 > &nbsp;
 
@@ -290,14 +293,14 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -ScanHostRGName <HostResourceGroupName> `
                 -Location <ResourceLocation> `
                 -ScanIdentityId <ManagedIdentityResourceId> `
-                -WebAPIAzureADAppId <WebAPIAzureADApplicationId> `
-                -UIAzureADAppId <UIAzureADApplicationId> `
-                -AzureEnvironmentName AzureCloud `
-                -SendUsageTelemetry:$true `
-                -ScanIdentityHasGraphPermission:$true `
+                [-WebAPIAzureADAppId <WebAPIAzureADApplicationId>] `
+                [-UIAzureADAppId <UIAzureADApplicationId>] `
+                [-AzureEnvironmentName AzureCloud] `
+                [-ScanIdentityHasGraphPermission:$true] `
                 -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
-                -EnableAutoUpdater `
-                -EnableAzTSUI `
+                [-EnableAutoUpdater] `
+                [-EnableAzTSUI] `
+                [-EnableVnetIntegration] `
                 -Verbose
 
   
@@ -324,7 +327,6 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                     -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
                     -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
                     -AzureEnvironmentName AzureCloud `
-                    -SendUsageTelemetry:$true `
                     -ScanIdentityHasGraphPermission:$true `
                     -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
                     -EnableAutoUpdater `
@@ -367,9 +369,9 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
 |AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
 |ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity does not have Graph permission. The default value is false.|FALSE|
-|SendUsageTelemetry| Permit application to send usage telemetry to Microsoft server. Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features. The default value is false.|FALSE|
 |EnableAutoUpdater | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
+|EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
@@ -445,6 +447,10 @@ The following section will walk you through the steps to trigger AzTS scan manua
 
 Run the `Start-AzSKTenantSecuritySolutionOnDemandScan` command to start scan after the installation of AzTS Soln. Please note that after running this command, AzTS UI will available in the next 2 hours depending on the number of subscriptions to be scanned.
 
+> **Note:** 
+> _If your AzTS solution is integrated to VNet, in that case, to trigger AzTS scan, run `Start-AzSKTenantSecuritySolutionOnDemandScan` command with `-EnableVnetIntegration` switch._
+
+
 ```PowerShell
 # Subscription id in which Azure Tenant Security Solution has been installed.
 $HostSubscriptionId = "<HostSubscriptionId>"
@@ -453,7 +459,8 @@ $HostSubscriptionId = "<HostSubscriptionId>"
 $HostResourceGroupName = "<HostResourceGroupName>"
 
 Start-AzSKTenantSecuritySolutionOnDemandScan -SubscriptionId $HostSubscriptionId `
-                                             -ScanHostRGName $HostResourceGroupName
+                                             -ScanHostRGName $HostResourceGroupName `
+                                             [-EnableVnetIntegration]
 
 ```
 
@@ -472,6 +479,12 @@ The below steps will help you to verify and understand different resources and f
   ![Resources](../Images/12_TSS_Resource_Group_1.png)	
   ![Resources](../Images/12_TSS_Resource_Group_2.png)	
 
+  > **Note:** _If the AzTS Solution is integrated to VNet, verify that below additional resources also got created, along with the once shown above._
+
+  ![Resources](../Images/12_TSS_Resource_Group_3.png)	
+  ![Resources](../Images/12_TSS_Resource_Group_4.png)
+  ![Resources](../Images/12_TSS_Resource_Group_4.png)	  
+
 **Resources details:**
 
 |Resource Name|Resource Type|Description|
@@ -489,6 +502,14 @@ The below steps will help you to verify and understand different resources and f
 |AzSK-AzTS-AutoUpdater-LogicApp-xxxxx| Logic App| Logic App required to upgrade the auto-updater service |
 |azsktsstoragexxxxx|Storage Account| Used to store the daily results of subscriptions scan|
 |AzSK-AzTS-AppInsights |App Insight| Used to collect telemetry logs from functions |
+|AzSK-AzTS-Vnet-xxxxx|Virtual Network| Virtual Network to enable secure communication of Azure resources with each other, it also ensures that all inbound communication to the resources gets routed through virtual network |
+|AzSK-AzTS-private-link-scope-xxxxx|Azure Monitor Private Link Scope| Used to connect private endpoints to Azure Monitor resources - Log Analytics workspaces and Application Insights, thereby ensuring that monitoring data is only accessed through authorized private networks |
+|AzSK-AzTS-private-link-scope-xxxxx-private-endpoint |Private Endpoint| Enables secure connectivity between the consumers from the same VNet, it is used to connect Azure Monitor Private Link Scope to the VNet|
+|privatelink-ods-opinsights-azure-com|Private DNS Zone| This zone covers workspace-specific mapping to ODS endpoints - the ingestion endpoint of Log Analytics|
+|privatelink-oms-opinsights-azure-com|Private DNS Zone| This zone covers workspace-specific mapping to OMS endpoints|
+|privatelink-monitor-azure-com|Private DNS Zone| This zone covers the global endpoints used by Azure Monitor|
+|privatelink-agentsvc-azure-automation-net|Private DNS Zone| This zone covers workspace-specific mapping to the agent service automation endpoints|
+|privatelink-agentsvc-azure-automation-net|Private DNS Zone| This zone configures connectivity to the global agents' solution packs storage account|
 
 <br/>
 
@@ -516,6 +537,7 @@ The below steps will help you to verify and understand different resources and f
 |ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
 |ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default, it would retry to scan 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
 |ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management groups will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
+|ATS_7_InitiateOnDemandProcessing| Responsible to queue MetadataAggregator's functions (ATS_1_SubscriptionInvProcessor, ATS_2_BaselineControlsInvProcessor, ATS_3_SubscriptionRBACProcessor, ATS_4_WorkItemScheduler) for processing. **Note**: This function will only be available if premium tier pricing plan is used for the function app. Also this function is available by default for AzTS solution with VNet integration, as the pricing plan used here is premium tier.
 
  **2.b. WorkItemProcessor Functions:** 
  
@@ -539,6 +561,8 @@ Similarly, you can trigger below functions with 10 mins interval.
  * ATS_4_WorkItemScheduler 
 
 After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get auto trigged, start processing scan and push scan results in Storage Account and LA workspace. 
+
+> **Note:** If AzTS solution is integrated to VNet, you cannot run the functions manually. To trigger all the required functions run [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command with `-EnableVnetIntegration` switch.
 
  **2.c. AutoUpdater Functions:** 
  
@@ -770,3 +794,4 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 4. To increase function timeout, go to your function app (say, you want to increase timeout value for 'AzSK-AzTS-WorkItemProcessor-xxxxx'. This app contains function to scan subscription with baseline control.) > Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
 
   > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
+<br> 

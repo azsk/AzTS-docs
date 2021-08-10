@@ -33,7 +33,9 @@ When you setup your Tenant Security endpoint (i.e. policy server), one of the th
 ## Create cloud security compliance report for your org using PowerBI
 We will look at how a PowerBI-based compliance dashboard can be created and deployed in a matter of minutes starting with a template dashboard that ships with the Tenant Security Solution (AzTS). All you need apart from the Log Analytics workspace instance is a CSV file that provides a mapping of your organization hierarchy to subscription ids (so that we know which team/service group owns each subscription).
 
-> Note: This is a one-time activity with tremendous leverage as you can use the resulting dashboard (example below) towards driving security governance activities over an extended period at your organization. 
+> **Note**: This is a one-time activity with tremendous leverage as you can use the resulting dashboard (example below) towards driving security governance activities over an extended period at your organization.
+>
+>**As of now this feature is not supported for AzTS setup integrated to VNet.** 
 
 #### **Step 0: Pre-requisites**
 To create, edit and publish your compliance dashboard, you will need to install the latest version of PowerBI desktop on your local machine. Download it from [here](https://powerbi.microsoft.com/en-us/desktop/).
