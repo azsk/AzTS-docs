@@ -182,7 +182,7 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-    
+
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
@@ -215,11 +215,8 @@ function Remove-AzTSInvalidAADAccounts
         if(($ObjectIds | Measure-Object).Count -eq 0)
         {
             # Getting all classic role assignments.
-            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-            $method = "Get"
             $classicAssignments = [ClassicRoleAssignments]::new()
-            $headers = $classicAssignments.GetAuthHeader()
-            $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+            $res = $classicAssignments.GetClassicRoleAssignmnets($subscriptionId)
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
             
             # Renaming property name
@@ -286,7 +283,7 @@ function Remove-AzTSInvalidAADAccounts
         catch
         {
             Write-Host "Connecting to Azure AD..."
-            Connect-AzureAD -ErrorAction Stop
+            Connect-AzureAD -TenantId $currentSub.Tenant.Id -ErrorAction Stop
         }   
 
         # Batching object ids in count of 900.
@@ -403,21 +400,22 @@ function Remove-AzTSInvalidAADAccounts
 
     Write-Host "Step 4 of 5: Taking backup of current role assignments at [$($folderPath)]..."  
     
+    # Safe Check: Exporting all role assignments in CSV file.
     # Safe Check: Taking backup of invalid identities.   
-    if ($invalidAADObjectRoleAssignments.length -gt 0)
+    if (($invalidAADObjectRoleAssignments | Measure-Object).Count -gt 0)
     {
         $invalidAADObjectRoleAssignments | ConvertTo-json | out-file "$($folderpath)\InvalidRoleAssignments.json"       
+        $invalidAADObjectRoleAssignments | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -NoTypeInformation        
     }
 
     # Safe Check: Taking backup of invalid classic role assignments.    
-    if ($invalidClassicRoles.length -gt 0)
+    if (($invalidClassicRoles | Measure-Object).Count -gt 0)
     {
         $invalidClassicRoles | ConvertTo-json | out-file "$($folderpath)\InvalidClassicRoleAssignments.json"       
+        $invalidClassicRoles | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force     
     }
      
-    # Safe Check: Exporting all role assignments in CSV file.
-    $invalidAADObjectRoleAssignments | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -NoTypeInformation
-    $invalidClassicRoles | Export-CSV -Path "$($folderpath)\DeprecatedIdentitiesRoleAssignments.csv" -Append -Force 
+   
 
     if(-not $DryRun)       
     {
@@ -440,42 +438,51 @@ function Remove-AzTSInvalidAADAccounts
 
         $isRemoved = $true
 
-        $invalidAADObjectRoleAssignments | ForEach-Object {
-            try 
-            {
-                Remove-AzRoleAssignment $_ 
-                $_ | Select-Object -Property "Scope", "RoleDefinitionName", "ObjectId"    
-            }
-            catch
-            {
-                $isRemoved = $false
-                Write-Host "Not able to remove invalid role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
+        if (($invalidAADObjectRoleAssignments | Measure-Object).Count -gt 0)
+        {
+
+            $invalidAADObjectRoleAssignments | ForEach-Object {
+                try 
+                {
+                    Remove-AzRoleAssignment $_ 
+                    $_ | Select-Object -Property "Scope", "RoleDefinitionName", "ObjectId"    
+                }
+                catch
+                {
+                    $isRemoved = $false
+                    Write-Host "Not able to remove invalid role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
+                }
             }
         }
 
         # Deleting deprecated account having classic role assignment.
-        $invalidClassicRoles | ForEach-Object {
-            try 
-            {
-                if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+        if(($invalidClassicRoles | Measure-Object).Count -gt 0)
+        {
+            $invalidClassicRoles | ForEach-Object {
+                try 
                 {
-                    $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
-                    $method = "Delete"
-                    $classicAssignments = $null
-                    $classicAssignments = [ClassicRoleAssignments]::new()
-                    $headers = $classicAssignments.GetAuthHeader()
-                    $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
-
-                    if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
+                    if($_.RoleDefinitionName -in ("CoAdministrator", "ServiceAdministrator") -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
                     {
-                        $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
+                        $isServiceAdminAccount = $false
+                        if($_.RoleDefinitionName -eq "ServiceAdministrator")
+                        {
+                            $isServiceAdminAccount = $true;
+                        }
+
+                        $classicAssignments = [ClassicRoleAssignments]::new()
+                        $res = $classicAssignments.DeleteClassicRoleAssignmnets($_.RoleAssignmentId, $isServiceAdminAccount)
+
+                        if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
+                        {
+                            $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
+                        }
                     }
-                } 
-            }
-            catch
-            {
-                $isRemoved = $false
-                Write-Host "Not able to remove invalid classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
+                }
+                catch
+                {
+                    $isRemoved = $false
+                    Write-Host "Not able to remove invalid classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
+                }
             }
         }
 
@@ -524,15 +531,15 @@ class ClassicRoleAssignments
         return($headers)
     }
 
-    [PSObject] GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] GetClassicRoleAssignmnets([string] $subscriptionId)
     {
         $content = $null
         try
         {
-            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::$method
-            
+            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+            $headers = $this.GetAuthHeader()
             # API to get classic role assignments
-            $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
+            $response = Invoke-WebRequest -Method Get -Uri $armUri -Headers $headers -UseBasicParsing
             $content = ConvertFrom-Json $response.Content
         }
         catch
@@ -543,20 +550,26 @@ class ClassicRoleAssignments
         return($content)
     }
 
-    [PSObject] DeleteClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] DeleteClassicRoleAssignmnets([string] $roleAssignmentId, [bool] $isServiceAdminAccount)
     {
         $content = $null
         try
         {
-            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::$method
+            $armUri = "https://management.azure.com" + $roleAssignmentId + "?api-version=2015-06-01"
+            if ($isServiceAdminAccount)
+            {
+                $armUri += "&adminType=serviceAdmin"
+            }
+            $headers = $this.GetAuthHeader()
             
             # API to get classic role assignments
-            $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
+            $response = Invoke-WebRequest -Method Delete -Uri $armUri -Headers $headers -UseBasicParsing
             $content = $response
         }
         catch
         {
             Write-Host "Error occured while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            throw;
         }
         
         return($content)
