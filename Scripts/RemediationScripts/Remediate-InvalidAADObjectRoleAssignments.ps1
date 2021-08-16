@@ -440,7 +440,6 @@ function Remove-AzTSInvalidAADAccounts
 
         if (($invalidAADObjectRoleAssignments | Measure-Object).Count -gt 0)
         {
-
             $invalidAADObjectRoleAssignments | ForEach-Object {
                 try 
                 {
