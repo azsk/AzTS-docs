@@ -1,6 +1,6 @@
 <##########################################
 
-# Overivew:
+# Overview:
     This script is used to remove deprecated/stale(invalid) AAD identities role assignments from subscription.
 
 ControlId: 
@@ -8,11 +8,11 @@ ControlId:
 DisplayName:
     Remove Orphaned accounts from your subscription(s).
 
-# Pre-requesites:
+# Pre-requisites:
     You will need owner or User Access Administrator role at subscription level.
 
 # Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+    1. Install and validate pre-requisites to run the script for subscription.
 
     2. Get role assignments for the subscription and filter deprecated/stale(invalid) identities.
 
@@ -105,7 +105,7 @@ function Remove-AzTSInvalidAADAccounts
     .Parameter Force
         Enter force parameter value to remove deprecated/stale identity's role assignment.
     .PARAMETER PerformPreReqCheck,
-        Perform pre requisites check to ensure all required module to perform remedition operation is available.
+        Perform pre requisites check to ensure all required module to perform remediation operation is available.
     .PARAMETER DryRun
         Run pre-script before actual remediating the subscription
     .PARAMETER FilePath
@@ -146,7 +146,7 @@ function Remove-AzTSInvalidAADAccounts
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
             break
         }
     }
@@ -194,7 +194,7 @@ function Remove-AzTSInvalidAADAccounts
         Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
     }
 
-    # Safe Check: saving the current login user object id to ensure we dont remove this during the actual removal
+    # Safe Check: saving the current login user object id to ensure we don't remove this during the actual removal
     $currentLoginUserObjectIdArray = @()
     $currentLoginUserObjectId = "";
     $currentLoginUserObjectIdArray += $currentLoginRoleAssignments | select ObjectId -Unique
@@ -210,7 +210,7 @@ function Remove-AzTSInvalidAADAccounts
         $classicAssignments = $null
         $distinctObjectIds = @();
 
-        # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we dont get any, means Graph API failed.
+        # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we don't get any, means Graph API failed.
         $distinctObjectIds += $currentLoginUserObjectId;
         if(($ObjectIds | Measure-Object).Count -eq 0)
         {
@@ -267,7 +267,7 @@ function Remove-AzTSInvalidAADAccounts
                 }
                 else
                 {
-                    Write-Host "Warning: Dont pass empty string array in the ObjectIds param. If you dont want to use the param, just remove while executing the command" -ForegroundColor Yellow
+                    Write-Host "Warning: Don't pass empty string array in the ObjectIds param. If you don't want to use the param, just remove while executing the command" -ForegroundColor Yellow
                     break;
                 }  
             }
@@ -307,7 +307,7 @@ function Remove-AzTSInvalidAADAccounts
             if(($subActiveIdentities | Measure-Object).Count -le 0)
             {
                 # If the active identities count has come as Zero, then API might have failed.  Print Warning and abort the execution
-                Write-Host "Warning: Graph API hasnt returned any active account. Current principal dont have access to Graph or Graph API is throwing error. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
+                Write-Host "Warning: Graph API hasnt returned any active account. Current principal don't have access to Graph or Graph API is throwing error. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
                 return;
             }
 
@@ -525,7 +525,7 @@ class ClassicRoleAssignments
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
@@ -543,7 +543,7 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)
@@ -567,7 +567,7 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
             throw;
         }
         
@@ -590,7 +590,7 @@ class ASCDeprecatedAccounts
         }
         catch
         {
-            Write-Host "Error occured while fetching deprecated account role assignments. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while fetching deprecated account role assignments. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)

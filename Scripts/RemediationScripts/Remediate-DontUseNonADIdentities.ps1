@@ -1,16 +1,16 @@
 <##########################################
 
-# Overivew:
+# Overview:
     This script is used to remove external (guest) AD identities access on subscriptions.
 
 ControlId: 
     Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
 
-# Pre-requesites:
+# Pre-requisites:
     You will need owner or User Access Administrator role at subscription level.
 
 # Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+    1. Install and validate pre-requisites to run the script for subscription.
 
     2. Get role assignments for the subscription and filter external/Non-Ad identities.
 
@@ -135,7 +135,7 @@ function Remove-AzTSNonADIdentities
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
             break
         }
     }
@@ -239,7 +239,7 @@ function Remove-AzTSNonADIdentities
             }
             else
             {
-                Write-Host "Warning: Dont pass empty string array in the ObjectIds param. If you dont want to use the param, just remove while executing the command" -ForegroundColor Yellow
+                Write-Host "Warning: Don't pass empty string array in the ObjectIds param. If you don't want to use the param, just remove while executing the command" -ForegroundColor Yellow
                 break;
             }  
         }
@@ -280,7 +280,7 @@ function Remove-AzTSNonADIdentities
     }
     catch
     {
-        Write-Host "Error occured while fetching eligible PIM role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+        Write-Host "Error occurred while fetching eligible PIM role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
     }
     #>
     
@@ -452,7 +452,7 @@ function Restore-AzTSNonADIdentities
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
             break
         }    
     }
@@ -585,7 +585,7 @@ class AzureADGraph
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
@@ -615,7 +615,7 @@ class MicrosoftGraph
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
@@ -645,7 +645,7 @@ class ClassicRoleAssignments
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
@@ -663,7 +663,7 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)
@@ -682,7 +682,7 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)
@@ -701,7 +701,7 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while adding classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while adding classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)
