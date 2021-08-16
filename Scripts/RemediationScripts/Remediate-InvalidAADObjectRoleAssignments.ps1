@@ -216,7 +216,7 @@ function Remove-AzTSInvalidAADAccounts
         {
             # Getting all classic role assignments.
             $classicAssignments = [ClassicRoleAssignments]::new()
-            $res = $classicAssignments.GetClassicRoleAssignment($subscriptionId)
+            $res = $classicAssignments.GetClassicRoleAssignments($subscriptionId)
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
             
             # Renaming property name
@@ -530,7 +530,7 @@ class ClassicRoleAssignments
         return($headers)
     }
 
-    [PSObject] GetClassicRoleAssignment([string] $subscriptionId)
+    [PSObject] GetClassicRoleAssignments([string] $subscriptionId)
     {
         $content = $null
         try

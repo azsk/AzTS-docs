@@ -197,7 +197,7 @@ function Remove-AzTSNonADIdentities
         $method = "Get"
         $classicAssignments = [ClassicRoleAssignments]::new()
         $headers = $classicAssignments.GetAuthHeader()
-        $res = $classicAssignments.GetClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers)
+        $res = $classicAssignments.GetClassicRoleAssignments([string] $armUri, [string] $method, [psobject] $headers)
         if($null -ne $res)
         {
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
@@ -650,7 +650,7 @@ class ClassicRoleAssignments
         return($headers)
     }
 
-    [PSObject] GetClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] GetClassicRoleAssignments([string] $armUri, [string] $method, [psobject] $headers)
     {
         $content = $null
         try
