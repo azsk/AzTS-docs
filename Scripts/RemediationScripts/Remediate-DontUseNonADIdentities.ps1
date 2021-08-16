@@ -197,7 +197,7 @@ function Remove-AzTSNonADIdentities
         $method = "Get"
         $classicAssignments = [ClassicRoleAssignments]::new()
         $headers = $classicAssignments.GetAuthHeader()
-        $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+        $res = $classicAssignments.GetClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers)
         if($null -ne $res)
         {
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
@@ -380,7 +380,7 @@ function Remove-AzTSNonADIdentities
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
                 $headers = $classicAssignments.GetAuthHeader()
-                $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
+                $res = $classicAssignments.DeleteClassicRoleAssignment([string] $armUri, [string] $method,[psobject] $headers)
 
                 if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
@@ -531,7 +531,7 @@ function Restore-AzTSNonADIdentities
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
                 $headers = $classicAssignments.GetAuthHeader()
-                $res = $classicAssignments.PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
+                $res = $classicAssignments.PutClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
                 if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
                     $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
@@ -650,7 +650,7 @@ class ClassicRoleAssignments
         return($headers)
     }
 
-    [PSObject] GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] GetClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers)
     {
         $content = $null
         try
@@ -669,7 +669,7 @@ class ClassicRoleAssignments
         return($content)
     }
 
-    [PSObject] DeleteClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] DeleteClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers)
     {
         $content = $null
         try
@@ -688,7 +688,7 @@ class ClassicRoleAssignments
         return($content)
     }
 
-    [PSObject] PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers, [System.Object] $body)
+    [PSObject] PutClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers, [System.Object] $body)
     {
         $content = $null
         try

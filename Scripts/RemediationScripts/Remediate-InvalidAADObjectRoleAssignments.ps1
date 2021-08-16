@@ -216,7 +216,7 @@ function Remove-AzTSInvalidAADAccounts
         {
             # Getting all classic role assignments.
             $classicAssignments = [ClassicRoleAssignments]::new()
-            $res = $classicAssignments.GetClassicRoleAssignmnets($subscriptionId)
+            $res = $classicAssignments.GetClassicRoleAssignment($subscriptionId)
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
             
             # Renaming property name
@@ -470,7 +470,7 @@ function Remove-AzTSInvalidAADAccounts
                         }
 
                         $classicAssignments = [ClassicRoleAssignments]::new()
-                        $res = $classicAssignments.DeleteClassicRoleAssignmnets($_.RoleAssignmentId, $isServiceAdminAccount)
+                        $res = $classicAssignments.DeleteClassicRoleAssignment($_.RoleAssignmentId, $isServiceAdminAccount)
 
                         if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                         {
@@ -531,7 +531,7 @@ class ClassicRoleAssignments
         return($headers)
     }
 
-    [PSObject] GetClassicRoleAssignmnets([string] $subscriptionId)
+    [PSObject] GetClassicRoleAssignment([string] $subscriptionId)
     {
         $content = $null
         try
@@ -550,7 +550,7 @@ class ClassicRoleAssignments
         return($content)
     }
 
-    [PSObject] DeleteClassicRoleAssignmnets([string] $roleAssignmentId, [bool] $isServiceAdminAccount)
+    [PSObject] DeleteClassicRoleAssignment([string] $roleAssignmentId, [bool] $isServiceAdminAccount)
     {
         $content = $null
         try
