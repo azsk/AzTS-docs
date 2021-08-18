@@ -162,7 +162,7 @@ function Remove-AnonymousAccessOnContainers
     }
     catch 
     {
-        Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+        Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
         break
     }
     
@@ -223,7 +223,7 @@ function Remove-AnonymousAccessOnContainers
 
         if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
         {
-            Write-Host "No storage account(s) found in input json file for remedition." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
         $resourceDetails.ResourceDetails | ForEach-Object { 
@@ -372,7 +372,7 @@ function Remove-AnonymousAccessOnContainers
                 }
             }
             catch{
-                Write-Host "Error occured while remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error occurred while remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
         }
@@ -419,7 +419,7 @@ function Remove-AnonymousAccessOnContainers
                                 }
                                 catch
                                 {
-                                    # If not able to remove container public access due to insufficient permission or exception occured.
+                                    # If not able to remove container public access due to insufficient permission or exception occurred.
                                     $flag = $false
                                     break;    
                                 }
@@ -443,7 +443,7 @@ function Remove-AnonymousAccessOnContainers
                             }
                             else
                             {
-                                # Unable to disable containers anonymous access may be because of insufficient permission over storage account(s) or exception occured.
+                                # Unable to disable containers anonymous access may be because of insufficient permission over storage account(s) or exception occurred.
                                 Write-Host "Skipping to disable anonymous access on containers of storage account(s) due to insufficient access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning);
                                 $item =  New-Object psobject -Property @{
                                         SubscriptionId = $SubscriptionId  
@@ -468,7 +468,7 @@ function Remove-AnonymousAccessOnContainers
             }
             catch
             {
-                Write-Host "Error occured while remediating control. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error occurred while remediating control. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
 
@@ -543,7 +543,7 @@ function Set-AnonymousAccessOnContainers
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
             break
         }    
     
@@ -616,7 +616,7 @@ function Set-AnonymousAccessOnContainers
                         }
                         catch
                         {
-                            Write-Host "Skipping rollback due to insufficient access or exception occured [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Skipping rollback due to insufficient access or exception occurred [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                         }
                     }
                     Write-Host $([Constants]::DoubleDashLine)
@@ -630,7 +630,7 @@ function Set-AnonymousAccessOnContainers
             }   
             catch
             {
-                Write-Host "Error occured while performing rollback opeartion for remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error occurred while performing rollback opeartion for remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
         }
@@ -712,7 +712,7 @@ function Set-AnonymousAccessOnContainers
             }
             catch
             {
-                Write-Host "Error occured while performing rollback operation for remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error occurred while performing rollback operation for remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
         }
