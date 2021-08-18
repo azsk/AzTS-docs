@@ -1,5 +1,5 @@
 ## Cloud Service
 
-| ControlId | Dependent Azure API(s) and Properties | Control spec-let |
+| ControlId | Dependent Azure API(s) and Properties | Control spec |
 |-----------|-------------------------------------|------------------|
 | <b>ControlId:</b><br>Azure_CloudService_SI_Enable_AntiMalware<br><b>DisplayName:</b><br>Antimalware extension must be installed on cloud service roles. <br><b>Description: </b><br> Enable the Antimalware extension for the cloud service roles.| <b> ARM API to get Cloud Service extension details: </b> <br> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences? <br> api-version=2015-06-01  <br><b>Properties:</b><br> name: 'PaaSAntimalware-****' <br> properties.state| <b>Passed: </b><br> Antimalware extension is enabled for all the roles in this cloud service. <br><b>Failed: </b><br> Antimalware extension is not enabled for one or more roles in this cloud service. |
