@@ -20,6 +20,7 @@ Below resource types can be checked for validating the security controls:
 |[DataLakeStore](Feature/DataLakeStore.md)|Microsoft.DataLakeStore/accounts|
 |[DBForMySql](Feature/DBForMySql.md)|Microsoft.DBforMySQL/servers|
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
+|[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
@@ -47,3 +48,4 @@ Following controls in AzTS are currently externally scanned:
 | Azure_VirtualMachine_SI_Enable_Vuln_Solution|Install DSRE Qualys Cloud Agent on assets|Vulnerability assessment solution should be installed on VM|
 | Azure_VirtualMachine_SI_Missing_OS_Patches|Patch assets to protect against vulnerabilities|Virtual Machine must have all the required OS patches installed|
 | Azure_VirtualMachine_SI_Enable_Antimalware|Ensure all devices have anti-malware protection installed and enabled|Antimalware must be enabled with real time protection on Virtual Machine|
+| Azure_VirtualMachine_SI_Enable_Sense_Agent|Ensure Sense Agent is installed and healthy|Sense Agent provides Threat and Vulnerability Management (TVM) data and other enhanced telemetry to the backend Microsoft Defender Advanced Threat Protection (MDATP) instance|
