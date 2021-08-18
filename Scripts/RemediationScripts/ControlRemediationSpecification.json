@@ -18,7 +18,7 @@
         },
         {
             "ControlId":"Azure_Subscription_Config_ASC_Tier",
-            "DisableRemediation": "false",
+            "EnableRemediation": "true",
             "Filename": "Remediate-ConfigASCTier.ps1",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/'users/sachyutuni/feature/Auto-Remediation'/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
             "LoadCommand": ". .\\\"Remediatie-ConfigASCTier.ps1\"",
