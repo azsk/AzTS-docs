@@ -1,16 +1,16 @@
 <##########################################
 
-# Overivew:
+# Overview:
     This script is used to remove external (guest) AD identities access on subscriptions.
 
 ControlId: 
     Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
 
-# Pre-requesites:
+# Pre-requisites:
     You will need owner or User Access Administrator role at subscription level.
 
 # Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+    1. Install and validate pre-requisites to run the script for subscription.
 
     2. Get role assignments for the subscription and filter external/Non-Ad identities.
 
@@ -147,7 +147,7 @@ function Remove-AzTSNonADIdentities
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
             break
         }
     }
@@ -205,19 +205,19 @@ function Remove-AzTSNonADIdentities
             # Excluding MG scoped role assignment
             $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
         
-            # API call to get classic role assignment
-            $classicAssignments = $null
-            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-            $method = "Get"
-            $classicAssignments = [ClassicRoleAssignments]::new()
-            $headers = $classicAssignments.GetAuthHeader()
-            $res = $classicAssignments.GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
-            if($null -ne $res)
-            {
-                $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
-                # Renaming property name
-                $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='RoleId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='RoleAssignmentId'; E={$_.id }}, ObjectId
-            }
+        # API call to get classic role assignment
+        $classicAssignments = $null
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        $method = "Get"
+        $classicAssignments = [ClassicRoleAssignments]::new()
+        $headers = $classicAssignments.GetAuthHeader()
+        $res = $classicAssignments.GetClassicRoleAssignments([string] $armUri, [string] $method, [psobject] $headers)
+        if($null -ne $res)
+        {
+            $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+            # Renaming property name
+            $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='RoleId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='RoleAssignmentId'; E={$_.id }}, ObjectId
+        }
         
             # Get object id of classic role assignment
             $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
@@ -253,7 +253,7 @@ function Remove-AzTSNonADIdentities
             }
             else
             {
-                Write-Host "Warning: Dont pass empty string array in the ObjectIds param. If you dont want to use the param, just remove while executing the command" -ForegroundColor Yellow
+                Write-Host "Warning: Don't pass empty string array in the ObjectIds param. If you don't want to use the param, just remove while executing the command" -ForegroundColor Yellow
                 break;
             }  
         }
@@ -294,7 +294,7 @@ function Remove-AzTSNonADIdentities
     }
     catch
     {
-        Write-Host "Error occured while fetching eligible PIM role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+        Write-Host "Error occurred while fetching eligible PIM role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
     }
     #>
     
@@ -407,18 +407,18 @@ function Remove-AzTSNonADIdentities
         # Start deletion of all Non-AD identities.
         Write-Host "Starting to delete role assignments for Non-AD identities..." -ForegroundColor Cyan
     
-        $isRemoved = $true
-        $externalAccountsRoleAssignments | ForEach-Object {
-            try
+    $isRemoved = $true
+    $externalAccountsRoleAssignments | ForEach-Object {
+        try
+        {
+            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
             {
-                if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
-                {
-                    $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
-                    $method = "Delete"
-                    $classicAssignments = $null
-                    $classicAssignments = [ClassicRoleAssignments]::new()
-                    $headers = $classicAssignments.GetAuthHeader()
-                    $res = $classicAssignments.DeleteClassicRoleAssignmnets([string] $armUri, [string] $method,[psobject] $headers)
+                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
+                $method = "Delete"
+                $classicAssignments = $null
+                $classicAssignments = [ClassicRoleAssignments]::new()
+                $headers = $classicAssignments.GetAuthHeader()
+                $res = $classicAssignments.DeleteClassicRoleAssignment([string] $armUri, [string] $method,[psobject] $headers)
 
                     if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                     {
@@ -496,7 +496,7 @@ function Restore-AzTSNonADIdentities
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
             break
         }    
     }
@@ -575,7 +575,7 @@ function Restore-AzTSNonADIdentities
                 $classicAssignments = $null
                 $classicAssignments = [ClassicRoleAssignments]::new()
                 $headers = $classicAssignments.GetAuthHeader()
-                $res = $classicAssignments.PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
+                $res = $classicAssignments.PutClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers,[System.Object] $body)
                 if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                 {
                     $_ | Select-Object -Property "SignInName", "RoleAssignmentId", "RoleDefinitionName"
@@ -629,7 +629,7 @@ class AzureADGraph
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
@@ -659,7 +659,7 @@ class MicrosoftGraph
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
@@ -689,12 +689,12 @@ class ClassicRoleAssignments
         }
         catch 
         {
-            Write-Host "Error occured while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
         }
         return($headers)
     }
 
-    [PSObject] GetClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] GetClassicRoleAssignments([string] $armUri, [string] $method, [psobject] $headers)
     {
         $content = $null
         try
@@ -707,13 +707,13 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)
     }
 
-    [PSObject] DeleteClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers)
+    [PSObject] DeleteClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers)
     {
         $content = $null
         try
@@ -726,13 +726,13 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)
     }
 
-    [PSObject] PutClassicRoleAssignmnets([string] $armUri, [string] $method, [psobject] $headers, [System.Object] $body)
+    [PSObject] PutClassicRoleAssignment([string] $armUri, [string] $method, [psobject] $headers, [System.Object] $body)
     {
         $content = $null
         try
@@ -745,7 +745,7 @@ class ClassicRoleAssignments
         }
         catch
         {
-            Write-Host "Error occured while adding classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while adding classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
         }
         
         return($content)

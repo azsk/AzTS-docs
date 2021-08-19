@@ -111,7 +111,7 @@ function Disable-RemoteDesktopAccess
     }
     catch 
     {
-        Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
+        Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
         break
     }
     
@@ -246,7 +246,7 @@ function Disable-RemoteDesktopAccess
         }   
     }
     catch {
-        Write-Host "Error occured while checking config of cloud service(s). ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Error occurred while checking config of cloud service(s). ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
     
@@ -328,7 +328,7 @@ function Disable-RemoteDesktopAccess
         }  
     }
     catch {
-        Write-Host "Error occured while performing remediation. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Error occurred while performing remediation. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
