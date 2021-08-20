@@ -205,19 +205,19 @@ function Remove-AzTSNonADIdentities
             # Excluding MG scoped role assignment
             $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object { !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/") }
         
-        # API call to get classic role assignment
-        $classicAssignments = $null
-        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-        $method = "Get"
-        $classicAssignments = [ClassicRoleAssignments]::new()
-        $headers = $classicAssignments.GetAuthHeader()
-        $res = $classicAssignments.GetClassicRoleAssignments([string] $armUri, [string] $method, [psobject] $headers)
-        if($null -ne $res)
-        {
-            $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
-            # Renaming property name
-            $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='RoleId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='RoleAssignmentId'; E={$_.id }}, ObjectId
-        }
+            # API call to get classic role assignment
+            $classicAssignments = $null
+            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+            $method = "Get"
+            $classicAssignments = [ClassicRoleAssignments]::new()
+            $headers = $classicAssignments.GetAuthHeader()
+            $res = $classicAssignments.GetClassicRoleAssignments([string] $armUri, [string] $method, [psobject] $headers)
+            if($null -ne $res)
+            {
+                $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
+                # Renaming property name
+                $currentRoleAssignmentList += $classicDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.properties.emailAddress}},  @{N='RoleDefinitionName'; E={$_.properties.role}}, @{N='RoleId'; E={$_.name}}, @{N='Type'; E={$_.type }}, @{N='RoleAssignmentId'; E={$_.id }}, ObjectId
+            }
         
             # Get object id of classic role assignment
             $getObjectsByUserPrincipalNameAPIString = "https://graph.windows.net/myorganization/users?api-version=1.6&`$filter=(userPrincipalName+eq+'{0}')+or+(mail+eq+'{1}')&`$select=objectType,objectId,displayName,userPrincipalName"
@@ -225,131 +225,118 @@ function Remove-AzTSNonADIdentities
             if(($currentRoleAssignmentList | Measure-Object).Count -gt 0)
             {
                 $currentRoleAssignmentList | Where-Object { [string]::IsNullOrWhiteSpace($_.ObjectId) } | ForEach-Object { 
-                $classicRoleAssignment = $_
-                $signInName = $classicRoleAssignment.SignInName.Replace("#","%23")
-                $url = [string]::Format($getObjectsByUserPrincipalNameAPIString, $signInName, $signInName)
-                $header = [AzureADGraph]::new().GetAuthHeader()
-                $adGraphResponse = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers $header -Method Get
+                    $classicRoleAssignment = $_
+                    $signInName = $classicRoleAssignment.SignInName.Replace("#","%23")
+                    $url = [string]::Format($getObjectsByUserPrincipalNameAPIString, $signInName, $signInName)
+                    $header = [AzureADGraph]::new().GetAuthHeader()
+                    $adGraphResponse = Invoke-WebRequest -UseBasicParsing -Uri $url -Headers $header -Method Get
 
-                if($adGraphResponse -ne $null)
-                {
-                        $adGraphResponse = $adGraphResponse.Content | ConvertFrom-Json
-                        $classicRoleAssignment.ObjectId = $adGraphResponse.value.objectId
+                    if($adGraphResponse -ne $null)
+                    {
+                            $adGraphResponse = $adGraphResponse.Content | ConvertFrom-Json
+                            $classicRoleAssignment.ObjectId = $adGraphResponse.value.objectId
+                    }
                 }
             }
+
+            # Filtering service principal object type
+            $distinctRoleAssignmentList += $currentRoleAssignmentList | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) }
         }
-
-        # Filtering service principal object type
-        $distinctRoleAssignmentList += $currentRoleAssignmentList | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) }
-    }
-    else
-    {
-        $ObjectIds | Foreach-Object {
-          $objectId = $_;
-           if(![string]::IsNullOrWhiteSpace($objectId))
-            {
-                # Filtering service principal object type
-                $distinctRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) -and !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/")}
-            }
-            else
-            {
-                Write-Host "Warning: Don't pass empty string array in the ObjectIds param. If you don't want to use the param, just remove while executing the command" -ForegroundColor Yellow
-                break;
-            }  
-        }
-    }
-
-    # Adding ARM API call to fetch eligible role assignment [Commenting this part because used ARM API is currently in preview state, we can officially start supporting once it is publicly available]
-    <#
-    try
-    {
-        # PIM api
-        $resourceAppIdUri = "https://management.core.windows.net/"
-        $rmContext = Get-AzContext
-        [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
-        $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
-        $rmContext.Account,
-        $rmContext.Environment,
-        $rmContext.Tenant,
-        [System.Security.SecureString] $null,
-        "Never",
-        $null,
-        $resourceAppIdUri); 
-
-        $header = "Bearer " + $authResult.AccessToken
-        $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
-        $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
-
-        # API to get eligible PIM assignment
-        $armUri = "https://management.azure.com/subscriptions/$($SubscriptionId)/providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01-preview"
-        $eligiblePIMRoleAssignments = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
-        $res = ConvertFrom-Json $eligiblePIMRoleAssignments.Content
-
-        # Exclude MG scope assignment
-        $excludedMGScopeAssignment =  $res.value.properties | where-object { !$_.scope.contains("/providers/Microsoft.Management/managementGroups/") }
-        $pimDistinctRoleAssignmentList += $excludedMGScopeAssignment.expandedProperties.principal | Where-Object { ![string]::IsNullOrWhiteSpace($_.email) }
-        
-        # Renaming property name
-        $distinctRoleAssignmentList += $pimDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.email}}, @{N='ObjectId'; E={$_.id}}, @{N='DisplayName'; E={$_.displayName}}, @{N='ObjectType'; E={$_.type }}
-    }
-    catch
-    {
-        Write-Host "Error occurred while fetching eligible PIM role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
-    }
-    #>
-    
-    # Find guest accounts from role assignments list
-    $GuestAccountsObjectId = @()
-    $getObjectsByObjectIdsBetaAPIUrl = "https://graph.microsoft.com/beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState"
-    if( ($distinctRoleAssignmentList | Measure-Object).Count -gt 0)
-    {
-        # Adding batch of 900
-        for( $i = 0; $i -lt $distinctRoleAssignmentList.Length; $i = $i + 900)
+        else
         {
-            if($i + 900 -lt $distinctRoleAssignmentList.Length)
-            {
-                $endRange = $i + 900
+            $ObjectIds | Foreach-Object {
+            $objectId = $_;
+            if(![string]::IsNullOrWhiteSpace($objectId))
+                {
+                    # Filtering service principal object type
+                    $distinctRoleAssignmentList += Get-AzRoleAssignment -ObjectId $objectId | Where-Object { ![string]::IsNullOrWhiteSpace($_.SignInName) -and !$_.Scope.Contains("/providers/Microsoft.Management/managementGroups/")}
+                }
+                else
+                {
+                    Write-Host "Warning: Don't pass empty string array in the ObjectIds param. If you don't want to use the param, just remove while executing the command" -ForegroundColor Yellow
+                    break;
+                }  
             }
-            else
+        }
+
+        # Adding ARM API call to fetch eligible role assignment [Commenting this part because used ARM API is currently in preview state, we can officially start supporting once it is publicly available]
+        <#
+        try
+        {
+            # PIM api
+            $resourceAppIdUri = "https://management.core.windows.net/"
+            $rmContext = Get-AzContext
+            [Microsoft.Azure.Commands.Common.Authentication.AzureSession]
+            $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+            $rmContext.Account,
+            $rmContext.Environment,
+            $rmContext.Tenant,
+            [System.Security.SecureString] $null,
+            "Never",
+            $null,
+            $resourceAppIdUri); 
+
+            $header = "Bearer " + $authResult.AccessToken
+            $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
+
+            # API to get eligible PIM assignment
+            $armUri = "https://management.azure.com/subscriptions/$($SubscriptionId)/providers/Microsoft.Authorization/roleEligibilityScheduleInstances?api-version=2020-10-01-preview"
+            $eligiblePIMRoleAssignments = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -UseBasicParsing
+            $res = ConvertFrom-Json $eligiblePIMRoleAssignments.Content
+
+            # Exclude MG scope assignment
+            $excludedMGScopeAssignment =  $res.value.properties | where-object { !$_.scope.contains("/providers/Microsoft.Management/managementGroups/") }
+            $pimDistinctRoleAssignmentList += $excludedMGScopeAssignment.expandedProperties.principal | Where-Object { ![string]::IsNullOrWhiteSpace($_.email) }
+            
+            # Renaming property name
+            $distinctRoleAssignmentList += $pimDistinctRoleAssignmentList | select @{N='SignInName'; E={$_.email}}, @{N='ObjectId'; E={$_.id}}, @{N='DisplayName'; E={$_.displayName}}, @{N='ObjectType'; E={$_.type }}
+        }
+        catch
+        {
+            Write-Host "Error occurred while fetching eligible PIM role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+        }
+        #>
+    
+        # Find guest accounts from role assignments list
+        $GuestAccountsObjectId = @()
+        $getObjectsByObjectIdsBetaAPIUrl = "https://graph.microsoft.com/beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState"
+        if( ($distinctRoleAssignmentList | Measure-Object).Count -gt 0)
+        {
+            # Adding batch of 900
+            for( $i = 0; $i -lt $distinctRoleAssignmentList.Length; $i = $i + 900)
             {
-                $endRange = $distinctRoleAssignmentList.Length - 1;
-            }
+                if($i + 900 -lt $distinctRoleAssignmentList.Length)
+                {
+                    $endRange = $i + 900
+                }
+                else
+                {
+                    $endRange = $distinctRoleAssignmentList.Length - 1;
+                }
 
-            $subRange = $distinctRoleAssignmentList[$i..$endRange]
+                $subRange = $distinctRoleAssignmentList[$i..$endRange]
 
-            $ObjectIds = @($subRange.ObjectId | Select -Unique)
-            $header = [MicrosoftGraph]::new().GetAuthHeader()
-            $body = @{
-                        "ids"= @($ObjectIds);
-                        "types"=@("user");
-                    } | ConvertTo-Json
-            $adGraphJsonResponse = Invoke-WebRequest -UseBasicParsing -Uri $getObjectsByObjectIdsBetaAPIUrl -Headers $header -Method Post -Body $body
-            if( $null -ne $adGraphJsonResponse)
-            {
-                $adGraphResponse = $adGraphJsonResponse.Content | ConvertFrom-Json
-                $GuestAccountsObjectId += $adGraphResponse.value | Where-Object { $_.userType -eq "Guest" } | Select -ExpandProperty Id
-            }
-        } 
-    }
+                $ObjectIds = @($subRange.ObjectId | Select -Unique)
+                $header = [MicrosoftGraph]::new().GetAuthHeader()
+                $body = @{
+                            "ids"= @($ObjectIds);
+                            "types"=@("user");
+                        } | ConvertTo-Json
+                $adGraphJsonResponse = Invoke-WebRequest -UseBasicParsing -Uri $getObjectsByObjectIdsBetaAPIUrl -Headers $header -Method Post -Body $body
+                if( $null -ne $adGraphJsonResponse)
+                {
+                    $adGraphResponse = $adGraphJsonResponse.Content | ConvertFrom-Json
+                    $GuestAccountsObjectId += $adGraphResponse.value | Where-Object { $_.userType -eq "Guest" } | Select -ExpandProperty Id
+                }
+            } 
+        }
 
-    $externalAccountsRoleAssignments = @($distinctRoleAssignmentList | Where-Object { $GuestAccountsObjectId -contains $_.ObjectId })
+        $externalAccountsRoleAssignments = @($distinctRoleAssignmentList | Where-Object { $GuestAccountsObjectId -contains $_.ObjectId })
     }
     else
     {
         Write-Host "Step 2 of 3: Fetching all the role assignments for subscription [$($SubscriptionId)] from given CSV file..."
-        # Connect to Azure Active Directory.
-        try
-        {
-            # Check if Connect-AzureAD session is already active 
-            Get-AzureADUser -ObjectId $currentLoginUserObjectId | Out-Null
-        }
-        catch
-        {
-            Write-Host "Connecting to Azure AD..."
-            Connect-AzureAD -ErrorAction Stop
-            Write-Host "Connected to AzAccount" -ForegroundColor Green
-        }  
-
         $externalAccountsRoleAssignments = Import-Csv -LiteralPath $FilePath
     }
 
@@ -377,17 +364,20 @@ function Remove-AzTSNonADIdentities
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    # Safe Check: Taking backup of Non-AD identities    
-    if ($externalAccountsRoleAssignments.length -gt 0)
+    # Safe Check: Taking backup of Non-AD identities  
+    if([String]::IsNullOrWhiteSpace($FilePath))
     {
         Write-Host "Taking backup of role assignments for Non-AD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor Cyan
         $externalAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonADAccountsRoleAssignments.json"       
         Write-Host "Path: $($folderpath)NonADAccountsRoleAssignments.json"
-    }
 
-    # Safe Check: Exporting all role assignments in CSV file.
-    $externalAccountsRoleAssignments | Export-CSV -Path "$($folderpath)\NonADAccountsRoleAssignments.csv" -NoTypeInformation
-
+        # Safe Check: Exporting all role assignments in CSV file.
+        Write-Host "Exporting all role assignments for Non-AD identities in form of CSV, if you want to use this CSV as an input to remediate." -ForegroundColor Cyan
+        $externalAccountsRoleAssignments | Export-CSV -Path "$($folderpath)\NonADAccountsRoleAssignments.csv" -NoTypeInformation
+        Write-Host "Path: $($folderPath)NonADAccountsRoleAssignments.csv"
+    }  
+    
+    
     if(-not $DryRun)
     {
         if(-not $Force)
@@ -401,24 +391,22 @@ function Remove-AzTSNonADIdentities
             }
         }
    
-
         Write-Host "Step 3 of 3: Clean up Non-AD identities for Subscription [$($SubscriptionId)]..."
-    
         # Start deletion of all Non-AD identities.
         Write-Host "Starting to delete role assignments for Non-AD identities..." -ForegroundColor Cyan
-    
-    $isRemoved = $true
-    $externalAccountsRoleAssignments | ForEach-Object {
-        try
-        {
-            if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+
+        $isRemoved = $true
+        $externalAccountsRoleAssignments | ForEach-Object {
+            try
             {
-                $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
-                $method = "Delete"
-                $classicAssignments = $null
-                $classicAssignments = [ClassicRoleAssignments]::new()
-                $headers = $classicAssignments.GetAuthHeader()
-                $res = $classicAssignments.DeleteClassicRoleAssignment([string] $armUri, [string] $method,[psobject] $headers)
+                if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
+                {
+                    $armUri = "https://management.azure.com" + $_.RoleAssignmentId + "?api-version=2015-06-01"
+                    $method = "Delete"
+                    $classicAssignments = $null
+                    $classicAssignments = [ClassicRoleAssignments]::new()
+                    $headers = $classicAssignments.GetAuthHeader()
+                    $res = $classicAssignments.DeleteClassicRoleAssignment([string] $armUri, [string] $method,[psobject] $headers)
 
                     if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                     {
@@ -543,10 +531,10 @@ function Restore-AzTSNonADIdentities
         Write-Host "Warning: Rollback file is not found. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor Yellow
         break;        
     }
-    $backedUpRoleAssingments = Get-Content -Raw -Path $RollbackFilePath | ConvertFrom-Json     
+    $backedUpRoleAssignments = Get-Content -Raw -Path $RollbackFilePath | ConvertFrom-Json     
 
     # Checking if no assignments found in given json file
-    if(($backedUpRoleAssingments | Measure-Object).count -eq 0)
+    if(($backedUpRoleAssignments | Measure-Object).count -eq 0)
     {
         Write-Host "No assignment found to perform rollback operation. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor Yellow
         break;
@@ -556,7 +544,7 @@ function Restore-AzTSNonADIdentities
     
     $isRestored = $true
 
-    $backedUpRoleAssingments | ForEach-Object {
+    $backedUpRoleAssignments | ForEach-Object {
         try
         {
             if($_.RoleDefinitionName -eq "CoAdministrator" -and $_.RoleAssignmentId.contains("/providers/Microsoft.Authorization/classicAdministrators/"))
