@@ -1,14 +1,12 @@
 {
-    "Version": "<version>",
     "Description": "Specifies metadata about Remediation scripts",
-    "RemediationScriptsBaseUrl": "https://aka.ms",
+    "RemediationScriptsBaseUrl": "https://aka.ms/azts/remediation/",
     "RemediationSpecification": [
         {
             "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
             "EnableRemediation": "true",
-            "Filename": "Remediate-AnonymousAccessOnContainers.ps1",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
-            "LoadCommand": ". .\\\"Remediate-AnonymousAccessOnContainers.ps1\"",
+            "RemediationScriptUrl": "",
+            "LoadCommand": ". .\\\"Azure_Storage_AuthN_Dont_Allow_Anonymous.ps1\"",
             "InitCommand": "Remove-AnonymousAccessOnContainers",
             "RollbackMetadata":
                 {
@@ -19,9 +17,8 @@
         {
             "ControlId":"Azure_Subscription_Config_ASC_Tier",
             "EnableRemediation": "true",
-            "Filename": "Remediate-ConfigASCTier.ps1",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
-            "LoadCommand": ". .\\\"Remediatie-ConfigASCTier.ps1\"",
+            "RemediationScriptUrl": "",
+            "LoadCommand": ". .\\\"Azure_Subscription_Config_ASC_Tier.ps1\"",
             "InitCommand": "Set-ConfigASCTier",
             "RollbackMetadata":
                 {
@@ -34,26 +31,24 @@
         {
             "ControlId":"Azure_AppService_DP_Use_Secure_TLS_Version",
             "EnableRemediation": "true",
-            "Filename": "Remediate-ConfigASCTier.ps1",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
-            "LoadCommand": ". .\\\"Remediatie-ConfigASCTier.ps1\"",
-            "InitCommand": "Set-ConfigASCTier",
+            "LoadCommand": ". .\\\"Azure_AppService_DP_Use_Secure_TLS_Version.ps1\"",
+            "InitCommand": "Set-TLSVersion",
             "RollbackMetadata":
                 {
-                    "RollbackCommand": "Remove-ConfigASCTier",
+                    "RollbackCommand": "Remove-TLSVersion",
                     "Arguments":["SubscriptionId"]
                 }
         },
         {
             "ControlId":"Azure_AppService_DP_Dont_Allow_HTTP_Access",
             "EnableRemediation": "true",
-            "Filename": "Remediate-ConfigASCTier.ps1",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
-            "LoadCommand": ". .\\\"Remediatie-ConfigASCTier.ps1\"",
-            "InitCommand": "Set-ConfigASCTier",
+            "LoadCommand": ". .\\\"Azure_AppService_DP_Dont_Allow_HTTP_Access.ps1\"",
+            "InitCommand": "Remove-HTTPAccess",
             "RollbackMetadata":
                 {
-                    "RollbackCommand": "Remove-ConfigASCTier",
+                    "RollbackCommand": "Set-HTTPAccess",
                     "Arguments":["SubscriptionId"]
                 }
         }
