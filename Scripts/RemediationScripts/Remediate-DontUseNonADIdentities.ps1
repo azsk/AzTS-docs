@@ -364,19 +364,19 @@ function Remove-AzTSNonADIdentities
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    # Safe Check: Taking backup of Non-AD identities  
-    if([String]::IsNullOrWhiteSpace($FilePath))
+    # Safe Check: Taking backup of Non-AD identities.  
+    if ($DryRun)
+    {
+        Write-Host "Exporting all role assignments for Non-AD identities in form of CSV, if you want to use this CSV as an input to remediate." -ForegroundColor Cyan
+        $externalAccountsRoleAssignments | Export-CSV -Path "$($folderpath)\NonADAccountsRoleAssignments.csv" -NoTypeInformation
+        Write-Host "Path: $($folderPath)NonADAccountsRoleAssignments.csv"
+    }
+    else
     {
         Write-Host "Taking backup of role assignments for Non-AD identities that needs to be removed. Please do not delete this file. Without this file you wont be able to rollback any changes done through remediation script." -ForegroundColor Cyan
         $externalAccountsRoleAssignments | ConvertTo-json -Depth 10 | out-file "$($folderpath)NonADAccountsRoleAssignments.json"       
         Write-Host "Path: $($folderpath)NonADAccountsRoleAssignments.json"
-
-        # Safe Check: Exporting all role assignments in CSV file.
-        Write-Host "Exporting all role assignments for Non-AD identities in form of CSV, if you want to use this CSV as an input to remediate." -ForegroundColor Cyan
-        $externalAccountsRoleAssignments | Export-CSV -Path "$($folderpath)\NonADAccountsRoleAssignments.csv" -NoTypeInformation
-        Write-Host "Path: $($folderPath)NonADAccountsRoleAssignments.csv"
-    }  
-    
+    }
     
     if(-not $DryRun)
     {
