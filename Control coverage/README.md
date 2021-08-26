@@ -25,6 +25,8 @@ Below resource types can be checked for validating the security controls:
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
 |[ServiceFabric](Feature/ServiceFabric.md)|Microsoft.ServiceFabric/clusters|
+|[SQLManagedInstance](Feature/SQLManagedInstance.md)|Microsoft.Sql/managedInstances|
+|[SQLServer](Feature/SQLServer.md)|Microsoft.Sql/servers|
 |[Storage](Feature/Storage.md)|Microsoft.Storage/storageAccounts|
 |[Subscription](Feature/SubscriptionCore.md)|
 |[TrafficManager](Feature/TrafficManager.md)|Microsoft.Network/trafficmanagerprofiles|
