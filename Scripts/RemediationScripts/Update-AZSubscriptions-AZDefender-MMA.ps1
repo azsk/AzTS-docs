@@ -1,13 +1,13 @@
 ﻿<##########################################
 
-# Overivew:
+# Overview:
     This script is used to update azure subscriptions to enable azure defender and MMA on subscriptions.
 
-# Pre-requesites:
+# Pre-requisites:
     You will need owner or Contributor role at subscription level.
 
 # Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+    1. Install and validate pre-requisites to run the script for subscription.
 
     2. Update azure subscriptions to enable azure defender and MMA.
 
@@ -115,7 +115,7 @@ function Update-AZDefenderMMA
         }
         catch 
         {
-            Write-Host "Error occured while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
             break
         }
     }
