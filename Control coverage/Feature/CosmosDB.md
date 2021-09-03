@@ -1,0 +1,6 @@
+## Cloud Service
+
+| ControlId | Dependent Azure API(s) and Properties | Control spec-let |
+|-----------|-------------------------------------|------------------|
+| <b>ControlId:</b><br>Azure_CosmosDB_AuthZ_Enable_Firewall<br><b>DisplayName:</b><br>Cosmos DB firewall should be enabled<br><b>Description: </b><br> Cosmos DB firewall should be enabled| <b> ARM API to get CosmosDB resources in a subscription  </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01  <br><b>Properties:</b><br> name: 'properties.ipRangeFilter'| <b>Passed: </b><br> Firewall IP range filter is set for CosmosDB. <br><b>Failed: </b><br> Firewall IP range filter is not set for CosmosDB. |
+| <b>ControlId:</b><br>Azure_CosmosDB_AuthZ_Verify_IP_Range<br><b>DisplayName:</b><br>Configure only the required IP addresses on Cosmos DB firewall<br><b>Description: </b><br> Configure only the required IP addresses on Cosmos DB firewall| <b> ARM API to get CosmosDB resources in a subscription  </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01  <br><b>Properties:</b><br> name: 'properties.ipRangeFilter'| <b>Passed: </b><br> Firewall IP range filter is set for CosmosDB. <br><b>Failed: </b><br> Firewall IP range filter is not set for CosmosDB. |	
