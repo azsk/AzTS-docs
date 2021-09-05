@@ -51,6 +51,18 @@
                     "RollbackCommand": "Set-HTTPAccess",
                     "Arguments":["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId":"Azure_Storage_NetSec_Restrict_Network_Access",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTierm.ps1",
+            "LoadCommand": ". .\\\"Remediate-MetSec.ps1\"",
+            "InitCommand": "Remove-MetSec",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Set-MetSec",
+                    "Arguments":["SubscriptionId"]
+                }
         }
     ]
 }
