@@ -4,7 +4,6 @@
 <br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community..
 # On Demand Scan using API 
 
-
 ### On this page:
 - [Overview](OnDemandScanAPIs.md#overview)
 - [Create client app registration](OnDemandScanAPIs.md#Create-client-app-registration)
@@ -48,6 +47,9 @@ Follow below steps to create client application:
 
 </br>
 
+
+[Back to top…](OnDemandScanAPIs.md#On-this-page)
+
 ## Generate user authentication token to access subscriptions
 User has to generate authentication token in order to get access over a subscription.
 There are two ways to generate access tokens:
@@ -67,6 +69,8 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 $token.AccessToken | ConvertTo-Json | Out-File '<token file path>\token.json'
 
 ```
+
+[Back to top…](OnDemandScanAPIs.md#On-this-page)
 
 ### Using user authentication code flow
 User authentication code flow uses user's crediential to generate the token. User must have access over the subscription  to scan or to get the control scan result.
@@ -88,6 +92,8 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 
 ```
 
+[Back to top…](OnDemandScanAPIs.md#On-this-page)
+
 ## API to scan a subscription
 
 Use below PowerShell command to get control scan result.
@@ -97,12 +103,10 @@ Use below PowerShell command to get control scan result.
 $header = "Bearer " + $token.AccessToken
 $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
 $requestBody = @{{"SubscriptionIDList"=@("subscription_id");}
-```
-> Example:
-</br>
-> $requestBody = @{"SubscriptionIDList"=@("sub1","sub2");}
 
-``` PowerShell
+# Example:
+$requestBody = @{"SubscriptionIDList"=@("sub1","sub2");}
+
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
 $ascUri = "https://localhost:5001/adhocscan/AddToQueue"
@@ -127,6 +131,8 @@ $response = ConvertFrom-Json $apiResponse.Content
 
 </br>
 
+[Back to top…](OnDemandScanAPIs.md#On-this-page)
+
 ## API to get control scan result
 Use below PowerShell command to get control scan result.
 
@@ -135,12 +141,10 @@ Use below PowerShell command to get control scan result.
 $header = "Bearer " + $token.AccessToken
 $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
 $requestBody = @{"scanRequestId"="scan_request_id";}
-```
-> Example:
-</br>
-> $requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id1","control_id1");"ResourceNameList"=@("resource1","resource2");}
 
-``` PowerShell
+# Example:
+$requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id1","control_id1");"ResourceNameList"=@("resource1","resource2");}
+
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
 $ascUri = "https://localhost:5001/adhocscan/subscription/<sub-id>/ControlScanResult"
@@ -171,11 +175,11 @@ $response = ConvertFrom-Json $apiResponse.Content
 
 > **Note:** 
 </br>
-> _1. If ScanRequestId is empty then API will return latest control scan result._
+> 1. If ScanRequestId is empty then API will return latest control scan result._
 >
-> _2. You can get control result for one subscription at a time._
+> 2. You can get control result for one subscription at a time._
 
-[Back to top…]()
+[Back to top…](OnDemandScanAPIs.md#On-this-page)
 
 ## Feedback
 
