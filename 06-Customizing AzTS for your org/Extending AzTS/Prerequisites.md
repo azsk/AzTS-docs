@@ -1,9 +1,5 @@
-# Add new control for existing SVT
-Azure Tenant Security Solution (AzTS) provides capability to add new controls(for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
-Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Azure Security Center assessment.
-
-## Prerequisite AzTS configuration to add new control
-Below mentioned configuration is required before adding new control:
+## Prerequisite AzTS configurations to add new control
+Below mentioned configurations are required before adding new controls:
 
 ### AzTS API
 
@@ -25,3 +21,21 @@ Below mentioned configuration is required before adding new control:
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
+
+Above mentioned settings can be configured either from Azure portal or using the helper script provided with AzTS solution.
+
+- Azure Portal
+  - Open the [Azure portal](https://portal.azure.com/).
+  - Navigate to AzTS host subscription -> AzTS host resource group.
+  - Go to required app service(API/MetaDataAggreagator/workItemProcessor) -> Configuration -> Click on "New application setting" to add required app settings.
+
+- Using helper script
+  - Download the script from [here]()(Script can be downloaded by clicking Alt+Raw button).
+  - Open powershell session.
+  - Navigate to the download location of the script in powershell session.
+    - cd "Download location"
+  - Load script in session.
+    - . ".\ConfigureCustomPolicyControlEval.ps1"
+    - Note : Do not miss the '.' at beginning of the above command
+  - Invoke the configuration cmdlet
+    - Configure-CustomControlAdditionPrerequisites -SubscriptionId "AzTS solution host subscription id" -ScanHostRGName "AzTS solution host resource group name"
