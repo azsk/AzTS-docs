@@ -6,11 +6,12 @@
 
 
 ### On this page:
-- [Overview]()
-- [Generate user authentication token to access subscriptions]()
-- [API to scan a subscription]()
-- [API to get control scan result]()
-- [Feedback]()
+- [Overview](OnDemandScanAPIs.md#overview)
+- [Create client app registration](OnDemandScanAPIs.md#Create-client-app-registration)
+- [Generate user authentication token to access subscriptions](OnDemandScanAPIs.md#Generate-user-authentication-token-to-access-subscriptions)
+- [API to scan a subscription](OnDemandScanAPIs.md#API-to-scan-a-subscription)
+- [API to get control scan result](OnDemandScanAPIs.md#API-to-get-control-scan-result)
+- [Feedback](OnDemandScanAPIs.md#Feedback)
 
 -----------------------------------------------------------------
 ## Overview 
