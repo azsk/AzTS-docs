@@ -25,24 +25,24 @@ Step 1: Assign the required policy definition to root management group of your t
 Step 2: Get the ID of the policy definition and policy assignment. If you already have ID of policy definition and assignment handy, please go to step #3 directly or follow the below mentioned steps to get these details.
 
 2.A- Go to the Azure portal. Search for and select Policy.
-![Search and select policy](../../Images/06_ExtendingAzTS_Search_Policy.png)
+![Search and select policy](../../Images/06_ExtendingAzTS_Search_Policy.PNG)
 
 2.B- Select Assignments on the left side of the Azure Policy page.
-![Search and select assignment](../../Images/06_ExtendingAzTS_Search_Assignment.png)
+![Search and select assignment](../../Images/06_ExtendingAzTS_Search_Assignment.PNG)
 
 2.C- Change the Scope filter to required management group scope.
 
 2.D- Select the required assignment.
-![Search and select assignment](../../Images/06_ExtendingAzTS_Select_Assignment.png)
+![Search and select assignment](../../Images/06_ExtendingAzTS_Select_Assignment.PNG)
 
 2.E- Copy the Assignement ID.
-![copy assignment ID](../../Images/06_ExtendingAzTS_Get_AssignmentId.png)
+![copy assignment ID](../../Images/06_ExtendingAzTS_Get_AssignmentId.PNG)
 
 2.F- Click on View Definition.
-![View Definition](../../Images/06_ExtendingAzTS_Select_View_Definition.png)
+![View Definition](../../Images/06_ExtendingAzTS_Select_View_Definition.PNG)
 
 2.G- Copy the Definition ID.
-![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.png)
+![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.PNG)
 
 Step 3: Go to AzTS UI. (Link to Faqs)
 
