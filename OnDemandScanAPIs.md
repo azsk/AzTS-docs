@@ -18,6 +18,7 @@ The Azure Tenant Security Solution (AzTS) exposes APIs for users to allow on dem
 
 ## Create client app registration
 Before generating the token or making an API call, client app registration needs to be created.
+</br>
 Follow below steps to create client application:
 1. Go to the Azure portal to register your application.
 
@@ -140,7 +141,7 @@ Use below PowerShell command to get control scan result.
 
 $header = "Bearer " + $token.AccessToken
 $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
-$requestBody = @{"scanRequestId"="scan_request_id";}
+$requestBody = @{}
 
 # Example:
 $requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id1","control_id1");"ResourceNameList"=@("resource1","resource2");}
