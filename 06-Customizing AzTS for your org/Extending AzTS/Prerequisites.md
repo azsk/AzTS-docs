@@ -35,6 +35,7 @@ Above mentioned settings can be configured either from Azure portal or using the
   - Navigate to the download location of the script in powershell session.
     cd <Download location>
   - Load script in session.
-    . ".\ConfigureCustomPolicyControlEval.ps1"
+    - . ".\ConfigureCustomPolicyControlEval.ps1"
+    - Note : Do not miss the '.' at beginning of the above command
   - Invoke the configuration cmdlet
-    Configure-CustomControlAdditionPrerequisites -SubscriptionId <AzTS solution host subscription id> -ScanHostRGName <AzTS solution host resource group name>
+    - Configure-CustomControlAdditionPrerequisites -SubscriptionId <AzTS solution host subscription id> -ScanHostRGName <AzTS solution host resource group name>
