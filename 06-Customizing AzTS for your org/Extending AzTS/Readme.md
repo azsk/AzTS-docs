@@ -25,7 +25,9 @@ Step 1: Assign the required policy definition to root management group of your t
 Step 2: Get the ID of the policy definition and policy assignment. If you already have ID of policy definition and assignment handy, please go to step #3 directly or follow the below mentioned steps to get these details.
 
     1- Go to the Azure portal. Search for and select Policy.
-        <Screenshot>
+    
+        ![Search and Select Policy](../../Images/06_ExtendingAzTS_Search_Policy.png) 
+
     2- Select Assignments on the left side of the Azure Policy page.
         <Screenshot>
     3- Change the Scope filter to required management group scope.
@@ -59,5 +61,29 @@ Step 8: Provide the Control ID. Initial part of the control ID is pre-populated 
 
 Step 9: Set Control Scan Source to 'Policy'.
 
-Step 10: 
+Step 10: Provide Display Name which is a user friendly name for the control.
+
+Step 11: Provide Policy Assignment ID of the assignment (Check step #2 on how to get policy assignment ID).
+
+Step 12: Provide one or more Policy Definition IDs(Check step #2 on how to get policy definition ID).
+    **Note:** To provide multiple definition IDs, presss enter after each definition ID.
+
+Step 13: Select either one of the existing Category (generic security specification of the control) for the control or if none of the existing categories is relevant for the control, enter/type your required category in text field.
+
+Step 14: Keep Enabled switch to 'Yes'.
+
+Step 15: Provide additional details for the control:
+
+|Settings| Description| Examples|
+|-------------|------|---------|
+|Automated| Whether the control is manual or automated| e.g. Yes/No (keep it Yes for policy based controls)|
+|Description| A basic description on what the control is about| e.g. App Service must only be accessible over HTTPS. |
+|Tags| Labels that denote the control being of a specific type or belonging to a specific domain | For e.g. Baseline, Automated etc.|
+|Control Severity| The severity of the control| e.g. High: Should be remediated as soon as possible. Medium: Should be considered for remediation. Low: Remediation should be prioritized after high and medium.|
+|Control Requirements| Prerequisites for the control.| e.g. Monitoring and auditing must be enabled and correctly configured according to prescribed organizational guidance|
+|Rationale|  Logical intention for the added control | e.g. Auditing enables log collection of important system events pertinent to security. Regular monitoring of audit logs can help to detect any suspicious and malicious activity early and respond in a timely manner.|
+|Recommendations| Steps or guidance on how to remediate non-compliant resources | e.g. Refer https://azure.microsoft.com/en-in/documentation/articles/key-vault-get-started/ for configuring Key Vault and storing secrets |
+|Custom Tags| Tags can be used for filtering and referring controls in the future while reporting| e.g. Production, Phase2 etc. |
+|Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For policy based contols this should be empty) |
+|Comments | These comments show up in the changelog for the feature. | e.g. Added new policy based control for App Service |
 
