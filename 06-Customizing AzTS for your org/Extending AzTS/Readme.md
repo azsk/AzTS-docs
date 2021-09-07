@@ -53,21 +53,25 @@ Step 2: Get the ID of the policy definition and policy assignment. If you alread
 Step 3: Go to AzTS UI. (Link to Faqs)
 
 Step 4: Open Control editor tool.
+
 ![Open CMET Editor](../../Images/06_ExtendingAzTS_Open_CMET.png)
 
 Step 5: Click on Action and select Add new control option.
+
 ![Open new control window](../../Images/06_ExtendingAzTS_Add_New_Control.png)
 
 Step 6: Select the service/feature for which you want to add new control.
+
 ![Select Feature Name](../../Images/06_ExtendingAzTS_NewControl_Feature.png)
 
 Step 7: Select either one of the existing Security Domain for the control or if you want to add new Security Domain, type required domain in text field.
+
 ![Select Security Domain](../../Images/06_ExtendingAzTS_NewControl_Security_Domain.png)
 
 Step 8: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
-    **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
-    To see some of the examples of existing control IDs please check out this list.
+**Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
+To see some of the examples of existing control IDs please check out this list.
 
 ![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ControlId.png)
 
@@ -84,7 +88,8 @@ Step 11: Provide Policy Assignment ID of the assignment (Check step #2 on how to
 ![Provide PolicyAssignment Id](../../Images/06_ExtendingAzTS_NewControl_PolicyAssignment_Id.png)
 
 Step 12: Provide one or more Policy Definition IDs(Check step #2 on how to get policy definition ID).
-    **Note:** To provide multiple definition IDs, presss enter after each definition ID.
+    
+**Note:** To provide multiple definition IDs, presss enter after each definition ID.
 
 ![Provide PolicyDefinition Id](../../Images/06_ExtendingAzTS_NewControl_PolicyDefinition_Id.png)
 
