@@ -25,54 +25,72 @@ Step 1: Assign the required policy definition to root management group of your t
 Step 2: Get the ID of the policy definition and policy assignment. If you already have ID of policy definition and assignment handy, please go to step #3 directly or follow the below mentioned steps to get these details.
 
 2.A- Go to the Azure portal. Search for and select Policy.
+
 ![Search and select policy](../../Images/06_ExtendingAzTS_Search_Policy.PNG)
 
 2.B- Select Assignments on the left side of the Azure Policy page.
+
 ![Search and select assignment](../../Images/06_ExtendingAzTS_Search_Assignment.PNG)
 
 2.C- Change the Scope filter to required management group scope.
 
 2.D- Select the required assignment.
+
 ![Search and select assignment](../../Images/06_ExtendingAzTS_Select_Assignment.PNG)
 
 2.E- Copy the Assignement ID.
+
 ![copy assignment ID](../../Images/06_ExtendingAzTS_Get_AssignmentId.PNG)
 
 2.F- Click on View Definition.
+
 ![View Definition](../../Images/06_ExtendingAzTS_Select_View_Definition.PNG)
 
 2.G- Copy the Definition ID.
+
 ![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.PNG)
 
 Step 3: Go to AzTS UI. (Link to Faqs)
 
 Step 4: Open Control editor tool.
-    <Screenshot>
+![Open CMET Editor](../../Images/06_ExtendingAzTS_Open_CMET.PNG)
 
 Step 5: Click on Action and select Add new control option.
-    <Screenshot>
+![Open new control window](../../Images/06_ExtendingAzTS_Add_New_Control.PNG)
 
 Step 6: Select the service/feature for which you want to add new control.
-    <Screenshot>
+![Select Feature Name](../../Images/06_ExtendingAzTS_NewControl_Feature.PNG)
 
-Step 7: Select either one of the existing Security Domain for the control or if you want new Security Domain type required domain in text field.
-    <Screenshot>
+Step 7: Select either one of the existing Security Domain for the control or if you want to add new Security Domain, type required domain in text field.
+![Select Security Domain](../../Images/06_ExtendingAzTS_NewControl_Security_Domain.PNG)
 
 Step 8: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
     **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
     To see some of the examples of existing control IDs please check out this list.
 
+![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ControlId.PNG)
+
 Step 9: Set Control Scan Source to 'Policy'.
+
+![Set Scan source](../../Images/06_ExtendingAzTS_NewControl_Scan_Source.PNG)
 
 Step 10: Provide Display Name which is a user friendly name for the control.
 
+![Provide Display Name](../../Images/06_ExtendingAzTS_NewControl_DisplayName.PNG)
+
 Step 11: Provide Policy Assignment ID of the assignment (Check step #2 on how to get policy assignment ID).
+
+![Provide PolicyAssignment Id](../../Images/06_ExtendingAzTS_NewControl_PolicyAssignment_Id.PNG)
 
 Step 12: Provide one or more Policy Definition IDs(Check step #2 on how to get policy definition ID).
     **Note:** To provide multiple definition IDs, presss enter after each definition ID.
 
+![Provide PolicyDefinition Id](../../Images/06_ExtendingAzTS_NewControl_PolicyDefinition_Id.PNG)
+
 Step 13: Select either one of the existing Category (generic security specification of the control) for the control or if none of the existing categories is relevant for the control, enter/type your required category in text field.
+
+![Select Category](../../Images/06_ExtendingAzTS_NewControl_Category.PNG)
 
 Step 14: Keep Enabled switch to 'Yes'.
 
@@ -90,4 +108,19 @@ Step 15: Provide additional details for the control:
 |Custom Tags| Tags can be used for filtering and referring controls in the future while reporting| e.g. Production, Phase2 etc. |
 |Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For policy based contols this should be empty) |
 |Comments | These comments show up in the changelog for the feature. | e.g. Added new policy based control for App Service |
+
+Step 16: Click on Add button to save new control.
+
+![Save new control](../../Images/06_ExtendingAzTS_NewControl_Save.PNG)
+
+Step 17: Post control addition, you will get success message. Now you are good to close 'Add new control' window.
+
+![New control success msg](../../Images/06_ExtendingAzTS_NewControl_Success.PNG)
+
+Step 18: To valiadate the control addition, refresh the control metadata editor tool and search for newly added control. Control should be available now.
+
+![Validate new control](../../Images/06_ExtendingAzTS_NewControl_Validation.PNG)
+
+
+
 
