@@ -166,7 +166,7 @@ $response = ConvertFrom-Json $apiResponse.Content
 **Request body parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
-| ScanRequestId | To get control scan result with respect to the scan request id.| No |
+| ScanRequestId | To get control scan result with respect to the scan request id.| Yes |
 | ControlIdList| List of control ids to get control result only for specific controls.| No |
 | ResourceNameList | List of resources to get control result only for certain resources.| No |
 
@@ -174,10 +174,10 @@ $response = ConvertFrom-Json $apiResponse.Content
 </br>
 
 > **Note:** 
-</br>
-> 1. If ScanRequestId is empty then API will return latest control scan result._
->
-> 2. You can get control result for one subscription at a time._
+> </br>
+> _1. If ScanRequestId is empty then API will return latest control scan result._
+> </br>
+> _2. You can get control result for one subscription at a time._
 
 [Back to top…](OnDemandScanAPIs.md#On-this-page)
 
