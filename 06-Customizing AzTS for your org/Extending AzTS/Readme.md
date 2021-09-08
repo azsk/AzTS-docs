@@ -70,7 +70,7 @@ Step 7: Select either one of the existing Security Domain for the control or if 
 
 Step 8: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
-**Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
+> **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
 To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
 
 ![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ControlId.png)
@@ -89,7 +89,7 @@ Step 11: Provide Policy Assignment ID of the assignment (Check step #2 on how to
 
 Step 12: Provide one or more Policy Definition IDs(Check step #2 on how to get policy definition ID).
     
-**Note:** To provide multiple definition IDs, presss enter after each definition ID.
+> **Note:** To provide multiple definition IDs, presss enter after each definition ID.
 
 ![Provide PolicyDefinition Id](../../Images/06_ExtendingAzTS_NewControl_PolicyDefinition_Id.png)
 
@@ -158,7 +158,7 @@ Step 6: Select either one of the existing Security Domain for the control or if 
 
 Step 7: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
-**Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
+> **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
 To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
 
 ![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ASC_ControlId.png)
