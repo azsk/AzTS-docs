@@ -24,31 +24,31 @@ Step 1: Assign the required policy definition to root management group of your t
 
 Step 2: Get the ID of the policy definition and policy assignment. If you already have ID of policy definition and assignment handy, please go to step #3 directly or follow the below mentioned steps to get these details.
 
-2.A- Go to the Azure portal. Search for and select Policy.
+   1. Go to the Azure portal. Search for and select Policy.
 
-![Search and select policy](../../Images/06_ExtendingAzTS_Search_Policy.PNG)
+      ![Search and select policy](../../Images/06_ExtendingAzTS_Search_Policy.PNG)
 
-2.B- Select Assignments on the left side of the Azure Policy page.
+   2. Select Assignments on the left side of the Azure Policy page.
 
-![Search and select assignment](../../Images/06_ExtendingAzTS_Search_Assignment.PNG)
+      ![Search and select assignment](../../Images/06_ExtendingAzTS_Search_Assignment.PNG)
 
-2.C- Change the Scope filter to required management group scope.
+   3. Change the Scope filter to required management group scope.
 
-2.D- Select the required assignment.
+   4. Select the required assignment.
 
-![Search and select assignment](../../Images/06_ExtendingAzTS_Select_Assignment.PNG)
+      ![Search and select assignment](../../Images/06_ExtendingAzTS_Select_Assignment.PNG)
 
-2.E- Copy the Assignement ID.
+   5. Copy the Assignement ID.
 
-![copy assignment ID](../../Images/06_ExtendingAzTS_Get_AssignmentId.PNG)
+      ![copy assignment ID](../../Images/06_ExtendingAzTS_Get_AssignmentId.PNG)
 
-2.F- Click on View Definition.
+   6. Click on View Definition.
 
-![View Definition](../../Images/06_ExtendingAzTS_Select_View_Definition.PNG)
+      ![View Definition](../../Images/06_ExtendingAzTS_Select_View_Definition.PNG)
 
-2.G- Copy the Definition ID.
+   7. Copy the Definition ID.
 
-![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.PNG)
+      ![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.PNG)
 
 Step 3: Go to AzTS UI. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
 
@@ -128,6 +128,7 @@ Step 18: To valiadate the control addition, refresh the control metadata editor 
 
 Step 19: As a additional validation, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
 
+-----
 
 ### Add new control based on custom ASC Assessment
 Please follow the below mentioned steps to add new controls based on Azure Security Center (ASC) Assessment/Recommendation:
@@ -209,6 +210,8 @@ Step 15: To valiadate the control addition, refresh the control metadata editor 
 ![Validate new control](../../Images/06_ExtendingAzTS_NewControl_ASC_Validation.png)
 
 Step 16: As a additional validation, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
+
+-----
 
 
 
