@@ -18,11 +18,11 @@ Currently you can extend AzTS controls set by either adding a new control based 
 ### Add new control based on custom Azure policy
 Please follow the below mentioned steps to add new controls based on custom Azure Policy:
 
-Step 0: Prerequisites - TBD
+**Step 0:** Prerequisites - TBD
 
-Step 1: Assign the required policy definition to root management group of your tenant. To assign a policy definition, please follow the steps mentioned [here](https://docs.microsoft.com/en-us/azure/governance/policy/tutorials/create-and-manage#assign-a-policy).
+**Step 1:** Assign the required policy definition to root management group of your tenant. To assign a policy definition, please follow the steps mentioned [here](https://docs.microsoft.com/en-us/azure/governance/policy/tutorials/create-and-manage#assign-a-policy).
 
-Step 2: Get the ID of the policy definition and policy assignment. If you already have ID of policy definition and assignment handy, please go to step #3 directly or follow the below mentioned steps to get these details.
+**Step 2:** Get the ID of the policy definition and policy assignment. If you already have ID of policy definition and assignment handy, please go to step #3 directly or follow the below mentioned steps to get these details.
 
    1. Go to the Azure portal. Search for and select Policy.
 
@@ -50,56 +50,57 @@ Step 2: Get the ID of the policy definition and policy assignment. If you alread
 
       ![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.PNG)
 
-Step 3: Go to AzTS UI. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
+**Step 3:** Go to **AzTS UI**. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
 
-Step 4: Open Control editor tool.
+**Step 4:** Open **Control editor tool**.
 
 ![Open CMET Editor](../../Images/06_ExtendingAzTS_Open_CMET.png)
 
-Step 5: Click on Action and select Add new control option.
+**Step 5:** Click on **Action** and select **Add new control** option.
 
 ![Open new control window](../../Images/06_ExtendingAzTS_Add_New_Control.png)
 
-Step 6: Select the service/feature for which you want to add new control.
+**Step 6:** Select the **Service/Feature** for which you want to add new control.
+> **Note:** Currently addition of new controls is only supported for existing services evaluated by AzTS. 
 
 ![Select Feature Name](../../Images/06_ExtendingAzTS_NewControl_Feature.png)
 
-Step 7: Select either one of the existing Security Domain for the control or if you want to add new Security Domain, type required domain in text field.
+**Step 7:** Select either one of the existing **Security Domain** for the control or if you want to add new Security Domain, type required domain in text field.
 
 ![Select Security Domain](../../Images/06_ExtendingAzTS_NewControl_Security_Domain.png)
 
-Step 8: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
+**Step 8:** Provide the **Control ID**. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
 > **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
 To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
 
 ![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ControlId.png)
 
-Step 9: Set Control Scan Source to 'Policy'.
+**Step 9:** Set control **Scan Source** to '**Policy**'.
 
 ![Set Scan source](../../Images/06_ExtendingAzTS_NewControl_Scan_Source.png)
 
-Step 10: Provide Display Name which is a user friendly name for the control.
+**Step 10:** Provide **Display Name** which is a user friendly name for the control.
 
 ![Provide Display Name](../../Images/06_ExtendingAzTS_NewControl_DisplayName.png)
 
-Step 11: Provide Policy Assignment ID of the assignment (Check step #2 on how to get policy assignment ID).
+**Step 11:** Provide **Policy Assignment ID** of the assignment (Check step #2 on how to get policy assignment ID).
 
 ![Provide PolicyAssignment Id](../../Images/06_ExtendingAzTS_NewControl_PolicyAssignment_Id.png)
 
-Step 12: Provide one or more Policy Definition IDs(Check step #2 on how to get policy definition ID).
+**Step 12:** Provide one or more **Policy Definition IDs**(Check step #2 on how to get policy definition ID).
     
 > **Note:** To provide multiple definition IDs, presss enter after each definition ID.
 
 ![Provide PolicyDefinition Id](../../Images/06_ExtendingAzTS_NewControl_PolicyDefinition_Id.png)
 
-Step 13: Select either one of the existing Category (generic security specification of the control) for the control or if none of the existing categories is relevant for the control, enter/type your required category in text field.
+**Step 13:** Select either one of the existing **Category** (generic security specification of the control) for the control or if none of the existing categories is relevant for the control, enter/type your required category in text field.
 
 ![Select Category](../../Images/06_ExtendingAzTS_NewControl_Category.png)
 
-Step 14: Keep Enabled switch to 'Yes'.
+**Step 14:** Keep **Enabled** switch to '**Yes**'.
 
-Step 15: Provide additional details for the control:
+**Step 15:** Provide **Additional details/Optional settings** for the control:
 
 |Settings| Description| Examples|
 |-------------|------|---------|
@@ -114,75 +115,76 @@ Step 15: Provide additional details for the control:
 |Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For policy based contols this should be empty) |
 |Comments | These comments show up in the changelog for the feature. | e.g. Added new policy based control for App Service |
 
-Step 16: Click on Add button to save new control.
+**Step 16:** Click on **Add** button to save new control.
 
 ![Save new control](../../Images/06_ExtendingAzTS_NewControl_Save.png)
 
-Step 17: Post control addition, you will get success message. Now you are good to close 'Add new control' window.
+**Step 17:** Post control addition, you will get success message. Now you are good to **close** 'Add new control' window.
 
 ![New control success msg](../../Images/06_ExtendingAzTS_NewControl_Success.png)
 
-Step 18: To valiadate the control addition, refresh the control metadata editor tool and search for newly added control. Control should be available now.
+**Step 18:** To **valiadate the control addition**, refresh the control metadata editor tool and search for newly added control. Control should be available now.
 
 ![Validate new control](../../Images/06_ExtendingAzTS_NewControl_Validation.png)
 
-Step 19: As a additional validation, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
+**Step 19:** As a **additional validation**, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
 
 -----
 
 ### Add new control based on custom ASC Assessment
 Please follow the below mentioned steps to add new controls based on Azure Security Center (ASC) Assessment/Recommendation:
 
-Step 0: Prerequisites - TBD
+**Step 0:** Prerequisites - TBD
 
-Step 1: Get the display name of the ASC control recommendation. You can find ASC control recommendations for your subscriptions [here](https://portal.azure.com/?feature.customportal=false#blade/Microsoft_Azure_Security/SecurityMenuBlade/5).
+**Step 1:** Get the display name of the ASC control recommendation. You can find ASC control recommendations for your subscriptions [here](https://portal.azure.com/?feature.customportal=false#blade/Microsoft_Azure_Security/SecurityMenuBlade/5).
 
 ![Open new control window](../../Images/06_ExtendingAzTS_Search_ASC_Recommendations.png)
 
-Step 2: Go to AzTS UI. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
+**Step 2:** Go to **AzTS UI**. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
 
-Step 3: Open Control editor tool.
+**Step 3:** Open **Control editor tool**.
 
 ![Open CMET Editor](../../Images/06_ExtendingAzTS_Open_CMET.png)
 
-Step 4: Click on Action and select Add new control option.
+**Step 4:** Click on **Action** and select **Add new control** option.
 
 ![Open new control window](../../Images/06_ExtendingAzTS_Add_New_Control.png)
 
-Step 5: Select the service/feature for which you want to add new control.
+**Step 5:** Select the **Service/Feature** for which you want to add new control.
+> **Note:** Currently addition of new controls is only supported for existing services evaluated by AzTS.
 
 ![Select Feature Name](../../Images/06_ExtendingAzTS_NewControl_Feature.png)
 
-Step 6: Select either one of the existing Security Domain for the control or if you want to add new Security Domain, type required domain in text field.
+**Step 6:** Select either one of the existing **Security Domain** for the control or if you want to add new Security Domain, type required domain in text field.
 
 ![Select Security Domain](../../Images/06_ExtendingAzTS_NewControl_ASC_Security_Domain.png)
 
-Step 7: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
+**Step 7:** Provide the **Control ID**. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
 > **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
 To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
 
 ![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ASC_ControlId.png)
 
-Step 8: Set Control Scan Source to 'ASC'.
+**Step 8:** Set Control **Scan Source** to '**ASC**'.
 
 ![Set Scan source](../../Images/06_ExtendingAzTS_NewControl_ASC_Scan_Source.png)
 
-Step 9: Provide Display Name. You can either choose ASC recommendation display name from the drop down or type display name in text field (which you have picked in step #1).
+**Step 9:** Provide **Display Name**. You can either choose ASC recommendation display name from the drop down or type display name in text field (which you have picked in step #1).
 
 ![Provide Display Name](../../Images/06_ExtendingAzTS_NewControl_ASC_DisplayName.png)
 
-Once you select the Display Name, Assessment Properties field will get auto populated.
+Once you select the Display Name, **Assessment Properties** field will get auto populated.
 
 ![Provide Display Name](../../Images/06_ExtendingAzTS_NewControl_ASC_Properties.png)
 
-Step 10: Select either one of the existing Category (generic security specification of the control) for the control or if none of the existing categories is relevant for the control, enter/type your required category in text field.
+**Step 10:** Select either one of the existing **Category** (generic security specification of the control) for the control or if none of the existing categories is relevant for the control, enter/type your required category in text field.
 
 ![Select Category](../../Images/06_ExtendingAzTS_NewControl_ASC_Category.png)
 
-Step 11: Keep Enabled switch to 'Yes'.
+**Step 11:** Keep **Enabled** switch to '**Yes**'.
 
-Step 12: Provide additional details for the control:
+**Step 12:** Provide **Additional details/Optional settings** for the control:
 
 |Settings| Description| Examples|
 |-------------|------|---------|
@@ -197,19 +199,19 @@ Step 12: Provide additional details for the control:
 |Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For ASC assessment/recommendation based contols this should be empty) |
 |Comments | These comments show up in the changelog for the feature. | e.g. Added new policy based control for App Service |
 
-Step 13: Click on Add button to save new control.
+**Step 13:** Click on **Add** button to save new control.
 
 ![Save new control](../../Images/06_ExtendingAzTS_NewControl_ASC_Save.png)
 
-Step 14: Post control addition, you will get success message. Now you are good to close 'Add new control' window.
+**Step 14:** Post control addition, you will get success message. Now you are good to **close** 'Add new control' window.
 
 ![New control success msg](../../Images/06_ExtendingAzTS_NewControl_ASC_Success.png)
 
-Step 15: To valiadate the control addition, refresh the control metadata editor tool and search for newly added control. Control should be available now.
+**Step 15:** To **valiadate the control addition**, refresh the control metadata editor tool and search for newly added control. Control should be available now.
 
 ![Validate new control](../../Images/06_ExtendingAzTS_NewControl_ASC_Validation.png)
 
-Step 16: As a additional validation, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
+**Step 16:** As a **additional validation**, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
 
 -----
 
