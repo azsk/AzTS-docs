@@ -5,8 +5,8 @@
 
 ## Contents
 - [Add new control for existing SVT](Readme.md#steps-to-extend-the-control-svt) 
-   - [Add new control by custom Azure policy](Readme.md#add-new-control-by-custom-azure-policy)
-   - [Add new control by custom ASC Assessment](./Extending%20AzSK%20Module/Readme.md#add-new-control-by-custom-asc-assessment)
+   - [Add new control based on custom Azure policy](Readme.md#add-new-control-based-on-custom-azure-policy)
+   - [Add new control based on custom ASC Assessment](./Extending%20AzSK%20Module/Readme.md#add-new-control-based-on-custom-asc-assessment)
 - [FAQ](Readme.md#faqs)  
 
 ----------------------------------------------
@@ -15,7 +15,7 @@
 Azure Tenant Security Solution (AzTS) provides capability to add new controls(for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
 Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Azure Security Center assessment.
 
-### Add new control by custom Azure policy
+### Add new control based on custom Azure policy
 Please follow the below mentioned steps to add new controls based on custom Azure Policy:
 
 Step 0: Prerequisites - TBD
@@ -50,7 +50,7 @@ Step 2: Get the ID of the policy definition and policy assignment. If you alread
 
 ![Copy the Definition ID](../../Images/06_ExtendingAzTS_Get_PolicyDefinitionId.PNG)
 
-Step 3: Go to AzTS UI. (Link to Faqs)
+Step 3: Go to AzTS UI. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
 
 Step 4: Open Control editor tool.
 
@@ -71,7 +71,7 @@ Step 7: Select either one of the existing Security Domain for the control or if 
 Step 8: Provide the Control ID. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
 **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
-To see some of the examples of existing control IDs please check out this list.
+To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
 
 ![Provide ControlId](../../Images/06_ExtendingAzTS_NewControl_ControlId.png)
 
@@ -125,6 +125,8 @@ Step 17: Post control addition, you will get success message. Now you are good t
 Step 18: To valiadate the control addition, refresh the control metadata editor tool and search for newly added control. Control should be available now.
 
 ![Validate new control](../../Images/06_ExtendingAzTS_NewControl_Validation.png)
+
+Step 19: As a additional validation, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
 
 
 
