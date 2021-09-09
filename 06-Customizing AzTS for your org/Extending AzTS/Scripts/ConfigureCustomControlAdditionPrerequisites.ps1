@@ -11,7 +11,9 @@ function Configure-CustomControlAdditionPrerequisites
     )
 
     # Set the context to host subscription
-        Set-AzContext -SubscriptionId  $SubscriptionId
+    Write-Host "Setting up az context to AzTS host subscription id." -ForegroundColor $([Constants]::MessageType.Info)
+    Set-AzContext -SubscriptionId  $SubscriptionId
+    Write-Host $([Constants]::DoubleDashLine)
     
     # AzTS resources name preparation
     $ResourceId='/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId,$ScanHostRGName;
@@ -22,7 +24,7 @@ function Configure-CustomControlAdditionPrerequisites
     $MetaDataAggregatorName = "AzSK-AzTS-MetadataAggregator-" + $ResourceHash
     $WorkItemProcessorName = "AzSK-AzTS-WorkItemProcessor-" + $ResourceHash
 
-    Write-Host "Configuring AzTS API : $APIName for Custom policy based control addition and evaluation" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Configuring AzTS API : $APIName for new control addition." -ForegroundColor $([Constants]::MessageType.Info)
     
     $AzTSAPI = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $APIName -ErrorAction Stop
 
@@ -48,14 +50,14 @@ function Configure-CustomControlAdditionPrerequisites
         $NewAPIAppSettings['WorkItemProcessorSettings__HostSubscriptionId'] = $SubscriptionId
 
         # Configuring new app settings
-        Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $APIName -AppSettings $NewAPIAppSettings -ErrorAction Stop
+        $AzTSAPI = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $APIName -AppSettings $NewAPIAppSettings -ErrorAction Stop
 
-        Write-Host "Configured AzTS API : $APIName for Custom policy based control addition and evaluation" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Configured AzTS API : $APIName for new control addition." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
 
     }
 
-    Write-Host "Configuring AzTS MetaDataAggregator : $MetaDataAggregatorName for Custom policy based control addition and evaluation" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Configuring AzTS MetaDataAggregator : $MetaDataAggregatorName for new control addition." -ForegroundColor $([Constants]::MessageType.Info)
     
     $AzTSMDA = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $MetaDataAggregatorName -ErrorAction Stop
 
@@ -75,14 +77,14 @@ function Configure-CustomControlAdditionPrerequisites
         $NewMDAAppSettings['FeatureManagement__PolicyStates'] = "true"
 
         # Configuring new app settings
-        Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $MetaDataAggregatorName -AppSettings $NewMDAAppSettings -ErrorAction Stop
+        $AzTSMDA = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $MetaDataAggregatorName -AppSettings $NewMDAAppSettings -ErrorAction Stop
 
-        Write-Host "Configured AzTS MetaDataAggregator : $MetaDataAggregatorName for Custom policy based control addition and evaluation" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Configured AzTS MetaDataAggregator : $MetaDataAggregatorName for new control addition." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
 
     }
 
-    Write-Host "Configuring AzTS WorkItemProcessor : $WorkItemProcessorName for Custom policy based control addition and evaluation" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Configuring AzTS WorkItemProcessor : $WorkItemProcessorName for new control addition." -ForegroundColor $([Constants]::MessageType.Info)
     
     $AzTSWIP = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WorkItemProcessorName -ErrorAction Stop
 
@@ -102,14 +104,14 @@ function Configure-CustomControlAdditionPrerequisites
         $NewWIPAppSettings['FeatureManagement__PolicyStates'] = "true"
 
         # Configuring new app settings
-        Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WorkItemProcessorName -AppSettings $NewWIPAppSettings -ErrorAction Stop
+        $AzTSWIP = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WorkItemProcessorName -AppSettings $NewWIPAppSettings -ErrorAction Stop
 
-        Write-Host "Configured AzTS WorkItemProcessor : $WorkItemProcessorName for Custom policy based control addition and evaluation" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Configured AzTS WorkItemProcessor : $WorkItemProcessorName for new control addition." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
 
     }
 
-    Write-Host "Configuration completed. Ready to add policy based control now..." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Configuration completed. Ready to add new control now..." -ForegroundColor $([Constants]::MessageType.Update)
 }
 
 function get-hash([string]$textToHash) 
