@@ -4,7 +4,7 @@ Please follow the below mentioned steps to add new controls based on Azure Secur
 **Step 0:** Following prerequisites are required to add new control.
    1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-add-new-control).
 
-   2. CMET (Control metadata editor tool) is only acccessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user (This is only required once per user).
+   2. CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user (This is only required once per user).
 
 **Step 1:** Get the display name of the ASC control recommendation. You can find ASC control recommendations for your subscriptions [here](https://portal.azure.com/?feature.customportal=false#blade/Microsoft_Azure_Security/SecurityMenuBlade/5).
 
