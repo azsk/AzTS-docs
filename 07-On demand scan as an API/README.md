@@ -120,6 +120,7 @@ $apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/RequestScan"
 $apiResponse = Invoke-WebRequest -Method $method -Uri $ascUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
 
 $response = ConvertFrom-Json $apiResponse.Content
+$response
 
 ```
 
@@ -146,18 +147,25 @@ $requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id
 
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
-$apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/subscription/<sub-id>/ControlScanResult"
+$subId = <sub-id>
+$apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/$subId/<sub-id>/ControlScanResult"
 
-try
-{
-    $apiResponse = Invoke-WebRequest -Method $method -Uri $ascUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
-}
-catch
-{
-    Write-Host "Error occured while getting the control scan result."
-}
+$apiResponse = Invoke-WebRequest -Method $method -Uri $ascUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
 
 $response = ConvertFrom-Json $apiResponse.Content
+
+$folderPath = [Environment]::GetFolderPath("MyDocuments") 
+if (Test-Path -Path $folderPath)
+{
+    $folderPath += "\AzTS\Subscriptions\$($subId.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\"
+    New-Item -ItemType Directory -Path $folderPath | Out-Null
+}
+
+if (($response | Measure-Object).Count -gt 0)
+{
+    $response | ConvertTo-json | out-file "$($folderpath)\ControlScanResult.json"   
+    Write-Host "Check control scan result for requested subscription at[$($folderPath)]..." -ForegroundColor Green    
+}
 
 ```
 
