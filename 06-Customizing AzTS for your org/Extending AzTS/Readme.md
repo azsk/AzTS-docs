@@ -18,7 +18,10 @@ Currently you can extend AzTS controls set by either adding a new control based 
 ### Add new control based on custom Azure policy
 Please follow the below mentioned steps to add new controls based on custom Azure Policy:
 
-**Step 0:** Prerequisites - TBD
+**Step 0:** Following prerequisites are required to add new control.
+   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-add-new-control).
+
+   2. CMET (Control metadata editor tool) is only acccessible to privileged users based on AzTS API configurations. Please follow the steps mentioned here to add yourself as privileged user (This is only required once per user).
 
 **Step 1:** Assign the required policy definition to root management group of your tenant. To assign a policy definition, please follow the steps mentioned [here](https://docs.microsoft.com/en-us/azure/governance/policy/tutorials/create-and-manage#assign-a-policy).
 
@@ -134,7 +137,10 @@ To see some of the examples of existing control IDs please check out this [list]
 ### Add new control based on custom ASC Assessment
 Please follow the below mentioned steps to add new controls based on Azure Security Center (ASC) Assessment/Recommendation:
 
-**Step 0:** Prerequisites - TBD
+**Step 0:** Following prerequisites are required to add new control.
+   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-add-new-control).
+
+   2. CMET (Control metadata editor tool) is only acccessible to privileged users based on AzTS API configurations. Please follow the steps mentioned here to add yourself as privileged user (This is only required once per user).
 
 **Step 1:** Get the display name of the ASC control recommendation. You can find ASC control recommendations for your subscriptions [here](https://portal.azure.com/?feature.customportal=false#blade/Microsoft_Azure_Security/SecurityMenuBlade/5).
 
