@@ -275,7 +275,8 @@ Setup will create infra resources and schedule daily security control scan on ta
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
 > 3. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._
-> 4. _To enable WAF for AzTS UI and API, you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableWAF` switch. To know more about Web Application Firewall (WAF) visit [here](README.md#enable-azure-web-application-firewall-waf-for-azts-ui-and-azts-api)._
+> 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolution` with `-EnableAzTSUI` switch._
+> 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableAzTSUI` and `-EnableWAF` switch._
 >
 > &nbsp;
 
@@ -307,6 +308,8 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 [-EnableWAF] `
                 -Verbose
 
+  <# Note : Parameters that are provided in square brackets[] in the above installation command are optional parameters. UIAzureADAppId and WebAPIAzureADAppId are mandatory parameters if you are enabling AzTSUI and WAF.
+  #>
   
 
   # -----------------------------------------------------------------#
@@ -376,75 +379,10 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |EnableAutoUpdater | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
 |EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
-|EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. Enabling WAF for AzTS UI and API, provides centralized protection of web applications from common exploits and vulnerabilities. |FALSE|
+|EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
-
-#### **Enable Azure Web Application Firewall (WAF) for AzTS UI and AzTS API**
-
-Web Application Firewall (WAF) provides centralized protection of your web applications from common exploits and vulnerabilities. Web applications are increasingly targeted by malicious attacks such as - SQL injection and cross-site scripting that exploit commonly known vulnerabilities.
-
-#### **WAF policy and rules:**
-
-A WAF policy can consist of two types of security rules :
-1. Custom rules that are authored by the customer.
-2. Managed rule sets that are a collection of Azure-managed pre-configured set of rules.
-
-> **Note:** When WAF is enabled for AzTS setup, by default only [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement.
-
-To enable WAF for your AzTS UI and API, run the installation command [Install-AzSKTenantSecuritySolution](README.md#step-6-of-6-run-setup-command) with `-EnableWAF` switch._
-
-> **Note:**
-> Before running installation command `Install-AzSKTenantSecuritySolution`, please make sure to complete below pre-requisites:
-> 1. _[Installing required Az modules](README.md#step-2-of-6-installing-required-az-modules)._
-> 2. _[Download and extract deployment package](README.md#step-3-of-6-download-and-extract-deployment-package)._
-> 3. _[Setup central scanning managed identity](README.md#step-4-of-6-setup-central-scanning-managed-identity)._
-> 4. _[Create Azure AD application for secure authentication](README.md#step-5-of-6-create-azure-AD-application-for-secure-authentication)._
-
-
- Example:
-  ```PowerShell
-  # Example:
-
-    $DeploymentResult = Install-AzSKTenantSecuritySolution `
-                    -SubscriptionId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
-                    -ScanHostRGName AzSK-AzTS-Solution-RG `
-                    -ScanIdentityId '/subscriptions/bbbe2e73-fc26-492b-9ef4-adec8560c4fe/resourceGroups/TenantReaderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/TenantReaderUserIdentity' `
-                    -Location EastUS2 `
-                    -EnableAzTSUI `
-                    -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
-                    -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
-                    -AzureEnvironmentName AzureCloud `
-                    -ScanIdentityHasGraphPermission:$true `
-                    -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
-                    -EnableAutoUpdater `
-                    -EnableWAF `
-                    -Verbose
-
-
-<#
-
-For '-ScanIdentityId' parameter, 
-          (a) use value created for "$UserAssignedIdentity.Id" from prerequisite section step 4.
-                              OR
-          (b) Run Set-AzSKTenantSecuritySolutionScannerIdentity command provided in step 4.
-                              OR
-          (c) you can get this resources id by going into Azure Portal --> Subscription where user-assigned MI resource created --> MIHostingRG --> Click on MI resource --> Properties --> Copy ResourceId.
-
-#>
-
-<#
-Note: UIAzureADAppId and WebAPIAzureADAppId is mandatory if you are enabling AzTSUI
-For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
-          (a) use value created for "$ADApplicationDetails.WebAPIAzureADAppId" and "$ADApplicationDetails.UIAzureADAppId" respectively from step 5.
-                                    OR
-          (b) Run Set-AzSKTenantSecurityADApplication command provided in step 5.
-                                    OR
-          (c) you can get this application ids by going into Azure Portal --> Azure Active Directory --> App registrations --> All applications --> Search the application by name --> Click on the AD application --> Overview --> Copy Application (client) ID.
-
-#>
-```
 
   6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission.
   </br>
