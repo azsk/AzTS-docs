@@ -125,7 +125,7 @@ $requestBody = @{"SubscriptionIDList"=@("sub1","sub2");}
 
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
-$apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/RequestScan"
+$apiUri = "<WebAPI-URI>/adhocscan/RequestScan"
 
 $apiResponse = Invoke-WebRequest -Method $method -Uri $apiUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
 
@@ -158,7 +158,7 @@ $requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
 $subId = <sub-id>
-$apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/$subId/<sub-id>/ControlScanResult"
+$apiUri = "<WebAPI-URI>/adhocscan/$subId/<sub-id>/ControlScanResult"
 
 $apiResponse = Invoke-WebRequest -Method $method -Uri $apiUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
 
