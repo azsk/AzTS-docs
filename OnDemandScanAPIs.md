@@ -77,7 +77,7 @@ $token.AccessToken | ConvertTo-Json | Out-File '<token file path>\token.json'
 User authentication code flow uses user's crediential to generate the token. User must have access over the subscription  to scan or to get the control scan result.
 
 > In this flow, Client app registration needs "Admin consent" to access the APIs.
-</br>
+> </br>
 > Grant admin consent for client app registration:
 > 1. Go to Azure Portal.
 > 2. Go to App Registration.
@@ -110,7 +110,7 @@ $requestBody = @{"SubscriptionIDList"=@("sub1","sub2");}
 
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
-$ascUri = "https://localhost:5001/adhocscan/AddToQueue"
+$apiUri = "https://localhost:5001/adhocscan/RequestScan"
 
 try
 {
@@ -148,7 +148,7 @@ $requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id
 
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
-$ascUri = "https://localhost:5001/adhocscan/subscription/<sub-id>/ControlScanResult"
+$apiUri = "https://localhost:5001/adhocscan/subscription/<sub-id>/ControlScanResult"
 
 try
 {
