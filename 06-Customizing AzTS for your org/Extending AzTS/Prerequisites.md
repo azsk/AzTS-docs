@@ -38,7 +38,7 @@ Above mentioned appsettings can be configured either from Azure portal or using 
   - Click on "New application setting" to add required appsettings.
 
 - Using helper script
-  - Download the script from [here](./Extending%20AzSK%20Module/Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)(Script can be downloaded by clicking Alt+Raw button).
+  - Download the script from [here](./Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)(Script can be downloaded by clicking Alt+Raw button).
   - Open a powershell session.
   - Navigate to the download location of the script in powershell session.
     - cd "Script download location"
