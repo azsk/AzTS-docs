@@ -65,12 +65,17 @@ Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGall
 ### Using client credential flow
 Client crediential flow uses the client credentials(client id and client secret) to generate the token. Token will be generating against specified SPN(Service Principal Name) and **SPN must have access over the subscription** to scan or to get the control scan result.
 
+In order to generate the token for APIs, you have get access for the client application from WebAPI owner.
+1. Send the client id to WebAPI owner to grant access for client application.
+2. WebAPI owner will grant the access and share the scope.
+3. Use WebAPI scope in below command.
+
 Commands to generate the token:
 ``` PowerShell
 
 $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
 
-$token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSecret $ClientSecret -Scopes "<WebAPI-scope>"
+$token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSecret $ClientSecret -Scopes "<WebAPI-scope>/.default"
 
 $token.AccessToken | ConvertTo-Json | Out-File '<token file path>\token.json'
 
@@ -94,7 +99,7 @@ User authentication code flow uses user's crediential to generate the token. Use
 Command to generate the token:
 ``` PowerShell
 
-$token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -RedirectUri 'https://localhost' -Scopes 'api://06b8fce5-a6a9-470a-b05d-a7557b7a704c/user_impersonation'
+$token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -RedirectUri 'https://localhost' -Scopes '<WebAPI-scope>'
 
 ```
 
