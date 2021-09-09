@@ -44,7 +44,7 @@ Follow below steps to create client application:
 
     - Under Add a client secret, provide a Description. Choose when the key should expire, and select Add.
 
-9. When the secret is created, note the key value for use in a subsequent step
+9. When the secret is created, note the key value for use in a subsequent step.
 
 </br>
 
