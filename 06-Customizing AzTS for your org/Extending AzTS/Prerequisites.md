@@ -38,10 +38,13 @@ Above mentioned appsettings can be configured either from Azure portal or using 
   - Click on "New application setting" to add required appsettings.
 
 - Using helper script
-  - Download the script from [here](./Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)(Script can be downloaded by clicking Alt+Raw button).
+  - Download the script from [here](./Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)
+  > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a powershell session.
   - Navigate to the download location of the script in powershell session.
     - cd "Script download location"
+  - Unblock the downloaded script.
+    - Unblock-File -Path ".\ConfigureCustomControlAdditionPrerequisites.ps1"
   - Load the script in current powershell session.
     - . ".\ConfigureCustomControlAdditionPrerequisites.ps1"
     > **Note:** Do not miss the '.' at beginning of the above command.
@@ -49,3 +52,18 @@ Above mentioned appsettings can be configured either from Azure portal or using 
     - Connect-AzAccount -Tenant "AzTSHostingTenantId"
   - Invoke the configuration cmdlet
     - Configure-CustomControlAdditionPrerequisites -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName"
+
+-----
+## Access to CMET (Control metadata editor tool)
+
+Any user can add new controls using the CMET (Control metadata editor tool) from the AzTS UI. Only the privileged users can access CMET. To elevate any user to privileged role kindly follow the steps mentioned below:
+
+- Open the [Azure portal](https://portal.azure.com/).
+- Navigate to AzTS host subscription -> AzTS host resource group.
+- Go to required AzTS API app service(AzSK-AzTS-WebApi-xxxxx).
+- Go to Configuration under Settings.
+- Click on "New application setting" to add required appsettings.
+- Add **ControlActionItem__0__PrivilegedEditorIds__[index]** as the Name of the appsetting.
+> **Note:** For first user being added **index** value should be 0, eg. **ControlActionItem__0__PrivilegedEditorIds__0** and incremented sequentially for further users being added.
+- Add the user's object id as the value of the appsetting.
+> **Note:** user's object id can be referenced from Azure AD.
