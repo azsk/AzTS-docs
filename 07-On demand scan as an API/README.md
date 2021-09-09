@@ -86,7 +86,7 @@ $token.AccessToken | ConvertTo-Json | Out-File '<token file path>\token.json'
 ### Using user authentication code flow
 User authentication code flow uses user's crediential to generate the token. User must have access over the subscription  to scan or to get the control scan result.
 
-> In this flow, Client app registration needs "Admin consent" to access the APIs.
+> WebAPI must have "Admin consent" granted to expose the APIs.
 > </br>
 > Grant admin consent for client app registration:
 > 1. Go to Azure Portal.
