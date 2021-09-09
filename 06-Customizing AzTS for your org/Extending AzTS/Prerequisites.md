@@ -43,7 +43,7 @@ Above mentioned appsettings can be configured either from Azure portal or using 
   - Navigate to the download location of the script in powershell session.
     - cd "Script download location"
   - Load the script in current powershell session.
-    - . ".\ConfigureCustomPolicyControlEval.ps1"
+    - . ".\ConfigureCustomControlAdditionPrerequisites.ps1"
     > **Note:** Do not miss the '.' at beginning of the above command.
   - Connect to AzAccount
     - Connect-AzAccount -Tenant "AzTSHostingTenantId"
