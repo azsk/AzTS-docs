@@ -114,3 +114,7 @@ To see some of the examples of existing control IDs please check out this [list]
 ![Validate new control](../../Images/06_ExtendingAzTS_NewControl_Validation.png)
 
 **Step 19:** As a **additional validation**, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
+
+> **Note:** For custom **Policy** based control, please do provide self-guided steps in control **Recommendation** field that would be used by users across your organization to fix non-compliant resources.
+
+-----
