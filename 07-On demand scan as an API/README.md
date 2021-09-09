@@ -57,9 +57,10 @@ There are two ways to generate access tokens:
 - Using client credential flow
 - Using user authentication code flow
 
-#### Required Az Module
+#### Required Az Modules
 ``` PowerShell
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -name JWTDetails -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
 ### Using client credential flow
@@ -78,6 +79,10 @@ $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSecret $ClientSecret -Scopes "<WebAPI-scope>/.default"
 
 $token.AccessToken | ConvertTo-Json | Out-File '<token file path>\token.json'
+
+# Get SPN object id to grant access over subscription(s):
+$tokenDetails = $token.AccessToken | Get-JWTDetails
+$tokenDetails.oid
 
 ```
 
