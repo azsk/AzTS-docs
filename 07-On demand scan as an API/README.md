@@ -52,15 +52,20 @@ Follow below steps to create client application:
 [Back to top…](README.md#On-this-page)
 
 ## Generate user authentication token to access subscriptions
-User has to generate authentication token in order to get access over a subscription.
+User has to generate authentication token in order to use APIs for any subscription.
 There are two ways to generate access tokens:
 - Using client credential flow
 - Using user authentication code flow
 
-### Using client credential flow
-Client crediential flow uses the client credentials(client id and client secret) to generate the token. Token will be generating against specified SPN and **SPN must have access over the subscription** to scan or to get the control scan result.
+#### Required Az Module
+``` PowerShell
+Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
+```
 
-Steps to generate the token:
+### Using client credential flow
+Client crediential flow uses the client credentials(client id and client secret) to generate the token. Token will be generating against specified SPN(Service Principal Name) and **SPN must have access over the subscription** to scan or to get the control scan result.
+
+Commands to generate the token:
 ``` PowerShell
 
 $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
@@ -86,7 +91,7 @@ User authentication code flow uses user's crediential to generate the token. Use
 > 5. Click 'Grant admin consent for Microsoft'.
 
 
-Steps to generate the token:
+Command to generate the token:
 ``` PowerShell
 
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -RedirectUri 'https://localhost' -Scopes 'api://06b8fce5-a6a9-470a-b05d-a7557b7a704c/user_impersonation'
@@ -103,23 +108,16 @@ Use below PowerShell command to get control scan result.
 
 $header = "Bearer " + $token.AccessToken
 $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
-$requestBody = @{{"SubscriptionIDList"=@("subscription_id");}
+$requestBody = @{"SubscriptionIDList"=@("subscription_id");}
 
 # Example:
 $requestBody = @{"SubscriptionIDList"=@("sub1","sub2");}
 
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
-$apiUri = "https://localhost:5001/adhocscan/RequestScan"
+$apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/RequestScan"
 
-try
-{
-    $apiResponse = Invoke-WebRequest -Method $method -Uri $ascUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
-}
-catch
-{
-    Write-Host "Error occured while scanning the subscription."
-}
+$apiResponse = Invoke-WebRequest -Method $method -Uri $ascUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
 
 $response = ConvertFrom-Json $apiResponse.Content
 
@@ -148,7 +146,7 @@ $requestBody = @{"scanRequestId"="scan_request_id";"ControlIdList"=@("control_id
 
 
 $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::POST
-$apiUri = "https://localhost:5001/adhocscan/subscription/<sub-id>/ControlScanResult"
+$apiUri = "https://azsk-ats-api-ringn.azurewebsites.net/adhocscan/subscription/<sub-id>/ControlScanResult"
 
 try
 {
