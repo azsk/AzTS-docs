@@ -29,7 +29,7 @@ Please follow the below mentioned steps to add new controls based on Azure Secur
 
 ![Select Security Domain](../../Images/06_ExtendingAzTS_NewControl_ASC_Security_Domain.png)
 
-**Step 7:** Provide the **Control ID**. Initial part of the control ID is pre-populated based on the service/feature and secuirty domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
+**Step 7:** Provide the **Control ID**. Initial part of the control ID is pre-populated based on the service/feature and security domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX).
 
 > **Note:** Please don't use spaces between words instead use underscore '_' to separate words in control ID. 
 To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
@@ -77,10 +77,10 @@ Once you select the Display Name, **Assessment Properties** field will get auto 
 
 ![New control success msg](../../Images/06_ExtendingAzTS_NewControl_ASC_Success.png)
 
-**Step 15:** To **valiadate the control addition**, refresh the control metadata editor tool and search for newly added control. Control should be available now.
+**Step 15:** To **validate the control addition**, refresh the control metadata editor tool and search for newly added control. Control should be available now.
 
 ![Validate new control](../../Images/06_ExtendingAzTS_NewControl_ASC_Validation.png)
 
-**Step 16:** As a **additional validation**, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
+**Step 16:** As an **additional validation**, you can also trigger adhoc scan from AzTS UI for one or more subscriptions and check the control scan results for newly added control. To get information on how to trigger adhoc scan, you can refer to this [link](https://github.com/azsk/AzTS-docs/tree/main/03-Running%20AzTS%20solution%20from%20UI#how-to-scan-subscription-manually).
 
 -----
