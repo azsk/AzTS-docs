@@ -5,12 +5,12 @@
 # On Demand Scan using API 
 
 ### On this page:
-- [Overview](OnDemandScanAPIs.md#overview)
-- [Create client app registration](OnDemandScanAPIs.md#Create-client-app-registration)
-- [Generate user authentication token to access subscriptions](OnDemandScanAPIs.md#Generate-user-authentication-token-to-access-subscriptions)
-- [API to scan a subscription](OnDemandScanAPIs.md#API-to-scan-a-subscription)
-- [API to get control scan result](OnDemandScanAPIs.md#API-to-get-control-scan-result)
-- [Feedback](OnDemandScanAPIs.md#Feedback)
+- [Overview](README.md#overview)
+- [Create client app registration](README.md#Create-client-app-registration)
+- [Generate user authentication token to access subscriptions](README.md#Generate-user-authentication-token-to-access-subscriptions)
+- [API to scan a subscription](README.md#API-to-scan-a-subscription)
+- [API to get control scan result](README.md#API-to-get-control-scan-result)
+- [Feedback](README.md#Feedback)
 
 -----------------------------------------------------------------
 ## Overview 
@@ -49,7 +49,7 @@ Follow below steps to create client application:
 </br>
 
 
-[Back to top…](OnDemandScanAPIs.md#On-this-page)
+[Back to top…](README.md#On-this-page)
 
 ## Generate user authentication token to access subscriptions
 User has to generate authentication token in order to get access over a subscription.
@@ -71,7 +71,7 @@ $token.AccessToken | ConvertTo-Json | Out-File '<token file path>\token.json'
 
 ```
 
-[Back to top…](OnDemandScanAPIs.md#On-this-page)
+[Back to top…](README.md#On-this-page)
 
 ### Using user authentication code flow
 User authentication code flow uses user's crediential to generate the token. User must have access over the subscription  to scan or to get the control scan result.
@@ -93,7 +93,7 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 
 ```
 
-[Back to top…](OnDemandScanAPIs.md#On-this-page)
+[Back to top…](README.md#On-this-page)
 
 ## API to scan a subscription
 
@@ -132,7 +132,7 @@ $response = ConvertFrom-Json $apiResponse.Content
 
 </br>
 
-[Back to top…](OnDemandScanAPIs.md#On-this-page)
+[Back to top…](README.md#On-this-page)
 
 ## API to get control scan result
 Use below PowerShell command to get control scan result.
@@ -185,7 +185,7 @@ $response = ConvertFrom-Json $apiResponse.Content
 > _4. If ScanRequestId is empty then API will return latest control scan result._
 > </br>
 
-[Back to top…](OnDemandScanAPIs.md#On-this-page)
+[Back to top…](README.md#On-this-page)
 
 ## Feedback
 
