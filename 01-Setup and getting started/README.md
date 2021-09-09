@@ -275,7 +275,7 @@ Setup will create infra resources and schedule daily security control scan on ta
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
 > 3. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._
-> 4. _To enable WAF for AzTS UI and API, you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableWAF` switch. To know more about Web Application Frirewall(WAF) visit [here](README.md#enable-azure-web-application-firewall-(WAF)-for-AzTS-UI-and-AzTS-API)._
+> 4. _To enable WAF for AzTS UI and API, you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableWAF` switch. To know more about Web Application Firewall (WAF) visit [here](README.md#enable-azure-web-application-firewall-waf-for-azts-ui-and-azts-api)._
 >
 > &nbsp;
 
@@ -585,7 +585,7 @@ The below steps will help you to verify and understand different resources and f
 |privatelink-agentsvc-azure-automation-net|Private DNS Zone| This zone configures connectivity to the global agents' solution packs storage account|
 |AzSK-AzTS-API-FrontDoor-xxxxx|Front Door| Used to stop network and application layer attacks at the edge with the help of Web Application Firewall. It secure your private back ends(API) and harden your service using Microsoft managed rule sets|
 |AzSK-AzTS-UI-FrontDoor-xxxxx|Front Door| Used to stop network and application layer attacks at the edge with the help of Web Application Firewall. It secure your private back ends(UI) and harden your service using Microsoft managed rule sets|
-|AAzSKAzTSWAFPolicyxxxxx|Front Door WAF policy| WAF policy with managed Default Rule Set that protect your web application from common threats|
+|AzSKAzTSWAFPolicyxxxxx|Front Door WAF policy| WAF policy with managed Default Rule Set that protect your web application from common threats|
 
 <br/>
 
