@@ -176,9 +176,14 @@ $response = ConvertFrom-Json $apiResponse.Content
 
 > **Note:** 
 > </br>
-> _1. If ScanRequestId is empty then API will return latest control scan result._
+> _1. Enable the flag 'OnDemandScanAPI' in order to expose API endpoints._
 > </br>
-> _2. You can get control result for one subscription at a time._
+> _2. On demand scan for each subcription can be requested maximum 10 times in a day._
+> </br>
+> _3. You can get entire control result only for one subscription at a time._
+> </br>
+> _4. If ScanRequestId is empty then API will return latest control scan result._
+> </br>
 
 [Back to top…](OnDemandScanAPIs.md#On-this-page)
 
