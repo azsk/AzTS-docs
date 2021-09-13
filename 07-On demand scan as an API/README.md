@@ -11,8 +11,9 @@
 - [Step 2: Configure permissions for WebAPI app registration](README.md#Step-2-Configure-permissions-for-WebAPI-app-registration)
 - [Step 3: Get administrator consent for WebAPI app registration](README.md#Step-3-Get-administrator-consent-for-WebAPI-app-registration)
 - [Step 4: Generate user authentication token to access subscriptions](README.md#Step-4-Generate-user-authentication-token-to-access-subscriptions)
-- [Request for scan](README.md#Request-for-scan)
-- [Get control scan result](README.md#Get-control-scan-result)
+- [Step 5: API Operation Groups](README.md#Step-5-API-Operation-Groups)
+    - [Request for scan](README.md#Request-for-scan)
+    - [Get control scan result](README.md#Get-control-scan-result)
 - [Feedback](README.md#Feedback)
 
 -----------------------------------------------------------------
