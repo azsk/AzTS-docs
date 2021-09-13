@@ -7,7 +7,7 @@
 ### On this page:
 - [Overview](README.md#overview)
 - [Prerequisites](README.md#prerequisites-For-AzTS-admin)
-- [Register an application in Azure AD to represent a client application](README.md#Step-1:Register-an-application-in-Azure-AD-to-represent-a-client-application)
+- [Register an application in Azure AD to represent a client application](README.md#Step-1:-Register-an-application-in-Azure-AD-to-represent-a-client-application)
 - [Generate user authentication token to access subscriptions](README.md#Generate-user-authentication-token-to-access-subscriptions)
 - [API to scan a subscription](README.md#API-to-scan-a-subscription)
 - [API to get control scan result](README.md#API-to-get-control-scan-result)
