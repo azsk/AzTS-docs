@@ -6,11 +6,11 @@
 
 ### On this page:
 - [Overview](README.md#overview)
-- [Prerequisites](README.md#prerequisites-For-AzTS-admin)
+- [Prerequisites](README.md#prerequisites)
 - [Step 1: Register an application in Azure AD to represent a client application](README.md#Step-1-Register-an-application-in-Azure-AD-to-represent-a-client-application)
 - [Step 2: Configure permissions for WebAPI app registration](README.md#Step-2-Configure-permissions-for-WebAPI-app-registration)
 - [Step 3: Get administrator consent for WebAPI app registration](README.md#Step-3-Get-administrator-consent-for-WebAPI-app-registration)
-- [Step 4: Generate authentication token to access API endpoints](README.md#Step-4-Generate-user-authentication-token-to-access-API-endpoints)
+- [Step 4: Generate authentication token to access API endpoints](README.md#Step-4-Generate-authentication-token-to-access-API-endpoints)
 - [Step 5: API Operation Groups](README.md#Step-5-API-Operation-Groups)
     - [Request for scan](README.md#Request-for-scan)
     - [Get control scan result](README.md#Get-control-scan-result)
