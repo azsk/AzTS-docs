@@ -10,7 +10,7 @@
 - [Step 1: Register an application in Azure AD to represent a client application](README.md#Step-1-Register-an-application-in-Azure-AD-to-represent-a-client-application)
 - [Step 2: Configure permissions for WebAPI app registration](README.md#Step-2-Configure-permissions-for-WebAPI-app-registration)
 - [Step 3: Get administrator consent for WebAPI app registration](README.md#Step-3-Get-administrator-consent-for-WebAPI-app-registration)
-- [Step 4: Generate user authentication token to access subscriptions](README.md#Step-4-Generate-user-authentication-token-to-access-subscriptions)
+- [Step 4: Generate authentication token to access API endpoints](README.md#Step-4-Generate-user-authentication-token-to-access-API-endpoints)
 - [Step 5: API Operation Groups](README.md#Step-5-API-Operation-Groups)
     - [Request for scan](README.md#Request-for-scan)
     - [Get control scan result](README.md#Get-control-scan-result)
@@ -20,27 +20,34 @@
 ## Overview 
 The Azure Tenant Security Solution (AzTS) provides APIs for users to allow on demand scan for a subscription and get control scan result.
 
-This document will walk you through:
+This document will help you out with the following aspects:
 1. Register an application in Azure AD to represent a client application.
 2. Configure permissions for WebAPI app registration.
 3. Get administrator consent for WebAPI app registration.
-4. Generate authentication token to access subscriptions.
+4. Generate authentication token to access API endpoints.
     - Using client credential flow
     - Using user authentication code flow
 5. API Operation Groups
     - Request for scan
     - Get control scan result
 
-## Prerequisites (For AzTS admin)
-Admin has to enable the flag **FeatureManagement__OnDemandScanAPI** in order to provide access over API endpoints.
-How to enable 'OnDemandScanAPI' from Azure Portal:
-1. Go to Azure Portal.
-2. Go to **Resource Groups**.
-3. Select your Resource Group where you have configured AzTS set up.
-4. Select the App Service for API 'AzSK-ATS-API-xxxxx'.
-5. Go to **Configuration**.
-6. Set **FeatureManagement__OnDemandScanAPI** as true.
-7. Save.
+## Prerequisites
+> **A. For AzTS admin**
+> </br>
+> On demand scan as an API feature is disabled by default in AzTS. If you want to enable this feature for your tenant, follow the steps below:
+> 1. Go to Azure Portal.
+> 2. Go to **Resource Groups**.
+> 3. Select your Resource Group where you have configured AzTS set up.
+> 4. Select the App Service for API 'AzSK-ATS-API-xxxxx'.
+> 5. In the app's left menu, select **Configuration** > **Application settings**.
+> 6. Add/edit app setting **FeatureManagement__OnDemandScanAPI** and set its value to _'true'_.
+> 7. Save.
+>
+> B. You must have [required roles](README.md#Required-roles) over a subscription.
+
+
+
+
 
 [Back to top…](README.md#On-this-page)
 
@@ -56,7 +63,7 @@ Follow below steps to create client application:
 
 4. When the **Register an application** page appears, enter your application's registration information:
 
-    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app, such as client-app.
+    - In the **Name** section, enter a meaningful application name that will be displayed to users of the app..
 
     - In the **Supported account types** section, select **Accounts in any organizational directory (Any Azure AD directory - Multitenant)**.
 
@@ -86,11 +93,14 @@ Follow below steps to create client application:
 3. Select your WebAPI App Registration.
 4. Go to **API Permissions**.
 5. Select **Add a permission**.
+![Add API Permission](../Images/07_AppRegistration_Grant_API_Permission.png)
 6. Go to **APIs my organization uses**.
 7. Search your WebAPI client id and select.
+![Add API Permission](../Images/07_AppRegistration_API_Permission.png)
 8. Select **Delegated permissions**.
 9. Select permissions.
 10. **Add permissions**.
+![Add API Permission](../Images/07_AppRegistration_Add_API_Permission.png)
 
 [Back to top…](README.md#On-this-page)
 
@@ -99,14 +109,22 @@ If 'User consent' is restricted to the WebAPI, then WebAPI must have 'Admin cons
 Grant admin consent for client app registration:
 1. Go to Azure Portal.
 2. Go to **App Registration**.
-3. Select your WebAPI App Registration.
-4. Go to **API Permissions**.
-5. Select **Add a permission**.
-6. Click **Grant admin consent** for your Tenant.
+3. Search your WebAPI App Registration using [client id](README.md#Get-client-id-of-WebAPI-App-Registration).
+4. Get scope from **Expose an API** > **Scopes**.
+5. Go to **API Permissions**.
+6. Click **Grant admin consent** for your Tenant at above scope (step-4).
+
+## Get client id of WebAPI App Registration
+1. Go to Azure Portal.
+2. Go to **Resource Groups**.
+3. Select your Resource Group where you have configured AzTS set up.
+4. Select the App Service for API 'AzSK-ATS-WebAPI-xxxxx'.
+5. In the app's left menu, select **Configuration** > **Application settings**.
+6. Add/edit app setting **AADClientAppDetails__ApplicationId** and use its value as WebPAI Client id. 
 
 [Back to top…](README.md#On-this-page)
 
-## Step 4: Generate authentication token to access subscriptions
+## Step 4: Generate authentication token to access API endpoints
 User has to generate authentication token in order to use APIs for any subscription.
 There are two ways to generate access tokens:
 - Option 1: Using client credential flow
@@ -120,6 +138,11 @@ Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGall
 ### Option 1: Using client credential flow
 Client crediential flow uses the client credentials (client id and client secret) to generate the token. Token will be generated against specified SPN (Service Principal Name) and **SPN must have [required](README.md#Required-roles) access over the subscription** to scan or to get the control scan result.
 
+> In order to generate the token for APIs, you have to request access for the client application from WebAPI owner.
+> 1. Send the client id ([generated here](README.md#Step-1-Register-an-application-in-Azure-AD-to-represent-a-client-application)) to WebAPI owner to request access for client application.
+> 2. WebAPI owner will grant the access and share the scope.
+> 3. Use WebAPI scope while generating the access token.
+
 **Steps for 'WebAPI Owner' to grant the permission for requested Client app:**
 1. Go to Azure Portal.
 2. Go to **App Registration**.
@@ -129,13 +152,6 @@ Client crediential flow uses the client credentials (client id and client secret
 6. Enable the check box **Authorized scopes**.
 7. Add application.
 8. Copy scope from 'Scopes'.
-
-
-> In order to generate the token for APIs, you have to get access for the client application from WebAPI owner.
-> 1. Send the client id to WebAPI owner to request access for client application.
-> 2. WebAPI owner will grant the access and share the scope.
-> 3. Use WebAPI scope while generating the access token.
-
 
 **Command to generate the token:**
 ``` PowerShell
@@ -177,15 +193,15 @@ You must have permission over a subscription with any of the following role:
 ## Step 5: API Operation Groups
 |Operation group|Description|
 |----|----|
-| [Request for scan](README.md#Request-for-scan) |Take subscription(s) for adhoc scan.|
-| [Get control scan result](README.md#Get-control-scan-result) |Get control scan result for specified subscription.|
+| [Request for scan](README.md#Request-for-scan) |Request on-demand scan for a group of subscriptions.|
+| [Get control scan result](README.md#Get-control-scan-result) |Get control scan result of a subscription.|
 
 
 ## Request for scan
 Take list of subscription id(s) for adhoc scan.
 
 ## Description
-To scan a subscription, you can pass list of subscription id(s). This API will return metadata about the status of subscription including 'Scan Request Id'. This 'Scan Request Id' can be further use to [get latest control scan result](README.md#Get-control-scan-result).
+To scan a subscription, you can pass list of subscription id(s). This API will return metadata about the status of subscription including 'Scan Request Id'. This 'Scan Request Id' can be further used to [get latest control scan result](README.md#Get-control-scan-result).
 
 
 ``` PowerShell
@@ -196,7 +212,7 @@ POST https://<WebAPI-URL>/adhocscan/RequestScan
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
 3. Select your Resource Group where you have configured AzTS set up.
-4. Select the App Service for API 'AzSK-ATS-API-xxxxx'.
+4. Select the App Service for API 'AzSK-ATS-WebAPI-xxxxx'.
 5. In **Overview** section, take **URL**.
 
 > Note: If you are not an admin, please contact with the admin to get WebAPI URL.
