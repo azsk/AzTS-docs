@@ -68,15 +68,15 @@ There are two ways to generate access tokens:
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
-## Required roles:
+### Required roles:
 You must have permission over a subscription with any of the following role:
-    - Owner
-    - Contributor
-    - ServiceAdministrator
-    - CoAdministrator
-    - AccountAdministrator
-    - Security Reader
-    - Security Admin
+- Owner
+- Contributor
+- ServiceAdministrator
+- CoAdministrator
+- AccountAdministrator
+- Security Reader
+- Security Admin
 > **Note:** You need to run RBAC after granting the permission to SPN over subscription.
 
 ### Using client credential flow
