@@ -153,6 +153,7 @@ $requestBody = @{"SubscriptionIDList"=@("{subscriptionId1}","{subscriptionId2}",
 $apiResponse = Invoke-WebRequest -Method 'POST' -Uri $apiUri -Headers $headers -Body ($requestBody | ConvertTo-Json) -UseBasicParsing
 
 $response = ConvertFrom-Json $apiResponse.Content
+
 $response
 ```
 
@@ -171,7 +172,6 @@ scanRequestId  : 20210101074331
 > </br>
 > 1. On demand scan for each subcription can be requested maximum 10 times in a day.
 > 2. Use **scanRequestId** to get latest control scan result.
-> </br>
 
 **Request body parameter details:**
 |Param Name|Description|Required?
@@ -218,6 +218,7 @@ $apiResponse = Invoke-WebRequest -Method $method -Uri $apiUri -Headers $headers 
 $response = ConvertFrom-Json $apiResponse.Content
 
 $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+
 if (Test-Path -Path $folderPath)
 {
     $folderPath += "\AzTS\Subscriptions\$($subId.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\"
