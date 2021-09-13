@@ -6,7 +6,7 @@
 
 ### On this page:
 - [Overview](README.md#overview)
-- [Prerequisites](README.md#prerequisites)
+- [Prerequisites](README.md#prerequisites-For-AzTS-admin)
 - [Register an application in Azure AD to represent a client application](README.md#Register-an-application-in-Azure-AD-to-represent-a-client-application)
 - [Generate user authentication token to access subscriptions](README.md#Generate-user-authentication-token-to-access-subscriptions)
 - [API to scan a subscription](README.md#API-to-scan-a-subscription)
@@ -22,7 +22,11 @@ This document will walk you through:
 2. Configure permissions for WebAPI app registration.
 3. Get administrator consent for WebAPI app registration.
 4. Generate authentication token to access subscriptions.
-5. Use the access token to call API endpoints.
+    - Using client credential flow
+    - Using user authentication code flow
+5. API Operation Groups
+    - Request for scan
+    - Get control scan result
 
 ## Prerequisites (For AzTS admin)
 Admin has to enable the flag **FeatureManagement__OnDemandScanAPI** in order to provide access over API endpoints.
@@ -34,6 +38,8 @@ How to enable 'OnDemandScanAPI' from Azure Portal:
 5. Go to **Configuration**.
 6. Set **FeatureManagement__OnDemandScanAPI** as true.
 7. Save.
+
+[Back to top…](README.md#On-this-page)
 
 ## Step 1: Register an application in Azure AD to represent a client application
 Before generating the token or making an API call, client app registration needs to be created.
@@ -83,6 +89,7 @@ Follow below steps to create client application:
 9. Select permissions.
 10. **Add permissions**.
 
+[Back to top…](README.md#On-this-page)
 
 ## Step 3: Get administrator consent for WebAPI app registration
 If 'User consent' is restricted to the WebAPI, then WebAPI must have 'Admin consent' granted to expose the APIs.
@@ -93,6 +100,8 @@ Grant admin consent for client app registration:
 4. Go to **API Permissions**.
 5. Select **Add a permission**.
 6. Click **Grant admin consent** for your Tenant.
+
+[Back to top…](README.md#On-this-page)
 
 ## Step 4: Generate authentication token to access subscriptions
 User has to generate authentication token in order to use APIs for any subscription.
@@ -105,9 +114,7 @@ There are two ways to generate access tokens:
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
-[Back to top…](README.md#On-this-page)
-
-### Using client credential flow
+### Option 1: Using client credential flow
 Client crediential flow uses the client credentials (client id and client secret) to generate the token. Token will be generated against specified SPN (Service Principal Name) and **SPN must have [required](README.md#Required-roles) access over the subscription** to scan or to get the control scan result.
 
 **Steps for 'WebAPI Owner' to grant the permission for requested Client app:**
@@ -127,7 +134,7 @@ Client crediential flow uses the client credentials (client id and client secret
 > 3. Use WebAPI scope while generating the access token.
 
 
-Commands to generate the token:
+**Command to generate the token:**
 ``` PowerShell
 # Add client secret key of client app registration created in Step-1.
 $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
@@ -138,11 +145,11 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 
 [Back to top…](README.md#On-this-page)
 
-### Using user authentication code flow
+### Option 2: Using user authentication code flow
 User authentication code flow uses user's crediential to generate the token. User must have access over the subscription  to scan or to get the control scan result.
 
 
-Command to generate the token:
+**Command to generate the token:**
 ``` PowerShell
 
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -RedirectUri 'https://localhost' -Scopes '<WebAPI-scope>'
@@ -162,7 +169,9 @@ You must have permission over a subscription with any of the following role:
 - Security Admin
 > **Note:** You need to run RBAC after granting the permission to SPN over subscription.
 
-## API Operation Groups
+[Back to top…](README.md#On-this-page)
+
+## Step 5: API Operation Groups
 |Operation group|Description|
 |----|----|
 | [Request for scan](README.md#Request-for-scan) |Take subscription(s) for adhoc scan.|
@@ -271,8 +280,7 @@ $requestBody = @{"scanRequestId"="{scanRequestId}";"ControlIdList"=@("control_id
 > 1. If 'requestBody' is empty then API will return latest control scan result.
 > 2. You can get entire control scan result only for one subscription at a time.
 
-
-</br>
+[Back to top…](README.md#On-this-page)
 
 ``` PowerShell
 
