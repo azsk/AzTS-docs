@@ -16,6 +16,8 @@
 ## Overview 
 The Azure Tenant Security Solution (AzTS) provides APIs to allow on demand scan for a subscription and get control scan result.
 
+<!--This article walks you through-->
+
 ## Register an application in Azure AD to represent a client application
 Before generating the token or making an API call, client app registration needs to be created.
 </br>
@@ -48,8 +50,7 @@ Follow below steps to create client application:
 
 </br>
 
-> **Note for WebAPI Admin**
-> </br>
+**Note for WebAPI Admin**
 > _Enable the flag 'OnDemandScanAPI' in order to provide access over API endpoints._
 
 [Back to top…](README.md#On-this-page)
@@ -107,8 +108,7 @@ User authentication code flow uses user's crediential to generate the token. Use
 
 <!-- TBD: Also, 'Admin consent' is required only when the access of granting consent is restricted to admin at AD level -->
 
-> **Note for WebAPI Admin**
-> </br>
+**Note for WebAPI Owner:**
 > WebAPI must have 'Admin consent' granted to expose the APIs.
 > </br>
 > Grant admin consent for client app registration:
