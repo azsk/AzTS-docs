@@ -68,16 +68,26 @@ Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGall
 ### Using client credential flow
 Client crediential flow uses the client credentials (client id and client secret) to generate the token. Token will be generated against specified SPN (Service Principal Name) and **SPN must have access over the subscription** to scan or to get the control scan result.
 
+> **Note:** You need to run RBAC after granting the permission to SPN over subscription.
+> </br>
 > In order to generate the token for APIs, you have to get access for the client application from WebAPI owner.
 > 1. Send the client id to WebAPI owner to request access for client application.
 > 2. WebAPI owner will grant the access and share the scope.
->    **Steps for WebAPI owner to get scope:**
->       i. Go to Azure Portal.
->       ii. Go to App Registration.
->       iii. Select WebAPI App Registration.
->       iv. Go to 'Expose an API'.
->       v. Copy scope from 'Scopes'.
 > 3. Use WebAPI scope in below command.
+> </br>
+</br>
+
+**Steps for WebAPI owner to get scope:**
+> 1. Go to Azure Portal.
+> </br>
+> 2. Go to App Registration.
+> </br>
+> 3. Select WebAPI App Registration.
+> </br>
+> 4. Go to 'Expose an API'.
+> </br>
+> 5. Copy scope from 'Scopes'.
+> </br>
 
 Commands to generate the token:
 ``` PowerShell
@@ -157,7 +167,6 @@ scanRequestId  : 20210101074331
 > **Note:** 
 > </br>
 > 1. On demand scan for each subcription can be requested maximum 10 times in a day.
-> </br>
 > 2. Use **scanRequestId** to get latest control scan result.
 > </br>
 
@@ -188,10 +197,14 @@ $requestBody = @{}
 $requestBody = @{"scanRequestId"="{scanRequestId}";"ControlIdList"=@("control_id1","control_id1");"ResourceNameList"=@("resource1","resource2");}
 ```
 
+> Note:
+> </br>
+> _If 'requestBody' is empty then API will return latest control scan result._
+
 **Request body parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
-| ScanRequestId | To get control scan result with respect to the scan request id. If ScanRequestId is empty then API will return latest control scan result.| Yes |
+| ScanRequestId | To get control scan result with respect to the scan request id. | Yes |
 | ControlIdList| List of control ids to get control result only for specific controls.| No |
 | ResourceNameList | List of resources to get control result only for certain resources.| No |
 
