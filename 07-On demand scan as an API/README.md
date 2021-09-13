@@ -134,8 +134,6 @@ $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
 
 ## API to scan a subscription
 
-Use below API URI to request for scan.
-
 ``` PowerShell
 POST https://AzSK-AzTS-WebApi-xxxxx.azurewebsites.net/adhocscan/RequestScan
 ```
@@ -180,7 +178,6 @@ scanRequestId  : 20210101074331
 [Back to top…](README.md#On-this-page)
 
 ## API to get control scan result
-Use below API URI to get control scan result.
 
 ``` PowerShell
 POST https://AzSK-AzTS-WebApi-xxxxx.azurewebsites.net/adhocscan/subscription/{subscriptionId}/ControlScanResult
