@@ -79,13 +79,9 @@ Client crediential flow uses the client credentials (client id and client secret
 
 **Steps for WebAPI owner to get scope:**
 > 1. Go to Azure Portal.
-> </br>
 > 2. Go to App Registration.
-> </br>
 > 3. Select WebAPI App Registration.
-> </br>
 > 4. Go to 'Expose an API'.
-> </br>
 > 5. Copy scope from 'Scopes'.
 > </br>
 
