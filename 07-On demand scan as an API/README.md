@@ -51,7 +51,7 @@ Follow below steps to create client application:
 </br>
 
 **Note for WebAPI Admin**
-> _Enable the flag 'OnDemandScanAPI' in order to provide access over API endpoints._
+> Enable the flag 'OnDemandScanAPI' in order to provide access over API endpoints.
 
 [Back to top…](README.md#On-this-page)
 
@@ -68,17 +68,24 @@ There are two ways to generate access tokens:
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
+## Required roles:
+You must have permission over a subscription with any of the following role:
+    - Owner
+    - Contributor
+    - ServiceAdministrator
+    - CoAdministrator
+    - AccountAdministrator
+    - Security Reader
+    - Security Admin
+> **Note:** You need to run RBAC after granting the permission to SPN over subscription.
+
 ### Using client credential flow
 Client crediential flow uses the client credentials (client id and client secret) to generate the token. Token will be generated against specified SPN (Service Principal Name) and **SPN must have access over the subscription** to scan or to get the control scan result.
-
 
 > In order to generate the token for APIs, you have to get access for the client application from WebAPI owner.
 > 1. Send the client id to WebAPI owner to request access for client application.
 > 2. WebAPI owner will grant the access and share the scope.
-> 3. Use WebAPI scope in below command.
-> </br>
-> **Note:** You need to run RBAC after granting the permission to SPN over subscription.
-> </br>
+> 3. Use WebAPI scope while generating the access token.
 
 **Steps for WebAPI owner to get scope:**
 > 1. Go to Azure Portal.
@@ -187,7 +194,7 @@ To get control scan result, you can pass subscription id as part of API URI. Als
 
 > Note:
 > </br>
-> _If 'requestBody' is empty then API will return latest control scan result._
+> If 'requestBody' is empty then API will return latest control scan result.
 
 ``` PowerShell
 POST https://AzSK-AzTS-WebApi-xxxxx.azurewebsites.net/adhocscan/subscription/{subscriptionId}/ControlScanResult
