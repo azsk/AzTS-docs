@@ -6,7 +6,7 @@
 
 ### On this page:
 - [Overview](README.md#overview)
-- [Create client app registration](README.md#Register-an-application-in-Azure-AD-to-represent-a-client-application)
+- [Register an application in Azure AD to represent a client application](README.md#Register-an-application-in-Azure-AD-to-represent-a-client-application)
 - [Generate user authentication token to access subscriptions](README.md#Generate-user-authentication-token-to-access-subscriptions)
 - [API to scan a subscription](README.md#API-to-scan-a-subscription)
 - [API to get control scan result](README.md#API-to-get-control-scan-result)
@@ -54,6 +54,8 @@ Follow below steps to create client application:
 
 [Back to top…](README.md#On-this-page)
 
+<!-- TBD: This token is not access subs, but to access AzTS REST API endpoints -->
+
 ## Generate user authentication token to access subscriptions
 User has to generate authentication token in order to use APIs for any subscription.
 There are two ways to generate access tokens:
@@ -68,14 +70,14 @@ Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGall
 ### Using client credential flow
 Client crediential flow uses the client credentials (client id and client secret) to generate the token. Token will be generated against specified SPN (Service Principal Name) and **SPN must have access over the subscription** to scan or to get the control scan result.
 
-> **Note:** You need to run RBAC after granting the permission to SPN over subscription.
-> </br>
+
 > In order to generate the token for APIs, you have to get access for the client application from WebAPI owner.
 > 1. Send the client id to WebAPI owner to request access for client application.
 > 2. WebAPI owner will grant the access and share the scope.
 > 3. Use WebAPI scope in below command.
 > </br>
-</br>
+> **Note:** You need to run RBAC after granting the permission to SPN over subscription.
+> </br>
 
 **Steps for WebAPI owner to get scope:**
 > 1. Go to Azure Portal.
@@ -103,6 +105,8 @@ $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
 ### Using user authentication code flow
 User authentication code flow uses user's crediential to generate the token. User must have access over the subscription  to scan or to get the control scan result.
 
+<!-- TBD: Also, 'Admin consent' is required only when the access of granting consent is restricted to admin at AD level -->
+
 > **Note for WebAPI Admin**
 > </br>
 > WebAPI must have 'Admin consent' granted to expose the APIs.
@@ -129,6 +133,11 @@ $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
 [Back to top…](README.md#On-this-page)
 
 ## API to scan a subscription
+<!-- TBD: Also, the data contract explaining various scenarios of this API. -->
+To scan a subscription, you can pass list of subscription id(s). This API will return metadata about the status of subscription including 'Scan Request Id'. This 'Scan Request Id' can be further use to get latest control scan result.
+
+
+<!-- TBD: Check URI-->
 
 ``` PowerShell
 POST https://AzSK-AzTS-WebApi-xxxxx.azurewebsites.net/adhocscan/RequestScan
@@ -174,6 +183,11 @@ scanRequestId  : 20210101074331
 [Back to top…](README.md#On-this-page)
 
 ## API to get control scan result
+To get control scan result, you can pass subscription id as part of API URI. Also, you can provide 'Scan Request Id' (generated when you have requested for adhoc scan) as part of request body to get the latest control scan result.
+
+> Note:
+> </br>
+> _If 'requestBody' is empty then API will return latest control scan result._
 
 ``` PowerShell
 POST https://AzSK-AzTS-WebApi-xxxxx.azurewebsites.net/adhocscan/subscription/{subscriptionId}/ControlScanResult
@@ -189,10 +203,6 @@ $requestBody = @{}
 # Example:
 $requestBody = @{"scanRequestId"="{scanRequestId}";"ControlIdList"=@("control_id1","control_id1");"ResourceNameList"=@("resource1","resource2");}
 ```
-
-> Note:
-> </br>
-> _If 'requestBody' is empty then API will return latest control scan result._
 
 **Request body parameter details:**
 |Param Name|Description|Required?
