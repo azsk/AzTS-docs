@@ -60,7 +60,7 @@ Follow below steps to create client application: <br/>
 
 </br>
 
-[Back to top…](README.md#On-this-page)
+[Back to top…](Prerequisite%20Steps.md#prerequisites-steps)
 
 ## Step 2: Configure permissions for WebAPI app registration
 1. Go to Azure Portal.
@@ -77,7 +77,7 @@ Follow below steps to create client application: <br/>
 10. **Add permissions**.
 ![Add API Permission](../Images/07_AppRegistration_Add_API_Permission.png)
 
-[Back to top…](README.md#On-this-page)
+[Back to top…](Prerequisite%20Steps.md#prerequisites-steps)
 
 ## Step 3: Get administrator consent for WebAPI app registration
 If 'User consent' is restricted to the WebAPI, then WebAPI must have 'Admin consent' granted to expose the APIs.
@@ -97,4 +97,4 @@ Grant admin consent for client app registration:
 5. In the app's left menu, select **Configuration** > **Application settings**.
 6. Add/edit app setting **AADClientAppDetails__ApplicationId** and use its value as WebAPI Client id. 
 
-[Back to top…](README.md#On-this-page)
+[Back to top…](Prerequisite%20Steps.md#prerequisites-steps)
