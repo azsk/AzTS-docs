@@ -84,7 +84,7 @@ If 'User consent' is restricted to the WebAPI, then WebAPI must have 'Admin cons
 Grant admin consent for client app registration:
 1. Go to Azure Portal.
 2. Go to **App Registration**.
-3. Search your WebAPI App Registration using [client id](README.md#Get-client-id-of-WebAPI-App-Registration).
+3. Search your WebAPI App Registration using client id.
 4. Get scope from **Expose an API** > **Scopes**.
 5. Go to **API Permissions**.
 6. Click **Grant admin consent** for your Tenant at above scope (step-4).
