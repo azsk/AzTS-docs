@@ -1,22 +1,127 @@
-## API Management
+# API Managment
 
-| ControlId | Dependent Azure API(s) and Properties | Control spec-let |
-|-----------|-------------------------------------|------------------|
-| <b>ControlId:</b><br>Azure_APIManagement_AuthN_Disable_Management_API<br><b>DisplayName:</b><br>Do not use API Management REST API. <br><b>Description: </b><br> Do not use API Management REST API. | <b>ARM API to list APIMs and its related property at Subscription level: </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?</br>api-version=2019-12-01</br><b>Properties:</b></br>sku <br><br> <b>ARM API to get tenant access information details without secrets:</b><br> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/access?<br> api-version=2019-12-01<br><b>Properties:</b><br>enabled| <b>Passed: </b><br>'Enable Management REST API' option is turned OFF.<br><b>Failed: </b><br>'Enable Management REST API' option is turned ON.<br><b>Verify: </b><br> Management API setting could not be verified as the API Management service is connected to a Virtual Network. As a result, control plane traffic on port 3443 is denied. <br><b>NotApplicable: </b><br> This control does not apply to consumption tier.|
-| <b>ControlId:</b><br>Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN<br><b>DisplayName:</b><br>Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials.<br><b>Description: </b><br> Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials. | <b> ARM API to list APIMs and its related property at Subscription level: </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?<br>api-version=2019-12-01<br><b>Properties:</b><br>sku <br><br><b>ARM API to list collection of portalsettings defined within a service instance: <br> </b> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings?<br>api-version=2018-06-01-preview <br><b>Properties:</b><br> name: "signup" <br> properties/enabled <br><br> <b>ARM API to list collection of Identity Provider configured in the specified service instance:</b> <br> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders?<br>api-version=2019-12-01 <br><b>Properties:</b><br>properties/type | <b>Passed: </b><br> 1. AAD Identity provider is being used for authentication in developer portal. <br> 2. Sign-up/sign-in option has been entirely disabled. <br><br><b>Failed: </b><br>Identity provider other than AAD is being used for authentication in developer portal.<br><br><b>Verify: </b><br> Sign up option setting could not be verified as the API Management service is connected to a Virtual Network. As a result, control plane traffic on port 3443 is denied. <br><br><b>NotApplicable: </b><br> This control does not apply to consumption tier.|
-| <b>ControlId:</b><br>Azure_APIManagement_DP_Use_Secure_TLS_Version<br><b>DisplayName:</b><br>Ensure that only the most secure and up to date version of TLS is enabled on the API gateway.<br><b>Description: </b><br> Ensure that only the most secure and up to date version of TLS is enabled on the API gateway. | <b>ARM API to list APIMs and its related property at Subscription level: </b> </br> /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br><b>Properties:</b><br> properties/customProperties <br> <b> Custom properties of the API Management service: </b> <br> 1. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168 <br> 2. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10 <br>3. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11 <br>4. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30 <br>5. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10 <br>6. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11 <br>7. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30 | <b>Passed: </b><br>All old versions of protocols and ciphers configurations are disabled.<br><b>Failed: </b><br>Old versions of protocols and ciphers configurations are being used.|
+**Resource Type:** Microsoft.ApiManagement/service
+<!-- TOC depthfrom:2 depthto:2 orderedlist:false -->
 
-<br>
+- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](#azure_apimanagement_dp_use_https_url_scheme)
+- [Azure_APIManagement_AuthN_Disable_Management_API](#azure_apimanagement_authn_disable_management_api)
 
-<br> <b>
+<!-- /TOC -->
+___
 
-</b>
+## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
+
+### DisplayName: 
+Ensure Backend API(s) are only accessible over HTTPS via API Management service.
+
+### Rationale
+Use of HTTPS ensures server/service authentication and protects data in transit from network layer eavesdropping attacks.
+
+### Control Spec
+    
+> **Passed:**
+> All API(s) are configured to use secure HTTP access to the backend via API Management, OR
+No API(s) found in APIM instance.
+> 
+> **Failed:**
+>Found API(s) that are configured to use non-secure HTTP access to the backend via API Management.
+> 
+> **Verify:**
+Unable to verify the delegation setting since management endpoint 3443 is disabled.
+
+<!-- TOC ignore:true -->
+### Recommendation
+
+<!-- - #### **Azure Portal** -->
+    
 
 
-	
+- **PowerShell:**
+    ```powershell
+    Set-AzApiManagementApi -Context {APIContextObject} -Protocols 'Https' -Name '{APIName}' -ApiId '{APIId}' -ServiceUrl '{ServiceURL}'
+    Get-AzApiManagementApi -Context '{APIContextObject}' # To get the details of existing APIs. 
+    
+    # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
+    ```
 
 
+- **Enforcement Policy**
+
+    [![Link to Azure Policy](https://camo.githubusercontent.com/decd8b19034344bb486631a9d3501b663b199bf367c8a9eb2c43ad0df9be10b2/687474703a2f2f617a7572656465706c6f792e6e65742f6465706c6f79627574746f6e2e706e67)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/https://raw.githubusercontent.com/Azure/azure-policy/master/samples/WebApp/web-app-https-traffic-only/azurepolicy.json)
 
 
+<!-- TOC ignore:true -->
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list APIMs and its related property at Subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?
+api-version=2019-12-01<br />
+**Properties:**
+sku
+
+- ARM API to get tenant access information details without secrets:
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/access?
+api-version=2019-12-01<br />
+**Properties:**
+enabled
+___
+
+## Azure_APIManagement_AuthN_Disable_Management_API
+
+<!-- TOC ignore:true -->
+### DisplayName: 
+Ensure Backend API(s) are only accessible over HTTPS via API Management service.
+
+<!-- TOC ignore:true -->
+### Rationale
+Use of HTTPS ensures server/service authentication and protects data in transit from network layer eavesdropping attacks.
+
+<!-- TOC ignore:true -->
+### Control Spec
+    
+> **Passed:**
+> All API(s) are configured to use secure HTTP access to the backend via API Management, OR
+No API(s) found in APIM instance.
+> 
+> **Failed:**
+>Found API(s) that are configured to use non-secure HTTP access to the backend via API Management.
+> 
+> **Verify:**
+Unable to verify the delegation setting since management endpoint 3443 is disabled.
+
+<!-- TOC ignore:true -->
+### Recommendation
+
+- **Azure Portal**
+    
 
 
+- **PowerShell:**
+    ```powershell
+    Set-AzApiManagementApi -Context {APIContextObject} -Protocols 'Https' -Name '{APIName}' -ApiId '{APIId}' -ServiceUrl '{ServiceURL}'
+    Get-AzApiManagementApi -Context '{APIContextObject}' # To get the details of existing APIs. 
+    
+    # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
+    ```
+
+
+- **Enforcement Policy**
+
+    [![Link to Azure Policy](https://camo.githubusercontent.com/decd8b19034344bb486631a9d3501b663b199bf367c8a9eb2c43ad0df9be10b2/687474703a2f2f617a7572656465706c6f792e6e65742f6465706c6f79627574746f6e2e706e67)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/https://raw.githubusercontent.com/Azure/azure-policy/master/samples/WebApp/web-app-https-traffic-only/azurepolicy.json)
+
+
+<!-- TOC ignore:true -->
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list APIMs and its related property at Subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?
+api-version=2019-12-01<br />
+**Properties:**
+sku
+
+- ARM API to get tenant access information details without secrets:
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/access?
+api-version=2019-12-01<br />
+**Properties:**
+enabled
+___
