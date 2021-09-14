@@ -8,7 +8,7 @@
 - [Overview](README.md#overview)
 - [Available APIs](README.md#available-apis)
 - [Generate authentication token to access API endpoints](README.md#Generate-authentication-token-to-access-API-endpoints)
-- [FAQ](README.md#FAQ)
+- [FAQs](README.md#FAQs)
 
 -----------------------------------------------------------------
 ## Overview 
@@ -226,7 +226,7 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 [Back to top…](README.md#On-this-page)
 
 
-## FAQ
+## FAQs
 
 ### How to get WebAPI URL with the help of AzTS admin?
 1. Go to Azure Portal.
