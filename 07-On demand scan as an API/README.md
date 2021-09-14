@@ -6,13 +6,9 @@
 
 ### On this page:
 - [Overview](README.md#overview)
-- [Pre-requisites](README.md#prerequisites)
-- [Available APIs]()
-- [Step 4: Generate authentication token to access API endpoints](README.md#Step-4-Generate-authentication-token-to-access-API-endpoints)
-- [Step 5: API Operation Groups](README.md#Step-5-API-Operation-Groups)
-    - [Request for scan](README.md#Request-for-scan)
-    - [Get control scan result](README.md#Get-control-scan-result)
-- [Feedback](README.md#Feedback)
+- [Available APIs](README.md#available-apis)
+- [Generate authentication token to access API endpoints](README.md#Generate-authentication-token-to-access-API-endpoints)
+- [FAQ](README.md#FAQ)
 
 -----------------------------------------------------------------
 ## Overview 
@@ -22,12 +18,11 @@ This document will help you out with the following aspects:
 1. Available API details:
     <br/>1.1 Request scan
     <br/>1.2 Get scan results
-2. Prerequisites to use APIs:
-3. Generate authentication token to access API endpoints: <br/>
+2. Generate authentication token to access API endpoints: <br/>
         2.1 Using client credential flow<br/>
         2.2 Using user authentication code flow<br/>
     
-> Note for AzTS admin: This feature is disabled by default. To enable this feature and other prequisites, please refer steps<pre-requisites todo>
+> Note for AzTS admin: This feature is disabled by default. To enable this feature and other pre-requisites, please refer steps(Prerequisite%20Steps.md#prerequisites)
 
 
 ## Available APIs:
@@ -37,7 +32,7 @@ This document will help you out with the following aspects:
 | [Get scan results](README.md#Get-scan-results) | Get scan results for a subscription.|
 
 
-## 1. Request scan - POST
+## 1.1 Request scan - POST
 Request ad-hoc<todo> scan for subscription(s).
 
 **Description** <br/>
@@ -47,7 +42,7 @@ In order to scan a subscription, you need to provide list of subscription id(s).
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/RequestScan
 ```
-Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for <WebAPI-URL>.<todo  steps><br/>
+Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned here.(https://github.com/azsk/AzTS-docs/tree/users/adisha/OnDemandScanDoc/07-On%20demand%20scan%20as%20an%20API#how-to-get-webapi-url-with-the-help-of-azts-admin)><br/>
 
 **Request Header**
 |Param Name|Description|Required?
@@ -107,11 +102,9 @@ Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to
 > 1. On demand scan for each subcription can be requested maximum 10 times in a day.
 > 2. Use **scanRequestId** to get latest scan results.
 
-
-
 [Back to top…](README.md#On-this-page)
 
-## Get latest scan results
+## 1.2 Get latest scan results - POST
 Get latest scan results for a subscription.
 
 **Description**
@@ -209,6 +202,7 @@ User authentication code flow uses user's crediential to generate the token.
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -RedirectUri 'https://localhost' -Scopes '<WebAPI-scope>'
 
 ```
+> Note: This token is intented to access AzTS API endpoints and not subscriptions.
 [Back to top…](README.md#On-this-page)
 
 
@@ -224,7 +218,7 @@ $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSecret $ClientSecret -Scopes "<WebAPI-scope>/.default"
 
 ```
-
+> Note: This token is intented to access AzTS API endpoints and not subscriptions.
 [Back to top…](README.md#On-this-page)
 
 
