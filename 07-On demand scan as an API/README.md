@@ -57,7 +57,8 @@ Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to
 | SubscriptionIDList|List`<string`>| List of subscription id(s) for scan.| Yes|
 
 **Permissions**
-As listed here (README.md#what-are-the-permissions-required-to-use-azts-apis)
+
+As listed here(README.md#what-are-the-permissions-required-to-use-azts-apis)
 
 **Example** <br/>
 **Sample Request**
@@ -134,6 +135,7 @@ Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to
 | ResourceNameList | List`<string`>| List of resources to get scan results only for certain resources.| No |
 
 **Permissions**
+
 As listed here(README.md#what-are-the-permissions-required-to-use-azts-apis)
 
 **Example** <br/>
