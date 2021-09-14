@@ -14,7 +14,7 @@
 #         #Write-Host "Filename is [$($file)]" 
 #         $JsonContent =  Get-content -path $file | ConvertFrom-Json
 #         $SubscriptionId = $JsonContent.SubscriptionId
-#         $uniqueControls = $JsonContent.UniqueControlList
+#         $uniqueControls = $JsonContent.ControlRemediationList
 #         $countstr = [string]$count
 #         $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId)
 #         $str =  "Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
@@ -23,7 +23,7 @@
 #         foreach ($uniqueControl in $uniqueControls){
 #             $remediate = $true
 #             if(Test-Path ($trackerPath) ){
-#                 $trackerUniqueControls = $trackerFileContent.UniqueControlList
+#                 $trackerUniqueControls = $trackerFileContent.ControlRemediationList
 #                 foreach($uniqueControlTracker in $trackerUniqueControls){
 #                     if($uniqueControlTracker.controlId -eq $uniqueControl.controlId ){
 #                         if( ($uniqueControl.FailedResourceList.Length -eq $uniqueControlTracker.FailedResourceList.Length)){
@@ -64,8 +64,8 @@
 #         $trackerSubsContent =  Get-content -path $trackerPath | ConvertFrom-Json
 
         
-#         $failedUniqueControls = $failedSubsContent.UniqueControlList
-#         $trackerUniqueControls = $trackerSubsContent.UniqueControlList
+#         $failedUniqueControls = $failedSubsContent.ControlRemediationList
+#         $trackerUniqueControls = $trackerSubsContent.ControlRemediationList
 
 #         foreach ($controlObj in $failedUniqueControls)
 #         {
@@ -112,7 +112,7 @@
             # $count = $count + 1
             $JsonContent =  Get-content -path $file | ConvertFrom-Json
             $subscriptionId = $JsonContent.SubscriptionId
-            $uniqueControls = $JsonContent.UniqueControlList
+            $uniqueControls = $JsonContent.ControlRemediationList
             $logFiles =  @(Get-ChildItem Rollback\$($subscriptionid.replace("-","_"))\*\*)
             foreach ($logFile in $logFiles){
                 $split = ([String]$logFile).split('\')
@@ -144,16 +144,16 @@
             $count = $count + 1
             $JsonContent =  Get-content -path $file | ConvertFrom-Json
             $SubscriptionId = $JsonContent.SubscriptionId
-            $uniqueControls = $JsonContent.UniqueControlList
-            $countstr = [string]$count
-            $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId)
+            $uniqueControls = $JsonContent.ControlRemediationList
+            #$countstr = [string]$count
+            $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId) +".Json"
             $str =  "Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
             Write-Host $str -ForegroundColor $([Constants]::MessageType.Warning)
             
             foreach ($uniqueControl in $uniqueControls){
                 $remediate = $true
                 if(Test-Path ($trackerPath) ){
-                    $trackerUniqueControls = $trackerFileContent.UniqueControlList
+                    $trackerUniqueControls = $trackerFileContent.ControlRemediationList
                     foreach($uniqueControlTracker in $trackerUniqueControls){
                         if($uniqueControlTracker.controlId -eq $uniqueControl.controlId ){
                             if( ($uniqueControl.FailedResourceList.Length -eq $uniqueControlTracker.FailedResourceList.Length)){
@@ -163,7 +163,7 @@
                     }
                 }
                 if($remediate){
-                    . ("./" + "RemediationScripts\" + $uniqueControl.file_name)
+                    . ("./" + "RemediationScripts\" + $uniqueControl.file_name)                  #file_name -> instead use load_command
                     $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
                     # Write-Host "Command is $($commandString)"
                     function runCommand($command) {
@@ -194,8 +194,8 @@
             $trackerSubsContent =  Get-content -path $trackerPath | ConvertFrom-Json
     
             
-            $failedUniqueControls = $failedSubsContent.UniqueControlList
-            $trackerUniqueControls = $trackerSubsContent.UniqueControlList
+            $failedUniqueControls = $failedSubsContent.ControlRemediationList
+            $trackerUniqueControls = $trackerSubsContent.ControlRemediationList
     
             foreach ($controlObj in $failedUniqueControls)
             {
@@ -238,7 +238,7 @@ if($files.Length -gt 0){
             rollback
         }
         elseif($rollback -eq "n"){
-            Write-Host "Please select on of the 2 above options."
+            Write-Host "Please select one of the 2 above options."
         }
         else{
             Write-Host "Please enter either y or n"
