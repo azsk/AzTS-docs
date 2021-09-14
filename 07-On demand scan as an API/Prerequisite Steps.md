@@ -32,6 +32,7 @@ In order to generate the token for making an API call, client app registration n
 
 </br>
 Follow below steps to create client application: <br/>
+
 1. Go to the Azure portal to register your application.
 
 2. Search for and select **App registrations**.
