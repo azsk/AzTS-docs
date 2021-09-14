@@ -42,7 +42,7 @@ In order to scan a subscription, you need to provide list of subscription id(s).
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/RequestScan
 ```
-Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned here.(README.md#how-to-get-webapi-url-with-the-help-of-azts-admin)><br/>
+Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](README.md#how-to-get-webapi-url-with-the-help-of-azts-admin).><br/>
 
 **Request Header**
 |Param Name|Description|Required?
@@ -58,7 +58,7 @@ Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to
 
 **Permissions**
 
-As listed here(README.md#what-are-the-permissions-required-to-use-azts-apis)
+As listed [here](README.md#what-are-the-permissions-required-to-use-azts-apis).
 
 **Example** <br/>
 **Sample Request**
