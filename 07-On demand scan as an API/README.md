@@ -22,7 +22,7 @@ This document will help you out with the following aspects:
         2.1 Using client credential flow<br/>
         2.2 Using user authentication code flow<br/>
     
-> Note for AzTS admin: This feature is disabled by default. To enable this feature and other pre-requisites, please refer steps(Prerequisite%20Steps.md#prerequisites)
+> Note for AzTS admin: This feature is disabled by default. To enable this feature and other pre-requisites, please refer steps(Prerequisite%20Steps.md#prerequisites-steps)
 
 
 ## Available APIs:

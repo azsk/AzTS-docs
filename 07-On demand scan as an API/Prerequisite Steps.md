@@ -4,9 +4,9 @@
 
 # Prerequisites steps
 Below are <b>one time steps</b> that need to be executed by <b>AzTS admin</b> in order to use APIs in AzTS. </b>
-- [Step 1: Register an application in Azure AD to represent a client application](README.md#Step-1-Register-an-application-in-Azure-AD-to-represent-a-client-application)
-- [Step 2: Configure permissions for WebAPI app registration](README.md#Step-2-Configure-permissions-for-WebAPI-app-registration)
-- [Step 3: Get administrator consent for WebAPI app registration](README.md#Step-3-Get-administrator-consent-for-WebAPI-app-registration)
+- [Step 1: Register an application in Azure AD to represent a client application](Prerequisite%20Steps.md#step-1-register-an-application-in-azure-ad-to-represent-a-client-application)
+- [Step 2: Configure permissions for WebAPI app registration](Prerequisite%20Steps.md#step-2-configure-permissions-for-webapi-app-registration)
+- [Step 3: Get administrator consent for WebAPI app registration](Prerequisite%20Steps.md#step-3-get-administrator-consent-for-webapi-app-registration)
 
 ## Prerequisites
 
