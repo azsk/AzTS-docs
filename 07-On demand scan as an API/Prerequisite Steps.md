@@ -2,15 +2,14 @@
 <br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community..
 
 
-# Authentication and authorization steps
+# Prerequisites steps
 Below are <b>one time steps</b> that need to be executed by <b>AzTS admin</b> in order to use APIs in AzTS. </b>
 - [Step 1: Register an application in Azure AD to represent a client application](README.md#Step-1-Register-an-application-in-Azure-AD-to-represent-a-client-application)
 - [Step 2: Configure permissions for WebAPI app registration](README.md#Step-2-Configure-permissions-for-WebAPI-app-registration)
 - [Step 3: Get administrator consent for WebAPI app registration](README.md#Step-3-Get-administrator-consent-for-WebAPI-app-registration)
 
 ## Prerequisites
-> **A. For AzTS admin**
-> </br>
+
 > On demand scan as an API feature is disabled by default in AzTS. If you want to enable this feature for your tenant, follow the steps below:
 > 1. Go to Azure Portal.
 > 2. Go to **Resource Groups**.
