@@ -28,21 +28,21 @@ This document will help you out with the following aspects:
 ## Available APIs:
 |API|Description|
 |----|----|
-| [Request scan](README.md#Request-scan) |Request ad-hoc scan for subscription(s).|
-| [Get scan results](README.md#Get-scan-results) | Get scan results for a subscription.|
+| [Request scan](README.md#11-request-scan---post) |Request ad-hoc scan for subscription(s).|
+| [Get scan results](README.md#12-get-latest-scan-results---post) | Get scan results for a subscription.|
 
 
 ## 1.1 Request scan - POST
-Request ad-hoc<todo> scan for subscription(s).
+Request ad-hoc scan for subscription(s).
 
 **Description** <br/>
-In order to scan a subscription, you need to provide list of subscription id(s). This API will return status of scan request for all subscriptions along with 'Scan Request Id'. This 'Scan Request Id' can be further used to [get scan results](README.md#Get-scan-result).
+In order to scan a subscription, you need to provide list of subscription id(s). This API will return status of scan request for all subscriptions along with 'Scan Request Id'. This 'Scan Request Id' can be further used to [get scan results](README.md#12-get-latest-scan-results---post).
 
 
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/RequestScan
 ```
-Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned here.(https://github.com/azsk/AzTS-docs/tree/users/adisha/OnDemandScanDoc/07-On%20demand%20scan%20as%20an%20API#how-to-get-webapi-url-with-the-help-of-azts-admin)><br/>
+Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned here.(README.md#how-to-get-webapi-url-with-the-help-of-azts-admin)><br/>
 
 **Request Header**
 |Param Name|Description|Required?
@@ -108,12 +108,12 @@ Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to
 Get latest scan results for a subscription.
 
 **Description**
-<br/>To get latest scan results, you need to pass Subscription Id and '[Scan Request Id](README.md#Sample-Response)'. 
+<br/>To get latest scan results, you need to pass Subscription Id. 
 
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanResult
 ```
-Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for <WebAPI-URL>.<todo  steps>
+Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned here.(README.md#how-to-get-webapi-url-with-the-help-of-azts-admin)><br/>
 
 **URI Parameters**
 |Name|Type|Description|Required?|
@@ -219,6 +219,7 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 
 ```
 > Note: This token is intented to access AzTS API endpoints and not subscriptions.
+
 [Back to top…](README.md#On-this-page)
 
 
