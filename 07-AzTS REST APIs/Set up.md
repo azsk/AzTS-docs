@@ -3,7 +3,7 @@
 
 <br/>
 
-# AzTS REST API Set Up Steps
+# AzTS REST API Set Up - Step by step
 
 ##  On this page:
 
