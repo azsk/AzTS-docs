@@ -12,7 +12,7 @@ Get latest scan results for a subscription.
 To get latest scan results, you need to pass Subscription Id. 
 
 **Permissions**
-You must have permission over subscription or resource group in the subscription with any of the following role:
+You must have permission over subscription or resource group in the subscription with any of the following roles:
 - Owner
 - Contributor
 - ServiceAdministrator
@@ -27,7 +27,7 @@ You must have permission over subscription or resource group in the subscription
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanResult
 ```
-> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)_
+> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)._
 
 <br/>
 
