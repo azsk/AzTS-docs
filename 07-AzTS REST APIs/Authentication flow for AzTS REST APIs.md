@@ -66,9 +66,6 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 
 ```
 
-AzTS admin will also provide scope of the WebAPI for which token has to be generated.
-
-
 |Parameter|Description|Required?|
 |--|--|--|
 |Tenant ID|Tenant identifier of the authority to issue token. It can also contain the value "consumers" or "organizations".|Yes|
