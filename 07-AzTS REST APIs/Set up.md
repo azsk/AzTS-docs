@@ -12,6 +12,7 @@
  a. [Steps to add `user_impersonation ` permission in AzTS WebAPI AAD application](./Set%20up.md#22-steps-to-add-user_impersonation--permission-in-azts-webapi-azure-active-directory-aad-application)<br>
  b. [Grant Admin consent for `user_impersonation ` permission](./Set%20up.md#23-grant-admin-consent-for-user_impersonation--permission)
 3. [(Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api)
+4. Get AzTS WebAPI URL
 
 <br> 
 
@@ -19,7 +20,7 @@
 
 <br>
 
-## **Step 1 of 3.** Steps to enable AzTS REST API feature
+## **Step 1 of 4.** Steps to enable AzTS REST API feature
 
 The AzTS REST API feature is disabled by default. To enable this feature for your tenant, follow the steps below:
 
@@ -31,7 +32,7 @@ The AzTS REST API feature is disabled by default. To enable this feature for you
 6. Add/edit app setting **FeatureManagement__OnDemandScanAPI** and set its value to _'true'_.
 7. Save.
 
-## **Step 2 of 3.** Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API 
+## **Step 2 of 4.** Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API 
 
 You'll need to add additional permissions in API permissions section of AzTS Web API AAD application. The permission/scope created in this step will have to be shared with end-users to generat access token for AzTS REST API. The steps to configure AzTS WebAPI AAD application are as follows: 
 
@@ -76,6 +77,25 @@ To grant admin consent for `user_impersonation ` permission follow the steps bel
 6. Click **Grant admin consent** for your Tenant at above scope (step-4).
 
 
-## **Step 3 of 3.** (Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API
+## **Step 3 of 4.** (Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API
 
 In order to generate access token, the end-user needs to provide a client id which will be used for authentication with AAD. This client can either be centrally registered for all users in your organization or you can ask each consumer of the REST API to register a new application in the same tenant which can be used for authentication. For steps to register a new AAD application, please follow [this guide](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application).
+
+## **Step 4 of 4.** Get AzTS WebAPI URL
+
+The AzTS WebAPI URL needs to be shared with the end user to access the AzTS REST APIs. Follow the steps below to get WebAPI URL:
+
+1. Go to Azure Portal.
+2. Go to **Resource Groups**.
+3. Select your Resource Group where you have configured AzTS set up.
+4. Select the App Service for API 'AzSK-ATS-WebAPI-xxxxx'.
+5. In **Overview** section, copy **URL**.
+
+<br>
+
+**Now your AzTS REST API is ready for use!**
+
+After completing the set up steps, you will have to share the following details with the end-users who want to consume these AzTS REST APIs:
+1. URL of the AzTS REST API copied in [step 4]() of the set up step.
+2. Scope of the AzTS REST API configured in the [step 2](./Set%20up.md#step-2-of-3-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
+3. Client id of the AAD application registered in [step 3](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
