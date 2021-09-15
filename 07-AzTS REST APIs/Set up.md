@@ -43,7 +43,7 @@ You'll need to add additional permissions in API permissions section of AzTS Web
 3. Select your Resource Group where you have configured AzTS set up.
 4. Select the App Service for API 'AzSK-AzTS-WebAPI-xxxxx'.
 5. In the app's left menu, select **Configuration** > **Application settings**.
-6. Add/edit app setting **AADClientAppDetails__ApplicationId** and use its value as WebAPI Client id.
+6. Search the app setting **AADClientAppDetails__ApplicationId** and use its value as WebAPI Client id.
 
 <br>
 
@@ -51,17 +51,19 @@ You'll need to add additional permissions in API permissions section of AzTS Web
 
 1. Go to Azure Portal.
 2. Go to **App Registration**.
-3. Select your WebAPI App Registration.
+3. Select your WebAPI App Registration using client id fetched in step 2.1.
 4. Go to **API Permissions**.
 5. Select **Add a permission**.
 ![Add API Permission](../Images/07_AppRegistration_Grant_API_Permission.png)
 6. Go to **APIs my organization uses**.
-7. Search your WebAPI client id and select.
+7. Search your WebAPI client id and select it.
 ![Add API Permission](../Images/07_AppRegistration_API_Permission.png)
 8. Select **Delegated permissions**.
-9. Select permissions.
-10. **Add permissions**.
+9. Under **Permission**, select the checkbox for `user_impersonation`.
+10. Finally, click on **Add permissions**.
 ![Add API Permission](../Images/07_AppRegistration_Add_API_Permission.png)
+
+After completing these steps, you will see `user_impersonation` permission added to your WebAPI AAD application.
 
 <br>
 
@@ -72,11 +74,20 @@ You'll need to add additional permissions in API permissions section of AzTS Web
 To grant admin consent for `user_impersonation ` permission follow the steps below:
 1. Go to Azure Portal.
 2. Go to **App Registration**.
-3. Search your WebAPI App Registration using client id.
+3. Select your WebAPI App Registration using client id fetched in step 2.1.
 4. Get scope from **Expose an API** > **Scopes**.
 5. Go to **API Permissions**.
 6. Click **Grant admin consent** for your Tenant at above scope (step-4).
 
+### **2.4. Get scope of the WebAPI:**
+
+You need to share the scope of the WebAPI end-users as this required to generate access token.
+
+To get scope for AzTS REST API, follow the steps below:
+1. Go to Azure Portal.
+2. Go to **App Registration**.
+3. Select your WebAPI App Registration using client id fetched in step 2.1.
+4. Get scope from **Expose an API** > **Scopes**. Scope is of the format: _`api://<WebAPI-ClientID>/user_impersonation `_
 
 ## **Step 3 of 4.** (Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API
 
