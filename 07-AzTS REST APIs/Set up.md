@@ -7,15 +7,19 @@
 
 ##  On this page:
 
-1. Steps to enable AzTS REST API feature
-2. Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API <br>
- a. Steps to add `user_impersonation ` permission in AzTS WebAPI AAD application<br>
- b. Grant Admin consent for `user_impersonation ` permission.
-3. (Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API
+1. [Steps to enable AzTS REST API feature](./Set%20up.md#step-1-of-3-enable-azts-rest-api-feature)
+2. [Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API](/Set%20up.md#step-2-of-3-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) <br>
+ a. [Steps to add `user_impersonation ` permission in AzTS WebAPI AAD application](/Set%20up.md#21-steps-to-get-the-client-id-of-the-azts-webapi-aad-application)<br>
+ b. [Grant Admin consent for `user_impersonation ` permission](./Set%20up.md#23-grant-admin-consent-for-user_impersonation--permission)
+3. [(Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API](/Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api)
 
-> _Note: This step has to be performed by AzTS Admin._
+<br> 
 
-## **Step 1 of 3.** Enable AzTS REST API feature
+> ##  _Note: This step has to be performed by AzTS Admin._
+
+<br>
+
+## **Step 1 of 3.** Steps to enable AzTS REST API feature
 
 The AzTS REST API feature is disabled by default. To enable this feature for your tenant, follow the steps below:
 
