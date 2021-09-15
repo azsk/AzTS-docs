@@ -15,7 +15,7 @@ The Azure Tenant Security Solution (AzTS) provides REST APIs which can be levera
 
 The AzTS REST API feature is disabled by default in AzTS. To enable this feature for your end-users and other set up steps, please follow [this guide](./Set%20up.md#azts-rest-api-set-up---step-by-step).
 
-Please note that as an admin of AzTS Soln, you need to share the following information with the consumer/end-users of the AzTS REST API:
+Please note that as an admin of AzTS Solution, you need to share the following information with the consumer/end-users of the AzTS REST API:
 
 1. Scope of the AzTS REST API configured in the [step 2](Set%20up.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
 2. Application (client) ID of the AAD application registered in [step 3](Set%20up.md#step-3-of-4-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
