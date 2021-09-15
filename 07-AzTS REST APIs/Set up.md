@@ -34,7 +34,7 @@ The AzTS REST API feature is disabled by default. To enable this feature for you
 
 ## **Step 2 of 4.** Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API 
 
-You'll need to add additional permissions in API permissions section of AzTS Web API AAD application. The permission/scope created in this step will have to be shared with end-users to generat access token for AzTS REST API. The steps to configure AzTS WebAPI AAD application are as follows: 
+You'll need to add additional permissions in API permissions section of AzTS WebAPI AAD application. The permission/scope created in this step will have to be shared with end-users to generate access token for AzTS REST APIs. The steps to configure AzTS WebAPI AAD application are as follows: 
 
 ### **2.1. Steps to get the client id of the AzTS WebAPI AAD application:**
 1. Go to Azure Portal.
