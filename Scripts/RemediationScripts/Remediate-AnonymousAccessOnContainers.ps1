@@ -266,7 +266,7 @@ function Remove-AnonymousAccessOnContainers
             }
 
             $totalStgWithEnableAllowBlobPublicAccess = ($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count
-            #$totalStgWithDisableAllowBlobPublicAccess = ($stgWithDisableAllowBlobPublicAccess | Measure-Object).Count
+            $totalStgWithDisableAllowBlobPublicAccess = ($stgWithDisableAllowBlobPublicAccess | Measure-Object).Count
 
             # Write-Host "Total storage account: [$($totalStorageAccount)]"
             # Write-Host "Storage account with enabled 'Allow Blob Public Access': [$($totalStgWithEnableAllowBlobPublicAccess)]"

@@ -6,7 +6,7 @@
             "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "",
-            "LoadCommand": ". .\\\"Remediate-AnonymousAccessOnContainers.ps1\"",
+            "LoadCommand": "Remediate-AnonymousAccessOnContainers.ps1",     
             "InitCommand": "Remove-AnonymousAccessOnContainers",
             "RollbackMetadata":
                 {
@@ -31,7 +31,7 @@
         {
             "ControlId":"Azure_AppService_DP_Use_Secure_TLS_Version",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTierr.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
             "LoadCommand": ". .\\\"Remediate-TLSVersion.ps1\"",
             "InitCommand": "Set-TLSVersion",
             "RollbackMetadata":
@@ -43,7 +43,7 @@
         {
             "ControlId":"Azure_AppService_DP_Dont_Allow_HTTP_Access",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTierm.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
             "LoadCommand": ". .\\\"Remediate-HTTPAccess.ps1\"",
             "InitCommand": "Remove-HTTPAccess",
             "RollbackMetadata":
@@ -55,7 +55,7 @@
         {
             "ControlId":"Azure_Storage_NetSec_Restrict_Network_Access",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTierm.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation_framework/Scripts/RemediationScripts/Remediate-ConfigASCTier.ps1",
             "LoadCommand": ". .\\\"Remediate-MetSec.ps1\"",
             "InitCommand": "Remove-MetSec",
             "RollbackMetadata":

@@ -163,8 +163,8 @@
                     }
                 }
                 if($remediate){
-                    . ("./" + "RemediationScripts\" + $uniqueControl.file_name)                  #file_name -> instead use load_command
-                    $commandString = $uniqueControl.init_command + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
+                    . ("./" + "RemediationScripts\" + $uniqueControl.LoadCommand)                  #file_name -> instead use load_command
+                    $commandString = $uniqueControl.InitCommand + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" 
                     # Write-Host "Command is $($commandString)"
                     function runCommand($command) {
                         if ($command[0] -eq '"') { Invoke-Expression "& $command" }
