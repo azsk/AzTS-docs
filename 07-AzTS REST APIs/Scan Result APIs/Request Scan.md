@@ -9,17 +9,15 @@
 Request ad-hoc scan for subscription(s).
 
 **Description**
-
 <br/>
-
-In order to scan a subscription, you need to provide list of subscription id(s). This API will return status of scan request for all subscriptions along with 'Scan Request Id'. This 'Scan Request Id' can be further used to [get scan results](README.md#12-get-latest-scan-results---post).
+In order to scan a subscription, you need to provide list of subscription id(s). This API will return status of scan request for all subscriptions along with 'Scan Request Id'. This 'Scan Request Id' can be further used to [get scan results](./Scan%20Result%20APIs/Get%20Scan%20Results.md#get-scan-results---post).
 
 **Request URL**
 
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/RequestScan
 ```
-> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](README.md#how-to-get-webapi-url-with-the-help-of-azts-admin)._
+> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)._
 
 <br/>
 

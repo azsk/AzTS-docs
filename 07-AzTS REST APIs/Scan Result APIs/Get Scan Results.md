@@ -16,7 +16,7 @@ To get latest scan results, you need to pass Subscription Id.
 ``` PowerShell
 POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanResult
 ```
-> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](README.md#how-to-get-webapi-url-with-the-help-of-azts-admin)_
+> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)_
 
 <br/>
 
