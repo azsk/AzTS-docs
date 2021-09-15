@@ -18,8 +18,9 @@ The AzTS REST API feature is disabled by default in AzTS. To enable this feature
 Please note that as an admin of AzTS Soln, you need to share the following information with the consumer/end-users of the AzTS REST API:
 
 1. Scope of the AzTS REST API configured in the [step 2](./Set%20up.md#step-2-of-3-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
-2. Client id of the AAD application registered in [step 3](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
+2. Application (client) ID of the AAD application registered in [step 3](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
 3. URL of the AzTS REST API copied in [step 4](./Set%20up.md#step-4-of-4-get-azts-webapi-url) of the set up step.
+4. Tenant ID
 
 
 ## Available REST APIs
@@ -32,3 +33,7 @@ Operation Group: Scan Result
 |----|----|
 | [Request scan](./Scan%20Result%20APIs/Request%20Scan.md#request-scan---post) |Request ad-hoc scan for subscription(s).|
 | [Get scan results](./Scan%20Result%20APIs/Get%20Scan%20Results.md#get-scan-results---post) | Get scan results for a subscription.|
+
+## Feedback
+
+For any feedback contact us at: aztssup@microsoft.com 
