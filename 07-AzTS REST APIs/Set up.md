@@ -15,7 +15,7 @@
 
 <br> 
 
-> ##  _Note: This step has to be performed by AzTS Admin._
+> ###  _Note: This step has to be performed by AzTS Admin Only._
 
 <br>
 
