@@ -65,7 +65,7 @@ You'll need to add additional permissions in API permissions section of AzTS Web
 
 ### **2.3. Grant admin consent for `user_impersonation ` permission:**
 
-> _Note: This step is required only if user consent is restricted in your Azure AD tenant._
+> _Note: This step is required only if user consent is restricted in your Azure AD tenant. Read more about AAD consent [here](https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/configure-user-consent?tabs=azure-portal)_
 
 To grant admin consent for `user_impersonation ` permission follow the steps below:
 1. Go to Azure Portal.
