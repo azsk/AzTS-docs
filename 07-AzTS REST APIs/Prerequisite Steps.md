@@ -21,14 +21,6 @@ Below are <b>one time steps</b> that need to be executed by <b>AzTS admin</b> in
 
 ## Step 1: Register an application in Azure AD to represent a client application
 In order to generate the token for making an API call, client app registration needs to be created.
-> Note: <br/>
-> This step is required for generating token using Client credential flow. For User Credential flow, existing AzTS UI AD application can be used. To get client Id for AzTS UI AD application , please follow steps below:
-> 1. Go to Azure Portal.
-> 2. Go to **Resource Groups**.
-> 3. Select your Resource Group where you have configured AzTS set up.
-> 4. Select the App Service for API 'AzSK-AzTS-UI-xxxxx'.
-> 5. In the app's left menu, select **Configuration** > **Application settings**.
-> 6. View app setting **AADClientAppDetails__ApplicationId** and copy the value. This is the Client id for AzTS UI AD application. 
 
 </br>
 Follow below steps to create client application: <br/>
@@ -94,7 +86,7 @@ Grant admin consent for client app registration:
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
 3. Select your Resource Group where you have configured AzTS set up.
-4. Select the App Service for API 'AzSK-ATS-WebAPI-xxxxx'.
+4. Select the App Service for API 'AzSK-AzTS-WebAPI-xxxxx'.
 5. In the app's left menu, select **Configuration** > **Application settings**.
 6. Add/edit app setting **AADClientAppDetails__ApplicationId** and use its value as WebAPI Client id. 
 
