@@ -12,7 +12,7 @@ Get latest scan results for a subscription.
 To get latest scan results, you need to pass Subscription Id. 
 
 **Permissions**
-You must have permission over a subscription with any of the following role:
+You must have permission over subscription or resource group in the subscription with any of the following role:
 - Owner
 - Contributor
 - ServiceAdministrator

@@ -15,7 +15,7 @@ In order to scan a subscription(s), you need to provide list of subscription id(
 
 **Permissions**
 
-You must have permission over a subscription(s) with any of the following role:
+You must have permission over subscription or resource group in the subscription with any of the following role:
 - Owner
 - Contributor
 - ServiceAdministrator
