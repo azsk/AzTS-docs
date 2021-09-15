@@ -30,5 +30,5 @@ Operation Group: Scan Result
 
 |API|Description|
 |----|----|
-| [Request scan](README.md#11-request-scan---post) |Request ad-hoc scan for subscription(s).|
-| [Get scan results](README.md#12-get-latest-scan-results---post) | Get scan results for a subscription.|
+| [Request scan](./Scan%20Result%20APIs/Request%20Scan.md) |Request ad-hoc scan for subscription(s).|
+| [Get scan results](./Scan%20Result%20APIs/Get%20Scan%20Results.md) | Get scan results for a subscription.|
