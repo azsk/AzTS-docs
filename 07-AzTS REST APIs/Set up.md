@@ -10,7 +10,7 @@
 1. [Steps to enable AzTS REST API feature](Set%20up.md#step-1-of-4-steps-to-enable-azts-rest-api-feature)
 2. [Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API](Set%20up.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) <br>
  2.1. [Steps to get the client id of the AzTS WebAPI AAD application](Set%20up.md#21-steps-to-get-the-client-id-of-the-azts-webapi-aad-application)<br>
- 2.2. [Steps to add `user_impersonation` permission in AzTS WebAPI Azure Active Directory (AAD) application](Set%20up.md#22-steps-to-add-user_impersonation--permission-in-azts-webapi-azure-active-directory-aad-application)
+ 2.2. [Steps to add `user_impersonation` permission in AzTS WebAPI Azure Active Directory (AAD) application](Set%20up.md#22-steps-to-add-user_impersonation--permission-in-azts-webapi-azure-active-directory-aad-application) <br>
  2.3. [Grant admin consent for user_impersonation permission](Set%20up.md#23-grant-admin-consent-for-user_impersonation--permission)
 3. [(Optional) Register an fresh Azure Active Directory (AAD) application to access AzTS REST API](Set%20up.md#step-3-of-4-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api)
 4. [Get AzTS WebAPI URL](Set%20up.md#step-4-of-4-get-azts-webapi-url)
