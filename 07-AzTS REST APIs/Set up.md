@@ -8,7 +8,7 @@
 ##  On this page:
 
 1. [Steps to enable AzTS REST API feature](Set%20up.md#step-1-of-4-steps-to-enable-azts-rest-api-feature)
-2. [Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API](Set%20up.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-apii) <br>
+2. [Steps to configure AzTS WebAPI's Azure Active Directory (AAD) application to access AzTS REST API](Set%20up.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) <br>
  2.1. [Steps to get the client id of the AzTS WebAPI AAD application](Set%20up.md#21-steps-to-get-the-client-id-of-the-azts-webapi-aad-application)<br>
  2.2. [Steps to add `user_impersonation` permission in AzTS WebAPI Azure Active Directory (AAD) application](Set%20up.md#22-steps-to-add-user_impersonation--permission-in-azts-webapi-azure-active-directory-aad-application)
  2.3. [Grant admin consent for user_impersonation permission](Set%20up.md#23-grant-admin-consent-for-user_impersonation--permission)
@@ -98,7 +98,7 @@ The AzTS WebAPI URL needs to be shared with the end user to access the AzTS REST
 
 After completing the set up steps, you will have to share the following details with end-users who want to consume these REST APIs:
 1. URL of the AzTS REST API copied in [step 4](Set%20up.md#step-4-of-4-get-azts-webapi-url) of the set up step.
-2. Scope of the AzTS REST API configured in the [step 2](Set%20up.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-apii) of the set up steps.
+2. Scope of the AzTS REST API configured in the [step 2](Set%20up.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
 3. Client id of the AAD application registered in [step 3](Set%20up.md#step-3-of-4-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
 
 
