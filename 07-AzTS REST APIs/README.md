@@ -18,8 +18,8 @@ The AzTS REST API feature is disabled by default in AzTS. To enable this feature
 Please note that as an admin of AzTS Soln, you need to share the following information with the consumer/end-users of the AzTS REST API:
 
 1. URL of the AzTS REST API.
-2. Scope of the AzTS REST API as configured in the [step 2](./Set%20up.md#step-2-of-3-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
-3. Client id of the AAD application register as part of [step 3](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) in the set up steps.
+2. Scope of the AzTS REST API configured in the [step 2](./Set%20up.md#step-2-of-3-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
+3. Client id of the AAD application registered in [step 3](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
 
 
 ## Available REST APIs
