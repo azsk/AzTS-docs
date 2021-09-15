@@ -36,12 +36,12 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 |--|--|--|
 |Tenant ID|Tenant identifier of the authority to issue token. It can also contain the value "consumers" or "organizations".|Yes|
 |Client ID| You can either register a new application using the steps provided here<todo azure doc> or request the AzTS admin of your organization to provide the client ID of the centrally registered application for access AzTS REST APIs which the Admin must have created during the set up ([as mentioned here](README.md#set-up-for-azts-admin-only)). | Yes |
-| Scope | Enter the scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](README.md#set-up-for-azts-admin-only)). | Yes|
+| Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#set-up-for-azts-admin-only)). | Yes|
 
 
 # Client credentials
 
-Client crediential flow uses the client credentials (client id and client secret) to generate the token. This is a two steps process.
+Client crediential flow uses the client credentials (client id and client secret) to generate the token. This is a two step process.
 
 1. You will need to [register a new Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) or use an existing AAD application and ask AzTS admin to provide permissions by following steps mentioned in [this FAQ](./Set%20up.md#an-end-user-wants-to-access-azts-rest-api-using-spn-credentials-ie-using-client-credential-authentication-flow-what-are-the-steps-to-grant-access-to-an-spnazure-ad-application-created-by-end-user-to-be-able-to-access-azts-rest-api).
 
@@ -72,5 +72,6 @@ AzTS admin will also provide scope of the WebAPI for which token has to be gener
 |Parameter|Description|Required?|
 |--|--|--|
 |Tenant ID|Tenant identifier of the authority to issue token. It can also contain the value "consumers" or "organizations".|Yes|
-|Client ID| You can either register a new application using the steps provided here<todo azure doc> or request the AzTS admin of your organization to provide the client ID of the centrally registered application for access AzTS REST APIs which the Admin must have created during the set up ([as mentioned here](README.md#set-up-for-azts-admin-only)). | Yes |
-| Scope | Enter the scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](README.md#set-up-for-azts-admin-only)). | Yes|
+|Client ID| Application (client) id of the AAD application created in step 1. | Yes |
+|Client Secret| Client secret of the AAD application created in step 1. For steps to create a new client secret, refer [this page](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-credentials).|Yes|
+| Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#set-up-for-azts-admin-only)). | Yes|
