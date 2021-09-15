@@ -10,7 +10,20 @@ Request ad-hoc scan for subscription(s).
 
 **Description**
 <br/>
-In order to scan a subscription, you need to provide list of subscription id(s). This API will return status of scan request for all subscriptions along with 'Scan Request Id'. This 'Scan Request Id' can be further used to [get scan results](./Scan%20Result%20APIs/Get%20Scan%20Results.md#get-scan-results---post).
+In order to scan a subscription(s), you need to provide list of subscription id(s). This API will queue subscription(s) for scan by AzTS and will return status of scan request for all subscriptions along with 'Scan Request Id'. This 'Scan Request Id' can be further used to [get scan results](./Scan%20Result%20APIs/Get%20Scan%20Results.md#get-scan-results---post).
+
+
+**Permissions**
+
+You must have permission over a subscription(s) with any of the following role:
+- Owner
+- Contributor
+- ServiceAdministrator
+- CoAdministrator
+- AccountAdministrator
+- Security Reader
+- Security Admin
+> **Note:** If you have been recently granted access to a subscription, you would be access AzTS APIs after 24 hours as it takes 24 hours to refresh latest RBAC.
 
 **Request URL**
 
@@ -33,9 +46,6 @@ POST https://<WebAPI-URL>/adhocscan/RequestScan
 |----|----|----|----|
 | SubscriptionIDList|List`<string`>| List of subscription id(s) for scan.| Yes|
 
-**Permissions**
-
-As listed [here](README.md#what-are-the-permissions-required-to-use-azts-apis).
 
 ## **Example** 
 <br/>

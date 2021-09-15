@@ -11,6 +11,17 @@ Get latest scan results for a subscription.
 <br/>
 To get latest scan results, you need to pass Subscription Id. 
 
+**Permissions**
+You must have permission over a subscription with any of the following role:
+- Owner
+- Contributor
+- ServiceAdministrator
+- CoAdministrator
+- AccountAdministrator
+- Security Reader
+- Security Admin
+> **Note:** If you have been recently granted access to a subscription, you would be access AzTS APIs after 24 hours as it takes 24 hours to refresh latest RBAC.
+
 **Request URL**
 
 ``` PowerShell
@@ -38,9 +49,6 @@ POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanRes
 | ControlIdList| List`<string`>|List of Control Ids to get scan results only for specific controls.| No |
 | ResourceNameList | List`<string`>| List of resources to get scan results only for certain resources.| No |
 
-**Permissions**
-
-As listed [here](README.md#what-are-the-permissions-required-to-use-azts-apis)
 
 ## **Example** 
 <br/>
