@@ -99,3 +99,20 @@ After completing the set up steps, you will have to share the following details 
 1. URL of the AzTS REST API copied in [step 4](./Set%20up.md#step-4-of-4-get-azts-webapi-url) of the set up step.
 2. Scope of the AzTS REST API configured in the [step 2](./Set%20up.md#step-2-of-3-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
 3. Client id of the AAD application registered in [step 3](./Set%20up.md#step-3-of-3-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the set up steps.
+
+
+## FAQ
+
+
+### **An end-user wants to access AzTS REST API using SPN credentials (i.e. using client credential authentication flow). What are the steps to grant access to an SPN/Azure AD application created by end-user to be able to access AzTS REST API?**
+
+1. Go to Azure Portal.
+2. Go to **App Registration**.
+3. Select AzTS WebAPI App Registration. If you do not have the client id of your WebAPI, please follow the steps provided to get its client id [here](./Set%20up.md#step-4-of-4-get-azts-webapi-url). 
+4. Select the WebAPI and in the left-pane, go to **Expose an API**.
+5. Under **Authorized client applications**, click on **Add a client application**.
+6. In the pop-up window, enter the client ID of the SPN/Azure AD application shared by the end-user to grant access to the SPN. 
+6. Select the `user_impersonation` scope check box under **Authorized scopes**.
+7. Click on **Add application**.
+
+With this the requested SPN is granted access to invoke AzTS REST API.
