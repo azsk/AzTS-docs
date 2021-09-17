@@ -31,6 +31,10 @@ function Install-AzSKTenantSecuritySolution
         Azure ARM template parameters used to deploy Azure Tenant Security Solution.
     .PARAMETER SendUsageTelemetry
         Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features."
+    .PARAMETER EnableCentralVisibility
+        Switch to enable central visibility of AzTS scan logs.
+    .PARAMETER CentralStorageAccountConnectionString
+        Connection string of the storage account to be used to store the scan logs centrally.
     .NOTES
 	
 
@@ -43,61 +47,73 @@ function Install-AzSKTenantSecuritySolution
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "Default", HelpMessage="Subscription id in which Azure Tenant Security Solution needs to be installed.")]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI", HelpMessage="Subscription id in which Azure Tenant Security Solution needs to be installed.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Subscription id in which Azure Tenant Security Solution needs to be installed.")]
         $SubscriptionId,
 
         [string]
 		[Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Name of ResourceGroup where setup resources will be created.")]
         [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Name of ResourceGroup where setup resources will be created.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Name of ResourceGroup where setup resources will be created.")]
 		$ScanHostRGName = "AzSK-AzTS-RG",
 
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "Default",  HelpMessage="Location where all resources will get created. Default location is EastUS2.")]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI",  HelpMessage="Location where all resources will get created. Default location is EastUS2.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility",  HelpMessage="Location where all resources will get created. Default location is EastUS2.")]
         $Location,
 
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "Default", HelpMessage="Resource id of user managed identity used to scan subscriptions.")]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI", HelpMessage="Resource id of user managed identity used to scan subscriptions.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Resource id of user managed identity used to scan subscriptions.")]
         $ScanIdentityId,
 
         [string]
         [Parameter(Mandatory = $false, ParameterSetName = "Default")]
         [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility")]
         $TemplateFilePath = ".\AzTSDeploymentTemplate.json",
 
         [Hashtable]
         [Parameter(Mandatory = $false, ParameterSetName = "Default")]
         [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility")]
         $TemplateParameters = @{},
 
         [switch]
         [Parameter(Mandatory = $false,  ParameterSetName = "Default", HelpMessage="Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
         [Parameter(Mandatory = $false,  ParameterSetName = "AzTSUI", HelpMessage="Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
+        [Parameter(Mandatory = $false,  ParameterSetName = "CentralVisibility", HelpMessage="Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
         $SendUsageTelemetry = $false,
 
         [switch]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Specify if user managed identity has Graph permission. This is to exclude controls dependent on Graph API response from the scan result, if scanner identity does not have graph permission.")]
         [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Specify if user managed identity has Graph permission. This is to exclude controls dependent on Graph API response from the scan result, if scanner identity does not have graph permission.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Specify if user managed identity has Graph permission. This is to exclude controls dependent on Graph API response from the scan result, if scanner identity does not have graph permission.")]
         $ScanIdentityHasGraphPermission = $false,
 
         [string]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Application (client) id of the Azure AD application to be used by API.")]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI", HelpMessage="Application (client) id of the Azure AD application to be used by API.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Application (client) id of the Azure AD application to be used by API.")]
         $WebAPIAzureADAppId,
 
         [string]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Application (client) id of the Azure AD application to be used by UI.")]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI", HelpMessage="Application (client) id of the Azure AD application to be used by UI.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Application (client) id of the Azure AD application to be used by UI.")]
         $UIAzureADAppId,
 
         [string[]]
         [Parameter(Mandatory = $true, ParameterSetName = "Default", HelpMessage="Email ids to which alert notification should be sent.")]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI", HelpMessage="Email ids to which alert notification should be sent.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Email ids to which alert notification should be sent.")]
         $SendAlertNotificationToEmailIds = @(),
 
         [string]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
         [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
         [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
         $AzureEnvironmentName = "AzureCloud",
 
@@ -108,15 +124,25 @@ function Install-AzSKTenantSecuritySolution
         [switch]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.")]
         [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.")]
         $EnableAutoUpdater,
 
         [switch]
         [Parameter(Mandatory = $true, ParameterSetName = "AzTSUI", HelpMessage="Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan.")]
         $EnableAzTSUI,
 
         [switch]
         [Parameter(Mandatory = $false, HelpMessage="Switch to enable WAF. Resources required for implementing WAF will be deployed only if this switch is ON.")]
-        $EnableWAF = $false
+        $EnableWAF = $false,
+        
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Switch to enable central visibility of AzTS scan logs.")]
+        $EnableCentralVisibility = $false,
+
+        [string]
+        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Connection string of the storage account to be used to store the scan logs centrally.")]
+        $CentralStorageAccountConnectionString
     )
         Begin
         {
@@ -348,6 +374,8 @@ function Install-AzSKTenantSecuritySolution
                 }
 
                 $TemplateParameters.Add("AzureEnvironmentName", $AzureEnvironmentName)
+                $TemplateParameters.Add("EnableCentralVisibility", $EnableCentralVisibility.IsPresent)
+                $TemplateParameters.Add("CentralStorageAccountConnectionString", $CentralStorageAccountConnectionString)
 
                 # Get package version
                 
@@ -598,6 +626,34 @@ function Install-AzSKTenantSecuritySolution
                     $storageAccountName = $deploymentResult.Outputs.storageId.Value.Split("/")[-1]
                     $storageQueueName = $deploymentResult.Outputs.storageQueueName.Value
 
+                    # Create a queue in central storage account
+                    try
+                    {
+                        Write-Verbose "$(Get-TimeStamp)Creating Storage queue in central storage account. This queue will be used to request subscription scan."
+                        if($EnableCentralVisibility -eq $true -and ![string]::IsNullOrWhiteSpace($CentralStorageAccountConnectionString))
+                        {
+                            $storageContext = New-AzStorageContext -ConnectionString $CentralStorageAccountConnectionString -ErrorAction Stop
+                            $storageQueue = Get-AzStorageQueue -Name $storageQueueName -Context $storageContext -ErrorAction SilentlyContinue
+                            if(-not $storageQueue)
+                            {   
+                                $storageQueue = New-AzStorageQueue -Name $storageQueueName -Context $storageContext -ErrorAction Stop
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        if(($_.Exception | GM ErrorContent -ErrorAction SilentlyContinue) -and ($_.Exception.ErrorContent | GM Message -ErrorAction SilentlyContinue))
+                        {
+                            Write-Host "ErrorCode [$($_.Exception.ErrorCode)] ErrorMessage [$($_.Exception.ErrorContent.Message.Value)]"  -ForegroundColor $([Constants]::MessageType.Error)
+                        }
+                        else
+                        {
+                            Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
+                        }
+                        Write-Host "Failed to create storage queue [$($storageQueueName)] in central storage account. You can create this queue directly from portal with the name [$($storageQueueName)]. For steps to create a queue, please refer https://docs.microsoft.com/en-us/azure/storage/queues/storage-quickstart-queues-portal#create-a-queue.`n`nPlease note that central storage repository feature is currently not supported if your central storage account has network restrictions. In this case, you will have to switch to the standalone mode by running this installation command again without '-EnableCentralVisibility' parameter." -ForegroundColor $([Constants]::MessageType.Error)
+                    }
+                    
+
                     #fetching storage network settings
                     if ($EnableVnetIntegration)
                     {
@@ -792,7 +848,6 @@ class Constants
                                               let RBAC_CL = union isfuzzy=true TablePlaceholder, (union (
                                               AzSK_RBAC_CL | where TimeGenerated > ago(24h)
                                               | take 10
-                                              | project RoleId = coalesce(RoleId_g, RoleId_s), NameId = NameId_g
                                               ))
                                               | where NameId !~ 'NA';
                                               RBAC_CL";
@@ -915,7 +970,13 @@ function SendCustomAIEvent
         if( $DeploymentResult.Outputs.ContainsKey('applicationInsightsIKey'))
         {
             $InstrumentationKey = $DeploymentResult.Outputs.applicationInsightsIKey.Value
-            $AssemblyPath = Get-ChildItem -Path "$($env:USERPROFILE)\Documents\WindowsPowerShell\Modules\Az.Accounts" -Filter "Microsoft.ApplicationInsights.dll" -Recurse
+            $azAccountsModuleInfo = Get-Module Az.Accounts -ListAvailable -Verbose:$false | Select-Object -First 1
+            if($null -eq $azAccountsModuleInfo)
+            {
+                Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery' -AllowClobber -Verbose:$false
+                $azAccountsModuleInfo = Get-Module Az.Accounts -ListAvailable -Verbose:$false | Select-Object -First 1
+            }
+            $AssemblyPath = Get-ChildItem -Path $azAccountsModuleInfo.ModuleBase -Filter "Microsoft.ApplicationInsights.dll" -Recurse
             $AssemblyPathFullName = $AssemblyPath.FullName | Sort-Object -Descending | Select-Object -First 1
             Add-Type -Path $AssemblyPathFullName
             $client = [Microsoft.ApplicationInsights.TelemetryClient]::new()

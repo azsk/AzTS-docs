@@ -100,7 +100,7 @@
       "type": "string",
       "defaultValue": "azskatsscanresult"
     },
-    "storageQueueName": {
+    "storageQueueNamePrefix": {
       "type": "string",
       "defaultValue": "subjobqueue"
     },
@@ -257,6 +257,13 @@
     },
     "WebAppEndpointSuffix":{
       "type": "string"
+    },
+    "EnableCentralVisibility": {
+      "type" : "bool",
+      "defaultValue": false
+    },
+    "CentralStorageAccountConnectionString": {
+      "type" : "string"
     }
   },
   "variables": {
@@ -302,7 +309,8 @@
     "UIfileShare": "[toLower(variables('WebUI'))]",
     "functionAppSubnetId":"[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), parameters('functionsSubnetName'))]",
     "appserviceSubnetId":"[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), parameters('appserviceSubnetName'))]",
-    "private_link_scope_name": "[concat('AzSK-AzTS-private-link-scope-', parameters('ResourceHash'))]"
+    "private_link_scope_name": "[concat('AzSK-AzTS-private-link-scope-', parameters('ResourceHash'))]",
+    "storageQueueName" : "[concat(parameters('storageQueueNamePrefix'), toLower(parameters('ResourceHash')))]"
   },
   "resources": [
     {
@@ -770,7 +778,7 @@
           "appSettings": [
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value))]"
             },
             {
               "name": "AuthNSettings__ScannerIdentityConnectionString",
@@ -826,7 +834,15 @@
             },
             {
               "name": "AzureStorageSettings__ResourceId",
-              "value": "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+              "value": "[if(parameters('EnableCentralVisibility'), json('null'), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')))]"
+            },
+            {
+              "name": "AzureStorageSettings__ConnectionString",
+              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), json('null'))]"
+            },
+            {
+              "name": "AzureStorageSettings__QueueName",
+              "value": "[variables('storageQueueName')]"
             },
             {
               "name": "LAConfigurations__ResourceId",
@@ -1057,7 +1073,7 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value))]"
             },
             {
               "name": "AuthNSettings__ScannerIdentityConnectionString",
@@ -1093,7 +1109,15 @@
             },
             {
               "name": "AzureStorageSettings__ResourceId",
-              "value": "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+              "value": "[if(parameters('EnableCentralVisibility'), json('null'), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')))]"
+            },
+            {
+              "name": "AzureStorageSettings__ConnectionString",
+              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), json('null'))]"
+            },
+            {
+              "name": "AzureStorageSettings__QueueName",
+              "value": "[variables('storageQueueName')]"
             },
             {
               "name": "LAConfigurations__ResourceId",
@@ -1248,7 +1272,7 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value))]"
             },
             {
               "name": "AuthNSettings__ScannerIdentityConnectionString",
@@ -1284,7 +1308,11 @@
             },
             {
               "name": "AzureStorageSettings__ResourceId",
-              "value": "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+              "value": "[if(parameters('EnableCentralVisibility'), json('null'), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')))]"
+            },
+            {
+              "name": "AzureStorageSettings__ConnectionString",
+              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), json('null'))]"
             },
             {
               "name": "LAConfigurations__ResourceId",
@@ -1300,7 +1328,7 @@
             },
             {
               "name": "queueTriggerName",
-              "value": "subjobqueue"
+              "value": "[variables('storageQueueName')]"
             },
             {
               "name": "AppMetadata__AppName",
@@ -1967,7 +1995,7 @@
     },
     "storageQueueName": {
       "type": "string",
-      "value": "[parameters('storageQueueName')]"
+      "value": "[variables('storageQueueName')]"
     },
     "uiAppName": {
       "type": "string",

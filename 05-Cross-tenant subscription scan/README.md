@@ -82,7 +82,16 @@ To overcome limitation of second approach and to get visibility across trusted t
 
 Below diagram depicts high level flow for Azure Lighthouse approach
 
-![Internals](../Images/05-CrossTenant_CentralVisibility.png)
+![Internals](../Images/05-CrossTenant_CentralVisibility_StorageAccount.png)
 
-Step to configure central repository will be available soon....
+Follow below steps to onboard AzTS Solution per Tenant with central visibility:
+
+a. To onboard AzTS Solution per Tenant, you will need to follow [setup steps](/01-Setup%20and%20getting%20started/README.md) for each Tenant. In [Step 6 of 6. Run Setup Command]() of this guide, you will have to run the installation command `Install-AzSKTenantSecuritySolution` with following parameter to store logs in the central storage account:
+1. `-EnableCentralVisibility`: Switch to configure the standalone AzTS setup to use central storage account for storing the scan results. 
+2. `-CentralStorageAccountConnectionString`: Connection string of the central storage account.
+
+> _Note:_
+> 1. _Currently, central visibility option is not supported with **VNet integration** feature._
+> 2. _If you are using [Control metadata editor tool (CMET)](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#access-to-cmet-control-metadata-editor-tool), then please ensure that this editor is only enabled in your central tenant._
+
  
