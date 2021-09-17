@@ -14,7 +14,7 @@
 # Steps performed by the script:
     1. Validate and install the modules required to run the script.
     2. Get the list of management certificates in a Subscription.
-    3. Backup details of management certificates that are to be remediated.
+    3. Back up details of management certificates that are to be remediated.
     4. Delete management certificates from a Subscription.
 
 # Instructions to execute the script:
@@ -246,7 +246,7 @@ function Remove-ManagementCertificates
     # No file path provided as input to the script. Fetch all management certificates in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        Write-Host "Fetching all management certificates for Subscription: $($context.Subscription.SubscriptionId)"
+        Write-Host "Fetching all management certificates for Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
         $certificateDetails = [XML]$managementCertificate.GetBySubscriptionId($context.Subscription.SubscriptionId)
         $certificates = $certificateDetails.GetElementsByTagName("SubscriptionCertificate") | ForEach-Object { $_ | Select-Object @{N='SubscriptionCertificatePublicKey';E={$_.SubscriptionCertificatePublicKey}},
                                                                                                                                   @{N='SubscriptionCertificateThumbprint';E={$_.SubscriptionCertificateThumbprint}},
@@ -262,7 +262,7 @@ function Remove-ManagementCertificates
             break
         }
 
-        Write-Host "Fetching all management certificates from $($FilePath)"
+        Write-Host "Fetching all management certificates from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
         $certificateDetails = Import-Csv -LiteralPath $FilePath
         $certificates = $certificateDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.SubscriptionCertificateThumbprint) }
     }
@@ -296,12 +296,12 @@ function Remove-ManagementCertificates
     if (-not $DryRun)
     {
         Write-Host "Certificate details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Rollback is not possible. This script does not back up certificates and certificates once deleted cannot be restored by this script." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "*** Recommended: Back up the certificates manually, prior to removing them. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "If the same certificates are still required post remediation, use $($backupFile) as a reference and manually upload the certificates." -ForegroundColor $([Constants]::MessageType.Warning)
 
         if (-not $Force)
         {
-            Write-Host "Rollback is not possible. This script does not back up certificates and certificates once deleted cannot be restored by this script." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "*** Recommended: Back up the certificates manually, prior to removing them. ***" -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "If the same certificates are still required post remediation, use $($backupFile) as a reference and manually upload the certificates." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to delete all the certificates? " -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
@@ -325,13 +325,7 @@ function Remove-ManagementCertificates
         $certificatesSkipped = @()
 
         $certificates | ForEach-Object {
-            $certificate = [PSCustomObject] @{
-                SubscriptionCertificatePublicKey = $_.SubscriptionCertificatePublicKey
-                SubscriptionCertificateThumbprint = $_.SubscriptionCertificateThumbprint
-                SubscriptionCertificateData = $_.SubscriptionCertificateData
-                Created = $_.Created
-            }
-
+            $certificate = $_
             $certificateThumbprint = $_.SubscriptionCertificateThumbprint
 
             Write-Host "Deleting certificate with thumbprint: $($certificateThumbprint)" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -372,24 +366,29 @@ function Remove-ManagementCertificates
                         @{Expression={$_.SubscriptionCertificateData};Label="SubscriptionCertificateData";Width=60},
                         @{Expression={$_.Created};Label="Created";Width=40}
 
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+
         if ($($certificatesDeleted | Measure-Object).Count -gt 0)
         {
-            Write-Host "The following certificate(s) have been successfully deleted:" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "The following certificate(s) have been successfully deleted:" -ForegroundColor $([Constants]::MessageType.Update)
             $certificatesDeleted | Format-Table -Property $colsProperty -Wrap
 
+            # Write this to a file.
             $certificatesDeletedFile = "$($backupFolderPath)\DeletedCertificates.csv"
-            Write-Host "This information has been saved to $($certificatesDeletedFile)"
             $certificatesDeleted | Export-CSV -Path $certificatesDeletedFile -NoTypeInformation
+            Write-Host "This information has been saved to $($certificatesDeletedFile)"
         }
 
         if ($($certificatesSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "The following certificate(s) could not be successfully deleted:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "`nThe following certificate(s) could not be successfully deleted:" -ForegroundColor $([Constants]::MessageType.Error)
             $certificatesSkipped | Format-Table -Property $colsProperty -Wrap
             
+            # Write this to a file.
             $certificatesSkippedFile = "$($backupFolderPath)\SkippedCertificates.csv"
-            Write-Host "This information has been saved to $($certificatesSkippedFile)"
             $certificatesSkipped | Export-CSV -Path $certificatesSkippedFile -NoTypeInformation
+            Write-Host "This information has been saved to $($certificatesSkippedFile)"
         }
     }
     else
