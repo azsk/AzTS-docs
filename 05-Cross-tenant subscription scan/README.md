@@ -102,6 +102,10 @@ a. Run the following PowerShell command in the same session in which you had ins
 
     # 3. Form storage account connection string. This connection string will be required in the next step.
     $connectionString = 'DefaultEndpointsProtocol=https;AccountName=' + $resourceInfo.Name + ';AccountKey=' + $storageAccountKey[0].Value + ';EndpointSuffix=core.windows.net' 
+
+    # Print and copy the value of connection string
+    $connectionString
+
     ```
     _OR_ <br>
 
