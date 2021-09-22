@@ -306,8 +306,6 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 [-EnableAzTSUI] `
                 [-EnableVnetIntegration] `
                 [-EnableWAF] `
-                [-EnableCentralVisibility] `
-                [-CentralStorageAccountConnectionString <string>] `
                 -Verbose
 
   <# Note : Parameters that are provided in square brackets[] in the above installation command are optional parameters. UIAzureADAppId and WebAPIAzureADAppId are mandatory parameters if you are enabling AzTSUI and WAF.
@@ -382,7 +380,6 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
 |EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
 |EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
-|EnableCentralVisibility|Switch to enable central visibility of AzTS scan logs. On enabling this switch, you have to also provide `CentralStorageAccountConnectionString` which is the connection string of the storage account. Read more about this workflow [here](../05-Cross-tenant%20subscription%20scan/README.md#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result).|FALSE|
 |CentralStorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 

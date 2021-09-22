@@ -30,9 +30,7 @@ function Install-AzSKTenantSecuritySolution
     .PARAMETER TemplateParameters
         Azure ARM template parameters used to deploy Azure Tenant Security Solution.
     .PARAMETER SendUsageTelemetry
-        Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features."
-    .PARAMETER EnableCentralVisibility
-        Switch to enable central visibility of AzTS scan logs.
+        Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.
     .PARAMETER CentralStorageAccountConnectionString
         Connection string of the storage account to be used to store the scan logs centrally.
     .NOTES
@@ -136,10 +134,6 @@ function Install-AzSKTenantSecuritySolution
         [Parameter(Mandatory = $false, HelpMessage="Switch to enable WAF. Resources required for implementing WAF will be deployed only if this switch is ON.")]
         $EnableWAF = $false,
         
-        [switch]
-        [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Switch to enable central visibility of AzTS scan logs.")]
-        $EnableCentralVisibility = $false,
-
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "CentralVisibility", HelpMessage="Connection string of the storage account to be used to store the scan logs centrally.")]
         $CentralStorageAccountConnectionString
@@ -374,7 +368,6 @@ function Install-AzSKTenantSecuritySolution
                 }
 
                 $TemplateParameters.Add("AzureEnvironmentName", $AzureEnvironmentName)
-                $TemplateParameters.Add("EnableCentralVisibility", $EnableCentralVisibility.IsPresent)
                 $TemplateParameters.Add("CentralStorageAccountConnectionString", $CentralStorageAccountConnectionString)
 
                 # Get package version
@@ -630,7 +623,7 @@ function Install-AzSKTenantSecuritySolution
                     try
                     {
                         Write-Verbose "$(Get-TimeStamp)Creating Storage queue in central storage account. This queue will be used to request subscription scan."
-                        if($EnableCentralVisibility -eq $true -and ![string]::IsNullOrWhiteSpace($CentralStorageAccountConnectionString))
+                        if(![string]::IsNullOrWhiteSpace($CentralStorageAccountConnectionString))
                         {
                             $storageContext = New-AzStorageContext -ConnectionString $CentralStorageAccountConnectionString -ErrorAction Stop
                             $storageQueue = Get-AzStorageQueue -Name $storageQueueName -Context $storageContext -ErrorAction SilentlyContinue
@@ -650,7 +643,7 @@ function Install-AzSKTenantSecuritySolution
                         {
                             Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
                         }
-                        Write-Host "Failed to create storage queue [$($storageQueueName)] in central storage account. You can create this queue directly from portal with the name [$($storageQueueName)]. For steps to create a queue, please refer https://docs.microsoft.com/en-us/azure/storage/queues/storage-quickstart-queues-portal#create-a-queue.`n`nPlease note that central storage repository feature is currently not supported if your central storage account has network restrictions. In this case, you will have to switch to the standalone mode by running this installation command again without '-EnableCentralVisibility' parameter." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Failed to create storage queue [$($storageQueueName)] in central storage account. You can create this queue directly from portal with the name [$($storageQueueName)]. For steps to create a queue, please refer https://docs.microsoft.com/en-us/azure/storage/queues/storage-quickstart-queues-portal#create-a-queue.`n`nPlease note that central storage repository feature is currently not supported if your central storage account has network restrictions. In this case, you will have to switch to the standalone mode by running this installation command again without '-CentralStorageAccountConnectionString' parameter." -ForegroundColor $([Constants]::MessageType.Error)
                     }
                     
 

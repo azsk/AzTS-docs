@@ -258,10 +258,6 @@
     "WebAppEndpointSuffix":{
       "type": "string"
     },
-    "EnableCentralVisibility": {
-      "type" : "bool",
-      "defaultValue": false
-    },
     "CentralStorageAccountConnectionString": {
       "type" : "string"
     }
@@ -778,7 +774,7 @@
           "appSettings": [
             {
               "name": "AzureWebJobsStorage",
-              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
             },
             {
               "name": "AuthNSettings__ScannerIdentityConnectionString",
@@ -834,11 +830,11 @@
             },
             {
               "name": "AzureStorageSettings__ResourceId",
-              "value": "[if(parameters('EnableCentralVisibility'), json('null'), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
             },
             {
               "name": "AzureStorageSettings__ConnectionString",
-              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), json('null'))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
             },
             {
               "name": "AzureStorageSettings__QueueName",
@@ -1073,7 +1069,7 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
             },
             {
               "name": "AuthNSettings__ScannerIdentityConnectionString",
@@ -1109,11 +1105,11 @@
             },
             {
               "name": "AzureStorageSettings__ResourceId",
-              "value": "[if(parameters('EnableCentralVisibility'), json('null'), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
             },
             {
               "name": "AzureStorageSettings__ConnectionString",
-              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), json('null'))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
             },
             {
               "name": "AzureStorageSettings__QueueName",
@@ -1272,7 +1268,7 @@
             },
             {
               "name": "AzureWebJobsStorage",
-              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
             },
             {
               "name": "AuthNSettings__ScannerIdentityConnectionString",
@@ -1308,11 +1304,11 @@
             },
             {
               "name": "AzureStorageSettings__ResourceId",
-              "value": "[if(parameters('EnableCentralVisibility'), json('null'), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
             },
             {
               "name": "AzureStorageSettings__ConnectionString",
-              "value": "[if(parameters('EnableCentralVisibility'), parameters('CentralStorageAccountConnectionString'), json('null'))]"
+              "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
             },
             {
               "name": "LAConfigurations__ResourceId",

@@ -225,8 +225,7 @@ $SendAlertNotificationToEmailIds =  @('<EmailId1>', '<EmailId2>', '<EmailId3>')
         # OTHER SUPPORTED PARAMETERS (read more about its usage in AzTS github doc):
         # 1. -EnableVnetIntegration 
         # 2. -EnableWAF 
-        # 3. -EnableCentralVisibility 
-        # 4. -CentralStorageAccountConnectionString "<ConnectionString>" 
+        # 3. -CentralStorageAccountConnectionString "<ConnectionString>" 
                         
 
         # iii) Save internal user-assigned managed identity name generated using below command. This will be used to grant Graph permission to internal MI.
