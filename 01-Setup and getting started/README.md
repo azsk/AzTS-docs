@@ -380,6 +380,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
 |EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
 |EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
+|CentralStorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
