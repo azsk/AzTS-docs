@@ -84,7 +84,7 @@ Below diagram depicts high level flow for central visibility approach
 
 ![Internals](../Images/05-CrossTenant_CentralVisibility_StorageAccount.png)
 
- _\* All scan results and inventory captured by AzTS Scanner are stored in a container in a central storage account. Data stored in this container cannot be used directly for reporting. To perform additional operations on this data, you can create a custom pipeline which reads the data stored in this container and uploads it in a data store that can be used for reporting._
+ _\* All scan results and inventory captured by AzTS Scanner are stored in a container in a central storage account. Data stored in this container cannot be used directly for reporting. To perform additional operations on this data, you can create a custom pipeline which reads the data stored in this container and uploads it in a data store that can be used for further reporting._
 
 Follow below steps to onboard AzTS Solution per Tenant with central visibility:
 
