@@ -17,9 +17,23 @@
 
 ## Overview
 
-The Azure Tenant Security Solution (AzTS) from the DevOps Kit (AzSK) team can be used to obtain visibility to cloud subscriptions and resource configuration across multiple subscriptions in an enterprise environment. The AzTS is a logical progression of the DevOps Kit which helps us move closer to implementation of cloud security compliance solution using native security capabilities in the Azure platform that are available today. Functionally, it is similar to running AzSK Continuous Assurance (CA) in central-scan mode.
-
 The AzTS solution provides a UI-based tool that can be used by dev-engineers to perform on-demand scans to verify fixes sooner, check reasons for control failures and view the latest scan results. This tool leverages your current subscription permissions to show you subscriptions that you have the ability to request scans for. 
+
+To get AzTS UI's URL, follow the steps below:
+
+**Using Azure Portal:**
+
+On Azure Portal, go to the resource group where AzTS Solution has been installed --> Go to AzSK-AzTS-UI-xxxxx App Service (here xxxxx represents the suffix added to the name of the App Service) --> From the 'Overview' section, copy the 'URL' of the UI.
+
+> **Note:** 
+> 1. _If you have enabled `Web Application Firewall (WAF)` for AzTS UI, then you will be able to access the UI using FrontDoor's URL_.
+> 2. _On Azure Portal, go to the resource group where AzTS Solution has been installed --> Go to AzSK-AzTS-UI-FrontDoor-xxxxx (here xxxxx represents the suffix added to the name of the Front Door) --> From the 'Overview' section, copy the 'URL' of the Front Door_.
+
+
+**Using PowerShell:**
+
+Link to the AzTS UI is provided at the end of the installation command ```Install-AzSKTenantSecuritySolution``` (as shown below).
+&nbsp;&nbsp;![UI](../Images/13_TSS_UIUrlPrintMessageInPSOutput.png)
 
 ## Prerequisite
 
