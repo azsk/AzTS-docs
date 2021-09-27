@@ -80,9 +80,15 @@ After access is provided to target subscription, next scheduled trigger will pic
 
 To overcome limitation of second approach and to get visibility across trusted tenants, you can install standalone AzTS setup per tenant and leverage central repository to get security scan telemetry. 
 
-Below diagram depicts high level flow for Azure Lighthouse approach
+Below diagram depicts high level flow for central visibility approach
 
-![Internals](../Images/05-CrossTenant_CentralVisibility.png)
+![Internals](../Images/05-CrossTenant_CentralVisibility_StorageAccount.png)
 
-Step to configure central repository will be available soon....
+Follow below steps to onboard AzTS Solution per Tenant with central visibility:
+
+a. To onboard AzTS Solution per Tenant, you will need to follow [setup steps](/01-Setup%20and%20getting%20started/README.md) for each Tenant. In [Step 6 of 6. Run Setup Command]() of this guide, you will have to run the installation command `Install-AzSKTenantSecuritySolution` with `-CentralStorageAccountConnectionString` parameter to store logs in the central storage account.
+
+> _Note:_
+> 1. _Currently, central visibility option is not supported with **VNet integration** feature._
+
  
