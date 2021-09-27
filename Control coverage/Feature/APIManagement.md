@@ -1,12 +1,6 @@
 # API Managment
 
 **Resource Type:** Microsoft.ApiManagement/service
-<!-- TOC depthfrom:2 depthto:2 orderedlist:false -->
-
-- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](#azure_apimanagement_dp_use_https_url_scheme)
-- [Azure_APIManagement_AuthN_Disable_Management_API](#azure_apimanagement_authn_disable_management_api)
-
-<!-- /TOC -->
 ___
 
 ## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
