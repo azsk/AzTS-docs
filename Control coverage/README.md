@@ -24,6 +24,7 @@ Below resource types can be checked for validating the security controls:
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
+|[ServiceBus](Feature/ServiceBus.md)|Microsoft.ServiceBus/namespaces|
 |[ServiceFabric](Feature/ServiceFabric.md)|Microsoft.ServiceFabric/clusters|
 |[SQLManagedInstance](Feature/SQLManagedInstance.md)|Microsoft.Sql/managedInstances|
 |[SQLServer](Feature/SQLServer.md)|Microsoft.Sql/servers|
