@@ -248,9 +248,7 @@ function Remove-ManagementCertificates
     {
         Write-Host "Fetching all management certificates for Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
         $certificateDetails = [XML]$managementCertificate.GetBySubscriptionId($context.Subscription.SubscriptionId)
-        $certificates = $certificateDetails.GetElementsByTagName("SubscriptionCertificate") | ForEach-Object { $_ | Select-Object @{N='SubscriptionCertificatePublicKey';E={$_.SubscriptionCertificatePublicKey}},
-                                                                                                                                  @{N='SubscriptionCertificateThumbprint';E={$_.SubscriptionCertificateThumbprint}},
-                                                                                                                                  @{N='SubscriptionCertificateData';E={$_.SubscriptionCertificateData}},
+        $certificates = $certificateDetails.GetElementsByTagName("SubscriptionCertificate") | ForEach-Object { $_ | Select-Object @{N='SubscriptionCertificateThumbprint';E={$_.SubscriptionCertificateThumbprint}},
                                                                                                                                   @{N='Created';E={$_.Created}}
                                                                                                              }
     }
@@ -361,9 +359,7 @@ function Remove-ManagementCertificates
             Write-Host "$($($certificatesDeleted | Measure-Object).Count) out of $($totalCertificates) certificate(s) successfully deleted." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
-        $colsProperty = @{Expression={$_.SubscriptionCertificatePublicKey};Label="SubscriptionCertificatePublicKey";Width=35},
-                        @{Expression={$_.SubscriptionCertificateThumbprint};Label="SubscriptionCertificateThumbprint";Width=40},
-                        @{Expression={$_.SubscriptionCertificateData};Label="SubscriptionCertificateData";Width=60},
+        $colsProperty = @{Expression={$_.SubscriptionCertificateThumbprint};Label="SubscriptionCertificateThumbprint";Width=40},
                         @{Expression={$_.Created};Label="Created";Width=40}
 
         Write-Host $([Constants]::DoubleDashLine)
