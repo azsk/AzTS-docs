@@ -37,7 +37,7 @@ DisplayName:
 
         Note:
             i. [Recommended] Use -DryRun parameter to get details of Storage accounts in CSV for pre-check.
-            ii. DryRun check is only available, if you are remediating conttrol at Storage account level (not at container level).
+            ii. DryRun check is only available, if you are remediating control at Storage account level (not at container level).
             iii. Use -Path parameter, if you are remediating control at container level.
  
         3. Run below command to rollback changes made by remediation script:
