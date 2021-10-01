@@ -128,7 +128,6 @@ function Disable-RemoteDesktopAccess
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -Force -ErrorAction Stop
     Select-AzureSubscription -SubscriptionId $($SubscriptionId) -ErrorAction Stop
     
-    Write-Host "Note: `n Cloud services on which RDP was enabled, during the deployment will not be remediated(These need to be remediated via azure portal)." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
@@ -216,7 +215,8 @@ function Disable-RemoteDesktopAccess
         # Checking cloud service(s) with enabled RDP acccess
         $resources |  ForEach-Object {
             $resource = $_
-            $rdpExtensions = @()
+            $rdpEnabledViaExtension = @()
+            $rdpEnabledViaConfig = @()
             
             # Fetching cloud service(s) slot i.e. Staging, Production 
             $cloudServiceSlots = Get-AzResource -ResourceGroupName $resource.ResourceGroupName -Name $resource.Name -ResourceType "$resourceType/slots" -ApiVersion "2016-04-01"
@@ -225,17 +225,51 @@ function Disable-RemoteDesktopAccess
             # Checking RDP extension on each slots
             $cloudServiceSlotsName | ForEach-Object {
                 $slot = $_
+
+                # Get Deployment Slot configuration. This will contain Remote Access status for each of the Cloud Service Roles.
+                $slotInfo = Get-AzureDeployment -ServiceName $resource.Name -Slot $slot
+
+                if (($null -ne $slotInfo) -and ($null -ne $slotInfo.RolesConfiguration))
+                {
+                    foreach ($roleConfig in $slotInfo.RolesConfiguration.GetEnumerator())
+                    {
+                        # Check if Remote Access is enabled for each of the Cloud Service Roles.
+                        if ($roleConfig.Value.Settings.Keys.Contains("Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled"))
+                        {
+                            if ($roleConfig.Value.Settings["Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled"] -eq "true")
+                            {
+                                # Book-keep the Deployment Slot configuration for it to be used to disable Remote Access.
+                                $slotConfiguration = [xml]$slotInfo.Configuration
+                                $rdpEnabledViaConfig += $roleConfig | select @{N='Slot'; E={$slot}}, @{N='Role'; E={$roleConfig.Key}}, @{N='UserName'; E={$roleConfig.Value.Settings["Microsoft.WindowsAzure.Plugins.RemoteAccess.AccountUsername"]}}, @{N='SlotConfiguration'; E={$slotConfiguration}}
+                            }
+                        }
+                    }
+                }
+
                 $cloudServiceExtension = Get-AzureServiceRemoteDesktopExtension -ServiceName $resource.Name -Slot $slot -ErrorAction SilentlyContinue
-                $rdpExtensions += $cloudServiceExtension | Where-Object { ($null -ne $_) -and ($_.Extension -like "*RDP*") } | select @{N='Slot'; E={$slot}}, @{N='UserName'; E={$_.UserName}}, @{N='Role'; E={$_.Role}}, @{N='Id'; E={$_.Id}}
+                $rdpEnabledViaExtension += $cloudServiceExtension | Where-Object { ($null -ne $_) -and ($_.Extension -like "*RDP*") } | select @{N='Slot'; E={$slot}}, @{N='Role'; E={$_.Role}}, @{N='UserName'; E={$_.UserName}}, @{N='Id'; E={$_.Id}}
             }
             
-            # Checking RDP extension is present on cloud service(s)
-            if(($rdpExtensions | Measure-Object).Count -gt 0)
+            # Checking if RDP is enabled via extension
+            if(($rdpEnabledViaExtension | Measure-Object).Count -gt 0)
             {
-                $item =  New-Object psobject -Property @{  
+                $item = New-Object psobject -Property @{
                     CloudServiceName = $_.Name                
                     ResourceGroupName = $_.ResourceGroupName
-                    RDPExtensionDetails = $rdpExtensions
+                    IsEnabledViaExtension = $true
+                    RemoteAccessDetails = $rdpEnabledViaExtension
+                }
+
+                $cloudServiceWithEnabledRDPAccess += $item
+            }
+            # Checking if RDP is enabled via configuration
+            elseif(($rdpEnabledViaConfig | Measure-Object).Count -gt 0)
+            {
+                $item = New-Object psobject -Property @{
+                    CloudServiceName = $_.Name
+                    ResourceGroupName = $_.ResourceGroupName
+                    IsEnabledViaExtension = $false
+                    RemoteAccessDetails = $rdpEnabledViaConfig
                 }
                     
                 $cloudServiceWithEnabledRDPAccess += $item        
@@ -280,28 +314,74 @@ function Disable-RemoteDesktopAccess
             
             Write-Host "`t"
             Write-Host "Disabling RDP access on [$($totalCloudServiceWithEnableRDPAccess)] cloud service(s)..."
-             try 
+            try
             {
                 $cloudServiceWithEnabledRDPAccess | ForEach-Object {
                     $serviceName = $_.CloudServiceName
                     $rgName = $_.ResourceGroupName
                     $isServiceRemediated = $true
+                    $isEnabledViaExtension = $_.IsEnabledViaExtension
 
                     # Disabling RDP access
-                    $_.RDPExtensionDetails | ForEach-Object {
-                        
-                        # TODO: Add 'UninstallConfiguration' switch to remove extension configurations associated with the service 
-                        $output = Remove-AzureServiceRemoteDesktopExtension -ServiceName $serviceName -Slot $_.Slot -Role $_.Role -ErrorAction SilentlyContinue
-                        if($null -eq $output -and $output.OperationStatus -ine "Succeeded")
-                        {
-                            $item =  New-Object psobject -Property @{  
-                                CloudServiceName = $serviceName                
-                                ResourceGroupName = $rgName
-                            }
+                    $_.RemoteAccessDetails | ForEach-Object {
+                        $slotName = $_.Slot
+                        $roleName = $_.Role
 
-                            $isServiceRemediated = $false
-                            $skippedCloudServiceFromRemediation += $item
-                            break;
+                        if ($isEnabledViaExtension)
+                        {
+                            $output = Remove-AzureServiceRemoteDesktopExtension -ServiceName $serviceName -Slot $slotName -Role $roleName -ErrorAction SilentlyContinue
+                            if($null -eq $output -and $output.OperationStatus -ine "Succeeded")
+                            {
+                                $item = New-Object psobject -Property @{
+                                    CloudServiceName = $serviceName
+                                    ResourceGroupName = $rgName
+                                    SlotName = $slotName
+                                    RoleName = $roleName
+                                }
+
+                                $isServiceRemediated = $false
+                                $skippedCloudServiceFromRemediation += $item
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            $index = 0
+                            $slotConfiguration=[xml]$_.slotConfiguration
+                            $slotConfiguration.ServiceConfiguration.Role | % {
+                                if ($($_.name) -eq $roleName)
+                                {
+                                    # The configuration (XML) retrieved from the Get-AzureDeployment command will be used in the call to Set-AzureDeployment, but, with Remote Access set to false.
+                                    $remoteAccessSetting = $slotConfiguration.ServiceConfiguration.Role[$index].ConfigurationSettings.Setting | Where-Object { $_.name -eq "Microsoft.WindowsAzure.Plugins.RemoteAccess.Enabled" }
+                                    $remoteAccessSetting.value = "false"
+
+                                    $configurationFile = "$($folderpath)\$serviceName_$slotName_$roleName.cfg"
+
+                                    # Create a temporary file to store this configuration and upload this file to the Cloud Service instance.
+                                    $slotConfiguration.Save($configurationFile)
+
+                                    $output = Set-AzureDeployment -Config -ServiceName $serviceName -Configuration $configurationFile -Slot $slotName -ErrorAction SilentlyContinue
+
+                                    # Remove the temporary file created previously.
+                                    Remove-Item($configurationFile)
+
+                                    if(($null -eq $output) -and ($output.OperationStatus -ine "Succeeded"))
+                                    {
+                                        $item = New-Object psobject -Property @{
+                                            CloudServiceName = $serviceName
+                                            ResourceGroupName = $rgName
+                                            SlotName = $slotName
+                                            RoleName = $roleName
+                                        }
+
+                                        $isServiceRemediated = $false
+                                        $skippedCloudServiceFromRemediation += $item
+                                        break
+                                    }
+                                }
+
+                                $index++
+                            }
                         }
                     }
 
@@ -313,7 +393,7 @@ function Disable-RemoteDesktopAccess
             }
             catch
             {
-                $item =  New-Object psobject -Property @{  
+                $item = New-Object psobject -Property @{
                     CloudServiceName = $_.CloudServiceName                
                     ResourceGroupName = $_.ResourceGroupName
                 }
@@ -350,7 +430,7 @@ class Constants
         Warning = [System.ConsoleColor]::Yellow
         Info = [System.ConsoleColor]::Cyan
         Update = [System.ConsoleColor]::Green
-	Default = [System.ConsoleColor]::White
+        Default = [System.ConsoleColor]::White
     }
 
     static [string] $DoubleDashLine    = "================================================================================"

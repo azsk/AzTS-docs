@@ -80,9 +80,66 @@ After access is provided to target subscription, next scheduled trigger will pic
 
 To overcome limitation of second approach and to get visibility across trusted tenants, you can install standalone AzTS setup per tenant and leverage central repository to get security scan telemetry. 
 
-Below diagram depicts high level flow for Azure Lighthouse approach
+Below diagram depicts high level flow for central visibility approach
 
-![Internals](../Images/05-CrossTenant_CentralVisibility.png)
+![Internals](../Images/05-CrossTenant_CentralVisibility_StorageAccount.png)
 
-Step to configure central repository will be available soon....
- 
+ _\* All scan results and inventory captured by AzTS Scanner are stored in a container in a central storage account. Data stored in this container cannot be used directly for reporting. To perform additional operations on this data, you can create a custom pipeline which reads the data stored in this container and uploads it in a data store that can be used for further reporting._
+
+Follow below steps to onboard AzTS Solution per Tenant with central visibility:
+
+1. Start by onboarding AzTS Solution in your central tenant by following the setup steps provided [here](/01-Setup%20and%20getting%20started/README.md). 
+
+2. After setting up AzTS in your central tenant, you need to get the connection string of the storage account that was created as part of the setup in step (1). To get the connection string you can either: <br>
+a. Run the following PowerShell command in the same session in which you had installed AzTS. 
+
+    ``` PowerShell
+    # 1. Get storage account info
+    $resourceInfo = Get-AzResource -ResourceId "$($DeploymentResult.Outputs.storageId.Value)"
+
+    # 2. Get storage account key
+    $storageAccountKey = Get-AzStorageAccountKey -ResourceGroupName $resourceInfo.ResourceGroupName -Name $resourceInfo.Name
+
+    # 3. Form storage account connection string. This connection string will be required in the next step.
+    $connectionString = 'DefaultEndpointsProtocol=https;AccountName=' + $resourceInfo.Name + ';AccountKey=' + $storageAccountKey[0].Value + ';EndpointSuffix=core.windows.net' 
+
+    # Print and copy the value of connection string
+    $connectionString
+
+    ```
+    _OR_ <br>
+
+    b. You can go to the Azure portal -> AzTS host RG -> AzTS Storage account (in the format 'azsktsstoragexxxxx') -> Search 'Access Key' in the left pane -> Click on 'Show Key' -> Copy one of the connection strings.
+
+<br>
+
+3. The steps to onboard AzTS Solution on other tenants is same as [step 1](/01-Setup%20and%20getting%20started/README.md), except that in [Step 6 of 6. Run Setup Command](../01-Setup%20and%20getting%20started/README.md#step-6-of-6-run-setup-command) of this setup guide, you will have to run the AzTS installation command `Install-AzSKTenantSecuritySolution` with `-CentralStorageAccountConnectionString` parameter to store logs in the central storage account.
+
+For example,
+
+``` PowerShell
+
+    $DeploymentResult = Install-AzSKTenantSecuritySolution `
+                    -SubscriptionId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
+                    -ScanHostRGName AzSK-AzTS-Solution-RG `
+                    -ScanIdentityId '/subscriptions/bbbe2e73-fc26-492b-9ef4-adec8560c4fe/resourceGroups/TenantReaderRG/providers/Microsoft.ManagedIdentity/userAssignedIdentities/TenantReaderUserIdentity' `
+                    -Location EastUS2 `
+                    -EnableAzTSUI `
+                    -UIAzureADAppId '000000yy-00yy-00yy-00yy-0000000000yy' `
+                    -WebAPIAzureADAppId '000000xx-00xx-00xx-00xx-0000000000xx' `
+                    -AzureEnvironmentName AzureCloud `
+                    -ScanIdentityHasGraphPermission:$true `
+                    -SendAlertNotificationToEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
+                    -EnableAutoUpdater `
+                    -CentralStorageAccountConnectionString "DefaultEndpointsProtocol=https;AccountName=xxx;AccountKey=xxx;EndpointSuffix=core.windows.net" `
+                    -Verbose
+
+```
+
+> _Note:_
+> 1. _Currently, central visibility option is not supported with **VNet integration** feature._
+
+To validate that the setup is working as expected after completing AzTS installation and running one full scan on each of your tenants using the steps provided [here](../01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant), go the central storage account -> Containers -> Select 'azskatsscanresult' container and follow the folder path which is in the format yyyy/mm/dd (as shown below). Check ControlResults, RBAC and other folders for results of subscription scanned in each tenant.
+
+![Internals](../Images/05-CrossTenant_CentralVisibility_StorageAccount_Container_Screenshot.png)
+
