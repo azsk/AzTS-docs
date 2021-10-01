@@ -5,6 +5,8 @@
 
 ControlId: 
     Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+DisplayName:
+    Remove external accounts from Azure subscriptions.
 
 # Pre-requisites:
     You will need owner or User Access Administrator role at subscription level.
