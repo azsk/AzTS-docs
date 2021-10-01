@@ -1,23 +1,23 @@
 ﻿<##########################################
 
-# Overivew:
+# Overview:
     This script is used to remove anonymous access of storage account(s) containers that can lead to information disclosure.
 
 ControlId: 
     Azure_Storage_AuthN_Dont_Allow_Anonymous
 
-# Pre-requesites:
+# Pre-requisites:
     You will need atleast contributor role on storage account(s) of subscription.
 
 # Steps performed by the script
-    1. Install and validate pre-requesites to run the script for subscription.
+    1. Install and validate pre-requisites to run the script for subscription.
 
     2. Get anonymous access details of storage account(s).
         a. For given storage account(s) present in input json file.
                           ----OR----
         b. For all storage account(s) present in subscription.
 
-    3. Taking backup of storage account(s) having anonymous access that are going to be remediate using remediation script.
+    3. Taking backup of storage account(s) having anonymous access that are going to be remediated using remediation script.
 
     4. Removing anonymous access from storage account(s) of subscription as per selected remediation type.
 
@@ -33,7 +33,7 @@ ControlId:
 
         2. Run below command to remove anonymous access from given storage account(s) of subscription
 
-        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account detail>' [-ExcludeResourceGroupNames <Comma separated resource group name(s) to be excluded from remediation>] [-ExcludeResourceNames <Comma separated resource name(s) to be excluded from remediation>]
+        Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing storage account(s) detail>' [-ExcludeResourceGroupNames <Comma separated resource group name(s) to be excluded from remediation>] [-ExcludeResourceNames <Comma separated resource name(s) to be excluded from remediation>]
 
         3. Auto-remediation Command
 
