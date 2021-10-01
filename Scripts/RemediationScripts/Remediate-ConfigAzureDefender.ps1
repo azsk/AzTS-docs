@@ -99,18 +99,14 @@ function Set-ConfigAzureDefender
     #>
 
     param (
-        # [string]
-        # [Parameter(Mandatory = $false, HelpMessage="Enter subscription id for remediation")]
-        # $SubscriptionId,
         [string]
-        [Parameter(Mandatory = $true, HelpMessage="Json file path which contain failed control details")]
-        $FailedControlsPath
-        # [switch]
-        # $PerformPreReqCheck
+        [Parameter(Mandatory = $true, HelpMessage="Enter subscription id for remediation")]
+        $SubscriptionId,
+
+        [switch]
+        $PerformPreReqCheck
     )
-    $controlForRemediation = Get-content -path $FailedControlsPath | ConvertFrom-Json
-    $SubscriptionId = $controlForRemediation.SubscriptionId
-    $PerformPreReqCheck = $true
+
     Write-Host "======================================================"
     Write-Host "Starting to configure Azure Defender for subscription [$($SubscriptionId)]..."
     Write-Host "------------------------------------------------------"
