@@ -3,7 +3,7 @@
 This page displays security controls that are automated via AzTS. Controls table listed under provide following details:
 - ControlId and Description
 - Dependent Azure API(s) and Properties
-- Control spec
+- Control spec-let
 
 ### Azure Services supported by AzTS
 
