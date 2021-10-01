@@ -326,23 +326,16 @@ function Remove-AnonymousAccessOnContainers
                 $skippedStorageAccountFromRemediation = @()
 
                 $resourceContext | ForEach-Object {
-                    if ($_ | Get-Member | Where-Object -Property Name -eq AllowBlobPublicAccess)
+                    if(-not(Get-Member -InputObject $_ -MemberType Properties -Name allowBlobPublicAccess) -or ($_.allowBlobPublicAccess))
                     {
-                        if ($_.AllowBlobPublicAccess)
-                        {                     
-                            $stgWithEnableAllowBlobPublicAccess += $_ | select -Property "StorageAccountName", "ResourceGroupName", "Id"
-                        }
-                        else
-                        {
-                            $stgWithDisableAllowBlobPublicAccess += $_
-                        }  
+                        $stgWithEnableAllowBlobPublicAccess += $_ | select -Property "StorageAccountName", "ResourceGroupName", "Id"
                     }
                     else
                     {
                         $stgWithDisableAllowBlobPublicAccess += $_
-                    }  
-                }
-   
+                    }                    
+                }              
+    
                 $totalStgWithEnableAllowBlobPublicAccess = ($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count
                 $totalStgWithDisableAllowBlobPublicAccess = ($stgWithDisableAllowBlobPublicAccess | Measure-Object).Count
     
@@ -408,7 +401,7 @@ function Remove-AnonymousAccessOnContainers
                     else 
                     {
                         Write-Host "Remediation was not successful on the following storage account(s)" -ForegroundColor $([Constants]::MessageType.Warning)
-                        $skippedStorageAccountFromRemediation | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
+                        $skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table
                         $resourceSummary += "Remediation was not successful on following storage account(s), due to insufficient permission"
                         $resourceSummary += "$($skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table |Out-String)"
                     }
@@ -808,7 +801,7 @@ Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' `
 
 Note: 
     1. Use 'DryRun' switch for pre-check, if you want to validate storage accounts before actual remediation.
-
+    
 Run below command to remove anonymous access from given storage account(s) of subscription
 Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' `
                                     -RemediationType '<DisableAnonymousAccessOnContainers>, <DisableAllowBlobPublicAccessOnStorage>' `
