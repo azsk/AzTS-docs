@@ -326,15 +326,21 @@ function Remove-AnonymousAccessOnContainers
                 $skippedStorageAccountFromRemediation = @()
 
                 $resourceContext | ForEach-Object {
-                    if (($_ | Get-Member | Where-Object -Property Name -eq AllowBlobPublicAccess) -and (($null -eq $_.AllowBlobPublicAccess) -or ($_.AllowBlobPublicAccess)))
+                    if ($_ | Get-Member | Where-Object -Property Name -eq AllowBlobPublicAccess)
                     {
-                        
-                        $stgWithEnableAllowBlobPublicAccess += $_ | select -Property "StorageAccountName", "ResourceGroupName", "Id"
+                        if ($_.AllowBlobPublicAccess)
+                        {                     
+                            $stgWithEnableAllowBlobPublicAccess += $_ | select -Property "StorageAccountName", "ResourceGroupName", "Id"
+                        }
+                        else
+                        {
+                            $stgWithDisableAllowBlobPublicAccess += $_
+                        }  
                     }
                     else
                     {
                         $stgWithDisableAllowBlobPublicAccess += $_
-                    }   
+                    }  
                 }
    
                 $totalStgWithEnableAllowBlobPublicAccess = ($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count
