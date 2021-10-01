@@ -53,7 +53,7 @@ function Pre_requisites
     This command would check pre requisites modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Resources, AzureAD, Az.Account" -ForegroundColor Cyan
+    Write-Host "Required modules are: Az.Resources, AzureAD, Az.Accounts" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
     $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts)
     

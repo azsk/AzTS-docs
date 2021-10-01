@@ -72,8 +72,9 @@ For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/pow
 #   Az.Monitor >= 1.5.0
 #   Az.OperationalInsights >= 1.3.4
 #   Az.ApplicationInsights >= 1.0.3
-#   Az.Websites >= 1.6.0
+#   Az.Websites >= 2.8.1
 #   Az.Network  >= 2.5.0
+#   Az.FrontDoor >= 1.8.0
 Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
@@ -83,6 +84,7 @@ Install-Module -Name Az.OperationalInsights -AllowClobber -Scope CurrentUser -re
 Install-Module -Name Az.ApplicationInsights -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Websites -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.Network -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.FrontDoor -AllowClobber -Scope CurrentUser -repository PSGallery
 
 # Install AzureAd 
 # Required version:
@@ -273,6 +275,8 @@ Setup will create infra resources and schedule daily security control scan on ta
 > 1. _Setup may take up to 5 minutes to complete._
 > 2. _For better performance, we recommend using one location for hosting central scanning user-assigned MI and resources which will be created in the following installation steps using the `Install-AzSKTenantSecuritySolution` cmdlet._
 > 3. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._
+> 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolution` with `-EnableAzTSUI` switch._
+> 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableAzTSUI` and `-EnableWAF` switch._
 >
 > &nbsp;
 
@@ -301,8 +305,11 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 [-EnableAutoUpdater] `
                 [-EnableAzTSUI] `
                 [-EnableVnetIntegration] `
+                [-EnableWAF] `
                 -Verbose
 
+  <# Note : Parameters that are provided in square brackets[] in the above installation command are optional parameters. UIAzureADAppId and WebAPIAzureADAppId are mandatory parameters if you are enabling AzTSUI and WAF.
+  #>
   
 
   # -----------------------------------------------------------------#
@@ -372,10 +379,11 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |EnableAutoUpdater | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
 |EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
+|EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
+|CentralStorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
-
 
   6.b. **Grant MS Graph read access:** AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission.
   </br>
@@ -479,6 +487,10 @@ The below steps will help you to verify and understand different resources and f
   ![Resources](../Images/12_TSS_Resource_Group_1.png)	
   ![Resources](../Images/12_TSS_Resource_Group_2.png)	
 
+  > **Note:** _If WAF is enabled for AzTS Solution, verify that below additional resources also got created, along with the once shown above._
+
+  ![Resources](../Images/12_TSS_Resource_Group_6.png)	
+
   > **Note:** _If the AzTS Solution is integrated to VNet, verify that below additional resources also got created, along with the once shown above._
 
   ![Resources](../Images/12_TSS_Resource_Group_3.png)	
@@ -510,6 +522,9 @@ The below steps will help you to verify and understand different resources and f
 |privatelink-monitor-azure-com|Private DNS Zone| This zone covers the global endpoints used by Azure Monitor|
 |privatelink-agentsvc-azure-automation-net|Private DNS Zone| This zone covers workspace-specific mapping to the agent service automation endpoints|
 |privatelink-agentsvc-azure-automation-net|Private DNS Zone| This zone configures connectivity to the global agents' solution packs storage account|
+|AzSK-AzTS-API-FrontDoor-xxxxx|Front Door| Used to stop network and application layer attacks at the edge with the help of Web Application Firewall. It secure your private back ends(API) and harden your service using Microsoft managed rule sets|
+|AzSK-AzTS-UI-FrontDoor-xxxxx|Front Door| Used to stop network and application layer attacks at the edge with the help of Web Application Firewall. It secure your private back ends(UI) and harden your service using Microsoft managed rule sets|
+|AzSKAzTSWAFPolicyxxxxx|Front Door WAF policy| WAF policy with managed Default Rule Set that protect your web application from common threats|
 
 <br/>
 
