@@ -26,6 +26,8 @@ DisplayName:
 # Step to execute script:
     Download and load remediation script in PowerShell session and execute below command.
     To know how to load script in PowerShell session refer link: https://aka.ms/AzTS-docs/RemediationscriptExcSteps.
+    Before running this script, make sure you load Helper.ps1 along with remediation script in current PowerShell session using below command:
+        . ".\Helper.ps1"
 
 # Command to execute:
     Examples:
@@ -37,8 +39,8 @@ DisplayName:
 
         Note:
             i. [Recommended] Use -DryRun parameter to get details of Storage accounts in CSV for pre-check.
-            ii. DryRun check is only available, if you are remediating control at Storage account level (not at container level).
-            iii. Use -Path parameter, if you are remediating control at container level.
+            ii. DryRun check is only available, if you are remediating conttrol at Storage account level (not at container level).
+            iii. Use -Path parameter, if you are remediating control at container level using parameter 'DisableAnonymousAccessOnContainers'. You can refer sample json file 'FailedControlsSetForRemediation.json'.
  
         3. Run below command to rollback changes made by remediation script:
             Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType '<EnableAnonymousAccessOnContainers>, <EnableAllowBlobPublicAccessOnStorage>'  -Path '<Json file path containing Remediated log>'   
@@ -205,6 +207,20 @@ function Remove-AnonymousAccessOnContainers
         break;
     }
     
+    # Safe Check: Current user must have Owner/Contributor/User Access Administrator access over the subscription.
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+
+    $requiredRoleDefinitionName = @("Owner", "Contributor", "User Access Administrator")
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    {
+        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
+        return;
+    }
+    else
+    {
+        Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
+    }
+
     Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "`n"
     Write-Host "Fetching storage account(s)..."
@@ -278,10 +294,16 @@ function Remove-AnonymousAccessOnContainers
         }
     
         # Apply resource or resource group exclusion logic
-    
-        $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
-        $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext) 
-        
+        try{
+            $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
+            $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext) 
+        }
+        catch
+        {
+            Write-Host "Please load Helper.ps1 file in current PowerShell session before executing the script." -ForegroundColor $([Constants]::MessageType.Error)
+            Break
+        }
+
         if($resourceResolver.messageToPrint -ne $null)
         {
             $resourceSummary += $([Constants]::SingleDashLine)
@@ -302,8 +324,9 @@ function Remove-AnonymousAccessOnContainers
                 $stgWithEnableAllowBlobPublicAccess = @()
                 $stgWithDisableAllowBlobPublicAccess = @()
                 $skippedStorageAccountFromRemediation = @()
+
                 $resourceContext | ForEach-Object {
-                    if(($null -eq $_.allowBlobPublicAccess) -or ($_.allowBlobPublicAccess))
+                    if (($_ | Get-Member | Where-Object -Property Name -eq AllowBlobPublicAccess) -and (($null -eq $_.AllowBlobPublicAccess) -or ($_.AllowBlobPublicAccess)))
                     {
                         
                         $stgWithEnableAllowBlobPublicAccess += $_ | select -Property "StorageAccountName", "ResourceGroupName", "Id"
@@ -313,7 +336,7 @@ function Remove-AnonymousAccessOnContainers
                         $stgWithDisableAllowBlobPublicAccess += $_
                     }   
                 }
-    
+   
                 $totalStgWithEnableAllowBlobPublicAccess = ($stgWithEnableAllowBlobPublicAccess | Measure-Object).Count
                 $totalStgWithDisableAllowBlobPublicAccess = ($stgWithDisableAllowBlobPublicAccess | Measure-Object).Count
     
@@ -329,8 +352,8 @@ function Remove-AnonymousAccessOnContainers
                     if ($DryRun)
                     {
                         Write-Host "Exporting configurations of Storage account(s) having 'Allow Blob Public Access' enabled. You may want to use this CSV as a pre-check before actual remediation." -ForegroundColor Cyan
-                        $stgWithEnableAllowBlobPublicAccess | Export-CSV -Path "$($folderpath)\StorageWithEnabledAllowBlobPublicAccess.csv" -NoTypeInformation
-                        Write-Host "Path: $($folderPath)DisabledAllowBlobPublicAccess.csv"
+                        $stgWithEnableAllowBlobPublicAccess | Export-CSV -Path "$($folderpath)\StorageWithPublicAccess.csv" -NoTypeInformation
+                        Write-Host "Path: $($folderPath)StorageWithPublicAccess.csv"
                         return;
                     }
                     else
@@ -778,7 +801,7 @@ Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' `
                                     [-DryRun]
 
 Note: 
-    1. Use 'DryRun' switch for pre-check, if you want to validate role assignments before remediation.
+    1. Use 'DryRun' switch for pre-check, if you want to validate storage accounts before actual remediation.
 
 Run below command to remove anonymous access from given storage account(s) of subscription
 Remove-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' `
