@@ -1,37 +1,34 @@
-# function rollback
-# {
-#     $files = @(Get-ChildItem FailedControls\*.json)
-#     foreach ($file in $files) {
-#         $JsonContent =  Get-content -path $file | ConvertFrom-Json
-#         $subscriptionId = $JsonContent.SubscriptionId
-#         $uniqueControls = $JsonContent.ControlRemediationList
-#         $logFiles =  @(Get-ChildItem Rollback\$($subscriptionid.replace("-","_"))\*\*)
-#         Write-Host "logfiles" + $logFiles
-#         foreach ($logFile in $logFiles){
-#             $split = ([String]$logFile).split('\')
-#             $controlId = $split[$split.Length - 1]
-#             foreach ($uniqueControl in $uniqueControls){
-#                 if($uniqueControl.controlId -eq $controlId){
-#                     $controlMetadata = $uniqueControl
-#                     Write-Host "CM "+$controlMetadata
-#                     break
-#                 }
-#             }
-#             . ("./" + "RemediationScripts\" + $controlMetadata.LoadCommand)
-#             $rollbackFiles = @(Get-ChildItem $logFile\*.json)
-#             foreach ($rollbackFile in $rollbackFiles){
-#                 $commandString = $controlMetadata.RollbackCommand + " -SubscriptionId " + "`'" + $subscriptionid + "`'" + " -RollBackType " + "`'" + "EnableAllowBlobPublicAccessOnStorage" + "`'" + " -Path " + "`'" + $rollbackFile + "`'" 
-#                 Write-Host $commandString
-#                 break;
-#                 function runCommand($command) {
-#                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
-#                     else { Invoke-Expression $command }
-#                 }
-#                 runCommand($commandString)
-#             }
-#         }
-#     }
-# }
+function rollback
+{
+    $files = @(Get-ChildItem FailedControls\*.json)
+    foreach ($file in $files) {
+        $JsonContent =  Get-content -path $file | ConvertFrom-Json
+        $subscriptionId = $JsonContent.SubscriptionId
+        $uniqueControls = $JsonContent.ControlRemediationList
+        $logFiles =  @(Get-ChildItem Rollback\$($subscriptionid.replace("-","_"))\*\*)
+        foreach ($logFile in $logFiles){
+            $split = ([String]$logFile).split('\')
+            $controlId = $split[$split.Length - 1]
+            foreach ($uniqueControl in $uniqueControls){
+                if($uniqueControl.controlId -eq $controlId){
+                    $controlMetadata = $uniqueControl
+                    break
+                }
+            }
+            . ("./" + "RemediationScripts\" + $controlMetadata.LoadCommand)
+            $rollbackFiles = @(Get-ChildItem $logFile\*.json)
+            foreach ($rollbackFile in $rollbackFiles){
+                $commandString = $controlMetadata.RollbackMetadata.RollbackCommand + " -SubscriptionId " + "`'" + $subscriptionid + "`'" + " -RollBackType " + "`'" + "EnableAllowBlobPublicAccessOnStorage" + "`'" + " -Path " + "`'" + $rollbackFile + "`'" 
+                #Write-Host $commandString
+                function runCommand($command) {
+                    if ($command[0] -eq '"') { Invoke-Expression "& $command" }
+                    else { Invoke-Expression $command }
+                }
+                runCommand($commandString)
+            }
+        }
+    }
+}
 function remediate{
     $files = @(Get-ChildItem FailedControls\*.json)
     $count = 0
@@ -124,28 +121,22 @@ class Constants
 #Execution begins here
 $trackerFiles = @(Get-ChildItem TrackerFilesGenerated\*.json)
 if($trackerFiles.Length -gt 0){
-    $continueRemediation = Read-Host -Prompt "A previous remediation has been detected. Do you want to continue the remediation? (y/n)"
+    $continueRemediation = Read-Host -Prompt "A previous remediation has been detected. Do you want to continue the remediation? (Press y for Yes)"
     if($continueRemediation -eq "y"){
         remediate
+    }
+    elseif($continueRemediation -eq "n"){
+        $rollback = Read-Host -Prompt "Do you want to rollback all the remediated controls to the state before the remediation has been done? (Press y for Yes)"
+        if($rollback -eq "y"){
+            rollback
+        }
+        else{
+            Write-Host "Exiting..."
+        }
     }
     else{
         Write-Host "Exiting..."
     }
-    # elseif($continueRemediation -eq "n"){
-    #     $rollback = Read-Host -Prompt "Do you want to rollback all the remediated controls to the state before the remediation has been done? (y/n)"
-    #     if($rollback -eq "y"){
-    #         rollback
-    #     }
-    #     elseif($rollback -eq "n"){
-    #         Write-Host "Please select one of the 2 above options."
-    #     }
-    #     else{
-    #         Write-Host "Please enter either y or n"
-    #     }
-    # }
-    # else{
-    #     Write-Host "Please enter either y or n"
-    # }
 }
 else{
     $startRemediation = Read-Host -Prompt "Do you want to start remediation? (Press y for Yes)"
