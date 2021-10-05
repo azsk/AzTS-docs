@@ -57,7 +57,6 @@ function remediate{
             if($remediate){
                 . ("./" + "RemediationScripts\" + $uniqueControl.LoadCommand)       
                 $commandString = $uniqueControl.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + "-AutoRemediation y";
-                    Write-Host "Command is $($commandString)"
                 function runCommand($command) {
                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                     else { Invoke-Expression $command }
