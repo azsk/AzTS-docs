@@ -156,24 +156,7 @@ function Disable-RemoteDesktopAccess
     Write-Host "`n"
     Write-Host "*** To disable RDP access user must have classic role assignment on Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "`n" 
-    Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has required permission to run the script for subscription [$($SubscriptionId)]..."
     
-    # Safe Check: Current user must have Owner/Contributor/User Access Administrator access over the subscription.
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    $requiredRoleDefinitionName = @("Owner", "Contributor", "User Access Administrator")
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
-    {
-        Write-Host "Warning: This script can only be run by [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
-        return;
-    }
-    else
-    {
-        Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
-    }
-
-    
-    Write-Host "`n"
     Write-Host "Fetching cloud service(s)..."
     $controlIds = "Azure_CloudService_SI_Disable_RemoteDesktop_Access"
     
