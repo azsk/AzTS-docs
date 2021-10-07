@@ -154,7 +154,7 @@ function Disable-RemoteDesktopAccess
     }
     
     Write-Host "`n"
-    Write-Host "*** To disable RDP access user must have atleast contributor access on cloud service(s) of Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To disable RDP access user must have classic role assignment on Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "`n" 
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has required permission to run the script for subscription [$($SubscriptionId)]..."
     
@@ -327,7 +327,8 @@ function Disable-RemoteDesktopAccess
             if ($DryRun)
             {
                 Write-Host "Exporting configurations of cloud service(s) having Remote Desktop enabled. You may want to use this CSV as a pre-check before actual remediation." -ForegroundColor Cyan
-                $totalCloudServiceWithEnableRDPAccess | Export-CSV -Path "$($folderpath)\CloudServiceWithRDPEnabled.csv" -NoTypeInformation
+                $cloudServiceDeatilsWithEnabledRDP = $cloudServiceWithEnabledRDPAccess | Select-Object CloudServiceName, IsEnabledViaExtension, ResourceGroupName, @{Name = 'RemoteAccessDetails'; expression = { $_.RemoteAccessDetails | Select-Object Slot, Role, UserName, Id }}
+                $cloudServiceDeatilsWithEnabledRDP | Export-CSV -Path "$($folderpath)\CloudServiceWithRDPEnabled.csv" -NoTypeInformation
                 Write-Host "Path: $($folderPath)CloudServiceWithRDPEnabled.csv"
                 return;
             }
@@ -336,7 +337,7 @@ function Disable-RemoteDesktopAccess
                 # Creating the log file
                 Write-Host "Backing up config of cloud service(s) detail." -ForegroundColor $([Constants]::MessageType.Info)
                 $cloudServiceWithEnabledRDPAccess | ConvertTo-json | out-file "$($folderpath)\CloudServiceWithEnabledRDPAccess.json"  
-                Write-Host "Path: $($folderpath)\CloudServiceWithEnabledRDPAccess.json"     
+                Write-Host "Path: $($folderpath)\CloudServiceWithEnabledRDPAccess.json"    
             }
 
             # Asking user to verify logs and select 'Y' to proceed
