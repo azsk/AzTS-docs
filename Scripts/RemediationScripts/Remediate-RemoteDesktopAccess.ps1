@@ -31,11 +31,12 @@ DisplayName:
 # Command to execute:
     Examples:
         1. Run below command to disable remote desktop access from all cloud service(s) of subscription
-
         Disable-RemoteDesktopAccess -SubscriptionId '<Sub_Id>' -Force
-        2. Run below command to disable remote desktop access from given cloud service(s)
 
+        2. Run below command to disable remote desktop access from given cloud service(s)
         Disable-RemoteDesktopAccess -SubscriptionId '<Sub_Id>' -Path '<Json file path containing cloud service(s) detail>' -Force
+
+        Note: [Recommended] Use -DryRun switch to get details of Cloud service(s) in CSV for pre-check.
 
 To know more about parameter execute:
     a. Get-Help Disable-RemoteDesktopAccess -Detailed
@@ -82,8 +83,10 @@ function Disable-RemoteDesktopAccess
             Enter subscription id on which remediation need to perform.
         .PARAMETER Path
             Json file path which contain failed controls detail to remediate.
-        .Parameter Force
+        .PARAMETER Force
             To disable RDP access forcefully.
+        .PARAMETER DryRun
+            Run pre-script before actual remediating Cloud service in the subscription.
     #>
 
     param (
@@ -96,7 +99,11 @@ function Disable-RemoteDesktopAccess
         $Path,
 
         [switch]
-        $Force
+        $Force,
+
+        [switch]
+        [Parameter(Mandatory = $false)]
+        $DryRun
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -132,9 +139,7 @@ function Disable-RemoteDesktopAccess
     Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)  
     Write-Host "Starting with subscription [$($SubscriptionId)]..."
-    Write-Host "`n"
-    Write-Host "*** To disable RDP access user must have atleast contributor access on cloud service(s) of Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host "`n" 
+    Write-Host "`n"   
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..."
     
     # Safe Check: Checking whether the current account is of type User
@@ -143,9 +148,15 @@ function Disable-RemoteDesktopAccess
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
         break;
     }
+    else
+    {
+        Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
+    }
     
-    Write-Host "Successfully validated" -ForegroundColor $([Constants]::MessageType.Update)
-    Write-Host "`t"
+    Write-Host "`n"
+    Write-Host "*** To disable RDP access user must have classic role assignment on Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "`n" 
+    
     Write-Host "Fetching cloud service(s)..."
     $controlIds = "Azure_CloudService_SI_Disable_RemoteDesktop_Access"
     
@@ -198,7 +209,7 @@ function Disable-RemoteDesktopAccess
     }
 
     Write-Host "Total cloud service(s): [$($totalCloudService)]"
-    $folderPath = [Environment]::GetFolderPath("LocalApplicationData") 
+    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
     if (Test-Path -Path $folderPath)
     {
         $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableRemoteDesktopAccess"
@@ -296,11 +307,22 @@ function Disable-RemoteDesktopAccess
     {
         if ($totalCloudServiceWithEnableRDPAccess -gt 0)
         {
-            # Creating the log file
-            Write-Host "Backing up config of cloud service(s) detail." -ForegroundColor $([Constants]::MessageType.Info)
-            $cloudServiceWithEnabledRDPAccess | ConvertTo-json | out-file "$($folderpath)\CloudServiceWithEnabledRDPAccess.json"  
-            Write-Host "Path: $($folderpath)\CloudServiceWithEnabledRDPAccess.json"     
-            
+            if ($DryRun)
+            {
+                Write-Host "Exporting configurations of cloud service(s) having Remote Desktop enabled. You may want to use this CSV as a pre-check before actual remediation." -ForegroundColor Cyan
+                $cloudServiceDeatilsWithEnabledRDP = $cloudServiceWithEnabledRDPAccess | Select-Object CloudServiceName, IsEnabledViaExtension, ResourceGroupName, @{Name = 'RemoteAccessDetails'; expression = { $_.RemoteAccessDetails | Select-Object Slot, Role, UserName, Id }}
+                $cloudServiceDeatilsWithEnabledRDP | Export-CSV -Path "$($folderpath)\CloudServiceWithRDPEnabled.csv" -NoTypeInformation
+                Write-Host "Path: $($folderPath)CloudServiceWithRDPEnabled.csv"
+                return;
+            }
+            else
+            {
+                # Creating the log file
+                Write-Host "Backing up config of cloud service(s) detail." -ForegroundColor $([Constants]::MessageType.Info)
+                $cloudServiceWithEnabledRDPAccess | ConvertTo-json | out-file "$($folderpath)\CloudServiceWithEnabledRDPAccess.json"  
+                Write-Host "Path: $($folderpath)\CloudServiceWithEnabledRDPAccess.json"    
+            }
+
             # Asking user to verify logs and select 'Y' to proceed
             if(-not $Force)
             {
@@ -398,7 +420,7 @@ function Disable-RemoteDesktopAccess
                     ResourceGroupName = $_.ResourceGroupName
                 }
                 $skippedCloudServiceFromRemediation += $item
-            }
+            }       
         }
         else
         {
@@ -438,3 +460,15 @@ class Constants
 }
 
 # ***************************************************** #
+<#
+Run below command to disable remote desktop access from all cloud service(s) of subscription.
+Disable-RemoteDesktopAccess -SubscriptionId '<Sub_Id>' `
+                            -DryRun
+
+Note: Use -DryRun switch to get details of Cloud service(s) in CSV for pre-check.
+
+Run below command to disable remote desktop access of cloud service(s) for given json file. 
+Disable-RemoteDesktopAccess -SubscriptionId '<Sub_Id>' `
+                            -Path '<Json file path containing Cloud service details>'`
+                            -Force
+#>
