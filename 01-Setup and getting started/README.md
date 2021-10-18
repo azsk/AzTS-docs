@@ -547,12 +547,15 @@ The below steps will help you to verify and understand different resources and f
 
 |Function Name|Description|
 |----|----|
-|ATS_1_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that have been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by consecutive jobs.
-|ATS_2_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
-|ATS_3_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
-|ATS_4_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default, it would retry to scan 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
-|ATS_5_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management groups will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
-|ATS_7_InitiateOnDemandProcessing| Responsible to queue MetadataAggregator's functions (ATS_1_SubscriptionInvProcessor, ATS_2_BaselineControlsInvProcessor, ATS_3_SubscriptionRBACProcessor, ATS_4_WorkItemScheduler) for processing. **Note**: This function will only be available if premium tier pricing plan is used for the function app. Also this function is available by default for AzTS solution with VNet integration, as the pricing plan used here is premium tier.
+|ATS_01_SubscriptionInvProcessor| Responsible to fetch details about all the subscriptions that have been granted access as Reader using central MI. All these subscriptions will be fetched by the job and persisted into LA. These subscriptions are scanned automatically by consecutive jobs.
+|ATS_02_BaselineControlsInvProcessor| Responsible to push baseline controls metadata to LA and storage account
+|ATS_03_SubscriptionRBACProcessor| Collects RBAC details of subscription to be scanned. RBAC collected is used to scan the control like "Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities" 
+|ATS_04_WorkItemScheduler|  Responsible to queue up subscriptions as workitems for scanning. It also reconciles the errored subscriptions through retries in the end. By default, it would retry to scan 5 times for each error subscription. If there is nothing to process for the day, it would simply ignore the run.
+|ATS_05_MGTreeProcessor| Responsible to fetch details about all the management group that has been granted access as Reader using central MI. All these management groups will be fetched by the job and persisted into LA. This function is disabled by default. To enable this function, you need to add/update ` FeatureManagement__ManagementGroups : true ` and `ManagementGroupConfigurations__ManagementGroupId : <Root_Management_Group_id> ` application setting on Azure Portal. To update settings, go to your App Service --> Configuration --> New application settings --> Save after adding/updating the setting.
+|ATS_07_InitiateOnDemandProcessing| Responsible to queue MetadataAggregator's functions (ATS_01_SubscriptionInvProcessor, ATS_02_BaselineControlsInvProcessor, ATS_03_SubscriptionRBACProcessor, ATS_04_WorkItemScheduler) for processing. **Note**: This function will only be available if premium tier pricing plan is used for the function app. Also this function is available by default for AzTS solution with VNet integration, as the pricing plan used here is premium tier.
+|ATS_08_SecureScoreProcessor| Responsible to fetch details of Secure Score provided by Azure Security Center. This data will be persisted into Log Analytics.
+|ATS_09_PolicyStateProcessor| Responsible to collect policy state data (compliance details of policy assignments), collected data is used to evaluate Azure policy based controls. This function is disabled by default and will be enabled as part of [prerequisites](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForPolicy.md) to add custom Azure policy based controls.
+|ATS_10_ARGInvProcessor| Responsible to collect dynamic data from Azure Resource Graph based on configured queries.
 
  **2.b. WorkItemProcessor Functions:** 
  
@@ -565,17 +568,17 @@ The below steps will help you to verify and understand different resources and f
 
 Steps to trigger the functions
 
-Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosting RG --> Click on 'Functions' tab --> Select 'ATS_1_SubscriptionInvProcessor' --> Click on 'Code + Test' --> Click 'Test/Run' --> Click 'Run'
+Click on 'AzSK-AzTS-MetadataAggregator-xxxxx' function app present in scan hosting RG --> Click on 'Functions' tab --> Select 'ATS_01_SubscriptionInvProcessor' --> Click on 'Code + Test' --> Click 'Test/Run' --> Click 'Run'
 
 Similarly, you can trigger below functions with 10 mins interval.
 
- * ATS_2_BaselineControlsInvProcessor
+ * ATS_02_BaselineControlsInvProcessor
 
- * ATS_3_SubscriptionRBACProcessor 
+ * ATS_03_SubscriptionRBACProcessor 
  
- * ATS_4_WorkItemScheduler 
+ * ATS_04_WorkItemScheduler 
 
-After ATS_4_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get auto trigged, start processing scan and push scan results in Storage Account and LA workspace. 
+After ATS_04_WorkItemScheduler completes pushing the messages in the queue, WorkItemProcessor will get auto trigged, start processing scan and push scan results in Storage Account and LA workspace. 
 
 > **Note:** If AzTS solution is integrated to VNet, you cannot run the functions manually. To trigger all the required functions run [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command with `-EnableVnetIntegration` switch.
 
