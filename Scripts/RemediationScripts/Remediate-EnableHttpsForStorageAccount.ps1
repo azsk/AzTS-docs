@@ -1,7 +1,7 @@
 ﻿<##########################################
 
 # Overview:
-    This script is used to make the transit in Storage Account encrpyted using the HTTPs.
+    This script is used to make the transit in Storage Account encrpyted using the HTTPS.
 
 # ControlId: 
     Azure_Storage_DP_Encrypt_In_Transit
@@ -15,7 +15,7 @@
 # Steps performed by the script :
    To Remediate:
         1. Checking for prerequisites.
-        2. Validating the Account Type and Access.
+        2. Validating the Account type.
         3. Removing   the excluded resource group(s) and resource  from the list of subscription.
         4. Get list of Storage Account in a subscription which are having 'EnableHttpsTrafficOnly' value set to false.
         5. Taking backup of Storage Account(s) having value of 'EnableHttpsTrafficOnly' set to false that are going to be remediated using remediation script.
@@ -46,7 +46,7 @@
            Enable-StorageEncryptionInTransit  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
        
         3. To enable "EnableHTTPSTrafficOnly"  on the Storage Account in a Subscription, from a previously taken snapshot:
-           Enable-StorageEncryptionInTransit  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\enablesecuretransit\StorageWithdisableHTTPs.csv
+           Enable-StorageEncryptionInTransit  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPs.csv
 
         To know more about the options supported by the remediation command, execute:
         
@@ -54,7 +54,7 @@
    
     To rollback: 
         1. To disable "EnableHTTPSTrafficOnly"  on the Storage Account in a Subscription, from a previously taken snapshot:
-           Disable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000  -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\enablesecuretransit\StorageWithdisableHTTPs.csv
+           Disable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000  -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPs.csv
 
         To know more about the options supported by the roll back command, execute:
         
@@ -180,7 +180,7 @@ function Enable-StorageEncryptionInTransit
         Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
       
         .EXAMPLE
-        PS> Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000  -FilePathC:\Users\Documents\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\enablesecuretransitStorageWithdisableHTTPs.csv
+        PS> Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000  -FilePathC:\Users\Documents\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPs.csv
          
         .LINK
         None
@@ -244,7 +244,7 @@ function Enable-StorageEncryptionInTransit
     
     Write-Host $([Constants]::DoubleDashLine)
 
-    write-host "[Step 2 of 6] : Validating the account type and access"
+    write-host "[Step 2 of 6] : Validating the account type."
    
     Write-Host "*** To enable HTTPS for Storage Account in a Subscription, Contributor and higher privileges on the Storage Account are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..." 
@@ -506,7 +506,7 @@ function Disable-StorageEncryptionInTransit
         None. Disable-StorageEncryptionInTransit does not return anything that can be piped and used as an input to another command.
        
         .EXAMPLE
-        Disable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\enablesecuretransitStorageWithdisableHTTPs.csv
+        Disable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPs.csv
 
         .LINK
         None
@@ -610,20 +610,17 @@ function Disable-StorageEncryptionInTransit
                     $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -EnableHttpsTrafficOnly $false -ErrorAction SilentlyContinue
                     if($output -ne $null)
                     {
-                        Write-Host "Rollback is successful on [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
                         $rollbackSuccess += $_ |Select-Object -Property "StorageAccountName" , "ResourceGroupName" , "ResourceId"
                     }
                             
                     else
                     {         
-                        Write-Host "Skipping rollback due to insufficient access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning) 
-                        $rollbackFailure += $_ |Select-Object -Property "StorageAccountName" , "ResourceGroupName" , "ResourceId"                              
+                       $rollbackFailure += $_ |Select-Object -Property "StorageAccountName" , "ResourceGroupName" , "ResourceId"                              
                     }
                 }   
                         
                 catch
                 {
-                    Write-Host "Skipping rollback due to exception occurred [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                     $rollbackFailure += $_ |Select-Object -Property "StorageAccountName" , "ResourceGroupName" , "ResourceId"
                 }
             }
