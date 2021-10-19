@@ -46,7 +46,7 @@
            Enable-StorageEncryptionInTransit  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
        
         3. To enable "EnableHTTPSTrafficOnly"  on the Storage Account in a Subscription, from a previously taken snapshot:
-           Enable-StorageEncryptionInTransit  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPs.csv
+           Enable-StorageEncryptionInTransit  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPs.csv
 
         To know more about the options supported by the remediation command, execute:
         
