@@ -39,8 +39,26 @@ function remediate{
         $SubscriptionId = $JsonContent.SubscriptionId
         $uniqueControls = $JsonContent.ControlRemediationList
         $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId) +".Json"
-        $str =  "Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
-        Write-Host $str -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
+        $str =  "Starting Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
+        Write-Host $str -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Following resources will be remediated :" -ForegroundColor $([Constants]::MessageType.Warning)
+        #resource
+        $resources = @()
+        foreach($uniqueControl in $uniqueControls){
+            foreach($failedResources in $uniqueControl.FailedResourceList){
+                $resources += [PSCustomObject]@{
+                    ControlId = $uniqueControl.ControlId;
+                    ResourceGroupName = $failedResources.ResourceGroupName;
+                    ResourceName = $failedResources.ResourceName;
+                    ResourceId = $failedResources.ResourceId;
+                }
+            }
+        }
+        $resources | Format-Table
+        $continueRemediation = Read-Host -Prompt "Do you want to continue? (Press y for Yes)";
+        if($continueRemediation -ne "y") {continue;}
         
         foreach ($uniqueControl in $uniqueControls){
             $remediate = $true
@@ -63,7 +81,6 @@ function remediate{
                 }
                 runCommand($commandString)
             }
-            
         }
     }
 
@@ -75,7 +92,6 @@ function remediate{
         "Command"="Blue"
         "Error"=[ConsoleColor]::DarkRed
     }
-    Write-Host "REMEDIATION SUMMARY"   -ForegroundColor $([Constants]::MessageType.Update)
     $summaryTable = @()
     foreach ($file in $files) {
         $failedSubsContent =  Get-content -path $file | ConvertFrom-Json
@@ -101,7 +117,12 @@ function remediate{
             }
         }
     }
-    $summaryTable | Format-Table
+    if($summaryTable.count -gt 0){
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Remediation Summary" -ForegroundColor $([Constants]::MessageType.Update)
+        $summaryTable | Format-Table
+        Write-Host $([Constants]::SingleDashLine)
+    }
 }
 class Constants
 {
@@ -118,6 +139,8 @@ class Constants
 }   
 
 #Execution begins here
+$introduction = "The Script remediate all the failing controls for which the metadata has been downloaded. (present at 'FailedControls' folder of the current folder)";
+Write-Host $introduction -ForegroundColor $([Constants]::MessageType.Info)
 $trackerFiles = @(Get-ChildItem TrackerFilesGenerated\*.json)
 if($trackerFiles.Length -gt 0){
     $continueRemediation = Read-Host -Prompt "A previous remediation has been detected. Do you want to continue the remediation? (Press y for Yes)"
