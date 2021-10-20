@@ -171,16 +171,16 @@ function Enable-StorageEncryptionInTransit
         $FilePath,
    
         [string]
-		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-		$ExcludeResourceGroupNames,
+        [Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
+	    $ExcludeResourceGroupNames,
 
         [Switch]
         [Parameter(Mandatory = $false , HelpMessage="Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
 	    [string]
-		[Parameter(Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-		$ExcludeResourceNames,
+        [Parameter(Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
+	    $ExcludeResourceNames,
         
         [switch]
         [Parameter(Mandatory = $false, HelpMessage="Specifies a forceful remediation without any prompts")]
