@@ -25,13 +25,13 @@
         1. Checking for Prerequisites..
         2. Validating the Account type.
         3. Get the list of Storage Accounts in a Subscription, the changes made to which previously, are to be rolled back.
-        4. Set the value of 'EnableHttpsTrafficOnly' to 'false' on the Storage Account in the Subscription.
+        4. Disable secure transfer on the Storage Account in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Load the script in the file Helper.ps available in the Remediation Script directory.
+        3. Load the script in the file Helper.ps1 available in the Remediation Script directory.
         4. Execute the script To enable encrpytion in transit on the Storage Account in the Subscription. Refer `Examples`, below.
    
     To roll back:
@@ -610,7 +610,7 @@ function Disable-StorageEncryptionInTransit
     }
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[step 4 of 4]: Performing rollback operation."
+    Write-Host "[step 4 of 4]: Disable secure transfer on the Storage Account in the Subscription."
     
     try
     {
