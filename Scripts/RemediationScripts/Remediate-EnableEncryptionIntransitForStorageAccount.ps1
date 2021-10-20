@@ -172,15 +172,15 @@ function Enable-StorageEncryptionInTransit
    
         [string]
         [Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-	    $ExcludeResourceGroupNames,
+	$ExcludeResourceGroupNames,
 
         [Switch]
         [Parameter(Mandatory = $false , HelpMessage="Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
-	    [string]
+	[string]
         [Parameter(Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-	    $ExcludeResourceNames,
+	$ExcludeResourceNames,
         
         [switch]
         [Parameter(Mandatory = $false, HelpMessage="Specifies a forceful remediation without any prompts")]
@@ -679,7 +679,7 @@ class Constants
         Warning = [System.ConsoleColor]::Yellow
         Info = [System.ConsoleColor]::Cyan
         Update = [System.ConsoleColor]::Green
-	    Default = [System.ConsoleColor]::White
+	Default = [System.ConsoleColor]::White
     }
 
     static [string] $DoubleDashLine    = "================================================================================"
