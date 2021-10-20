@@ -293,7 +293,7 @@ function Enable-TransparentDataEncryption
 
     Write-Host "Found $($totalSqlDatabaseWithTDEDisabled) SQL Server database(s) with Transparent Data Encryption (TDE) disabled." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $backupFolderPath = "$([Environment]::GetFolderPath('MyDocuments'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -533,7 +533,7 @@ function Disable-TransparentDataEncryption
 
     Write-Host "Found $($totalSqlServerDatabases) SQL Server database(s)." -ForegroundColor $([Constants]::MessageType.Update)
     
-    $backupFolderPath = "$([Environment]::GetFolderPath('MyDocuments'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
