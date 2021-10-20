@@ -48,7 +48,7 @@
            Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
        
         3. To enable  encrpytion in transit on the Storage Account in a Subscription, from a previously taken snapshot:
-           Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
+           Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
 
         To know more about the options supported by the remediation command, execute:
         
@@ -155,7 +155,7 @@ function Enable-StorageEncryptionInTransit
         Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
       
         .EXAMPLE
-        PS> Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePathC:\Users\Documents\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
+        PS> Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePathC:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
          
         .LINK
         None
@@ -172,15 +172,15 @@ function Enable-StorageEncryptionInTransit
    
         [string]
         [Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-	    $ExcludeResourceGroupNames,
+        $ExcludeResourceGroupNames,
 
         [Switch]
         [Parameter(Mandatory = $false , HelpMessage="Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
-	    [string]
+        [string]
         [Parameter(Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-	    $ExcludeResourceNames,
+        $ExcludeResourceNames,
         
         [switch]
         [Parameter(Mandatory = $false, HelpMessage="Specifies a forceful remediation without any prompts")]
@@ -291,7 +291,7 @@ function Enable-StorageEncryptionInTransit
         break
     }
 
-    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    $folderPath = [Environment]::GetFolderPath("LocalApplicationData") 
 
     if (Test-Path -Path $folderPath)
     {  
@@ -679,7 +679,7 @@ class Constants
         Warning = [System.ConsoleColor]::Yellow
         Info = [System.ConsoleColor]::Cyan
         Update = [System.ConsoleColor]::Green
-	    Default = [System.ConsoleColor]::White
+        Default = [System.ConsoleColor]::White
     }
 
     static [string] $DoubleDashLine    = "================================================================================"
