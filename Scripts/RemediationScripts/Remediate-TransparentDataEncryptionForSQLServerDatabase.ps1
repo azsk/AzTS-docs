@@ -269,7 +269,6 @@ function Enable-TransparentDataEncryptionForSQLServerDatabase
             }
         }
 
-        # TODO: Validate below count
         # Excluding 'Master' database from all database list, since we do not consider 'Master' database in control evaluation.
         $totalSQLServerDatabases = $($databaseList.Count) - 1
         Write-Host "Found $($totalSQLServerDatabases) SQL Server databases." -ForegroundColor $([Constants]::MessageType.Update)
