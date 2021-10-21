@@ -38,28 +38,28 @@
     To remediate:
         1. To review the SQL Server database details in a Subscription that will be remediated:
     
-           Enable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
+           Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
         2. To enable Transparent Data Encryption (TDE) on the SQL Server databases in a Subscription:
        
-           Enable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000
+           Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000
 
         3. To enable Transparent Data Encryption (TDE) on the SQL Server databases in a Subscription, from a previously taken snapshot:
        
-           Enable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
+           Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
 
         To know more about the options supported by the remediation command, execute:
         
-        Get-Help Enable-TransparentDataEncryptionForSQLServerDatabase -Detailed
+        Get-Help Enable-TransparentDataEncryptionForSQLDatabases -Detailed
 
     To roll back:
         1. To disable Transparent Data Encryption (TDE) on the SQL Server databases in a Subscription, from a previously taken snapshot:
 
-           Disable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
+           Disable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
         
         To know more about the options supported by the roll back command, execute:
         
-        Get-Help Disable-TransparentDataEncryptionForSQLServerDatabase -Detailed        
+        Get-Help Disable-TransparentDataEncryptionForSQLDatabases -Detailed        
 ###>
 
 function Setup-Prerequisites
@@ -107,7 +107,7 @@ function Setup-Prerequisites
     }
 }
 
-function Enable-TransparentDataEncryptionForSQLServerDatabase
+function Enable-TransparentDataEncryptionForSQLDatabases
 {
     <#
         .SYNOPSIS
@@ -133,13 +133,13 @@ function Enable-TransparentDataEncryptionForSQLServerDatabase
         Specifies the path to the file to be used as input for the remediation.
 
         .EXAMPLE
-        PS> Enable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Enable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
+        PS> Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
 
         .LINK
         None
@@ -237,7 +237,7 @@ function Enable-TransparentDataEncryptionForSQLServerDatabase
         Write-Host "Fetching all SQL Servers in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
         # Get all SQL Servers in a Subscription      
-        $sqlServersResources = Get-AzSQLServer
+        $sqlServersResources = Get-AzSqlServer
         $totalSQLServers = ($sqlServersResources | Measure-Object).Count
 
         if ($totalSQLServers -eq 0)
@@ -250,12 +250,14 @@ function Enable-TransparentDataEncryptionForSQLServerDatabase
         Write-Host "NOTE: Each SQL Server may have multiple databases."
         Write-Host "Fetching SQL Server databases..."
 
+        $totalSQLServerDatabases = 0
         $sqlServersResources | ForEach-Object{
             $databaseList = Get-AzSqlDatabase -ServerName $_.ServerName -ResourceGroupName $_.ResourceGroupName
             $databaseList | ForEach-Object{
                 if ($_.DatabaseName -ne 'master')
                 {
                     $databaseConfigDetails = Get-AzSqlDatabaseTransparentDataEncryption -ServerName $_.ServerName -DatabaseName $_.DatabaseName -ResourceGroupName $_.ResourceGroupName
+                    $totalSQLServerDatabases += 1
                     if ($databaseConfigDetails.State -eq "Enabled")
                     {
                         $sqlServerDatabasesWithTDEEnabled += $databaseConfigDetails
@@ -268,8 +270,6 @@ function Enable-TransparentDataEncryptionForSQLServerDatabase
             }
         }
 
-        # Excluding 'Master' database from all database list, since we do not consider 'Master' database in control evaluation.
-        $totalSQLServerDatabases = $($databaseList.Count) - 1
         Write-Host "Found $($totalSQLServerDatabases) SQL Server databases." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
@@ -411,7 +411,7 @@ function Enable-TransparentDataEncryptionForSQLServerDatabase
     }
 }
 
-function Disable-TransparentDataEncryptionForSQLServerDatabase
+function Disable-TransparentDataEncryptionForSQLDatabases
 {
     <#
         .SYNOPSIS
@@ -434,7 +434,7 @@ function Disable-TransparentDataEncryptionForSQLServerDatabase
         Specifies the path to the file to be used as input for the roll back.
 
         .EXAMPLE
-        PS> Disable-TransparentDataEncryptionForSQLServerDatabase -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
+        PS> Disable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
         
         .LINK
         None
