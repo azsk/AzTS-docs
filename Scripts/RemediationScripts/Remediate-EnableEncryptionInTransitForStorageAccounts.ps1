@@ -197,7 +197,7 @@ function Enable-StorageEncryptionInTransit
     )
 
     Write-Host " $([Constants]::DoubleDashLine)"
-    Write-Host "[Step 1 of 6]: Checking for prerequisites..." 
+    Write-Host "[Step 1 of 6] : Checking for prerequisites..." 
     
     if ($PerformPreReqCheck)
     {
@@ -309,7 +309,7 @@ function Enable-StorageEncryptionInTransit
     Write-Host "Total Storage Account found: [$($totalStorageAccount)] " -ForegroundColor $([Constants]::MessageType.update)
     Write-Host $([Constants]::DoubleDashLine)
 
-    Write-Host "[Step 3 of 6]: Removing the excluded resource group and resource from the list of subscription." 
+    Write-Host "[Step 3 of 6] : Removing the excluded resource group and resource from the list of subscription." 
     $resourceSummary = @()
  
     # Adding property 'ResourceName' which will contain Storage Account name and being used by common helper method
@@ -401,14 +401,14 @@ function Enable-StorageEncryptionInTransit
                 }
    
                 Write-Host $([Constants]::DoubleDashLine)
-                Write-Host "[step 6 of 6] :Enable 'secure transfer' for the Storage Account(s) of subscription."
+                Write-Host "[step 6 of 6] : Enable 'secure transfer' for the Storage Account(s) of subscription."
 
                 #Storage Account passed from remediation
                 $remediationSuccess = @() 
                 #Storage Account failed from remediation
                 $remediationFailure = @()
     
-                Write-Host "Enabling 'secure transfer' on [$($totalStgWithEnableHTTPS)] Storage Account(s)..."
+                Write-Host "Enabling 'secure transfer' on [$($totalStgWithDisableHTTPS)] Storage Account(s)..."
                 $stgWithDisableHTTPS = $stgWithDisableHTTPS | Sort-Object -Property "ResourceGroupName"
                 $stgWithDisableHTTPS | ForEach-Object {
                     try
@@ -529,7 +529,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Starting rollback operation to disable secure transfer on Storage Account(s) from subscription [$($SubscriptionId)]...." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
      
-    Write-Host "[step 1 of 4]: Checking for prerequisites." 
+    Write-Host "[step 1 of 4] : Checking for prerequisites." 
 
     if ($PerformPreReqCheck)
     {
@@ -561,7 +561,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Starting with subscription [$($SubscriptionId)]..." 
     Write-Host $([Constants]::DoubleDashLine)
 
-    Write-Host "[step 2 of 4]: Validating the Account type."
+    Write-Host "[step 2 of 4] : Validating the Account type."
 
     Write-Host " ***To perform rollback operation for disabling secure transfer user must have atleast contributor access on Storage Account(s) of subscription: [$($SubscriptionId)]  ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] have valid account type [User] to run the script for subscription [$($SubscriptionId)]..." 
@@ -588,12 +588,12 @@ function Disable-StorageEncryptionInTransit
     }
    
     # Fetching remediated log 
-    Write-Host "[step 3 of 4 ]: Getting the list of resources for rollback."
+    Write-Host "[step 3 of 4] : Getting the list of resources for rollback."
     $remediatedResourceLog = Import-Csv -LiteralPath $FilePath
     
     Write-Host "Fetching remediation log..."
    
-    Write-Host "Performing rollback operation to disable  'secure transfer' for Storage Account(s) of subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Performing rollback operation to disable 'secure transfer' for Storage Account(s) of subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine) 
 
 
@@ -614,7 +614,7 @@ function Disable-StorageEncryptionInTransit
     }
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[step 4 of 4]: Disable secure transfer on the Storage Account in the Subscription."
+    Write-Host "[step 4 of 4] : Disable secure transfer on the Storage Account in the Subscription."
     
     try
     {
