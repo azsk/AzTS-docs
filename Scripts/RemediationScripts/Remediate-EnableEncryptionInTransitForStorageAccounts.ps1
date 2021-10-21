@@ -183,7 +183,7 @@ function Enable-StorageEncryptionInTransit
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
         
         [string]
         [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
@@ -193,7 +193,7 @@ function Enable-StorageEncryptionInTransit
         [string]
         [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-        $ExcludeResourceNames,
+        $ExcludeResourceNames
     )
 
     Write-Host " $([Constants]::DoubleDashLine)"
@@ -226,15 +226,15 @@ function Enable-StorageEncryptionInTransit
 
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
-  
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "Metadata Details: `nSubscriptionName: $($currentSub.Subscription.Name) `nSubscriptionId: $($SubscriptionId) `nAccountName: $($currentSub.Account.Id) `nAccountType: $($currentSub.Account.Type)" 
     Write-Host $([Constants]::SingleDashLine)  
     Write-Host "Starting with subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::DoubleDashLine)
 
-    write-host "[Step 2 of 6] : Validating the account type."
+    Write-Host "[Step 2 of 6] : Validating the account type."
     Write-Host "*** To enable secure transfer for Storage Account(s) in a Subscription, Contributor and higher privileges on the Storage Account are required.***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..." 
+    Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)].." 
     
     # Safe Check: Checking whether the current account is of type [User].
     if($currentSub.Account.Type -ne "User")
@@ -309,7 +309,7 @@ function Enable-StorageEncryptionInTransit
     Write-Host "Total Storage Account found: [$($totalStorageAccount)] " -ForegroundColor $([Constants]::MessageType.update)
     Write-Host $([Constants]::DoubleDashLine)
 
-    write-host "[Step 3 of 6]: Removing the excluded resource group and resource from the list of subscription." 
+    Write-Host "[Step 3 of 6]: Removing the excluded resource group and resource from the list of subscription." 
     $resourceSummary = @()
  
     # Adding property 'ResourceName' which will contain Storage Account name and being used by common helper method
@@ -328,20 +328,21 @@ function Enable-StorageEncryptionInTransit
         catch
         {
             Write-Host "Please load Helper.ps1 file in current PowerShell session before executing the script." -ForegroundColor $([Constants]::MessageType.Error)
-            Break
+            break
         }
 
         if($resourceResolver.messageToPrint -ne $null)
         {
             $resourceSummary += "Excluded resource/resource group summary:`n " 
             $resourceSummary += $resourceResolver.messageToPrint
-        }   
+        }  
+        Write-Host $resourceSummary
     }
     
-    Write-Host $resourceSummary
+    
     Write-Host "Total Storage Account(s) excluded  from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "Total Storage Account(s) for remediation: [$(($storageAccounts | Measure-Object).Count)]" -ForegroundColor $([Constants]::MessageType.Update)
-    write-host "$([Constants]::DoubleDashLine)"
+    Write-Host "$([Constants]::DoubleDashLine)"
 
     try
     {
@@ -369,20 +370,19 @@ function Enable-StorageEncryptionInTransit
         $totalStgWithDisableHTTPS = ($stgWithDisableHTTPS | Measure-Object).Count
     
         Write-Host "Storage Account(s) with enabled 'secure transfer': [$($totalStgWithEnableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host "Storage Account(s) with disabled 'secure transfer'': [$($totalStgWithDisableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Storage Account(s) with disabled 'secure transfer': [$($totalStgWithDisableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
 
         #Start remediation Storage Account(s) with 'secure transfer' enabled.
         if ($totalStgWithDisableHTTPS -gt 0)
         {
-            # Creating the log file
             if (-not $DryRun)
             {  
-                write-host  $([Constants]::DoubleDashLine)
+                Write-Host  $([Constants]::DoubleDashLine)
                 Write-Host "[step 5 of 6] : Exporting the Storage Account to csv file so that it can be used to rollback."
                 Write-Host "Backing up config of Storage Account(s) details. Please do not delete this file. Without this file you won't be able to rollback any changes done through remediation script." 
                 $stgWithDisableHTTPS | Export-CSV -Path "$($folderpath)\StorageWithDisableHTTPS.csv" -NoTypeInformation
                 Write-Host "Path: $($folderPath)\StorageWithDisableHTTPS.csv" -ForegroundColor $([Constants]::MessageType.Update)
-                write-host $([Constants]::SingleDashLine)
+                Write-Host $([Constants]::SingleDashLine)
                
                 if (-not $Force)
                 {
@@ -400,7 +400,7 @@ function Enable-StorageEncryptionInTransit
                     Write-Host "'Force' flag is provided. Secure transfer will be enabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
    
-                write-host $([Constants]::DoubleDashLine)
+                Write-Host $([Constants]::DoubleDashLine)
                 Write-Host "[step 6 of 6] :Enable 'secure transfer' for the Storage Account(s) of subscription."
 
                 #Storage Account passed from remediation
@@ -427,7 +427,7 @@ function Enable-StorageEncryptionInTransit
                     catch
                     {
                         Write-Host "Error occurred while remediating [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error) 
-                        write-Host  "Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host  "Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                         $remediationFailure += $_
                     }
                 }
@@ -437,7 +437,7 @@ function Enable-StorageEncryptionInTransit
                 {
                     Write-Host "Remediation is successful on following Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Update)
                     $remediationSuccess |Select-Object -Property ResourceGroupName , StorageAccountName , ResourceId |ft
-                    write-Host $([Constants]::SingleDashLine)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
 
                 if(($remediationFailure| Measure-Object).Count -ne 0)
@@ -448,7 +448,9 @@ function Enable-StorageEncryptionInTransit
             }
             else
             {
-                write-host " $([Constants]::SingleDashLine)"
+                Write-Host " $([Constants]::SingleDashLine)"
+
+                # Creating the log file
                 Write-Host "Exporting configurations of Storage Account(s) that don't have secure transfer enabled. You may want to use this CSV as a pre-check before actual remediation." 
                 $stgWithDisableHTTPS | Export-CSV -Path "$($folderpath)\StorageWithDisableHTTPS.csv" -NoTypeInformation
                 Write-Host "Path: $($folderPath)\StorageWithDisableHTTPS.csv" -ForegroundColor $([Constants]::MessageType.Info)
@@ -525,7 +527,7 @@ function Disable-StorageEncryptionInTransit
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "Starting rollback operation to disable secure transfer on Storage Account(s) from subscription [$($SubscriptionId)]...." -ForegroundColor $([Constants]::MessageType.Info)
-    write-host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::DoubleDashLine)
      
     Write-Host "[step 1 of 4]: Checking for prerequisites." 
 
@@ -557,9 +559,9 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Metadata Details: `nSubscriptionId: $($SubscriptionId) `nAccountName: $($currentSub.Account.Id) `nAccountType: $($currentSub.Account.Type)" 
     Write-Host $([Constants]::SingleDashLine) 
     Write-Host "Starting with subscription [$($SubscriptionId)]..." 
-    write-host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::DoubleDashLine)
 
-    write-host "[step 2 of 4]: Validating the Account type."
+    Write-Host "[step 2 of 4]: Validating the Account type."
 
     Write-Host " ***To perform rollback operation for disabling secure transfer user must have atleast contributor access on Storage Account(s) of subscription: [$($SubscriptionId)]  ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Validating whether the current user [$($currentSub.Account.Id)] have valid account type [User] to run the script for subscription [$($SubscriptionId)]..." 
@@ -574,7 +576,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Successfully validated" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine) 
     Write-Host "Fetching remediation log to perform rollback operation on  Storage Account(s) from subscription [$($SubscriptionId)]..." 
-    write-host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::DoubleDashLine)
 
     # Array to store Storage Accounts.
     $storageAccounts = @()
@@ -590,12 +592,10 @@ function Disable-StorageEncryptionInTransit
     $remediatedResourceLog = Import-Csv -LiteralPath $FilePath
     
     Write-Host "Fetching remediation log..."
-    $resource =@()
-       
+   
     Write-Host "Performing rollback operation to disable  'secure transfer' for Storage Account(s) of subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
-    write-host $([Constants]::DoubleDashLine) 
+    Write-Host $([Constants]::DoubleDashLine) 
 
-    Write-Host $([Constants]::SingleDashLine)
 
     if (-not $Force)
     {
@@ -651,8 +651,7 @@ function Disable-StorageEncryptionInTransit
             if(($rollbackSuccess|Measure-Object).Count -ne 0)
             {   Write-Host "Rollback is successful on following  Storage Account(s):" -ForegroundColor ([Constants]::MessageType.Update)
                 $rollbackSuccess | Select-Object -Property "ResourcegroupName", "storageAccountName" ,"ResourceId" | ft   
-                write-host $([Constants]::SingleDashLine)
-
+                Write-Host $([Constants]::SingleDashLine)
             } 
             
             if(($rollbackFailure|Measure-Object).Count -ne 0)
