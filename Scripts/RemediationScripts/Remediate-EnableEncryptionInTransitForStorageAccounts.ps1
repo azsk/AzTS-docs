@@ -32,22 +32,22 @@
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Load the script in the file Helper.ps1 available in the Remediation Script directory.
-        4. Execute the script To enable encrpytion in transit on the Storage Account in the Subscription. Refer 'Examples', below.
+        4. Execute the script To enable encryption in transit on the Storage Account in the Subscription. Refer 'Examples', below.
    
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to disable  encrpytion in transit" on the Storage Account in the Subscription. Refer `Examples`, below.
+        3. Execute the script to disable  encryption in transit" on the Storage Account in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
         1. To review the Storage Account in a Subscription that will be remediated:
            Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
-        2. To enable encrpytion in transit on the Storage Account in a Subscription:
+        2. To enable encryption in transit on the Storage Account in a Subscription:
            Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
        
-        3. To enable  encrpytion in transit on the Storage Account in a Subscription, from a previously taken snapshot:
+        3. To enable  encryption in transit on the Storage Account in a Subscription, from a previously taken snapshot:
            Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
 
         To know more about the options supported by the remediation command, execute:
@@ -55,7 +55,7 @@
         Get-Help Enable-StorageEncryptionInTransit -Detailed
    
     To rollback: 
-        1. To disable  encrpytion in transit  on the Storage Account in a Subscription, from a previously taken snapshot:
+        1. To disable  encryption in transit  on the Storage Account in a Subscription, from a previously taken snapshot:
            Disable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
 
         To know more about the options supported by the roll back command, execute:
@@ -162,37 +162,42 @@ function Enable-StorageEncryptionInTransit
     #>
 
     param (
-        [string]
-        [Parameter(Mandatory = $true, HelpMessage="Enter subscription id for remediation")]
+        
+        [String]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
         $SubscriptionId,
 
-        [string]
-        [Parameter(Mandatory = $false, HelpMessage="Enter path for the CSV file")]
-        $FilePath,
-   
-        [string]
-        [Parameter(Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-        $ExcludeResourceGroupNames,
-
         [Switch]
-        [Parameter(Mandatory = $false , HelpMessage="Specifies validation of prerequisites for the command")]
-        $PerformPreReqCheck,
-
-        [string]
-        [Parameter(Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-        $ExcludeResourceNames,
-        
-        [switch]
-        [Parameter(Mandatory = $false, HelpMessage="Specifies a forceful remediation without any prompts")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies a forceful remediation without any prompts")]
         $Force,
 
-        [switch]
-        [Parameter(Mandatory = $false)]
-        $DryRun
+        [Switch]
+        [Parameter(ParameterSetName = "DryRun", HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies validation of prerequisites for the command")]
+        $PerformPreReqCheck,
+
+        [Switch]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
+        $DryRun,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
+        $FilePath
+        
+        [string]
+        [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
+        [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
+        $ExcludeResourceGroupNames,
+
+        [string]
+        [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
+        [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
+        $ExcludeResourceNames,
     )
 
     Write-Host " $([Constants]::DoubleDashLine)"
-    Write-Host "[Step 1 of 6]: Checking for pre-requisites..." 
+    Write-Host "[Step 1 of 6]: Checking for prerequisites..." 
     
     if ($PerformPreReqCheck)
     {
@@ -421,7 +426,7 @@ function Enable-StorageEncryptionInTransit
                     }        
                     catch
                     {
-                        Write-Host "Error occured while remediating [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error) 
+                        Write-Host "Error occurred while remediating [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error) 
                         write-Host  "Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                         $remediationFailure += $_
                     }
@@ -444,7 +449,7 @@ function Enable-StorageEncryptionInTransit
             else
             {
                 write-host " $([Constants]::SingleDashLine)"
-                Write-Host "Exporting configurations of Storage Account(s) that don't have secure transfer enabled.You may want to use this CSV as a pre-check before actual remediation." 
+                Write-Host "Exporting configurations of Storage Account(s) that don't have secure transfer enabled. You may want to use this CSV as a pre-check before actual remediation." 
                 $stgWithDisableHTTPS | Export-CSV -Path "$($folderpath)\StorageWithDisableHTTPS.csv" -NoTypeInformation
                 Write-Host "Path: $($folderPath)\StorageWithDisableHTTPS.csv" -ForegroundColor $([Constants]::MessageType.Info)
             }          
@@ -522,7 +527,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Starting rollback operation to disable secure transfer on Storage Account(s) from subscription [$($SubscriptionId)]...." -ForegroundColor $([Constants]::MessageType.Info)
     write-host $([Constants]::DoubleDashLine)
      
-    Write-Host "[step 1 of 4]: Checking for pre-requisites." 
+    Write-Host "[step 1 of 4]: Checking for prerequisites." 
 
     if ($PerformPreReqCheck)
     {
@@ -584,7 +589,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "[step 3 of 4 ]: Getting the list of resources for rollback."
     $remediatedResourceLog = Import-Csv -LiteralPath $FilePath
     
-    Write-Host "Fetching remedation log..."
+    Write-Host "Fetching remediation log..."
     $resource =@()
        
     Write-Host "Performing rollback operation to disable  'secure transfer' for Storage Account(s) of subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -635,7 +640,7 @@ function Disable-StorageEncryptionInTransit
                 }             
                 catch
                 {
-                    Write-Host "Error occured while rollback on [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error occurred while rollback on [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host  "Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                     $rollbackFailure += $_ |Select-Object -Property "StorageAccountName" , "ResourceGroupName" , "ResourceId"
                 }
@@ -665,7 +670,7 @@ function Disable-StorageEncryptionInTransit
     }   
     catch
     {
-        Write-Host "Error occurred while performing rollback opeartion for remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.error)
+        Write-Host "Error occurred while performing rollback operation for remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         break 
     }       
 } 
