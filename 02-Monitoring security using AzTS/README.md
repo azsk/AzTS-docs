@@ -99,7 +99,7 @@ Once you have successfully logged in, you will see the Log Analytics data in the
 
 ![Compliance summary](../Images/13_TSS_PBIDashboardComplianceSummary.png)
 
-The report contains 3 tabs. (The report with detailed inventory contains 3 additional tabs  )There is an overall/summary view of compliance, a detailed view which can be used to see control 'pass/fail' details for individual subscriptions and inventory view which shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. An example of the detailed view and inventory view is shown below:
+The report contains 3 tabs(The report with detailed inventory contains 3 additional tabs).There is an overall/summary view of compliance, a detailed view which can be used to see control 'pass/fail' details for individual subscriptions and inventory view which shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. An example of the detailed view and inventory view is shown below:
 
 ###### Detailed view:
 
@@ -118,7 +118,7 @@ In report with detailed inventory view along with above mentioned tabs, 3 additi
 ![Compliance summary](../Images/13_TSS_PBIDashboardAssessmentsMetadata.png) 
 
 ###### VM Extension Status:
-![Compliance summary](../13_TSS_PBIDashboardVMExtensions.png) 
+![Compliance summary](../Images/13_TSS_PBIDashboardVMExtensions.png) 
 
 
 
