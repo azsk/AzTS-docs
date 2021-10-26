@@ -84,11 +84,11 @@ class ResourceResolver
 
 				# If no coinciding resource found then need to exclude given resource group name
 				$this.ExcludedResources += $Resources| Where-Object{$_.ResourceGroupName -in $matchingRGs}
-				$this.messageToPrint += "Number of resource group(s) excluded explicitly: $(($matchingRGs | Measure-Object).Count)"
-				$this.messageToPrint += "ResourceGroupName"
-				$this.messageToPrint += "-----------------"				
+				$this.messageToPrint += "Number of resource group(s) excluded explicitly: $(($matchingRGs | Measure-Object).Count) `n"
+				$this.messageToPrint += "ResourceGroupName `n"
+				$this.messageToPrint += "----------------- `n"				
 				$this.messageToPrint += "$($matchingRGs | Sort-Object |Format-Table |Out-String)"
-				$this.messageToPrint += "`n"
+				
 			}
 		}
 		
@@ -112,7 +112,7 @@ class ResourceResolver
 			}	
 			
 			$ExcludedRes = $Resources | Where-Object{$_.ResourceName -in $ResourcesToExclude}
-			$this.messageToPrint += "Number of resources excsluded explicitly: $(($ExcludedRes | Measure-Object).Count)"
+			$this.messageToPrint += "`nNumber of resources excluded explicitly: $(($ExcludedRes | Measure-Object).Count)"
 			$this.messageToPrint += "$($ExcludedRes | Select-Object -Property "ResourceGroupName", "ResourceName"| Sort-Object |Format-Table |Out-String)"
 			$this.ExcludedResources += $ExcludedRes
 		}
