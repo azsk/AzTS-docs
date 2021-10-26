@@ -195,3 +195,52 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ___ 
 
+## Azure_DBforMySQL_Audit_Enable_Diagnostics_Log 
+
+### DisplayName 
+Diagnostics logs must be enabled for Azure Database for MySQL 
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
+
+### Control Spec 
+
+> **Passed:** 
+> 1. Required diagnostic logs are enabled and 2. At least one of the below setting configured: a. Log Analytics b. Storage account (with min Retention period of 365 or forever(Retention period 0) c. Event Hub. 
+>  
+> **Failed:** 
+> 1. Diagnostics setting is disabled for resource or 2. Diagnostic setting meet the following conditions: a. All diagnostic logs are not enabled b. None of the below setting is configured: i. Log Analytics ii. Storage account (with min Retention period of 365 or forever(Retention period 0) iii. Event Hub. 
+> 
+> **Error:** 
+> Required logs are not configured in control settings.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 You can change the diagnostic settings from the Azure Portal by following the steps given here: https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings 
+
+<!---- **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list diagnostic setting details of Azure Database for MySQL servers: - 
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview 
+<br />
+ 
+**Properties:** name, properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy.enabled, properties.logs.retentionPolicy.days, properties.workspaceId, properties.storageAccountId, properties.eventHubName
+ <br />
+
+<br />
+
+
