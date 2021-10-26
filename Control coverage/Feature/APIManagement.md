@@ -38,7 +38,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - ARM API to list APIMs and its related property at Subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01
  <br />
-**Properties:** id
+ **Properties:** id
  <br />
 
 - ARM API to list all APIs of the API Management service instance: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01
