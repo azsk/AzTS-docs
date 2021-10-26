@@ -99,7 +99,7 @@ Once you have successfully logged in, you will see the Log Analytics data in the
 
 ![Compliance summary](../Images/13_TSS_PBIDashboardComplianceSummary.png)
 
-The report contains 3 tabs. There is an overall/summary view of compliance, a detailed view which can be used to see control 'pass/fail' details for individual subscriptions and inventory view which shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. An example of the detailed view and inventory view is shown below:
+The report contains 3 tabs. (The report with detailed inventory contains 3 additional tabs  )There is an overall/summary view of compliance, a detailed view which can be used to see control 'pass/fail' details for individual subscriptions and inventory view which shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. An example of the detailed view and inventory view is shown below:
 
 ###### Detailed view:
 
@@ -108,6 +108,19 @@ The report contains 3 tabs. There is an overall/summary view of compliance, a de
 ###### Inventory view:
 
 ![Compliance summary](../Images/13_TSS_PBIDashboardInventoryOverview.png)
+
+In report with detailed inventory view along with above mentioned tabs, 3 additional tabs are present. SecureScore tab provides details about Secure Score for subscriptions (single score based on Security Center assessment). Assessments Metadata tab provides details about ASC assessments like recommendation, severity, etc. VM Extension status taab contains details about virtual machines scanned like OS type, extensions, power state,etc. Examples of these tabs are shown below:
+
+###### Secure Score:
+![Compliance summary](../Images/13_TSS_PBIDashboardSecureScore.png) 
+
+###### Assessments Metadata:
+![Compliance summary](../Images/13_TSS_PBIDashboardAssessmentsMetadata.png) 
+
+###### VM Extension Status:
+![Compliance summary](../13_TSS_PBIDashboardVMExtensions.png) 
+
+
 
 > Note: You can consider controlling access to the detailed view by business group.
 
