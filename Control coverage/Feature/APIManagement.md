@@ -36,11 +36,8 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list APIMs and its related property at Subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01
- <br />
-
-**Properties:** id
- <br />
+- ARM API to list APIMs and its related property at Subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
+**Properties:** id<br />
 
 - ARM API to list all APIs of the API Management service instance: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01
  <br />
@@ -77,10 +74,9 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list APIMs and its related property at Subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01
- <br />
+- ARM API to list APIMs and its related property at Subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
+**Properties:** properties.customProperties<br />
 
-**Properties:** properties.customProperties
 **Custom Properties:** 
   1. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168
   2. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10
