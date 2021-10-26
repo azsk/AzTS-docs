@@ -1,6 +1,6 @@
 # DBForMySql
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.DBforMySQL/servers 
 
 ___ 
 
