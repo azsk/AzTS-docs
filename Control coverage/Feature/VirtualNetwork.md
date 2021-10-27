@@ -1,6 +1,6 @@
 # VirtualNetwork
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.Network/virtualNetworks
 
 ___ 
 
@@ -592,7 +592,7 @@ Resources in the peered virtual networks can communicate with each other directl
 - ARM API to list all Virtual Networks in a Subscription:-
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 
  <br />
- 
+
 **Properties:** properties.virtualNetworkPeerings
  <br />
 
