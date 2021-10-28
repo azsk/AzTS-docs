@@ -7,7 +7,7 @@ ___
 ## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme 
 
 ### DisplayName 
-Ensure Backend API(s) are only accessible over HTTPS via API Management service 
+Ensure API Management service is accessible only over HTTPS
 
 ### Rationale 
 Use of HTTPS ensures server/service authentication and protects data in transit from network layer eavesdropping attacks. 
