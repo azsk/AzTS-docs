@@ -612,7 +612,7 @@ function Disable-HTTPSUrlSchemeForAPIsOfAPIManagementServices
         {
             $validAPIManagementServiceDetails += $_
         }
-      }
+    }
 
     $totalAPIManagementResources = $($validAPIManagementServiceDetails.Count)
 
@@ -744,7 +744,6 @@ function Disable-HTTPSUrlSchemeForAPIsOfAPIManagementServices
             Write-Host "`nError disabling HTTPS url scheme for the API(s) of following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $apiManagementServicesSkipped | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPISkipped
 
-            
             # Write this to a file.
             $apiManagementServicesSkippedFile = "$($backupFolderPath)\RollbackSkippedApiManagementServices.csv"
             $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
