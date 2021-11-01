@@ -611,47 +611,36 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> All Subnets in the VNet have an associated NSG configured.
 > 
 > **Failed:** 
-> Failed condition
+> Subnets without associated NSG are found on the VNet.
 > 
 > **Verify:** 
-> Verify condition
+> The recommendation is disabled in the policy. VNet Kind is not available for the evaluation.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
-> 
+> Current VNet resource object is connected to an ExpressRoute gateway.
+>
+> **Error:** 
+> The Assessment details are not present in the Control JSON.
+>
+> **NotScanned:** 
+> The data required for evaluation by the Reader is not available.
+>
 ### Recommendation 
 
 - **Azure Portal** 
 
 	 Configure NSG rules to be as restrictive as possible via: (a) Azure Portal -> Network security groups -> <Your NSG> -> Inbound security rules -> Edit 'Allow' action rules. (b) Azure Portal -> Network security groups. -> <Your NSG> -> Outbound security rules -> Edit 'Allow' action rules 
 
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Virtual Networks and their constituent Subnets at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 
  <br />
-**Properties:** example-property
- <br />
-
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
- <br />
-
+**Properties:** properties.subnets[*].properties.networkSecurityGroup.id
+ 
 <br />
 
 ___ 
@@ -667,16 +656,14 @@ Public IPs provide direct access over the internet exposing the resource(s) to a
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> No NICs found on the vNet.
+Or, no Public IP is configured for any NIC on the vNet.
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> One or more Public IP address is associated with vNet.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> Current VNet resource object is connected to an ExpressRoute gateway.
 > 
 ### Recommendation 
 
@@ -684,28 +671,22 @@ Public IPs provide direct access over the internet exposing the resource(s) to a
 
 	 Unutilized Public IP address must be removed from virtual network. For more information visit: https://docs.microsoft.com/en-us/powershell/module/az.network/remove-azpublicipaddress 
 
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Network Interfaces at
+subscription level:- /subscriptions/{subscriptionId}/providers
+/Microsoft.Network/networkInterfaces
+?api-version=2019-04-01
  <br />
-**Properties:** example-property
+**Properties:** properties.ipConfigurations[*].properties.subnet.id,
+properties.ipConfigurations[*].properties.publicIPAddress.id
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?
+api-version=2019-04-01 
  <br />
-**Properties:** example-property
+**Properties:** properties.gatewayType
  <br />
 
 <br />
@@ -723,16 +704,13 @@ Virtual network gateways enable network traffic between a virtual network and ot
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> There are NO Gateways found on the vNet.
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> There are Gateways found on the vNet.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VNet resource object is connected to an ExpressRoute gateway.
 > 
 ### Recommendation 
 
@@ -740,28 +718,17 @@ Virtual network gateways enable network traffic between a virtual network and ot
 
 	 You can remove virtual network gateways using the Remove-AzVirtualNetworkGateway command (unless their presence has been approved by network security team). Run 'Get-Help Remove-AzVirtualNetworkGateway -full' for more help. 
 
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Virtual Networks and their subnets at subscription level::- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 
  <br />
-**Properties:** example-property
+**Properties:** properties.subnets[*].id
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 
  <br />
-**Properties:** example-property
+**Properties:** properties.gatewayType
  <br />
 
 <br />
@@ -779,16 +746,14 @@ Enabling IP Forwarding on a VM NIC allows the VM to receive traffic addressed to
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> No NICs found on the vNet.
+Or, there are no NICs with EnableIPForwarding turned on the vNet.
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> IP Forwarding is enabled for one or more NIC(s) in vNet.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VNet resource object is connected to ExpressRoute gateway.
 > 
 ### Recommendation 
 
@@ -796,31 +761,21 @@ Enabling IP Forwarding on a VM NIC allows the VM to receive traffic addressed to
 
 	 Disable IP Forwarding unless it has been reviewed and approved by network security team. Go to Azure Portal --> Navigate to VM NIC (where IP Forwarding is enabled) --> IP Configurations --> IP Forwarding settings --> Click on 'Disabled'. 
 
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Network Interfaces at
+subscription level:- /subscriptions/{subscriptionId}/providers
+/Microsoft.Network/networkInterfaces?api-version=2019-04-01 
  <br />
-**Properties:** example-property
+**Properties:** properties.ipConfigurations[*].properties.subnet.id,
+properties.enableIPForwarding
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 
  <br />
-**Properties:** example-property
+**Properties:** properties.gatewayType
  <br />
 
 <br />
 
 ___ 
-
