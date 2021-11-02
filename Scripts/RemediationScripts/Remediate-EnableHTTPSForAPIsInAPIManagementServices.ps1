@@ -1,6 +1,6 @@
 <###
 # Overview:
-    The script is used to enable HTTPS for all the APIs in the API Management services in a Subscription..
+    This script is used to enable HTTPS for all the APIs in the API Management services in a Subscription..
 
 # Control ID:
     Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
