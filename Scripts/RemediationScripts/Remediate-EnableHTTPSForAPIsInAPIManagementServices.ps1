@@ -311,7 +311,7 @@ function Enable-HTTPSForAPIsInAPIManagementServices
                 $apiManagementServicesWithoutHTTPSEnabled+= $_ | Select-Object @{N='ResourceID';E={$resourceId}},
                                                                     @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                     @{N='ResourceName';E={$resourceName}},
-                                                                    @{N='$ListOfAPIsWithoutHTTPSEnabled';E={$listOfAPIsWithoutHTTPSEnabled}}
+                                                                    @{N='ListOfAPIsWithoutHTTPSEnabled';E={$listOfAPIsWithoutHTTPSEnabled}}
             }
         }
         catch
@@ -319,7 +319,7 @@ function Enable-HTTPSForAPIsInAPIManagementServices
             $apiManagementServicesSkipped += $_ | Select-Object @{N='ResourceID';E={$resourceId}},
                                                                 @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                 @{N='ResourceName';E={$resourceName}},
-                                                                @{N='$ListOfAPIsWithoutHTTPSEnabled';E={$listOfAPIsWithoutHTTPSEnabled}}
+                                                                @{N='ListOfAPIsWithoutHTTPSEnabled';E={$listOfAPIsWithoutHTTPSEnabled}}
             Write-Host "Error fetching API Management Service configuration: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
         }
     }
@@ -386,16 +386,16 @@ function Enable-HTTPSForAPIsInAPIManagementServices
             
             try
             {   #To hold name of API(s) which are remediated and skipped.        
-                listOfAPIsRemediated = @()
+                $listOfAPIsRemediated = @()
                 $listOfAPIsSkipped = @()
                 
                 $apiMgmtContext = New-AzAPIManagementContext -ResourceGroupName $resourceGroupName -ServiceName $_.ResourceName
                 $apiMgmt = Get-AzAPIManagementAPI -Context $apiMgmtContext
-                $apiManagementService.$ListOfAPIsWithoutHTTPSEnabled = $apiManagementService.$ListOfAPIsWithoutHTTPSEnabled -split ","
+                $apiManagementService.ListOfAPIsWithoutHTTPSEnabled = $apiManagementService.ListOfAPIsWithoutHTTPSEnabled -split ","
                 $apiMgmt | ForEach-Object { 
-                    if($apiManagementService.$ListOfAPIsWithoutHTTPSEnabled -contains  $_.Name)
+                    if($apiManagementService.ListOfAPIsWithoutHTTPSEnabled -contains  $_.Name)
                     {
-                        Set-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.ApId -Protocols @("https") -ErrorAction SilentlyContinue
+                        Set-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId -Protocols @("https") -ErrorAction SilentlyContinue
                         $output = (Get-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId  -ErrorAction SilentlyContinue).Protocols 
                    
                         if($output -eq "https" -and  $output.count -eq 1)
@@ -409,7 +409,7 @@ function Enable-HTTPSForAPIsInAPIManagementServices
                     }
                 }  
 
-                if($ListOfAPIsRemediated.count -ne 0)
+                if($listOfAPIsRemediated.count -ne 0)
                 {
                    $listOfAPIsRemediated =$listOfAPIsRemediated -join ","
                     $apiManagementServicesRemediated += $apiManagementService |Select-Object @{N='ResourceID';E={$_.ResourceId}},
@@ -430,9 +430,9 @@ function Enable-HTTPSForAPIsInAPIManagementServices
             catch
             {
                 $listOfAPIsSkipped = $listOfAPIsSkipped -join ","
-                $apiManagementServicesSkipped += $apiManagementService | Select-Object @{N='ResourceID';E={$resourceId}},
-                                                                                        @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                        @{N='ResourceName';E={$resourceName}},
+                $apiManagementServicesSkipped += $apiManagementService | Select-Object @{N='ResourceID';E={$_.ResourceId}},
+                                                                                        @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                                        @{N='ResourceName';E={$_.ResourceName}},
                                                                                         @{N='ListOfAPIsSkipped';E={$listOfAPIsSkipped}}
                 Write-Host "Error enabling HTTPS URL Scheme on the API. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping this API Management Service. HTTPS URL Scheme will not be enabled." -ForegroundColor $([Constants]::MessageType.Error)
