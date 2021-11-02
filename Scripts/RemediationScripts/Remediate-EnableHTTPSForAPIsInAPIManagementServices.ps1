@@ -398,7 +398,7 @@ function Enable-HTTPSForAPIsInAPIManagementServices
                         Set-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId -Protocols @("https") -ErrorAction SilentlyContinue
                         $output = (Get-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId  -ErrorAction SilentlyContinue).Protocols 
                    
-                        if $output.count -eq 1 -and $output -eq "https")
+                        if ($output.count -eq 1 -and $output -eq "https")
                         {
                            $listOfAPIsRemediated += $_.Name
                         }
@@ -671,7 +671,7 @@ function Disable-HTTPSForAPIsInAPIManagementServices
                     Set-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId -Protocols @("Http") -ErrorAction SilentlyContinue
                     $output = (Get-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId  -ErrorAction SilentlyContinue).Protocols 
                         
-                    if $output.count -eq 1 -and $output -eq "http")
+                    if ($output.count -eq 1 -and $output -eq "http")
                     {
                        
                         $listOfAPIsRolledBack += $_.Name
