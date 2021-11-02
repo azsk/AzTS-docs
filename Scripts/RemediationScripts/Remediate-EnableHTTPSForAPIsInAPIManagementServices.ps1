@@ -244,7 +244,7 @@ function Enable-HTTPSForAPIsInAPIManagementServices
 
         Write-Host "Fetching all API Management Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
 
-         $validAPIManagementServicesDetails = Import-Csv -LiteralPath $FilePath
+        $validAPIManagementServicesDetails = Import-Csv -LiteralPath $FilePath
         $validAPIManagementServicesDetails =  $validAPIManagementServicesDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
         
         $validAPIManagementServicesDetails | ForEach-Object {
@@ -398,7 +398,7 @@ function Enable-HTTPSForAPIsInAPIManagementServices
                         Set-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId -Protocols @("https") -ErrorAction SilentlyContinue
                         $output = (Get-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId  -ErrorAction SilentlyContinue).Protocols 
                    
-                        if($output -eq "https" -and  $output.count -eq 1)
+                        if $output.count -eq 1 -and $output -eq "https")
                         {
                            $listOfAPIsRemediated += $_.Name
                         }
@@ -598,8 +598,8 @@ function Disable-HTTPSForAPIsInAPIManagementServices
 
     Write-Host "Fetching all API Management Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
     $validAPIManagementServicesDetails = @()
-     $apiManagementServicesDetails = Import-Csv -LiteralPath $FilePath
-     $apiManagementServicesDetails | ForEach-Object{
+    $apiManagementServicesDetails = Import-Csv -LiteralPath $FilePath
+    $apiManagementServicesDetails | ForEach-Object{
         if( ![String]::IsNullOrWhiteSpace($_.ResourceId))
         {
             $validAPIManagementServicesDetails += $_
@@ -671,7 +671,7 @@ function Disable-HTTPSForAPIsInAPIManagementServices
                     Set-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId -Protocols @("Http") -ErrorAction SilentlyContinue
                     $output = (Get-AzAPIManagementAPI -Context $apiMgmtContext -APIId $_.APIId  -ErrorAction SilentlyContinue).Protocols 
                         
-                    if($output -eq "Http" -and $output.Count -eq 1)
+                    if $output.count -eq 1 -and $output -eq "http")
                     {
                        
                         $listOfAPIsRolledBack += $_.Name
