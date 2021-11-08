@@ -46,7 +46,7 @@
 
         3. To enable HTTPS URL Scheme on the API(s) in API Management Services in a Subscription, from a previously taken snapshot:
        
-           Enable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAPIsOfAPIManagementServices\APIManagementServicesWithoutHTTPSEnabled.csv
+           Enable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHttpsForApisInApiManagementServices\ApiManagementServicesWithoutHttpsEnabled.csv
 
         To know more about the options supported by the remediation command, execute:
         
@@ -54,7 +54,7 @@
 
     To roll back:
         1. To disable HTTPS URL Scheme on the API(s) in API Management Services in a Subscription, from a previously taken snapshot:
-           Disable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAPIsOfAPIManagementServices\RemediatedAPIManagementServices.csv
+           Disable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHttpsForApisInApiManagementServices\RemediatedApiManagementServices.csv
         
         To know more about the options supported by the roll back command, execute:
         
@@ -144,7 +144,7 @@ function Enable-HttpsForApisInApiManagementServices
         PS> Enable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAPIsOfAPIManagementServices\APIManagementServicesWithoutHTTPSEnabled.csv
+        PS> Enable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHttpsForApisInApiManagementServices\ApiManagementServicesWithoutHttpsEnabled.csv
 
         .LINK
         None
@@ -336,7 +336,7 @@ function Enable-HttpsForApisInApiManagementServices
     Write-Host "Found $($totalApiManagementServicesWithoutHttpsEnabled) API Management Service(s) to remediate." -ForegroundColor $([Constants]::MessageType.Update)
 
     # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHTTPSForAPIsOfApiManagementServices"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHttpsForApisInApiManagementServices"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -347,7 +347,7 @@ function Enable-HttpsForApisInApiManagementServices
     Write-Host "[Step 3 of 4] Backing up API Management Services details:"
     
     # Backing up API Management Services details.
-    $backupFile = "$($backupFolderPath)\APIManagementServicesWithoutHTTPSEnabled.csv"
+    $backupFile = "$($backupFolderPath)\ApiManagementServicesWithoutHttpsEnabled.csv"
 
     $apiManagementServicesWithoutHttpsEnabled| Export-CSV -Path $backupFile -NoTypeInformation
 
@@ -463,7 +463,7 @@ function Enable-HttpsForApisInApiManagementServices
             $apiManagementServicesRemediated | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsRemediated
            
             # Write this to a file.
-            $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedAPIManagementServices.csv"
+            $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedApiManagementServices.csv"
             $apiManagementServicesRemediated | Export-CSV -Path $apiManagementServicesRemediatedFile -NoTypeInformation
             Write-Host "This information has been saved to $($apiManagementServicesRemediatedFile)"
             Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
@@ -475,7 +475,7 @@ function Enable-HttpsForApisInApiManagementServices
             $apiManagementServicesSkipped | Format-Table -Property ResourceGroupName , ResourceName ,ListOfAPIsSkipped
         
             # Write this to a file.
-            $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedAPIManagementServices.csv"
+            $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedApiManagementServices.csv"
             $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
             Write-Host "This information has been saved to $($apiManagementServicesSkippedFile)"
         }
@@ -517,7 +517,7 @@ function Disable-HttpsForApisInApiManagementServices
         None. Disable-HttpsForApisInApiManagementServices does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAPIsOfApiManagementServices\RemediatedAPIManagementServices.csv
+        PS> Disable-HttpsForApisInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHttpsForApisInApiManagementServices\RemediatedApiManagementServices.csv
 
         .LINK
         None
@@ -613,7 +613,7 @@ function Disable-HttpsForApisInApiManagementServices
     Write-Host "Found $($totalApiManagementServices) API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     
     # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableHTTPSForAPIsOfApiManagementServices"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableHttpsForApisInApiManagementServices"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -721,7 +721,7 @@ function Disable-HttpsForApisInApiManagementServices
             $apiManagementServicesRolledBack | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsRolledBack
 
             # Write this to a file.
-            $apiManagementServiceRolledBackFile = "$($backupFolderPath)\RolledBackAPIManagementServices.csv"
+            $apiManagementServiceRolledBackFile = "$($backupFolderPath)\RolledBackApiManagementServices.csv"
             $apiManagementServicesRolledBack | Export-CSV -Path $apiManagementServiceRolledBackFile -NoTypeInformation
             Write-Host "This information has been saved to $($apiManagementServiceRolledBackFile)"
         }
@@ -732,7 +732,7 @@ function Disable-HttpsForApisInApiManagementServices
             $apiManagementServicesSkipped | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsSkipped
 
             # Write this to a file.
-            $apiManagementServicesSkippedFile = "$($backupFolderPath)\RollBackSkippedAPIManagementServices.csv"
+            $apiManagementServicesSkippedFile = "$($backupFolderPath)\RollBackSkippedApiManagementServices.csv"
             $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
             Write-Host "This information has been saved to $($apiManagementServicesSkippedFile)"
         }
