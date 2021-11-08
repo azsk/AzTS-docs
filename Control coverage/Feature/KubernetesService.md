@@ -297,9 +297,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list diagnostic setting details of Kubernetes service resources: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}
-/providers/Microsoft.Kubernetes/connectedClusters/{serviceName}/providers
-/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview
+- ARM API to list diagnostic setting details of Kubernetes service resources: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview
  <br />
 **Properties:**<br /> name, <br />
 properties.logs.category, <br />
@@ -351,8 +349,7 @@ Enabling HTTP application routing creates publicly accessible DNS names for appl
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?
-api-version=2020-09-01
+- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01
  <br />
 **Properties:** properties.addonProfiles.httpApplicationRouting.enabled
  <br />
