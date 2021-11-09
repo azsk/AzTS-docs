@@ -40,8 +40,7 @@ Enabling RBAC in a cluster lets you finely control access to various operations 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01
- <br />
+- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.enableRBAC
  <br />
 
@@ -85,9 +84,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?
-api-version=2020-09-01
- <br />
+- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.clientAppID, properties.serverAppID, properties.tenantID, properties.managed
  <br />
 
@@ -131,9 +128,7 @@ Running on older versions could mean you are not using latest security classes. 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?
-api-version=2020-09-01
- <br />
+- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.kubernetesVersion
  <br />
 
@@ -177,9 +172,7 @@ Auditing enables log collection of important system events pertinent to security
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?
-api-version=2020-09-01
- <br />
+- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.addonProfiles.omsagent
  <br />
 
@@ -223,18 +216,15 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01
- <br />
+- ARM API to list Network Interfaces at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
 **Properties:** properties.ipConfigurations, properties.networksecuritygroup
  <br />
 
-- ARM API to list Network Security Groups at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01
- <br />
+- ARM API to list Network Security Groups at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:** properties.destinationAddressPrefixes
  <br /> 
 
-- ARM API to list Virtual Networks at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01
- <br />
+- ARM API to list Virtual Networks at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 **Properties:** properties.subnets
  <br />
 
@@ -297,8 +287,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list diagnostic setting details of Kubernetes service resources: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview
- <br />
+- ARM API to list diagnostic setting details of Kubernetes service resources: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:**<br /> name, <br />
 properties.logs.category, <br />
 properties.logs.enabled, <br />
@@ -349,8 +338,7 @@ Enabling HTTP application routing creates publicly accessible DNS names for appl
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01
- <br />
+- ARM API to list Container Services at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.addonProfiles.httpApplicationRouting.enabled
  <br />
 

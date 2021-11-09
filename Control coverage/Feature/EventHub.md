@@ -48,8 +48,7 @@ A 'namespace' level access policy provides access to all Event Hubs in a namespa
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Authorization Rules for an Event Hubs Namespace: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/authorizationRules?api-version=2017-04-01
- <br />
+- ARM API to list all Authorization Rules for an Event Hubs Namespace: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/authorizationRules?api-version=2017-04-01<br />
 **Properties:** properties.rights
  <br />
 
@@ -96,14 +95,12 @@ Granting minimum access ensures that users are granted just enough permissions t
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Event Hubs Instances in an Event Hubs Namespace: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs?api-version=2017-04-01 
- <br />
+- ARM API to list all Event Hubs Instances in an Event Hubs Namespace: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs?api-version=2017-04-01 <br />
 **Properties:** properties.name
  <br />
 
 - ARM API to list all Authorization Rules for an Event Hubs Instance: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs/{eventHubsInstanceName}/authorizationRules?
-api-version=2017-04-01
- <br />
+api-version=2017-04-01<br />
 **Properties:** properties.rights
  <br />
 
