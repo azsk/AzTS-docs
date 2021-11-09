@@ -30,8 +30,8 @@ Once you have an Tenant Security setup running smoothly with multiple subscripti
 
 When you setup your Tenant Security endpoint (i.e. policy server), one of the things that happens is creation of an Log Analytics workspace for your setup. After that, whenever someone performs an AzTS scan for a subscription that is configured to use your Tenant Security, the scan results are sent (as 'security' telemetry) to your org's Log Analytics workspace. Because this workspace receives scan events from all such subscriptions, it can be leveraged to generate aggregate security compliance views for your cloud-based environments. 
 
-## Create cloud security compliance report for your org using PowerBI
-We will look at how a PowerBI-based compliance dashboard can be created and deployed in a matter of minutes starting with a template dashboard that ships with the Tenant Security Solution (AzTS). All you need apart from the Log Analytics workspace instance is a CSV file that provides a mapping of your organization hierarchy to subscription ids (so that we know which team/service group owns each subscription).
+## Create cloud security compliance and inventory reports for your org using PowerBI
+We will look at how a PowerBI-based compliance dashboard and inventory dashboard can be created and deployed in a matter of minutes starting with a template dashboard that ships with the Tenant Security Solution (AzTS). All you need apart from the Log Analytics workspace instance is a CSV file that provides a mapping of your organization hierarchy to subscription ids (so that we know which team/service group owns each subscription).
 
 > **Note**: This is a one-time activity with tremendous leverage as you can use the resulting dashboard (example below) towards driving security governance activities over an extended period at your organization.
 >
@@ -86,7 +86,9 @@ In this section we shall create a PowerBI report locally within PowerBI Desktop 
 
 ![capture Workspace ID](../Images/13_TSS_LAWS_AgentManagement.png)
 
-**(b)** Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityReport.pbit?raw=1) (for Gov subs use template from [here](../TemplateFiles/TenantSecurityReport.Gov.pbit?raw=1)) to your local machine.To view detailed inventory for resources and Secure Score for subscriptions being scanned, download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityInventoryReport.pbit?raw=1). 
+**(b)** There are 2 PowerBI templates leveraged as of now: <br/>
+1) Compliance dashboard which can be used to get insights about controls compliance details for subscriptions getting scanned with AzTS. Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityReport.pbit?raw=1) for compliance dahboard (for Gov subs use template from [here](../TemplateFiles/TenantSecurityReport.Gov.pbit?raw=1)) to your local machine.<br/>
+2) Inventory dashboard which contains detailed inventory for resources and Secure Score for subscriptions being scanned. Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityInventoryReport.pbit?raw=1) for inventory dahboard. 
 
 **(c)** Open the template (.pbit) file using PowerBI Desktop, provide the LA Workspace ID and click on 'Load' as shown below:
 
@@ -99,17 +101,18 @@ Once you have successfully logged in, you will see the Log Analytics data in the
 
 ![Compliance summary](../Images/13_TSS_PBIDashboardComplianceSummary.png)
 
-The report contains 3 tabs(The report with detailed inventory contains 3 additional tabs).There is an overall/summary view of compliance, a detailed view which can be used to see control 'pass/fail' details for individual subscriptions and inventory view which shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. An example of the detailed view and inventory view is shown below:
+The compliance report contains 2 tabs.There is an overall/summary view of compliance and detailed view which can be used to see control 'pass/fail' details for individual subscriptions in the organization. An example of the detailed view is shown below:
 
 ###### Detailed view:
 
 ![Compliance summary](../Images/13_TSS_PBIDashboardComplianceDetails.png) 
 
+
+In Inventory dashboard, 4 tabs are present. Inventory Overview tab shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. SecureScore tab provides details about Secure Score for subscriptions (single score based on Security Center assessment). Assessments Metadata tab provides details about ASC assessments like recommendation, severity, etc. VM Extension status tab contains details about virtual machines scanned like OS type, extensions, power state,etc. Examples of these tabs are shown below:
+
 ###### Inventory view:
 
 ![Compliance summary](../Images/13_TSS_PBIDashboardInventoryOverview.png)
-
-In report with detailed inventory view along with above mentioned tabs, 3 additional tabs are present. SecureScore tab provides details about Secure Score for subscriptions (single score based on Security Center assessment). Assessments Metadata tab provides details about ASC assessments like recommendation, severity, etc. VM Extension status taab contains details about virtual machines scanned like OS type, extensions, power state,etc. Examples of these tabs are shown below:
 
 ###### Secure Score:
 ![Compliance summary](../Images/13_TSS_PBIDashboardSecureScore.png) 
