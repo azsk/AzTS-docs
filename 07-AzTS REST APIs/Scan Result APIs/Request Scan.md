@@ -28,9 +28,13 @@ You must have permission over subscription or resource group in the subscription
 **Request URL**
 
 ``` PowerShell
-POST https://<WebAPI-URL>/adhocscan/RequestScan
+POST https://<WebAPI-URL>/adhocscan/RequestScan?api-version=1.0
 ```
-> _Note: 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)._
+> _Note:_
+<br/>
+>_1. 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)._
+<br/>
+>_2. 'api-version' is a required parameter. Current supported version: **1.0**_
 
 <br/>
 
@@ -52,7 +56,7 @@ POST https://<WebAPI-URL>/adhocscan/RequestScan
 
 **Sample Request**
 ``` 
- POST https://AzSK-AzTS-WebApi-xxxxx/adhocscan/RequestScan
+ POST https://AzSK-AzTS-WebApi-xxxxx/adhocscan/RequestScan?api-version=1.0
 ```
 <br/> 
 
