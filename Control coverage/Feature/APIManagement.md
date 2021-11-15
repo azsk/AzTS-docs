@@ -65,7 +65,7 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11",
 		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30",
 		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168"
-	]
+		]
 }
  ``` 
 
@@ -113,7 +113,7 @@ By default, each API Management instance comes with two sample products: Starter
 {
     "SampleProductId": [
 		"starter",
-        "unlimited"
+		"unlimited"
     ]
 }
  ``` 
