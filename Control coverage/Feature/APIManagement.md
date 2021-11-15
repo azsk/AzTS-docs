@@ -15,13 +15,13 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 ### Control Spec 
 
 > **Passed:** 
-> All API(s) are configured to use secure HTTP access to the backend via API Management, or no API(s) found in APIM instance.
+> All APIs are configured to be accessed only over HTTPS via the API Management service, or no APIs are present in the API Management instance.
 > 
 > **Failed:** 
-> Found API(s) that are configured to use non-secure HTTP access to the backend via API Management.
+> One or more APIs are not configured to be accessed only over HTTPS via the API Management service.
 > 
 > **Verify:** 
-> Unable to verify the delegation setting since management endpoint 3443 is disabled.
+> URL Scheme settings could not be verified as the management endpoint over port 3443 is disabled.
 > 
 
 ### Recommendation 
