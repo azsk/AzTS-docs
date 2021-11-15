@@ -12,6 +12,13 @@ HDInsight must have supported HDI cluster version
 ### Rationale 
 Being on the latest/supported HDInsight version significantly reduces risks from security bugs or updates that may be present in older or retired cluster versions. 
 
+### Control Settings 
+```json 
+{
+    "MinRequiredClusterVersion": "3.6.0"
+}
+ ```  
+
 ### Control Spec 
 
 > **Passed:** 
@@ -105,6 +112,13 @@ Use approved version of TLS for HDInsight cluster
 
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ```  
 
 ### Control Spec 
 

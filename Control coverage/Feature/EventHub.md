@@ -12,6 +12,15 @@ Event Hub clients (event senders or receivers) must not use 'namespace' level ac
 ### Rationale 
 A 'namespace' level access policy provides access to all Event Hubs in a namespace. However, using an access policy at an entity (Event Hub) level provides access only to the specific entity. Thus using the latter is in line with the principle of least privilege. 
 
+### Control Settings 
+```json 
+{
+    "SharedAccessPoliciesToExclude": [
+        "RootManageSharedAccessKey"
+    ]
+}
+ ``` 
+
 ### Control Spec 
 
 > **Passed:** 

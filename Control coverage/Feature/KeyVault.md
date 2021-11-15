@@ -109,6 +109,17 @@ Diagnostics logs must be enabled with a retention period of at least 365 days
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "AuditEvent"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+ ``` 
+
 ### Control Spec 
 
 > **Passed:** 
@@ -133,6 +144,10 @@ Logs should be retained for a long enough period so that activity trail can be r
 > ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
 > iii. Event Hub.
 > 
+> **Error:** 
+> Required logs are not configured in control settings.
+> 
+
 ### Recommendation 
 
 - **Azure Portal** 
