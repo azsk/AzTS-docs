@@ -747,7 +747,7 @@ Or, no Public IP is configured for any NIC on the vNet.
 > 
 ### Recommendation 
 
-- **Azure Portal** 
+- **PowerShell** 
 
 	 Unutilized Public IP address must be removed from virtual network. For more information visit: https://docs.microsoft.com/en-us/powershell/module/az.network/remove-azpublicipaddress 
 
@@ -796,7 +796,7 @@ Virtual network gateways enable network traffic between a virtual network and ot
 > 
 ### Recommendation 
 
-- **Azure Portal** 
+- **PowerShell** 
 
 	 You can remove virtual network gateways using the Remove-AzVirtualNetworkGateway command (unless their presence has been approved by network security team). Run 'Get-Help Remove-AzVirtualNetworkGateway -full' for more help. 
 
@@ -858,7 +858,7 @@ properties.enableIPForwarding
 
 - ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 
  <br />
- 
+
 **Properties:** properties.gatewayType
  <br />
 
