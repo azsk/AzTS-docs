@@ -12,6 +12,15 @@ Do not use Any-to-Any IP range for Azure Database for MySQL
 ### Rationale 
 Using the firewall feature ensures that access to the data or the service is restricted to a specific set/group of clients. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
 
+### Control Settings 
+```json 
+{
+    "FirewallRuleName_AllowAzureIps": "AllowAllWindowsAzureIps",
+    "IPRangeEndIP": "255.255.255.255",
+    "IPRangeStartIP": "0.0.0.0"
+}
+ ```
+
 ### Control Spec 
 
 > **Passed:** 
@@ -106,6 +115,15 @@ Enable Threat detection for MySQL database
 ### Rationale 
 Advanced Threat Protection for Azure Database for MySQL provides a layer of security, which enables customers to detect and respond to potential threats as they occur by providing security alerts on anomalous activities. 
 
+### Control Settings 
+```json 
+{
+    "UnsupportedTier": [
+        "Basic"
+    ]
+}
+ ```
+
 ### Control Spec 
 
 > **Passed:** 
@@ -152,6 +170,13 @@ Use approved version of TLS for Azure Database for MySQL
 
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ``` 
 
 ### Control Spec 
 
@@ -203,6 +228,17 @@ Diagnostics logs must be enabled for Azure Database for MySQL
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "MySqlAuditLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+ ```
+
 ### Control Spec 
 
 > **Passed:** 
@@ -243,4 +279,4 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 <br />
 
-
+___
