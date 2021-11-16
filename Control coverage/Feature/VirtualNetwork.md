@@ -718,6 +718,7 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 
 - ARM API to list Virtual Networks and their constituent Subnets at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 
  <br />
+
 **Properties:** properties.subnets[*].properties.networkSecurityGroup.id
  
 <br />
@@ -758,6 +759,7 @@ subscription level:- /subscriptions/{subscriptionId}/providers
 /Microsoft.Network/networkInterfaces
 ?api-version=2019-04-01
  <br />
+
 **Properties:** properties.ipConfigurations[*].properties.subnet.id,
 properties.ipConfigurations[*].properties.publicIPAddress.id
  <br />
@@ -765,6 +767,7 @@ properties.ipConfigurations[*].properties.publicIPAddress.id
 - ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?
 api-version=2019-04-01 
  <br />
+
 **Properties:** properties.gatewayType
  <br />
 
@@ -802,11 +805,13 @@ Virtual network gateways enable network traffic between a virtual network and ot
 
 - ARM API to list Virtual Networks and their subnets at subscription level::- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 
  <br />
+
 **Properties:** properties.subnets[*].id
  <br />
 
 - ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 
  <br />
+
 **Properties:** properties.gatewayType
  <br />
 
@@ -846,12 +851,14 @@ Or, there are no NICs with EnableIPForwarding turned on the vNet.
 subscription level:- /subscriptions/{subscriptionId}/providers
 /Microsoft.Network/networkInterfaces?api-version=2019-04-01 
  <br />
+
 **Properties:** properties.ipConfigurations[*].properties.subnet.id,
 properties.enableIPForwarding
  <br />
 
 - ARM API to list Virtual Network Gateways at subscription level:- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 
  <br />
+ 
 **Properties:** properties.gatewayType
  <br />
 
