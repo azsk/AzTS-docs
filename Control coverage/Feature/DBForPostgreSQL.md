@@ -59,6 +59,15 @@ Do not use Any-to-Any IP range for Azure Database for PostgreSQL servers
 ### Rationale 
 Using the firewall feature ensures that access to the data or the service is restricted to a specific set/group of clients. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
 
+### Control Settings 
+```json 
+{
+    "FirewallRuleName_AllowAzureIps": "AllowAllWindowsAzureIps",
+    "IPRangeEndIP": "255.255.255.255",
+    "IPRangeStartIP": "0.0.0.0"
+}
+ ```  
+
 ### Control Spec 
 
 > **Passed:** 
@@ -105,6 +114,15 @@ Enable Threat detection for PostgreSQL
 
 ### Rationale 
 Advanced Threat Protection for Azure Database for PostgreSQL provides a layer of security, which enables customers to detect and respond to potential threats as they occur by providing security alerts on anomalous activities. 
+
+### Control Settings 
+```json 
+{
+    "UnsupportedTier": [
+        "Basic"
+    ]
+}
+ ```
 
 ### Control Spec 
 
@@ -246,6 +264,13 @@ Use approved version of TLS for Azure Database for PostgreSQL
 
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ```
 
 ### Control Spec 
 
