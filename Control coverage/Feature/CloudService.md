@@ -42,18 +42,15 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get the list of Deployment Slots in a Cloud Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01 
- <br />
+- ARM API to get the list of Deployment Slots in a Cloud Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
 **Properties:** properties.slotType, properties.name
  <br />
 
-- ARM API to get the list of Cloud Service Roles in a Deployment Slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01 
- <br />
+- ARM API to get the list of Cloud Service Roles in a Deployment Slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
 **Properties:** properties.name
  <br />
 
-- ARM API to get Cloud Service roles details: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}?api-version=2016-04-01
- <br />
+- ARM API to get Cloud Service roles details: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}?api-version=2016-04-01<br />
 **Properties:** properties.inputEndpoints.protocol
  <br />
 
