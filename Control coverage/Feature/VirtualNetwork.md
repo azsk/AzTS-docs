@@ -199,6 +199,24 @@ There must not be a UDR on *any* subnet in an ExpressRoute-connected vNet
 ### Rationale 
 Using UDRs on any subnet of an ER-connected virtual network can lead to security exposure for corpnet traffic by allowing it to be routed in a way that evades inspection from network security scanners.
 
+### Control Settings 
+```json 
+{
+    "ApprovedRoutes": [
+        {
+            "AddressPrefix": "0.0.0.0/0",
+            "NextHopType": "VirtualAppliance",
+            "ResourceGroup": "ERNetwork-LAB"
+        },
+        {
+            "AddressPrefix": "0.0.0.0/0",
+            "NextHopType": "VirtualAppliance",
+            "ResourceGroup": "ERNetwork-MVD"
+        }
+    ]
+}
+ ```
+
 ### Control Spec 
 
 > **Passed:** 
@@ -320,6 +338,38 @@ Peering must not be allowed on ExpressRoute connected Virtual Network
 ### Rationale 
 A virtual network peering on an ER-connected circuit establishes a link to another virtual network whereby traffic egress and ingress can evade inspection from network security appliances. This creates a direct risk to corpnet security. 
 
+### Control Settings 
+```json 
+{
+    "ApprovedPeerings": [
+        {
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-LAB"
+        },
+        {
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-MVD"
+        },
+        {
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-PvtApp"
+        },
+        {
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-InetApp"
+        },
+        {
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-SVC"
+        },
+        {
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-DB"
+        }
+    ]
+}
+ ```  
+
 ### Control Spec 
 
 > **Passed:** 
@@ -378,6 +428,13 @@ Add only Microsoft.Network/* resources to the ERNetwork resource group
 ### Rationale 
 The ERNetwork resource group is a critical component that facilitates provisioning of an ER-connection for your subscription. This resource group is deployed and managed by the networking team and should not be used as a general purpose resource group or as a container for non-networking resources as it can impact the ER-connectivity of your subscription.
 
+### Control Settings 
+```json 
+{
+    "ExemptedResourceTypes": "providers/microsoft.eventgrid/"
+}
+ ``` 
+
 ### Control Spec 
 
 > **Passed:** 
@@ -429,6 +486,13 @@ Ensure that the ERNetwork resource group is protected with a resource lock
 
 ### Rationale 
 The ERNetwork resource group is a critical component that facilitates provisioning of an ER-connection for your subscription. A resource lock is deployed on the ERNetwork resource group to keep you from deleting it accidentally. Removing this lock increases the chances of accidental write/delete of this resource group and that can impact ER-connectivity of your subscription.
+
+### Control Settings 
+```json 
+{
+    "LockLevel": ""
+}
+ ``` 
 
 ### Control Spec 
 
@@ -608,6 +672,21 @@ Associate Subnets with a Network Security Group
 ### Rationale 
 Restricting inbound and outbound traffic via NSGs limits the network exposure of the subnets within a virtual network and limits the attack surface 
 
+### Control Settings 
+```json 
+{
+    "AssessmentNotAvailableCausesForFallback": [
+        "",
+        "Exempt",
+        "OffByPolicy"
+    ],
+    "SubnetsToExcludeFromEvaluation": [
+        "gatewaysubnet",
+        "azurefirewallsubnet"
+    ]
+}
+ ``` 
+ 
 ### Control Spec 
 
 > **Passed:** 
