@@ -95,11 +95,21 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 - **PowerShell**
 
+  * **For standard SQL servers:**
+
 	```powershell
 	Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DatabaseName '{DatabaseName}' -State 'Enabled'
 	```
 
 	Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqldatabasetransparentdataencryption to enable Transparent Data Encryption on a SQL database in a SQL server.
+	
+  * **For Synapse workspaces:**
+
+	```powershell
+	Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceId '{ Resource ID of the SQL pool }' -State 'Enabled'
+	```
+
+	Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlpooltransparentdataencryption to enable Transparent Data Encryption on a SQL pool.
 
 	**Note:** If **Blob Auditing** or **Threat Detection** is enabled on the server, they will always apply to the database, regardless of the database level settings.
 
@@ -183,12 +193,23 @@ Enabling threat detection helps generate alerts about suspicious activity that m
 
 - **PowerShell**
 
+  * **For standard SQL servers:**
+
 	```powershell
 	Set-AzSqlServerAudit -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -StorageAccountResourceId '{StorageAccountResourceId}' -BlobStorageTargetState 'Enabled' -RetentionInDays 365
 	Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -StorageAccountName '{StorageAccountName}' -EmailAdmins $true -ExcludedDetectionType 'None'
 	```
 
-	Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveraudit to enable auditing on the SQL server.
+	Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveraudit to enable auditing on a SQL server.
+
+  * **For Synapse workspaces:**
+
+	```powershell
+	Set-AzSynapseSqlAuditSetting -WorkspaceName {workspacename} -BlobStorageTargetState Enabled -RetentionInDays 365 -StorageAccountResourceId { StorageAccountResourceId }
+	Update-AzSynapseSqlAdvancedThreatProtectionSetting -WorkspaceName {workspacename} -EmailAdmin $true -ExcludedDetectionType None -ResourceGroupName {ResourceGroupName} -StorageAccountName {StorageAccountName}
+	```
+	
+	Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/update-azsynapsesqladvancedthreatprotectionsetting to enable auditing on a Synapse workspace.
 
 <!--
 - **Enforcement Policy**
