@@ -1,6 +1,6 @@
 <###
 # Overview:
-    This script is used to enable Advance Threat Protection for SQL Servers in a Subscription.
+    This script is used to enable Advanced Threat Protection for SQL Servers in a Subscription.
 
 # Control ID:
     Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server
@@ -14,25 +14,25 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
-        2. Get the list of SQL Servers in a Subscription that do not have Advance Threat Protection enabled.
+        2. Get the list of SQL Servers in a Subscription that do not have Advanced Threat Protection enabled.
         3. Back up details of SQL Servers that are going to be remediated.
-        4. Enable Advance Threat Protection on the SQL Server in the Subscription.
+        4. Enable Advanced Threat Protection on the SQL Server in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script.
         2. Get the list of SQL Servers in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Disable Advance Threat Protection on the SQL Server in the Subscription.
+        3. Disable Advanced Threat Protection on the SQL Server in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to enable Advance Threat Protection on the SQL Server in the Subscription. Refer `Examples`, below.
+        3. Execute the script to enable Advanced Threat Protection on the SQL Server in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to disable Advance Threat Protection on the SQL Server in the Subscription. Refer `Examples`, below.
+        3. Execute the script to disable Advanced Threat Protection on the SQL Server in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -40,11 +40,11 @@
     
            Enable-AdvanceThreatprotectionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
-        2. To enable Advance Threat Protection on the SQL Server in a Subscription:
+        2. To enable Advanced Threat Protection on the SQL Server in a Subscription:
        
            Enable-AdvanceThreatprotectionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000
 
-        3. To enable Advance Threat Protection on the SQL Server  in a Subscription, from a previously taken snapshot:
+        3. To enable Advanced Threat Protection on the SQL Server  in a Subscription, from a previously taken snapshot:
        
            Enable-AdvanceThreatprotectionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
 
@@ -53,7 +53,7 @@
         Get-Help Enable-AdvanceThreatprotectionForSQLServers -Detailed
 
     To roll back:
-        1. To disable Advance Threat Protection on theSQL Server  in a Subscription, from a previously taken snapshot:
+        1. To disable Advanced Threat Protection on theSQL Server  in a Subscription, from a previously taken snapshot:
 
            Disable-AdvanceThreatprotectionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
         
@@ -115,7 +115,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
 
         .DESCRIPTION
         Remediates 'Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server' Control.
-        Advance Threat Protection must be enabled. 
+        Advanced Threat Protection must be enabled.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -170,7 +170,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to enable Advance Threat Protection for SQL Server(s) in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 4] Preparing to enable Advanced Threat Protection for SQL Server(s) in Subscription: $($SubscriptionId)"
     Set-Item Env:\SuppressAzurePowerShellBreakingChangeWarnings "true"
 
     if ($PerformPreReqCheck)
@@ -216,7 +216,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
         break
     }
 
-    Write-Host "*** To enable Advance Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To enable Advanced Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
    
     # Safe Check: Current user must have Owner/Contributor/User Access Administrator access over the subscription.
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
@@ -287,10 +287,10 @@ function Enable-AdvanceThreatprotectionForSQLServers
     Write-Host "Found $($totalSQLServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "Fetching SQL Servers ..."
 
-    # Includes SQL Servers where Advance Threat Protection is enabled.
+    # Includes SQL Servers where Advanced Threat Protection is enabled.
     $sqlServersWithAdvanceThreatProtectionEnabled  = @()
 
-    # Includes SQL Servers where Advance Threat Protection is not enabled.
+    # Includes SQL Servers where Advanced Threat Protection is not enabled.
     $sqlServersWithadvanceThreatProtectionDisabled  = @()
 
     $ascContactDetails = Get-AzSecurityContact 
@@ -404,11 +404,11 @@ function Enable-AdvanceThreatprotectionForSQLServers
     $totalSQLServersWithThreatDetectionDisabled = ($sqlServersWithadvanceThreatProtectionDisabled | Measure-Object).Count
     if ($totalSQLServersWithThreatDetectionDisabled -eq 0)
     {
-        Write-Host "No SQL Server found with Advance Threat Protection disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No SQL Server found with Advanced Threat Protection disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         break
     }
 
-    Write-Host "Found $($totalSQLServersWithThreatDetectionDisabled) SQL Server (s) with Advance Threat Protection disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found $($totalSQLServersWithThreatDetectionDisabled) SQL Server (s) with Advanced Threat Protection disabled." -ForegroundColor $([Constants]::MessageType.Update)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableAdvanceThreatProtectionForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
@@ -427,7 +427,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
     {   
         if (-not $Force)
         {
-            Write-Host "Do you want to enable Advance Threat Protection for all SQL Servers ? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "Do you want to enable Advanced Threat Protection for all SQL Servers ? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -439,11 +439,11 @@ function Enable-AdvanceThreatprotectionForSQLServers
         }
         else
         {
-            Write-Host "'Force' flag is provided. Advance Threat Protection will be enabled forSQL Server ." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Advanced Threat Protection will be enabled forSQL Server ." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enabling Advance Threat Protection for SQL Server ..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "[Step 4 of 4] Enabling Advanced Threat Protection for SQL Server ..." -ForegroundColor $([Constants]::MessageType.Warning)
 
         # To hold results from the remediation.
         $remediatedSQLServers = @()
@@ -512,7 +512,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
 
                 if($sqlServerPricingDetails.PricingTier -eq "Standard")
                 {
-                    Write-Host "Advance Threat Protection is already enabled at the subscription level." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Advanced Threat Protection is already enabled at the subscription level." -ForegroundColor $([Constants]::MessageType.Update)
                    $atpStatusAtSubscription = $true
                 }
                 else
@@ -713,8 +713,8 @@ function Enable-AdvanceThreatprotectionForSQLServers
                 {
                     $skippedSQLServers  += $sqlinstance 
                                                              
-                    Write-Host "Error enabling Advance Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this SQL Server. Advance Threat Protection will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Error enabling Advanced Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this SQL Server. Advanced Threat Protection will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
                     return
                 }
             }
@@ -834,8 +834,8 @@ function Enable-AdvanceThreatprotectionForSQLServers
                 catch
                 {
                     $skippedSQLServers  += $sqlinstance 
-                    Write-Host "Error enabling Advance Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this SQL Server. Advance Threat Protection will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Error enabling Advanced Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this SQL Server. Advanced Threat Protection will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
                     return
                 }
             }
@@ -847,7 +847,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
         
         if ($($remediatedSQLServers | Measure-Object).Count -gt 0)
         {
-            Write-Host "Advance Threat Protection successfully enabled for the following SQL Server (s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Advanced Threat Protection successfully enabled for the following SQL Server (s):" -ForegroundColor $([Constants]::MessageType.Update)
             $remediatedSQLServers | Format-Table -property ResourceGroupName , ServerName
 
             # Write this to a file.
@@ -858,7 +858,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
 
         if ($($skippedSQLServers | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error occurred while enabling Advance Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while enabling Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $skippedSQLServers |  Format-Table -property ResourceGroupName , ServerName
             
             # Write this to a file.
@@ -879,7 +879,7 @@ function Enable-AdvanceThreatprotectionForSQLServers
     {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4] SQL Server  details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable Advance Threat Protection for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable Advanced Threat Protection for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
     }
 }
 
@@ -891,7 +891,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
 
         .DESCRIPTION
         Rolls back remediation done for Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server' Control.
-        Disables Advance Threat Protection on the SQL Servers in the Subscription. 
+        Disables Advanced Threat Protection on the SQL Servers in the Subscription.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -931,7 +931,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable Advance Threat Protection for SQL Servers in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 3] Preparing to disable Advanced Threat Protection for SQL Servers in Subscription: $($SubscriptionId)"
 
     if ($PerformPreReqCheck)
     {
@@ -976,7 +976,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
         break
     }
 
-    Write-Host "*** To disable Advance Threat Protection for SQL Servers in a Subscription, Contributor and higher privileges on the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To disable Advanced Threat Protection for SQL Servers in a Subscription, Contributor and higher privileges on the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
    
     # Safe Check: Current user must have Owner/Contributor/User Access Administrator access over the subscription.
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
@@ -1020,27 +1020,27 @@ function Disable-AdvanceThreatProtectionForSqlServers
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "Advance Threat Protection will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "Advanced Threat Protection will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
    
     if (-not $Force)
     {
-        Write-Host "Do you want to disable Advance Threat Protection for all SQL Servers? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to disable Advanced Threat Protection for all SQL Servers? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Advance Threat Protection will not be disabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Advanced Threat Protection will not be disabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             break
         }
     }
     else
     {
-        Write-Host "'Force' flag is provided. Advance Threat Protection will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. Advanced Threat Protection will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Disabling Advance Threat Protection for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "[Step 3 of 3] Disabling Advanced Threat Protection for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Warning)
 
     # Includes SQL Servers, to which, previously made changes were successfully rolled back.
     $rolledbackSQLServers = @()
@@ -1053,18 +1053,18 @@ function Disable-AdvanceThreatProtectionForSqlServers
         {
             if($_.ATPStatusAtSubscription -eq $false)
             {
-                write-Host "Rolling Back Advance Threat Protection on the Subscription $($SubscriptionId)"
+                write-Host "Rolling Back Advanced Threat Protection on the Subscription $($SubscriptionId)"
                 Set-AzSecurityPricing -Name "SqlServers" -PricingTier "Free" 
                 $sqlServerPricingDetails = Get-AzSecurityPricing -Name "Sqlservers"
 
                 if($sqlServerPricingDetails.PricingTier -eq "Free")
                 { 
-                    Write-Host "Advance Threat Protection has been RolledBack Successfully on the Subscription $($SubscriptionId)"
+                    Write-Host "Advanced Threat Protection has been RolledBack Successfully on the Subscription $($SubscriptionId)"
                     $atpStatusAtSubscription = $false
                 }
                 else
                 {
-                    Write-Host "error occured while rolling back Advance Threat Protection on the Subscription $($SubscriptionId)"
+                    Write-Host "error occured while rolling back Advanced Threat Protection on the Subscription $($SubscriptionId)"
                     $atpStatusAtSubscription = $true 
                 }
             }
@@ -1075,7 +1075,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
         }
         catch
         {
-            Write-Host "Error while Rolling back Advance Threat Protection at Subscription level. Error $($_)"
+            Write-Host "Error while Rolling back Advanced Threat Protection at Subscription level. Error $($_)"
             Write-Host "Exiting..."
             $atpStatusAtSubscription = $true
             break
@@ -1225,7 +1225,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
         catch
         {
             $skippedSQLServers  += $sqlserver
-            Write-Host "Error while rolling back Advance Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error while rolling back Advanced Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host "Skipping this SQL Server. The resource is either partially rolled back or not rolledback at all at all" -ForegroundColor $([Constants]::MessageType.Info)
             return
         }
@@ -1236,7 +1236,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
         
     if ($($rolledbackSQLServers | Measure-Object).Count -gt 0)
     {
-        Write-Host "Advance Threat Protection successfully Disabled for the following SQL Server (s):" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Advanced Threat Protection successfully Disabled for the following SQL Server (s):" -ForegroundColor $([Constants]::MessageType.Update)
         $rolledbackSQLServers | Format-Table -property ResourceGroupName , ServerName
 
         # Write this to a file.
@@ -1247,7 +1247,7 @@ function Disable-AdvanceThreatProtectionForSqlServers
 
     if ($($skippedSQLServers | Measure-Object).Count -gt 0)
     {
-        Write-Host "Error occurred while Disabling Advance Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Error occurred while Disabling Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
         $skippedSQLServers |  Format-Table -property ResourceGroupName , ServerName
             
         # Write this to a file.
