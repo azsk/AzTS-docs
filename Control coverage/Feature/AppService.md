@@ -238,8 +238,7 @@ One of the below conditions is met:
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
--  ARM API to list App Service Plans in a subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Web/serverfarms?api-version=2019-08-01&detailed=false
- <br />
+-  ARM API to list App Service Plans in a subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Web/serverfarms?api-version=2019-08-01&detailed=false <br />
 **Properties:** properties.AppServicePlan.SkuDescription.Capacity
  <br />
 
@@ -335,13 +334,11 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list existing App Services at subscription level: - <br />
- /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
- <br />
+ /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01<br />
  **Properties:**  properties.httpsOnly
 
 - ARM API to list properties of all slots of app service: - <br />
-/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01
- <br />
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01<br />
 **Properties:**  properties.httpsOnly
  <br />
 
@@ -509,8 +506,7 @@ Using the IP/VNet subnet rules based access restriction ensures that access to t
  <br />
 
 - ARM API to list configuration properties for app service: -  <br/>
- /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/config/web?api-version=2018-11-01
-  <br />
+ /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/config/web?api-version=2018-11-01<br />
  **Properties:**  properties.ipSecurityRestrictions, properties.scmIpSecurityRestrictions, properties["scmIpSecurityRestrictionsUseMain
 
 <br />

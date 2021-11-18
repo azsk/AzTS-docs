@@ -47,17 +47,10 @@ One of the following conditions is met:
 	Refer: https://docs.microsoft.com/en-us/azure/cdn/cdn-standard-rules-engine to configure HTTP to HTTPs redirection rule in rules engine. 
 
 
-<!-- - **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
-
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API used to list existing CDN endpoints at subscription level: <br />
-/subscriptions/{subscriptionId}/resourceGroups/{resourcegroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints?api-version=2019-12-31
- <br />
+- ARM API used to list existing CDN endpoints at subscription level:-  <br />
+/subscriptions/{subscriptionId}/resourceGroups/{resourcegroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints?api-version=2019-12-31<br />
 **Properties:** 
 properties.isHttpAllowed, properties.isHttpsAllowed, properties.deliveryPolicy.rules
  <br />
