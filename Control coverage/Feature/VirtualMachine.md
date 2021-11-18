@@ -66,8 +66,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list virtual machine extensions at resource group level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01";
- <br />
+- Example ARM API to list virtual machine extensions at resource group level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01";<br />
 **Properties:** Kind ,properties.Type ,properties.Publisher
  <br />
 <!--
@@ -146,13 +145,11 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list virtual machine extensions at resource group level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01";
- <br />
+- ARM API to list virtual machine extensions at resource group level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01";<br />
 **Properties:** Kind, properties.Type ,properties.Publisher
  <br />
 <!--
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 -->
@@ -220,17 +217,14 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 - ARM API to list networkInterfaces at subscription level: 
 /subscriptions/{subscriptionId}/providers
 /Microsoft.Network/networkInterfaces
-?api-version=2019-04-01 
- <br />
-**Properties:** publicIPAddress.id, networkSecurityGroup.id
- <br />
+?api-version=2019-04-01 <br />
+**Properties:** publicIPAddress.id, networkSecurityGroup.id<br />
 
 - ARM API to list Virtual Networks at
 subscription level:
 /subscriptions/{subscriptionId}/providers
 /Microsoft.Network/virtualNetworks
-?api-version=2019-11-01
- <br />
+?api-version=2019-11-01<br />
 **Properties:** networkSecurityGroup.id
  <br />
 <br />
@@ -293,20 +287,16 @@ No Public IP address is associated with VM.
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machines at subscription level:
-/subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 
- <br />
+/subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** 
-properties.networkProfile.networkInterfaces[*].id
- <br />
+properties.networkProfile.networkInterfaces[*].id<br />
 
 - ARM API to list Network Interfaces at
 subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces
-?api-version=2019-04-01
- <br />
+?api-version=2019-04-01<br />
 **Properties:**  publicIPAddress.id	
  <br />
-
 <br />
 
 ___ 
@@ -370,17 +360,15 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 subscription level:
 /subscriptions/{subscriptionId}/providers
 /Microsoft.Security/assessments?
-api-version=2020-01-01
- <br />
- **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
- <br />
+api-version=2020-01-01<br />
+ **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData <br />
 
 - ARM API to list Virtual Machines at subscription level:
-/subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01
-<br>
+/subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01<br>
 **Properties:** properties.storageProfile.osDisk.caching, properties.storageProfile.diffDiskSettings.option
  <br />
 <br />
+
 ___ 
 
 ## Azure_VirtualMachine_SI_ASC_OS_Vulnerabilities 
@@ -445,12 +433,10 @@ Azure Security Center raises alerts (which are typically indicative of resources
 
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/
-providers/Microsoft.Security/assessments?api-version=2020-01-01 
- <br />
+providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** Properties:
 id, name, properties.resourceDetails.id,
-properties.displayName, properties.status, properties.additionalData
- <br />
+properties.displayName, properties.status, properties.additionalData<br />
  **Assessments:** 
  181ac480-f7c4-544b-9865-11b8ffe87f47 - Vulnerabilities in security
 configuration on your machines should be remediated.
@@ -519,13 +505,11 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
@@ -577,20 +561,13 @@ Azure Security Center provide various security recommendations for resources tha
 
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/
-providers/Microsoft.Security/assessments?api-version=2020-01-01
-<br>
+providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
  **Properties:** id, name, properties.resourceDetails.id,
-properties.displayName, properties.status, properties.additionalData
-<br>
+properties.displayName, properties.status, properties.additionalData<br>
  **Assessments:**  
- d57a4221-a804-52ca-3dea-768284f06bb7 - Disk encryption should
-be applied on virtual machines.
-<br>
-35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application
-controls for defining safe applications should be enabled on your
-machines.
-<br>ffff0522-1e88-47fc-8382-2a80ba848f5d - A vulnerability assessment
-solution should be enabled on your virtual machines.
+  d57a4221-a804-52ca-3dea-768284f06bb7 - Disk encryption should be applied on virtual machines.<br>
+ 35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application controls for defining safe applications should be enabled on your machines.<br>
+ ffff0522-1e88-47fc-8382-2a80ba848f5d  - A vulnerability assessmentsolution should be enabled on your virtual machines.
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
@@ -670,8 +647,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 - ARM API to list all extensions in a Virtual Machine:
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupId}/
 providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/
-extensions?api-version=2019-07-01
- <br />
+extensions?api-version=2019-07-01<br />
 **Properties:** properties.type, properties.publisher	
  <br />
 <!--
@@ -758,8 +734,7 @@ resource level:
 /subscriptions/{subscriptionId}/resourceGroups/
 {resourceGroupName}/providers/Microsoft.
 Compute/virtualMachines/{vmName}
-/extensions?api-version=2019-07-01
- <br />
+/extensions?api-version=2019-07-01<br />
 **Properties:** properties.type, properties.publisher
  <br />
 <!--
@@ -842,13 +817,11 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
@@ -923,13 +896,11 @@ One or more extensions may be required for maintaining data plane security hygie
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
@@ -994,13 +965,11 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
@@ -1071,13 +1040,11 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
@@ -1145,13 +1112,11 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
@@ -1214,13 +1179,11 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
+- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 
