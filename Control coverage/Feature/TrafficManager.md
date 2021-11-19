@@ -1,6 +1,6 @@
 # TrafficManager
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.Network/TrafficManager
 
 ___ 
 
@@ -51,8 +51,8 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 - ARM API to lists all Traffic Manager profiles within a subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/trafficmanagerprofiles?
 api-version=2018-04-01<br />
-**Properties:** properties.endpoints[*]
-properties.monitorConfig.protocol
+**Properties:** properties.endpoints[*],
+ properties.monitorConfig.protocol
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
