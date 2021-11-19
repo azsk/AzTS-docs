@@ -88,7 +88,7 @@ In this section we shall create a PowerBI report locally within PowerBI Desktop 
 
 **(b)** There are 2 PowerBI templates leveraged as of now: <br/>
 1) Compliance dashboard which can be used to get insights about controls compliance details for subscriptions getting scanned with AzTS. Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityReport.pbit?raw=1) for compliance dahboard (for Gov subs use template from [here](../TemplateFiles/TenantSecurityReport.Gov.pbit?raw=1)) to your local machine.<br/>
-2) Inventory dashboard which contains detailed inventory for resources and Secure Score for subscriptions being scanned. Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityInventoryReport.pbit?raw=1) for inventory dahboard. 
+2) Inventory dashboard which contains detailed inventory for resources and Secure Score for subscriptions being scanned. Download and copy the PowerBI template file from [here](../TemplateFiles/TenantSecurityInventoryReport.pbit?raw=1) for inventory dashboard. 
 
 **(c)** Open the template (.pbit) file using PowerBI Desktop, provide the LA Workspace ID and click on 'Load' as shown below:
 
