@@ -543,7 +543,7 @@ Azure Security Center provide various security recommendations for resources tha
 
 - **Azure Portal** 
 
-	 First, examine the detailed AzSK log file for this VM to find out the specific recommendations this control is currently failing for. Review the ASC documentation for those recommendations and implement the suggested fixes. (Note: Not all ASC recommendations are flagged by AzSK. So the first step is critical.). 1.For Disk encryption should be applied on virtual machines Refer:https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview , 2.For Adaptive application controls for defining safe applications should be enabled on your machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/adaptive-network-hardening , 3.For A vulnerability assessment solution should be enabled on your virtual machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/deploy-vulnerability-assessment-vm#deploy-the-integrated-scanner-to-your-azure-and-hybrid-machines.
+	 First, examine the detailed AzSK log file for this VM to find out the specific recommendations this control is currently failing for. Review the ASC documentation for those recommendations and implement the suggested fixes. (Note: Not all ASC recommendations are flagged by AzSK. So the first step is critical.). <br>1.For Disk encryption should be applied on virtual machines Refer:https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview <br> 2.For Adaptive application controls for defining safe applications should be enabled on your machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/adaptive-network-hardening <br> 3.For A vulnerability assessment solution should be enabled on your virtual machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/deploy-vulnerability-assessment-vm#deploy-the-integrated-scanner-to-your-azure-and-hybrid-machines.
 <!--
 - **PowerShell** 
 
@@ -575,7 +575,6 @@ properties.displayName, properties.status, properties.additionalData<br>
 **Properties:** 
 -->
  <br />
-<br />
 
 ___ 
 
@@ -656,8 +655,6 @@ extensions?api-version=2019-07-01<br />
 **Properties:** example-property
 -->
  <br />
-
-<br />
 
 ___ 
 
