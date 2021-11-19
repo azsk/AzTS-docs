@@ -1,6 +1,6 @@
 # VirtualMachine
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.Compute/virtualMachines
 
 ___ 
 
@@ -66,7 +66,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list virtual machine extensions at resource group level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01";<br />
+- Example ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
 **Properties:** Kind ,properties.Type ,properties.Publisher
  <br />
 <!--
@@ -145,11 +145,11 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list virtual machine extensions at resource group level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01";<br />
+- ARM API to list virtual machine extensions at resource group level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
 **Properties:** Kind, properties.Type ,properties.Publisher
  <br />
 <!--
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
+- Example-2 ARM API to list service and its related property at resource group level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 -->
@@ -287,7 +287,7 @@ No Public IP address is associated with VM.
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machines at subscription level:
-/subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** 
 properties.networkProfile.networkInterfaces[*].id<br />
 
@@ -364,7 +364,7 @@ api-version=2020-01-01<br />
  **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData <br />
 
 - ARM API to list Virtual Machines at subscription level:
-/subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01<br>
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01<br>
 **Properties:** properties.storageProfile.osDisk.caching, properties.storageProfile.diffDiskSettings.option
  <br />
 <br />
@@ -434,7 +434,7 @@ Azure Security Center raises alerts (which are typically indicative of resources
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/
 providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** Properties:
+**Properties:** 
 id, name, properties.resourceDetails.id,
 properties.displayName, properties.status, properties.additionalData<br />
  **Assessments:** 
@@ -566,8 +566,8 @@ providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
 properties.displayName, properties.status, properties.additionalData<br>
  **Assessments:**  
   d57a4221-a804-52ca-3dea-768284f06bb7 - Disk encryption should be applied on virtual machines.<br>
- 35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application controls for defining safe applications should be enabled on your machines.<br>
- ffff0522-1e88-47fc-8382-2a80ba848f5d  - A vulnerability assessmentsolution should be enabled on your virtual machines.
+  35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application controls for defining safe applications should be enabled on your machines.<br>
+  ffff0522-1e88-47fc-8382-2a80ba848f5d  - A vulnerability assessmentsolution should be enabled on your virtual machines.
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
