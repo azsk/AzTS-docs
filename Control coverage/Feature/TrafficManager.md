@@ -50,8 +50,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - ARM API to lists all Traffic Manager profiles within a subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/trafficmanagerprofiles?
-api-version=2018-04-01
- <br />
+api-version=2018-04-01<br />
 **Properties:** properties.endpoints[*]
 properties.monitorConfig.protocol
  <br />
