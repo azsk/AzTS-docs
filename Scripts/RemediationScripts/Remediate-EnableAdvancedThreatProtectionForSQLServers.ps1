@@ -87,7 +87,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql")
+    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql", "Az.Synapse")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
@@ -229,10 +229,15 @@ function Enable-AdvancedThreatProtectionForSqlServers
         # Get all Synapse Workspaces in a Subscription
         $synapseWorkspaces = Get-AzResource -ResourceType "Microsoft.Synapse/workspaces" -ErrorAction Stop
 
+        $standaloneSqlServers = $sqlServers
+
         # Filter SQL Servers not associated with a Synapse Workspace.
         # Synapse Workspace and the associated SQL Server have the same name.
         # Synapse Workspace names are unique.
-        $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName }
+        if ($synapseWorkspaces -ne $null)
+        {
+            $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName }
+        }
 
         $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
                                                                      @{N='ResourceGroupName';E={$_.ResourceGroupName}},
@@ -400,8 +405,6 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                                                              @{N='IsEmailAccountAdminsConfiguredAtSubscriptionLevel';E={$isEmailAccountAdminsConfiguredAtSubscriptionLevel}},
                                                                              @{N="IsAtpEnabledAtSubscriptionLevel";E={$isAtpEnabledAtSubscriptionLevel}},
                                                                              @{N="IsAtpConfigured";E={$isAtpConfigured}}
-
-                Write-Host "Error fetching Auditing and Advanced Threat Protection configuration: Resource ID - $($_.ResourceId), Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ServerName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             }
         }
         catch
@@ -931,7 +934,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4] SQL Server details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable Auditing and Advanced Threat Protection for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "*** It is recommended to keep this file and use it for any subsequent roll back post the remediation. ***" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`n*** It is recommended to keep this file and use it for any subsequent roll back post the remediation. ***" -ForegroundColor $([Constants]::MessageType.Info)
     }
 }
 
