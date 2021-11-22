@@ -160,6 +160,8 @@ function StartOperation{
             }
         }
         #tracker file formation
+        #Do we need tracker file? No
+        # Print the remediation summary.
     }
 }
 #Execution begins here
@@ -172,33 +174,3 @@ PrintSubscription
 Write-Host "`n"
 Write-Host $([Constants]::DoubleDashLine)
 StartOperation
-
-#$trackerFiles = @(Get-ChildItem TrackerFilesGenerated\*.json)
-# if($trackerFiles.Length -gt 0){
-#     $continueRemediation = Read-Host -Prompt "A previous remediation has been detected. Do you want to continue the remediation? (Press y for Yes)"
-#     if($continueRemediation -eq "y"){
-#         #remediate
-#     }
-#     elseif($continueRemediation -eq "n"){
-#         $rollback = Read-Host -Prompt "Do you want to rollback all the remediated controls to the state before the remediation has been done? (Press y for Yes)"
-#         if($rollback -eq "y"){
-#             rollback
-#         }
-#         else{
-#             Write-Host "Exiting..."
-#         }
-#     }
-#     else{
-#         Write-Host "Exiting..."
-#     }
-# }
-# else{
-#     $startRemediation = Read-Host -Prompt "Do you want to start remediation? (Press y for Yes)"
-#     if($startRemediation -eq "y"){
-#         Write-Host "Proceeding to start the remediation."
-#         #remediate
-#     }else{
-#         Write-Host "Exiting"
-#     }
-
-# } 

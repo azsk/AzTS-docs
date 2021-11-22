@@ -151,7 +151,11 @@ function Remove-AnonymousAccessOnContainers
 
         [switch]
         [Parameter(Mandatory = $false)]
-        $DryRun
+        $DryRun,
+
+        [switch]
+        [Parameter(Mandatory = $false)]
+        $AutoRemediation
     )
 
     if($RemediationType -eq "DisableAnonymousAccessOnContainers" -and [string]::IsNullOrWhiteSpace($Path))
@@ -244,24 +248,47 @@ function Remove-AnonymousAccessOnContainers
 
         # Fetching storage accounts details for remediation.
         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
-        $controls = $controlForRemediation.FailedControlSet
-        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
-
-        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
-        {
-            Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-            break
-        }
-        $resourceDetails.ResourceDetails | ForEach-Object { 
-            try
+        if($AutoRemediation){
+            $controls = $controlForRemediation.ControlRemediationList
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
+            
+            if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.FailedResourceList | Measure-Object).Count -eq 0)
             {
-                $resourceContext += Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName
-                $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
-            }
-            catch
-            {
-                Write-Host "Valid resource group(s) or resource name(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
                 break
+            }
+            $resourceDetails.FailedResourceList | ForEach-Object { 
+                try
+                {
+                    $resourceContext += Get-AzStorageAccount -Name $_.ResourceName -ResourceGroupName $_.ResourceGroupName
+                    $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
+                }
+                catch
+                {
+                    Write-Host "Valid resource group(s) or resource name(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    break
+                }
+            }
+            
+        }else{
+            $controls = $controlForRemediation.FailedControlSet
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
+            if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
+            {
+                Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+                break
+            }
+            $resourceDetails.ResourceDetails | ForEach-Object { 
+                try
+                {
+                    $resourceContext += Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName
+                    $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
+                }
+                catch
+                {
+                    Write-Host "Valid resource group(s) or resource name(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    break
+                }
             }
         }
     }
