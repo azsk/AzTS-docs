@@ -774,7 +774,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             $storageAccountNameSuffix = $storageAccountNameSuffix.Substring(0, 15)
                         }
 
-                        $storageAccountName = -join("auditlogs", $storageAccountNameSuffix)
+                        $storageAccountName = -join("auditlogs", $storageAccountNameSuffix.ToLower())
 
                         Write-Host "Creating a Storage Account for SQL Server: $($sqlServerInstance.ServerName)"
 
@@ -1058,7 +1058,7 @@ function Create-StorageAccountIfNotExists
 
     Write-Host "Checking if Storage Account - $($StorageAccountName) is present in Resource Group - $($ResourceGroupName)..."
 
-    $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName
+    $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Continue
 
     if ([String]::IsNullOrWhiteSpace($storageAccount))
     {
