@@ -334,7 +334,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
             $isAtpConfigured = $false
 
             # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-            if (-not $_.IsSynapseWorkspace)
+            if ($_.IsSynapseWorkspace -eq "False")
             {
                 # SQL Server is a stand-alone SQL Server.
                 # Get SQL Server audit details.
@@ -653,7 +653,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 if ($isAtpEnabledAtSubscriptionLevelNow -or $isContactDetailsConfiguredAtSubscriptionNow)
                 {
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if (-not $sqlServerInstance.IsSynapseWorkspace)
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
                     {
                         # SQL Server is a stand-alone SQL Server.
                         # Get SQL Server Advanced Threat Protection details.
@@ -767,7 +767,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     Write-Host "Enabling Auditing for SQL Server: $($sqlServerInstance.ServerName)"
 
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if (-not $sqlServerInstance.IsSynapseWorkspace)
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
                     {
                         # SQL Server is a stand-alone SQL Server.
                         $sqlServerAuditDetails = Set-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id -ErrorAction Continue
@@ -818,7 +818,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     }
 
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if (-not $sqlServerInstance.IsSynapseWorkspace)
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
                     {
                         # SQL Server is a stand-alone SQL Server.
                         $sqlServerAtpSetting = Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
@@ -1292,7 +1292,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
             if (-not $isAuditingDisabled)
             {
                 # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                if (-not $sqlServerInstance.IsSynapseWorkspace)
+                if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
                 {
                     # SQL Server is a stand-alone SQL Server.
                     # Any exceptions when disabling Auditing on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
@@ -1315,7 +1315,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
                 if (-not $sqlServerInstance.IsAtpEnabled)
                 {
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if (-not $sqlServerInstance.IsSynapseWorkspace)
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
                     {
                         # SQL Server is a stand-alone SQL Server.
                         # Any exceptions when disabling Advanced Threat Protection on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
@@ -1350,7 +1350,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
                     if (-not [String]::IsNullOrWhiteSpace($disabledAlerts) -or [String]::IsNullOrWhiteSpace($notificationRecipientsEmails))
                     {
                         # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                        if (-not $sqlServerInstance.IsSynapseWorkspace)
+                        if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
                         {
                             # SQL Server is a stand-alone SQL Server.
                             # Any exceptions when disabling Advanced Threat Protection on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
