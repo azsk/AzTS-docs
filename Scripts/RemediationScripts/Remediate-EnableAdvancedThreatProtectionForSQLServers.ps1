@@ -463,7 +463,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
         $userInput = Read-Host -Prompt "(Y|N)"
 
-        if ($userInput -eq "N")
+        if ($userInput -ne "Y")
         {
             Write-Host "Auditing and Advanced Threat Protection will not be enabled for any SQL Server. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             break
@@ -511,7 +511,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                     if ($hasPrivilegedRolesInSubscription)
                     {
-                        Write-Host "Current user [$($currentSub.Account.Id)] has the required permissions to enable Advanced Threat Protection at the Subscription level." -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host "Current user [$($context.Account.Id)] has the required permissions to enable Advanced Threat Protection at the Subscription level." -ForegroundColor $([Constants]::MessageType.Info)
                         Write-Host "Enabling Advanced Threat Protection for SQL servers in the Subscription" -ForegroundColor $([Constants]::MessageType.Warning)
 
                         $sqlServerPricingDetails = Set-AzSecurityPricing -Name "SqlServers" -PricingTier "Standard" -ErrorAction Continue
@@ -520,6 +520,25 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         {
                             $isAtpEnabledAtSubscriptionLevel = $true
                             $isAtpEnabledAtSubscriptionLevelNow = $true
+
+                            # Enabling Advanced Threat Protection at the Subscription level will also configure contact details. Hence, query them again.
+                            # Get contact details from Azure Security Center.
+                            $ascContactDetails = Get-AzSecurityContact -ErrorAction Stop
+
+                            if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
+                            {
+                                if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
+                                {
+                                    $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
+                                    $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ", "
+                                }
+
+                                if ($ascContactDetails[0].AlertsToAdmins -eq "on")
+                                {
+                                    $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $true
+                                }
+                            }
+
                             Write-Host "Advanced Threat Protection for SQL Servers successfully enabled in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
                         }
                         else
@@ -577,7 +596,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         Write-Host "*** Please use the Azure Portal to configure additional email addresses, if required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "*** Also, email notifications to Admins and Subscription Owners will be enabled. ***" -ForegroundColor $([Constants]::MessageType.Warning)
 
-                        $ascContactDetails = Set-AzSecurityContact -Name "$($context.Account.Id)" -Email "$($context.Account.Id)" -AlertAdmin $true -NotifyOnAlert $true -ErrorAction Continue
+                        $ascContactDetails = Set-AzSecurityContact -Name $context.Account.Id -Email $context.Account.Id -AlertAdmin -NotifyOnAlert -ErrorAction Continue
 
                         # Check if contact details are successfully configured on the Subscription.
                         if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
@@ -695,7 +714,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         $userInput = Read-Host -Prompt "(Y|N)"
 
-                        if ($userInput -eq "N")
+                        if ($userInput -ne "Y")
                         {
                             Write-Host "If you prefer a different destination for storing the audit logs, please configure them and run this script again to configure Advanced Threat Protection." -ForegroundColor $([Constants]::MessageType.Update)
                             Write-Host "Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
