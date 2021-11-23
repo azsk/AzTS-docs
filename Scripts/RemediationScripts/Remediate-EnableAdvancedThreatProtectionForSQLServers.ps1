@@ -842,6 +842,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         {
                             $notificationRecipientsEmails = $emailAddressesConfiguredAtSubscriptionLevel.Split(',') -join ';'
                         }
+
                         $emailAdmins = $isEmailAccountAdminsConfiguredAtSubscriptionLevel
 
                         # If no email address has already been configured at the Subscription level, or if email notifications to Admins and Subscription Owners is not enabled at the Subscription level, the current sign-in address will be used.
