@@ -635,7 +635,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
             else
             {
                 Write-Host "Warning: Current user [$($context.Account.Id)] does not have the required permissions to configure contact details in Azure Security Center." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host "One of the following roles is required to configure contact details in Azure Security Center: [$($requiredRoleDefinitionNames -join ", ")]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "One of the following roles is required to configure contact details in Azure Security Center: [$($privilegedRoleDefinitionNames -join ", ")]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
@@ -816,7 +816,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                     if ($isAuditingEnabled)
                     {
-                        Write-Host "Auditing is succesfully enabled for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Auditing is successfully enabled for SQL Server: $($sqlServerInstance.ServerName)"
                     }
                     else
                     {
@@ -879,7 +879,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                     if ($isAtpConfigured -eq $true)
                     {
-                        Write-Host "Advanced Threat Protection is succesfully configured for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Advanced Threat Protection is successfully configured for SQL Server: $($sqlServerInstance.ServerName)"
                     }
                     else
                     {
