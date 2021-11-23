@@ -522,7 +522,6 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             $isAtpEnabledAtSubscriptionLevelNow = $true
 
                             # Enabling Advanced Threat Protection at the Subscription level will also configure contact details. Hence, query them again.
-
                             # Get contact details from Azure Security Center.
                             $ascContactDetails = Get-AzSecurityContact -ErrorAction Stop
 
@@ -740,13 +739,13 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                             if (($storageAccount | Measure-Object).Count -ne 0)
                             {
-                                Write-Host "Centralized Storage Account successfully created." -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host "Centralized Storage Account already present or successfully created." -ForegroundColor $([Constants]::MessageType.Update)
                             }
                             else
                             {
                                 Write-Host "Error creating a centralized Storage Account to store the auditing logs." -ForegroundColor $([Constants]::MessageType.Error)
                                 Write-Host "Please ensure that you have sufficient permissions to create a Storage Account in this Resource Group." -ForegroundColor $([Constants]::MessageType.Error)
-                                Write-Host "You may also run this script again and configure individal Storage Accounts for each SQL Server." -ForegroundColor $([Constants]::MessageType.Error)
+                                Write-Host "You may also run this script again and configure individual Storage Accounts for each SQL Server." -ForegroundColor $([Constants]::MessageType.Error)
                                 Write-Host "Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                                 break
                             }
@@ -782,7 +781,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         if (($storageAccount | Measure-Object).Count -ne 0)
                         {
-                            Write-Host "Storage Account - $($storageAccountName) successfully created." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host "Storage Account - $($storageAccountName) already present or successfully created." -ForegroundColor $([Constants]::MessageType.Update)
                         }
                         else
                         {
@@ -837,7 +836,12 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     # If no email address has already been configured for the SQL Server, or if email notifications to Admins and Subscription Owners is not enabled, check if contact details have been configured at the Subscription level.
                     if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and $emailAdmins -eq $false)
                     {
-                        $notificationRecipientsEmails = $emailAddressesConfiguredAtSubscriptionLevel
+                        # Azure Security Center supports comma-separated email addresses.
+                        # Advanced Threat Protection supports semi-colon-separated email addresses.
+                        if ($emailAddressesConfiguredAtSubscriptionLevel.Length -gt 0)
+                        {
+                            $notificationRecipientsEmails = $emailAddressesConfiguredAtSubscriptionLevel.Split(',') -join ';'
+                        }
                         $emailAdmins = $isEmailAccountAdminsConfiguredAtSubscriptionLevel
 
                         # If no email address has already been configured at the Subscription level, or if email notifications to Admins and Subscription Owners is not enabled at the Subscription level, the current sign-in address will be used.
@@ -860,7 +864,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         # SQL Server is associated with a Synapse Workspace.
                         # Synapse Workspace and the associated SQL Server have the same name.
                         Update-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
-                        $sqlServerAtpSetting = Get-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
+                        $sqlServerAtpSetting = Get-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName
                     }
 
                     $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
@@ -936,6 +940,15 @@ function Enable-AdvancedThreatProtectionForSqlServers
             }
         }
 
+        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=20;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=10;Alignment="left"},
+                        @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
+                        @{Expression={$_.ResourceType};Label="Resource Type";Width=10;Alignment="left"},
+                        @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=10;Alignment="left"},
+                        @{Expression={$_.IsAuditingEnabled};Label="Is Auditing enabled?";Width=10;Alignment="left"},
+                        @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
+                        @{Expression={$_.IsAtpConfigured};Label="Is Advanced Threat Protection configured?";Width=10;Alignment="left"}
+
         Write-Host $([Constants]::SingleDashLine)
 
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -943,7 +956,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         if ($($remediatedSqlServers | Measure-Object).Count -gt 0)
         {
             Write-Host "Auditing and Advanced Threat Protection successfully enabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $remediatedSqlServers | Format-Table -Property ResourceId, ResourceGroupName, ServerName, ResourceType, IsSynapseWorkspace, StorageAccountName
+            $remediatedSqlServers | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
             $remediatedSqlServersFile = "$($backupFolderPath)\RemediatedSQLServers.csv"
@@ -954,7 +967,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         if ($($skippedSqlServers | Measure-Object).Count -gt 0)
         {
             Write-Host "Error enabling Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $skippedSqlServers | Format-Table -Property ResourceId, ResourceGroupName, ServerName, ResourceType, IsSynapseWorkspace, IsAuditingEnabled, StorageAccountName, IsAtpConfigured
+            $skippedSqlServers | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
             $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
@@ -1064,7 +1077,7 @@ function Create-StorageAccountIfNotExists
 
     $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Continue
 
-    if ([String]::IsNullOrWhiteSpace($storageAccount))
+    if (($storageAccount | Measure-Object).Count -eq 0)
     {
         Write-Host "Storage Account does not exist. Creating a new Storage Account with the specified information..." -ForegroundColor $([Constants]::MessageType.Warning)
         $storageAccount = New-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -SkuName Standard_LRS -Location "East US" -ErrorAction Continue
