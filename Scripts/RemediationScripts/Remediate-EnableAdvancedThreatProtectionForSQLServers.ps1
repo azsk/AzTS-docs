@@ -296,7 +296,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
         {
             $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
-            $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ", "
+            $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ','
         }
 
         if ($ascContactDetails[0].AlertsToAdmins -eq "on")
@@ -373,7 +373,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
             # Check if Advanced Threat Protection is configured on the SQL Server.
             $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
             $isAnyAlertDisabled = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.ExcludedDetectionTypes)
-            $disabledAlerts = $sqlServerAtpSetting.ExcludedDetectionTypes -join ", "
+            $disabledAlerts = $sqlServerAtpSetting.ExcludedDetectionTypes -join ','
             $isAnyEmailAddressConfigured = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.NotificationRecipientsEmails)
             $notificationRecipientsEmails = $sqlServerAtpSetting.NotificationRecipientsEmails
             $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
@@ -531,7 +531,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                 if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
                                 {
                                     $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
-                                    $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ", "
+                                    $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ','
                                 }
 
                                 if ($ascContactDetails[0].AlertsToAdmins -eq "on")
@@ -695,7 +695,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     # Check if Advanced Threat Protection is configured on the SQL Server.
                     $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
                     $isAnyAlertDisabled = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.ExcludedDetectionTypes)
-                    $disabledAlerts = $sqlServerAtpSetting.ExcludedDetectionTypes -join ", "
+                    $disabledAlerts = $sqlServerAtpSetting.ExcludedDetectionTypes -join ','
                     $isAnyEmailAddressConfigured = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.NotificationRecipientsEmails)
                     $notificationRecipientsEmails = $sqlServerAtpSetting.NotificationRecipientsEmails
                     $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
@@ -865,7 +865,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                     $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
                     $isAnyAlertDisabled = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.ExcludedDetectionTypes)
-                    $disabledAlerts = $sqlServerAtpSetting.ExcludedDetectionTypes -join ", "
+                    $disabledAlerts = $sqlServerAtpSetting.ExcludedDetectionTypes -join ','
                     $isAnyEmailAddressConfigured = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.NotificationRecipientsEmails)
                     $notificationRecipientsEmails = $sqlServerAtpSetting.NotificationRecipientsEmails
                     $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
