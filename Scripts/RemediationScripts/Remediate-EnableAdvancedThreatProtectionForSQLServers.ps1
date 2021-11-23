@@ -765,7 +765,16 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         # Storage Account name will be a concatenation of "auditlogs" + name of the SQL Server.
                         # Only the first 15 characters of the SQL Server's name will be considered, as there is a size limit of 24 characters for the name of a Storage Account.
-                        $storageAccountName = -join("auditlogs", ($sqlServerInstance.ServerName -replace "\W").Substring((0, 15)))
+                        # This will strip out non-alphanumeric characters as Storage Account names can only contain alphanumeric characters.
+                        $storageAccountNameSuffix = $sqlServerInstance.ServerName -replace "\W"
+
+                        # This check is required, else, String::Substring() will throw an error for strings less than 15 characters.
+                        if ($storageAccountNameSuffix.Length -gt 15)
+                        {
+                            $storageAccountNameSuffix = $storageAccountNameSuffix.Substring(0, 15)
+                        }
+
+                        $storageAccountName = -join("auditlogs", $storageAccountNameSuffix)
 
                         Write-Host "Creating a Storage Account for SQL Server: $($sqlServerInstance.ServerName)"
 
@@ -1212,8 +1221,8 @@ function Disable-AdvancedThreatProtectionForSqlServers
     # We are relying on the state from the dry run output, i.e. before the remediation.
     # If any email addresses were configured or email notifications were enabled for Admins and Subscription Owners were enabled, these were done prior to the remediation.
     # Check is there are any Subscription level changes that are to be rolled back.
-    $isAnyEmailAddressConfiguredAtSubscriptionLevel = $validSqlServerDetails.IsAnyEmailAddressConfiguredAtSubscriptionLevel
-    $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $validSqlServerDetails.IsEmailAccountAdminsConfiguredAtSubscriptionLevel
+    $isAnyEmailAddressConfiguredAtSubscriptionLevel = $validSqlServerDetails[0].IsAnyEmailAddressConfiguredAtSubscriptionLevel
+    $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $validSqlServerDetails[0].IsEmailAccountAdminsConfiguredAtSubscriptionLevel
 
     if ($isAnyEmailAddressConfiguredAtSubscriptionLevel -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel)
     {
