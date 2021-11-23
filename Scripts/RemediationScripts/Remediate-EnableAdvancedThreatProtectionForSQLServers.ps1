@@ -691,7 +691,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         Write-Host "Auditing requires one or more of Storage Account, Log Analytics Workspace or Event Hub to be configured for storing the audit logs." -ForegroundColor $([Constants]::MessageType.Info)
                         Write-Host "*** This script supports only Storage Accounts as a destination for storing the audit logs. ***" -ForegroundColor $([Constants]::MessageType.Info)
-                        Write-Host "Do you still want to proceed?" -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host "Do you still want to proceed?" -ForegroundColor $([Constants]::MessageType.Info) -NoNewline
 
                         $userInput = Read-Host -Prompt "(Y|N)"
 
