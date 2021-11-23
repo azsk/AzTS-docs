@@ -727,6 +727,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         if ($userInput -eq "Y")
                         {
+                            $isCentralStorageAccount = $true
+
                             Write-Host "You can use a previously created Storage Account to store the auditing logs by specifying its Name and Resource Group." -ForegroundColor $([Constants]::MessageType.Info)
                             Write-Host "If no such Storage Account exists, a new Storage Account with the specified name will be created to store the auditing logs." -ForegroundColor $([Constants]::MessageType.Info)
                             Write-Host "In this case, the Resource Group needs to be already present. If not, create the Resource Group and resume." -ForegroundColor $([Constants]::MessageType.Info)
@@ -749,8 +751,6 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                 Write-Host "Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                                 break
                             }
-
-                            $isCentralStorageAccount = $true
                         }
                         else
                         {
@@ -940,14 +940,13 @@ function Enable-AdvancedThreatProtectionForSqlServers
             }
         }
 
-        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=10;Alignment="left"},
-                        @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
-                        @{Expression={$_.ResourceType};Label="Resource Type";Width=10;Alignment="left"},
+        $colsProperty = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
+                        @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
+                        @{Expression={$_.ResourceType};Label="Resource Type";Width=20;Alignment="left"},
                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=10;Alignment="left"},
                         @{Expression={$_.IsAuditingEnabled};Label="Is Auditing enabled?";Width=10;Alignment="left"},
-                        @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
-                        @{Expression={$_.IsAtpConfigured};Label="Is Advanced Threat Protection configured?";Width=10;Alignment="left"}
+                        @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=20;Alignment="left"},
+                        @{Expression={$_.IsAtpConfigured};Label="Is Advanced Threat Protection configured?";Width=20;Alignment="left"}
 
         Write-Host $([Constants]::SingleDashLine)
 
