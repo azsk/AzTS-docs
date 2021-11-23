@@ -798,14 +798,14 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
-                        Set-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id
+                        Set-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id -ErrorAction Continue
                         $sqlServerAuditDetails = Get-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                     }
                     else
                     {
                         # SQL Server is associated with a Synapse Workspace.
                         # Synapse Workspace and the associated SQL Server have the same name.
-                        Set-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id
+                        Set-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id -ErrorAction Continue
                         $sqlServerAuditDetails = Get-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName
                     }
 
@@ -833,8 +833,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     # If emails to Admins and Subscription Owners is enabled, retain that.
                     $emailAdmins = $sqlServerInstance.IsEmailAccountAdminsConfigured
 
-                    # If no email address has already been configured for the SQL Server, or if email notifications to Admins and Subscription Owners is not enabled, check if contact details have been configured at the Subscription level.
-                    if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and $emailAdmins -eq $false)
+                    # If no email address has already been configured for the SQL Server, and if email notifications to Admins and Subscription Owners is not enabled, check if contact details have been configured at the Subscription level.
+                    if ($notificationRecipientsEmails.Length -eq 0 -and $emailAdmins -eq $false)
                     {
                         # Azure Security Center supports comma-separated email addresses.
                         # Advanced Threat Protection supports semi-colon-separated email addresses.
@@ -845,11 +845,16 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         $emailAdmins = $isEmailAccountAdminsConfiguredAtSubscriptionLevel
 
-                        # If no email address has already been configured at the Subscription level, or if email notifications to Admins and Subscription Owners is not enabled at the Subscription level, the current sign-in address will be used.
-                        if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and $emailAdmins -eq $false)
+                        # If no email address has already been configured at the Subscription level, and if email notifications to Admins and Subscription Owners is not enabled at the Subscription level, the current sign-in address will be used.
+                        if ($notificationRecipientsEmails.Length -eq 0 -and $emailAdmins -eq $false)
                         {
                             $notificationRecipientsEmails = $context.Account.Id
                             $emailAdmins = $true
+                        }
+                        else
+                        {
+                            $notificationRecipientsEmails = [String]::Empty
+                            $emailAdmins = $false
                         }
                     }
 
@@ -1241,7 +1246,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
     $isAnyEmailAddressConfiguredAtSubscriptionLevel = $validSqlServerDetails[0].IsAnyEmailAddressConfiguredAtSubscriptionLevel
     $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $validSqlServerDetails[0].IsEmailAccountAdminsConfiguredAtSubscriptionLevel
 
-    if ($isAnyEmailAddressConfiguredAtSubscriptionLevel -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel)
+    if ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true)
     {
         Write-Host "Contact details were already configured at the Subscription level. These were not configured during the remediation." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "These changes will not be rolled back." -ForegroundColor $([Constants]::MessageType.Update)
@@ -1259,9 +1264,11 @@ function Disable-AdvancedThreatProtectionForSqlServers
         {
             # Current user was added as a contact during the remediation.
             # Reset contact details in Azure Security Center.
-            $isContactRemoved = Remove-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
+            Remove-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
-            if ($isContactRemoved)
+            $isContactRemoved = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
+
+            if (($isContactRemoved | Measure-Object).Count -eq 0)
             {
                 Write-Host "Contact details of the current user successfully removed from Azure Security Center." -ForegroundColor $([Constants]::MessageType.Update)
             }
@@ -1279,7 +1286,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
 
     $isAtpEnabledAtSubscriptionLevel = $validSqlServerDetails.IsAtpEnabledAtSubscriptionLevel
 
-    if ($isAtpEnabledAtSubscriptionLevel)
+    if ($isAtpEnabledAtSubscriptionLevel -eq $true)
     {
         Write-Host "Advanced Threat Protection for SQL Servers was already configured at the Subscription level. These were not configured during the remediation." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "These changes will not be rolled back." -ForegroundColor $([Constants]::MessageType.Update)
@@ -1328,58 +1335,71 @@ function Disable-AdvancedThreatProtectionForSqlServers
         try
         {
             $sqlServerInstance = $_
-            $isAuditingDisabled = -not $sqlServerInstance.IsAuditingEnabled
+            $isAuditingEnabled = $sqlServerInstance.IsAuditingEnabled
             $isAtpConfigured = $sqlServerInstance.IsAtpConfigured
 
             Write-Host "Rolling back any changes made to SQL Server: Resource ID - $($sqlServerInstance.ResourceId)" -ForegroundColor $([Constants]::MessageType.Info)
 
             # The dry run output from prior to the remediation is used as a reference for rollback.
             # If Auditing is disabled in that output, it means, it was enabled during the remediation and this needs to be rolled back now.
-            if (-not $isAuditingDisabled)
+            if ($isAuditingEnabled -eq $false)
             {
                 # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
+                if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                 {
                     # SQL Server is a stand-alone SQL Server.
                     # Any exceptions when disabling Auditing on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
                     Remove-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ErrorAction Continue
-                    $isAuditingDisabled = $true
+                    $sqlServerAuditDetails = Get-AzSqlServerAudit -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -ErrorAction Continue
                 }
                 else
                 {
                     # SQL Server is associated with a Synapse Workspace.
                     # Synapse Workspace and the associated SQL Server have the same name.
                     # Any exceptions when disabling Auditing on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
-                    Remove-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ErrorAction Continue
-                    $isAuditingDisabled = $true
+                    Reset-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ErrorAction Continue
+                    $sqlServerAuditDetails = Get-AzSynapseSqlAuditSetting -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -ErrorAction Continue
                 }
+
+                $isAuditingEnabled = (-not [String]::IsNullOrWhiteSpace($sqlServerAuditDetails) -and ($sqlServerAuditDetails.BlobStorageTargetState -eq "Enabled" -or
+                                                                                                      $sqlServerAuditDetails.EventHubTargetState -eq "Enabled" -or
+                                                                                                      $sqlServerAuditDetails.LogAnalyticsTargetState -eq "Enabled"))
             }
 
-            if (-not $isAtpConfigured)
+            if ($isAtpConfigured -eq $false)
             {
                 # If Advanced Threat Protection was not previously enabled, it will now be disabled.
-                if (-not $sqlServerInstance.IsAtpEnabled)
+                if ($sqlServerInstance.IsAtpEnabled -eq $false)
                 {
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
                         # Any exceptions when disabling Advanced Threat Protection on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
                         Clear-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
+                        $sqlServerAtpSetting = Get-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                     }
                     else
                     {
                         # SQL Server is associated with a Synapse Workspace.
                         # Synapse Workspace and the associated SQL Server have the same name.
                         # Any exceptions when disabling Advanced Threat Protection on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
-                        Reset-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName
+                        Clear-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName
+                        $sqlServerAtpSetting = Get-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName
+                    }
+
+                    if ($sqlServerAtpSetting.ThreatDetectionState -eq "Enabled")
+                    {
+                        $isAtpConfigured = $true
                     }
                 }
                 else
                 {
                     # If Advanced Threat Protection was already enabled, but, changes were made to not exclude any alerts and/or email recipients were added, only those changes will be rolled back.
                     # Advanced Threat Protection will continue to be enabled.
+                    $disabledAlerts = @()
                     $disabledAlerts = $sqlServerInstance.DisabledAlerts
+                    $disabledAlerts = $disabledAlerts -split ','
                     $notificationRecipientsEmails = $sqlServerInstance.NotificationRecipientsEmails
                     $isEmailAccountAdminsConfigured = $sqlServerInstance.IsEmailAccountAdminsConfigured
 
@@ -1396,26 +1416,31 @@ function Disable-AdvancedThreatProtectionForSqlServers
                     if (-not [String]::IsNullOrWhiteSpace($disabledAlerts) -or [String]::IsNullOrWhiteSpace($notificationRecipientsEmails))
                     {
                         # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                        if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
+                        if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                         {
                             # SQL Server is a stand-alone SQL Server.
                             # Any exceptions when disabling Advanced Threat Protection on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
-                            $sqlServerAuditDetails = Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ExcludedDetectionType $disabledAlerts -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
-                            $isAtpConfigured = $false
+                            Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ExcludedDetectionType $disabledAlerts -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
+                            $sqlServerAtpSetting = Get-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                         }
                         else
                         {
                             # SQL Server is associated with a Synapse Workspace.
                             # Synapse Workspace and the associated SQL Server have the same name.
                             # Any exceptions when disabling Advanced Threat Protection on the SQL Server will be caught and the SQL Server will be considered as skipped for roll back.
-                            $sqlServerAuditDetails = Update-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ExcludedDetectionType $disabledAlerts -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
-                            $isAtpConfigured = $false
+                            $sqlServerAtpSetting = Update-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ExcludedDetectionType $disabledAlerts -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
                         }
                     }
+
+                    $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
+                    $isAnyAlertDisabled = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.ExcludedDetectionTypes)
+                    $isAnyEmailAddressConfigured = -not [String]::IsNullOrWhiteSpace($sqlServerAtpSetting.NotificationRecipientsEmails)
+                    $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
+                    $isAtpConfigured = $isAtpEnabled -eq $true -and $isAnyAlertDisabled -eq $false -and ($isAnyEmailAddressConfigured -eq $true -or $isEmailAccountAdminsConfigured -eq $true)
                 }
             }
 
-            if ($isAuditingDisabled -or -not $isAtpConfigured)
+            if ($isAuditingEnabled -eq $false -and $isAtpConfigured -eq $false)
             {
                  $rolledBackSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
                                                                              @{N='ResourceGroupName';E={$sqlServerInstance.ResourceGroupName}},
@@ -1453,6 +1478,13 @@ function Disable-AdvancedThreatProtectionForSqlServers
         }
     }
 
+    $colsProperty = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
+                    @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
+                    @{Expression={$_.ResourceType};Label="Resource Type";Width=20;Alignment="left"},
+                    @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=10;Alignment="left"},
+                    @{Expression={$_.IsAuditingEnabled};Label="Is Auditing enabled?";Width=10;Alignment="left"},
+                    @{Expression={$_.IsAtpConfigured};Label="Is Advanced Threat Protection configured?";Width=20;Alignment="left"}
+
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "RollBack Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -1460,7 +1492,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
     if ($($rolledBackSqlServers | Measure-Object).Count -gt 0)
     {
         Write-Host "Auditing and Advanced Threat Protection successfully disabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
-        $rolledBackSqlServers | Format-Table -Property ResourceId, ResourceGroupName, ServerName, ResourceType, IsSynapseWorkspace, IsAuditingEnabled, IsAtpConfigured
+        $rolledBackSqlServers | Format-Table -Property $colsProperty -Wrap
 
         # Write this to a file.
         $rolledBackSqlServersFile = "$($backupFolderPath)\RolledBackSQLServers.csv"
@@ -1471,7 +1503,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
     if ($($skippedSqlServers | Measure-Object).Count -gt 0)
     {
         Write-Host "Error disabling Auditing and Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
-        $skippedSqlServers |  Format-Table -Property ResourceId, ResourceGroupName, ServerName, ResourceType, IsSynapseWorkspace, IsAuditingEnabled, IsAtpConfigured
+        $skippedSqlServers |  Format-Table -Property $colsProperty -Wrap
 
         # Write this to a file.
         $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
