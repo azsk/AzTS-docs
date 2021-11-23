@@ -860,7 +860,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         # SQL Server is associated with a Synapse Workspace.
                         # Synapse Workspace and the associated SQL Server have the same name.
                         Update-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
-                        $sqlServerAtpSetting = Get-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
+                        $sqlServerAtpSetting = Get-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                     }
 
                     $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
