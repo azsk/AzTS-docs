@@ -87,7 +87,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql", "Az.Synapse")
+    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql", "Az.Synapse", "Az.Security")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
@@ -234,7 +234,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         # Filter SQL Servers not associated with a Synapse Workspace.
         # Synapse Workspace and the associated SQL Server have the same name.
         # Synapse Workspace names are unique.
-        if ($synapseWorkspaces -ne $null)
+        if (($synapseWorkspaces | Measure-Object).Count -gt 0)
         {
             $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName }
         }
@@ -291,7 +291,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
     # Get contact details from Azure Security Center.
     $ascContactDetails = Get-AzSecurityContact -ErrorAction Stop
 
-    if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
+    if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and ($ascContactDetails | Measure-Object).Count -gt 0)
     {
         if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
         {
@@ -334,7 +334,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
             $isAtpConfigured = $false
 
             # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-            if ($_.IsSynapseWorkspace -eq "False")
+            if ($_.IsSynapseWorkspace -eq $false)
             {
                 # SQL Server is a stand-alone SQL Server.
                 # Get SQL Server audit details.
@@ -378,10 +378,10 @@ function Enable-AdvancedThreatProtectionForSqlServers
             $notificationRecipientsEmails = $sqlServerAtpSetting.NotificationRecipientsEmails
             $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
 
-            $isAtpConfigured = $isAtpEnabled -and (-not $isAnyAlertDisabled) -and ($isAnyEmailAddressConfiguredAtSubscriptionLevel -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -or $isAnyEmailAddressConfigured -or $isEmailAccountAdminsConfigured)
+            $isAtpConfigured = $isAtpEnabled -eq $true -and $isAnyAlertDisabled -eq $false -and ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true -or $isAnyEmailAddressConfigured -eq $true -or $isEmailAccountAdminsConfigured -eq $true)
 
             # Check if Auditing and Advanced Threat Protection are enabled on the SQL Server.
-            if ($isAuditingEnabled -and $isAtpConfigured)
+            if ($isAuditingEnabled -eq $true -and $isAtpConfigured -eq $true)
             {
                 $sqlServersWithThreatDetectionEnabled += $_
                 Write-Host "Auditing and Advanced Threat Protection is already enabled on the SQL Server. Resource ID - $($_.ResourceId), Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ServerName)." -ForegroundColor $([Constants]::MessageType.Info)
@@ -495,7 +495,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         # Flag to indicate if contact details were configured as a part of this remediation.
         $isContactDetailsConfiguredAtSubscriptionNow = $false
 
-        if (-not $isAtpEnabledAtSubscriptionLevel)
+        if ($isAtpEnabledAtSubscriptionLevel -eq $false)
         {
             Write-Host "Advanced Threat Protection for SQL Servers is not enabled at the Subscription level." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to enable Advanced Threat Protection for SQL Servers at the Subscription level? This will configure Advanced Threat Protection for all SQL Servers in the Subscription." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
@@ -522,10 +522,11 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             $isAtpEnabledAtSubscriptionLevelNow = $true
 
                             # Enabling Advanced Threat Protection at the Subscription level will also configure contact details. Hence, query them again.
+
                             # Get contact details from Azure Security Center.
                             $ascContactDetails = Get-AzSecurityContact -ErrorAction Stop
 
-                            if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
+                            if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and ($ascContactDetails | Measure-Object).Count -gt 0)
                             {
                                 if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
                                 {
@@ -572,7 +573,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
             }
         }
 
-        if (-not ($isAnyEmailAddressConfiguredAtSubscriptionLevel -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel))
+        if (-not ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true))
         {
             Write-Host "Contact details are not configured in Azure Security Center." -ForegroundColor $([Constants]::MessageType.Warning)
 
@@ -596,7 +597,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         Write-Host "*** Please use the Azure Portal to configure additional email addresses, if required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "*** Also, email notifications to Admins and Subscription Owners will be enabled. ***" -ForegroundColor $([Constants]::MessageType.Warning)
 
-                        $ascContactDetails = Set-AzSecurityContact -Name $context.Account.Id -Email $context.Account.Id -AlertAdmin -NotifyOnAlert -ErrorAction Continue
+                        $ascContactDetails = Set-AzSecurityContact -Name "$($context.Account.Id)" -Email "$($context.Account.Id)" -AlertAdmin -NotifyOnAlert -ErrorAction Continue
 
                         # Check if contact details are successfully configured on the Subscription.
                         if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
@@ -672,7 +673,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 if ($isAtpEnabledAtSubscriptionLevelNow -or $isContactDetailsConfiguredAtSubscriptionNow)
                 {
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
                         # Get SQL Server Advanced Threat Protection details.
@@ -699,10 +700,10 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     $notificationRecipientsEmails = $sqlServerAtpSetting.NotificationRecipientsEmails
                     $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
 
-                    $isAtpConfigured = $isAtpEnabled -and (-not $isAnyAlertDisabled) -and ($isAnyEmailAddressConfiguredAtSubscriptionLevel -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -or $isAnyEmailAddressConfigured -or $isEmailAccountAdminsConfigured)
+                    $isAtpConfigured = $isAtpEnabled -eq $true -and $isAnyAlertDisabled -eq $false -and ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true -or $isAnyEmailAddressConfigured -eq $true -or $isEmailAccountAdminsConfigured -eq $true)
                 }
 
-                if (-not $isAuditingEnabled)
+                if ($isAuditingEnabled -eq $false)
                 {
                     if (-not $isStorageAccountPreferenceDecided)
                     {
@@ -737,7 +738,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                             $storageAccount = Create-StorageAccountIfNotExists $storageAccountResourceGroupName $storageAccountName
 
-                            if (-not [String]::IsNullOrWhiteSpace($storageAccount))
+                            if (($storageAccount | Measure-Object).Count -ne 0)
                             {
                                 Write-Host "Centralized Storage Account successfully created." -ForegroundColor $([Constants]::MessageType.Update)
                             }
@@ -770,7 +771,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         $storageAccount = Create-StorageAccountIfNotExists $storageAccountResourceGroupName $storageAccountName
 
-                        if (-not [String]::IsNullOrWhiteSpace($storageAccount))
+                        if (($storageAccount | Measure-Object).Count -ne 0)
                         {
                             Write-Host "Storage Account - $($storageAccountName) successfully created." -ForegroundColor $([Constants]::MessageType.Update)
                         }
@@ -786,7 +787,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     Write-Host "Enabling Auditing for SQL Server: $($sqlServerInstance.ServerName)"
 
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
                         $sqlServerAuditDetails = Set-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id -ErrorAction Continue
@@ -814,7 +815,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     }
                 }
 
-                if (-not $isAtpConfigured)
+                if ($isAtpConfigured -eq $false)
                 {
                     # If an email address has already been configured for the SQL Server, retain that.
                     $notificationRecipientsEmails = $sqlServerInstance.NotificationRecipientsEmails
@@ -823,13 +824,13 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     $emailAdmins = $sqlServerInstance.IsEmailAccountAdminsConfigured
 
                     # If no email address has already been configured for the SQL Server, or if email notifications to Admins and Subscription Owners is not enabled, check if contact details have been configured at the Subscription level.
-                    if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and -not $emailAdmins)
+                    if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and $emailAdmins -eq $false)
                     {
                         $notificationRecipientsEmails = $emailAddressesConfiguredAtSubscriptionLevel
                         $emailAdmins = $isEmailAccountAdminsConfiguredAtSubscriptionLevel
 
                         # If no email address has already been configured at the Subscription level, or if email notifications to Admins and Subscription Owners is not enabled at the Subscription level, the current sign-in address will be used.
-                        if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and -not $emailAdmins)
+                        if ([String]::IsNullOrWhiteSpace($notificationRecipientsEmails) -and $emailAdmins -eq $false)
                         {
                             $notificationRecipientsEmails = $context.Account.Id
                             $emailAdmins = $true
@@ -837,7 +838,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     }
 
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
-                    if ($sqlServerInstance.IsSynapseWorkspace -eq "False")
+                    if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
                         $sqlServerAtpSetting = Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
@@ -857,9 +858,9 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     $isEmailAccountAdminsConfigured = $sqlServerAtpSetting.EmailAdmins
 
                     # Check if Advanced Threat Protection is configured.
-                    $isAtpConfigured = $isAtpEnabled -and (-not $isAnyAlertDisabled) -and ($isAnyEmailAddressConfiguredAtSubscriptionLevel -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -or $isAnyEmailAddressConfigured -or $isEmailAccountAdminsConfigured)
+                    $isAtpConfigured = $isAtpEnabled -eq $true -and $isAnyAlertDisabled -eq $false -and ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true -or $isAnyEmailAddressConfigured -eq $true -or $isEmailAccountAdminsConfigured -eq $true)
 
-                    if ($isAtpConfigured)
+                    if ($isAtpConfigured -eq $true)
                     {
                         Write-Host "Advanced Threat Protection is succesfully configured for SQL Server: $($sqlServerInstance.ServerName)"
                     }
@@ -870,7 +871,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     }
                 }
 
-                if ($isAuditingEnabled -and $isAtpConfigured)
+                if ($isAuditingEnabled -eq $true -and $isAtpConfigured -eq $true)
                 {
                     $remediatedSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
                                                                                 @{N='ResourceGroupName';E={$sqlServerInstance.ResourceGroupName}},
