@@ -799,13 +799,15 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
-                        $sqlServerAuditDetails = Set-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id -ErrorAction Continue
+                        Set-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id
+                        $sqlServerAuditDetails = Get-AzSqlServerAudit -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                     }
                     else
                     {
                         # SQL Server is associated with a Synapse Workspace.
                         # Synapse Workspace and the associated SQL Server have the same name.
-                        $sqlServerAuditDetails = Set-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id -ErrorAction Continue
+                        Set-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccount.Id
+                        $sqlServerAuditDetails = Get-AzSynapseSqlAuditSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName
                     }
 
                     # Auditing is enabled if one or more of BlobStorageTargetState, EventHubTargetState or LogAnalyticsTargetState is enabled.
@@ -850,13 +852,15 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
                     {
                         # SQL Server is a stand-alone SQL Server.
-                        $sqlServerAtpSetting = Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
+                        Update-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
+                        $sqlServerAtpSetting = Get-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                     }
                     else
                     {
                         # SQL Server is associated with a Synapse Workspace.
                         # Synapse Workspace and the associated SQL Server have the same name.
-                        $sqlServerAtpSetting = Update-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
+                        Update-AzSynapseSqlAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -WorkspaceName $sqlServerInstance.ServerName -ExcludedDetectionType "" -NotificationRecipientsEmail "$($notificationRecipientsEmails)" -EmailAdmin $emailAdmins
+                        $sqlServerAtpSetting = Get-AzSqlServerAdvancedThreatProtectionSetting -ResourceGroupName $sqlServerInstance.ResourceGroupName -ServerName $sqlServerInstance.ServerName
                     }
 
                     $isAtpEnabled = $sqlServerAtpSetting.ThreatDetectionState -eq "Enabled"
