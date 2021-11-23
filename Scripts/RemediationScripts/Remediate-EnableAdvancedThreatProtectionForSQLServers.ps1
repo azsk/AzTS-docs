@@ -236,7 +236,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         # Synapse Workspace names are unique.
         if (($synapseWorkspaces | Measure-Object).Count -gt 0)
         {
-            $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName }
+            $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName } -PassThru
         }
 
         $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
@@ -733,8 +733,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             Write-Host "In this case, the Resource Group needs to be already present. If not, create the Resource Group and resume." -ForegroundColor $([Constants]::MessageType.Info)
                             Write-Host "Please ensure that you have sufficient permissions to create/access the Storage Account." -ForegroundColor $([Constants]::MessageType.Info)
 
-                            $storageAccountResourceGroupName = Read-Host -Prompt "Resource Group Name: "
-                            $storageAccountName = Read-Host -Prompt "Storage Account Name: "
+                            $storageAccountResourceGroupName = Read-Host -Prompt "Resource Group Name"
+                            $storageAccountName = Read-Host -Prompt "Storage Account Name"
 
                             $storageAccount = Create-StorageAccountIfNotExists $storageAccountResourceGroupName $storageAccountName
 
