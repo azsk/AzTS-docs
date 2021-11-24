@@ -508,7 +508,6 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 {
                     $isPrivilegedRoleChecked = $true
                     $hasPrivilegedRolesInSubscription = Check-HasRolesInScope "$($context.Account.Id)" "/subscriptions/$($context.Subscription.Id)" $privilegedRoleDefinitionNames
-                    $hasPrivilegedRolesInSubscription = $true
                     if ($hasPrivilegedRolesInSubscription)
                     {
                         Write-Host "Current user [$($context.Account.Id)] has the required permissions to enable Advanced Threat Protection at the Subscription level." -ForegroundColor $([Constants]::MessageType.Info)
