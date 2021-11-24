@@ -1075,7 +1075,7 @@ function Create-StorageAccountIfNotExists
 
     Write-Host "Checking if Storage Account - $($StorageAccountName) is present in Resource Group - $($ResourceGroupName)..."
 
-    $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction silentlyContinue
+    $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Continue
 
     if (($storageAccount | Measure-Object).Count -eq 0)
     {
@@ -1253,7 +1253,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
         # This is assuming remediation and roll back are being done by the same user.
 
         # Get contact details from Azure Security Center.
-        $ascContactDetails = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction SilentlyContinue
+        $ascContactDetails = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
         if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
         {
@@ -1261,7 +1261,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
             # Reset contact details in Azure Security Center.
             Remove-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
-            $isContactRemoved = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction SilentlyContinue
+            $isContactRemoved = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
             if (($isContactRemoved | Measure-Object).Count -eq 0)
             {
