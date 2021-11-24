@@ -27,39 +27,39 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to enable Transparent Data Encryption (TDE) on the SQL Server databases in the Subscription. Refer `Examples`, below.
+        3. Execute the script to enable Transparent Data Encryption (TDE) on the SQL Servers in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to disable Transparent Data Encryption (TDE) on the SQL Server databases in the Subscription. Refer `Examples`, below.
+        3. Execute the script to disable Transparent Data Encryption (TDE) on the SQL Servers in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
         1. To review the SQL Server database details in a Subscription that will be remediated:
     
-           Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
+           Enable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
         2. To enable Transparent Data Encryption (TDE) on the SQL Server databases in a Subscription:
        
-           Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000
+           Enable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000
 
         3. To enable Transparent Data Encryption (TDE) on the SQL Server databases in a Subscription, from a previously taken snapshot:
        
-           Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
+           Enable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServers\sqlServersWithTDEDisabled.csv
 
         To know more about the options supported by the remediation command, execute:
         
-        Get-Help Enable-TransparentDataEncryptionForSQLDatabases -Detailed
+        Get-Help Enable-TransparentDataEncryptionForSQLServers -Detailed
 
     To roll back:
         1. To disable Transparent Data Encryption (TDE) on the SQL Server databases in a Subscription, from a previously taken snapshot:
 
-           Disable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
+           Disable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServers\sqlServersWithTDEDisabled.csv
         
         To know more about the options supported by the roll back command, execute:
         
-        Get-Help Disable-TransparentDataEncryptionForSQLDatabases -Detailed        
+        Get-Help Disable-TransparentDataEncryptionForSQLServers -Detailed        
 ###>
 
 function Setup-Prerequisites
@@ -86,7 +86,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Sql")
+    $requiredModules = @("Az.Accounts", "Az.Sql", "Az.Synapse")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
@@ -107,7 +107,7 @@ function Setup-Prerequisites
     }
 }
 
-function Enable-TransparentDataEncryptionForSQLDatabases
+function Enable-TransparentDataEncryptionForSQLServers
 {
     <#
         .SYNOPSIS
@@ -133,13 +133,13 @@ function Enable-TransparentDataEncryptionForSQLDatabases
         Specifies the path to the file to be used as input for the remediation.
 
         .EXAMPLE
-        PS> Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Enable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Enable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\SQLServerDatabasesWithTDEDisabled.csv
+        PS> Enable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServers\sqlServersWithTDEDisabled.csv
 
         .LINK
         None
@@ -222,12 +222,6 @@ function Enable-TransparentDataEncryptionForSQLDatabases
     $sqlServersResources = @()
     $databaseList = @()
 
-    # Includes SQL Servers where Transparent Data Encryption (TDE) is enabled.
-    $sqlServerDatabasesWithTDEEnabled = @()
-
-    # Includes SQL Servers where Transparent Data Encryption (TDE) is not enabled.
-    $sqlServerDatabasesWithTDEDisabled = @()
-
     # Includes SQL Servers that were skipped during remediation. There were errors remediating them.
     $skippedSQLServerDatabases = @()
 
@@ -236,9 +230,33 @@ function Enable-TransparentDataEncryptionForSQLDatabases
     {
         Write-Host "Fetching all SQL Servers in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
-        # Get all SQL Servers in a Subscription      
-        $sqlServersResources = Get-AzSqlServer
-        $totalSQLServers = ($sqlServersResources | Measure-Object).Count
+        $sqlServerResources = @()
+
+        # Get all SQL Servers in a Subscription
+        $sqlServers = Get-AzResource -ResourceType "Microsoft.Sql/servers" -ErrorAction Stop
+
+        # Get all Synapse Workspaces in a Subscription
+        $synapseWorkspaces = Get-AzResource -ResourceType "Microsoft.Synapse/workspaces" -ErrorAction Stop
+
+        # Filter SQL Servers not associated with a Synapse Workspace.
+        # Synapse Workspace and the associated SQL Server have the same name.
+        # Synapse Workspace names are unique.
+        $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName } -PassThru
+
+        $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                     @{N='ServerName';E={$_.Name}},
+                                                                     @{N='ResourceType';E={$_.ResourceType}},
+                                                                     @{N='IsSynapseWorkspace';E={$false}}
+
+        # Add Synapse Workspaces to this list.
+        $sqlServerResources += $synapseWorkspaces | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                  @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                  @{N='ServerName';E={$_.ResourceName}},
+                                                                  @{N='ResourceType';E={$_.ResourceType}},
+                                                                  @{N='IsSynapseWorkspace';E={$true}}
+
+        $totalSQLServers = ($sqlServerResources | Measure-Object).Count
 
         if ($totalSQLServers -eq 0)
         {
@@ -250,27 +268,80 @@ function Enable-TransparentDataEncryptionForSQLDatabases
         Write-Host "NOTE: Each SQL Server may have multiple databases."
         Write-Host "Fetching SQL Server databases..."
 
-        $totalSQLServerDatabases = 0
-        $sqlServersResources | ForEach-Object{
-            $databaseList = Get-AzSqlDatabase -ServerName $_.ServerName -ResourceGroupName $_.ResourceGroupName
-            $databaseList | ForEach-Object{
-                if ($_.DatabaseName -ne 'master')
+        # Includes SQL Server databases where Transparent Data Encryption (TDE) is disabled.
+        $sqlServersWithTDEDisabled = @()
+
+        $sqlServerResources | ForEach-Object{
+            $hasTDEEnabled = $true
+            $sqlServerDatabasesWithTDEEnabled = @()
+            $sqlServerDatabasesWithTDEDisabled = @()
+            $sqlDatabaseList = @()
+            try
+            {
+                if (-not $_.IsSynapseWorkspace)
                 {
-                    $databaseConfigDetails = Get-AzSqlDatabaseTransparentDataEncryption -ServerName $_.ServerName -DatabaseName $_.DatabaseName -ResourceGroupName $_.ResourceGroupName
-                    $totalSQLServerDatabases += 1
-                    if ($databaseConfigDetails.State -eq "Enabled")
-                    {
-                        $sqlServerDatabasesWithTDEEnabled += $databaseConfigDetails
+                    $databaseList = Get-AzSqlDatabase -ServerName $_.ServerName -ResourceGroupName $_.ResourceGroupName
+                    $databaseList | ForEach-Object{
+                        if ($_.DatabaseName -ne 'master')
+                        {
+                            $databaseConfigDetails = Get-AzSqlDatabaseTransparentDataEncryption -ServerName $_.ServerName -DatabaseName $_.DatabaseName -ResourceGroupName $_.ResourceGroupName
+                            if ($databaseConfigDetails.State -eq "Enabled")
+                            {
+                                $sqlServerDatabasesWithTDEEnabled += $_.DatabaseName
+                            }
+                            else
+                            {
+                                $hasTDEEnabled = $false
+                                $sqlServerDatabasesWithTDEDisabled += $_.DatabaseName
+                            }
+                        }                
                     }
-                    else
+
+                    if (-not $hasTDEEnabled)
                     {
-                        $sqlServerDatabasesWithTDEDisabled += $databaseConfigDetails
+                        $sqlServersWithTDEDisabled += $_ | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                         @{N='ServerName';E={$_.ServerName}},
+                                                                         @{N='ResourceType';E={$_.ResourceType}},
+                                                                         @{N='IsSynapseWorkspace';E={$_.IsSynapseWorkspace}},
+                                                                         @{N='DatabasesWithTDEDisabled';E={$sqlServerDatabasesWithTDEDisabled -join ', '}},
+                                                                         @{N='DatabasesWithTDEEnabled';E={$sqlServerDatabasesWithTDEEnabled -join ', '}}
                     }
-                }                
+                }
+                else
+                {   
+                    $databaseList = Get-AzSynapseSqlPool -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
+                    $databaseList | ForEach-Object{  
+                        $databaseConfigDetails = Get-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.WorkspaceName -Name $_.SqlPoolName
+                        if ($databaseConfigDetails.State -eq "Enabled")
+                        {
+                            $sqlServerDatabasesWithTDEEnabled += $_.SqlPoolName
+                        }
+                        else
+                        {
+                            $hasTDEEnabled = $false
+                            $sqlServerDatabasesWithTDEDisabled += $_.SqlPoolName
+                        }           
+                    }
+            
+                    if (-not $hasTDEEnabled)
+                    {
+                        $sqlServersWithTDEDisabled += $_ | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                @{N='ServerName';E={$_.ServerName}},
+                                                                @{N='ResourceType';E={$_.ResourceType}},
+                                                                @{N='IsSynapseWorkspace';E={$_.IsSynapseWorkspace}},
+                                                                @{N='DatabasesWithTDEDisabled';E={$sqlServerDatabasesWithTDEDisabled -join ', '}},
+                                                                @{N='DatabasesWithTDEEnabled';E={$sqlServerDatabasesWithTDEEnabled -join ', '}}
+                    }             
+                }       
+            }
+            catch
+            {
+                Write-Host "Error occurred while getting SQL Server details: Resource Group Name - $($_.ResourceGroupName), Server Name - $($_.ServerName), Database Name - $($sqlDatabaseList). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this SQL Server database. Transparent Data Encryption (TDE) will not be enabled for this database."
             }
         }
-
-        Write-Host "Found $($totalSQLServerDatabases) SQL Server databases." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
@@ -282,18 +353,18 @@ function Enable-TransparentDataEncryptionForSQLDatabases
 
         Write-Host "Fetching all SQL Server databases from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
 
-        $sqlServerDatabasesWithTDEDisabled = Import-Csv -LiteralPath $FilePath
+        $sqlServersWithTDEDisabled = Import-Csv -LiteralPath $FilePath
     }
 
-    $totalSQLServerDatabasesWithTDEDisabled = ($sqlServerDatabasesWithTDEDisabled | Measure-Object).Count
-    if ($totalSQLServerDatabasesWithTDEDisabled -eq 0)
+    $totalSQLServersWithTDEDisabled = ($sqlServersWithTDEDisabled | Measure-Object).Count
+    if ($totalSQLServersWithTDEDisabled -eq 0)
     {
-        Write-Host "No SQL Server database found with Transparent Data Encryption (TDE) disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No SQL Server found with Transparent Data Encryption (TDE) disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         break
     }
 
-    Write-Host "Found $($totalSQLServerDatabasesWithTDEDisabled) SQL Server database(s) with Transparent Data Encryption (TDE) disabled." -ForegroundColor $([Constants]::MessageType.Update)
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServerDatabases"
+    Write-Host "Found $($totalSQLServersWithTDEDisabled) SQL Server(s) with Transparent Data Encryption (TDE) disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -301,117 +372,143 @@ function Enable-TransparentDataEncryptionForSQLDatabases
     }
  
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Backing up SQL Server database details to $($backupFolderPath)"
+    Write-Host "[Step 3 of 4] Backing up SQL Server details to $($backupFolderPath)"
     
     # Backing up SQL Server database details.
-    $backupFile = "$($backupFolderPath)\SQLServerDatabasesWithTDEDisabled.csv"
-    $sqlServerDatabasesWithTDEDisabled | Export-CSV -Path $backupFile -NoTypeInformation
+    $backupFile = "$($backupFolderPath)\sqlServersWithTDEDisabled.csv"
+    $sqlServersWithTDEDisabled | Export-CSV -Path $backupFile -NoTypeInformation
 
     if (-not $DryRun)
     {
-        Write-Host "SQL Server database details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)    
+        Write-Host "SQL Server details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)    
         if (-not $Force)
         {
-            Write-Host "Do you want to enable Transparent Data Encryption (TDE) for all SQL Server databases? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "Do you want to enable Transparent Data Encryption (TDE) for all SQL Servers? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
             {
-                Write-Host "Transparent Data Encryption (TDE) will not be enabled for SQL Server databases. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Transparent Data Encryption (TDE) will not be enabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                 break
             }
         }
         else
         {
-            Write-Host "'Force' flag is provided. Transparent Data Encryption (TDE) will be enabled for SQL Server databases." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Transparent Data Encryption (TDE) will be enabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enabling Transparent Data Encryption (TDE) for SQL Server databases..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "[Step 4 of 4] Enabling Transparent Data Encryption (TDE) for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Warning)
 
         # To hold results from the remediation.
-        $remediatedSQLServerDatabases = @()
-        $skippedSQLServerDatabases = @()
+        $remediationSummary = @()
+        $databaseList = @()
+        $totalRemediatedSQLServers = 0
 
-        $sqlServerDatabasesWithTDEDisabled | ForEach-Object{
-            $databaseDetail = $_
-            $serverName = $_.ServerName
-            $databaseName = $_.DatabaseName
-            $resourceGroupName = $_.ResourceGroupName
-
-            try
-            {
-                $tdeStatus = $(Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Enabled').State
-                
-                if ($tdeStatus -eq 'Enabled')
+        try
+        {
+            $sqlServersWithTDEDisabled | ForEach-Object{
+                $databaseDetail = $_
+                $serverName = $_.ServerName
+                $databaseList = $_.DatabasesWithTDEDisabled -split ', '
+                $resourceGroupName = $_.ResourceGroupName
+                $isSynapseWorkspace = $_.IsSynapseWorkspace
+                $remediatedSQLServerDatabases = @()
+                $skippedSQLServerDatabases = @()
+           
+                if ($_.IsSynapseWorkspace -eq $false)
                 {
-                    $remediatedSQLServerDatabases += $databaseDetail
+                    $databaseList | ForEach-Object{
+                        $databaseName = $_ 
+                        $tdeStatus = $(Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $_ -State 'Enabled').State
+                        if ($tdeStatus -eq 'Enabled')
+                        {
+                            $remediatedSQLServerDatabases += $databaseName
+                        }
+                        else
+                        {
+                            $skippedSQLServerDatabases += $databaseName
+                        }
+                    }
+
+                    $remediationSummary += $databaseDetail | Select-Object @{N='ServerName';E={$serverName}},
+                                                                          @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                          @{N='RemediatedSQLServerDatabases';E={$remediatedSQLServerDatabases}},
+                                                                          @{N='SkippedSQLServerDatabases';E={$skippedSQLServerDatabases}}
                 }
                 else
                 {
-                    $skippedSQLServerDatabases += $databaseDetail
-                }
+                    $databaseList | ForEach-Object{
+                        $sqlPoolName = $_
+                        $tdeStatus = $(Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName -State 'Enabled' -ErrorAction SilentlyContinue).State
+                        if ($tdeStatus -eq 'Enabled')
+                        {
+                            $remediatedSQLServerDatabases += $sqlPoolName
+                            
+                        }
+                        else
+                        {
+                            $skippedSQLServerDatabases += $sqlPoolName
+                        }
+                    }
+
+                    $remediationSummary += $databaseDetail | Select-Object @{N='ServerName';E={$serverName}},
+                                                                           @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                           @{N='RemediatedSQLServerDatabases';E={$remediatedSQLServerDatabases}},
+                                                                           @{N='SkippedSQLServerDatabases';E={$skippedSQLServerDatabases}}
+
+                    if ([String]::IsNullOrWhiteSpace($skippedSQLServerDatabases))
+                    {
+                        $totalRemediatedSQLServers += 1
+                    }
+                }                              
             }
-            catch
-            {
-                $skippedSQLServerDatabases += $databaseDetail
-                Write-Host "Error occurred while enabling Transparent Data Encryption (TDE) for SQL Server database: Resource Group Name - $($resourceGroupName), Server Name - $($serverName), Database Name - $($databaseName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this database. Transparent Data Encryption (TDE) will not be enabled for this database."
-            }           
+        }
+        catch
+        {
+            Write-Host "Error occurred while enabling Transparent Data Encryption (TDE) for SQL Server: Server Name - $($serverName), Resource Group Name - $($resourceGroupName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Skipping this SQL Server. Transparent Data Encryption (TDE) will not be enabled for this Server."
         }
 
         Write-Host $([Constants]::SingleDashLine)
 
-        if (($remediatedSQLServerDatabases | Measure-Object).Count -eq $totalSQLServerDatabasesWithTDEDisabled)
+        if (($totalRemediatedSQLServers | Measure-Object).Count -eq $totalSQLServersWithTDEDisabled)
         {
-            Write-Host "Transparent Data Encryption (TDE) successfully enabled for all $($totalSQLServerDatabasesWithTDEDisabled) SQL Server database(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Transparent Data Encryption (TDE) successfully enabled for all $($totalSQLServersWithTDEDisabled) SQL Servers." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "Transparent Data Encryption (TDE) successfully enabled for $($($remediatedSQLServerDatabases | Measure-Object).Count) out of $($totalSQLServerDatabasesWithTDEDisabled) SQL Server database(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Transparent Data Encryption (TDE) successfully enabled for $($($totalRemediatedSQLServers | Measure-Object).Count) out of $($totalSQLServersWithTDEDisabled) SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
         }
-        
-        $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
-                        @{Expression={$_.DatabaseName};Label="Database Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.State};Label="State";Width=20;Alignment="left"}
-                              
+                                     
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($remediatedSQLServerDatabases | Measure-Object).Count -gt 0)
+        if ($($remediationSummary | Measure-Object).Count -gt 0)
         {
-            Write-Host "Transparent Data Encryption (TDE) successfully enabled for the following SQL Server database(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $remediatedSQLServerDatabases | Format-Table -Property $colsProperty -Wrap
+            Write-Host "Transparent Data Encryption (TDE) enabled for the following SQL Servers:" -ForegroundColor $([Constants]::MessageType.Update)
+            $remediationSummary | Format-Table -Property ServerName, ResourceGroupName, RemediatedSQLServerDatabases, SkippedSQLServerDatabases
 
             # Write this to a file.
-            $remediatedSQLServerDatabasesFile = "$($backupFolderPath)\RemediatedSQLServerDatabases.csv"
-            $remediatedSQLServerDatabases | Export-CSV -Path $remediatedSQLServerDatabasesFile -NoTypeInformation
-            Write-Host "This information has been saved to $($remediatedSQLServerDatabasesFile)"
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
-        }
+            $remediationSummaryFile = "$($backupFolderPath)\RemediationSummary.csv"
+            $remediatedSQLServerDatabases | Export-CSV -Path $remediationSummaryFile -NoTypeInformation
+            Write-Host "This information has been saved to $($remediationSummaryFile)"
 
-        if ($($skippedSQLServerDatabases | Measure-Object).Count -gt 0)
-        {
-            Write-Host "Error occurred while enabling Transparent Data Encryption (TDE) for the following SQL Server database(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $skippedSQLServerDatabases | Format-Table -Property $colsProperty -Wrap
-            
-            # Write this to a file.
-            $skippedSQLServerDatabasesFile = "$($backupFolderPath)\SkippedSQLServerDatabases.csv"
-            $skippedSQLServerDatabases | Export-CSV -Path $skippedSQLServerDatabasesFile -NoTypeInformation
-            Write-Host "This information has been saved to $($skippedSQLServerDatabasesFile)"
+            $rollbackFilePath = "$($backupFolderPath)\sqlServersWithTDEDisabled.csv"
+            Write-Host "Use $($rollbackFilePath) file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
         }
     }
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] SQL Server database details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable Transparent Data Encryption (TDE) for all SQL Server databases listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "[Step 4 of 4] SQL Server details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable Transparent Data Encryption (TDE) for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`n*** It is recommended to keep this file and use it for any subsequent roll back post the remediation. ***" -ForegroundColor $([Constants]::MessageType.Info)
     }
 }
 
-function Disable-TransparentDataEncryptionForSQLDatabases
+function Disable-TransparentDataEncryptionForSQLServers
 {
     <#
         .SYNOPSIS
@@ -419,7 +516,7 @@ function Disable-TransparentDataEncryptionForSQLDatabases
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_SQLDatabase_DP_Enable_TDE' Control.
-        Disables Transparent Data Encryption (TDE) on the SQL Server databases in the Subscription. 
+        Disables Transparent Data Encryption (TDE) on the SQL Server in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -434,7 +531,7 @@ function Disable-TransparentDataEncryptionForSQLDatabases
         Specifies the path to the file to be used as input for the roll back.
 
         .EXAMPLE
-        PS> Disable-TransparentDataEncryptionForSQLDatabases -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServerDatabases\RemediatedSQLServerDatabases.csv
+        PS> Disable-TransparentDataEncryptionForSQLServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableTDEForSQLServers\RemediatedSQLServerDatabases.csv
         
         .LINK
         None
@@ -514,118 +611,130 @@ function Disable-TransparentDataEncryptionForSQLDatabases
         break
     }
 
-    Write-Host "Fetching all SQL Server database details from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+    $sqlServerDetails = @()
+    $validSQLServerDetails = @()
+    Write-Host "Fetching all SQL Server details from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
     $sqlServerDetails = Import-Csv -LiteralPath $FilePath
-    $validSQLServerDetails = $sqlServerDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ServerName) -and ![String]::IsNullOrWhiteSpace($_.DatabaseName)}
-    $totalSQLServerDatabases = $($validSQLServerDetails.Count)
-
-    if ($totalSQLServerDatabases -eq 0)
+    $validSQLServerDetails = $sqlServerDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ServerName) -and ![String]::IsNullOrWhiteSpace($_.DatabasesWithTDEDisabled)}
+    $totalSQLServers = $($validSQLServerDetails | Measure-Object).Count
+    
+    if ($totalSQLServers -eq 0)
     {
-        Write-Host "No SQL Server database found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No SQL Server found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         break
     }
 
-    Write-Host "Found $($totalSQLServerDatabases) SQL Server database(s)." -ForegroundColor $([Constants]::MessageType.Update)
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServerDatabases"
+    Write-Host "Found $($totalSQLServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "Transparent Data Encryption (TDE) will be disabled for SQL Server databases." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "Transparent Data Encryption (TDE) will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
     if (-not $Force)
     {
-        Write-Host "Do you want to disable Transparent Data Encryption (TDE) for all SQL Server databases? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to disable Transparent Data Encryption (TDE) for all SQL Servers? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Transparent Data Encryption (TDE) will not be disabled for SQL Server databases. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Transparent Data Encryption (TDE) will not be disabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             break
         }
     }
     else
     {
-        Write-Host "'Force' flag is provided. Transparent Data Encryption (TDE) will be disabled for SQL Server databases." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. Transparent Data Encryption (TDE) will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Disabling Transparent Data Encryption (TDE) for SQL Server databases..." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "[Step 3 of 3] Disabling Transparent Data Encryption (TDE) for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Warning)
 
-    # Includes SQL Server databases, to which, previously made changes were successfully rolled back.
-    $sqlServersRolledBack = @()
+    $databaseList = @()
+    $rollbackSummary = @()
+    $totalRolledbackSQLServers = 0
+    try
+    {
+        $validSQLServerDetails | ForEach-Object{
+            $databaseDetail = $_
+            $serverName = $_.ServerName
+            $databaseList = $_.DatabasesWithTDEDisabled -split ', '
+            $resourceGroupName = $_.ResourceGroupName
+            $isSynapseWorkspace = $_.IsSynapseWoekspace
 
-    # Includes SQL Server databases that were skipped during roll back. There were errors rolling back the changes made previously.
-    $skippedSQLServerDatabases = @()
+            # Includes SQL Server databases, to which, previously made changes were successfully rolled back.
+            $rolledbackSQLServerDatabases = @()
 
-    $validSQLServerDetails | ForEach-Object {
-        $databaseDetail = $_
-        $serverName = $_.ServerName
-        $databaseName = $_.DatabaseName
-        $resourceGroupName = $_.ResourceGroupName
-        try
-        {
-            $tdeStatus = $(Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Disabled').State
-                
-            if ($tdeStatus -eq 'Disabled')
+            # Includes SQL Server databases that were skipped during roll back. There were errors rolling back the changes made previously.
+            $skippedSQLServerDatabases = @()
+        
+            if ($_.IsSynapseWorkspace -eq $false)
             {
-                $sqlServersRolledBack += $databaseDetail
+                $databaseList | ForEach-Object{
+                    $databaseName = $_
+                    $tdeStatus = $(Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Disabled').State
+                    if ($tdeStatus -eq 'Disabled')
+                    {
+                        $rolledbackSQLServerDatabases += $databaseName
+                    }
+                    else
+                    {
+                        $skippedSQLServerDatabases += $databaseName
+                    }
+                }
+
+                $rollbackSummary += $databaseDetail | Select-Object @{N='ServerName';E={$serverName}},
+                                                                   @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                   @{N='RolledbackSQLServerDatabases';E={$rolledbackSQLServerDatabases}},
+                                                                   @{N='SkippedSQLServerDatabases';E={$skippedSQLServerDatabases}}
             }
             else
             {
-                $skippedSQLServerDatabases += $databaseDetail
-            }
+                $databaseList | ForEach-Object{
+                    $sqlPoolName = $_
+                    $tdeStatus = $(Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName -State 'Disabled').State
+                    if ($tdeStatus -eq 'Disabled')
+                    {
+                        $rolledbackSQLServerDatabases += $sqlPoolName
+                    }
+                    else
+                    {
+                        $skippedSQLServerDatabases += $sqlPoolName
+                    }
+                }
+
+                $rollbackSummary += $databaseDetail | Select-Object @{N='ServerName';E={$serverName}},
+                                                                    @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                    @{N='RolledbackSQLServerDatabases';E={$rolledbackSQLServerDatabases}},
+                                                                    @{N='SkippedSQLServerDatabases';E={$skippedSQLServerDatabases}}
+
+                if ([String]::IsNullOrWhiteSpace($skippedSQLServerDatabases))
+                {
+                    $totalRolledbackSQLServers += 1
+                }
+            }                              
         }
-        catch
-        {
-            $skippedSQLServerDatabases += $databaseDetail
-            Write-Host "Error occurred while disabling Transparent Data Encryption (TDE) for SQL Server database: Resource Group Name - $($resourceGroupName), Server Name - $($serverName), Database Name - $($databaseName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping this database. Transparent Data Encryption (TDE) will not be disabled for this database."
-        }
     }
-
-    if (($skippedSQLServerDatabases | Measure-Object).Count -eq 0)
+    catch
     {
-        Write-Host "Transparent Data Encryption (TDE) successfully disabled for all $($totalSQLServerDatabases) SQL Server database(s)." -ForegroundColor $([Constants]::MessageType.Update)
-    }
-    else
-    {
-        Write-Host "Transparent Data Encryption (TDE) successfully disabled for $($($sqlServersRolledBack | Measure-Object).Count) out of $($totalSQLServerDatabases) SQL Server database(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Error occurred while disabling Transparent Data Encryption (TDE) for SQL Server: Server Name - $($serverName), Resource Group Name - $($resourceGroupName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Skipping this SQL Server. Transparent Data Encryption (TDE) will not be disabled for this Server."
     }
 
-    $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
-                    @{Expression={$_.DatabaseName};Label="Database Name";Width=20;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                    @{Expression={$_.State};Label="State";Width=20;Alignment="left"}
-
-    if ($($sqlServersRolledBack | Measure-Object).Count -gt 0 -or $($skippedSQLServerDatabases | Measure-Object).Count -gt 0)
+    if ($($rollbackSummary | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "`nRollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($sqlServersRolledBack | Measure-Object).Count -gt 0)
-        {
-            Write-Host "Transparent Data Encryption (TDE) successfully disabled for the following SQL Server database(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $sqlServersRolledBack | Format-Table -Property $colsProperty -Wrap
+        $rollbackSummary | Format-Table -Property  ServerName, ResourceGroupName, RolledbackSQLServerDatabases, SkippedSQLServerDatabases
 
-            # Write this to a file.
-            $sqlServersRolledBackFile = "$($backupFolderPath)\RolledBackSQLServerDatabases.csv"
-            $sqlServersRolledBack | Export-CSV -Path $sqlServersRolledBackFile -NoTypeInformation
-            Write-Host "This information has been saved to $($sqlServersRolledBackFile)"
-        }
-
-        if ($($skippedSQLServerDatabases | Measure-Object).Count -gt 0)
-        {
-            Write-Host "`nError occurred while disabling Transparent Data Encryption (TDE) for the following SQL Server database(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $skippedSQLServerDatabases | Format-Table -Property $colsProperty -Wrap
-            
-            # Write this to a file.
-            $skippedSQLServerDatabasesFile = "$($backupFolderPath)\SkippedSQLServerDatabases.csv"
-            $skippedSQLServerDatabases | Export-CSV -Path $skippedSQLServerDatabasesFile -NoTypeInformation
-            Write-Host "This information has been saved to $($skippedSQLServerDatabasesFile)"
-        }
+        # Write this to a file.
+        $rollbackSummaryFile = "$($backupFolderPath)\RollbackSummary.csv"
+        $rollbackSummary | Export-CSV -Path $rollbackSummaryFile -NoTypeInformation
+        Write-Host "This information has been saved to $($rollbackSummaryFile)"
     }
 }
 
