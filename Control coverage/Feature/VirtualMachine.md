@@ -66,8 +66,8 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Kind ,properties.Type ,properties.Publisher
+- ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
+**Properties:** Properties.StorageProfile.osDisk.osType ,properties.Type ,properties.Publisher
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
@@ -146,7 +146,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list virtual machine extensions at resource group level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Kind, properties.Type ,properties.Publisher
+**Properties:** Properties.StorageProfile.osDisk.osType, properties.Type ,properties.Publisher
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at resource group level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
