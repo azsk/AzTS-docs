@@ -450,6 +450,7 @@ configuration on your machines should be remediated.
 
 ___ 
 
+<!--
 ## Azure_VirtualMachine_SI_Missing_OS_Patches 
 
 ### DisplayName 
@@ -516,7 +517,7 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
 <br />
 
 ___ 
-
+-->
 ## Azure_VirtualMachine_SI_ASC_Recommendations 
 
 ### DisplayName 
@@ -743,7 +744,7 @@ Compute/virtualMachines/{vmName}
 
 
 ___
-
+<!--
 ## Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension 
 
 ### DisplayName 
@@ -946,7 +947,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 - **Azure Portal** 
 
-	 Go to Azure Portal --> VM Settings --> Networking --> Inbound security rules --> Select security rule which allows management ports (e.g. RDP-3389, WINRM-5985, SSH-22, SMB-445) --> Click 'Deny' under Action --> Click Save. 
+	 Go to Azure Portal -> VM Settings -> Networking -> Inbound security rules -> Select security rule which allows management ports (e.g. RDP-3389, WINRM-5985, SSH-22, SMB-445) -> Click 'Deny' under Action -> Click Save. 
 
 - **PowerShell** 
 
@@ -1160,7 +1161,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 - **Azure Portal** 
 
-	 Go to security center --> Compute & apps --> VMs and Servers --> Click on VM name --> Click on VM Vulnerability remediation recommendation --> Click on Take Action --> Remediate list of vulnerabilities 
+	 Go to security center -> Compute & apps -> VMs and Servers-> Click on VM name -> Click on VM Vulnerability remediation recommendation -> Click on Take Action -> Remediate list of vulnerabilities 
 
 - **PowerShell** 
 
@@ -1227,7 +1228,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 - **Azure Portal** 
 
-	 Go to security center --> Compute & apps --> Containers --> Click on VM name --> Click on VM Container Vulnerability remediation recommendation --> Click on Take Action --> Remediate list of vulnerabilities 
+	 Go to security center -> Compute & apps -> Containers -> Click on VM name -> Click on VM Container Vulnerability remediation recommendation -> Click on Take Action -> Remediate list of vulnerabilities 
 
 - **PowerShell** 
 
@@ -1301,7 +1302,7 @@ For new deployments, require Just-In-Time network access control on virtual mach
 
 - **Azure Portal** 
 
-	 Go To Security Center --> Just in time VM access --> Go To Not Configured --> Select your VM --> Click on Enable JIT on 1 VMs 
+	 Go To Security Center -> Just in time VM access -> Go To Not Configured -> Select your VM -> Click on Enable JIT on 1 VMs 
 
 - **PowerShell** 
 
@@ -1375,7 +1376,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 - **Azure Portal** 
 
-	 Go to security center --> Compute & apps --> VMs and Servers --> Click on VM name --> Click on VM Vulnerability remediation recommendation by Assessment solution --> Click on Take Action --> Remediate list of vulnerabilities 
+	 Go to security center -> Compute & apps -> VMs and Servers -> Click on VM name -> Click on VM Vulnerability remediation recommendation by Assessment solution -> Click on Take Action -> Remediate list of vulnerabilities 
 
 - **PowerShell** 
 
@@ -1446,7 +1447,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 - **Azure Portal** 
 
-	 Go to Azure Portal --> VM Settings --> Networking --> Inbound security rules --> Select security rule which allows management ports (e.g. RDP-3389, WINRM-5985, SSH-22) --> Click 'Deny' under Action --> Click Save. 
+	 Go to Azure Portal -> VM Settings -> Networking -> Inbound security rules -> Select security rule which allows management ports (e.g. RDP-3389, WINRM-5985, SSH-22) -> Click 'Deny' under Action -> Click Save. 
 
 - **PowerShell** 
 
@@ -1552,4 +1553,4 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 <br />
 
 ___ 
-
+-->
