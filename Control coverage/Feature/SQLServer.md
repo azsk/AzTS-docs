@@ -564,7 +564,14 @@ ___
 Use approved version of TLS for SQL Server
 
 ### Rationale
-TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions."
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ``` 
 
 ### Control Spec
 
@@ -579,18 +586,12 @@ TLS provides privacy and data integrity between client and server. Using approve
 > **Error:**
 > Required minimum TLS version is not set properly in control settings.
 >
-> **Verify:**
-> Not Applicable.
->
-> **NotApplicable:**
-> Not Applicable.
->
 
 ### Recommendation
 
 - **Azure Portal**
 
-	Go to Azure Portal --> Your Resource --> Firewalls and virtual networks --> Set the Minimum TLS Version to latest version
+	To Configure 'Minimum TLS Version' setting for SQL Server, go to Azure Portal --> Your Resource --> Firewalls and virtual networks --> Set the Minimum TLS Version to latest version.
 
 <!--
 - **PowerShell**
@@ -616,4 +617,5 @@ TLS provides privacy and data integrity between client and server. Using approve
   **Properties:** properties.minimalTlsVersion
   <br />
  <br />
+
 ___
