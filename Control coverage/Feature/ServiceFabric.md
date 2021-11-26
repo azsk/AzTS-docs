@@ -1,7 +1,380 @@
-## Service Fabric
+# ServiceFabric
 
-| ControlId | Dependent Azure API(s) and Properties | Control spec-let |
-|-----------|-------------------------------------|------------------|
-| <b>ControlId:</b><br> Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port <br><b>DisplayName:</b><br>Reverse proxy port must not be exposed publicly. <br><b>Description: </b><br> Reverse proxy port must not be exposed publicly.| <b> ARM API to get the list of Service Fabric cluster resources created in the specified subscription - Gets all Service Fabric cluster resources created or in the process of being created in the subscription. </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?<br>api-version=2018-02-01<br><b>Properties:</b><br> properties.nodeTypes[\*].reverseProxyEndpointPort <br> <br> <b> ARM API to get all the load balancers in a subscription. </b> /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers? <br> api-version=2019-12-01 <br><b>Properties:</b><br> Tags <br> backendAddressPools[].properties. backendIPConfigurations[].id | <b>Passed: </b><br>Reverse proxy endpoints ports list is empty. <br><b>Failed: </b><br>Reverse proxy endpoints ports found and ports are opened using public load balancer on SF.|
-| <b>ControlId:</b><br>Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel<br><b>DisplayName:</b><br> The ClusterProtectionLevel property must be set to EncryptAndSign. <br><b>Description: </b><br> The ClusterProtectionLevel property must be set to EncryptAndSign.|<b> ARM API to get the list of Service Fabric cluster resources created in the specified subscription - Gets all Service Fabric cluster resources created or in the process of being created in the subscription. </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters? <br> api-version=2018-02-01 <br><b>Properties:</b><br> fabricSettings.Security.ClusterProtectionLevel<br><b>Azure built-in policy:</b> Service Fabric clusters should have the ClusterProtectionLevel property set to EncryptAndSign. | <b>Passed: </b><br>ASC assessment status is healthy. Cluster protection level is set to "EncryptAndSign".<br><b>Failed: </b><br>ASC assessment status is unhealthy. Cluster protection level is not set to "EncryptAndSign". (or) ASC assessment status is "NotApplicable" with "cause" as either "OffByPolicy" or "Exempt".<br><b>Verify:</b><br>ASC assessment status is not applicable (with "cause" other than "OffByPolicy" and "Exempt").<br><b>Note:</b> If ASC Assessment is not found for a resource, the ARM API is used for the evaluation.
-| <b>ControlId:</b><br>Azure_ServiceFabric_AuthN_NSG_Enabled<br><b>DisplayName:</b><br> Firewall/NSGs must be enabled on subnet of Service Fabric cluster. <br><b>Description: </b><br> Network security group (NSG) must be enabled on subnets of Service Fabric cluster.|<b> ARM API to list Service Fabric cluster resources at subscription level: </b> <br> /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters<br>?api-version=2018-02-01 <br><b>Properties:</b><br> properties.nodeTypes[\*].name <br><br><b> ARM API to list Virtual Machine scale sets at subscription level:</b><br> /subscriptions/{subscriptionId}/providers/Microsoft.Compute<br>/virtualMachineScaleSets<br>?api-version=2019-07-01 <br><b>Properties:</b><br> tags, properties.virtualMachineProfile.networkProfile.<br>networkInterfaceConfigurations[\*].properties.ipConfigurations[\*]<br>.properties.subnet.id <br><br><b>ARM API to list Virtual Networks at <br>subscription level:</b><br>/subscriptions/{subscriptionId}/providers<br>/Microsoft.Network/virtualNetworks<br>?api-version=2019-11-01<br><b>Property:</b><br>networkSecurityGroup/id<br><br><b>ARM API to list Network Security Groups at <br>subscription level:</b><br>/subscriptions/{subscriptionId}/providers<br>/Microsoft.Network/networkSecurityGroups<br>?api-version=2019-04-01<br><b>Property:</b><br>destinationPortRange, destinationPortRanges<br>| <b>Passed: </b><br> NSG is configured with no restricted ports (e.g. RDP 3389, SMB 445 etc.) open using NSG rules. <br><b>Failed: </b><br> NSG is not configured or any restricted ports (e.g. RDP 3389, SMB 445 etc.) are open using NSG rules. <br><b>Verify: </b><br> No linked Virtual Machine scale set node found. |
+**Resource Type:** Microsoft.ServiceFabric/clusters
+
+___ 
+
+## Azure_ServiceFabric_AuthZ_Security_Mode_Enabled 
+
+### DisplayName 
+Service Fabric cluster security must be enabled using security mode option 
+
+### Rationale 
+A secure cluster prevents unauthorized access to management operations, which includes deployment, upgrade, and deletion of microservices. Also provides encryption for node-to-node communication, client-to-node communication etc. In oppose to unsecure cluster which can be connected by any anonymous user. 
+
+### Control Spec 
+
+> **Passed:** 
+> Service Fabric cluster is secured with certificate.
+> 
+> **Failed:** 
+> Service Fabric cluster is not secured with certificate.
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 A secure cluster must be created to prevent unauthorized access to management operations (e.g., deployment, upgrade or deletion of microservices). A secure cluster also provides encryption for node-to-node communication, client-to-node communication, etc. An insecure cluster is open to be connected by any anonymous user. An insecure cluster cannot be secured at a later time. For creating a secure cluster using (1) Azure Portal, refer: https://azure.microsoft.com/en-in/documentation/articles/service-fabric-cluster-creation-via-portal/#_3-security or using (2) ARM template refer:https://azure.microsoft.com/en-in/documentation/articles/service-fabric-cluster-creation-via-arm/ 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+-->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get certificate details of Service Fabric resource: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
+**Properties:** properties.certificate
+ <br />
+
+<br />
+
+___ 
+
+## Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only 
+
+### DisplayName 
+Use Azure Active directory for client authentication on Service Fabric clusters 
+
+### Rationale 
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
+
+### Control Spec 
+
+> **Passed:** 
+> AAD authentication is enabled.
+> 
+> **Failed:** 
+> AAD authentication is not enabled.
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 A Service Fabric cluster offers several entry points to its management functionality, including the web-based Service Fabric Explorer, Visual Studio and PowerShell. Access to the cluster must be controlled using AAD. Refer: https://docs.microsoft.com/en-in/azure/service-fabric/service-fabric-cluster-creation-setup-aad 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+-->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get Azure Active Directory details and its related property: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+**Properties:** property.azureActiveDirectory.tenantId
+ <br />
+
+<br />
+
+___ 
+
+## Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel 
+
+### DisplayName 
+The ClusterProtectionLevel property must be set to EncryptAndSign 
+
+### Rationale 
+With cluster protection level set to 'EncryptAndSign', all the node-to-node messages are encrypted and digitally signed. This protects the intra-cluster communication from eavesdropping/tampering/man-in-the-middle attacks on the network. 
+
+### Control Spec 
+
+> **Passed:** 
+> Cluster protection level is set to "EncryptAndSign"
+> 
+> **Failed:** 
+> Cluster protection level is not set to "EncryptAndSign"
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Service Fabric provides three levels of protection (None, Sign and EncryptAndSign) for node to node communication using cluster primary certificate. The protection level can be specified using property 'ClusterProtectionLevel' inside Service Fabric ARM template. The value of 'ClusterProtectionLevel' must be set to 'EncryptAndSign' to ensure that all the node-to-node messages are encrypted and digitally signed. Configure 'ClusterProtectionLevel' using ARM template as follows: ARM Template --> Resources --> Select resource type 'Microsoft.ServiceFabric/clusters' --> 'fabricSettings' --> Add 'ClusterProtectionLevel' property with value 'EncryptAndSign'. 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+-->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get cluster protection level : - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+**Properties:** property.fabricSettings.ClusterProtectionLevel.value
+ <br />
+
+<br />
+
+___ 
+
+## Azure_ServiceFabric_AuthN_NSG_Enabled 
+
+### DisplayName 
+Enable Firewall/NSGs on subnet of Service Fabric cluster 
+
+### Rationale 
+Use of appropriate NSG rules can limit exposure of Service Fabric cluster in multiple scenarios. For example, RDP connections can be restricted only for specific admin machines. Incoming requests to microservices may be restricted to specific clients. Also, deployments can be restricted to happen only from an allowed range of IP addresses. 
+
+### Control Settings 
+```json 
+{
+    "RestrictedPorts": "445,3389,5985,22"
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> NSG is configured with no restricted ports (e.g. RDP 3389, SMB 445 etc.) open using NSG rules.
+> 
+> **Failed:** 
+> NSG is not configured or any restricted ports (e.g. RDP 3389, SMB 445 etc.) are open using NSG rules.
+> 
+> **Verify:** 
+> No linked Virtual machine scale set (VMSS) node found.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 NSG contains a list of Access Control List (ACL) rules that allow or deny network traffic to Service Fabric node instances in a Virtual Network. NSGs can be associated with either subnets or individual node/VM instances within a subnet. NSG must be used in following scenarios: (1) Restrict RDP connection only from admin machine IP,  (2) Restrict microservice incoming request from trusted source IP, (3) Lock down the remote address ranges allowed for microservice deployments. Refer: https://azure.microsoft.com/en-in/documentation/articles/virtual-networks-create-nsg-arm-pportal/ 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+--> 
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list Service Fabric cluster resources at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
+**Properties:** properties.nodeTypes[*].name
+ <br />
+
+- ARM API to list Virtual Machine scale sets at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01 <br />
+**Properties:** properties.virtualMachineProfile.networkProfile.
+networkInterfaceConfigurations[*].properties.ipConfigurations[*]
+.properties.subnet.id, tags
+ <br />
+
+- ARM API to list Virtual Networks at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
+**Properties:** properties.networkSecurityGroup.id
+ <br />
+
+- ARM API to list Network Security Groups at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
+**Properties:** properties.destinationPortRange, properties.destinationPortRanges
+
+ <br/>
+
+ <br />
+
+
+___ 
+
+## Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports 
+
+### DisplayName 
+Monitor publicly exposed ports on load balancers used by Service Fabric cluster 
+
+### Rationale 
+Publically exposed ports must be monitored to detect suspicious and malicious activities early and respond in a timely manner. 
+
+### Control Settings 
+```json 
+{
+    "RestrictedPorts": [
+        19000,
+        19080,
+        445,
+        3389,
+        5985,
+        22
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> NSG is configured with no restricted ports (e.g. RDP 3389, SMB 445 etc.) open using NSG rules.
+> 
+> **Failed:** 
+> NSG is not configured or any restricted ports (e.g. RDP 3389, SMB 445 etc.) are open using NSG rules.
+> 
+> **Error:** 
+> Restricted port list not defined against control settings.
+> 
+> **Verify**
+> No load balancer rules found on service fabric
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Azure load balancer maps the public IP address and port number of incoming traffic to the private IP address and port number of the Service Fabric nodes (ports number opened by microservices). Intranet microservice ports must not be exposed to the internet. Moreover, publicly exposed IP address/port numbers must be monitored using Azure load balancer rules as follows: Azure Portal --> Load Balancers --> <Load Balancer Name> --> Load Balancing Rules --> Validate mapping of public end port with backend port. 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+-->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list Load Balancer Rules at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01 <br />
+**Properties:** properties.loadBalancingRules.BackendPort
+ <br />
+
+<br />
+
+___ 
+
+## Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port 
+
+### DisplayName 
+Reverse proxy port must not be exposed publicly 
+
+### Rationale 
+Configuring the reverse proxy's port in Load Balancer with public IP will expose all microservices with HTTP endpoint. Microservices meant to be internal may be discoverable by a determined malicious user. 
+
+### Control Spec 
+
+> **Passed:** 
+> Reverse proxy endpoints ports list is empty
+> 
+> **Failed:** 
+> Reverse proxy endpoints ports found and ports are opened using public load balancer on SF
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Check that reverse proxy port is not be exposed through Azure Load Balancer rules as follows: Azure Portal --> Load Balancers --> <Load Balancer Name> --> Load Balancing Rules --> Validate reverse proxy port is not exposed. 
+
+<!--
+- **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+-->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get reverse proxy details at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+**Properties:** properties.nodeTypes.reverseProxyEndpointPort
+ <br />
+
+- ARM API to list Load Balancer Rules at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
+**Properties:** properties.loadBalancingRules.BackendPort
+ <br />
+
+<br />
+
+___ 
+
+## Azure_ServiceFabric_SI_Set_Auto_Update_Cluster 
+
+### DisplayName 
+Upgrade mode should be set to automatic for cluster 
+
+### Rationale 
+Clusters with unsupported fabric version can become targets for compromise from various malware/trojan attacks that exploit known vulnerabilities in software. 
+
+### Control Spec 
+
+> **Passed:** 
+> Upgrade mode for cluster is set to automatic
+> 
+> **Failed:** 
+> Upgrade mode for cluster is set to manual
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 You can set your cluster to receive automatic fabric upgrades as they are released by Microsoft, for details please refer: https://docs.microsoft.com/en-us/azure/service-fabric/service-fabric-cluster-upgrade 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+--> 
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get status of upgrade mode at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+**Properties:** properties.UpgradeMode
+ <br />
+
+<br />
+
+___ 
+
