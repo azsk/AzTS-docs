@@ -2,6 +2,15 @@
 
 **Resource Type:** Microsoft.KeyVault/vaults
 
+<!-- TOC -->
+
+- [Azure_KeyVault_AuthZ_Configure_Advanced_Access_Policies](#azure_keyvault_authz_configure_advanced_access_policies)
+- [Azure_KeyVault_SI_Enable_SoftDelete](#azure_keyvault_si_enable_softdelete)
+- [Azure_KeyVault_Audit_Enable_Diagnostics_Log](#azure_keyvault_audit_enable_diagnostics_log)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_KeyVault_AuthZ_Configure_Advanced_Access_Policies 

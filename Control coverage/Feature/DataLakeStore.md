@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.DataLakeStore/accounts 
 
+<!-- TOC -->
+
+- [Azure_DataLakeStore_DP_Encrypt_At_Rest](#azure_datalakestore_dp_encrypt_at_rest)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_DataLakeStore_DP_Encrypt_At_Rest 

@@ -2,6 +2,23 @@
 
 **Resource Type:** Microsoft.ApiManagement/service 
 
+<!-- TOC depthfrom:2 depthto:2 -->
+
+- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](#azure_apimanagement_dp_use_https_url_scheme)
+- [Azure_APIManagement_DP_Use_Secure_TLS_Version](#azure_apimanagement_dp_use_secure_tls_version)
+- [Azure_APIManagement_DP_Remove_Default_Products](#azure_apimanagement_dp_remove_default_products)
+- [Azure_APIManagement_AuthN_Verify_Delegated_Authentication](#azure_apimanagement_authn_verify_delegated_authentication)
+- [Azure_APIManagement_AuthZ_Validate_JWT](#azure_apimanagement_authz_validate_jwt)
+- [Azure_APIManagement_AuthN_Disable_Management_API](#azure_apimanagement_authn_disable_management_api)
+- [Azure_APIManagement_AuthZ_Enable_User_Authorization_For_API](#azure_apimanagement_authz_enable_user_authorization_for_api)
+- [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](#azure_apimanagement_authn_use_aad_for_client_authn)
+- [Azure_APIManagement_AuthN_Secure_API_Using_Client_Certificates](#azure_apimanagement_authn_secure_api_using_client_certificates)
+- [Azure_APIManagement_AuthZ_Enable_Requires_Subscription](#azure_apimanagement_authz_enable_requires_subscription)
+- [Azure_APIManagement_AuthN_Use_Managed_Service_Identity](#azure_apimanagement_authn_use_managed_service_identity)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme 
@@ -78,6 +95,7 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 > Old versions of protocols and ciphers configurations are being used.
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -124,6 +142,7 @@ By default, each API Management instance comes with two sample products: Starter
 > APIM contains sample products: Starter and Unlimited.
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -161,6 +180,7 @@ Delegation allows you to use your existing website for handling developer sign-i
 > **NotApplicable:** 
 > This control does not apply to consumption tier APIM.
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -196,6 +216,7 @@ If 'validate-jwt' policy is not configured, client can call the API without the 
 > JWT Token validation not found for OAuth/OpenID connect authorization.
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -242,6 +263,7 @@ The credentials used to access API Management REST API provide admin-level acces
 > **NotApplicable:** 
 > This control does not apply to consumption tier.
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -277,6 +299,7 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 > Neither OAuth 2.0 nor OpenID Connect are used to authorize developer accounts for this APIM instance.
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -329,6 +352,7 @@ Using the native enterprise directory for authentication ensures that there is a
 > **NotApplicable:** 
 > This control does not apply to consumption tier.
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -367,6 +391,7 @@ Use client certificates to secure access to the back-end service of an API and p
 > Gateway authentication using client certificate is not enabled in API(s).
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -412,6 +437,7 @@ When publishing APIs through Azure API Management (APIM), the easiest and most c
 > 'Requires Subscription' option is turned 'OFF' for product(s) in APIM instance.
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 
@@ -454,6 +480,7 @@ Managed Service Identity (MSI) allows your API Management instance to easily acc
 > APIM instance is not using Managed Service Identity(MSI).
 > 
 > 
+
 ### Recommendation 
 
 - **Azure Portal** 

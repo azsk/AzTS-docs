@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.Cdn/profiles
 
+<!-- TOC -->
+
+- [Azure_CDN_DP_Enable_Https](#azure_cdn_dp_enable_https)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_CDN_DP_Enable_Https 

@@ -1,6 +1,24 @@
 # VirtualMachineScaleSet
 
 **Resource Type:** Microsoft.Compute/virtualMachineScaleSets
+<!-- TOC -->
+
+- [Azure_VirtualMachineScaleSet_Audit_Enable_Diagnostics](#azure_virtualmachinescaleset_audit_enable_diagnostics)
+- [Azure_VirtualMachineScaleSet_Config_Enable_NSG](#azure_virtualmachinescaleset_config_enable_nsg)
+- [Azure_VirtualMachineScaleSet_Deploy_Monitoring_Agent](#azure_virtualmachinescaleset_deploy_monitoring_agent)
+- [Azure_VirtualMachineScaleSet_NetSec_Dont_Open_Management_Ports](#azure_virtualmachinescaleset_netsec_dont_open_management_ports)
+- [Azure_VirtualMachineScaleSet_NetSec_Justify_PublicIPs](#azure_virtualmachinescaleset_netsec_justify_publicips)
+- [Azure_VirtualMachineScaleSet_SI_Enable_Antimalware](#azure_virtualmachinescaleset_si_enable_antimalware)
+- [Azure_VirtualMachineScaleSet_SI_Enable_Auto_OS_Upgrade](#azure_virtualmachinescaleset_si_enable_auto_os_upgrade)
+- [Azure_VirtualMachineScaleSet_SI_Latest_Model_Applied](#azure_virtualmachinescaleset_si_latest_model_applied)
+- [Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches](#azure_virtualmachinescaleset_si_missing_os_patches)
+- [Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachinescaleset_si_remediate_security_vulnerabilities)
+- [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
+
+<!-- /TOC -->
+<br/>
+
+
 
 ___
 

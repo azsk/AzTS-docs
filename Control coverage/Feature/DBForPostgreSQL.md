@@ -2,6 +2,18 @@
 
 **Resource Type:** Microsoft.DBforPostgreSQL/servers 
 
+<!-- TOC -->
+
+- [Azure_DBforPostgreSQL_AuthZ_Enable_SSL_Connection](#azure_dbforpostgresql_authz_enable_ssl_connection)
+- [Azure_DBforPostgreSQL_NetSec_Dont_Allow_Universal_IP_Range](#azure_dbforpostgresql_netsec_dont_allow_universal_ip_range)
+- [Azure_DBforPostgreSQL_Audit_Enable_ATP](#azure_dbforpostgresql_audit_enable_atp)
+- [Azure_DBforPostgreSQL_Audit_Enable_Logging_On_Server](#azure_dbforpostgresql_audit_enable_logging_on_server)
+- [Azure_DBforPostgreSQL_AuthN_Enable_Connection_Throttling](#azure_dbforpostgresql_authn_enable_connection_throttling)
+- [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](#azure_dbforpostgresql_dp_use_secure_tls_version)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_DBforPostgreSQL_AuthZ_Enable_SSL_Connection 

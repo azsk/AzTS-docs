@@ -2,6 +2,24 @@
 
 **Resource Type:** Microsoft.Web/sites 
 
+<!-- TOC -->
+
+- [Azure_AppService_DP_Use_CNAME_With_SSL](#azure_appservice_dp_use_cname_with_ssl)
+- [Azure_AppService_Config_Disable_Remote_Debugging](#azure_appservice_config_disable_remote_debugging)
+- [Azure_AppService_Config_Disable_Web_Sockets](#azure_appservice_config_disable_web_sockets)
+- [Azure_AppService_BCDR_Use_AlwaysOn](#azure_appservice_bcdr_use_alwayson)
+- [Azure_AppService_BCDR_Use_Multiple_Instances](#azure_appservice_bcdr_use_multiple_instances)
+- [Azure_AppService_Audit_Enable_Logging_and_Monitoring](#azure_appservice_audit_enable_logging_and_monitoring)
+- [Azure_AppService_DP_Dont_Allow_HTTP_Access](#azure_appservice_dp_dont_allow_http_access)
+- [Azure_AppService_DP_Review_CORS_Request_Credential](#azure_appservice_dp_review_cors_request_credential)
+- [Azure_AppService_DP_Restrict_CORS_Access](#azure_appservice_dp_restrict_cors_access)
+- [Azure_AppService_DP_Use_Secure_TLS_Version](#azure_appservice_dp_use_secure_tls_version)
+- [Azure_AppService_AuthZ_Configure_IP_Restrictions](#azure_appservice_authz_configure_ip_restrictions)
+- [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_AppService_DP_Use_CNAME_With_SSL 

@@ -2,6 +2,14 @@
 
 **Resource Type:** Microsoft.Network/networkSecurityGroups 
 
+<!-- TOC -->
+
+- [Azure_NSG_NetSec_Dont_Open_Restricted_Ports](#azure_nsg_netsec_dont_open_restricted_ports)
+- [Azure_NSG_NetSec_Dont_Open_InBound_Any_Any](#azure_nsg_netsec_dont_open_inbound_any_any)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_NSG_NetSec_Dont_Open_Restricted_Ports 

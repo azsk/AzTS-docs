@@ -1,6 +1,20 @@
 # VirtualMachine
 
 **Resource Type:** Microsoft.Compute/virtualMachines
+<!-- TOC -->
+
+- [Azure_VirtualMachine_SI_Enable_Antimalware](#azure_virtualmachine_si_enable_antimalware)
+- [Azure_VirtualMachine_SI_Enable_Antimalware_Trial](#azure_virtualmachine_si_enable_antimalware_trial)
+- [Azure_VirtualMachine_Config_Enable_NSG](#azure_virtualmachine_config_enable_nsg)
+- [Azure_VirtualMachine_NetSec_Justify_PublicIPs](#azure_virtualmachine_netsec_justify_publicips)
+- [Azure_VirtualMachine_DP_Enable_Disk_Encryption](#azure_virtualmachine_dp_enable_disk_encryption)
+- [Azure_VirtualMachine_SI_ASC_OS_Vulnerabilities](#azure_virtualmachine_si_asc_os_vulnerabilities)
+- [Azure_VirtualMachine_SI_ASC_Recommendations](#azure_virtualmachine_si_asc_recommendations)
+- [Azure_VirtualMachine_Audit_Enable_Diagnostics](#azure_virtualmachine_audit_enable_diagnostics)
+- [Azure_VirtualMachine_SI_Enable_Vuln_Solution](#azure_virtualmachine_si_enable_vuln_solution)
+
+<!-- /TOC -->
+<br/>
 
 ___ 
 

@@ -2,6 +2,14 @@
 
 **Resource Type:** Microsoft.EventHub/namespaces
 
+<!-- TOC -->
+
+- [Azure_EventHub_AuthZ_Dont_Use_Policies_At_Event_Hub_Namespace](#azure_eventhub_authz_dont_use_policies_at_event_hub_namespace)
+- [Azure_EventHub_AuthZ_Use_Min_Permissions_Access_Policies](#azure_eventhub_authz_use_min_permissions_access_policies)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_EventHub_AuthZ_Dont_Use_Policies_At_Event_Hub_Namespace 
