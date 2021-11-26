@@ -43,8 +43,7 @@ A secure cluster prevents unauthorized access to management operations, which in
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get certificate details of Service Fabric resource: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 
- <br />
+- ARM API to get certificate details of Service Fabric resource: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.certificate
  <br />
 
@@ -91,8 +90,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get Azure Active Directory details and its related property: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  
- <br />
+- ARM API to get Azure Active Directory details and its related property: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
 **Properties:** property.azureActiveDirectory.tenantId
  <br />
 
@@ -139,8 +137,7 @@ With cluster protection level set to 'EncryptAndSign', all the node-to-node mess
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get cluster protection level : - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  
- <br />
+- ARM API to get cluster protection level : - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
 **Properties:** property.fabricSettings.ClusterProtectionLevel.value
  <br />
 
@@ -196,25 +193,21 @@ Use of appropriate NSG rules can limit exposure of Service Fabric cluster in mul
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Service Fabric cluster resources at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 
- <br />
+- ARM API to list Service Fabric cluster resources at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.nodeTypes[*].name
  <br />
 
-- ARM API to list Virtual Machine scale sets at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
- <br />
+- ARM API to list Virtual Machine scale sets at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01 <br />
 **Properties:** properties.virtualMachineProfile.networkProfile.
 networkInterfaceConfigurations[*].properties.ipConfigurations[*]
 .properties.subnet.id, tags
  <br />
 
-- ARM API to list Virtual Networks at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01
- <br />
+- ARM API to list Virtual Networks at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
 **Properties:** properties.networkSecurityGroup.id
  <br />
 
-- ARM API to list Network Security Groups at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01
- <br />
+- ARM API to list Network Security Groups at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
 **Properties:** properties.destinationPortRange, properties.destinationPortRanges
 
  <br/>
@@ -282,8 +275,7 @@ Publically exposed ports must be monitored to detect suspicious and malicious ac
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Load Balancer Rules at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01
- <br />
+- ARM API to list Load Balancer Rules at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01 <br />
 **Properties:** properties.loadBalancingRules.BackendPort
  <br />
 
@@ -329,13 +321,11 @@ Configuring the reverse proxy's port in Load Balancer with public IP will expose
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get reverse proxy details at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  
- <br />
+- ARM API to get reverse proxy details at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
 **Properties:** properties.nodeTypes.reverseProxyEndpointPort
  <br />
 
-- ARM API to list Load Balancer Rules at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01
- <br />
+- ARM API to list Load Balancer Rules at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
 **Properties:** properties.loadBalancingRules.BackendPort
  <br />
 
@@ -380,8 +370,7 @@ Clusters with unsupported fabric version can become targets for compromise from 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get status of upgrade mode at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 
- <br />
+- ARM API to get status of upgrade mode at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
 **Properties:** properties.UpgradeMode
  <br />
 

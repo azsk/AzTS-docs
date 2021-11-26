@@ -108,8 +108,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get all Redis caches in the specified subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01
- <br />
+- ARM API to get all Redis caches in the specified subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.enableNonSslPort
  <br />
 

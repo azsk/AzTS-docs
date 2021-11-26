@@ -41,8 +41,7 @@ Manage security claim has the highest level of access (Create/Update/Read/Delete
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to fetch authorization rules: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NotificationHubs/namespaces/{namespaceName}/notificationHubs/{notificationHubName}/AuthorizationRules?api-version=2016-03-01
- <br />
+- ARM API to fetch authorization rules: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NotificationHubs/namespaces/{namespaceName}/notificationHubs/{notificationHubName}/AuthorizationRules?api-version=2016-03-01<br />
 **Properties:** properties.rights, name
  <br />
 
