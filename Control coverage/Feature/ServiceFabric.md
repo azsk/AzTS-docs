@@ -1,6 +1,6 @@
 # ServiceFabric
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.ServiceFabric/clusters
 
 ___ 
 

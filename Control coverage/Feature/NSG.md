@@ -1,6 +1,6 @@
 # NSG
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.Network/networkSecurityGroups 
 
 ___ 
 

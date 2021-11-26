@@ -1,6 +1,6 @@
 # RedisCache
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.Cache/Redis
 
 ___ 
 <!--

@@ -1,6 +1,6 @@
 # ServiceBus
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.ServiceBus/namespaces
 
 ___ 
 

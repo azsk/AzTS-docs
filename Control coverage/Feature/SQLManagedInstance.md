@@ -1,6 +1,6 @@
 # SQLManagedInstance
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.Sql/managedInstances
 
 ___ 
 

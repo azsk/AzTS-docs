@@ -1,6 +1,6 @@
 # NotificationHub
 
-**Resource Type:** Microsoft.ServiceName/subcategory 
+**Resource Type:** Microsoft.NotificationHubs/namespaces/notificationHubs
 
 ___ 
 
