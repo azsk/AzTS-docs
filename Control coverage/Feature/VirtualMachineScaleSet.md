@@ -42,20 +42,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 - **Azure Portal**
 -->
 
--**PowerShell**
-
-    ```powershell
-        Add-AzVmssDiagnosticsExtension -VirtualMachineScaleSet '{Scale set name}' -SettingFilePath '{Path of public configuration file}' -ProtectedSettingFilePath '{Path of private configuration file}' -Name '{Extension name}' -TypeHandlerVersion '{Extension Version}' -AutoUpgradeMinorVersion $True -Force
-    ```
-    Refer : https://docs.microsoft.com/en-us/powershell/module/az.compute/add-azvmssdiagnosticsextension?view=azps-6.6.0
-
-- **Azure CLI**
-
-    ```Azure CLI
-    az vmss diagnostics set --protected-settings {protected-settings} --resource-group '{ResourceGroupName}' --settings '{Json string or a file path}' --vmss-name '{Virtual Scale set name}'
-    ```
-
-	Refer: https://docs.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest
+- Refer: https://docs.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest
 
 <!--
 - **Enforcement Policy**
@@ -101,10 +88,10 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 ### Recommendation
 
 
-- **Azure Portal**
-     To apply NSG at scale set, refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-networking#nsg--asgs-per-scale-set 
-     or 
-     to apply NSG at subnet level, refer: https://docs.microsoft.com/en-us/azure/virtual-network/tutorial-filter-network-traffic#associate-network-security-group-to-subnet
+- To apply NSG at scale set, refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-networking#nsg--asgs-per-scale-set
+, or 
+
+- To apply NSG at subnet level, refer: https://docs.microsoft.com/en-us/azure/virtual-network/tutorial-filter-network-traffic#associate-network-security-group-to-subnet
 
 
 <!--
@@ -262,7 +249,7 @@ Open remote management ports expose a VMSS instance/compute node to a high level
   <br />
  <br />
  
- - ARM API to list all the NSG configurations under the specified subscription:
+- ARM API to list all the NSG configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01
   <br />
   **Properties:** properties.securityRules.properties.destinationPortRange
@@ -296,9 +283,7 @@ Public IPs provide direct access over the internet exposing the VMSS instance to
 
 ### Recommendation
 
-- **Azure CLI**
-
-	Refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-networking#public-ipv4-per-virtual-machine
+- Refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-networking#public-ipv4-per-virtual-machine
 
 <!--
 - **PowerShell**
@@ -385,7 +370,8 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 - **Azure Portal**
 
 	To install antimalware, Go to Azure Portal --> VMSS --> Settings --> Extensions --> Add 'Microsoft Antimalware' --> Enable Real-Time Protection and Scheduled Scan --> Click Ok. To turn on antimalware using powershell.
-    Refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#how-do-i-turn-on-antimalware-in-my-virtual-machine-scale-set
+  
+  Please refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#how-do-i-turn-on-antimalware-in-my-virtual-machine-scale-set
 
 <!--
 - **PowerShell**
@@ -446,9 +432,7 @@ Being on the latest OS version significantly reduces risks from security design 
 
 ### Recommendation
 
-- **Azure Portal**
-
-	To configure auto OS image upgarde on VM Scale Set, please refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-automatic-upgrade
+- To configure auto OS image upgarde on VM Scale Set, refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-automatic-upgrade
 
 <!--
 - **PowerShell**
@@ -502,9 +486,7 @@ All the security configurations applied on VM Scale Set will be effective only i
 
 ### Recommendation
 
-- **Azure Portal**
-
-	Please refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-upgrade-scale-set#how-to-bring-vms-up-to-date-with-the-latest-scale-set-model
+-	Refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-upgrade-scale-set#how-to-bring-vms-up-to-date-with-the-latest-scale-set-model
 
 <!--
 - **PowerShell**
@@ -565,9 +547,7 @@ Un-patched VMSSs are easy targets for compromise from various malware/trojan att
 
 ### Recommendation
 
-- **Azure Portal**
-
-	Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates . It takes 24 hours to reflect the latest status at ASC.
+- Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates. It takes 24 hours to reflect the latest status at ASC.
 
 <!--
 - **PowerShell**
@@ -690,9 +670,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 ### Recommendation
 
-- **Azure Portal**
-
-	Refer: https://docs.microsoft.com/en-in/azure/virtual-machine-scale-sets/disk-encryption-powershell
+- Refer: https://docs.microsoft.com/en-in/azure/virtual-machine-scale-sets/disk-encryption-powershell
 
 <!--
 - **PowerShell**
@@ -715,7 +693,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 - ARM API to get configuration of a Virtual Machine Scale Set:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
-  **Properties:** properties.virtualMachineProfile.extensionProfile.extensions[*].type, properties.virtualMachineProfile.extensionProfile.extensions.[*].provisioningState
+  **Properties:** properties.virtualMachineProfile.extensionProfile.extensions[\*].type, properties.virtualMachineProfile.extensionProfile.extensions.[\*].provisioningState
   <br />
  <br />
  
