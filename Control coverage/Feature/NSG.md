@@ -25,12 +25,12 @@ Open restricted ports expose a NSG to a high level of risk from internet-based a
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "databricks-environment",
             "TagValue": "true"
         },
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "application",
             "TagValue": "databricks"
         }
@@ -97,12 +97,12 @@ Open restricted ports expose a NSG to a high level of risk from internet-based a
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "databricks-environment",
             "TagValue": "true"
         },
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "application",
             "TagValue": "databricks"
         }

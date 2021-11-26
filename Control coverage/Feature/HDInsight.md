@@ -34,7 +34,7 @@ Being on the latest/supported HDInsight version significantly reduces risks from
 > Cluster version is greater or equal to minimum required version.
 > 
 > **Failed:** 
-> Cluster verison is less than minimum required version.
+> Cluster version is less than minimum required version.
 > 
 > **Error:** 
 > Minimum required version is not defined in control settings.
