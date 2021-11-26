@@ -360,12 +360,12 @@ Enabling antimalware protection minimizes the risks from existing and new attack
     "Publisher": "Microsoft.Azure.Security",
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of AKS cluster.",
+            "Description": "VM is part of AKS cluster.",
             "TagName": "orchestrator",
             "TagValue": "kubernetes"
         },
         {
-            "Desciption": "VM is part of Service Fabric.",
+            "Description": "VM is part of Service Fabric.",
             "TagName": "resourcetype",
             "TagValue": "service fabric"
         }
@@ -460,7 +460,7 @@ Being on the latest OS version significantly reduces risks from security design 
 
 ### Recommendation
 
-- To configure auto OS image upgarde on VM Scale Set, refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-automatic-upgrade
+- To configure auto OS image upgrade on VM Scale Set, refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-automatic-upgrade
 
 <!--
 - **PowerShell**

@@ -24,13 +24,13 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 > **Passed:** 
 > All the following conditions are true -
 > a. Vulnerability assessment setting is enabled
-> b. Atleast one option to send email notification on alert is selected
+> b. At least one option to send email notification on alert is selected
 > c. Storage account container path is selected.
 > 
 > **Failed:** 
 > Any one of the four conditions is false -
 > a. Vulnerability assessment setting is enabled
-> b. Atleast one option to send email notification on alert is selected
+> b. At least one option to send email notification on alert is selected
 > c. Storage account container path is selected.
 > 
 ### Recommendation 
@@ -57,7 +57,7 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get Vulnerability Assessment of a SQLManagedInstance:: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{resourceName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview <br />
+- ARM API to get Vulnerability Assessment of a SQLManagedInstance: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{resourceName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview <br />
 **Properties:** properties.VulnerabilityAssessmentSetting.IsEnabled, properties.EmailSubscriptionAdmins, properties.StorageContainerPath, properties.Emails
  <br />
 

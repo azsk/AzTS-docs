@@ -157,7 +157,7 @@ Using IP Forwarding one can change the routing of packets from an ER-connected v
 
 - **Azure Portal** 
 
-	Step 1 : Go to Azure portal --> Network interfaces --> Select the Network interface for which you want to disbale the 'IP Forwarding'.
+	Step 1 : Go to Azure portal --> Network interfaces --> Select the Network interface for which you want to disable the 'IP Forwarding'.
 
 	Step 2 : Go to Settings --> IP Configurations.​
 
@@ -670,7 +670,7 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 > **NotScanned:** 
 > The data required for evaluation by the Reader is not available.
 >
-### Recommendation 
+### Recommendation
 
 - **Azure Portal** 
 

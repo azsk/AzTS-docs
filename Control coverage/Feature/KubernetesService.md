@@ -126,7 +126,7 @@ Running on older versions could mean you are not using latest security classes. 
 > AKS is running on one of the defined version
 > 
 > **Failed:** 
-> AKS is not running on the required kubernetes version.
+> AKS is not running on the required Kubernetes version.
 > 
 ### Recommendation 
 

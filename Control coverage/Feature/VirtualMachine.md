@@ -32,7 +32,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "vendor",
             "TagValue": "Databricks"
         }
@@ -107,12 +107,12 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "vendor",
             "TagValue": "Databricks"
         },
         {
-            "Desciption": "VM is part of AKS cluster.",
+            "Description": "VM is part of AKS cluster.",
             "TagName": "orchestrator",
             "TagValue": "kubernetes"
         }
@@ -184,7 +184,7 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "vendor",
             "TagValue": "Databricks"
         }
@@ -229,16 +229,12 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list networkInterfaces at subscription level: 
-/subscriptions/{subscriptionId}/providers
-/Microsoft.Network/networkInterfaces
-?api-version=2019-04-01 <br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** publicIPAddress.id, networkSecurityGroup.id<br />
 
 - ARM API to list Virtual Networks at
 subscription level:
-/subscriptions/{subscriptionId}/providers
-/Microsoft.Network/virtualNetworks
-?api-version=2019-11-01<br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 **Properties:** networkSecurityGroup.id
  <br />
 <br />
@@ -258,7 +254,7 @@ Public IPs provide direct access over the internet exposing the VM to attacks ov
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "vendor",
             "TagValue": "Databricks"
         }
@@ -307,8 +303,7 @@ properties.networkProfile.networkInterfaces[*].id<br />
 
 - ARM API to list Network Interfaces at
 subscription level:
-/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces
-?api-version=2019-04-01<br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
 **Properties:**  publicIPAddress.id	
  <br />
 <br />
@@ -328,7 +323,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "vendor",
             "TagValue": "Databricks"
         }
@@ -372,9 +367,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 - ARM API to list security assessments at
 subscription level:
-/subscriptions/{subscriptionId}/providers
-/Microsoft.Security/assessments?
-api-version=2020-01-01<br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
  **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData <br />
 
 - ARM API to list Virtual Machines at subscription level:
@@ -446,8 +439,7 @@ Azure Security Center raises alerts (which are typically indicative of resources
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription:
-/subscriptions/{subscriptionId}/
-providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
 id, name, properties.resourceDetails.id,
 properties.displayName, properties.status, properties.additionalData<br />
@@ -575,8 +567,7 @@ Azure Security Center provide various security recommendations for resources tha
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription:
-/subscriptions/{subscriptionId}/
-providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
  **Properties:** id, name, properties.resourceDetails.id,
 properties.displayName, properties.status, properties.additionalData<br>
  **Assessments:**  
@@ -659,9 +650,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all extensions in a Virtual Machine:
-/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupId}/
-providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/
-extensions?api-version=2019-07-01<br />
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupId}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
 **Properties:** properties.type, properties.publisher	
  <br />
 <!--
@@ -686,12 +675,12 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 {
     "ExclusionTags": [
         {
-            "Desciption": "VM is part of ADB cluster.",
+            "Description": "VM is part of ADB cluster.",
             "TagName": "vendor",
             "TagValue": "Databricks"
         },
         {
-            "Desciption": "VM is part of AKS cluster.",
+            "Description": "VM is part of AKS cluster.",
             "TagName": "orchestrator",
             "TagValue": "kubernetes"
         }
@@ -743,10 +732,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 - ARM API to list Virtual Machine Extensions at
 resource level:
-/subscriptions/{subscriptionId}/resourceGroups/
-{resourceGroupName}/providers/Microsoft.
-Compute/virtualMachines/{vmName}
-/extensions?api-version=2019-07-01<br />
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
 **Properties:** properties.type, properties.publisher
  <br />
 <!--

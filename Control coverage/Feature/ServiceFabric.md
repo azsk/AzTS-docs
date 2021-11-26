@@ -23,7 +23,7 @@ ___
 Service Fabric cluster security must be enabled using security mode option 
 
 ### Rationale 
-A secure cluster prevents unauthorized access to management operations, which includes deployment, upgrade, and deletion of microservices. Also provides encryption for node-to-node communication, client-to-node communication etc. In oppose to unsecure cluster which can be connected by any anonymous user. 
+A secure cluster prevents unauthorized access to management operations, which includes deployment, upgrade, and deletion of microservices. Also provides encryption for node-to-node communication, client-to-node communication etc. In oppose to unsecured cluster which can be connected by any anonymous user. 
 
 ### Control Spec 
 
@@ -236,7 +236,7 @@ ___
 Monitor publicly exposed ports on load balancers used by Service Fabric cluster 
 
 ### Rationale 
-Publically exposed ports must be monitored to detect suspicious and malicious activities early and respond in a timely manner. 
+Publicly exposed ports must be monitored to detect suspicious and malicious activities early and respond in a timely manner. 
 
 ### Control Settings 
 ```json 
