@@ -558,3 +558,64 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 
 ___
 
+## Azure_SQLDatabase_DP_Use_Secure_TLS_Version
+
+### DisplayName
+Use approved version of TLS for SQL Server
+
+### Rationale
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ``` 
+
+### Control Spec
+
+> **Passed:**
+> Current TLS version of SQL Server is set to either equal or greater than the required minimum TLS version.
+>
+> **Failed:**
+> One or more of the following conditions are met:
+> * Current TLS version of SQL Server is less than the required minimum TLS version.
+> * TLS for SQL Server is not configured.
+>
+> **Error:**
+> Required minimum TLS version is not set properly in control settings.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+	To Configure 'Minimum TLS Version' setting for SQL Server, go to Azure Portal --> Your Resource --> Firewalls and virtual networks --> Set the Minimum TLS Version to latest version.
+
+<!--
+- **PowerShell**
+
+	 ```powershell
+	 $variable = 'apple'
+	 ```
+-->
+
+<!--
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+-->
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to check a SQL server's TLS version:
+  /subscriptions/{subscriptionId}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview
+  <br />
+  **Properties:** properties.minimalTlsVersion
+  <br />
+ <br />
+
+___
