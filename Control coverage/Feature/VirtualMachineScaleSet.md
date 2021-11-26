@@ -57,6 +57,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+  
   **Properties:** properties.storageProfile.osDisk.osType, properties.virtualMachineProfile.extensionProfile.extensions
   <br />
   <br />
@@ -107,13 +108,15 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 - ARM API to get all the public IPs for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/publicipaddresses?api-version=2019-07-01
   <br />
+
   **Properties:** properties.ipAddress
   <br />
   <br />
 
-- ARM API to list all the VMSS configurations under the specified subscription::
+- ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.properties.networkSecurityGroup, properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.properties.ipConfigurations.properties.subnet
   <br />
   <br />
@@ -181,6 +184,7 @@ Installing the Log Analytics extension for Windows and Linux allows Azure Monito
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.storageProfile.osDisk.osType, properties.virtualMachineProfile.extensionProfile.extensions
   <br />
   <br />
@@ -245,6 +249,7 @@ Open remote management ports expose a VMSS instance/compute node to a high level
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.storageProfile.osDisk.osType, properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.properties.networkSecurityGroup, properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.properties.ipConfigurations.properties.subnet
   <br />
  <br />
@@ -252,6 +257,7 @@ Open remote management ports expose a VMSS instance/compute node to a high level
 - ARM API to list all the NSG configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01
   <br />
+
   **Properties:** properties.securityRules.properties.destinationPortRange
   <br />
  <br />
@@ -306,13 +312,15 @@ Public IPs provide direct access over the internet exposing the VMSS instance to
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.virtualMachineProfile.networkProfile.networkInterfaceConfigurations.properties.ipConfigurations.properties.subnet
   <br />
  <br />
 
- - ARM API to get all the public IPs for the specified VMSS:
+- ARM API to get all the public IPs for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/publicipaddresses?api-version=2019-07-01
   <br />
+
   **Properties:** properties.ipAddress
   <br />
  <br />
@@ -371,7 +379,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 
 	To install antimalware, Go to Azure Portal --> VMSS --> Settings --> Extensions --> Add 'Microsoft Antimalware' --> Enable Real-Time Protection and Scheduled Scan --> Click Ok. To turn on antimalware using powershell.
   
-  Please refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#how-do-i-turn-on-antimalware-in-my-virtual-machine-scale-set
+  Refer: https://docs.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-faq#how-do-i-turn-on-antimalware-in-my-virtual-machine-scale-set
 
 <!--
 - **PowerShell**
@@ -393,7 +401,8 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
-  <br />
+  <br/>
+  
   **Properties:** properties.storageProfile.osDisk.osType, properties.virtualMachineProfile.extensionProfile.extension
   <br />
  <br />
@@ -401,6 +410,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 - ARM API to get all the VM instances for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/virtualMachines?api-version=2019-07-01
   <br />
+
   **Properties:** instance.resources (Microsoft.Compute/virtualMachines/extensions)
   <br />
  <br />
@@ -455,6 +465,7 @@ Being on the latest OS version significantly reduces risks from security design 
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.upgradePolicy.automaticOSUpgradePolicy.enableAutomaticOSUpgrade
   <br />
  <br />
@@ -509,6 +520,7 @@ All the security configurations applied on VM Scale Set will be effective only i
 - ARM API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.upgradePolicy.mode
   <br />
  <br />
@@ -516,6 +528,7 @@ All the security configurations applied on VM Scale Set will be effective only i
 - ARM API to get all the VM instances for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/virtualMachines?api-version=2019-07-01
   <br />
+
   **Properties:** instance.properties.latestModelApplied
   <br />
  <br />
@@ -570,6 +583,7 @@ Un-patched VMSSs are easy targets for compromise from various malware/trojan att
 - ARM API to fetch all the security assessment for the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01
   <br />
+
   **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
   <br />
  <br />
@@ -626,6 +640,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 - ARM API to fetch all the security assessment for the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01
   <br />
+
   **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
   <br />
  <br />
@@ -693,6 +708,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 - ARM API to get configuration of a Virtual Machine Scale Set:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
+
   **Properties:** properties.virtualMachineProfile.extensionProfile.extensions[\*].type, properties.virtualMachineProfile.extensionProfile.extensions.[\*].provisioningState
   <br />
  <br />
@@ -700,6 +716,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 - ARM API to get instance view of Virtual Machines in a Virtual Machine Scale Set:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualmachines/{instanceId}/instanceView?api-version=2021-03-01
   <br />
+
   **Properties:** disks.statuses[*].code
   <br />
  <br />
