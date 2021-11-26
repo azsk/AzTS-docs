@@ -2,6 +2,16 @@
 
 **Resource Type:** Microsoft.Storage/storageAccounts
 
+<!-- TOC -->
+
+- [Azure_Storage_AuthN_Dont_Allow_Anonymous](#azure_storage_authn_dont_allow_anonymous)
+- [Azure_Storage_DP_Encrypt_In_Transit](#azure_storage_dp_encrypt_in_transit)
+- [Azure_Storage_NetSec_Restrict_Network_Access](#azure_storage_netsec_restrict_network_access)
+- [Azure_Storage_DP_Use_Secure_TLS_Version](#azure_storage_dp_use_secure_tls_version)
+
+<!-- /TOC -->
+<br/>
+
 ___
 
 ## Azure_Storage_AuthN_Dont_Allow_Anonymous

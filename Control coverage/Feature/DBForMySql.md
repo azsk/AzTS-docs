@@ -2,6 +2,17 @@
 
 **Resource Type:** Microsoft.DBforMySQL/servers 
 
+<!-- TOC -->
+
+- [Azure_DBforMySQL_NetSec_Dont_Allow_Universal_IP_Range](#azure_dbformysql_netsec_dont_allow_universal_ip_range)
+- [Azure_DBforMySQL_Authz_Enable_SSL_Connection](#azure_dbformysql_authz_enable_ssl_connection)
+- [Azure_DBforMySQL_Audit_Enable_ATP](#azure_dbformysql_audit_enable_atp)
+- [Azure_DBforMySQL_DP_Use_Secure_TLS_Version](#azure_dbformysql_dp_use_secure_tls_version)
+- [Azure_DBforMySQL_Audit_Enable_Diagnostics_Log](#azure_dbformysql_audit_enable_diagnostics_log)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_DBforMySQL_NetSec_Dont_Allow_Universal_IP_Range 

@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.Cache/Redis
 
+<!-- TOC -->
+
+- [Azure_RedisCache_DP_Use_SSL_Port](#azure_rediscache_dp_use_ssl_port)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 <!--
 ## Azure_RedisCache_BCDR_Use_RDB_Backup 

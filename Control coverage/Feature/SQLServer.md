@@ -2,6 +2,21 @@
 
 **Resource Type:** Microsoft.Sql/servers
 
+<!-- TOC -->
+
+- [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](#azure_sqldatabase_authz_use_aad_admin)
+- [Azure_SQLDatabase_DP_Enable_TDE](#azure_sqldatabase_dp_enable_tde)
+- [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](#azure_sqldatabase_audit_enable_threat_detection_server)
+- [Azure_SQLDatabase_Audit_Enable_Vuln_Assessment](#azure_sqldatabase_audit_enable_vuln_assessment)
+- [Azure_SQLDatabase_NetSec_Dont_Allow_Universal_IP_Range](#azure_sqldatabase_netsec_dont_allow_universal_ip_range)
+- [Azure_SQLDatabase_Audit_Enable_Logging_and_Monitoring_Server](#azure_sqldatabase_audit_enable_logging_and_monitoring_server)
+- [Azure_SQLDatabase_AuthZ_Firewall_Deny_Access_AzureServices](#azure_sqldatabase_authz_firewall_deny_access_azureservices)
+- [Azure_SQLDatabase_SI_Remediate_Security_Vulnerabilities](#azure_sqldatabase_si_remediate_security_vulnerabilities)
+- [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](#azure_sqldatabase_dp_use_secure_tls_version)
+
+<!-- /TOC -->
+<br/>
+
 ___
 
 ## Azure_SQLDatabase_AuthZ_Use_AAD_Admin

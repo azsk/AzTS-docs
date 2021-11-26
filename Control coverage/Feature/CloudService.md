@@ -2,6 +2,17 @@
 
 **Resource Type:** Microsoft.Compute/cloudServices
 
+
+<!-- TOC -->
+
+- [Azure_CloudService_DP_DontAllow_HTTP_Access_InputEndpoints](#azure_cloudservice_dp_dontallow_http_access_inputendpoints)
+- [Azure_CloudService_SI_Auto_OSUpdate](#azure_cloudservice_si_auto_osupdate)
+- [Azure_CloudService_SI_Enable_AntiMalware](#azure_cloudservice_si_enable_antimalware)
+- [Azure_CloudService_SI_Disable_RemoteDesktop_Access](#azure_cloudservice_si_disable_remotedesktop_access)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_CloudService_DP_DontAllow_HTTP_Access_InputEndpoints 

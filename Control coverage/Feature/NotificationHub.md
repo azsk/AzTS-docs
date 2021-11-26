@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.NotificationHubs/namespaces/notificationHubs
 
+<!-- TOC -->
+
+- [Azure_NotificationHub_AuthZ_Dont_Use_Manage_Access_Permission](#azure_notificationhub_authz_dont_use_manage_access_permission)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_NotificationHub_AuthZ_Dont_Use_Manage_Access_Permission 

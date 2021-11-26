@@ -2,6 +2,26 @@
 
 **Resource Type:** Microsoft.Network/virtualNetworks
 
+<!-- TOC -->
+
+- [Azure_ERvNet_NetSec_Dont_Use_PublicIPs](#azure_ervnet_netsec_dont_use_publicips)
+- [Azure_ERvNet_NetSec_Dont_Use_Multi_NIC_VMs](#azure_ervnet_netsec_dont_use_multi_nic_vms)
+- [Azure_ERvNet_NetSec_Dont_Enable_IPForwarding_for_NICs](#azure_ervnet_netsec_dont_enable_ipforwarding_for_nics)
+- [Azure_ERvNet_NetSec_Dont_Add_UDRs_on_Subnets](#azure_ervnet_netsec_dont_add_udrs_on_subnets)
+- [Azure_ERvNet_NetSec_Dont_Add_VPN_Gateways](#azure_ervnet_netsec_dont_add_vpn_gateways)
+- [Azure_ERvNet_NetSec_Dont_Use_VNet_Peerings](#azure_ervnet_netsec_dont_use_vnet_peerings)
+- [Azure_ERvNet_SI_Add_Only_Network_Resources](#azure_ervnet_si_add_only_network_resources)
+- [Azure_ERvNet_SI_Dont_Remove_Resource_Lock](#azure_ervnet_si_dont_remove_resource_lock)
+- [Azure_ERvNet_NetSec_Revoke_PublicIPs_On_Sub](#azure_ervnet_netsec_revoke_publicips_on_sub)
+- [Azure_VNet_NetSec_Justify_Peering](#azure_vnet_netsec_justify_peering)
+- [Azure_VNet_NetSec_Configure_NSG](#azure_vnet_netsec_configure_nsg)
+- [Azure_VNet_NetSec_Justify_PublicIPs](#azure_vnet_netsec_justify_publicips)
+- [Azure_VNet_NetSec_Justify_Gateways](#azure_vnet_netsec_justify_gateways)
+- [Azure_VNet_NetSec_Justify_IPForwarding_for_NICs](#azure_vnet_netsec_justify_ipforwarding_for_nics)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_ERvNet_NetSec_Dont_Use_PublicIPs 

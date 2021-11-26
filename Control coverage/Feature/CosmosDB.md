@@ -2,6 +2,17 @@
 
 **Resource Type:** Microsoft.DocumentDB/databaseAccounts 
 
+<!-- TOC -->
+
+- [Azure_CosmosDB_AuthZ_Enable_Firewall](#azure_cosmosdb_authz_enable_firewall)
+- [Azure_CosmosDB_AuthZ_Verify_IP_Range](#azure_cosmosdb_authz_verify_ip_range)
+- [Azure_CosmosDB_Deploy_Use_Replication](#azure_cosmosdb_deploy_use_replication)
+- [Azure_CosmosDB_Deploy_Use_Automatic_Failover](#azure_cosmosdb_deploy_use_automatic_failover)
+- [Azure_CosmosDB_Enable_Adv_Threat_Protection](#azure_cosmosdb_enable_adv_threat_protection)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_CosmosDB_AuthZ_Enable_Firewall 

@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.Sql/managedInstances
 
+<!-- TOC -->
+
+- [Azure_SQLManagedInstance_Audit_Enable_Vuln_Assessment](#azure_sqlmanagedinstance_audit_enable_vuln_assessment)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_SQLManagedInstance_Audit_Enable_Vuln_Assessment 

@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.ServiceBus/namespaces
 
+<!-- TOC -->
+
+- [Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace](#azure_servicebus_authz_dont_use_policies_at_sb_namespace)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace 

@@ -2,6 +2,14 @@
 
 **Resource Type:** Microsoft.Network/TrafficManager
 
+<!-- TOC -->
+
+- [Azure_TrafficManager_DP_Enable_HTTPS](#azure_trafficmanager_dp_enable_https)
+
+<!-- /TOC -->
+<br/>
+
+
 ___ 
 
 ## Azure_TrafficManager_DP_Enable_HTTPS 

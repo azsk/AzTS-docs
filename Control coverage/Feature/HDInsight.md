@@ -2,6 +2,15 @@
 
 **Resource Type:** Microsoft.HDInsight/clusters
 
+<!-- TOC -->
+
+- [Azure_HDInsight_Deploy_Supported_Cluster_Version](#azure_hdinsight_deploy_supported_cluster_version)
+- [Azure_HDInsight_NetSec_Restrict_Cluster_Network_Access](#azure_hdinsight_netsec_restrict_cluster_network_access)
+- [Azure_HDInsight_DP_Use_Secure_TLS_Version](#azure_hdinsight_dp_use_secure_tls_version)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_HDInsight_Deploy_Supported_Cluster_Version 

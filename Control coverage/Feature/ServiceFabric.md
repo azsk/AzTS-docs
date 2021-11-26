@@ -2,6 +2,19 @@
 
 **Resource Type:** Microsoft.ServiceFabric/clusters
 
+<!-- TOC -->
+
+- [Azure_ServiceFabric_AuthZ_Security_Mode_Enabled](#azure_servicefabric_authz_security_mode_enabled)
+- [Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only](#azure_servicefabric_authn_client_authn_aad_only)
+- [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](#azure_servicefabric_dp_set_property_clusterprotectionlevel)
+- [Azure_ServiceFabric_AuthN_NSG_Enabled](#azure_servicefabric_authn_nsg_enabled)
+- [Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports](#azure_servicefabric_audit_publicly_exposed_load_balancer_ports)
+- [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](#azure_servicefabric_dp_dont_expose_reverse_proxy_port)
+- [Azure_ServiceFabric_SI_Set_Auto_Update_Cluster](#azure_servicefabric_si_set_auto_update_cluster)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_ServiceFabric_AuthZ_Security_Mode_Enabled 

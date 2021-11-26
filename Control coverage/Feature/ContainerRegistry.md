@@ -2,6 +2,15 @@
 
 **Resource Type:** Microsoft.ContainerRegistry 
 
+<!-- TOC -->
+
+- [Azure_ContainerRegistry_AuthZ_Disable_Admin_Account](#azure_containerregistry_authz_disable_admin_account)
+- [Azure_ContainerRegistry_DP_Enable_Content_Trust](#azure_containerregistry_dp_enable_content_trust)
+- [Azure_ContainerRegistry_Config_Enable_Security_Scanning](#azure_containerregistry_config_enable_security_scanning)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_ContainerRegistry_AuthZ_Disable_Admin_Account 

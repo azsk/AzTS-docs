@@ -2,6 +2,13 @@
 
 **Resource Type:** Microsoft.DataLakeAnalytics/accounts 
 
+<!-- TOC -->
+
+- [Azure_DataLakeAnalytics_DP_Encrypt_At_Rest](#azure_datalakeanalytics_dp_encrypt_at_rest)
+
+<!-- /TOC -->
+<br/>
+
 ___ 
 
 ## Azure_DataLakeAnalytics_DP_Encrypt_At_Rest 
