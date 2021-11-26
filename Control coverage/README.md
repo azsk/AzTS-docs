@@ -24,6 +24,8 @@ Below resource types can be checked for validating the security controls:
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
+|[NotificationHub](Feature/NotificationHub.md)|Microsoft.NotificationHubs/namespaces/notificationHubs|
+|[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
 |[ServiceBus](Feature/ServiceBus.md)|Microsoft.ServiceBus/namespaces|
 |[ServiceFabric](Feature/ServiceFabric.md)|Microsoft.ServiceFabric/clusters|
