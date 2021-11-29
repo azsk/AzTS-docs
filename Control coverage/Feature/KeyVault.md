@@ -53,7 +53,7 @@ Advanced access policy allows Azure services (Azure Resource Manager, Virtual Ma
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the KeyVault configurations under the specified subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2019-09-01<br/>
+- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2019-09-01<br/>
 **Properties:** 
 properties/enabledForDeployment<br/>
 properties/enabledForDiskEncryption<br/>
@@ -102,7 +102,7 @@ Enabling soft delete feature on Key Vault acts as a safety measure to recover in
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the KeyVault configurations under the specified subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2019-09-01<br />
+- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2019-09-01<br />
 **Properties:** properties.enableSoftDelete
  <br />
 
@@ -177,7 +177,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list diagnostic setting details of Key Vault resources: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+- ARM API to list diagnostic setting details of Key Vault resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:** 
 name<br />
 properties.logs.category<br />

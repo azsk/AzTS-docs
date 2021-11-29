@@ -52,7 +52,7 @@ Enforcing SSL connections between your database server and your client applicati
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get resource details of a DBForPostgreSQL server: - 
+- ARM API to get resource details of a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/providers/Microsoft.DBforPostgreSQL/servers?api-version=2017-12-01 
 <br />
  
@@ -108,7 +108,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to fetch the firewall rules for a DBForPostgreSQL server: - 
+- ARM API to fetch the firewall rules for a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/firewallRules?api-version=2017-12-01 
 <br />
  
@@ -164,7 +164,7 @@ Advanced Threat Protection for Azure Database for PostgreSQL provides a layer of
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get security alert policy of a DBForPostgreSQL server: - 
+- ARM API to get security alert policy of a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/securityAlertPolicies/Default?api-version=2017-12-01  
 <br />
  
@@ -211,7 +211,7 @@ PostgreSQL sever logging parameters enable log collection of important system ev
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list configurations for PostgreSQL servers: - 
+- ARM API to list configurations for PostgreSQL servers: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/configurations?api-version=2017-12-01 
 <br />
  
@@ -258,7 +258,7 @@ Connection throttling protects your server against password guessing and brute f
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list configurations for PostgreSQL servers: - 
+- ARM API to list configurations for PostgreSQL servers: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/configurations?api-version=2017-12-01 
 <br />
  
@@ -315,7 +315,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get resource details of a DBForPostgreSQL server: - 
+- ARM API to get resource details of a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/providers/Microsoft.DBforPostgreSQL/servers?api-version=2017-12-01 
 <br />
  

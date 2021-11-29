@@ -54,7 +54,7 @@ The Admin user account is designed for a single user to access the registry. Mul
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to lists all the container registries under the specified subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
+- ARM API to lists all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
 **Properties:** properties.adminUserEnabled
  <br />
 
@@ -101,7 +101,7 @@ Content trust gives the ability to verify both the integrity and the publisher o
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to lists all the container registries under the specified subscription: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{ResourceName}/listPolicies?api-version=2017-10-01<br />
+- ARM API to lists all the container registries under the specified subscription: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{ResourceName}/listPolicies?api-version=2017-10-01<br />
 **Properties:** trustPolicy.status
  <br />
 
@@ -159,7 +159,7 @@ Images in a container registry need to be regularly scanned for vulnerabilities.
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview<br />
+- ARM API to list role assignment at scope: /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview<br />
 **Properties:** UserName, RoleName, ResourceId
  <br />
 

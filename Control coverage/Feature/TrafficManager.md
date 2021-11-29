@@ -62,7 +62,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
  properties.monitorConfig.protocol
  <br />
 <!--
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
