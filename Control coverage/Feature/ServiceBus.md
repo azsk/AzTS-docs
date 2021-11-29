@@ -62,7 +62,7 @@ Get-Help Remove-AzServiceBusAuthorizationRule -full
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Authorization Rules for a ServiceBus namespace: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/AuthorizationRules?api-version=2017-04-01<br />
+- ARM API to list Authorization Rules for a ServiceBus namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/AuthorizationRules?api-version=2017-04-01<br />
 **Properties:** properties.value[*].id, properties.value[*].name<br />
 
 <br />

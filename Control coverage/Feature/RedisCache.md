@@ -62,12 +62,12 @@ Enabling backup on Redis Cache ensures that there is always a previous snapshot 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
@@ -115,7 +115,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get all Redis caches in the specified subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
+- ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.enableNonSslPort
  <br />
 
@@ -172,12 +172,12 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />

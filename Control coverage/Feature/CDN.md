@@ -56,7 +56,7 @@ One of the following conditions is met:
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API used to list existing CDN endpoints at subscription level:-  <br />
+- ARM API used to list existing CDN endpoints at subscription level: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourcegroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints?api-version=2019-12-31<br />
 **Properties:** 
 properties.isHttpAllowed, properties.isHttpsAllowed, properties.deliveryPolicy.rules

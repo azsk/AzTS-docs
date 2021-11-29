@@ -54,7 +54,7 @@ Run command New-AzWebAppSSLBinding to enable the SSL binding for your custom dom
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all App Services in a subscription: - <br />
+- ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01 <br />
  **Properties:**  properties.hostNames, properties.hostNameSslStates
 
@@ -87,18 +87,18 @@ Remote debugging requires inbound ports to be opened on App Service. These ports
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all App Services in a subscription: - <br />
+- ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
-- ARM API to list all slots of App Service: - <br />
+- ARM API to list all slots of App Service: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01
  <br />
 
- - ARM API to get configuration of App Service: - <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+ - ARM API to get configuration of App Service: <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.RemoteDebuggingEnabled<br />
 
- - ARM API to get configuration of App Service slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
+ - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:** properties.RemoteDebuggingEnabled<br />
  <br />
 
@@ -140,18 +140,18 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all App Services in a subscription: - <br />
+- ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
-- ARM API to list all slots of App Service: - <br />
+- ARM API to list all slots of App Service: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01
  <br />
 
- - ARM API to get configuration of App Service: - <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+ - ARM API to get configuration of App Service: <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.webSocketsEnabled<br />
 
- - ARM API to get configuration of App Service slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
+ - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:**  properties.webSocketsEnabled<br />
 
 <br />
@@ -196,11 +196,11 @@ By default, websites are unloaded if they have been idle for some period of time
 	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Always On --> Click on 'ON'. 
 
 ### Azure Policy or ARM API used for evaluation 
-- ARM API to list all App Services in a subscription: - <br />
+- ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
- - ARM API to get configuration of App Service: - <br /> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+ - ARM API to get configuration of App Service: <br /> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:**  properties.alwaysOn
 
 <br />
@@ -252,11 +252,11 @@ One of the below conditions is met:
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list existing App Services at subscription level: - <br />
+- ARM API to list existing App Services at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
--  ARM API to list App Service Plans in a subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Web/serverfarms?api-version=2019-08-01&detailed=false <br />
+-  ARM API to list App Service Plans in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Web/serverfarms?api-version=2019-08-01&detailed=false <br />
 **Properties:** properties.AppServicePlan.SkuDescription.Capacity
  <br />
 
@@ -298,18 +298,18 @@ Auditing enables log collection of important system events pertinent to security
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all App Services in a subscription: - <br />
+- ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
-- ARM API to list all slots of App Service: - <br />
+- ARM API to list all slots of App Service: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01
  <br />
 
- - ARM API to get configuration of App Service: - <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+ - ARM API to get configuration of App Service: <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:**  properties.detailedErrorLoggingEnabled, properties.httpLoggingEnabled, properties.requestTracingEnabled
 
- - ARM API to get configuration of App Service slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
+ - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:**  properties.detailedErrorLoggingEnabled, properties.httpLoggingEnabled, properties.requestTracingEnabled
 <br />
 
@@ -351,11 +351,11 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list existing App Services at subscription level: - <br />
+- ARM API to list existing App Services at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01<br />
  **Properties:**  properties.httpsOnly
 
-- ARM API to list properties of all slots of app service: - <br />
+- ARM API to list properties of all slots of app service: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01<br />
 **Properties:**  properties.httpsOnly
  <br />
@@ -389,13 +389,13 @@ CORS enables applications running under one domain to access a resource under an
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get configuration of an App Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+- ARM API to get configuration of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.cors<br />
 
-- ARM API to list all deployment slots of an App Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
+- ARM API to list all deployment slots of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
 **Properties:** name<br />
 
-- ARM API to get configuration of an App Service slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
+- ARM API to get configuration of an App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:** properties.cors<br />
 
 <br />
@@ -425,13 +425,13 @@ CORS enables applications running under one domain to access a resource under an
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get configuration of an App Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+- ARM API to get configuration of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.cors.allowedOrigins<br />
 
-- ARM API to list all deployment slots of an App Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
+- ARM API to list all deployment slots of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
 **Properties:** name<br />
 
-- ARM API to get configuration of an App Service slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
+- ARM API to get configuration of an App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:** properties.cors.allowedOrigins<br />
 
 <br />
@@ -471,18 +471,18 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all App Services in a subscription: - <br />
+- ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
-- ARM API to list all slots of App Service: - <br />
+- ARM API to list all slots of App Service: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01
  <br />
 
- - ARM API to get configuration of App Service: - <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
+ - ARM API to get configuration of App Service: <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.minTlsVersion<br />
 
- - ARM API to get configuration of App Service slot: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
+ - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:**  properties.minTlsVersion
 <br />
 
@@ -519,11 +519,11 @@ Using the IP/VNet subnet rules based access restriction ensures that access to t
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list existing App Services at subscription level: - <br />
+- ARM API to list existing App Services at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
 
-- ARM API to list configuration properties for app service: -  <br/>
+- ARM API to list configuration properties for app service:  <br/>
  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/config/web?api-version=2018-11-01<br />
  **Properties:**  properties.ipSecurityRestrictions, properties.scmIpSecurityRestrictions, properties["scmIpSecurityRestrictionsUseMain
 
@@ -554,10 +554,10 @@ Managed Service Identity (MSI) allows your app to easily access other AAD-protec
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the App Services in a subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?2018-11-01<br />
+- ARM API to list all the App Services in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?2018-11-01<br />
 **Properties:** properties.identity.type<br />
 
-- ARM API to list all deployment slots of an App Service: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
+- ARM API to list all deployment slots of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
 **Properties:** properties.identity.type<br />
 
 <br />

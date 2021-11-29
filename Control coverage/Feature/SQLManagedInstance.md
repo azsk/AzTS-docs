@@ -57,7 +57,7 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get Vulnerability Assessment of a SQLManagedInstance: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{resourceName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview <br />
+- ARM API to get Vulnerability Assessment of a SQLManagedInstance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{resourceName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview <br />
 **Properties:** properties.VulnerabilityAssessmentSetting.IsEnabled, properties.EmailSubscriptionAdmins, properties.StorageContainerPath, properties.Emails
  <br />
 
@@ -108,12 +108,12 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
@@ -172,12 +172,12 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
 **Properties:** example-property
  <br />

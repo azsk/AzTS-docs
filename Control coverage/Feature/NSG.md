@@ -77,7 +77,7 @@ Open restricted ports expose a NSG to a high level of risk from internet-based a
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list open ports in the NSG at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
+- ARM API to list open ports in the NSG at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:** properties.direction, properties.access, properties.destinationPortRange<br />
 
 <br />
@@ -155,7 +155,7 @@ Open restricted ports expose a NSG to a high level of risk from internet-based a
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the inbound rules in Network Security Groups at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
+- ARM API to list all the inbound rules in Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:** properties.direction, properties.access <br />
 
 <br />

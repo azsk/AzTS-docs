@@ -59,7 +59,7 @@ Being on the latest/supported HDInsight version significantly reduces risks from
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to lists all the HDInsight clusters under the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
+- ARM API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
 **Properties:** properties.clusterVersion
  <br />
 
@@ -106,7 +106,7 @@ Restricting cluster access with inbound and outbound traffic via NSGs limits the
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to lists all the HDInsight clusters under the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
+- ARM API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
 **Properties:** properties.computeProfile
  <br />
 
@@ -161,7 +161,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to lists all the HDInsight clusters under the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
+- ARM API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
 **Properties:** properties.minSupportedTlsVersion
  <br />
 
