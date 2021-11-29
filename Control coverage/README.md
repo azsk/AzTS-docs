@@ -16,6 +16,7 @@ Below resource types can be checked for validating the security controls:
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
 |[ContainerRegistry](Feature/ContainerRegistry.md)|Microsoft.ContainerRegistry/registries|
+|[CosmosDB](Feature/CosmosDB.md)|Microsoft.DocumentDB/databaseAccounts|
 |[DataLakeAnalytics](Feature/DataLakeAnalytics.md)|Microsoft.DataLakeAnalytics/accounts|
 |[DataLakeStore](Feature/DataLakeStore.md)|Microsoft.DataLakeStore/accounts|
 |[DBForMySql](Feature/DBForMySql.md)|Microsoft.DBforMySQL/servers|
@@ -23,6 +24,8 @@ Below resource types can be checked for validating the security controls:
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
+|[NotificationHub](Feature/NotificationHub.md)|Microsoft.NotificationHubs/namespaces/notificationHubs|
+|[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
 |[ServiceBus](Feature/ServiceBus.md)|Microsoft.ServiceBus/namespaces|
 |[ServiceFabric](Feature/ServiceFabric.md)|Microsoft.ServiceFabric/clusters|
