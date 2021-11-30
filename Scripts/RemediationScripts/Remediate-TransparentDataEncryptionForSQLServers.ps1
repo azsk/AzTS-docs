@@ -297,7 +297,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                                 Write-Host "Error occurred while getting database details for SQL Server: Resource Group Name - $($_.ResourceGroupName), Server Name - $($_.ServerName), Database Name - $($_.DatabaseName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                                 Write-Host "Skipping this SQL Server database. Transparent Data Encryption (TDE) will not be enabled for this database."
                             }
-                        }                
+                        }
                     }
                 }
                 else
@@ -312,20 +312,20 @@ function Enable-TransparentDataEncryptionForSqlServers
                         else
                         {
                             $sqlDatabasesWithTdeDisabled += $_.SqlPoolName
-                        }           
-                    }                                 
+                        }
+                    }
                 }
 
                 if (($sqlDatabasesWithTdeDisabled | Measure-Object).Count -ne 0)
                 {
                     $sqlServersWithTdeDisabled += $_ | Select-Object @{N='ResourceId';E={$_.ResourceId}},
-                                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                     @{N='ServerName';E={$_.ServerName}},
-                                                                     @{N='ResourceType';E={$_.ResourceType}},
-                                                                     @{N='IsSynapseWorkspace';E={$_.IsSynapseWorkspace}},
-                                                                     @{N='DatabasesWithTDEDisabled';E={$sqlDatabasesWithTdeDisabled -join ', '}},
-                                                                     @{N='DatabasesWithTDEEnabled';E={$sqlDatabasesWithTdeEnabled -join ', '}}
-                }   
+                                                                @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                @{N='ServerName';E={$_.ServerName}},
+                                                                @{N='ResourceType';E={$_.ResourceType}},
+                                                                @{N='IsSynapseWorkspace';E={$_.IsSynapseWorkspace}},
+                                                                @{N='DatabasesWithTDEDisabled';E={$sqlDatabasesWithTdeDisabled -join ', '}},
+                                                                @{N='DatabasesWithTDEEnabled';E={$sqlDatabasesWithTdeEnabled -join ', '}}
+                }
             }
             catch
             {
@@ -438,7 +438,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                         {
                             $skippedSqlDatabases += $sqlPoolName
                         }
-                    }   
+                    }
                 }
 
                 if ([String]::IsNullOrWhiteSpace($skippedSqlDatabases))
@@ -452,7 +452,6 @@ function Enable-TransparentDataEncryptionForSqlServers
                                                                        @{N='IsSynapseWorkspace';E={$isSynapseWorkspace}},
                                                                        @{N='RemediatedSqlDatabases';E={$remediatedSqlDatabases -join ', '}},
                                                                        @{N='SkippedSqlDatabases';E={$skippedSqlDatabases -join ', '}}
-                                                                       
             }
             catch
             {
