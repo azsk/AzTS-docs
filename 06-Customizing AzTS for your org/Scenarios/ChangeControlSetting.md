@@ -10,34 +10,34 @@ Because the first-time org policy setup does not customize anything from this, w
 0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](../README.md#setting-up-the-solution).
 1.  Copy _FeatureNameExt.json_ file and rename it accordingly. For example: SubscriptionCoreExt.json
 2.  Fill the parameters according to the feature. For example: 
-        ``` JSON
-        {
-            "FeatureName": "SubscriptionCore",
-            "Reference": "aka.ms/azsktcp/sshealth", // you can find this from the FeatureName.json as well
-            "IsMaintenanceMode": false,
-        }
-        ```
+    ``` JSON
+    {
+        "FeatureName": "SubscriptionCore",
+        "Reference": "aka.ms/azsktcp/sshealth", // you can find this from the FeatureName.json as well
+        "IsMaintenanceMode": false,
+    }
+    ```
 3.  Add the control json with all parameters given in template. The following meta-data are required for a control to be scanned:
-        ``` JSON
-        "Controls": [
-            {
-            // The following parameters can be taken from the FeatureName.json directly as there will no change in them for the scope of this scenario. 
-            "ControlID": "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count",
-            "Id": "SubscriptionCore160",
-            "Automated": "Yes",
-            "MethodName": "CheckCoAdminCount",
-            "Enabled": true,
+    ``` JSON
+    "Controls": [
+        {
+        // The following parameters can be taken from the FeatureName.json directly as there will no change in them for the scope of this scenario. 
+        "ControlID": "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count",
+        "Id": "SubscriptionCore160",
+        "Automated": "Yes",
+        "MethodName": "CheckCoAdminCount",
+        "Enabled": true,
 
-            // For this scenario, modify the control settings as such:
-            "ControlSettings": {
-                "NoOfClassicAdminsLimit": 5 // Changing the Classic Admin limit to 5 from 2.
-                }
-            },
+        // For this scenario, modify the control settings as such:
+        "ControlSettings": {
+            "NoOfClassicAdminsLimit": 5 // Changing the Classic Admin limit to 5 from 2.
+            }
+        },
 
-            // As required we need to modify the Display Name according to the control setting changes for this case:
-            "DisplayName": "Limit access per subscription to 5 or less classic administrators"
-        ]
-        ```
+        // As required we need to modify the Display Name according to the control setting changes for this case:
+        "DisplayName": "Limit access per subscription to 5 or less classic administrators"
+    ]
+    ```
 
         1. For **Id** above: 
             * Since we are modifying control settings for an existing control here, use the same ID as used previously from the FeatureName.json . 
@@ -51,10 +51,10 @@ The final JSON file should look like this for our walk-through example:
 
 4. Build and Run
    - Click on the AzTS_Extended as shown below to run the project: <br />
-      ![Build Step 1](../Images/06_OrgPolicy_Setup_BuildStep.png)<br/>
+      ![Build Step 1](../../Images/06_OrgPolicy_Setup_BuildStep.png)<br/>
    - Output looks like below:<br/>
-      ![Run Output](../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
-      ![Run Output](../Images/06_OrgPolicy_Setup_RunStep2.png)
+      ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
+      ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
    Congratulations! Changing Control Setting Scenario is complete with this step.
 
 5. Verify the changes:
