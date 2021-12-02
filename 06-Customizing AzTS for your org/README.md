@@ -59,9 +59,9 @@ While the out-of-box files in the package may be good for limited use, in many c
 1. enable/disable some controls, 
 2. change control settings to better match specific security policies within your org, 
 3. change various messages,
-4. modify existing control logic
-5. add additional filter criteria for certain regulatory requirements that teams in your org can leverage, etc. 
-6. add new controls to existing service
+4. modify existing control logic,
+5. add additional filter criteria for certain regulatory requirements that teams in your org can leverage,
+6. add new controls to existing service, etc.
 
 When faced with such a need, you need a way to create and manage a dedicated policy endpoint customized to the needs of your environment. The organization policy customization setup feature helps you do that in an automated fashion.
 
@@ -75,33 +75,10 @@ for the AzTS.
 
 Basic org policy setup is done by default during AzTS installation. Setup leverages storage account (added along with AzTS setup) to hold various policy artifacts in the subscription. This should be a secure, limited-access subscription to be used only for managing your org's AzTS policy.
 
-## What happens during org policy setup?
-## First-time policy setup - an example
+<!-- ## What happens during org policy setup? -->
+<!-- ## First-time policy setup - an example -->
 
 # Modifying and customizing org policy
-
-## Getting Started
-
-The typical workflow for all control changes will remain same and will involve the following basic steps:
-1. Make modifications to the existing control metadata (Json files).
-2. Add or Modify control methods in respective control evaluator files.
-3. Build and Run
-
-### Structure
-Before we get started with extending the toolkit, let's understand the structure of the solution repository. 
-
-        ├───AzTS_Extended
-        ├───Connected Services  
-        ├───Dependencies
-        ├───Properties
-        ├───ConfigurationProvider    
-        │   ├───ControlConfigurations   
-        │   └───RoleDefinitionConfigurations   
-        ├───Configurations
-        │   ├───LAQueries
-        ├───ControlConfigurationExt
-        ├───ControlEvaluator
-
 
 ### Know more about controls
 
@@ -175,19 +152,30 @@ public class StorageControlEvaluator : BaseControlEvaluator
 ```
 
 <!-- Add a block diagram here to show how the overlay happens -->
+## Getting Started
+
+The typical workflow for all control changes will remain same and will involve the following basic steps:
+1. Set up the AzTS Extended solution following the steps mentioned below.
+2. Modify or Author control metadata (Json files).
+3. Modify or Author control methods in respective control evaluator files.
+4. Build and run the solution in your local system and verify your changes.
+<!-- 5. Deploy the solution. -->
+
 
 ## Setting up the solution
 
-In this section, we will walk through the steps of setting up organization-specific policy customizable AzTS Scanner locally.
+In this section, we will walk through the steps of setting up organization-specific policy customizable AzTS Scanner in your local systems.
 
 > **Note**: You would require at least 'Reader' level access on Subscription and 'Contributor' level access to the LA Workspace, Storage, etc.
 
 Let's Start!
 
-1. Clone [this](https://github.com/azsk/AzTS-Samples) GitHub repository in a new Visual Studio.
+1. Clone [this](https://github.com/azsk/AzTS-Samples) GitHub repository in a new Visual Studio. This solution has Nuget package reference to the AzTS solution.
 2. Go to AzTS_Extended folder and load the AzTS_Extended.sln.
-3. Files to update: 
-    * In local.settings.json file: 
+      ![Load Extended solution](../Images/06_OrgPolicy_Setup_Step2.PNG)
+
+3. Files to update:
+    * In local.settings.json file:
         ```JSON
             {
             "IsEncrypted": false,
@@ -195,22 +183,53 @@ Let's Start!
                 "ASPNETCORE_ENVIRONMENT": "Local",
                 "AzureWebJobsStorage": "UseDevelopmentStorage=true",
                 "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-                "APPINSIGHTS_INSTRUMENTATIONKEY": "",
-                "AzureStorageSettings__ResourceId": "",
-                "LAConfigurations__WorkspaceId": "",
+                "APPINSIGHTS_INSTRUMENTATIONKEY": "", // more details on App insights instrumentation key can be found below.
+                "AzureStorageSettings__ResourceId": "", // more details on Storage Settings can be found below.
+                "LAConfigurations__WorkspaceId": "",// more details on LA Configurations can be found below.
                 "LAConfigurations__ResourceId": ""
             }
             } 
-        ```          
-        1. Application insights collect telemetry data from connected apps and provides Live Metrics, Log Analytics, etc. It has an instrumentation key which we need to configure into our function app i.e. APPINSIGHTS_INSTRUMENTATIONKEY and with this key app insights grab data from our app. Add instrumentation key for Application Insights by entering "APPINSIGHTS_INSTRUMENTATIONKEY"
-	    2. Storage Account and Log Analytic Workspace are used to store the scan events, inventory, subscription scan progress details and results.
-	        1. Add 'ResourceId' of the Storage Account,
-		    2. Add 'WorkspaceId' and 'ResourceId' of the LA Workspace
+        ```
+        <!-- [TODO] Make LA and Storage details options -->
+      1. Application insights collect telemetry data from connected apps and provides Live Metrics, Log Analytics, etc. It has an instrumentation key which we need to configure into our function app i.e. APPINSIGHTS_INSTRUMENTATIONKEY and with this key app insights grab data from our app. Add instrumentation key for Application Insights by entering "APPINSIGHTS_INSTRUMENTATIONKEY"
+         Application insights by the name - AzSK-AzTS-AppInsights get created while setting up the AzTS solution. Please refer to [this](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started) link for reference to setting up AzTS for more context.
+         You can find the instrumentation key as shown below for your respective App insights resource.
+         ![App Insights Instrumentation Key](../Images/06_OrgPolicy_Setup_Step3_AppInsights.PNG)
+      2. Storage Account and Log Analytic Workspace are used to store the scan events, inventory, subscription scan progress details and results.
+	       1. Storage Account: It gets created by the name - azsktsstoragexxxxx while setting up the AzTS solution. Add 'ResourceId' of the Storage Account. 
+               You can find the Resource ID as shown below.
+               ![Storage Resource ID Step 1](../Images/06_OrgPolicy_Setup_Step3_StorageRID1.PNG)
+               ![Storage Resource ID Step 2](../Images/06_OrgPolicy_Setup_Step3_StorageRID2.PNG)
+
+		    2. Log Analytic Workspace: It gets created by the name - AzSK-AzTS-LAWorkspace-xxxxx while setting up the AzTS solution. Add 'WorkspaceId' and 'ResourceId' of the LA Workspace. 
+               You can find the Workspace ID as shown below.
+               ![LAW ID ](../Images/06_OrgPolicy_Setup_Step3_LAWID1.PNG)
+               You can find the Resource ID as shown below.
+               ![LAW Resource ID Step 1](../Images/06_OrgPolicy_Setup_Step3_LARID1.PNG)
+               ![LAW Resource ID Step 2](../Images/06_OrgPolicy_Setup_Step3_LARID2.PNG)
     * Mention the ID of the subscription to be scanned in Processor.cs, (line 33)
+               ![Processor.cs Step 4](../Images/06_OrgPolicy_Setup_Step4.PNG)
+
 4. Build and Run
 
-This will install the required [NuGet packages](https://www.nuget.org/packages/Microsoft.AzTS.Azure.Scanner/). It will import the dependencies and dynamic linked libraries of the AzTS Scanner to the user's solution along with the following templates:
+This solution will refer to the required [NuGet packages](https://www.nuget.org/packages/Microsoft.AzTS.Azure.Scanner/). It will import the dependencies and libraries of the AzTS Scanner to the user's solution.
 
+Before we get started with extending the toolkit, let's understand the structure of the built solution repository. 
+
+   ![Structure](../Images/06_OrgPolicy_Setup_Structure.PNG)
+        ├───AzTS_Extended
+        ├───Connected Services  
+        ├───Dependencies
+        ├───Properties
+        ├───ConfigurationProvider
+        │   ├───ControlConfigurations   
+        │   └───RoleDefinitionConfigurations   
+        ├───Configurations
+        │   ├───LAQueries
+        ├───ControlConfigurationExt
+        ├───ControlEvaluator
+
+The following template files are also included in the solution to better guide the users in the authoring controls:
 | Template File | Description 
 | ---- | ---- | 
 | FeatureNameExt.json <br> [under the ControlConfigurationExt folder] | This file contains the setting of controls of a specific feature. A few meta-data are required for a control to be scanned which are mentioned in detail further ahead.
