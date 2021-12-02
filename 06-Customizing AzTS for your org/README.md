@@ -172,7 +172,7 @@ Let's Start!
 
 1. Clone [this](https://github.com/azsk/AzTS-Samples) GitHub repository in a new Visual Studio. This solution has Nuget package reference to the AzTS solution.
 2. Go to AzTS_Extended folder and load the AzTS_Extended.sln.
-      ![Load Extended solution](../Images/06_OrgPolicy_Setup_Step2.PNG)
+      ![Load Extended solution](../Images/06_OrgPolicy_Setup_Step2.png)
 
 3. Files to update:
     * In local.settings.json file:
@@ -194,21 +194,21 @@ Let's Start!
       1. Application insights collect telemetry data from connected apps and provides Live Metrics, Log Analytics, etc. It has an instrumentation key which we need to configure into our function app i.e. APPINSIGHTS_INSTRUMENTATIONKEY and with this key app insights grab data from our app. Add instrumentation key for Application Insights by entering "APPINSIGHTS_INSTRUMENTATIONKEY"
          Application insights by the name - AzSK-AzTS-AppInsights get created while setting up the AzTS solution. Please refer to [this](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started) link for reference to setting up AzTS for more context.
          You can find the instrumentation key as shown below for your respective App insights resource.
-         ![App Insights Instrumentation Key](../Images/06_OrgPolicy_Setup_Step3_AppInsights.PNG)
+         ![App Insights Instrumentation Key](../Images/06_OrgPolicy_Setup_Step3_AppInsights.png)
       2. Storage Account and Log Analytic Workspace are used to store the scan events, inventory, subscription scan progress details and results.
 	       1. Storage Account: It gets created by the name - azsktsstoragexxxxx while setting up the AzTS solution. Add 'ResourceId' of the Storage Account. 
                You can find the Resource ID as shown below.
-               ![Storage Resource ID Step 1](../Images/06_OrgPolicy_Setup_Step3_StorageRID1.PNG)
-               ![Storage Resource ID Step 2](../Images/06_OrgPolicy_Setup_Step3_StorageRID2.PNG)
+               ![Storage Resource ID Step 1](../Images/06_OrgPolicy_Setup_Step3_StorageRID1.png)
+               ![Storage Resource ID Step 2](../Images/06_OrgPolicy_Setup_Step3_StorageRID2.png)
 
 		    2. Log Analytic Workspace: It gets created by the name - AzSK-AzTS-LAWorkspace-xxxxx while setting up the AzTS solution. Add 'WorkspaceId' and 'ResourceId' of the LA Workspace. 
                You can find the Workspace ID as shown below.
-               ![LAW ID ](../Images/06_OrgPolicy_Setup_Step3_LAWID1.PNG)
+               ![LAW ID ](../Images/06_OrgPolicy_Setup_Step3_LAWID1.png)
                You can find the Resource ID as shown below.
-               ![LAW Resource ID Step 1](../Images/06_OrgPolicy_Setup_Step3_LARID1.PNG)
-               ![LAW Resource ID Step 2](../Images/06_OrgPolicy_Setup_Step3_LARID2.PNG)
+               ![LAW Resource ID Step 1](../Images/06_OrgPolicy_Setup_Step3_LARID1.png)
+               ![LAW Resource ID Step 2](../Images/06_OrgPolicy_Setup_Step3_LARID2.png)
     * Mention the ID of the subscription to be scanned in Processor.cs, (line 33)
-               ![Processor.cs Step 4](../Images/06_OrgPolicy_Setup_Step4.PNG)
+               ![Processor.cs Step 4](../Images/06_OrgPolicy_Setup_Step4.png)
 
 4. Build and Run
 
@@ -216,18 +216,7 @@ This solution will refer to the required [NuGet packages](https://www.nuget.org/
 
 Before we get started with extending the toolkit, let's understand the structure of the built solution repository. 
 
-   ![Structure](../Images/06_OrgPolicy_Setup_Structure.PNG)
-        ├───AzTS_Extended
-        ├───Connected Services  
-        ├───Dependencies
-        ├───Properties
-        ├───ConfigurationProvider
-        │   ├───ControlConfigurations   
-        │   └───RoleDefinitionConfigurations   
-        ├───Configurations
-        │   ├───LAQueries
-        ├───ControlConfigurationExt
-        ├───ControlEvaluator
+   ![Structure](../Images/06_OrgPolicy_Setup_Structure.png)
 
 The following template files are also included in the solution to better guide the users in the authoring controls:
 | Template File | Description 
