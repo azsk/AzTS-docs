@@ -251,7 +251,7 @@ Let's Start!
 Before we get started with extending the toolkit, let's understand the structure of the built solution repository. 
 
    ![Structure](../Images/06_OrgPolicy_Setup_Structure.png)
-
+<!-- TODO : Add details about the structure -->
 The following template files are also included in the solution repository to better guide the users in the authoring controls:
 | Template File Name | High-level Description 
 | ---- | ---- | 
