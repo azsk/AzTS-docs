@@ -413,8 +413,8 @@ function Enable-TransparentDataEncryptionForSqlServers
                 {
                     $databaseList | ForEach-Object{
                         $databaseName = $_ 
-                        $tdeStatus = Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Enabled'
-                        $tdeStatus = $(Get-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName).State
+                        $tdeDetail = Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Enabled'
+                        $tdeStatus = $tdeDetail.State
                         if ($tdeStatus -eq 'Enabled')
                         {
                             $remediatedSqlDatabases += $databaseName
@@ -429,8 +429,8 @@ function Enable-TransparentDataEncryptionForSqlServers
                 {
                     $databaseList | ForEach-Object{
                         $sqlPoolName = $_
-                        $tdeStatus = Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName -State 'Enabled'
-                        $tdeStatus = $(Get-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName).State
+                        $tdeDetail = Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName -State 'Enabled'
+                        $tdeStatus = $tdeDetail.State
                         if ($tdeStatus -eq 'Enabled')
                         {
                             $remediatedSqlDatabases += $sqlPoolName
@@ -665,8 +665,8 @@ function Disable-TransparentDataEncryptionForSqlServers
             {
                 $databaseList | ForEach-Object{
                     $databaseName = $_
-                    $tdeStatus = Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Disabled'
-                    $tdeStatus = $(Get-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName).State
+                    $tdeDetail = Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName $resourceGroupName -ServerName $serverName -DatabaseName $databaseName -State 'Disabled'
+                    $tdeStatus = $tdeDetail.State
                     if ($tdeStatus -eq 'Disabled')
                     {
                         $rolledbackSqlDatabases  += $databaseName
@@ -682,8 +682,8 @@ function Disable-TransparentDataEncryptionForSqlServers
                 $databaseList | ForEach-Object{
                     $sqlPoolName = $_
 
-                    $tdeStatus = Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName -State 'Disabled'
-                    $tdeStatus = $(Get-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName).State
+                    $tdeDetail = Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceGroupName $resourceGroupName -WorkspaceName $serverName -Name $sqlPoolName -State 'Disabled'
+                    $tdeStatus = $tdeDetail.State
 
                     if ($tdeStatus -eq 'Disabled')
                     {
