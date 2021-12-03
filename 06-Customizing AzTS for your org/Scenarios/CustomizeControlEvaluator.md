@@ -1,7 +1,6 @@
-# Customizing specific controls for an existing service
+# Update/extend existing control by custom Azure policy
 
-
-Using Org policy customization, we can modify the Control Result for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](../README.md#setting-up-the-solution).
+Using Org policy customization, we can modify the Control logic or Control Result status for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](../README.md#setting-up-the-solution).
 <br/><br/>A typical setting you may want to tweak is the Status Reason for a control according to your org's needs. 
 Let us customize the Status Reason for the "Azure_Storage_NetSec_Restrict_Network_Access" existing control.
 This setting resides in a file called FeatureNameControlEvaluator.cs. 

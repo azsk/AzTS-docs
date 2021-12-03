@@ -266,15 +266,17 @@ In this section let us look at typical scenarios in which you would want to cust
 
 > Note: To edit policy JSON files, use a friendly JSON editor such as Visual Studio Code. It will save you lot of debugging time by telling you when objects are not well-formed (extra commas, missing curly-braces, etc.)! This is key because in a lot of policy customization tasks, you will be taking existing JSON objects and removing large parts of them (to only keep the things you want to modify).
 
-### Update default metadata (display name, recommendation, etc.) for existing controls
-### Changing control setting for existing controls 
-### Update control metadata for controls based on ASC Assessment
-### Customizing specific controls for an existing service
-### Setting up and updating baselines for your org
+#### [Update default metadata (display name, recommendation, etc.) for existing controls](./Scenarios/UpdateDefaultMetadata.md)
+#### [Changing control setting for existing controls](./Scenarios/ChangeControlSetting.md)
+#### [Update control metadata for controls based on ASC Assessment](./Scenarios/UpdateControlMetadataASCAssessment.md)
+#### [Customizing specific controls for an existing service](./Scenarios/CustomizeSpecificControls.md)
+<!-- #### Setting up and updating baselines for your org -->
 
 ## Advanced scenarios for org policy customization
+It is powerful capability of AzTS to enable an org to customize the control behaviour. You will be able to achieve the following scenarios:
 
-### Update/extend existing control by custom Azure policy
-### Update/extend existing control by custom ASC Assessment 
-### Add new control for existing service
+### [Update/extend existing control by custom Azure policy](./Scenarios/CustomizeControlEvaluator.md)
+### [Update/extend existing control by custom ASC Assessment](./Scenarios/CustomizeASCControls.md) 
+### [Add new control for existing service](./Scenarios/AddNewControl.md)
 ### Add new service altogether (non-existing service) - Coming soon!
+s
