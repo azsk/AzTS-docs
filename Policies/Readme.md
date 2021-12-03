@@ -8,9 +8,9 @@ Azure Policy helps to enforce organizational standards. It also helps to bring y
 
 The following are the AzTS controls for which Azure policy definitions are available to keep resources compliant as per controls requirements:
 
-1. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](/APIManagement/Azure_APIManagement_DP_Use_HTTPS_URL_Scheme/Readme.md)
-2. [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server]
-3. [Azure_SQLDatabase_DP_Enable_TDE]
-4. [Azure_Storage_DP_Encrypt_In_Transit]
-5. [Azure_Subscription_SI_Classic_Resources]
+1. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](APIManagement/Azure_APIManagement_DP_Use_HTTPS_URL_Scheme/Readme.md)
+2. [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](SQLServer/Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server/Readme.md)
+3. [Azure_SQLDatabase_DP_Enable_TDE](SQLServer/Azure_SQLDatabase_DP_Enable_TDE/Readme.md)
+4. [Azure_Storage_DP_Encrypt_In_Transit](Storage/Azure_Storage_DP_Encrypt_In_Transit/Readme.md)
+5. [Azure_Subscription_SI_Classic_Resources](Subscription/Azure_Subscription_SI_Classic_Resources/Readme.md)
 
