@@ -1,7 +1,7 @@
 ## Azure_Storage_DP_Encrypt_In_Transit
 
 ### DisplayName 
-Enable Secure transfer to storage accounts
+[Enable Secure transfer to storage accounts](../../../Control%20coverage/Feature/Storage.md#azure_storage_dp_encrypt_in_transit)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:

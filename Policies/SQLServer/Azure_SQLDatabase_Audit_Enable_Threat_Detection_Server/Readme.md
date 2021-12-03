@@ -1,7 +1,7 @@
 ## Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server
 
 ### DisplayName 
-Enable advanced data security on your SQL servers
+[Enable advanced data security on your SQL servers](../../../Control%20coverage/Feature/SQLServer.md#azure_sqldatabase_audit_enable_threat_detection_server)
 
 ### Required Policies
 Control can be covered with Azure policies mentioned below:

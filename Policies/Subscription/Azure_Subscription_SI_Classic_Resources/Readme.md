@@ -1,7 +1,7 @@
 ## Azure_Subscription_SI_Classic_Resources
 
 ### DisplayName 
-Remove classic resources on a subscription
+[Remove classic resources on a subscription](../../../Control%20coverage/Feature/SubscriptionCore.md)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:

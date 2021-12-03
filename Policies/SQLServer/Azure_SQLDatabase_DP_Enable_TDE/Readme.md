@@ -1,7 +1,7 @@
 ## Azure_SQLDatabase_DP_Enable_TDE 
 
 ### DisplayName 
-Enable Transparent Data Encryption on SQL databases
+[Enable Transparent Data Encryption on SQL databases](../../../Control%20coverage/Feature/SQLServer.md#azure_sqldatabase_dp_enable_tde)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:
