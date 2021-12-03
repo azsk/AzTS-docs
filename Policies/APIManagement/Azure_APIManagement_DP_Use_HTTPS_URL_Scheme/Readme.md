@@ -1,7 +1,7 @@
 ## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme 
 
 ### DisplayName 
-[Ensure API Management service is accessible only over HTTPS](../Control%20coverage\Feature\APIManagement.md#azure_apimanagement_dp_use_https_url_scheme)
+[Ensure API Management service is accessible only over HTTPS](../../Control%20coverage\Feature\APIManagement.md#azure_apimanagement_dp_use_https_url_scheme)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:
