@@ -4,11 +4,11 @@
 
 ### [Overview](README.md#overview)
  - [When and why should I set up org policy?](README.md#when-and-why-should-i-setup-org-policy)
- - [How does AzTS use online policy?](README.md#how-does-azts-use-online-policy)
+ <!-- - [How does AzTS use online policy?](README.md#how-does-azts-use-online-policy) -->
 
 ### [Setting up org policy](Readme.md#setting-up-org-policy-1)
- - [What happens during org policy setup?](Readme.md#what-happens-during-org-policy-setup)
- - [First-time policy setup - an example](Readme.md#first-time-policy-setup---an-example)
+ <!-- - [What happens during org policy setup?](Readme.md#what-happens-during-org-policy-setup) -->
+ <!-- - [First-time policy setup - an example](Readme.md#first-time-policy-setup---an-example) -->
  
 <!-- ### [Consuming custom org policy](Readme.md#consuming-custom-org-policy-1)
 
@@ -69,7 +69,7 @@ In this document, we will look at how to setup an organization-specific policy e
 to and manage the policy files and how to accomplish various common org-specific policy/behavior customizations 
 for the AzTS.
 
-## How does AzTS use online policy?
+<!-- ## How does AzTS use online policy? -->
 
 # Setting up org policy
 
