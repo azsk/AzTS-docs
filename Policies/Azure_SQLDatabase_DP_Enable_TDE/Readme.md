@@ -25,7 +25,7 @@ Following policy can be used to enable Transparent Data Encryption on non-compli
 
 
 ### Notes
-    NA
+NA
 
 
 
