@@ -8,7 +8,7 @@ Ensure API Management service is accessible only over HTTPS
 Following policy can be used with 'Deny' effect to disallow users to create non-compliant APIs under API Management service (Greenfield Scenario).
 
 #### Policy Definition
-[Security - APIManagement - Deny APIs with HTTP URL] (Security - APIManagement - Deny APIs with HTTP URL.md)
+[Security - APIManagement - Deny APIs with HTTP URL](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20HTTP%20URL.json)
 
 #### Parameter details
 
