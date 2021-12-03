@@ -5,6 +5,7 @@ Enable advanced data security on your SQL servers
 
 ### Required Policies
 Control can be covered with Azure policies mentioned below:
+___ 
 
 #### Policy Details
 
@@ -45,6 +46,7 @@ Following policy will enable Advanced Threat Protection (ATP) for each non-compl
 
 #### Policy Definition
 [Security - SQL Server - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20DeploySqlServerThreatDetection.json)
+
 [Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerThreatDetection.json)
 
 #### Parameter details
@@ -65,6 +67,7 @@ Following policy will enable SQL auditing for each non-compliant SQL server.
 
 #### Policy Definition
 [Security - SQL Server - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20DeploySqlServerAuditSettings.json)
+
 [Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerAuditSettings.json)
 
 #### Parameter details
@@ -74,6 +77,9 @@ Following policy will enable SQL auditing for each non-compliant SQL server.
 | Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
 | RetentionDays | The value in days of the retention period (0 indicates unlimited retention) | 365 |No |
 | StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
+
+___ 
+
 
 ### Notes
 1. It is recommended to assign policy to setup ASC security contacts at Subscription scope (or Management group with subscriptions managed by same team) as it will configure same email address for all subscriptions in scope.
