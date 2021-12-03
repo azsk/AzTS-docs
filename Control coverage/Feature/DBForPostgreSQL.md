@@ -6,6 +6,7 @@
 
 - [Azure_DBforPostgreSQL_AuthZ_Enable_SSL_Connection](#azure_dbforpostgresql_authz_enable_ssl_connection)
 - [Azure_DBforPostgreSQL_NetSec_Dont_Allow_Universal_IP_Range](#azure_dbforpostgresql_netsec_dont_allow_universal_ip_range)
+- [Azure_DBforPostgreSQL_AuthZ_Firewall_Deny_AzureServices_Access](#azure_dbforpostgresql_authz_firewall_deny_azureservices_access)
 - [Azure_DBforPostgreSQL_Audit_Enable_ATP](#azure_dbforpostgresql_audit_enable_atp)
 - [Azure_DBforPostgreSQL_Audit_Enable_Logging_On_Server](#azure_dbforpostgresql_audit_enable_logging_on_server)
 - [Azure_DBforPostgreSQL_AuthN_Enable_Connection_Throttling](#azure_dbforpostgresql_authn_enable_connection_throttling)
@@ -113,6 +114,61 @@ Using the firewall feature ensures that access to the data or the service is res
 <br />
  
 **Properties:** name, properties.startIpAddress, properties.endIpAddress
+ <br />
+
+<br />
+
+___ 
+
+## Azure_DBforPostgreSQL_AuthZ_Firewall_Deny_AzureServices_Access 
+
+### DisplayName 
+Use the 'Allow access to Azure services' flag for DBforPostgreSQL only if required 
+
+### Rationale 
+The 'Allow access to Azure services' setting configures a very broad range of IP addresses from Azure as permitted to access the PostgreSQL Server. Please make sure your scenario really requires this setting before enabling it. Turning it ON exposes your PostgreSQL Server to risk of attacks from resources (IPs) owned by others in the Azure region. 
+
+### Control Settings 
+```json 
+{
+    "FirewallRuleName_AllowAzureIps": "AllowAllWindowsAzureIps"
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Allow access to Azure services flag is off.
+> 
+> **Failed:** 
+> Allow access to Azure services flag is on.
+> 
+> **Error:** 
+> AllowAzureServices ControlSettings is not present.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Turn 'OFF' the 'Allow access to Azure services' setting. Refer: https://docs.microsoft.com/en-us/azure/postgresql/concepts-firewall-rules#connecting-from-azure 
+<!-- 
+- **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to fetch the firewall rules for a DBForPostgreSQL server: 
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/firewallRules?api-version=2017-12-01 <br />
+**Properties:** name
  <br />
 
 <br />
