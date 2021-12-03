@@ -6,7 +6,7 @@
  - [When and why should I set up org policy?](README.md#when-and-why-should-i-setup-org-policy)
  <!-- - [How does AzTS use online policy?](README.md#how-does-azts-use-online-policy) -->
 
-### [Setting up org policy](Readme.md#setting-up-org-policy-1)
+### [Setting up org policy](Readme.md#setting-up-org-policy)
  <!-- - [What happens during org policy setup?](Readme.md#what-happens-during-org-policy-setup) -->
  <!-- - [First-time policy setup - an example](Readme.md#first-time-policy-setup---an-example) -->
  
@@ -16,14 +16,15 @@
  - [Running Tenant Scan with org policy](Readme.md#2-setup-continuous-assurance) -->
 
  
-### [Modifying and customizing org policy](Readme.md#modifying-and-customizing-org-policy-1)
+### [Modifying and customizing org policy](Readme.md#modifying-and-customizing-org-policy)
+ - [Know more about controls](Readme.md#know-more-about-controls)
  - [Getting Started](Readme.md#getting-started)
+ - [Setting up the solution](Readme.md#setting-up-the-solution)
  - [Basic scenarios for org policy customization](Readme.md#basic-scenarios-for-org-policy-customization) 
-      - [Update default metadata (display name, recommendation, etc.) for existing controls](README.md#update-default-metadata)
-      - [Changing control setting for existing controls](Readme.md#changing-a-control-setting-for-existing-controls)
-      - [Update control metadata for controls based on ASC Assessment](README.md#update-control-metadata-for-controls-based-on-ASC-assessment)
-      - [Customizing specific controls for an existing service](Readme.md#customizing-specific-controls-for-a-service)
-      - [Setting up and updating baselines for your org](Readme.md#creating-a-custom-control-baseline-for-your-org)
+      - [Update default metadata (display name, recommendation, etc.) for existing controls](./Scenarios/UpdateDefaultMetadata.md)
+      - [Changing control setting for existing controls](./Scenarios/ChangeControlSetting.md)
+      - [Update control metadata for controls based on ASC Assessment](./Scenarios/UpdateControlMetadataASCAssessment.md)
+      - [Customizing specific controls for an existing service](./Scenarios/CustomizeSpecificControls.md)
 
 <!-- ### [Managing policy/advanced policy usage ](Readme.md#managing-policyadvanced-policy-usage)
 
@@ -32,12 +33,12 @@
 - [Policy deployment using CICD pipeline](Readme.md#policy-deployment-using-cicd-pipeline) -->
 
 
- - [Advanced scenarios for org policy customization](Readme.md#advanced-scenarios-of-org-policy) 
+ - [Advanced scenarios for org policy customization](Readme.md#advanced-scenarios-for-org-policy-customization) 
       <!-- - [SVT customization](Readme.md#customizing-the-svts) -->
-      - [Update/extend existing control by custom Azure policy](./Extending%20AzSK%20Module/Readme.md#steps-to-override-the-logic-of-existing-svt)
-      - [Update/extend existing control by custom ASC Assessment](./Extending%20AzSK%20Module/Readme.md#steps-to-override-the-logic-of-existing-svt)
-      - [Add new control for existing service](./Extending%20AzSK%20Module/Readme.md#steps-to-extend-the-control-svt)
-      - [Add new service altogether (non-existing service) - Coming soon!](./Extending%20AzSK%20Module/Readme.md#steps-to-add-a-new-svt-to-the-azsk-module)
+      - [Update/extend existing control by custom Azure policy](./Scenarios/CustomizeControlEvaluator.md)
+      - [Update/extend existing control by custom ASC Assessment](./Scenarios/CustomizeASCControls.md) 
+      - [Add new control for existing service](./Scenarios/AddNewControl.md)
+      - Add new service altogether (non-existing service) - Coming soon!
 
 
 # Overview
@@ -273,10 +274,10 @@ In this section let us look at typical scenarios in which you would want to cust
 <!-- #### Setting up and updating baselines for your org -->
 
 ## Advanced scenarios for org policy customization
+
 It is powerful capability of AzTS to enable an org to customize the control behaviour. You will be able to achieve the following scenarios:
 
-### [Update/extend existing control by custom Azure policy](./Scenarios/CustomizeControlEvaluator.md)
-### [Update/extend existing control by custom ASC Assessment](./Scenarios/CustomizeASCControls.md) 
-### [Add new control for existing service](./Scenarios/AddNewControl.md)
-### Add new service altogether (non-existing service) - Coming soon!
-s
+#### [Update/extend existing control by custom Azure policy](./Scenarios/CustomizeControlEvaluator.md)
+#### [Update/extend existing control by custom ASC Assessment](./Scenarios/CustomizeASCControls.md) 
+#### [Add new control for existing service](./Scenarios/AddNewControl.md)
+#### Add new service altogether (non-existing service) - Coming soon!
