@@ -42,7 +42,7 @@ ___
 
 Following policy will enable Advanced Threat Protection (ATP) for each non-compliant SQL server.
 
-    > **important**: Two different policy definitions are required to cover both general SQL servers and SQL servers which are part of Synapse Workspace as policy aliases are different.  
+    > **Important**: Two different policy definitions are required to cover both general SQL servers and SQL servers which are part of Synapse Workspace as policy aliases are different.  
 
 #### Policy Definition
 [Security - SQL Server - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20DeploySqlServerThreatDetection.json)
