@@ -5,6 +5,11 @@
 
 ### Required Policies
 Control can be covered with Azure policies mentioned below:
+- Policy to enable Microsoft Defender with Standard tier for SQL servers at Subscription level (if not enabled).
+- Policy to configure email address in Microsoft Defender security contacts (if security contacts not setup as per requirements).
+- Policy to enable Advanced Threat Protection (ATP) for each non-compliant SQL server.
+- Policy to enable SQL auditing for each non-compliant SQL server.
+
 ___ 
 
 #### Policy Details
