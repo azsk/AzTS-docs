@@ -29,8 +29,30 @@
                 "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
                 "name": "Default",
                 "existenceCondition": {
-                    "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/state",
-                    "equals": "Enabled"
+                    "allOf": [
+                        {
+                            "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/state",
+                            "equals": "Enabled"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts",
+                                    "exists": "false"
+                                },
+                                {
+                                    "count": {
+                                        "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts[*]",
+                                        "where": {
+                                            "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts[*]",
+                                            "notEquals": ""
+                                        }
+                                    },
+                                    "equals": 0
+                                }
+                            ]
+                        }
+                    ]
                 },
                 "roleDefinitionIds": [
                     "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
@@ -53,7 +75,8 @@
                                     "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
                                     "apiVersion": "2021-06-01-preview",
                                     "properties": {
-                                        "state": "Enabled"
+                                        "state": "Enabled",
+                                        "disabledAlerts": []
                                     }
                                 }
                             ]

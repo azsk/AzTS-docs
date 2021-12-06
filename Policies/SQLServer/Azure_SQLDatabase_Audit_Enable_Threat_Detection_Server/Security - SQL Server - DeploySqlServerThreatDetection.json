@@ -33,8 +33,30 @@
                 "type": "Microsoft.Sql/servers/securityAlertPolicies",
                 "name": "Default",
                 "existenceCondition": {
-                    "field": "Microsoft.Sql/securityAlertPolicies.state",
-                    "equals": "Enabled"
+                    "allOf": [
+                        {
+                            "field": "Microsoft.Sql/securityAlertPolicies.state",
+                            "equals": "Enabled"
+                        },
+                        {
+                            "anyOf": [
+                                {
+                                    "field": "Microsoft.Sql/securityAlertPolicies.disabledAlerts",
+                                    "exists": "false"
+                                },
+                                {
+                                    "count": {
+                                        "field": "Microsoft.Sql/servers/securityAlertPolicies/disabledAlerts[*]",
+                                        "where": {
+                                          "field": "Microsoft.Sql/servers/securityAlertPolicies/disabledAlerts[*]",
+                                          "notEquals": ""
+                                        }
+                                   },
+                                   "equals": 0
+                                }
+                            ]
+                        }
+                    ]
                 },
                 "roleDefinitionIds": [
                     "/providers/microsoft.authorization/roleDefinitions/056cd41c-7e88-42e1-933e-88ba6a50c9c3"
@@ -57,7 +79,8 @@
                                     "type": "Microsoft.Sql/servers/securityAlertPolicies",
                                     "apiVersion": "2020-11-01-preview",
                                     "properties": {
-                                        "state": "Enabled"
+                                        "state": "Enabled",
+                                        "disabledAlerts": []
                                     }
                                 }
                             ]
