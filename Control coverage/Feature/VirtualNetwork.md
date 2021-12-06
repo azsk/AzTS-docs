@@ -195,7 +195,7 @@ ___
 ## Azure_ERvNet_NetSec_Dont_Add_UDRs_on_Subnets 
 
 ### DisplayName 
-There must not be a UDR on *any* subnet in an ExpressRoute-connected vNet 
+There must not be a UDR on any subnet in an ExpressRoute-connected vNet 
 
 ### Rationale 
 Using UDRs on any subnet of an ER-connected virtual network can lead to security exposure for corpnet traffic by allowing it to be routed in a way that evades inspection from network security scanners.
