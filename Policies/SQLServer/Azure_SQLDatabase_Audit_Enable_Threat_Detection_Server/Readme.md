@@ -69,6 +69,7 @@ Following policy will enable SQL auditing for each non-compliant SQL server.
     > **Important**: 
     1. Two different policy definitions are required to cover both general SQL servers and SQL servers which are part of Synapse Workspace as policy aliases are different.  
     2. In the provided resource group, Storage account will be created in each region where a SQL Server is created that will be shared by all servers in that region.
+    3. Provided resource group should pre-exist in all the subscriptions (in scope), otherwise remediation will fail. 
 
 #### Policy Definition
 [Security - SQL Server - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20DeploySqlServerAuditSettings.json)
@@ -88,4 +89,4 @@ ___
 
 ### Notes
 1. It is recommended to assign policy to setup ASC security contacts at Subscription scope (or Management group with subscriptions managed by same team) as it will configure same email address for all subscriptions in scope.
-2. It is recommended to assign policy to enable SQL auditing at Subscription scope (or Management group with subscriptions managed by same team) as it will require one existing resource group at the time of policy assignment and a Storage account will be created in each region where a SQL Server is created (within policy assignment scope) that will be shared by all servers (within policy assignment scope) in that region.
+2. It is recommended to assign policy to enable SQL auditing at Subscription scope (or Management group with subscriptions managed by same team) as it will require one existing resource group (in all subscriptions in scope) at the time of policy assignment and a Storage account will be created in each region where a SQL Server is created that will be shared by all servers (in the subscription) in that region.
