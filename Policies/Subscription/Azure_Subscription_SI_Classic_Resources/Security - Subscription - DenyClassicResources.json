@@ -1,55 +1,55 @@
 {
-    "mode": "All",
-    "parameters": {
-      "effect": {
-        "type": "String",
-        "metadata": {
-          "displayName": "Effect",
-          "description": "Enable or disable the execution of the policy"
-        },
-        "allowedValues": [
-          "Audit",
-          "Disabled",
-          "Deny"
-        ],
-        "defaultValue": "Deny"
-      }
-    },
-    "policyRule": {
-      "if": {
-        "anyOf": [
-          {
-            "field": "type",
-            "equals": "Microsoft.ClassicCompute/virtualMachines"
-          },
-          {
-            "field": "type",
-            "equals": "Microsoft.ClassicCompute/domainNames"
-          },
-          {
-            "field": "type",
-            "equals": "Microsoft.ClassicStorage/storageAccounts"
-          },
-          {
-            "field": "type",
-            "equals": "Microsoft.ClassicNetwork/virtualNetworks"
-          },
-          {
-            "field": "type",
-            "equals": "Microsoft.ClassicNetwork/reservedIps"
-          },
-          {
-            "field": "type",
-            "equals": "Microsoft.ClassicNetwork/networkSecurityGroups"
-          },
-          {
-            "field": "type",
-            "equals": "Microsoft.MarketplaceApps/classicDevServices"
-          }
-        ]
+  "mode": "All",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
       },
-      "then": {
-        "effect": "[parameters('effect')]"
-      }
+      "allowedValues": [
+        "Audit",
+        "Disabled",
+        "Deny"
+      ],
+      "defaultValue": "Deny"
     }
+  },
+  "policyRule": {
+    "if": {
+      "anyOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.ClassicCompute/virtualMachines"
+        },
+        {
+          "field": "type",
+          "equals": "Microsoft.ClassicCompute/domainNames"
+        },
+        {
+          "field": "type",
+          "equals": "Microsoft.ClassicStorage/storageAccounts"
+        },
+        {
+          "field": "type",
+          "equals": "Microsoft.ClassicNetwork/virtualNetworks"
+        },
+        {
+          "field": "type",
+          "equals": "Microsoft.ClassicNetwork/reservedIps"
+        },
+        {
+          "field": "type",
+          "equals": "Microsoft.ClassicNetwork/networkSecurityGroups"
+        },
+        {
+          "field": "type",
+          "equals": "Microsoft.MarketplaceApps/classicDevServices"
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]"
+    }
+  }
 }
