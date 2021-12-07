@@ -4,6 +4,7 @@
 
 <!-- TOC -->
 
+- [Azure_DBforMySQL_AuthZ_Firewall_Deny_AzureServices_Access](#azure_dbformysql_authz_firewall_deny_azureservices_access)
 - [Azure_DBforMySQL_NetSec_Dont_Allow_Universal_IP_Range](#azure_dbformysql_netsec_dont_allow_universal_ip_range)
 - [Azure_DBforMySQL_Authz_Enable_SSL_Connection](#azure_dbformysql_authz_enable_ssl_connection)
 - [Azure_DBforMySQL_Audit_Enable_ATP](#azure_dbformysql_audit_enable_atp)
@@ -12,6 +13,61 @@
 
 <!-- /TOC -->
 <br/>
+
+___ 
+
+## Azure_DBforMySQL_AuthZ_Firewall_Deny_AzureServices_Access 
+
+### DisplayName 
+Use the 'Allow access to Azure services' flag for DBForMySQL only if required 
+
+### Rationale 
+The 'Allow access to Azure services' setting configures a very broad range of IP addresses from Azure as permitted to access the MySQL Server. Please make sure your scenario really requires this setting before enabling it. Turning it ON exposes your MySQL Server to risk of attacks from resources (IPs) owned by others in the Azure region. 
+
+### Control Settings 
+```json 
+{
+    "FirewallRuleName_AllowAzureIps": "AllowAllWindowsAzureIps"
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Allow access to Azure services flag is off.
+> 
+> **Failed:** 
+> Allow access to Azure services flag is on.
+> 
+> **Error:** 
+> AllowAzureServices ControlSettings is not present.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 1. Turn 'OFF' the 'Allow access to Azure services' setting. 
+	 2. Remove IP range from firewall rules. Refer: https://docs.microsoft.com/en-us/azure/mysql/concepts-firewall-rules#connecting-from-azure 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get firewall rules of a DBForMySql server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/firewallRules/{firewallRuleName}?api-version=2017-12-01 <br />
+**Properties:** name
+ <br />
+
+<br />
 
 ___ 
 

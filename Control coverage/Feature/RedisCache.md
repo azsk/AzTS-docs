@@ -2,15 +2,16 @@
 
 **Resource Type:** Microsoft.Cache/Redis
 
-<!-- TOC -->
+<!-- TOC depthfrom:2 depthto:2 -->
 
+- [Azure_RedisCache_BCDR_Use_RDB_Backup](#azure_rediscache_bcdr_use_rdb_backup)
 - [Azure_RedisCache_DP_Use_SSL_Port](#azure_rediscache_dp_use_ssl_port)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
-<!--
+
 ## Azure_RedisCache_BCDR_Use_RDB_Backup 
 
 ### DisplayName 
@@ -31,16 +32,13 @@ Enabling backup on Redis Cache ensures that there is always a previous snapshot 
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> rdb-backup-enabled is enabled
 > 
 > **Failed:** 
-> Failed condition
+> rdb-backup-enabled is not enabled or is not supported for Sku Tier.
 > 
-> **Verify:** 
-> Verify condition
-> 
-> **NotApplicable:** 
-> NotApplicable condition if applicable
+> **Error:** 
+> Required Sku(s) are not defined in control settings.
 > 
 ### Recommendation 
 
@@ -48,7 +46,7 @@ Enabling backup on Redis Cache ensures that there is always a previous snapshot 
 
 	 Configure data persistence. Refer: https://docs.microsoft.com/en-us/azure/azure-cache-for-redis/cache-how-to-premium-persistence 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -58,24 +56,17 @@ Enabling backup on Redis Cache ensures that there is always a previous snapshot 
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
- <br />
-
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
- <br />
+- ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
+**Properties:** properties.redisConfiguration, properties.Sku
 
 <br />
 
 ___ 
--->
+
 ## Azure_RedisCache_DP_Use_SSL_Port 
 
 ### DisplayName 
