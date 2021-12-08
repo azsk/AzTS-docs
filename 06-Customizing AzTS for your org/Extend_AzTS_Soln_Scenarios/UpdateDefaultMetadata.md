@@ -6,9 +6,12 @@ Using Org policy customization, we can change some basic default metadata for an
 <br/>Let us change the display name of the "Azure_Subscription_AuthZ_Remove_Management_Certs" existing control from "Do not use management certificates" to "Management certificates are classic methods for automation on Azure subscription but are risky because the hygiene tends to be laxed and can easily be compromised.". 
 This setting resides in a file called FeatureName.json. 
 <br/>Because the first-time org policy setup does not customize anything from this, we will need to follow the following steps to modify the ASC assessments settings:
+<br>
 
+> Note: To edit policy JSON files, use a friendly JSON editor such as Visual Studio Code. It will save you lot of debugging time by telling you when objects are not well-formed (extra commas, missing curly-braces, etc.)! This is key because in a lot of policy customization tasks, you will be taking existing JSON objects and removing large parts of them (to only keep the things you want to modify).
+<br>
 
-### Steps:
+## Steps:
 0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](../README.md#setting-up-the-solution).
 1.  Copy _FeatureNameExt.json_ file and rename it accordingly. For example: SubscriptionCoreExt.json
 2.  Fill the parameters according to the feature. For example: 
