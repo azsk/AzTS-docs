@@ -2,11 +2,11 @@
 <br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community..
 
 
-### [Overview](README.md#overview)
+### [Overview](README.md#overview-1)
  - [When and why should I set up org policy?](README.md#when-and-why-should-i-setup-org-policy)
  <!-- - [How does AzTS use online policy?](README.md#how-does-azts-use-online-policy) -->
 
-### [Setting up org policy](Readme.md#setting-up-org-policy)
+### [Setting up org policy](README.md#setting-up-org-policy-1)
  <!-- - [What happens during org policy setup?](Readme.md#what-happens-during-org-policy-setup) -->
  <!-- - [First-time policy setup - an example](Readme.md#first-time-policy-setup---an-example) -->
  
@@ -15,28 +15,28 @@
  - [Running scan in AzTS-UI with org policy](Readme.md#1-running-scan-in-local-machine-with-custom-org-policy)
  - [Running Tenant Scan with org policy](Readme.md#2-setup-continuous-assurance) -->
  
-### [Modifying and customizing org policy](Readme.md#modifying-and-customizing-org-policy)
+### [Modifying and customizing org policy](README.md#modifying-and-customizing-org-policy-1)
  <!-- - [Know more about controls](Readme.md#know-more-about-controls) -->
- - [AzTS UI CMET Tool](Readme.md#1-azts-ui-cmet-tool)
-     - [Getting Started](Readme.md#getting-started)
-     - [Basic scenarios for org policy customization:](Readme.md#basic-scenarios-for-org-policy-customization-1)
+ - [AzTS UI CMET Tool](README.md#1-azts-ui-cmet-tool)
+     - [Getting Started](README.md#getting-started)
+     - [Basic scenarios for org policy customization:](README.md#basic-scenarios-for-org-policy-customization)
         - [Changing control setting](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)
         - [Customizing specific controls for a service SVT](./AzTS_CMET_Tool_Scenarios/CustomizeSpecificControls.md)
         - [Setting up and updating baselines for your org](./AzTS_CMET_Tool_Scenarios/SettingUpdatingBaseline.md)
-     - [Advanced scenarios for org policy customization:](Readme.md#advanced-scenarios-for-org-policy-customization-1) 
+     - [Advanced scenarios for org policy customization:](README.md#advanced-scenarios-for-org-policy-customization) 
         - [Add new control based on ASC Assessment evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForAssessment.md)
         - [Add new control based on custom Azure Policy evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForPolicy.md)
         - [Update/extend existing control by custom ASC Assessment](./AzTS_CMET_Tool_Scenarios/CustomizeASCControls.md) 
         - [Update/extend existing control by custom Azure policy](./AzTS_CMET_Tool_Scenarios/CustomizeCustomPolicyControls.md)
      
- - [Extend AzTS Solution]()
-     - [Getting Started](Readme.md#getting-started)
-     - [Basic scenarios for org policy customization:](Readme.md#basic-scenarios-for-org-policy-customization)
+ - [Extend AzTS Solution](README.md#2-extend-azts-solution)
+     - [Getting Started](README.md#getting-started-1)
+     - [Basic scenarios for org policy customization:](README.md#basic-scenarios-for-org-policy-customization-1)
         - [Update default metadata (display name, recommendation, etc.) for existing controls](./Extend_AzTS_Soln_Scenarios/UpdateDefaultMetadata.md)<br>
         - [Changing control setting for existing controls](./Extend_AzTS_Soln_Scenarios/ChangeControlSetting.md)<br>
         - [Update control metadata for controls based on ASC Assessment](./Extend_AzTS_Soln_Scenarios/UpdateControlMetadataASCAssessment.md)<br>
         - [Customizing specific controls for an existing service](./Extend_AzTS_Soln_Scenarios/CustomizeSpecificControls.md)<br>
-     - [Advanced scenarios for org policy customization:](Readme.md#advanced-scenarios-for-org-policy-customization) 
+     - [Advanced scenarios for org policy customization:](README.md#advanced-scenarios-for-org-policy-customization-1) 
         - [Update/extend existing control by custom Azure policy](./Extend_AzTS_Soln_Scenarios/CustomizeControlEvaluator.md)<br>
         - [Update/extend existing control by custom ASC Assessment](./Extend_AzTS_Soln_Scenarios/CustomizeASCControls.md) <br>
         - [Add new control for existing service](./Extend_AzTS_Soln_Scenarios/AddNewControl.md)<br>
