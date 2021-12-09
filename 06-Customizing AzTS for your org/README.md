@@ -104,15 +104,14 @@ The typical workflow for all policy changes and customizatio will remain same an
 
 
 ### **Basic scenarios for org policy customization**
-[1. Changing control setting](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)<br>
+[1. Update default metadata (display name, recommendation, etc.) for existing controls](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)<br>
 [2. Customizing specific controls for a service SVT](./AzTS_CMET_Tool_Scenarios/CustomizeSpecificControls.md)<br>
 [3. Setting up and updating baselines for your org](./AzTS_CMET_Tool_Scenarios/SettingUpdatingBaseline.md)<br>
 
 ### <b>Advanced scenarios for org policy customization</b>
 [1. Add new control based on ASC Assessment evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForAssessment.md)<br>
 [2. Add new control based on custom Azure Policy evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForPolicy.md)<br>
-[3. Update/extend existing control by custom ASC Assessment](./AzTS_CMET_Tool_Scenarios/CustomizeASCControls.md) <br>
-[4. Update/extend existing control by custom Azure policy](./AzTS_CMET_Tool_Scenarios/CustomizeCustomPolicyControls.md)<br>
+[3. Update/extend existing control by custom Azure policy](./AzTS_CMET_Tool_Scenarios/CustomizeCustomPolicyControls.md)<br>
 
 ## 2. Extend AzTS Solution:
 AzTS Solution is published as NuGet package. This NuGet package comes with extensibility feature and this enables powerful capability for organization to customize the control behaviour with custom logic. 
