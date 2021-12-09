@@ -8,12 +8,12 @@ Imagine that you want to turn off the evaluation of some control altogether (reg
 2. Modify severity of Azure_Storage_AuthN_Dont_Allow_Anonymous to Critical for our org (it is High by default).
 3. Change the recommendation for people in our org to follow if they need to address an issue with the Azure_Storage_DP_Encrypt_In_Transit control.
 
-Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](../README.md#setting-up-the-solution).
+Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 
 <br/>Because the first-time org policy setup does not customize anything from this, we will need to follow the following steps to modify the Control Evaluator:
 
 ### Steps:
-0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](../README.md#setting-up-the-solution).
+0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](./SettingUpSolution.md).
 1.  Copy _FeatureNameExt.json_ file and rename it accordingly. For example: StorageExt.json
 2.  Fill the parameters according to the feature. For example: 
     ``` JSON

@@ -1,6 +1,6 @@
 # Updating Control Metadata for controls based on ASC Assessment
 
-Using Org policy customization, we can change some ASC assessment setting for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](../README.md#setting-up-the-solution).
+Using Org policy customization, we can change some ASC assessment setting for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 <br/>
 <br/>A typical setting you may want to modify is the name of the ASC assessment that is being scanned for a control according to your org's needs. 
 <br/>Let us change the ASC assessment value to "2acd365d-e8b5-4094-bce4-244b7c51d67c" from "00c6d40b-e990-6acf-d4f3-471e747a27c4" for the "Azure_Subscription_AuthZ_Remove_Management_Certs" existing control. 
@@ -8,7 +8,7 @@ This setting resides in a file called FeatureName.json.
 <br/>Because the first-time org policy setup does not customize anything from this, we will need to follow the following steps to modify the ASC assessments settings:
 
 ### Steps:
-0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](../README.md#setting-up-the-solution).
+0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](./SettingUpSolution.md).
 1.  Copy _FeatureNameExt.json_ file and rename it accordingly. For example: SubscriptionCoreExt.json
 2.  Fill the parameters according to the feature. For example: 
     ``` JSON

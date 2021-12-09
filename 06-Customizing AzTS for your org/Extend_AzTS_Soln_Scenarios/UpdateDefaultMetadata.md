@@ -1,6 +1,6 @@
 # Update default metadata (display name, recommendation, etc.) for existing controls
 
-Using Org policy customization, we can change some basic default metadata for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](../README.md#setting-up-the-solution).
+Using Org policy customization, we can change some basic default metadata for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 <br/>
 <br/>A typical setting you may want to modify is the display name of an existing control according to your org's needs. 
 <br/>Let us change the display name of the "Azure_Subscription_AuthZ_Remove_Management_Certs" existing control from "Do not use management certificates" to "Management certificates are classic methods for automation on Azure subscription but are risky because the hygiene tends to be laxed and can easily be compromised.". 
@@ -12,7 +12,7 @@ This setting resides in a file called FeatureName.json.
 <br>
 
 ## Steps:
-0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](../README.md#setting-up-the-solution).
+0.  Initially, set up the organization-specific policy customizable AzTS Solution in your local systems by following the steps mentioned [here](./SettingUpSolution.md).
 1.  Copy _FeatureNameExt.json_ file and rename it accordingly. For example: SubscriptionCoreExt.json
 2.  Fill the parameters according to the feature. For example: 
     ``` JSON
