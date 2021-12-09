@@ -20,13 +20,13 @@
  - [**AzTS UI CMET Tool**](README.md#1-azts-ui-cmet-tool)
      - [Getting Started](README.md#getting-started)
      - [Basic scenarios for org policy customization:](README.md#basic-scenarios-for-org-policy-customization)
-        - [Changing control setting](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)
+        - [Update default metadata (display name, recommendation, etc.) for existing controls](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)
         - [Customizing specific controls for a service SVT](./AzTS_CMET_Tool_Scenarios/CustomizeSpecificControls.md)
         - [Setting up and updating baselines for your org](./AzTS_CMET_Tool_Scenarios/SettingUpdatingBaseline.md)
      - [Advanced scenarios for org policy customization:](README.md#advanced-scenarios-for-org-policy-customization) 
         - [Add new control based on ASC Assessment evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForAssessment.md)
         - [Add new control based on custom Azure Policy evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForPolicy.md)
-        - [Update/extend existing control by custom ASC Assessment](./AzTS_CMET_Tool_Scenarios/CustomizeASCControls.md) 
+        <!-- - [Update/extend existing control by custom ASC Assessment](./AzTS_CMET_Tool_Scenarios/CustomizeASCControls.md)  -->
         - [Update/extend existing control by custom Azure policy](./AzTS_CMET_Tool_Scenarios/CustomizeCustomPolicyControls.md)
      
  - [**Extend AzTS Solution**](README.md#2-extend-azts-solution)
