@@ -12,9 +12,7 @@ This setting resides in a file called FeatureName.json.
 2.  Fill the parameters according to the feature. For example: 
     ``` JSON
     {
-        "FeatureName": "SubscriptionCore",
-        "Reference": "aka.ms/azsktcp/sshealth", // you can find this from the FeatureName.json as well
-        "IsMaintenanceMode": false,
+        "FeatureName": "SubscriptionCore"
     }
     ```
 3.  Add the control json with all parameters given in template. The following meta-data are required for a control to be scanned:

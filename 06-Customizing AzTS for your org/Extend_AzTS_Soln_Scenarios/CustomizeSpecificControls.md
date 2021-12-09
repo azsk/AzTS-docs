@@ -18,9 +18,7 @@ Below is a walk-through example of how to do so leveraging the AzTS-Extended sol
 2.  Fill the parameters according to the feature. For example: 
     ``` JSON
     {
-        "FeatureName": "Storage",
-        "Reference": "aka.ms/azsktcp/storage", // you can find this from the FeatureName.json as well
-        "IsMaintenanceMode": false,
+        "FeatureName": "Storage"
     }
     ```
 3.  Add the control json with all parameters given in template. The following meta-data are required for a control to be scanned:
