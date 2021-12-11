@@ -145,7 +145,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 - **Azure Portal** 
 
-	 The TLS setting can only be configured during cluster creation using either the Azure portal, or a Resource Manager template. Refer : https://docs.microsoft.com/en-us/azure/hdinsight/transport-layer-security 
+	 The TLS setting can only be configured during cluster creation using either the Azure portal, or a Resource Manager template. Refer: https://docs.microsoft.com/en-us/azure/hdinsight/transport-layer-security 
 
 <!-- - **PowerShell** 
 

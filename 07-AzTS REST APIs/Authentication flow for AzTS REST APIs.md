@@ -1,13 +1,13 @@
 > The Azure Tenant Security Solution (AzTS) was created by the Core Services Engineering & Operations (CSEO) division at Microsoft, to help accelerate Microsoft IT's adoption of Azure. We have shared AzTS and its documentation with the community to provide guidance for rapidly scanning, deploying and operationalizing cloud resources, across the different stages of DevOps, while maintaining controls on security and governance.
-<br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community..
+<br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community.
 
 <br/>
 
 # **Authentication flow for AzTS REST APIs**
 
-To use AzTS REST API one needs to submit a request-header that contains an access token. The access token is used for authentication and authorization. This document walks through several authentication flows using Microsoft Authentication Library (MSAL) for use in different application scenarios. You can use one of these approches to generate access token. 
+To use AzTS REST API one needs to submit a request-header that contains an access token. The access token is used for authentication and authorization. This document walks through several authentication flows using Microsoft Authentication Library (MSAL) for use in different application scenarios. You can use one of these approaches to generate access token. 
 
-> _Note: Access token generated using the authentication flows listed below is intented to access AzTS API endpoints and not Azure subscriptions._
+> _Note: Access token generated using the authentication flows listed below is intended to access AzTS API endpoints and not Azure subscriptions._
 
 ## Available options to acquire tokens
 
@@ -19,7 +19,7 @@ To use AzTS REST API one needs to submit a request-header that contains an acces
 
 # Authorization code
 
-User authorization code flow uses user's crediential to generate the token. This is an interactive flow where user is prompted to enter Azure AD username and password. To generate token using this flow, you need to provide the **Tenant ID**, **Client ID** and **Scope**.
+User authorization code flow uses user's credentials to generate the token. This is an interactive flow where user is prompted to enter Azure AD username and password. To generate token using this flow, you need to provide the **Tenant ID**, **Client ID** and **Scope**.
 
 **Required Az Module**
 ``` PowerShell
@@ -41,11 +41,11 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 
 # Client credentials
 
-Client crediential flow uses the client credentials (client id and client secret) to generate the token. This is a two step process.
+Client credential flow uses the client credentials (client id and client secret) to generate the token. This is a two-step process.
 
 1. You will need to [register a new Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) or use an existing AAD application and ask AzTS admin to provide permissions by following steps mentioned in [this FAQ](./Set%20up.md#an-end-user-wants-to-access-azts-rest-api-using-spn-credentials-ie-using-client-credential-authentication-flow-what-are-the-steps-to-grant-access-to-an-spnazure-ad-application-created-by-end-user-to-be-able-to-access-azts-rest-api).
 
-2. Then use the following PowerShell command to generate access token. This token will be generated against specified Service Principal Name (SPN) and **SPN must have one of the following permission at Azure subscription or resource group scope** to use AzTS APIs.
+2. Then use the following PowerShell command to generate access token. This token will be generated against specified Service Principal Name (SPN) and **SPN must have one of the following permissions at Azure subscription or resource group scope** to use AzTS APIs.
 
     - Owner
     - Contributor

@@ -293,7 +293,7 @@ Public IPs provide direct access over the internet exposing the VMSS instance to
 ### Control Spec
 
 > **Passed:**
-> No Public IP is associated with VMSS or VMSS has Public IP is associated with it but its not part of ExpressRoute connected virtual network.
+> No Public IP is associated with VMSS or VMSS has Public IP associated with it but it is not part of ExpressRoute connected virtual network.
 >
 > **Failed:**
 > VMSS is part of an ExpressRoute connected virtual network and has Public IP associated with it.
@@ -376,10 +376,10 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Control Spec
 
 > **Passed:**
-> Antimalware Malware extension is deployed at VMSS model and all it's VM instances with Auto Upgrade to minor version enabled and Realtime protection enabled
+> Antimalware Malware extension is deployed at VMSS model and all its VM instances with Auto Upgrade to minor version enabled and Realtime protection enabled
 >
 > **Failed:**
-> AntiMalware extension is not deployed at VMSS model or at one or more VM instances or AntiMalware extension is present but Auto Upgrade to minor version is disabled or AntiMalware extension is present but Auto Realtime protection is disabled.
+> AntiMalware extension is not deployed at VMSS model or at one or more VM instances or AntiMalware extension is present, but Auto Upgrade to minor version is disabled, or AntiMalware extension is present but Auto Realtime protection is disabled.
 >
 > **Error:**
 >Required Extension details is not properly defined in control settings.
@@ -686,7 +686,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 ### Control Spec
 
 > **Passed:**
-> Azure disk encryption extension is installed and existing disks (OS and Data) are encrypted.
+> Azure disk encryption extension is installed, and existing disks (OS and Data) are encrypted.
 >
 > **Failed:**
 > Azure disk encryption extension is not installed One or more existing disks (OS or Data) are in a non-compliant state
