@@ -25,13 +25,16 @@ This setting resides in a file called FeatureName.json.
     "Controls": [
         {
         // The following parameters can be taken from the FeatureName.json directly as there will no change in them for the scope of this scenario. 
-        "ControlID": "Azure_Subscription_AuthZ_Remove_Management_Certs",
-        "Id": "SubscriptionCore170",
+        "ControlID": "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count",
+        "Id": "SubscriptionCore160",
         "Automated": "Yes",
         // Note that below we update the Display Name value to the one required according to the org's policy.
-        "DisplayName": "Management certificates are classic methods for automation on Azure subscription but are risky because the hygiene tends to be laxed and can easily be compromised.",
-        "MethodName": "", // This will be empty since the Control is ASC assessment based
-        "Enabled": true
+        "DisplayName": "Limit access per subscription to 2 or less classic administrators",
+        "MethodName": "CheckCoAdminCount", //  Represents the Control method that is responsible to evaluate this control. It should be present inside the feature SVT associated with this control.
+        "Enabled": true,
+        "ControlSettings": {
+        "NoOfClassicAdminsLimit": 1
+      } // Settings specific to the control to be provided for the scan
         }
     ]
     ```
@@ -71,3 +74,6 @@ This setting resides in a file called FeatureName.json.
 5. Verify the changes:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
  <br/> Few simple queries are provided in the above link related to the inventory and Control Scan summary for reference.
+
+6. Deploy the changes:
+You can deploy the project with your changes in your current AzTS solution now. Please follow the steps mentioned [here]().
