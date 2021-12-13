@@ -54,7 +54,8 @@ The final JSON file should look like this for our walk-through example:
    - Output looks like below:<br/>
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
-   Congratulations! Changing Control Setting Scenario is complete with this step.
+   
+   <br><b>Congratulations! Changing Control Setting Scenario is complete with this step.</b>
 
 5. Verify the changes in your local system:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).

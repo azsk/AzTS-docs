@@ -2,8 +2,8 @@
 
 Using Org policy customization, we can change some basic default metadata for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 <br/>
-<br/>A typical setting you may want to modify is the display name of an existing control according to your org's needs. 
-<br/>Let us change the display name of the "Azure_Subscription_AuthZ_Remove_Management_Certs" existing control from "Do not use management certificates" to "Management certificates are classic methods for automation on Azure subscription but are risky because the hygiene tends to be laxed and can easily be compromised.". 
+<br/>A typical setting you may want to modify is the display name, control ID, Recommendation, etc of an existing control according to your org's needs. 
+<br/>Let us change the control ID of the "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count" existing control from "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count" to "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count_Extended". 
 This setting resides in a file called FeatureName.json. 
 <br/>Because the first-time org policy setup does not customize anything from this, we will need to follow the following steps to modify the ASC assessments settings:
 <br>
@@ -69,7 +69,8 @@ This setting resides in a file called FeatureName.json.
    - Output looks like below:<br/>
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
-   Congratulations! Updating default metadata Scenario is complete with this step.
+   
+   <br><b>Congratulations! Updating default metadata Scenario is complete with this step.</b>
 
 5. Verify the changes in your local system:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).

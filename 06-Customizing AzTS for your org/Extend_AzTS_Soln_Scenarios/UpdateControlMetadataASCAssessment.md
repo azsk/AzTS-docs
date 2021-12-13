@@ -53,7 +53,7 @@ This setting resides in a file called FeatureName.json.
    - Output looks like below:<br/>
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
-   Congratulations! Modifying control metadata for controls based on ASC Assessment Scenario is complete with this step.
+   <br><b>Congratulations! Modifying control metadata for controls based on ASC Assessment Scenario is complete with this step.</b>
 
 5. Verify the changes in your local system:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
