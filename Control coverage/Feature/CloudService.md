@@ -21,15 +21,15 @@ ___
 Encrypt data in transit for Cloud service role 
 
 ### Rationale 
-Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks. 
+Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks.
 
 ### Control Spec 
 
 > **Passed:** 
-> No active non SSL enabled input endpoints for all the roles in cloud service.
+> No active non-SSL enabled input endpoints for all the roles in cloud service.
 > 
 > **Failed:** 
-> Active non SSL enabled input endpoints are present for any of the roles in cloud service.
+> Active non-SSL enabled input endpoints are present for any of the roles in cloud service.
 >  
 ### Recommendation 
 
@@ -179,7 +179,7 @@ ___
 Disable Remote Desktop (RDP) access on cloud service roles 
 
 ### Rationale 
-Remote desktop access requires inbound ports to be opened. These ports become easy targets for compromise from various internet based attacks. 
+Remote desktop access requires inbound ports to be opened. These ports become easy targets for compromise from various internet-based attacks. 
 
 ### Control Spec 
 

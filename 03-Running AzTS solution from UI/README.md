@@ -1,12 +1,12 @@
 
 > The Azure Tenant Security Solution (AzTS) was created by the Core Services Engineering & Operations (CSEO) division at Microsoft, to help accelerate Microsoft IT's adoption of Azure. We have shared AzTS and its documentation with the community to provide guidance for rapidly scanning, deploying and operationalizing cloud resources, across the different stages of DevOps, while maintaining controls on security and governance.
-<br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community..
+<br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community.
 
 </br>
 
 # Running AzTS solution from UI
 
-##  On this page:
+## On this page:
 
 - [Overview](README.md#overview)
 - [Prerequisite](README.md#prerequisite)
@@ -37,7 +37,7 @@ Link to the AzTS UI is provided at the end of the installation command ```Instal
 
 ## Prerequisite
 
-1. Signed in user must have one of the following permission at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
+1. Signed in user must have one of the following permissions at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
 2. If the AzTS solution has been installed recently, it can take up to 24 hours to reflect the scan result.
 
 > **Note:**

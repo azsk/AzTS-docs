@@ -68,7 +68,7 @@ ___
 Remote debugging should be turned off for Web Applications 
 
 ### Rationale 
-Remote debugging requires inbound ports to be opened on App Service. These ports become easy targets for compromise from various internet based attacks. 
+Remote debugging requires inbound ports to be opened on App Service. These ports become easy targets for compromise from various internet-based attacks. 
 
 ### Control Spec 
 
@@ -112,7 +112,7 @@ ___
 Web Sockets should be disabled for App Service 
 
 ### Rationale 
-WebSockets protocol (WS) is vulnerable to different types of security attacks. Usage of Web Sockets with in web applications has to be carefully reviewed. 
+WebSockets protocol (WS) is vulnerable to different types of security attacks. Usage of Web Sockets within web applications has to be carefully reviewed. 
 
 ### Control Spec 
 
@@ -336,14 +336,14 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - **PowerShell** 
 
- To enable only https traffic on default 'Production' slot,run command
+ To enable only https traffic on default 'Production' slot, run command
  
 ```powershell
 Set-AzWebApp -Name <WebAppName> -ResourceGroupName <RGName> -HttpsOnly $true 
 ```
 Run Get-Help Set-AzWebApp -full for more help.
 
-To enable only https traffic on any non-production slot,run command 
+To enable only https traffic on any non-production slot, run command 
 	 
 ```powershell
 Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -HttpsOnly $true
@@ -496,7 +496,7 @@ ___
 Setup IP-based access restrictions for App Service if feasible 
 
 ### Rationale 
-Using the IP/VNet subnet rules based access restriction ensures that access to the data or the service is restricted to a specific set of IPs. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
+Using the IP/VNet subnet rules-based access restriction ensures that access to the data or the service is restricted to a specific set of IPs. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
 
 ### Control Spec 
 

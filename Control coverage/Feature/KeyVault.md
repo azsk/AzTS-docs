@@ -146,7 +146,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 > 
 >       or
 >
-> 2. Diagnostic setting meet the following conditions:
+> 2. Diagnostic settings meet the following conditions:
 > a. All diagnostic logs are not enabled.
 > b. None of the below setting is configured:
 > i. Log Analytics.

@@ -89,7 +89,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 - **Azure Portal** 
 
-	 Do not use high ranges like 0.0.0.0/0, 0.0.0.0/1, 128.0.0.0/1, etc. Maximum IPs in a range should be less that 256 and total IPs including all ranges should be less than 2048. To modify - Azure Portal --> Resource --> Firewall and Virtual networks. Turn 'ON' - 'Enable IP Access Control' and add/or remove IP addresses and/or ranges and save. Note: In case the IP range is indeterminate (for instance, if the client is a PaaS endpoint), you may need to attest this control. 
+	 Do not use high ranges like 0.0.0.0/0, 0.0.0.0/1, 128.0.0.0/1, etc. Maximum IPs in a range should be less than 256 and total IPs including all ranges should be less than 2048. To modify - Azure Portal --> Resource --> Firewall and Virtual networks. Turn 'ON' - 'Enable IP Access Control' and add/or remove IP addresses and/or ranges and save. Note: In case the IP range is indeterminate (for instance, if the client is a PaaS endpoint), you may need to attest this control. 
 
 <!--
 - **PowerShell** 

@@ -115,7 +115,7 @@ ___
 Security scanner identity must be granted access to Container Registry for image scans
 
 ### Rationale 
-Images in a container registry need to be regularly scanned for vulnerabilities. The enterprise wide solution deployed for this needs access to read the images from the registry to perform the scans. 
+Images in a container registry need to be regularly scanned for vulnerabilities. The enterprise-wide solution deployed for this needs access to read the images from the registry to perform the scans. 
 
 ### Control Settings 
 ```json 

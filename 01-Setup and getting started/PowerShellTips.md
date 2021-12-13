@@ -8,10 +8,10 @@
 -	Save your work (in script, not TXT files)
 -	Use auto-complete
 -   Use backtick for long command lines
--	Search for commands�
--	Look for loaded modules�
--	Variables..
--	Strings, � � v � � 
+-	Search for commands
+-	Look for loaded modules
+-	Variables
+-	Strings
 -	List Subscriptions
 -	Switch context
 -	Find resources/resource groups
@@ -122,7 +122,7 @@ right there in the script file you saved (and most likely also in your recently 
 Also, over each working session you can add a few more useful/valuable lines to your saved scripts and, 
 before you know, you will be sitting on a mini treasure of *your own* PowerShell nuggets.
 
-This is why, when you use the ISE, always  use the script pane for most of your work. Each time you make net progress, hit 'Save'. Make sure
+This is why, when you use the ISE, always use the script pane for most of your work. Each time you make net progress, hit 'Save'. Make sure
 you organize scripts in an easy to find folder (e.g., \Desktop\PSScripts) and name script files aptly (e.g., AzSKCmds.ps1, MyAzCmds.ps1, etc.).
 
 [Back to top...](README.md#list-of-tips)
@@ -141,9 +141,9 @@ to get the whole command. E.g., 'Set-AzSKSu' + TAB gives you 'Set-AzSKSubscripti
 PS will cycle through all commands that have that prefix and let you stop at whichever you actually want to run. E.g., 'Get-AzSKSu' + TAB will
 start with 'Get-AzSKSubscriptionSecurityStatus' and then, on further TABs, give you other commands which have the same prefix.
 - After the name of the command, you can type just "-" (dash or minus) and TAB one or more times to cycle through the various parameters supported by the command.
-You can pause at the parameter you want to use and provides it's value then move on to the next parameter, etc. E.g., 'Get-AzSKSubscriptionSecurityStatus -' 
+You can pause at the parameter you want to use and provides its value then move on to the next parameter, etc. E.g., 'Get-AzSKSubscriptionSecurityStatus -' 
 (not the '-') followed by one or more TABs will give you the parameter choices for the Get-AzSKSubscriptionSecurityStatus command. This saves time and 
-eliminates syntax errors from mis-typed parameter names. Usually, commands are designed so that 'auto complete'suggests the most often used (and mandatory) parameters first. 
+eliminates syntax errors from mis-typed parameter names. Usually, commands are designed so that 'auto complete' suggests the most often used (and mandatory) parameters first. 
 
 Additionally, using the auto-complete functionality helps you explore a command and discover its various parameters easily. 
 
@@ -560,7 +560,7 @@ Although PS supports the standard 'for' and 'while' loops, it allows using the '
 You can take a source object (e.g., an array of resource groups in your subscription), 'feed' it to the '%' operator and have some
 operation performed or some expression evaluated for every constituent object in the array.
 
-For instance,  to print just the location of every resource group in the current subscription, you'd use:
+For instance, to print just the location of every resource group in the current subscription, you'd use:
 ```PowerShell
 PS C:\> Get-AzResourceGroup | % {$_.Location}
 eastus

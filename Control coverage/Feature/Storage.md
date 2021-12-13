@@ -78,7 +78,7 @@ ___
 Enable Secure transfer to storage accounts
 
 ### Rationale
-Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks. When enabling HTTPS one must remember to simultaneously disable access over plain HTTP else data can still be subject to compromise over clear text connections.
+Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks. When enabling HTTPS, one must remember to simultaneously disable access over plain HTTP else data can still be subject to compromise over clear text connections.
 
 ### Control Spec
 

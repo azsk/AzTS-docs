@@ -67,7 +67,7 @@ ___
 AAD should be enabled in Kubernetes Service 
 
 ### Rationale 
-Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control.All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
 
 ### Control Spec 
 
@@ -123,7 +123,7 @@ Running on older versions could mean you are not using latest security classes. 
 ### Control Spec 
 
 > **Passed:** 
-> AKS is running on one of the defined version
+> AKS is running on one of the defined versions.
 > 
 > **Failed:** 
 > AKS is not running on the required Kubernetes version.
@@ -298,7 +298,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 >
 >       or
 >
-> 2. Diagnostic setting meet the following conditions:
+> 2. Diagnostic settings meet the following conditions:
 > a. All diagnostic logs are not enabled.
 > b. None of the below setting is configured:
 > i. Log Analytics.

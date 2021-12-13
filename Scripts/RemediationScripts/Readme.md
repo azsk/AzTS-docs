@@ -22,7 +22,7 @@ Loading script in PowerShell session is divided into four steps:
 
 ### **Step 2 of 4. Installing Az Modules:**
 
-Az modules contain cmdlet to connect to az account.
+Az modules contain cmdlet to connect to Az Account.
 Install Az PowerShell Modules using below command. 
 For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps)
 
@@ -33,7 +33,7 @@ Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PS
 ### **Step 3 of 4. Download and extract remediation package**
  
  Remediation package mainly contains:
- 1. **RemediationScripts** which contains powershell scripts to remediate AzTS controls.
+ 1. **RemediationScripts** which contains PowerShell scripts to remediate AzTS controls.
 
 If you have already downloaded the remediation package zip, you can start from step (3.d).
 
