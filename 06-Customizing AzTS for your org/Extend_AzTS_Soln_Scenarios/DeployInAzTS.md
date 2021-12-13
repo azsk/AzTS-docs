@@ -12,7 +12,7 @@ You can deploy the **AzTS_Extended** function app project in your running AzTS S
 
 2. For Target, choose Azure, which will publish your function app to the Microsoft Cloud.
 
-3. For the **Specific target**, choose **Azure Function App (Windows)**, which creates a function app that runs on Windows.
+3. For the **Specific target**, choose **Azure Function App (Windows)**, which publish a function app that runs on Windows.
 
 4. In **Function Instance**, choose your Host Subscription and select the `AzSK-AzTS-WorkItemProcessor-xxxxx` as shown below. 
 ![Deploy_FunctionInstance](../../Images/06_OrgPolicy_Deploy_FunctionInstance.png)

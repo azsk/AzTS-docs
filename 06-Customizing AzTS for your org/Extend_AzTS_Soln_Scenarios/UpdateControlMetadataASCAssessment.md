@@ -55,6 +55,9 @@ This setting resides in a file called FeatureName.json.
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
    Congratulations! Modifying control metadata for controls based on ASC Assessment Scenario is complete with this step.
 
-5. Verify the changes:
+5. Verify the changes in your local system:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
  <br/> Few simple queries are provided in the above link related to the inventory and Control Scan summary for reference.
+
+6. Deploy the changes:
+You can deploy the project with your changes in your current AzTS solution now. Please follow the steps mentioned [here](./DeployInAzTS.md).
