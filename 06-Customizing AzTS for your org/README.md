@@ -122,6 +122,9 @@ The typical workflow to achieve any listed scenarios will remain same and will i
 1. Set up the AzTS Extended solution following the steps mentioned [here](./Extend_AzTS_Soln_Scenarios/SettingUpSolution.md). 
 2. Modify or Author control metadata (JSON files).
 3. Modify or Author control methods in respective control evaluator files.
+
+   > You can read more about the AzTS Security Controls and their implementation [here](./Prerequisite.md).
+
 4. Build and run the solution in your local system and verify your changes.
 
 You will be able to achieve all scenarios listed using AzTS UI along with the following additional scenarios:
