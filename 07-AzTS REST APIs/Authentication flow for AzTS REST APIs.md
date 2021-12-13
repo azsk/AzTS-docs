@@ -35,7 +35,7 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 |Parameter|Description|Required?|
 |--|--|--|
 |Tenant ID|Tenant identifier of the authority to issue token. It can also contain the value "consumers" or "organizations".|Yes|
-|Client ID| You can either register a new application using the steps provided here<todo azure doc> or request the AzTS admin of your organization to provide the client ID of the centrally registered application for access AzTS REST APIs which the Admin must have created during the setup ([as mentioned here](README.md#setup-for-azts-admin-only)). | Yes |
+|Client ID| You can either register a new application using the steps provided [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) or request the AzTS admin of your organization to provide the client ID of the centrally registered application for access AzTS REST APIs which the Admin must have created during the setup ([as mentioned here](README.md#setup-for-azts-admin-only)). | Yes |
 | Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#setup-for-azts-admin-only)). | Yes|
 
 
