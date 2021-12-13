@@ -19,7 +19,7 @@ Please note that as an admin of AzTS Solution, you need to share the following i
 
 1. Scope of the AzTS REST API configured in the [step 2](Setup.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the setup steps.
 2. Application (client) ID of the AAD application registered in [step 3](Setup.md#step-3-of-4-optional-register-a-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the setup steps.
-3. URL of the AzTS REST API copied in [step 4](Setup.md##step-4-of-4-get-azts-webapi-url) of the setup steps.
+3. URL of the AzTS REST API copied in [step 4](Setup.md#step-4-of-4-get-azts-webapi-url) of the setup steps.
 4. Tenant ID
 
 
