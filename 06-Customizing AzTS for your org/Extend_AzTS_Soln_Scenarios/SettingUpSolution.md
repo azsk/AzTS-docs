@@ -6,7 +6,7 @@ In this section, we will walk through the steps of setting up organization-speci
 
 Let's Start!
 
-1. Clone [this](https://github.com/azsk/AzTS-Samples) GitHub repository in a new Visual Studio. This solution has the required [NuGet package](https://www.nuget.org/packages/Microsoft.AzTS.Azure.Scanner/) reference to the AzTS Solution. It will import the dependencies and libraries of the AzTS Scanner to the user's solution.
+1. Clone [this](https://github.com/azsk/AzTS-Samples/tree/Extended_AzTS) GitHub repository in a new Visual Studio. This solution has the required [NuGet package](https://www.nuget.org/packages/Microsoft.AzTS.Azure.Scanner/) reference to the AzTS Solution. It will import the dependencies and libraries of the AzTS Scanner to the user's solution.
 2. Go to AzTS_Extended folder and load the AzTS_Extended.sln. <br />
 ![Load Extended solution](../../Images/06_OrgPolicy_Setup_Step2.png)
 

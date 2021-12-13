@@ -4,9 +4,9 @@
 
 You can deploy the **AzTS_Extended** function app project in your running AzTS Solution *using the Visual Studio* by following the below mentioned steps:
 
-> Prerequiste: 
+> Prequisite: It is required to be logged in to your Microsoft Account in the Visual Studio.
 
-0. Ensure that the local settings (details of Storage account, Log Analytic Workspace, etc) do not get deployed in the AzTS solution setup. These settings can be found in the `local.settings.json` which are used during debugging in your local system but the values should be removed while publish the function app as your current running AzTS solution setup has its own settings in-place. <br>Additionally, ensure the Subscription ID mentioned in the `Processor.cs` is the same as the host Subscription of AzTS Solution setup.
+0. Ensure that the local settings (details of Storage account, Log Analytic Workspace, etc) do not get deployed in the AzTS solution setup. These settings can be found in the `local.settings.json` which are used during debugging in your local system but the values should be removed while publish the function app as your current running AzTS solution setup has its own settings in-place. <br>Additionally, ensure the Subscription ID mentioned in the `Processor.cs` is the same as the host Subscription of AzTS Solution setup. <br> 
 
 1. In **Solution Explorer**, right-click on the **`AzTS_Extended`** project and select **Publish**.
 
