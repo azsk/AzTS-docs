@@ -35,8 +35,8 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 |Parameter|Description|Required?|
 |--|--|--|
 |Tenant ID|Tenant identifier of the authority to issue token. It can also contain the value "consumers" or "organizations".|Yes|
-|Client ID| You can either register a new application using the steps provided here<todo azure doc> or request the AzTS admin of your organization to provide the client ID of the centrally registered application for access AzTS REST APIs which the Admin must have created during the set up ([as mentioned here](README.md#set-up-for-azts-admin-only)). | Yes |
-| Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#set-up-for-azts-admin-only)). | Yes|
+|Client ID| You can either register a new application using the steps provided here<todo azure doc> or request the AzTS admin of your organization to provide the client ID of the centrally registered application for access AzTS REST APIs which the Admin must have created during the setup ([as mentioned here](README.md#setup-for-azts-admin-only)). | Yes |
+| Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#setup-for-azts-admin-only)). | Yes|
 
 
 # Client credentials
@@ -71,4 +71,4 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 |Tenant ID|Tenant identifier of the authority to issue token. It can also contain the value "consumers" or "organizations".|Yes|
 |Client ID| Application (client) id of the AAD application created in step 1. | Yes |
 |Client Secret| Client secret of the AAD application created in step 1. For steps to create a new client secret, refer [this page](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-credentials).|Yes|
-| Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#set-up-for-azts-admin-only)). | Yes|
+| Scope | Scope of the WebAPI for which access token has to be generated. Please contact AzTS admin for the details ([as mentioned here](./README.md#setup-for-azts-admin-only)). | Yes|
