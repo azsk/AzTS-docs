@@ -3,7 +3,7 @@
 
 <br/>
 
-# AzTS REST API Set Up - Step by step
+# AzTS REST API Setup - Step by step
 
 ## On this page:
 
@@ -28,7 +28,7 @@ The AzTS REST API feature is disabled by default. To enable this feature for you
 
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
-3. Select your Resource Group where you have configured AzTS set up.
+3. Select your Resource Group where you have configured AzTS setup.
 4. Select the App Service for API 'AzSK-AzTS-WebApi-xxxxx'.
 5. In the app's left menu, select **Configuration** > **Application settings**.
 6. Add/edit app setting **FeatureManagement__OnDemandScanAPI** and set its value to _'true'_.
@@ -41,7 +41,7 @@ You'll need to add additional permissions in API permissions section of AzTS Web
 ### **2.1. Steps to get the client id of the AzTS WebAPI AAD application:**
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
-3. Select your Resource Group where you have configured AzTS set up.
+3. Select your Resource Group where you have configured AzTS setup.
 4. Select the App Service for API 'AzSK-AzTS-WebAPI-xxxxx'.
 5. In the app's left menu, select **Configuration** > **Application settings**.
 6. Search the app setting **AADClientAppDetails__ApplicationId** and use its value as WebAPI Client id.
@@ -100,7 +100,7 @@ The AzTS WebAPI URL needs to be shared with the end user to access the AzTS REST
 
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
-3. Select your Resource Group where you have configured AzTS set up.
+3. Select your Resource Group where you have configured AzTS setup.
 4. Select the App Service for API 'AzSK-AzTS-WebAPI-xxxxx'.
 5. In **Overview** section, copy **URL**.
 
