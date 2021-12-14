@@ -111,7 +111,7 @@ The AzTS WebAPI URL needs to be shared with the end user to access the AzTS REST
 After completing the setup steps, you will have to share the following details with end-users who want to consume these REST APIs:
 
 1. Scope of the AzTS REST API configured in the [step 2](Setup.md#step-2-of-4-steps-to-configure-azts-webapis-azure-active-directory-aad-application-to-access-azts-rest-api) of the setup steps.
-2. Client Id of the AAD application registered in [step 3](Setup.md#step-3-of-4-optional-register-an-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the setup steps.
+2. Client Id of the AAD application registered in [step 3](Setup.md#step-3-of-4-optional-register-a-fresh-azure-active-directory-aad-application-to-access-azts-rest-api) of the setup steps.
 3. URL of the AzTS REST API copied in [step 4](Setup.md#step-4-of-4-get-azts-webapi-url) of the setup steps.
 4. Tenant Id in which the application is registered.
 
@@ -122,7 +122,7 @@ After completing the setup steps, you will have to share the following details w
 
 1. Go to Azure Portal.
 2. Go to **App Registration**.
-3. Select AzTS WebAPI App Registration. If you do not have the client id of your WebAPI, please follow the steps provided [here](Set%20up.md#step-4-of-4-get-azts-webapi-url) to get its client id. 
+3. Select AzTS WebAPI App Registration. If you do not have the client id of your WebAPI, please follow the steps provided [here](Setup.md#step-4-of-4-get-azts-webapi-url) to get its client id. 
 4. Select the WebAPI and in the left-pane, go to **Expose an API**.
 5. Under **Authorized client applications**, click on **Add a client application**.
 6. In the pop-up window, enter the client ID of the SPN/Azure AD application shared by the end-user to grant access to the SPN. 
