@@ -66,7 +66,7 @@ To see some of the examples of existing control IDs please check out this [list]
 
 ![Set Scan source](../../Images/06_ExtendingAzTS_NewControl_Scan_Source.png)
 
-**Step 10:** Provide **Display Name** which is a user friendly name for the control.
+**Step 10:** Provide **Display Name** which is a user-friendly name for the control.
 
 ![Provide Display Name](../../Images/06_ExtendingAzTS_NewControl_DisplayName.png)
 
@@ -90,16 +90,16 @@ To see some of the examples of existing control IDs please check out this [list]
 
 |Settings| Description| Examples|
 |-------------|------|---------|
-|Automated| Whether the control is manual or automated| e.g. Yes/No (keep it Yes for policy based controls)|
+|Automated| Whether the control is manual or automated| e.g. Yes/No (keep it Yes for policy-based controls)|
 |Description| A basic description on what the control is about| e.g. App Service must only be accessible over HTTPS. |
 |Tags| Labels that denote the control being of a specific type or belonging to a specific domain | For e.g. Baseline, Automated etc.|
 |Control Severity| The severity of the control| e.g. High: Should be remediated as soon as possible. Medium: Should be considered for remediation. Low: Remediation should be prioritized after high and medium.|
 |Control Requirements| Prerequisites for the control.| e.g. Monitoring and auditing must be enabled and correctly configured according to prescribed organizational guidance|
-|Rationale|  Logical intention for the added control | e.g. Auditing enables log collection of important system events pertinent to security. Regular monitoring of audit logs can help to detect any suspicious and malicious activity early and respond in a timely manner.|
+|Rationale| Logical intention for the added control | e.g. Auditing enables log collection of important system events pertinent to security. Regular monitoring of audit logs can help to detect any suspicious and malicious activity early and respond in a timely manner.|
 |Recommendations| Steps or guidance on how to remediate non-compliant resources | e.g. Refer https://azure.microsoft.com/en-in/documentation/articles/key-vault-get-started/ for configuring Key Vault and storing secrets |
 |Custom Tags| Tags can be used for filtering and referring controls in the future while reporting| e.g. Production, Phase2 etc. |
-|Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For policy based contols this should be empty) |
-|Comments | These comments show up in the changelog for the feature. | e.g. Added new policy based control for App Service |
+|Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For policy-based controls this should be empty) |
+|Comments | These comments show up in the changelog for the feature. | e.g. Added new policy-based control for App Service |
 
 **Step 16:** Click on **Add** button to save new control.
 

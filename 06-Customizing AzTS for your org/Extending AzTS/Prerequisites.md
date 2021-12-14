@@ -12,21 +12,21 @@ Below mentioned appsettings are required before adding new controls:
 - WorkItemProcessorSettings__HostResourceGroupName -> AzTS solution host resource group name
 - WorkItemProcessorSettings__HostSubscriptionId -> AzTS solution host subscription id
 
-> **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy based control evaluation.
+> **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 
 ### AzTS MetaDataAggregator
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
 
-> **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy based control evaluation.
+> **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 
 ### AzTS WorkItemProcessor
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
 
-> **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy based control evaluation.
+> **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 -----
 Above mentioned appsettings can be configured either from Azure portal or using the helper script provided with AzTS solution.
 
@@ -40,12 +40,12 @@ Above mentioned appsettings can be configured either from Azure portal or using 
 - Using helper script
   - Download the script from [here](./Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
-  - Open a powershell session.
-  - Navigate to the download location of the script in powershell session.
+  - Open a PowerShell session.
+  - Navigate to the download location of the script in PowerShell session.
     - cd "Script download location"
   - Unblock the downloaded script.
     - Unblock-File -Path ".\ConfigureCustomControlAdditionPrerequisites.ps1"
-  - Load the script in current powershell session.
+  - Load the script in current PowerShell session.
     - . ".\ConfigureCustomControlAdditionPrerequisites.ps1"
     > **Note:** Do not miss the '.' at beginning of the above command.
   - Connect to AzAccount

@@ -4,7 +4,6 @@
 <!-- TOC -->
 
 - [Azure_VirtualMachine_SI_Enable_Antimalware](#azure_virtualmachine_si_enable_antimalware)
-- [Azure_VirtualMachine_SI_Enable_Antimalware_Trial](#azure_virtualmachine_si_enable_antimalware_trial)
 - [Azure_VirtualMachine_Config_Enable_NSG](#azure_virtualmachine_config_enable_nsg)
 - [Azure_VirtualMachine_NetSec_Justify_PublicIPs](#azure_virtualmachine_netsec_justify_publicips)
 - [Azure_VirtualMachine_DP_Enable_Disk_Encryption](#azure_virtualmachine_dp_enable_disk_encryption)
@@ -56,7 +55,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Control Spec 
 
 > **Passed:** 
-> If evaluated by reader permissions Required Antimalware extension is present in VM,and Auto upgrade to minor version is configured as true for extension and Real time protection is enabled for extension.
+> If evaluated by reader permissions Required Antimalware extension is present in VM, and Auto upgrade to minor version is configured as true for extension and Real time protection is enabled for extension.
 > 
 > **Failed:** 
 > If evaluated by reader permissions Required Antimalware extension is missing for VM, or Auto upgrade to minor version is configured as false for extension or Real time protection is disabled for extension.
@@ -92,89 +91,11 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Properties.StorageProfile.osDisk.osType ,properties.Type ,properties.Publisher
+**Properties:** Properties.StorageProfile.osDisk.osType, properties.Type, properties.Publisher
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
-**Properties:** example-property
- <br />
--->
-<br />
-
-___ 
-
-## Azure_VirtualMachine_SI_Enable_Antimalware_Trial 
-
-### DisplayName 
-[Trial] Ensure all devices have anti-malware protection installed and enabled 
-
-### Rationale 
-Enabling antimalware protection minimizes the risks from existing and new attacks from various types of malware. Microsoft Antimalware provide real-time protection, scheduled scanning, malware remediation, signature updates, engine updates, samples reporting, exclusion event collection etc. 
-
-
-### Control Settings 
-```json 
-{
-    "ExclusionTags": [
-        {
-            "Description": "VM is part of ADB cluster.",
-            "TagName": "vendor",
-            "TagValue": "Databricks"
-        },
-        {
-            "Description": "VM is part of AKS cluster.",
-            "TagName": "orchestrator",
-            "TagValue": "kubernetes"
-        }
-    ],
-    "ReqExtensionPublisher": "Microsoft.Azure.Security",
-    "ReqExtensionType": "IaaSAntimalware"
-}
- ```  
-
-
-### Control Spec 
-<!--
-> **Passed:** 
-> Passed condition
-> 
-> **Failed:** 
-> Failed condition
-> -->
-> **Verify:** 
-> Virtual Machine's Operating System (OS) type is considered for evaluation.
-> <!--
-> **NotApplicable:** 
-> NotApplicable condition if applicable
-> -->
-> **Error:** Virtual Machine's Operating System (OS) type cannot be determined. 
-### Recommendation 
-
-- **Azure Portal** 
-
-	 To install antimalware, Go to Azure Portal --> VM Properties --> Extensions --> Add 'Microsoft Antimalware' --> Enable Real-Time Protection and Scheduled Scan --> Click Ok. If antimalware is already present on VM, validate and resolve endpoint protection recommendations in ASC. Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-install-endpoint-protection, https://docs.microsoft.com/en-us/azure/security/azure-security-antimalware 
-<!--
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-	 "/providers/Microsoft.Authorization/policyDefinitions/af6cd1bd-1635-48cb-bde7-5b15693900b9"
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
--->
-### Azure Policy or ARM API used for evaluation 
-
-- ARM API to list virtual machine extensions at resource group level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Properties.StorageProfile.osDisk.osType, properties.Type ,properties.Publisher
- <br />
-<!--
-- Example-2 ARM API to list service and its related property at resource group level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
 **Properties:** example-property
  <br />
 -->
@@ -217,23 +138,23 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 > **NotApplicable:** 
 > VM instance is part of ADB cluster.
 > 
-### Recommendation 
+### Recommendation
 
 - **Azure Portal** 
 
 	 Refer: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/endpoints-in-resource-manager, https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-create-nsg-arm-ps 
 <!--
-- **PowerShell** 
+- **PowerShell**
 
 	 ```powershell 
 	 $variable = 'apple' 
-	 ```  
+	 ```
 
-- **Enforcement Policy** 
+- **Enforcement Policy**
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 	 "/providers/Microsoft.Authorization/policyDefinitions/af6cd1bd-1635-48cb-bde7-5b15693900b9"
-	 
+
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
@@ -247,10 +168,10 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 **Properties:** networkSecurityGroup.id
- <br />
+<br />
 <br />
 
-___ 
+___
 
 ## Azure_VirtualMachine_NetSec_Justify_PublicIPs 
 
@@ -507,7 +428,7 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
 
 - **Azure Portal** 
 
-	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates . It takes 24 hours to reflect the latest status at ASC. 
+	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates. It takes 24 hours to reflect the latest status at ASC. 
 
 - **PowerShell** 
 
@@ -584,7 +505,7 @@ properties.displayName, properties.status, properties.additionalData<br>
  **Assessments:**  
   d57a4221-a804-52ca-3dea-768284f06bb7 - Disk encryption should be applied on virtual machines.<br>
   35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application controls for defining safe applications should be enabled on your machines.<br>
-  ffff0522-1e88-47fc-8382-2a80ba848f5d  - A vulnerability assessmentsolution should be enabled on your virtual machines.
+  ffff0522-1e88-47fc-8382-2a80ba848f5d - A vulnerability assessment solution should be enabled on your virtual machines.
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
@@ -627,10 +548,10 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 
 > **Passed:** 
 > 1. All required diagnostics extension(s) are configured.
->2. No mandatory diagnostics extension(s) have been specified for the Operating System.
+> 2. No mandatory diagnostics extension(s) have been specified for the Operating System.
 > 
 > **Failed:** 
->  One or more diagnostics extension(s) are not configured on the Virtual Machine.
+> One or more diagnostics extension(s) are not configured on the Virtual Machine.
 <!--
 > **Verify:** 
 > Verify condition
@@ -1255,7 +1176,7 @@ ___
 Just-In-Time network access control must be applied on virtual machines 
 
 ### Rationale 
-For new deployments, require Just-In-Time network access control on virtual machines.(Effect type "Deny") *For existing VMs, force the deployment of require Just-In-Time network access on virtual machines. (Effect type "DeployIfNotExists") 
+For new deployments, require Just-In-Time network access control on virtual machines. (Effect type "Deny") *For existing VMs, force the deployment of require Just-In-Time network access on virtual machines. (Effect type "DeployIfNotExists") 
 
 ### Control Settings 
 ```json 
@@ -1290,7 +1211,7 @@ For new deployments, require Just-In-Time network access control on virtual mach
 
 - **Azure Portal** 
 
-	 Go To Security Center -> Just in time VM access -> Go To Not Configured -> Select your VM -> Click on Enable JIT on 1 VMs 
+	 Go to Security Center -> Just in time VM access -> Go to Not Configured -> Select your VM -> Click on Enable JIT on 1 VMs 
 
 <!-- - **PowerShell** 
 

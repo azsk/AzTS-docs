@@ -147,7 +147,7 @@ By default, each API Management instance comes with two sample products: Starter
 
 - **Azure Portal** 
 
-	 To delete sample products go to Azure Portal --> your API management instance --> Products --> Select 'Starter'/'Unlimited' Product --> Delete. 
+	 To delete sample products, go to Azure Portal --> your API management instance --> Products --> Select 'Starter'/'Unlimited' Product --> Delete. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -304,7 +304,7 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 
 - **Azure Portal** 
 
-	 To enable user authorization for an API go to Azure Portal --> your API management instance --> APIs --> Select API --> Settings -> User Authorization -> Enable 'OAuth 2.0' or 'OpenID connect'. Please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-oauth2. 
+	 To enable user authorization for an API, go to Azure Portal --> your API management instance --> APIs --> Select API --> Settings -> User Authorization -> Enable 'OAuth 2.0' or 'OpenID connect'. Please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-oauth2. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -419,7 +419,7 @@ ___
 'Requires Subscription' option must be turned on for all products in an API Management instance 
 
 ### Rationale 
-When publishing APIs through Azure API Management (APIM), the easiest and most common way to secure access to the APIs is by using Subscription Keys. To obtain a Subscription Key for accessing APIs, a Subscription is required. This ensures that a Client applications that need to consume the published APIs must subscribe before making calls to those APIs. 
+When publishing APIs through Azure API Management (APIM), the easiest and most common way to secure access to the APIs is by using Subscription Keys. To obtain a Subscription Key for accessing APIs, a Subscription is required. This ensures that client applications that need to consume the published APIs must subscribe before making calls to those APIs. 
 
 ### Control Settings 
 ```json 

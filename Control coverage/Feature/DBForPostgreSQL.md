@@ -251,7 +251,7 @@ PostgreSQL sever logging parameters enable log collection of important system ev
 
 - **Azure Portal** 
 
-	 To configure logging for your server, go to Server Parameters --> Set following log parameter: a) 'log_connections': 'ON' b) 'log_disconnections': 'ON' . Refer: https://docs.microsoft.com/en-us/azure/postgresql/concepts-server-logs#configure-logging 
+	 To configure logging for your server, go to Server Parameters --> Set following log parameter: a) 'log_connections': 'ON' b) 'log_disconnections': 'ON'. Refer: https://docs.microsoft.com/en-us/azure/postgresql/concepts-server-logs#configure-logging 
 
 <!---- **PowerShell** 
 
