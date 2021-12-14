@@ -3,7 +3,7 @@
 Using Org policy customization, we can change some ASC assessment setting for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 <br/>
 <br/>A typical setting you may want to modify is the name of the ASC assessment that is being scanned for a control according to your org's needs. 
-<br/>Let us change the ASC assessment value to "2acd365d-e8b5-4094-bce4-244b7c51d67c" from "00c6d40b-e990-6acf-d4f3-471e747a27c4" for the "Azure_Subscription_AuthZ_Remove_Management_Certs" existing control. 
+<br/>Let us change the ASC assessment value from "2acd365d-e8b5-4094-bce4-244b7c51d67c" to "00c6d40b-e990-6acf-d4f3-471e747a27c4" for the "Azure_Subscription_AuthZ_Remove_Management_Certs" existing control. 
 This setting resides in a file called FeatureName.json. 
 <br/>Because the first-time org policy setup does not customize anything from this, we will need to follow the following steps to modify the ASC assessments settings:
 
@@ -31,9 +31,9 @@ This setting resides in a file called FeatureName.json.
         // For this scenario, modify the ASC Assessment name under Assessment properties as such:
         "AssessmentProperties": {
                 "AssessmentNames": [
-                    "2acd365d-e8b5-4094-bce4-244b7c51d67c"
+                    "00c6d40b-e990-6acf-d4f3-471e747a27c4"
                 ]
-        } //
+        }
         }
     ]
     ```
@@ -55,9 +55,11 @@ This setting resides in a file called FeatureName.json.
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
    <br><b>Congratulations! Modifying control metadata for controls based on ASC Assessment Scenario is complete with this step.</b>
 
-5. Verify the changes in your local system:
+<b>Next Steps:</b>
+
+1. Verify the changes in your local system:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
  <br/> Few simple queries are provided in the above link related to the inventory and Control Scan summary for reference.
 
-6. Deploy the changes:
+2. Deploy the changes:
 You can deploy the project with your changes in your current AzTS solution now. Please follow the steps mentioned [here](./DeployInAzTS.md).

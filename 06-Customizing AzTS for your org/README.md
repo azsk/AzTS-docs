@@ -17,7 +17,7 @@
  
 ### [Modifying and customizing org policy](README.md#modifying-and-customizing-org-policy-1)
  <!-- - [Know more about controls](Readme.md#know-more-about-controls) -->
- - [**AzTS UI CMET Tool**](README.md#1-azts-ui-cmet-tool)
+ - [**Using AzTS UI CMET Tool**](README.md#1-using-azts-ui-cmet)
      - [Getting Started](README.md#getting-started)
      - [Basic scenarios for org policy customization:](README.md#basic-scenarios-for-org-policy-customization)
         - [Update default metadata (display name, recommendation, etc.) for existing controls](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)
@@ -29,7 +29,7 @@
         <!-- - [Update/extend existing control by custom ASC Assessment](./AzTS_CMET_Tool_Scenarios/CustomizeASCControls.md)  -->
         - [Update/extend existing control by custom Azure policy](./AzTS_CMET_Tool_Scenarios/CustomizeCustomPolicyControls.md)
      
- - [**Extend AzTS Solution**](README.md#2-extend-azts-solution)
+ - [**Extending AzTS Solution**](README.md#2-extending-azts-solution)
      - [Getting Started](README.md#getting-started-1)
      - [Basic scenarios for org policy customization:](README.md#basic-scenarios-for-org-policy-customization-1)
         - [Update default metadata (display name, recommendation, etc.) for existing controls](./Extend_AzTS_Soln_Scenarios/UpdateDefaultMetadata.md)<br>
@@ -83,10 +83,20 @@ Basic org policy setup is done by default during AzTS installation. Setup levera
 
 # Modifying and customizing org policy
 
-There are mainly two approaches to achieve org policy customization. Click on respective link based on scenario. </br>
+<!-- 
+TODO: Add more friendly explanation
+Click on respective link under each of the two approaches to based on scenario. </br> -->
 
-## 1. AzTS UI CMET Tool:
+There are mainly two approaches to achieve org policy customization.
+
+1. [Using AzTS UI CMET Tool](README.md#1-using-azts-ui-cmet)
+2. [Extending AzTS Solution](README.md#2-extending-azts-solution)
+
+<br>
+
+## 1. Using AzTS UI CMET:
 AzTS UI Control Metadata Editor Tool (CMET) provides easy way to accomplish org policy customization. AzTS admin can use this feature in UI and perform control updates or addition of new controls with typical scenarios listed below.
+<!-- TODO: Add more details here. Mentions when to take this approach over Extending AzTS solution -->
 
 ### **Getting Started**
 
@@ -113,8 +123,16 @@ The typical workflow for all policy changes and customizatio will remain same an
 [2. Add new control based on custom Azure Policy evaluation](./AzTS_CMET_Tool_Scenarios/AddControlForPolicy.md)<br>
 [3. Update/extend existing control by custom Azure policy](./AzTS_CMET_Tool_Scenarios/CustomizeCustomPolicyControls.md)<br>
 
-## 2. Extend AzTS Solution:
-AzTS Solution is published as NuGet package. This NuGet package comes with extensibility feature and this enables powerful capability for organization to customize the control behaviour with custom logic. 
+## 2. Extending AzTS Solution:
+In this option to customize org policy, we use the Extended AzTS solution which refers to the existing AzTS scanner function app which is published as NuGet package. This NuGet package comes with extensibility feature and this enables powerful capability for organization to customize the control behaviour with custom logic. You can customize the behavior of the security scans for your environment in various contexts such as: 
+1. enable/disable some controls, 
+2. change control settings to better match specific security policies within your org, 
+3. change various messages,
+4. modify existing control logic,
+5. add additional filter criteria for certain regulatory requirements that teams in your org can leverage,
+6. changing the underlying code logic
+7. add new controls to existing service, etc.
+<!-- TODO: Add more explanation here -->
 
 ### **Getting Started**
 
@@ -125,9 +143,10 @@ The typical workflow to achieve any listed scenarios will remain same and will i
 
    > You can read more about the AzTS Security Controls and their implementation [here](./Prerequisite.md).
 
-4. Build and run the solution in your local system and verify your changes.
+4. Build and run the solution in your local system and verify your custom code takes effect.
+<br>
 
-You will be able to achieve all scenarios listed using AzTS UI along with the following additional scenarios:
+<!-- You will be able to achieve all scenarios listed using AzTS UI along with the following additional scenarios: -->
 
 ### <b>Basic scenarios for org policy customization</b>
 

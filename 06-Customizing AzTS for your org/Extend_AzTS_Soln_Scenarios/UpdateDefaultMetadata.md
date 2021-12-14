@@ -20,31 +20,33 @@ This setting resides in a file called FeatureName.json.
         "FeatureName": "SubscriptionCore"
     }
     ```
-3.  Add the control json with all parameters given in template. The following meta-data are required for a control to be scanned:
+3.  Add the control json with all parameters given in template. You can see the existing control metadata of the feature control you want to update from [here](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).<br>
+The following meta-data are required for a control to be scanned:
     ``` JSON
     "Controls": [
         {
-        // The following parameters can be taken from the FeatureName.json directly as there will no change in them for the scope of this scenario. 
-        "ControlID": "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count",
-        "Id": "SubscriptionCore160",
+        // The following parameters can be taken from the FeatureName.json directly as there will no change in them for the scope of this scenario.
+        
+         // Note that below we update the Control ID value to the one required according to the org's policy.
+        "ControlID": "Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count_Extended",
+        "Id": "SubscriptionCore160", // This is the unique primary key so unless we are not adding a new control, this should remain same when modifying any control.
         "Automated": "Yes",
-        // Note that below we update the Display Name value to the one required according to the org's policy.
         "DisplayName": "Limit access per subscription to 2 or less classic administrators",
-        "MethodName": "CheckCoAdminCount", //  Represents the Control method that is responsible to evaluate this control. It should be present inside the feature SVT associated with this control.
+        "MethodName": "CheckCoAdminCount", //  Represents the Control method that is responsible to evaluate this control. It should be present inside the feature JSON associated with this control.
         "Enabled": true,
         "ControlSettings": {
-        "NoOfClassicAdminsLimit": 1
+        "NoOfClassicAdminsLimit": 2
       } // Settings specific to the control to be provided for the scan
         }
     ]
     ```
 
-    1. For **Id** above: 
+    1. For `Id` above: 
         * Since we are modifying control settings for an existing control here, use the same ID as used previously from the FeatureName.json . 
-    2. For **ControlID** above: Initial part of the control ID is pre-populated based on the service/feature and security domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX). Please don't use spaces between words instead use underscore '_' to separate words in control ID. To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
-    3. Keep **Enabled** switch to 'Yes' to scan a control.
-    4. **DisplayName** is the user friendly name for the control.
-    5. For **MethodName** above: Use the same method name for this scenario as no change in the control logic is required.
+    2. For `ControlID` above: Initial part of the control ID is pre-populated based on the service/feature and security domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX). Please don't use spaces between words instead use underscore '_' to separate words in control ID. To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
+    3. Keep `Enabled` switch to 'Yes' to scan a control.
+    4. `DisplayName` is the user friendly name for the control.
+    5. For `MethodName` above: Use the same method name for this scenario as no change in the control logic is required.
 
     > *Note*:  You can provide additional details/optional settings for the control as listed below.
 
@@ -65,16 +67,17 @@ This setting resides in a file called FeatureName.json.
 4. Build and Run
    - Click on the AzTS_Extended as shown below to run the project: <br />
       ![Build Step 1](../../Images/06_OrgPolicy_Setup_BuildStep.png)<br/>
-<!-- TODO Add the SubscriptionCore file EXT added log -->
    - Output looks like below:<br/>
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
    
-   <br><b>Congratulations! Updating default metadata Scenario is complete with this step.</b>
+   <br><b>Congratulations! Updating default metadata scenario is complete with this step.</b>
 
-5. Verify the changes in your local system:
+**Next Steps:**
+
+1. Verify the changes in your local system:
  You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
  <br/> Few simple queries are provided in the above link related to the inventory and Control Scan summary for reference.
 
-6. Deploy the changes:
+2. Deploy the changes:
 You can deploy the project with your changes in your current AzTS solution now. Please follow the steps mentioned [here](./DeployInAzTS.md).
