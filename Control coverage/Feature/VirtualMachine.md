@@ -975,7 +975,7 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
-**Properties:** publisher, type
+**Properties:** [*].properties.type, [*].properties.publisher
  <br />
 
 <br />
