@@ -1,7 +1,7 @@
 # VirtualMachine
 
 **Resource Type:** Microsoft.Compute/virtualMachines
-<!-- TOC -->
+<!-- TOC depthto:2 depthfrom:2 -->
 
 - [Azure_VirtualMachine_SI_Enable_Antimalware](#azure_virtualmachine_si_enable_antimalware)
 - [Azure_VirtualMachine_Config_Enable_NSG](#azure_virtualmachine_config_enable_nsg)
@@ -664,7 +664,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 - ARM API to list Virtual Machine Extensions at resource level:
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
-**Properties:** properties.type, properties.publisher
+**Properties:** [*].properties.type, [*].properties.publisher
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
@@ -751,8 +751,8 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 **Properties:** identity.type
  <br />
 
-- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01service/{serviceName}/tenant/access? <br />
-**Properties:** properties.type, properties.publisher
+- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
+**Properties:** [*].properties.type, [*].properties.publisher
  <br />
 
 <br />
@@ -827,7 +827,7 @@ One or more extensions may be required for maintaining data plane security hygie
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
-**Properties:** publisher, type
+**Properties:** [*].properties.type, [*].properties.publisher
  <br />
 
 <br />
@@ -892,19 +892,19 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
-**Properties:** properties.networkSecurityGroup.Id, properties.ipConfigurations
+**Properties:** [*].properties.networkSecurityGroup.Id, [*].properties.ipConfigurations
 <br />
 
 - ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
-**Properties:** properties.subnets
+**Properties:** [*].properties.subnets
 <br />
 
 - ARM API to list open ports in the NSG at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
-**Properties:** properties.destinationPortRanges
+**Properties:** [*].properties.securityRules.destinationPortRanges
 <br />
 
-- Assessments: 805651bc-6ecd-4c73-9b55-97a19d0582d0 <br />
-Management ports of virtual machines should be protected with just-in-time network access control
+- **Assessments:** 
+805651bc-6ecd-4c73-9b55-97a19d0582d0 - Management ports of virtual machines should be protected with just-in-time network access control
 <br />
 
 <br />
@@ -1037,11 +1037,11 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, properties.resourceDetails.id, properties.displayName, properties.status, properties.additionalData
+**Properties:** [*].id, [*].name, [*].properties.resourceDetails.id, [*].properties.displayName, [*].properties.status, [*].properties.additionalData
  <br />
 
-- Assessments: f9f0eed0-f143-47bf-b856-671ea2eeed62 <br />
-Adaptive network hardening recommendations should be applied on internet facing virtual machines. <br />
+- **Assessments:** 
+f9f0eed0-f143-47bf-b856-671ea2eeed62 - Adaptive network hardening recommendations should be applied on internet facing virtual machines. <br />
  <br />
 
 <br />
@@ -1098,11 +1098,11 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, properties.resourceDetails.id, properties.displayName, properties.status, properties.additionalData
+**Properties:** [*].id, [*].name, [*].properties.resourceDetails.id, [*].properties.displayName, [*].properties.status, [*].properties.additionalData
  <br />
 
-- Assessments: 181ac480-f7c4-544b-9865-11b8ffe87f47 <br />
-Machines should be configured securely.
+- **Assessments:**
+181ac480-f7c4-544b-9865-11b8ffe87f47 - Machines should be configured securely.
  <br />
 
 <br />
@@ -1159,11 +1159,11 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, properties.resourceDetails.id, properties.displayName, properties.status, properties.additionalData
+**Properties:** [*].id, [*].name, [*].properties.resourceDetails.id, [*].properties.displayName, [*].properties.status, [*].properties.additionalData
  <br />
 
-- Assessments: 0677209d-e675-2c6f-e91a-54cef2878663 <br />
-Container hosts should be configured securely
+- **Assessments:**
+0677209d-e675-2c6f-e91a-54cef2878663 - Container hosts should be configured securely
  <br />
 
 <br />
@@ -1228,11 +1228,11 @@ For new deployments, require Just-In-Time network access control on virtual mach
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, properties.resourceDetails.id, properties.displayName, properties.status, properties.additionalData
+**Properties:** [*].id, [*].name, [*].properties.resourceDetails.id, [*].properties.displayName, [*].properties.status, [*].properties.additionalData
  <br />
 
-- Assessments: 805651bc-6ecd-4c73-9b55-97a19d0582d0 <br />
-Management ports of virtual machines should be protected with just-in-time network access control.
+- **Assessments:**
+ 805651bc-6ecd-4c73-9b55-97a19d0582d0 - Management ports of virtual machines should be protected with just-in-time network access control.
  <br />
 
 <br />
@@ -1294,11 +1294,11 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, properties.resourceDetails.id, properties.displayName, properties.status, properties.additionalData
+**Properties:** [*].id, [*].name, [*].properties.resourceDetails.id, [*].properties.displayName, [*].properties.status, [*].properties.additionalData
  <br />
 
-- Assessments: 71992a2a-d168-42e0-b10e-6b45fa2ecddb <br />
-Management ports of virtual machines should be protected with just-in-time network access control.
+- **Assessments:** 
+71992a2a-d168-42e0-b10e-6b45fa2ecddb - Management ports of virtual machines should be protected with just-in-time network access control.
  <br />
 
 <br />
@@ -1331,7 +1331,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Control Spec 
 
 > **Passed:** 
-> NSG is configured and no inbound port is open or NSG is configured and only allowed.
+> NSG is configured and no inbound port is open or NSG is configured and only allowed ports are open..
 > 
 > **Failed:** 
 > No NSG is configured on VM or NSG is configured but other than allowed ports are open.
@@ -1360,20 +1360,20 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machines at subscription level: /subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
-**Properties:** properties.networkProfile.networkInterfaces[*].id
+**Properties:** [*].properties.networkProfile.networkInterfaces[*].id
  <br />
 
-- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers /Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
-**Properties:** networkSecurityGroup.id
+- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
+**Properties:** [*].properties.networkSecurityGroup.id
  <br />
 
-- ARM API to list Virtual Networks (and associated subnets) at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks
-?api-version=2019-11-01 <br />
-**Properties:** properties.subnets[*].networkSecurityGroup.id
+- ARM API to list Virtual Networks (and associated subnets) at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
+**Properties:** [*].properties.subnets[*].networkSecurityGroup.id
  <br />
 
 - ARM API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
-**Properties:** destinationPortRange, destinationPortRanges
+**Properties:** properties.destinationPortRange, properties.destinationPortRanges	
+
  <br />
 
 <br />
@@ -1438,8 +1438,8 @@ Not Applicable
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list virtual machine extensions at resource group level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Properties.StorageProfile.osDisk.osType
+- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** properties.storageProfile.osDisk.osType
 <br />
 
 ___ 
