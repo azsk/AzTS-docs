@@ -17,7 +17,7 @@
  
 ### [Modifying and customizing org policy](README.md#modifying-and-customizing-org-policy-1)
  <!-- - [Know more about controls](Readme.md#know-more-about-controls) -->
- - [**Using AzTS UI CMET Tool**](README.md#1-using-azts-ui-cmet)
+ - [**Using AzTS UI CMET**](README.md#1-using-azts-ui-cmet)
      - [Getting Started](README.md#getting-started)
      - [Basic scenarios for org policy customization:](README.md#basic-scenarios-for-org-policy-customization)
         - [Update default metadata (display name, recommendation, etc.) for existing controls](./AzTS_CMET_Tool_Scenarios/ChangeControlSetting.md)
@@ -45,7 +45,7 @@
 
 # Overview
 
-## When and why should I setup org policy
+## When and why should I setup org policy?
 
 When you run any scan command from AzTS (using AzTS-UI or scheduled scan), it relies on JSON-based policy files to determine various parameters that effect the behavior of the scan it is about to run. These policy files are downloaded 'on the fly' from a policy server. When you run the public version of the scanner, the offline policy files present in the AzTS solution/package are accessed. Thus, whenever you run a scan from a vanilla installation, AzTS accesses the offline file present in the package to get the policy configuration and runs the scan using it.
 
@@ -89,7 +89,7 @@ Click on respective link under each of the two approaches to based on scenario. 
 
 There are mainly two approaches to achieve org policy customization.
 
-1. [Using AzTS UI CMET Tool](README.md#1-using-azts-ui-cmet)
+1. [Using AzTS UI CMET](README.md#1-using-azts-ui-cmet)
 2. [Extending AzTS Solution](README.md#2-extending-azts-solution)
 
 <br>
@@ -150,7 +150,7 @@ The typical workflow to achieve any listed scenarios will remain same and will i
 
 ### <b>Basic scenarios for org policy customization</b>
 
-In this section let us look at typical scenarios in which you would want to customize the org policy and ways to accomplish them.
+Click on the below links to look at typical scenarios in which you would want to customize the org policy and ways to accomplish them:
 
 [1. Update default metadata (display name, recommendation, etc.) for existing controls](./Extend_AzTS_Soln_Scenarios/UpdateDefaultMetadata.md)<br>
 [2. Changing control setting for existing controls](./Extend_AzTS_Soln_Scenarios/ChangeControlSetting.md)<br>
