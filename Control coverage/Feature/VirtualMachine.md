@@ -21,7 +21,6 @@
 - [Azure_VirtualMachine_Just_In_Time_Network_Access_Control](#azure_virtualmachine_just_in_time_network_access_control)
 - [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
-- [Azure_VirtualMachine_SI_Enable_Sense_Agent](#azure_virtualmachine_si_enable_sense_agent)
 
 <!-- /TOC -->
 <br/>
@@ -1380,7 +1379,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 ___ 
 
-## Azure_VirtualMachine_SI_Enable_Sense_Agent 
+<!-- ## Azure_VirtualMachine_SI_Enable_Sense_Agent 
 
 ### DisplayName 
 Ensure Sense Agent is installed and healthy 
@@ -1423,7 +1422,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Recommendation 
 
 Not Applicable
-<!-- 
+
 - **PowerShell** 
 
 	 ```powershell 
@@ -1434,13 +1433,13 @@ Not Applicable
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  
 
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** properties.storageProfile.osDisk.osType
-<br />
-
+<br /> -->
+<!-- 
 ___ 
-
+ -->
