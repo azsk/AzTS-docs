@@ -351,6 +351,10 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
         {
             "RemoteNetworkIdPrefix": "",
             "ResourceGroup": "ERNetwork-DB"
+        },
+	{
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-EML"
         }
     ]
 }
