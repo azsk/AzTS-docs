@@ -90,7 +90,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Properties.StorageProfile.osDisk.osType, properties.Type, properties.Publisher
+**Properties:** [\*].properties.storageProfile.osDisk.osType, [\*].properties.Type, [\*].properties.Publisher
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
@@ -296,14 +296,13 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list security assessments at
-subscription level:
+- ARM API to list security assessments at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
- **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData <br />
+ **Properties:** [\*].id, [\*].name, [\*].resourceDetails.Id, [\*].displayName, [\*].status.code, [\*].status, [\*].additionalData <br />
 
 - ARM API to list Virtual Machines at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01<br>
-**Properties:** properties.storageProfile.osDisk.caching, properties.storageProfile.diffDiskSettings.option
+**Properties:** [\*].properties.storageProfile.osDisk.caching, [\*].properties.storageProfile.diffDiskSettings.option
  <br />
 <br />
 
@@ -372,11 +371,9 @@ Azure Security Center raises alerts (which are typically indicative of resources
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
-id, name, properties.resourceDetails.id,
-properties.displayName, properties.status, properties.additionalData<br />
+[\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
  **Assessments:** 
- 181ac480-f7c4-544b-9865-11b8ffe87f47 - Vulnerabilities in security
-configuration on your machines should be remediated.
+ 181ac480-f7c4-544b-9865-11b8ffe87f47 - Vulnerabilities in security configuration on your machines should be remediated.
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
@@ -499,8 +496,7 @@ Azure Security Center provide various security recommendations for resources tha
 
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
- **Properties:** id, name, properties.resourceDetails.id,
-properties.displayName, properties.status, properties.additionalData<br>
+ **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br>
  **Assessments:**  
   d57a4221-a804-52ca-3dea-768284f06bb7 - Disk encryption should be applied on virtual machines.<br>
   35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application controls for defining safe applications should be enabled on your machines.<br>
@@ -1330,7 +1326,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Control Spec 
 
 > **Passed:** 
-> NSG is configured and no inbound port is open or NSG is configured and only allowed ports are open..
+> NSG is configured and no inbound port is open or NSG is configured and only allowed ports are open.
 > 
 > **Failed:** 
 > No NSG is configured on VM or NSG is configured but other than allowed ports are open.
@@ -1379,67 +1375,3 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 ___ 
 
-<!-- ## Azure_VirtualMachine_SI_Enable_Sense_Agent 
-
-### DisplayName 
-Ensure Sense Agent is installed and healthy 
-
-### Rationale 
-Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising a VM/container with such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
-
-### Control Settings 
-```json 
-{
-    "ApplicableOsTypes": [
-        "Windows"
-    ],
-    "ExclusionTags": [
-        {
-            "Desciption": "VM is part of ADB cluster.",
-            "TagName": "vendor",
-            "TagValue": "Databricks"
-        },
-        {
-            "Desciption": "VM is part of AKS cluster.",
-            "TagName": "orchestrator",
-            "TagValue": "kubernetes"
-        }
-    ]
-}
- ```  
-
-### Control Spec 
-
-> **Verify:** 
-> Virtual Machine's Operating System (OS) type is considered for evaluation.
-> 
-> **Failed:** 
-> Virtual Machine's Operating System (OS) type cannot be determined.
-> 
-> **NotApplicable:** 
-> Virtual Machine's Operating System (OS) type is excluded from the evaluation.
-> 
-### Recommendation 
-
-Not Applicable
-
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  
-
-### Azure Policy or ARM API used for evaluation 
-
-- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
-**Properties:** properties.storageProfile.osDisk.osType
-<br /> -->
-<!-- 
-___ 
- -->
