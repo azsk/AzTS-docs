@@ -747,7 +747,7 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
-**Properties:** identity.type
+**Properties:** [*].identity.type
  <br />
 
 - ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
