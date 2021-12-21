@@ -1371,7 +1371,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
  <br />
 
 - ARM API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
-**Properties:** properties.destinationPortRange, properties.destinationPortRanges	
+**Properties:** [\*].properties.securityRules.destinationPortRange, [\*].properties.securityRules.destinationPortRanges
 
  <br />
 
