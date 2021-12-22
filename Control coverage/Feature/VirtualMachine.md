@@ -1,7 +1,7 @@
 # VirtualMachine
 
 **Resource Type:** Microsoft.Compute/virtualMachines
-<!-- TOC -->
+<!-- TOC depthto:2 depthfrom:2 -->
 
 - [Azure_VirtualMachine_SI_Enable_Antimalware](#azure_virtualmachine_si_enable_antimalware)
 - [Azure_VirtualMachine_Config_Enable_NSG](#azure_virtualmachine_config_enable_nsg)
@@ -11,6 +11,16 @@
 - [Azure_VirtualMachine_SI_ASC_Recommendations](#azure_virtualmachine_si_asc_recommendations)
 - [Azure_VirtualMachine_Audit_Enable_Diagnostics](#azure_virtualmachine_audit_enable_diagnostics)
 - [Azure_VirtualMachine_SI_Enable_Vuln_Solution](#azure_virtualmachine_si_enable_vuln_solution)
+- [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](#azure_virtualmachine_si_deploy_guestconfig_extension)
+- [Azure_VirtualMachine_SI_Enable_Monitoring_Agent](#azure_virtualmachine_si_enable_monitoring_agent)
+- [Azure_VirtualMachine_NetSec_Dont_Open_Restricted_Ports](#azure_virtualmachine_netsec_dont_open_restricted_ports)
+- [Azure_VirtualMachine_SI_Deploy_Data_Collection_Extension](#azure_virtualmachine_si_deploy_data_collection_extension)
+- [Azure_VirtualMachine_NetSec_Apply_ASC_Network_Recommendations](#azure_virtualmachine_netsec_apply_asc_network_recommendations)
+- [Azure_VirtualMachine_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachine_si_remediate_security_vulnerabilities)
+- [Azure_VirtualMachine_SI_Remediate_Container_Security_Vulnerabilities](#azure_virtualmachine_si_remediate_container_security_vulnerabilities)
+- [Azure_VirtualMachine_Just_In_Time_Network_Access_Control](#azure_virtualmachine_just_in_time_network_access_control)
+- [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
+- [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
 
 <!-- /TOC -->
 <br/>
@@ -80,8 +90,13 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** Properties.StorageProfile.osDisk.osType, properties.Type, properties.Publisher
+**Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
+
+- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** [\*].properties.storageProfile.osDisk.osType
+ <br />
+
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
@@ -220,7 +235,7 @@ No Public IP address is associated with VM.
 - ARM API to list Virtual Machines at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** 
-properties.networkProfile.networkInterfaces[*].id<br />
+properties.networkProfile.networkInterfaces[\*].id<br />
 
 - ARM API to list Network Interfaces at
 subscription level:
@@ -286,14 +301,13 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list security assessments at
-subscription level:
+- ARM API to list security assessments at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
- **Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData <br />
+ **Properties:** [\*].id, [\*].name, [\*].resourceDetails.Id, [\*].displayName, [\*].status.code, [\*].status, [\*].additionalData <br />
 
 - ARM API to list Virtual Machines at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01<br>
-**Properties:** properties.storageProfile.osDisk.caching, properties.storageProfile.diffDiskSettings.option
+**Properties:** [\*].properties.storageProfile.osDisk.caching, [\*].properties.storageProfile.diffDiskSettings.option
  <br />
 <br />
 
@@ -362,11 +376,9 @@ Azure Security Center raises alerts (which are typically indicative of resources
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
-id, name, properties.resourceDetails.id,
-properties.displayName, properties.status, properties.additionalData<br />
+[\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
  **Assessments:** 
- 181ac480-f7c4-544b-9865-11b8ffe87f47 - Vulnerabilities in security
-configuration on your machines should be remediated.
+ 181ac480-f7c4-544b-9865-11b8ffe87f47 - Vulnerabilities in security configuration on your machines should be remediated.
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
@@ -489,8 +501,7 @@ Azure Security Center provide various security recommendations for resources tha
 
 - ARM API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
- **Properties:** id, name, properties.resourceDetails.id,
-properties.displayName, properties.status, properties.additionalData<br>
+ **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br>
  **Assessments:**  
   d57a4221-a804-52ca-3dea-768284f06bb7 - Disk encryption should be applied on virtual machines.<br>
   35f45c95-27cf-4e52-891f-8390d1de5828 - Adaptive application controls for defining safe applications should be enabled on your machines.<br>
@@ -651,10 +662,9 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Virtual Machine Extensions at
-resource level:
+- ARM API to list Virtual Machine Extensions at resource level:
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
-**Properties:** properties.type, properties.publisher
+**Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
@@ -665,7 +675,7 @@ resource level:
 
 
 ___
-<!--
+
 ## Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension 
 
 ### DisplayName 
@@ -705,24 +715,25 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Guest config extension is present, and System assigned MI is enabled for VM.
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> Guest config extension is not present in VM, or System assigned MI is disabled for VM.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VM is part of ADB cluster.
+> 
+> **Not Scanned:** 
+> VM OS type is null or empty.
 > 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 This control checks that the VM meets the following criteria: [a] Guest Configuration Extension is installed and provisioned successfully, [b] 'SystemAssigned' managed identity (MSI) is enabled for the VM. Both, the required Guest Configuration extension and a system-assigned MSI, will be automatically deployed and configured when the machine is in scope for an Azure Policy assignment that includes definitions in the Guest Configuration category. 
+	This control checks that the VM meets the following criteria: [a] Guest Configuration Extension is installed and provisioned successfully, [b] 'SystemAssigned' managed identity (MSI) is enabled for the VM. Both, the required Guest Configuration extension and a system-assigned MSI, will be automatically deployed and configured when the machine is in scope for an Azure Policy assignment that includes definitions in the Guest Configuration category. 
+    Refer: https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/guest-configuration
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -732,16 +743,16 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** [*].identity.type
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
+**Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
 <br />
@@ -784,16 +795,16 @@ One or more extensions may be required for maintaining data plane security hygie
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> All required extensions are present in VM.
 > 
 > **Failed:** 
-> Failed condition
+> One or more required extensions are missing in VM.
 > 
-> **Verify:** 
-> Verify condition
+> **Not Scanned:** 
+> VM OS type is null or empty.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VM is part of ADB cluster.
 > 
 ### Recommendation 
 
@@ -801,7 +812,7 @@ One or more extensions may be required for maintaining data plane security hygie
 
 	 Please refer: https://docs.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-install?context=/azure/virtual-machines/context/context 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -811,16 +822,12 @@ One or more extensions may be required for maintaining data plane security hygie
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
- <br />
-
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
+**Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
 <br />
@@ -853,16 +860,16 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> NSG is configured and no inbound port is open, or NSG is configured and no restricted ports are open.
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> No NSG is configured on VM, or NSG is configured but restricted ports are open.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VM instance is part of ADB cluster.
+> 
+> **Error:** 
+> RestrictedPorts list is not properly configured in control settings.
 > 
 ### Recommendation 
 
@@ -870,7 +877,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 	 Go to Azure Portal -> VM Settings -> Networking -> Inbound security rules -> Select security rule which allows management ports (e.g. RDP-3389, WINRM-5985, SSH-22, SMB-445) -> Click 'Deny' under Action -> Click Save. 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -880,17 +887,25 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
- <br />
+- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
+**Properties:** [\*].properties.networkSecurityGroup.Id, [\*].properties.ipConfigurations
+<br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
- <br />
+- ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
+**Properties:** [\*].properties.subnets
+<br />
+
+- ARM API to list open ports in the NSG at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
+**Properties:** [\*].properties.securityRules.destinationPortRanges
+<br />
+
+- **Assessments:** 
+805651bc-6ecd-4c73-9b55-97a19d0582d0 - Management ports of virtual machines should be protected with just-in-time network access control
+<br />
 
 <br />
 
@@ -928,23 +943,23 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Required vulnerability assessment solution is present in VM
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> Required vulnerability assessment solution is not present in VM
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VM instance is part of AKS or ADB cluster
+> 
+> **Not Scanned:** 
+> VM OS type is null or empty
 > 
 ### Recommendation 
 
 - **Azure Portal** 
 
 	 Please refer: https://docs.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-overview 
-
+<!-- 
 - **PowerShell** 
 
 	 ```powershell 
@@ -955,16 +970,12 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
- <br />
-
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
+**Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
 <br />
@@ -1000,16 +1011,10 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Azure Security Center (ASC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
-> 
-> **NotApplicable:** 
-> NotApplicable condition if applicable
+> Azure Security Center (ASC) Assessment status is "Unhealthy".
 > 
 ### Recommendation 
 
@@ -1017,7 +1022,7 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 
 	 Please refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-adaptive-network-hardening#what-is-adaptive-network-hardening 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -1027,16 +1032,16 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- **Assessments:** 
+f9f0eed0-f143-47bf-b856-671ea2eeed62 - Adaptive network hardening recommendations should be applied on internet facing virtual machines. <br />
  <br />
 
 <br />
@@ -1067,16 +1072,10 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Azure Security Center (ASC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
-> 
-> **NotApplicable:** 
-> NotApplicable condition if applicable
+> Azure Security Center (ASC) Assessment status is "Unhealthy".
 > 
 ### Recommendation 
 
@@ -1084,7 +1083,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 	 Go to security center -> Compute & apps -> VMs and Servers-> Click on VM name -> Click on VM Vulnerability remediation recommendation -> Click on Take Action -> Remediate list of vulnerabilities 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -1094,16 +1093,16 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? <br />
-**Properties:** example-property
+- **Assessments:**
+181ac480-f7c4-544b-9865-11b8ffe87f47 - Machines should be configured securely.
  <br />
 
 <br />
@@ -1134,23 +1133,17 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Azure Security Center (ASC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
-> 
-> **NotApplicable:** 
-> NotApplicable condition if applicable
+> Azure Security Center (ASC) Assessment status is "Unhealthy".
 > 
 ### Recommendation 
 
 - **Azure Portal** 
 
 	 Go to security center -> Compute & apps -> Containers -> Click on VM name -> Click on VM Container Vulnerability remediation recommendation -> Click on Take Action -> Remediate list of vulnerabilities 
-
+<!-- 
 - **PowerShell** 
 
 	 ```powershell 
@@ -1161,18 +1154,16 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- **Assessments:**
+0677209d-e675-2c6f-e91a-54cef2878663 - Container hosts should be configured securely
  <br />
 
 <br />
@@ -1208,16 +1199,13 @@ For new deployments, require Just-In-Time network access control on virtual mach
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Azure Security Center (ASC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
-> 
+> Azure Security Center (ASC) Assessment status is "Unhealthy".
+>  
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VM is part of either Azure Databricks cluster or Azure Kubernetes service cluster.
 > 
 ### Recommendation 
 
@@ -1225,7 +1213,7 @@ For new deployments, require Just-In-Time network access control on virtual mach
 
 	 Go to Security Center -> Just in time VM access -> Go to Not Configured -> Select your VM -> Click on Enable JIT on 1 VMs 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -1235,18 +1223,16 @@ For new deployments, require Just-In-Time network access control on virtual mach
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- **Assessments:**
+ 805651bc-6ecd-4c73-9b55-97a19d0582d0 - Management ports of virtual machines should be protected with just-in-time network access control.
  <br />
 
 <br />
@@ -1282,24 +1268,18 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> Azure Security Center (ASC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
-> 
-> **NotApplicable:** 
-> NotApplicable condition if applicable
-> 
+> Azure Security Center (ASC) Assessment status is "Unhealthy".
+>
 ### Recommendation 
 
 - **Azure Portal** 
 
 	 Go to security center -> Compute & apps -> VMs and Servers -> Click on VM name -> Click on VM Vulnerability remediation recommendation by Assessment solution -> Click on Take Action -> Remediate list of vulnerabilities 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -1309,18 +1289,16 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- **Assessments:** 
+71992a2a-d168-42e0-b10e-6b45fa2ecddb - Management ports of virtual machines should be protected with just-in-time network access control.
  <br />
 
 <br />
@@ -1353,16 +1331,13 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Control Spec 
 
 > **Passed:** 
-> Passed condition
+> NSG is configured and no inbound port is open or NSG is configured and only allowed ports are open.
 > 
 > **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
+> No NSG is configured on VM or NSG is configured but other than allowed ports are open.
 > 
 > **NotApplicable:** 
-> NotApplicable condition if applicable
+> VM instance is part of Azure Databricks cluster or connected to ERvNET.
 > 
 ### Recommendation 
 
@@ -1370,7 +1345,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 	 Go to Azure Portal -> VM Settings -> Networking -> Inbound security rules -> Select security rule which allows management ports (e.g. RDP-3389, WINRM-5985, SSH-22) -> Click 'Deny' under Action -> Click Save. 
 
-- **PowerShell** 
+<!-- - **PowerShell** 
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -1380,98 +1355,28 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
+- ARM API to list Virtual Machines at subscription level: /subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** [\*].properties.networkProfile.networkInterfaces[\*].id
  <br />
 
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
+- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
+**Properties:** [\*].properties.networkSecurityGroup.id
  <br />
-**Properties:** example-property
+
+- ARM API to list Virtual Networks (and associated subnets) at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
+**Properties:**  [\*].properties.subnets[\*].networkSecurityGroup.id
+ <br />
+
+- ARM API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
+**Properties:** [\*].properties.securityRules.destinationPortRange, [\*].properties.securityRules.destinationPortRanges
+
  <br />
 
 <br />
 
 ___ 
 
-## Azure_VirtualMachine_SI_Enable_Sense_Agent 
-
-### DisplayName 
-Ensure Sense Agent is installed and healthy 
-
-### Rationale 
-Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising a VM/container with such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
-
-### Control Settings 
-```json 
-{
-    "ApplicableOsTypes": [
-        "Windows"
-    ],
-    "ExclusionTags": [
-        {
-            "Desciption": "VM is part of ADB cluster.",
-            "TagName": "vendor",
-            "TagValue": "Databricks"
-        },
-        {
-            "Desciption": "VM is part of AKS cluster.",
-            "TagName": "orchestrator",
-            "TagValue": "kubernetes"
-        }
-    ]
-}
- ```  
-
-### Control Spec 
-
-> **Passed:** 
-> Passed condition
-> 
-> **Failed:** 
-> Failed condition
-> 
-> **Verify:** 
-> Verify condition
-> 
-> **NotApplicable:** 
-> NotApplicable condition if applicable
-> 
-### Recommendation 
-
-- **Azure Portal** 
-
-	 NA 
-
-- **PowerShell** 
-
-	 ```powershell 
-	 $variable = 'apple' 
-	 ```  
-
-- **Enforcement Policy** 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
-
-### Azure Policy or ARM API used for evaluation 
-
-- Example ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
- <br />
-
-- Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
- <br />
-**Properties:** example-property
- <br />
-
-<br />
-
-___ 
--->
