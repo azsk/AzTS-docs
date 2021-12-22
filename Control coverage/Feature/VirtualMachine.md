@@ -90,8 +90,13 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
-**Properties:** [\*].properties.storageProfile.osDisk.osType, [\*].properties.Type, [\*].properties.Publisher
+**Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
+
+- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** [\*].properties.storageProfile.osDisk.osType
+ <br />
+
 <!--
 - Example-2 ARM API to list service and its related property at specified level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceName/service/{serviceName}/tenant/access? 
  <br />
