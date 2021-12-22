@@ -16,7 +16,7 @@ ___
 
 ## Azure_Storage_AuthN_Dont_Allow_Anonymous
 
-### DisplayName
+### Display Name
 Ensure secure access to storage account containers
 
 ### Rationale
@@ -74,7 +74,7 @@ ___
 
 ## Azure_Storage_DP_Encrypt_In_Transit
 
-### DisplayName
+### Display Name
 Enable Secure transfer to storage accounts
 
 ### Rationale
@@ -142,7 +142,7 @@ ___
 
 ## Azure_Storage_NetSec_Restrict_Network_Access
 
-### DisplayName
+### Display Name
 Ensure that Firewall and Virtual Network access is granted to a minimal set of trusted origins
 
 ### Rationale
@@ -197,7 +197,7 @@ ___
 
 ## Azure_Storage_DP_Use_Secure_TLS_Version
 
-### DisplayName
+### Display Name
 Use approved version of TLS for Azure Storage
 
 ### Rationale

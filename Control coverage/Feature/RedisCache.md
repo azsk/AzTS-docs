@@ -14,7 +14,7 @@ ___
 
 ## Azure_RedisCache_BCDR_Use_RDB_Backup 
 
-### DisplayName 
+### Display Name 
 Redis Data Persistence should be enabled to back up Redis Cache data 
 
 ### Rationale 
@@ -69,7 +69,7 @@ ___
 
 ## Azure_RedisCache_DP_Use_SSL_Port 
 
-### DisplayName 
+### Display Name 
 Non-SSL port must not be enabled 
 
 ### Rationale 
@@ -116,7 +116,7 @@ ___
 <!--
 ## Azure_RedisCache_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use approved version of TLS for Azure RedisCache 
 
 ### Rationale 

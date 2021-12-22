@@ -13,7 +13,7 @@ ___
 
 ## Azure_NotificationHub_AuthZ_Dont_Use_Manage_Access_Permission 
 
-### DisplayName 
+### Display Name 
 Access policies on Notification Hub must not have Manage access permissions 
 
 ### Rationale 

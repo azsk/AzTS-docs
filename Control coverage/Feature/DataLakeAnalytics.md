@@ -13,7 +13,7 @@ ___
 
 ## Azure_DataLakeAnalytics_DP_Encrypt_At_Rest 
 
-### DisplayName 
+### Display Name 
 Data Lake Analytics sensitive data must be encrypted at rest 
 
 ### Rationale 

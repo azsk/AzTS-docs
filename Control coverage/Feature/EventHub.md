@@ -14,7 +14,7 @@ ___
 
 ## Azure_EventHub_AuthZ_Dont_Use_Policies_At_Event_Hub_Namespace 
 
-### DisplayName 
+### Display Name 
 Event Hub clients (event senders or receivers) must not use 'namespace' level access policies 
 
 ### Rationale 
@@ -75,7 +75,7 @@ ___
 
 ## Azure_EventHub_AuthZ_Use_Min_Permissions_Access_Policies 
 
-### DisplayName 
+### Display Name 
 Access policies must be defined with minimum required permissions to the Event Hub 
 
 ### Rationale 

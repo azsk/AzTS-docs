@@ -19,7 +19,7 @@ ___
 
 ## Azure_DBforPostgreSQL_AuthZ_Enable_SSL_Connection 
 
-### DisplayName 
+### Display Name 
 SSL connection must be enabled for Azure Database for PostgreSQL 
 
 ### Rationale 
@@ -66,7 +66,7 @@ ___
 
 ## Azure_DBforPostgreSQL_NetSec_Dont_Allow_Universal_IP_Range 
 
-### DisplayName 
+### Display Name 
 Do not use Any-to-Any IP range for Azure Database for PostgreSQL servers 
 
 ### Rationale 
@@ -122,7 +122,7 @@ ___
 
 ## Azure_DBforPostgreSQL_AuthZ_Firewall_Deny_AzureServices_Access 
 
-### DisplayName 
+### Display Name 
 Use the 'Allow access to Azure services' flag for DBforPostgreSQL only if required 
 
 ### Rationale 
@@ -177,7 +177,7 @@ ___
 
 ## Azure_DBforPostgreSQL_Audit_Enable_ATP 
 
-### DisplayName 
+### Display Name 
 Enable Threat detection for PostgreSQL 
 
 ### Rationale 
@@ -233,7 +233,7 @@ ___
 
 ## Azure_DBforPostgreSQL_Audit_Enable_Logging_On_Server 
 
-### DisplayName 
+### Display Name 
 Enable PostgreSQL server parameters log_connections and log_disconnections 
 
 ### Rationale 
@@ -280,7 +280,7 @@ ___
 
 ## Azure_DBforPostgreSQL_AuthN_Enable_Connection_Throttling 
 
-### DisplayName 
+### Display Name 
 Ensure server parameter 'connection_throttling' is set to 'ON' 
 
 ### Rationale 
@@ -327,7 +327,7 @@ ___
 
 ## Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use approved version of TLS for Azure Database for PostgreSQL 
 
 ### Rationale 

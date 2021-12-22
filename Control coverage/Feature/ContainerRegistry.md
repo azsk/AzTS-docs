@@ -15,7 +15,7 @@ ___
 
 ## Azure_ContainerRegistry_AuthZ_Disable_Admin_Account 
 
-### DisplayName 
+### Display Name 
 The Admin account in Container Registry should be disabled 
 
 ### Rationale 
@@ -64,7 +64,7 @@ ___
 
 ## Azure_ContainerRegistry_DP_Enable_Content_Trust 
 
-### DisplayName 
+### Display Name 
 Content trust must be enabled for the Container Registry 
 
 ### Rationale 
@@ -111,7 +111,7 @@ ___
 
 ## Azure_ContainerRegistry_Config_Enable_Security_Scanning 
 
-### DisplayName 
+### Display Name 
 Security scanner identity must be granted access to Container Registry for image scans
 
 ### Rationale 

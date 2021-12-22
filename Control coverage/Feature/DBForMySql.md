@@ -18,7 +18,7 @@ ___
 
 ## Azure_DBforMySQL_AuthZ_Firewall_Deny_AzureServices_Access 
 
-### DisplayName 
+### Display Name 
 Use the 'Allow access to Azure services' flag for DBForMySQL only if required 
 
 ### Rationale 
@@ -73,7 +73,7 @@ ___
 
 ## Azure_DBforMySQL_NetSec_Dont_Allow_Universal_IP_Range 
 
-### DisplayName 
+### Display Name 
 Do not use Any-to-Any IP range for Azure Database for MySQL 
 
 ### Rationale 
@@ -129,7 +129,7 @@ ___
 
 ## Azure_DBforMySQL_Authz_Enable_SSL_Connection 
 
-### DisplayName 
+### Display Name 
 SSL connection must be enabled for Azure Database for MySQL 
 
 ### Rationale 
@@ -176,7 +176,7 @@ ___
 
 ## Azure_DBforMySQL_Audit_Enable_ATP 
 
-### DisplayName 
+### Display Name 
 Enable Threat detection for MySQL database 
 
 ### Rationale 
@@ -232,7 +232,7 @@ ___
 
 ## Azure_DBforMySQL_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use approved version of TLS for Azure Database for MySQL 
 
 ### Rationale 
@@ -289,7 +289,7 @@ ___
 
 ## Azure_DBforMySQL_Audit_Enable_Diagnostics_Log 
 
-### DisplayName 
+### Display Name 
 Diagnostics logs must be enabled for Azure Database for MySQL 
 
 ### Rationale 

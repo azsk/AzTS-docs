@@ -13,7 +13,7 @@ ___
 
 ## Azure_SQLManagedInstance_Audit_Enable_Vuln_Assessment 
 
-### DisplayName 
+### Display Name 
 Vulnerability assessment must be enabled on your SQL managed instances 
 
 ### Rationale 
@@ -67,7 +67,7 @@ ___
 <!-- 
 ## Azure_SQLManagedInstance_SI_Remediate_Security_Vulnerabilities 
 
-### DisplayName 
+### Display Name 
 Vulnerabilities on your SQL databases should be remediated 
 
 ### Rationale 
@@ -124,7 +124,7 @@ ___
 
 ## Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use approved version of TLS for Azure SQL Managed Instance 
 
 ### Rationale 

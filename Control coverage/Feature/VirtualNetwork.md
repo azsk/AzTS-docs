@@ -26,7 +26,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Use_PublicIPs 
 
-### DisplayName 
+### Display Name 
 Remove public IPs on ER connected VMs
 
 ### Rationale 
@@ -84,7 +84,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Use_Multi_NIC_VMs 
 
-### DisplayName 
+### Display Name 
 There must not be multiple NICs on ExpressRoute-connected VMs
 
 ### Rationale 
@@ -136,7 +136,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Enable_IPForwarding_for_NICs 
 
-### DisplayName 
+### Display Name 
 Set 'EnableIPForwarding' flag to false for NICs in the ExpressRoute-connected vNet
 
 ### Rationale 
@@ -194,7 +194,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Add_UDRs_on_Subnets 
 
-### DisplayName 
+### Display Name 
 There must not be a UDR on any subnet in an ExpressRoute-connected vNet 
 
 ### Rationale 
@@ -267,7 +267,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Add_VPN_Gateways 
 
-### DisplayName 
+### Display Name 
 There must not be another virtual network gateway (GatewayType = Vpn) in an ExpressRoute-connected vNet 
 
 ### Rationale 
@@ -318,7 +318,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Use_VNet_Peerings 
 
-### DisplayName 
+### Display Name 
 Peering must not be allowed on ExpressRoute connected Virtual Network
 
 ### Rationale 
@@ -401,7 +401,7 @@ ___
 
 ## Azure_ERvNet_SI_Add_Only_Network_Resources 
 
-### DisplayName 
+### Display Name 
 Add only Microsoft.Network/* resources to the ERNetwork resource group
 
 ### Rationale 
@@ -456,7 +456,7 @@ ___
 
 ## Azure_ERvNet_SI_Dont_Remove_Resource_Lock 
 
-### DisplayName 
+### Display Name 
 Ensure that the ERNetwork resource group is protected with a resource lock
 
 ### Rationale 
@@ -520,7 +520,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Revoke_PublicIPs_On_Sub 
 
-### DisplayName 
+### Display Name 
 There must not be any Public IPs on Subscription with ExpressRoute connection
 
 ### Rationale 
@@ -573,7 +573,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_Peering 
 
-### DisplayName 
+### Display Name 
 Assure virtual network peering is not allowed 
 
 ### Rationale 
@@ -629,7 +629,7 @@ ___
 
 ## Azure_VNet_NetSec_Configure_NSG 
 
-### DisplayName 
+### Display Name 
 Associate Subnets with a Network Security Group 
 
 ### Rationale 
@@ -689,7 +689,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_PublicIPs 
 
-### DisplayName 
+### Display Name 
 Minimize the number of Public IPs (i.e. NICs with PublicIP) on a virtual network 
 
 ### Rationale 
@@ -731,7 +731,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_Gateways 
 
-### DisplayName 
+### Display Name 
 Presence of any virtual network gateways (GatewayType = VPN/ExpressRoute) in the virtual network must be justified 
 
 ### Rationale 
@@ -771,7 +771,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_IPForwarding_for_NICs 
 
-### DisplayName 
+### Display Name 
 Use of IP Forwarding on any NIC in a virtual network should be scrutinized 
 
 ### Rationale 

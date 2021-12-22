@@ -24,7 +24,7 @@ ___
 
 ## Azure_AppService_DP_Use_CNAME_With_SSL 
 
-### DisplayName 
+### Display Name 
 Custom domain with SSL binding must be configured for App Service 
 
 ### Rationale 
@@ -64,7 +64,7 @@ ___
 
 ## Azure_AppService_Config_Disable_Remote_Debugging 
 
-### DisplayName 
+### Display Name 
 Remote debugging should be turned off for Web Applications 
 
 ### Rationale 
@@ -108,7 +108,7 @@ ___
 
 ## Azure_AppService_Config_Disable_Web_Sockets 
 
-### DisplayName 
+### Display Name 
 Web Sockets should be disabled for App Service 
 
 ### Rationale 
@@ -160,7 +160,7 @@ ___
 
 ## Azure_AppService_BCDR_Use_AlwaysOn 
 
-### DisplayName 
+### Display Name 
 'Always On' should be configured for App Service 
 
 ### Rationale 
@@ -209,7 +209,7 @@ ___
 
 ## Azure_AppService_BCDR_Use_Multiple_Instances 
 
-### DisplayName 
+### Display Name 
 App Service must be deployed on a minimum of two instances to ensure availability 
 
 ### Rationale 
@@ -266,7 +266,7 @@ ___
 
 ## Azure_AppService_Audit_Enable_Logging_and_Monitoring 
 
-### DisplayName 
+### Display Name 
 Monitoring must be enabled for App Service 
 
 ### Rationale 
@@ -317,7 +317,7 @@ ___
 
 ## Azure_AppService_DP_Dont_Allow_HTTP_Access 
 
-### DisplayName 
+### Display Name 
 Use HTTPS for app services 
 
 ### Rationale 
@@ -368,7 +368,7 @@ ___
 
 ## Azure_AppService_DP_Review_CORS_Request_Credential 
 
-### DisplayName 
+### Display Name 
 Review use of credentials in CORS request for App Service
 
 ### Rationale 
@@ -404,7 +404,7 @@ ___
 
 ## Azure_AppService_DP_Restrict_CORS_Access 
 
-### DisplayName 
+### Display Name 
 Ensure that CORS access is granted to a limited set of trusted origins 
 
 ### Rationale 
@@ -441,7 +441,7 @@ ___
 
 ## Azure_AppService_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use Approved TLS Version in App Service 
 
 ### Rationale 
@@ -492,7 +492,7 @@ ___
 
 ## Azure_AppService_AuthZ_Configure_IP_Restrictions 
 
-### DisplayName 
+### Display Name 
 Setup IP-based access restrictions for App Service if feasible 
 
 ### Rationale 
@@ -533,7 +533,7 @@ ___
 
 ## Azure_AppService_AuthN_Use_Managed_Service_Identity 
 
-### DisplayName 
+### Display Name 
 Use Managed Service Identity (MSI) for accessing other AAD-protected resources from the app service 
 
 ### Rationale 

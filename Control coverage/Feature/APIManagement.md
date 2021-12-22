@@ -23,7 +23,7 @@ ___
 
 ## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme 
 
-### DisplayName 
+### Display Name 
 Ensure API Management service is accessible only over HTTPS
 
 ### Rationale 
@@ -65,7 +65,7 @@ ___
 
 ## Azure_APIManagement_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Latest TLS version should be used in your APIM 
 
 ### Rationale 
@@ -120,7 +120,7 @@ ___
 
 ## Azure_APIManagement_DP_Remove_Default_Products 
 
-### DisplayName 
+### Display Name 
 Delete the two sample products 'Starter' and 'Unlimited' to avoid accidental exposure of APIs 
 
 ### Rationale 
@@ -160,7 +160,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Verify_Delegated_Authentication 
 
-### DisplayName 
+### Display Name 
 Delegated authentication should be implemented securely 
 
 ### Rationale 
@@ -201,7 +201,7 @@ ___
 
 ## Azure_APIManagement_AuthZ_Validate_JWT 
 
-### DisplayName 
+### Display Name 
 Ensure that JWT validation is enabled if using OAuth 2.0 or OpenID connect 
 
 ### Rationale 
@@ -243,7 +243,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Disable_Management_API 
 
-### DisplayName 
+### Display Name 
 Do not use API Management REST API 
 
 ### Rationale 
@@ -284,7 +284,7 @@ ___
 
 ## Azure_APIManagement_AuthZ_Enable_User_Authorization_For_API 
 
-### DisplayName 
+### Display Name 
 Ensure that either OAuth 2.0 or OpenID Connect are used to authorize developer accounts in API Management 
 
 ### Rationale 
@@ -323,7 +323,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN 
 
-### DisplayName 
+### Display Name 
 Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials 
 
 ### Rationale 
@@ -376,7 +376,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Secure_API_Using_Client_Certificates 
 
-### DisplayName 
+### Display Name 
 Use client certificates for authentication between gateway and backend APIs 
 
 ### Rationale 
@@ -415,7 +415,7 @@ ___
 
 ## Azure_APIManagement_AuthZ_Enable_Requires_Subscription 
 
-### DisplayName 
+### Display Name 
 'Requires Subscription' option must be turned on for all products in an API Management instance 
 
 ### Rationale 
@@ -455,7 +455,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Use_Managed_Service_Identity 
 
-### DisplayName 
+### Display Name 
 Use Managed Service Identity (MSI) for accessing other AAD-protected resources from the API management instance 
 
 ### Rationale 
