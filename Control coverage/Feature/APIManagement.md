@@ -15,6 +15,7 @@
 - [Azure_APIManagement_AuthN_Secure_API_Using_Client_Certificates](#azure_apimanagement_authn_secure_api_using_client_certificates)
 - [Azure_APIManagement_AuthZ_Enable_Requires_Subscription](#azure_apimanagement_authz_enable_requires_subscription)
 - [Azure_APIManagement_AuthN_Use_Managed_Service_Identity](#azure_apimanagement_authn_use_managed_service_identity)
+- [Azure_APIManagement_Audit_Enable_Alerts](#azure_apimanagement_audit_enable_alerts)
 
 <!-- /TOC -->
 <br/>
@@ -494,5 +495,71 @@ Managed Service Identity (MSI) allows your API Management instance to easily acc
 
 <br />
 
-___ 
+___
+
+## Azure_APIManagement_Audit_Enable_Alerts
+
+### DisplayName
+Metric alert rules must be configured for critical actions on API Management service
+
+### Rationale
+Metric alert for occurrence of unauthorized gateway requests help the admin to identify security breach attempts.
+
+### Control Spec
+
+> **Passed:**
+> All the required metric alerts have been configured for the resource.
+>
+> **Failed:**
+> No metric alerts are configured in the Subscription.
+> (or)
+> One or more required metric alerts are either not configured, or, are misconfigured.
+>
+> **Verify:**
+> Metric alerts are disabled from being fetched.
+>
+> **Error:**
+> No metric alerts configured in Control Settings.
+>
+### Recommendation
+
+
+- **Azure Portal**
+
+  To setup an alert rule:
+  1. Go to API Management instance -> 'Alerts' -> 'New Alert Rule' -> 'Add condition'.
+  2. Select Signal type as 'Metrics' -> Select 'Requests' -> In 'Split by dimensions', in 'Dimension name', select 'Gateway Response Code Category'. In 'Dimension values', select 4xx. If this option is not listed in the drop-down, click 'Add custom value' and add '4xx' for 'Gateway Response Code Category'. Configure 'Alert logic' as follows: a. Operator = 'Greater Than' b. Aggregation type = 'Total' c. Threshold value = '0' and d. Aggregation granularity (Period) = '1 hour'.
+  3. Select an existing Action Group or create a new one of type 'Email/SMS message/Push/Voice'. Select 'Email' option and specify the email id.
+
+  Refer: [Set up an alert rule](https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-use-azure-monitor#set-up-an-alert-rule-for-unauthorized-request) for instructions to configure this alert.
+
+<!--
+- **PowerShell**
+
+	```powershell
+	```
+
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+-->
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all alert rule definitions in a Subscription:
+  /subscriptions/{0}/providers/Microsoft.Insights/metricAlerts?api-version=2018-03-01
+  <br />
+  **Properties:** [*]
+  <br />
+
+- ARM API to list all action groups in a Subscription:
+  /subscriptions/{0}/providers/microsoft.insights/actionGroups?api-version=2019-06-01
+  <br />
+  **Properties:** [*]
+  <br />
+  <br />
+
+___
 
