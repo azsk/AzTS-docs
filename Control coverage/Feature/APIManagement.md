@@ -551,13 +551,13 @@ Metric alert for occurrence of unauthorized gateway requests help the admin to i
 - ARM API to list all alert rule definitions in a Subscription:
   /subscriptions/{0}/providers/Microsoft.Insights/metricAlerts?api-version=2018-03-01
   <br />
-  **Properties:** [*]
+  **Properties:** [\*].id, [\*].name, [\*].properties.enabled, [\*].properties.scopes, [\*].properties.windowSize, [\*].properties.criteria, [\*].properties.actions
   <br />
 
 - ARM API to list all action groups in a Subscription:
   /subscriptions/{0}/providers/microsoft.insights/actionGroups?api-version=2019-06-01
   <br />
-  **Properties:** [*]
+  **Properties:** [\*].id, [\*].name, [\*].properties.enabled, [\*].properties.emailReceivers
   <br />
   <br />
 
