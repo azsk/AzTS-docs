@@ -13,7 +13,7 @@ ___
 
 ## Azure_DataLakeStore_DP_Encrypt_At_Rest 
 
-### DisplayName 
+### Display Name 
 Data Lake Store sensitive data must be encrypted at rest 
 
 ### Rationale 

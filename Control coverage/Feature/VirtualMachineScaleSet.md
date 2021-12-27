@@ -24,7 +24,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_Audit_Enable_Diagnostics
 
-### DisplayName
+### Display Name
 Diagnostics (IaaSDiagnostics extension on Windows; LinuxDiagnostic extension on Linux) must be enabled on Virtual Machine Scale Set.
 
 ### Rationale
@@ -84,7 +84,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_Config_Enable_NSG
 
-### DisplayName
+### Display Name
 NSG must be configured for Virtual Machine Scale Set.
 
 ### Rationale
@@ -143,7 +143,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_Deploy_Monitoring_Agent
 
-### DisplayName
+### Display Name
 Log analytics agent should be installed on Virtual Machine Scale Set.
 
 ### Rationale
@@ -211,7 +211,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_NetSec_Dont_Open_Management_Ports
 
-### DisplayName
+### Display Name
 Management ports must not be open on Virtual Machine Scale Sets.
 
 ### Rationale
@@ -284,7 +284,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_NetSec_Justify_PublicIPs
 
-### DisplayName
+### Display Name
 Public IPs on a Virtual Machine Scale Set instances should be carefully reviewed.
 
 ### Rationale
@@ -347,7 +347,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Enable_Antimalware
 
-### DisplayName
+### Display Name
 Antimalware must be enabled with real time protection on Virtual Machine Scale Set.
 
 ### Rationale
@@ -437,7 +437,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Enable_Auto_OS_Upgrade
 
-### DisplayName
+### Display Name
 Enable automatic OS image upgrade on Virtual Machine Scale Set.
 
 ### Rationale
@@ -492,7 +492,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Latest_Model_Applied
 
-### DisplayName
+### Display Name
 All VMs in VM Scale Set must be up-to-date with the latest scale set model.
 
 ### Rationale
@@ -555,7 +555,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches
 
-### DisplayName
+### Display Name
 System updates on virtual machine scale sets must be installed.
 
 ### Rationale
@@ -610,7 +610,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities
 
-### DisplayName
+### Display Name
 Vulnerabilities in security configuration on your virtual machine scale sets must be remediated.
 
 ### Rationale
@@ -667,7 +667,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption
 
-### DisplayName
+### Display Name
 Disk encryption should be applied on virtual machine scale sets.
 
 ### Rationale

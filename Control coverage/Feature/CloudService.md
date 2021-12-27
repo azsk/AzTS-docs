@@ -17,7 +17,7 @@ ___
 
 ## Azure_CloudService_DP_DontAllow_HTTP_Access_InputEndpoints 
 
-### DisplayName 
+### Display Name 
 Encrypt data in transit for Cloud service role 
 
 ### Rationale 
@@ -71,7 +71,7 @@ ___
 
 ## Azure_CloudService_SI_Auto_OSUpdate 
 
-### DisplayName 
+### Display Name 
 Set automatic update for Cloud Service OS version 
 
 ### Rationale 
@@ -121,7 +121,7 @@ ___
 
 ## Azure_CloudService_SI_Enable_AntiMalware 
 
-### DisplayName 
+### Display Name 
 Antimalware extension must be installed on cloud service roles 
 
 ### Rationale 
@@ -175,7 +175,7 @@ ___
 
 ## Azure_CloudService_SI_Disable_RemoteDesktop_Access 
 
-### DisplayName 
+### Display Name 
 Disable Remote Desktop (RDP) access on cloud service roles 
 
 ### Rationale 

@@ -29,7 +29,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Enable_Antimalware 
 
-### DisplayName 
+### Display Name 
 Ensure all devices have anti-malware protection installed and enabled 
 
 ### Rationale 
@@ -109,7 +109,7 @@ ___
 
 ## Azure_VirtualMachine_Config_Enable_NSG 
 
-### DisplayName 
+### Display Name 
 Internet-facing virtual machines must be protected with Network Security Groups 
 
 ### Rationale 
@@ -179,7 +179,7 @@ ___
 
 ## Azure_VirtualMachine_NetSec_Justify_PublicIPs 
 
-### DisplayName 
+### Display Name 
 Public IPs on a Virtual Machine should be carefully reviewed 
 
 ### Rationale 
@@ -248,7 +248,7 @@ ___
 
 ## Azure_VirtualMachine_DP_Enable_Disk_Encryption 
 
-### DisplayName 
+### Display Name 
 Disk encryption should be applied on virtual machines 
 
 ### Rationale 
@@ -315,7 +315,7 @@ ___
 
 ## Azure_VirtualMachine_SI_ASC_OS_Vulnerabilities 
 
-### DisplayName 
+### Display Name 
 Virtual Machine must be in a healthy state in Azure Security Center 
 
 ### Rationale 
@@ -392,7 +392,7 @@ ___
 <!--
 ## Azure_VirtualMachine_SI_Missing_OS_Patches 
 
-### DisplayName 
+### Display Name 
 Patch virtual machine to protect against vulnerabilities 
 
 ### Rationale 
@@ -459,7 +459,7 @@ ___
 -->
 ## Azure_VirtualMachine_SI_ASC_Recommendations 
 
-### DisplayName 
+### Display Name 
 Virtual Machine must implement all the flagged ASC recommendations 
 
 ### Rationale 
@@ -518,7 +518,7 @@ ___
 
 ## Azure_VirtualMachine_Audit_Enable_Diagnostics 
 
-### DisplayName 
+### Display Name 
 Diagnostics must be enabled on the Virtual Machine 
 
 ### Rationale 
@@ -596,7 +596,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Enable_Vuln_Solution 
 
-### DisplayName 
+### Display Name 
 Install DSRE Qualys Cloud Agent on assets 
 
 ### Rationale 
@@ -678,7 +678,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension 
 
-### DisplayName 
+### Display Name 
 Guest Configuration extension must be deployed to the VM using Azure Policy assignment 
 
 ### Rationale 
@@ -761,7 +761,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Enable_Monitoring_Agent 
 
-### DisplayName 
+### Display Name 
 Ensure the MMA on your VM is healthy (running successfully) 
 
 ### Rationale 
@@ -836,7 +836,7 @@ ___
 
 ## Azure_VirtualMachine_NetSec_Dont_Open_Restricted_Ports 
 
-### DisplayName 
+### Display Name 
 Management ports must not be open on machines 
 
 ### Rationale 
@@ -913,7 +913,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Deploy_Data_Collection_Extension 
 
-### DisplayName 
+### Display Name 
 [Preview]: Install Network data collection agents 
 
 ### Rationale 
@@ -984,7 +984,7 @@ ___
 
 ## Azure_VirtualMachine_NetSec_Apply_ASC_Network_Recommendations 
 
-### DisplayName 
+### Display Name 
 Apply Adaptive Network Hardening to Internet facing virtual machines 
 
 ### Rationale 
@@ -1050,7 +1050,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Remediate_Security_Vulnerabilities 
 
-### DisplayName 
+### Display Name 
 Vulnerabilities in security configuration on your machines must be remediated. 
 
 ### Rationale 
@@ -1111,7 +1111,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Remediate_Container_Security_Vulnerabilities 
 
-### DisplayName 
+### Display Name 
 Vulnerabilities in container security configurations must be remediated 
 
 ### Rationale 
@@ -1172,7 +1172,7 @@ ___
 
 ## Azure_VirtualMachine_Just_In_Time_Network_Access_Control 
 
-### DisplayName 
+### Display Name 
 Just-In-Time network access control must be applied on virtual machines 
 
 ### Rationale 
@@ -1241,7 +1241,7 @@ ___
 
 ## Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities 
 
-### DisplayName 
+### Display Name 
 Vulnerabilities must be remediated by a Vulnerability Assessment solution 
 
 ### Rationale 
@@ -1307,7 +1307,7 @@ ___
 
 ## Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only 
 
-### DisplayName 
+### Display Name 
 Only allowed ports must be opened on Virtual Machines 
 
 ### Rationale 

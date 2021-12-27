@@ -17,7 +17,7 @@ ___
 
 ## Azure_CosmosDB_AuthZ_Enable_Firewall 
 
-### DisplayName 
+### Display Name 
 Cosmos DB firewall should be enabled 
 
 ### Rationale 
@@ -63,7 +63,7 @@ ___
 
 ## Azure_CosmosDB_AuthZ_Verify_IP_Range 
 
-### DisplayName 
+### Display Name 
 Configure only the required IP addresses on Cosmos DB firewall 
 
 ### Rationale 
@@ -117,7 +117,7 @@ ___
 
 ## Azure_CosmosDB_Deploy_Use_Replication 
 
-### DisplayName 
+### Display Name 
 Use global replication 
 
 ### Rationale 
@@ -162,7 +162,7 @@ ___
 
 ## Azure_CosmosDB_Deploy_Use_Automatic_Failover 
 
-### DisplayName 
+### Display Name 
 Use automatic failover 
 
 ### Rationale 
@@ -209,7 +209,7 @@ ___
 
 ## Azure_CosmosDB_Enable_Adv_Threat_Protection 
 
-### DisplayName 
+### Display Name 
 Enable Threat detection for CosmosDB database 
 
 ### Rationale 

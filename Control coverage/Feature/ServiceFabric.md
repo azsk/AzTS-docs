@@ -19,7 +19,7 @@ ___
 
 ## Azure_ServiceFabric_AuthZ_Security_Mode_Enabled 
 
-### DisplayName 
+### Display Name 
 Service Fabric cluster security must be enabled using security mode option 
 
 ### Rationale 
@@ -66,7 +66,7 @@ ___
 
 ## Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only 
 
-### DisplayName 
+### Display Name 
 Use Azure Active directory for client authentication on Service Fabric clusters 
 
 ### Rationale 
@@ -113,7 +113,7 @@ ___
 
 ## Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel 
 
-### DisplayName 
+### Display Name 
 The ClusterProtectionLevel property must be set to EncryptAndSign 
 
 ### Rationale 
@@ -160,7 +160,7 @@ ___
 
 ## Azure_ServiceFabric_AuthN_NSG_Enabled 
 
-### DisplayName 
+### Display Name 
 Enable Firewall/NSGs on subnet of Service Fabric cluster 
 
 ### Rationale 
@@ -232,7 +232,7 @@ ___
 
 ## Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports 
 
-### DisplayName 
+### Display Name 
 Monitor publicly exposed ports on load balancers used by Service Fabric cluster 
 
 ### Rationale 
@@ -298,7 +298,7 @@ ___
 
 ## Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port 
 
-### DisplayName 
+### Display Name 
 Reverse proxy port must not be exposed publicly 
 
 ### Rationale 
@@ -348,7 +348,7 @@ ___
 
 ## Azure_ServiceFabric_SI_Set_Auto_Update_Cluster 
 
-### DisplayName 
+### Display Name 
 Upgrade mode should be set to automatic for cluster 
 
 ### Rationale 

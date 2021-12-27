@@ -21,7 +21,7 @@ ___
 
 ## Azure_SQLDatabase_AuthZ_Use_AAD_Admin
 
-### DisplayName
+### Display Name
 Use AAD Authentication for SQL Database
 
 ### Rationale
@@ -76,7 +76,7 @@ ___
 
 ## Azure_SQLDatabase_DP_Enable_TDE
 
-### DisplayName
+### Display Name
 Enable Transparent Data Encryption on SQL databases
 
 ### Rationale
@@ -159,7 +159,7 @@ ___
 
 ## Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server
 
-### DisplayName
+### Display Name
 Enable advanced data security on your SQL servers
 
 ### Rationale
@@ -253,7 +253,7 @@ ___
 
 ## Azure_SQLDatabase_Audit_Enable_Vuln_Assessment
 
-### DisplayName
+### Display Name
 Enable Vulnerability assessment on your SQL servers
 
 ### Rationale
@@ -313,7 +313,7 @@ ___
 
 ## Azure_SQLDatabase_NetSec_Dont_Allow_Universal_IP_Range
 
-### DisplayName
+### Display Name
 Do not use Any-to-Any IP range for Azure SQL Database
 
 ### Rationale
@@ -384,7 +384,7 @@ ___
 
 ## Azure_SQLDatabase_Audit_Enable_Logging_and_Monitoring_Server
 
-### DisplayName
+### Display Name
 Ensure Azure SQL Server auditing is configured correctly
 
 ### Rationale
@@ -459,7 +459,7 @@ ___
 
 ## Azure_SQLDatabase_AuthZ_Firewall_Deny_Access_AzureServices
 
-### DisplayName
+### Display Name
 Use the 'Allow access to Azure services' flag only if required
 
 ### Rationale
@@ -522,7 +522,7 @@ ___
 
 ## Azure_SQLDatabase_SI_Remediate_Security_Vulnerabilities
 
-### DisplayName
+### Display Name
 Vulnerabilities on your SQL databases must be remediated
 
 ### Rationale
@@ -575,7 +575,7 @@ ___
 
 ## Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
-### DisplayName
+### Display Name
 Use approved version of TLS for SQL Server
 
 ### Rationale

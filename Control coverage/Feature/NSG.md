@@ -14,7 +14,7 @@ ___
 
 ## Azure_NSG_NetSec_Dont_Open_Restricted_Ports 
 
-### DisplayName 
+### Display Name 
 Do not use risky ports on firewall and NSGs 
 
 ### Rationale 
@@ -86,7 +86,7 @@ ___
 
 ## Azure_NSG_NetSec_Dont_Open_InBound_Any_Any 
 
-### DisplayName 
+### Display Name 
 Firewall/NSG rules must not allow unrestricted traffic (any-any rule) 
 
 ### Rationale 

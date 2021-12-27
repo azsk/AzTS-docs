@@ -13,7 +13,7 @@ ___
 
 ## Azure_CDN_DP_Enable_Https 
 
-### DisplayName 
+### Display Name 
 CDN endpoints must use HTTPS protocol while providing data to the client browser/machine or while fetching data from the origin server 
 
 ### Rationale 
