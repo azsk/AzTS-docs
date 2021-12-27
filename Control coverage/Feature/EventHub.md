@@ -32,7 +32,7 @@ A 'namespace' level access policy provides access to all Event Hubs in a namespa
 ### Control Spec 
 
 > **Passed:** 
-> No namespace level access policies have been configured for the Event Hub.
+> No namespace level access policies (except RootManageSharedAccessKey) have been configured for the Event Hub.
 > 
 > **Failed:** 
 > One or more namespace level access policies have been configured for the Event Hub.
