@@ -1,6 +1,6 @@
 # Changing control setting for existing controls 
 
-Using Org policy customization, we can change some numeric setting for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
+Using Org policy customization, we can change some control setting for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 <br/><br/>A typical setting you may want to tweak is the maximum number of classic admins allowed for your org's subscriptions. 
 It is verified in one of the subscription security controls. (The default value is 2.) Let us change this default value to 5.
 This setting resides in a file called FeatureName.json. 
