@@ -60,8 +60,12 @@ The final JSON file should look like this for our walk-through example:
 <b>Next Steps:</b>
 
 1. Verify the changes in your local system:
- You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
- <br/> Few simple queries are provided in the above link related to the inventory and Control Scan summary for reference.
+    You can verify your changes in the Log Analytics Workspace with the help of this query.
+    ``` kusto
+    AzSK_ControlResults_CL
+    | where TimeGenerated > ago(1d)
+    ```
+    Few simple queries are provided in this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization) related to the inventory and Control Scan summary for reference.
 
 2. Deploy the changes:
 You can deploy the project with your changes in your current AzTS solution now. Please follow the steps mentioned [here](./DeployInAzTS.md).
