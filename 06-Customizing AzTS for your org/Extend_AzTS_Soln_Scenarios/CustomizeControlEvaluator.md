@@ -50,66 +50,74 @@ This setting resides in a file called FeatureNameControlEvaluator.cs.
     Modify the Status reason of the Control Result in here according to the org's policy. 
     <!-- Note: Use the same method name as mentioned above in the Control JSON file. -->
 
-<!-- TODO : Add details about storage resource here -->
+    <!-- TODO : Add details about storage resource here -->
 
-``` CS
-public class StorageControlEvaluatorExt : StorageControlEvaluator
-{
-
-    // Note: Use the same method name as mentioned above in the Control JSON file.
-    public void CheckStorageNetworkAccess(Resource storage, ControlResult cr)
+    ``` CS
+    public class StorageControlEvaluatorExt : StorageControlEvaluator
     {
-        // 1. This is where the code logic is placed
-        // 2. ControlResult input to this function, which needs to be updated with the verification Result (Passed/Failed/Verify/Manual/Error) based on the control logic
-        // 3. Messages that you add to ControlResult variable will be displayed in the detailed log automatically.
-        
-        if (!string.IsNullOrEmpty(storage.CustomField1))
+
+        // Note: Use the same method name as mentioned above in the Control JSON file.
+        public void CheckStorageNetworkAccess(Resource storage, ControlResult cr)
         {
-            // Start with failed state, mark control as Passed if all required conditions are met
-            cr.VerificationResult = VerificationResultStatus.Failed;
-            cr.ScanSource = ScanResourceType.Reader.ToString();
+            // 1. This is where the code logic is placed
+            // 2. ControlResult input to this function, which needs to be updated with the verification Result (Passed/Failed/Verify/Manual/Error) based on the control logic
+            // 3. Messages that you add to ControlResult variable will be displayed in the detailed log automatically.
 
-            // CustomField1 has details about which protocol is supported by Storage for traffic
-            var stgDetails = JObject.Parse(storage.CustomField1);
-            string strNetworkRuleSet = stgDetails["NetworkRuleSet"].Value<string>();
-
-            if (strNetworkRuleSet.Equals("Deny", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(storage.CustomField1))
             {
-                // Firewall and Virtual Network restrictions are defined for this storage. Hence, Passed
-                // Note below we modify the Status Reason in case the control is Passed
-                cr.StatusReason = $"According to Org policy: Firewall and Virtual Network restrictions are defined for this storage.";
-                cr.VerificationResult = VerificationResultStatus.Passed;
-            }
-            else
-            {
-                // No Firewall and Virtual Network restrictions are defined for this storage. Hence, Failed
-                // Note below we modify the Status Reason in case the control is Failed
-                cr.StatusReason = $"According to Org policy: No Firewall and Virtual Network restrictions are defined for this storage.";
+                // Start with failed state, mark control as Passed if all required conditions are met
                 cr.VerificationResult = VerificationResultStatus.Failed;
-            }
-        }
+                cr.ScanSource = ScanResourceType.Reader.ToString();
 
-        // 'Else' block not required since CustomField1 is never expected to be null
+                // CustomField1 has details about which protocol is supported by Storage for traffic
+                var stgDetails = JObject.Parse(storage.CustomField1);
+                string strNetworkRuleSet = stgDetails["NetworkRuleSet"].Value<string>();
+
+                if (strNetworkRuleSet.Equals("Deny", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Firewall and Virtual Network restrictions are defined for this storage. Hence, Passed
+                    // Note below we modify the Status Reason in case the control is Passed
+                    cr.StatusReason = $"According to Org policy: Firewall and Virtual Network restrictions are defined for this storage.";
+                    cr.VerificationResult = VerificationResultStatus.Passed;
+                }
+                else
+                {
+                    // No Firewall and Virtual Network restrictions are defined for this storage. Hence, Failed
+                    // Note below we modify the Status Reason in case the control is Failed
+                    cr.StatusReason = $"According to Org policy: No Firewall and Virtual Network restrictions are defined for this storage.";
+                    cr.VerificationResult = VerificationResultStatus.Failed;
+                }
+            }
+
+            // 'Else' block not required since CustomField1 is never expected to be null
+        }
+        .
+        .
+        .
     }
-    .
-    .
-    .
-}
-```
+    ```
 
 
 7. Build and Run
    - Click on the AzTS_Extended as shown below to run the project: <br />
       ![Build Step 1](../../Images/06_OrgPolicy_Setup_BuildStep.png)<br/>
-<!-- TODO Add the SubscriptionCore file EXT added log -->
+     <!-- TODO Add the SubscriptionCore file EXT added log -->
    - Output looks like below:<br/>
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep1.png)<br />
       ![Run Output](../../Images/06_OrgPolicy_Setup_RunStep2.png)
-   Congratulations! Customizing the Control Evaluator Scenario is complete with this step.
+   <br><b>Congratulations! Changing Control Setting Scenario is complete with this step.</b>
+   
+<b>Next Steps:</b>
 
-8. Verify the changes in your local system:
- You can verify your changes in the Log Analytics Workspace with the help of this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization).
- <br/> Few simple queries are provided in the above link related to the inventory and Control Scan summary for reference.
+1. Verify the changes in your local system:
+    You can verify your changes in the Log Analytics Workspace with the help of this query.
+    ``` kusto
+    AzSK_ControlResults_CL
+    | where TimeGenerated > ago(30m) 
+    | where JobId_d == <<jobId>>
+    | where ControlName_s == "<<ControlName>>"
+    ```
+    Few simple queries are provided in this [link](https://github.com/azsk/AzTS-docs/tree/main/01-Setup%20and%20getting%20started#4-log-analytics-visualization) related to the inventory and Control Scan summary for reference.
 
-9. Deploy the changes:
+2. Deploy the changes:
 You can deploy the project with your changes in your current AzTS solution now. Please follow the steps mentioned [here](./DeployInAzTS.md).
