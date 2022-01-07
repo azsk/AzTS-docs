@@ -55,7 +55,7 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 
 - **Azure Portal** 
 
-	 Steps to remove role assignments of deprecated/invalid accounts are:  a. To remove permanent role assignment use command 'Remove-AzRoleAssignment' or refer link, https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-remove#azure-portal b. To remove classic role assignments, refer link: https://docs.microsoft.com/en-us/azure/role-based-access-control/classic-administrators#remove-a-co-administrator c. To remove PIM role assignments, refer link https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/pim-how-to-add-role-to-user?tabs=new#update-or-remove-an-existing-role-assignment. For bulk remediation of permanent and classic role assignments using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Remove_Deprecated_Accounts.
+	 Steps to remove role assignments of deprecated/invalid accounts are:  <br />a. To remove permanent role assignment use command 'Remove-AzRoleAssignment' or refer link, https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-remove#azure-portal <br />b. To remove classic role assignments, refer link: https://docs.microsoft.com/en-us/azure/role-based-access-control/classic-administrators#remove-a-co-administrator <br />c. To remove PIM role assignments, refer link https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/pim-how-to-add-role-to-user?tabs=new#update-or-remove-an-existing-role-assignment. <br />For bulk remediation of permanent and classic role assignments using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Remove_Deprecated_Accounts.
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -212,7 +212,7 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 
 - **Azure Portal** 
 
-	 You need to remove any 'Classic Administrators/Co-Administrators' who should not be in the role. Please follow these steps: (a) Logon to https://portal.azure.com/ (b) Navigate to Subscriptions (c) Select the subscription (d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. (e) Select the co-administrator account that has to be removed and click on the 'Remove' button. (f) Perform this operation for all the co-administrators that need to be removed from the subscription. 
+	 You need to remove any 'Classic Administrators/Co-Administrators' who should not be in the role. Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. <br />(e) Select the co-administrator account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the co-administrators that need to be removed from the subscription. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -248,7 +248,7 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 - **Azure Portal** 
 
-	 You need to remove any management certificates that are not required. Please follow these steps: (a) Logon to https://portal.azure.com/ (b) Navigate to Subscriptions (c) Select the subscription (d) Go to Settings tab  --> Management Certificates tab --> Delete unwanted management certificates. 
+	 You need to remove any management certificates that are not required. Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to Settings tab  --> Management Certificates tab --> Delete unwanted management certificates. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -284,14 +284,14 @@ Based on the policies that are enabled in the subscription, Azure Security Cente
 > There are no active ASC Alerts OR there is no active alert which is beyond defined grace.
 > 
 > **Failed:** 
-> There are ASC alerts in the subscription which are active beyond the defined grace. (Alert Severity: High, Grace period: 0; Alert Severity: Medium, Grace period: 30)
+> There are ASC alerts in the subscription which are active beyond the defined grace. <br />Alert Severity: High, Grace period: 0 <br />Alert Severity: Medium, Grace period: 30
 > 
 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 You need to address all active alerts on Azure Security Center. Please follow these steps: (a) Logon to https://portal.azure.com/ (b) Navigate to Security Center. (c) Click on Security Alerts under 'Threat Protection' category. (d) Take appropriate actions on all active alerts. 
+	 You need to address all active alerts on Azure Security Center. Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Security Center. <br />(c) Click on Security Alerts under 'Threat Protection' category. <br />(d) Take appropriate actions on all active alerts. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -395,7 +395,7 @@ You should use new ARM/v2 resources as the ARM model provides several security e
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all resources in a Subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
-**Properties:** type (The following Classic resource types are in scope for the evaluation: Microsoft.ClassicCompute/virtualMachines, Microsoft.ClassicStorage/storageAccounts, Microsoft.ClassicCompute/domainNames, Microsoft.ClassicNetwork/virtualNetworks, Microsoft.ClassicNetwork/reservedIps, Microsoft.ClassicNetwork/networkSecurityGroups, Microsoft.MarketplaceApps/classicDevServices)
+**Properties:** type <br />The following Classic resource types are in scope for the evaluation: <br />1. Microsoft.ClassicCompute/virtualMachines <br />2. Microsoft.ClassicStorage/storageAccounts <br /> 3. Microsoft.ClassicCompute/domainNames <br />4. Microsoft.ClassicNetwork/virtualNetworks <br />5. Microsoft.ClassicNetwork/reservedIps <br />6. Microsoft.ClassicNetwork/networkSecurityGroups <br />7. Microsoft.MarketplaceApps/classicDevServices
  <br />
 
 <br />
@@ -855,24 +855,24 @@ Security contact information will be used by Microsoft to contact you if the Mic
 
 > **Passed:** 
 > ASC security contact setting meet the following conditions:
->   a. 'Owner' and 'Account Admin' should be selected as email recipients.
->   b. At least one email id is specified as email recipients.
->   c. Alert notification should be enabled.
->   d. Alert notification severity should be at least set to 'Medium' such that notification is triggered for both Medium and High severity alert.
+>   <br />a. 'Owner' and 'Account Admin' should be selected as email recipients.
+>   <br />b. At least one email id is specified as email recipients.
+>   <br />c. Alert notification should be enabled.
+>   <br />d. Alert notification severity should be at least set to 'Medium' such that notification is triggered for both Medium and High severity alert.
 > 
 > **Failed:** 
 > Fail if security center provider is not registered OR if ASC security contact setting does not meet the following conditions:
->   a. 'Owner' and 'Account Admin' should be selected as email recipients.
->   b. At least one email id is specified as email recipients.
->   c. Notify about alerts is enabled.
->   d. Alert notification severity should be at least set to 'Medium' such that notification is triggered for both Medium and High severity alert.
+>   <br />a. 'Owner' and 'Account Admin' should be selected as email recipients.
+>   <br />b. At least one email id is specified as email recipients.
+>   <br />c. Notify about alerts is enabled.
+>   <br />d. Alert notification severity should be at least set to 'Medium' such that notification is triggered for both Medium and High severity alert.
 > 
 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 On Azure portal, go to Security Center -> Pricing & settings (select subscription id) -> Email notifications -> a. Select 'Owner' and 'Account Admin' as email recipients or explicitly specify the email recipients b. Select checkbox to notify about alerts c. Alert severity should be set to atleast 'Medium' -> Save. 
+	 On Azure portal, go to Security Center -> Pricing & settings (select subscription id) -> Email notifications -> <br />a. Select 'Owner' and 'Account Admin' as email recipients or explicitly specify the email recipients <br />b. Select checkbox to notify about alerts <br />c. Alert severity should be set to atleast 'Medium' -> Save. 
 
 ### Azure Policy or ARM API used for evaluation 
 
