@@ -64,11 +64,11 @@ Deprecated accounts are ones that were once deployed to your subscription for so
  <br />
 
 - PIM API to get role assignment: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}') <br />
-**Properties:** subject/id
+**Properties:** subject.id
  <br />
 
 - ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
-**Properties:** id, name, resourceDetails/Id, displayName, status/code, status, additionalData
+**Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
  <br />
 
 <br />
@@ -108,7 +108,7 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject/principalName
+**Properties:** subject.principalName
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
@@ -253,7 +253,7 @@ Just like classic admins, management certificates were used in the v1 model for 
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, resourceDetails/Id, displayName, status/code, status, additionalData
+**Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
  <br />
 
 <br />
