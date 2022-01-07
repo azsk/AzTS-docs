@@ -63,11 +63,11 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 **Properties:** principalId
  <br />
 
-- PIM API to get role assignment: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27) <br />
+- PIM API to get role assignment: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}') <br />
 **Properties:** subject/id
  <br />
 
-- ARM API to list security assessments at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
+- ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
 **Properties:** id, name, resourceDetails/Id, displayName, status/code, status, additionalData
  <br />
 
@@ -107,11 +107,11 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27)<br />
+- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** subject/principalName
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** emailAddress
  <br />
 
@@ -161,7 +161,7 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27)<br />
+- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** subject.type, roleDefinition.displayName
  <br />
 
@@ -169,7 +169,7 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
 **Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** role
  <br />
 
@@ -216,7 +216,7 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** properties.role
  <br />
 
@@ -252,7 +252,7 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list security assessments at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** id, name, resourceDetails/Id, displayName, status/code, status, additionalData
  <br />
 
@@ -295,7 +295,7 @@ Based on the policies that are enabled in the subscription, Azure Security Cente
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the alerts that are associated with the subscription: - /subscriptions/%7BsubscriptionId%7D/providers/microsoft.Security/alerts?api-version=2015-06-01-preview <br />
+- ARM API to list all the alerts that are associated with the subscription: - /subscriptions/{subscriptionId}/providers/microsoft.Security/alerts?api-version=2015-06-01-preview <br />
 **Properties:** properties.state, properties.reportedSeverity, properties.reportedTimeUtc
  <br />
 
@@ -334,7 +334,7 @@ Custom RBAC role definitions are usually tricky to get right. A lot of threat mo
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27)<br />
+- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** subject.type, roleDefinition.displayName
  <br />
 
@@ -342,11 +342,11 @@ Custom RBAC role definitions are usually tricky to get right. A lot of threat mo
 **Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId), memberType
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** role
  <br />
 
-- ARM API to get custom role definitions: - /{scope}/providers/Microsoft.Authorization/roleDefinitions?$filter=type eq %27CustomRole%27&api-version=2018-01-01-preview<br />
+- ARM API to get custom role definitions: - /{scope}/providers/Microsoft.Authorization/roleDefinitions?$filter=type eq 'CustomRole'&api-version=2018-01-01-preview<br />
 **Properties:** roleName
  <br />
 
@@ -394,7 +394,7 @@ You should use new ARM/v2 resources as the ARM model provides several security e
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all resources in a Subscription: - /subscriptions/%7BsubscriptionId%7D/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
+- ARM API to list all resources in a Subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
 **Properties:** type (The following Classic resource types are in scope for the evaluation: Microsoft.ClassicCompute/virtualMachines, Microsoft.ClassicStorage/storageAccounts, Microsoft.ClassicCompute/domainNames, Microsoft.ClassicNetwork/virtualNetworks, Microsoft.ClassicNetwork/reservedIps, Microsoft.ClassicNetwork/networkSecurityGroups, Microsoft.MarketplaceApps/classicDevServices)
  <br />
 
@@ -454,7 +454,7 @@ Permanent access increase the risk of a malicious user getting that access and i
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27)<br />
+- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** subject.type, roleDefinition.displayName, assignmentState, linkedEligibleRoleAssignmentId, memberType, subject.displayName
  <br />
 
@@ -462,7 +462,7 @@ Permanent access increase the risk of a malicious user getting that access and i
 **Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** role
  <br />
 
@@ -524,7 +524,7 @@ Permanent access increase the risk of a malicious user getting that access and i
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27)<br />
+- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** subject.type, roleDefinition.displayName, assignmentState, linkedEligibleRoleAssignmentId, memberType, subject.displayName
  <br />
 
@@ -532,7 +532,7 @@ Permanent access increase the risk of a malicious user getting that access and i
 **Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** role
  <br />
 
@@ -626,7 +626,7 @@ Certain tags are expected to be present in all resources to support enterprise w
 **Properties:** properties.tags
  <br />
 
-- ARM API to get resource group tags: - /subscriptions/%7BsubscriptionId%7D/resourcegroups?api-version=2019-10-01 <br />
+- ARM API to get resource group tags: - /subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01 <br />
 **Properties:** tags
  <br />
 
@@ -708,7 +708,7 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Security Center pricing configurations in the subscription: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Security/pricings?api-version=2018-06-01 <br />
+- ARM API to list Security Center pricing configurations in the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2018-06-01 <br />
 **Properties:** pricingTier, name
  <br />
 
@@ -762,7 +762,7 @@ The regular / day to day use accounts are subject to a lot of credential theft a
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/%7BuniquePIMIdentifier%7D/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType%20ne%20%27{filterCondition}%27)<br />
+- PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** subject.type, roleDefinition.displayName
  <br />
 
@@ -770,7 +770,7 @@ The regular / day to day use accounts are subject to a lot of credential theft a
 **Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** role
  <br />
 
@@ -817,7 +817,7 @@ ASC monitors various security parameters on a VM such as missing updates, OS sec
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list auto provisioning settings at subscription level: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Security/autoProvisioningSettings/default?api-version=2017-08-01-preview <br />
+- ARM API to list auto provisioning settings at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/autoProvisioningSettings/default?api-version=2017-08-01-preview <br />
 **Properties:** autoProvision
  <br />
 
@@ -876,7 +876,7 @@ Security contact information will be used by Microsoft to contact you if the Mic
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all security contact configurations for the subscription: - /subscriptions/%7BsubscriptionId%7D/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview <br />
+- ARM API to list all security contact configurations for the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview <br />
 **Properties:** properties.emails, properties.phone, properties.alertNotifications.state, properties.alertNotifications.minimalSeverity, properties.notificationsByRole.state, properties.notificationsByRole.roles
  <br />
 
@@ -923,7 +923,7 @@ By using Conditional Access policies for privileged roles, you can apply the rig
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+%27{0}%27)+and+((roleDefinition/templateId+eq+%27{1}%27)+or+(roleDefinition/templateId+eq+%27{2}%27)+or+(roleDefinition/templateId+eq+%27{3}%27)) <br />
+- PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+'{0}')+and+((roleDefinition/templateId+eq+'{1}')+or+(roleDefinition/templateId+eq+'{2}')+or+(roleDefinition/templateId+eq+'{3}')) <br />
 **Properties:** roleDefinitionId, userMemberSettings, roleDefinition.displayName
  <br />
 
