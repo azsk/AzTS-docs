@@ -17,7 +17,7 @@
 - [Azure_Subscription_Use_Only_Alt_Credentials](#Azure_Subscription_Use_Only_Alt_Credentials)
 - [Azure_Subscription_Config_ASC_Enable_AutoProvisioning](#Azure_Subscription_Config_ASC_Enable_AutoProvisioning)
 - [Azure_Subscription_Config_ASC_Setup_SecurityContacts](#Azure_Subscription_Config_ASC_Setup_SecurityContacts)
-- [Azure_Subscription_SI_No_Billing_Activity_Trial](#Azure_Subscription_SI_No_Billing_Activity_Trial)
+- [Azure_Subscription_SI_No_Billing_Activity](#Azure_Subscription_SI_No_Billing_Activity)
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
 
 <!-- /TOC -->
@@ -27,7 +27,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Remove_Deprecated_Accounts 
 
-### DisplayName 
+### Display Name 
 Remove Orphaned accounts from your subscription(s) 
 
 ### Rationale 
@@ -59,16 +59,22 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 
 ### Azure Policy or ARM API used for evaluation 
 
+- Azure Security Center Recommendation - [Deprecated accounts should be removed from subscriptions](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/00c6d40b-e990-6acf-d4f3-471e747a27c4)
+
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
-**Properties:** principalId
+**Properties:** [\*].properties.principalId
  <br />
 
 - PIM API to get role assignment: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}') <br />
-**Properties:** subject.id
+**Properties:** [\*].subject.id
+ <br />
+
+- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+**Properties:** [\*].properties.emailAddress
  <br />
 
 - ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
-**Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.Id, [\*].properties.displayName, [\*].properties.status.code, [\*].properties.status, [\*].properties.additionalData
  <br />
 
 <br />
@@ -77,7 +83,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities 
 
-### DisplayName 
+### Display Name 
 Remove external accounts from Azure subscriptions 
 
 ### Rationale 
@@ -108,11 +114,19 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject.principalName
+**Properties:** [\*].subject.id, [\*].subject.type
+ <br />
+
+- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+**Properties:** [\*].properties.principalId, [\*].properties.principalType
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** emailAddress
+**Properties:** [\*].properties.emailAddress
+ <br />
+
+- Graph API to fetch additional details: - /beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState<br />
+**Properties:** [\*].userType (To identify guest accounts)
  <br />
 
 <br />
@@ -121,7 +135,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles 
 
-### DisplayName 
+### Display Name 
 Remove external accounts with privileged roles at subscription scope 
 
 ### Rationale 
@@ -162,19 +176,19 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject.type, roleDefinition.displayName
+**Properties:** [\*].subject.type, [\*].roleDefinition.displayName
  <br />
 
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
-**Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
+**Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** role
+**Properties:** [\*].properties.role
  <br />
 
 - Graph API to fetch additional details: - /beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState<br />
-**Properties:** userType (To identify guest accounts)
+**Properties:** [\*].userType (To identify guest accounts)
  <br />
 
 <br />
@@ -183,7 +197,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count 
 
-### DisplayName 
+### Display Name 
 Limit access per subscription to 2 or less classic administrators 
 
 ### Rationale 
@@ -217,7 +231,7 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** properties.role
+**Properties:** [\*].properties.role
  <br />
 
 <br />
@@ -226,7 +240,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Remove_Management_Certs 
 
-### DisplayName 
+### Display Name 
 Do not use management certificates 
 
 ### Rationale 
@@ -252,8 +266,10 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 ### Azure Policy or ARM API used for evaluation 
 
+- Azure Security Center Recommendation - [Service principals should be used to protect your subscriptions instead of Management Certificates](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/2acd365d-e8b5-4094-bce4-244b7c51d67c)
+
 - ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
-**Properties:** id, name, resourceDetails.Id, displayName, status.code, status, additionalData
+**Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.Id, [\*].properties.displayName, [\*].properties.status.code, [\*].properties.status, [\*].properties.additionalData
  <br />
 
 <br />
@@ -262,7 +278,7 @@ ___
 
 ## Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts 
 
-### DisplayName 
+### Display Name 
 Pending Azure Security Center (ASC) alerts must be resolved 
 
 ### Rationale 
@@ -296,7 +312,7 @@ Based on the policies that are enabled in the subscription, Azure Security Cente
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all the alerts that are associated with the subscription: - /subscriptions/{subscriptionId}/providers/microsoft.Security/alerts?api-version=2015-06-01-preview <br />
-**Properties:** properties.state, properties.reportedSeverity, properties.reportedTimeUtc
+**Properties:** [\*].properties.state, [\*].properties.reportedSeverity, [\*].properties.reportedTimeUtc
  <br />
 
 <br />
@@ -305,7 +321,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Custom_RBAC_Roles 
 
-### DisplayName 
+### Display Name 
 Do not use custom-defined RBAC roles 
 
 ### Rationale 
@@ -335,19 +351,19 @@ Custom RBAC role definitions are usually tricky to get right. A lot of threat mo
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject.type, roleDefinition.displayName
+**Properties:** [\*].subject.type, [\*].roleDefinition.displayName
  <br />
 
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
-**Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId), memberType
+**Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId), [\*].properties.memberType
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** role
+**Properties:** [\*].properties.role
  <br />
 
 - ARM API to get custom role definitions: - /{scope}/providers/Microsoft.Authorization/roleDefinitions?$filter=type eq 'CustomRole'&api-version=2018-01-01-preview<br />
-**Properties:** roleName
+**Properties:** [\*].properties.roleName
  <br />
 
 <br />
@@ -356,7 +372,7 @@ ___
 
 ## Azure_Subscription_SI_Classic_Resources 
 
-### DisplayName 
+### Display Name 
 Remove classic resources on a subscription 
 
 ### Rationale 
@@ -395,7 +411,7 @@ You should use new ARM/v2 resources as the ARM model provides several security e
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all resources in a Subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
-**Properties:** type <br />The following Classic resource types are in scope for the evaluation: <br />1. Microsoft.ClassicCompute/virtualMachines <br />2. Microsoft.ClassicStorage/storageAccounts <br /> 3. Microsoft.ClassicCompute/domainNames <br />4. Microsoft.ClassicNetwork/virtualNetworks <br />5. Microsoft.ClassicNetwork/reservedIps <br />6. Microsoft.ClassicNetwork/networkSecurityGroups <br />7. Microsoft.MarketplaceApps/classicDevServices
+**Properties:** [\*].type <br />The following Classic resource types are in scope for the evaluation: <br />1. Microsoft.ClassicCompute/virtualMachines <br />2. Microsoft.ClassicStorage/storageAccounts <br /> 3. Microsoft.ClassicCompute/domainNames <br />4. Microsoft.ClassicNetwork/virtualNetworks <br />5. Microsoft.ClassicNetwork/reservedIps <br />6. Microsoft.ClassicNetwork/networkSecurityGroups <br />7. Microsoft.MarketplaceApps/classicDevServices
  <br />
 
 <br />
@@ -404,7 +420,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access 
 
-### DisplayName 
+### Display Name 
 Do not grant permanent access for privileged subscription level roles 
 
 ### Rationale 
@@ -455,19 +471,19 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject.type, roleDefinition.displayName, assignmentState, linkedEligibleRoleAssignmentId, memberType, subject.displayName
+**Properties:** [\*].subject.type, [\*].roleDefinition.displayName, [\*].assignmentState, [\*].linkedEligibleRoleAssignmentId, [\*].memberType, [\*].subject.displayName
  <br />
 
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
-**Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
+**Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** role
+**Properties:** [\*].properties.role
  <br />
 
 - Graph API to fetch additional details: - /myorganization/getObjectsByObjectIds?api-version=1.6&$select=objectType,objectId,displayName,userPrincipalName<br />
-**Properties:** displayName
+**Properties:** [\*].displayName
  <br />
 
 <br />
@@ -476,7 +492,7 @@ ___
 
 ## Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG 
 
-### DisplayName 
+### Display Name 
 Do not grant permanent access for privileged roles at resource group level 
 
 ### Rationale 
@@ -525,19 +541,19 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject.type, roleDefinition.displayName, assignmentState, linkedEligibleRoleAssignmentId, memberType, subject.displayName
+**Properties:** [\*].subject.type, [\*].roleDefinition.displayName, [\*].assignmentState, [\*].linkedEligibleRoleAssignmentId, [\*].memberType, [\*].subject.displayName
  <br />
 
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
-**Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
+**Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** role
+**Properties:** [\*].properties.role
  <br />
 
 - Graph API to fetch additional details: - /myorganization/getObjectsByObjectIds?api-version=1.6&$select=objectType,objectId,displayName,userPrincipalName<br />
-**Properties:** displayName
+**Properties:** [\*].displayName
  <br />
 
 <br />
@@ -546,7 +562,7 @@ ___
 
 ## Azure_Subscription_Config_Add_Required_Tags 
 
-### DisplayName 
+### Display Name 
 Mandatory tags must be set per your organization policy 
 
 ### Rationale 
@@ -627,7 +643,7 @@ Certain tags are expected to be present in all resources to support enterprise w
  <br />
 
 - ARM API to get resource group tags: - /subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01 <br />
-**Properties:** tags
+**Properties:** [\*].tags
  <br />
 
 <br />
@@ -636,7 +652,7 @@ ___
 
 ## Azure_Subscription_Config_ASC_Defender 
 
-### DisplayName 
+### Display Name 
 Enable all Azure Defender plans in Azure Security Center 
 
 ### Rationale 
@@ -648,44 +664,36 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
     "ReqASCTier": "Standard",
     "ReqASCTierResourceTypes": [
         {
-            "DisplayName": "Servers",
-            "Type": "VirtualMachines"
+            "Type": "VirtualMachines",
+            "DisplayName": "Servers"
         },
         {
-            "DisplayName": "Azure SQL Databases",
-            "Type": "SqlServers"
+            "Type": "SqlServers",
+            "DisplayName": "Azure SQL Databases"
         },
         {
-            "DisplayName": "App Service",
-            "Type": "AppServices"
+            "Type": "AppServices",
+            "DisplayName": "App Service"
         },
         {
-            "DisplayName": "Storage",
-            "Type": "StorageAccounts"
+            "Type": "StorageAccounts",
+            "DisplayName": "Storage"
         },
         {
-            "DisplayName": "Kubernetes",
-            "Type": "KubernetesService"
+            "Type": "KeyVaults",
+            "DisplayName": "Key Vault"
         },
         {
-            "DisplayName": "Container registries",
-            "Type": "ContainerRegistry"
+            "Type": "SqlServerVirtualMachines",
+            "DisplayName": "SQL servers on machines"
         },
         {
-            "DisplayName": "Key Vault",
-            "Type": "KeyVaults"
+            "Type": "Arm",
+            "DisplayName": "Resource Manager"
         },
         {
-            "DisplayName": "SQL servers on machines",
-            "Type": "SqlServerVirtualMachines"
-        },
-        {
-            "DisplayName": "Resource Manager",
-            "Type": "Arm"
-        },
-        {
-            "DisplayName": "DNS",
-            "Type": "Dns"
+            "Type": "Dns",
+            "DisplayName": "DNS"
         }
     ]
 }
@@ -709,7 +717,7 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list Security Center pricing configurations in the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2018-06-01 <br />
-**Properties:** pricingTier, name
+**Properties:** [\*].properties.pricingTier, [\*].name
  <br />
 
 <br />
@@ -718,7 +726,7 @@ ___
 
 ## Azure_Subscription_Use_Only_Alt_Credentials 
 
-### DisplayName 
+### Display Name 
 Use Smart-Card ALT (SC-ALT) accounts to access subscription 
 
 ### Rationale 
@@ -727,15 +735,14 @@ The regular / day to day use accounts are subject to a lot of credential theft a
 ### Control Settings 
 ```json 
 {
-    "AlernateAccountRegularExpressionForOrg": "^sc-(.)*@(.)*microsoft.com$",
     "CriticalPIMRoles": {
-        "ResourceGroup": [
-            "Owner",
-            "User Access Administrator"
-        ],
         "Subscription": [
             "Owner",
             "Contributor",
+            "User Access Administrator"
+        ],
+        "ResourceGroup": [
+            "Owner",
             "User Access Administrator"
         ]
     }
@@ -763,19 +770,19 @@ The regular / day to day use accounts are subject to a lot of credential theft a
 ### Azure Policy or ARM API used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
-**Properties:** subject.type, roleDefinition.displayName
+**Properties:** [\*].subject.type, [\*].roleDefinition.displayName
  <br />
 
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
-**Properties:** principalType, roleDefinitionId (Role name resolved from roleDefinitionId)
+**Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
 - ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
-**Properties:** role
+**Properties:** [\*].properties.role
  <br />
 
 - Graph API to fetch additional details: - /beta/directoryObjects/getByIds?$select=id,userPrincipalName,onPremisesExtensionAttributes,userType,creationType,externalUserState<br />
-**Properties:** userType (To identify guest accounts), onPremisesExtensionAttributes.extensionAttribute2
+**Properties:** [\*].userType (To identify guest accounts), [\*].onPremisesExtensionAttributes.extensionAttribute2
  <br />
 
 <br />
@@ -784,7 +791,7 @@ ___
 
 ## Azure_Subscription_Config_ASC_Enable_AutoProvisioning 
 
-### DisplayName 
+### Display Name 
 Turn on Microsoft Monitoring Agent (MMA) to enable Security Monitoring 
 
 ### Rationale 
@@ -811,14 +818,17 @@ ASC monitors various security parameters on a VM such as missing updates, OS sec
 - **PowerShell** 
 
 	 ```powershell 
-	 # Run this command for setting up AutoProvisioning settings
+     # This powershell command is from Secure DevOps Kit for Azure (AzSK), https://github.com/azsk/DevOpsKit-docs
+     # For more information about the command please visit: https://github.com/azsk/DevOpsKit-docs/blob/master/01-Subscription-Security/Readme.md#azsk-azure-security-center-asc-configuration-1
+	 
+     # Run this command for setting up AutoProvisioning settings
      Set-AzSKAzureSecurityCenterPolicies -SubscriptionId '<SubscriptionId>'
 	 ```  
 
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list auto provisioning settings at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/autoProvisioningSettings/default?api-version=2017-08-01-preview <br />
-**Properties:** autoProvision
+**Properties:** properties.autoProvision
  <br />
 
 <br />
@@ -827,7 +837,7 @@ ___
 
 ## Azure_Subscription_Config_ASC_Setup_SecurityContacts 
 
-### DisplayName 
+### Display Name 
 A security contact and alerts must be configured for your subscription 
 
 ### Rationale 
@@ -884,9 +894,53 @@ Security contact information will be used by Microsoft to contact you if the Mic
 
 ___ 
 
+## Azure_Subscription_SI_No_Billing_Activity 
+
+### Display Name 
+Subscriptions with no billing activity and resources must be deleted 
+
+### Rationale 
+Cleaning up unused subscriptions is suggested as a good hygiene practice. 
+
+### Control Settings 
+```json 
+{
+    "MinReqdBillingPeriodInDays": 90,
+    "GracePeriodForDisabledSubsInDays": 0
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Subscription has been billed in the last 90 days or it is an active subscription which has resources.
+> 
+> **Failed:** 
+> No billing activity and resources were found for a subscription in last ninety days.
+>
+> **Verify:**
+> Billing info is not available for processing.
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 To cancel subscription in the Azure portal, <br />1. Select your subscription from the Subscriptions page in the Azure portal. <br />2. Select the subscription that you want to cancel. <br />3. Select Overview, and then select Cancel subscription. <br />4. Follow prompts and finish cancellation. <br />For detailed instructions, refer: https://docs.microsoft.com/en-us/azure/cost-management-billing/manage/cancel-azure-subscription.
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list resources under subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
+**Properties:** [\*].id
+ <br />
+
+<br />
+
+___ 
+
 ## Azure_Subscription_Configure_Conditional_Access_for_PIM 
 
-### DisplayName 
+### Display Name 
 Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions 
 
 ### Rationale 
@@ -914,6 +968,9 @@ By using Conditional Access policies for privileged roles, you can apply the rig
 - **PowerShell** 
 
 	 ```powershell 
+     # This powershell command is from Secure DevOps Kit for Azure (AzSK), https://github.com/azsk/DevOpsKit-docs
+     # For more information about the command please visit: https://github.com/azsk/DevOpsKit-docs/blob/master/01-Subscription-Security/Readme.md#azsk-privileged-identity-management-pim-helper-cmdlets
+
 	 # Run the below command for Owner, Contributor and User Access Administrator roles for the subscription
      Set-AzSKPIMConfiguration -ConfigureRoleSettings -SubscriptionId `$subid -RoleName `$roleName  -ApplyConditionalAccessPolicyForRoleActivation `$true
 
@@ -923,8 +980,8 @@ By using Conditional Access policies for privileged roles, you can apply the rig
 
 ### Azure Policy or ARM API used for evaluation 
 
-- PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+'{0}')+and+((roleDefinition/templateId+eq+'{1}')+or+(roleDefinition/templateId+eq+'{2}')+or+(roleDefinition/templateId+eq+'{3}')) <br />
-**Properties:** roleDefinitionId, userMemberSettings, roleDefinition.displayName
+- PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+'{uniquePimIdentifier}')+and+((roleDefinition/templateId+eq+'{ownerTemplateId}')+or+(roleDefinition/templateId+eq+'{userAccessAdminTemplateId}')+or+(roleDefinition/templateId+eq+'{contributorTemplateId}')) <br />
+**Properties:** [\*].roleDefinitionId, [\*].userMemberSettings, [\*].roleDefinition.displayName
  <br />
 
 <br />
