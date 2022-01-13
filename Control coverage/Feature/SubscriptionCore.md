@@ -930,6 +930,8 @@ Cleaning up unused subscriptions is suggested as a good hygiene practice.
 
 ### Azure Policy or ARM API used for evaluation 
 
+- This control is not evaluated using an Azure ARM API but rather a custom data source. <br />This control will be marked as "Verify" for external customers since the billing information will not be available. <br />With the upcoming extensibility updates, external customers will be able to extend this control by adding their own control logic.
+
 - ARM API to list resources under subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
 **Properties:** [\*].id
  <br />
