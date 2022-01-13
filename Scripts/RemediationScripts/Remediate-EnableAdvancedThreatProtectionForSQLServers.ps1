@@ -833,25 +833,13 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     $emailAdmins = $sqlServerInstance.IsEmailAccountAdminsConfigured
 
                     # If no email address has already been configured for the SQL Server, and if email notifications to Admins and Subscription Owners is not enabled, check if contact details have been configured at the Subscription level.
-                    if ($notificationRecipientsEmails.Length -eq 0 -and $emailAdmins -eq $false)
+                    if ($notificationRecipientsEmails.Length -eq 0 )
                     {
                         # Azure Security Center supports comma-separated email addresses.
                         # Advanced Threat Protection supports semi-colon-separated email addresses.
                       
-                        $notificationRecipientsEmails = $emailAddressesConfiguredAtSubscriptionLevel
-                        $emailAdmins = $isEmailAccountAdminsConfiguredAtSubscriptionLevel
-
-                        # If no email address has already been configured at the Subscription level, and if email notifications to Admins and Subscription Owners is not enabled at the Subscription level, the current sign-in address will be used.
-                        if ($notificationRecipientsEmails.Length -eq 0 -and $emailAdmins -eq $false)
-                        {
-                            $notificationRecipientsEmails = $context.Account.Id
-                            $emailAdmins = $true
-                        }
-                        else
-                        {
-                            $notificationRecipientsEmails = [String]::Empty
-                            $emailAdmins = $false
-                        }
+                        $notificationRecipientsEmails = [String]::Empty
+                        $emailAdmins = $true
                     }
 
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
