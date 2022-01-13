@@ -896,6 +896,8 @@ ___
 
 ## Azure_Subscription_SI_No_Billing_Activity 
 
+> This control is not evaluated using an Azure ARM API but rather a custom data source and will be marked as "Verify" for users outside Microsoft. <br />With the upcoming extensibility updates, users will be able to extend this control by adding their own control logic.
+
 ### Display Name 
 Subscriptions with no billing activity and resources must be deleted 
 
@@ -927,14 +929,6 @@ Cleaning up unused subscriptions is suggested as a good hygiene practice.
 - **Azure Portal** 
 
 	 To cancel subscription in the Azure portal, <br />1. Select your subscription from the Subscriptions page in the Azure portal. <br />2. Select the subscription that you want to cancel. <br />3. Select Overview, and then select Cancel subscription. <br />4. Follow prompts and finish cancellation. <br />For detailed instructions, refer: https://docs.microsoft.com/en-us/azure/cost-management-billing/manage/cancel-azure-subscription.
-
-### Azure Policy or ARM API used for evaluation 
-
-- This control is not evaluated using an Azure ARM API but rather a custom data source. <br />This control will be marked as "Verify" for users outside Microsoft since the billing information will not be available. <br />With the upcoming extensibility updates, users will be able to extend this control by adding their own control logic.
-
-- ARM API to list resources under subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
-**Properties:** [\*].id
- <br />
 
 <br />
 
