@@ -24,14 +24,15 @@ function PrintSubscriptions
     }
 }
 
-function StartRemediation
+function StartRemediation($timestamp)
 {
     $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
     foreach($file in $failedControlsFiles)
     {
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
-        $logFile = "LogFiles\log_" + $($SubscriptionId) + ".json"
+        $logFile = "LogFiles\" + $($timestamp) + "\log_" + $($SubscriptionId) + ".json"
+        #Write-Host $logFile #delete
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Getting failing controls details of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
@@ -144,14 +145,17 @@ Enter the choice (1/2)";
                     }
                 }
                 Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Remediating control having control id [$($control.ControlId)] : using [$($control.LoadCommand)] bulk remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Remediating control having control id [$($control.ControlId)] using [$($control.LoadCommand)] bulk remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
 
                 #command to execute the corresponding control remediation script.
                 # what if corresponding remediation script is not present?
                 #if(Test-Path ($(Get-location)/$control.LoadCommand)) {
+                    [string]$timeStampString = $timestamp
+                   # Write-Host $timeStampString
                     . ("./" + "RemediationScripts\" + $control.LoadCommand)       
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + "-AutoRemediation y";
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation y" + " -timeStamp " + "`'" + $timeStampString +  "`'";
+                   # Write-Host $commandString
                     function runCommand($command) {
                         if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                         else { Invoke-Expression $command }
@@ -207,9 +211,10 @@ Enter the choice (1/2)";
 
 # TODO : Do we need line 212-217 and how to print that the showed remediation is previous one in case it get's displayed.
 
-function PrintRemediationSummary
+function PrintRemediationSummary($timestamp)
 {
-    $logFiles = @(Get-ChildItem LogFiles\*.json);
+    $logFiles = @(Get-ChildItem LogFiles\$($timestamp)\*.json);
+    #Write-Host $($timestamp)   #delete
     if($logFiles.Count -eq 0)
     {
         Write-Host $([Constants]::SingleDashLine)
@@ -233,8 +238,6 @@ function PrintRemediationSummary
                     "NumberOfSkippedResources" = $logControl.SkippedResources.Length;
                 }
             }
-            $log.hasBeenRead="1"
-            $log | ConvertTo-json -depth 100  | Out-File $logFile
         }
         $remediationSummary | Format-Table
         Write-Host "More details can be found at folder [$(Get-location)/LogFiles]" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -244,10 +247,13 @@ function PrintRemediationSummary
 function StartExecution
 {
     #get time stamp
+    $timestamp = $(get-date -f MMddyyyyHHmmss)
+    $directory = "$(Get-location)/LogFiles/$($timestamp)"
+    $null = New-Item -Type Directory -path $directory -Force -ErrorAction Stop
     PrintGeneralInformation
     PrintSubscriptions
-    StartRemediation #pass it
-    PrintRemediationSummary #pass it
+    StartRemediation ($timestamp)
+    PrintRemediationSummary($timestamp)
 }
 
 class Constants

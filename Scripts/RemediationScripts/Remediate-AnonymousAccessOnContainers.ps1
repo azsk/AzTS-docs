@@ -155,7 +155,11 @@ function Remove-AnonymousAccessOnContainers
 
         [switch]
         [Parameter(Mandatory = $false)]
-        $AutoRemediation
+        $AutoRemediation,
+
+        [string]
+        [Parameter(Mandatory = $false)]
+        $timeStamp
     )
 
     if($RemediationType -eq "DisableAnonymousAccessOnContainers" -and [string]::IsNullOrWhiteSpace($Path))
@@ -462,7 +466,9 @@ function Remove-AnonymousAccessOnContainers
                     Write-Host $([Constants]::DoubleDashLine)
                 }
                 if($AutoRemediation){
-                    $logFile = "LogFiles\log_" + $($SubscriptionId) +".json"
+                    $logFile = "LogFiles\"+ $($timeStamp) + "\log_" + $($SubscriptionId) +".json"
+                    #Write-Host $timeStamp
+                   # Write-Host $logFile
                     $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
                     foreach($logControl in $log.ControlList){
                         if($logControl.ControlId -eq $controlIds){
