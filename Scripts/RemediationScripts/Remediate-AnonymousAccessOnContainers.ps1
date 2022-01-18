@@ -359,7 +359,7 @@ function Remove-AnonymousAccessOnContainers
                     }
                     else
                     {
-                        $stgWithDisableAllowBlobPublicAccess += $_
+                        $stgWithDisableAllowBlobPublicAccess += $_ | select -Property "StorageAccountName", "ResourceGroupName", "Id"
                     }                    
                 }              
     
@@ -371,6 +371,20 @@ function Remove-AnonymousAccessOnContainers
 
                 Write-Host "`n"
 
+                $logRemediatedResources = @()
+                $logSkippedResources=@()
+                #Write-Host $totalStgWithDisableAllowBlobPublicAccess   #delete_this_statement
+                if($totalStgWithDisableAllowBlobPublicAccess -gt 0){
+                    #Write-Host "hehe1"   #delete_this_statement
+                    $stgWithDisableAllowBlobPublicAccess = $stgWithDisableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
+                    $stgWithDisableAllowBlobPublicAccess | ForEach-Object {
+                    # Write-Host "hehe2" #delete
+                            $logResource = @{}
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                            $logResource.Add("ResourceName",($_.StorageAccountName))
+                            $logSkippedResources += $logResource
+                        }
+                }
                 # Start remediation storage account(s) with 'Allow Blob Public Access' enabled.
                 if ($totalStgWithEnableAllowBlobPublicAccess -gt 0)
                 {
@@ -392,7 +406,6 @@ function Remove-AnonymousAccessOnContainers
                     Write-Host "`n"
                     Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s)..."
                     $stgWithEnableAllowBlobPublicAccess = $stgWithEnableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
-                    $trackerResources = @()
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
                         {
@@ -400,13 +413,18 @@ function Remove-AnonymousAccessOnContainers
                             if($output -ne $null)
                             {
                                 $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
-                                $trackerResource = @{}
-                                $trackerResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                                $trackerResource.Add("ResourceName",($_.StorageAccountName))
-                                $trackerResources += $trackerResource
+                                $logResource = @{}
+                                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                                $logResource.Add("ResourceName",($_.StorageAccountName))
+                                $logRemediatedResources += $logResource
                             }
                             else
                             {
+                                $logResource = @{}
+                                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                                $logResource.Add("ResourceName",($_.StorageAccountName))
+                                $logSkippedResources += $logResource
+
                                 $item =  New-Object psobject -Property @{  
                                     StorageAccountName = $_.StorageAccountName                
                                     ResourceGroupName = $_.ResourceGroupName
@@ -423,16 +441,6 @@ function Remove-AnonymousAccessOnContainers
                             }
                             $skippedStorageAccountFromRemediation += $item
                         }
-                    }
-                    if($AutoRemediation){
-                        $trackerFile = "TrackerFilesGenerated\tracker_" + $($SubscriptionId) +".json"
-                        $tracker =  Get-content -Raw -path $trackerFile | ConvertFrom-Json
-                        foreach($trackerControl in $tracker){
-                            if($trackerControl.ControlId -eq $controlIds){
-                                $trackerControl.RemediatedList.RemediatedResources=$trackerResources
-                            }
-                        }
-                        $tracker | ConvertTo-json -depth 100  | Out-File $trackerFile
                     }
 
                     Write-Host "`n"
@@ -452,8 +460,19 @@ function Remove-AnonymousAccessOnContainers
                 {
                     Write-Host "No storage account(s) found with enabled 'Allow Blob Public Access'." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::DoubleDashLine)
-                    break
                 }
+                if($AutoRemediation){
+                    $logFile = "LogFiles\log_" + $($SubscriptionId) +".json"
+                    $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+                    foreach($logControl in $log.ControlList){
+                        if($logControl.ControlId -eq $controlIds){
+                            $logControl.RemediatedResources=$logRemediatedResources
+                            $logControl.SkippedResources=$logSkippedResources
+                        }
+                    }
+                    $log | ConvertTo-json -depth 100  | Out-File $logFile
+                }
+                break
             }
             catch{
                 Write-Host "Error occurred while remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
@@ -581,9 +600,11 @@ function Remove-AnonymousAccessOnContainers
             break;
         }
     }
-    $resourceSummary += [Constants]::DoubleDashLine
-    [ResourceResolver]::RemediationSummary($resourceSummary, $folderPath)
-    Write-Host $([Constants]::DoubleDashLine)
+    if(-not ($AutoRemediation) ){
+        $resourceSummary += [Constants]::DoubleDashLine
+        [ResourceResolver]::RemediationSummary($resourceSummary, $folderPath)
+       Write-Host $([Constants]::DoubleDashLine)
+    }
 }
 
 # Script to rollback changes done by remediation script

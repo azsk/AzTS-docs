@@ -1,98 +1,255 @@
-function remediate{
-    $files = @(Get-ChildItem FailedControls\*.json)
-    $count = 0
-    [string]$totalCount = $files.Length
-    foreach ($file in $files) {
-        $count = $count + 1
+function PrintGeneralInformation
+{
+    $scriptInformation = "**General Information**
+[1]. All the failing controls, which have been downloaded using AzTS UI, are present at [$(Get-location)\FailedControls] and same will be referred for remediation.
+[2]. Remediation scripts will be used to fix the failing controls in bulk.
+[3]. Different controls require different level of permissions to fix them.
+[4]. Minimum of contributor role at a subscription level is recommended for most of the cases.";
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $scriptInformation -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
+} 
+
+function PrintSubscriptions
+{
+    $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
+    Write-Host "Following subscriptions will be remediated:"
+    $filesCount = 1;
+    foreach($file in $failedControlsFiles)
+    {
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
-        $uniqueControls = $JsonContent.ControlRemediationList
-        $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId) +".Json"
-        Write-Host $([Constants]::DoubleDashLine)
-        $str =  "Starting Remediating Subscription (" + $count + "/" + $totalCount + "): $($SubscriptionId)  "
-        Write-Host $str -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Following resources will be remediated :" -ForegroundColor $([Constants]::MessageType.Warning)
-        #resource
-        $resources = @()
-        foreach($uniqueControl in $uniqueControls){
-            foreach($failedResources in $uniqueControl.FailedResourceList){
-                $resources += [PSCustomObject]@{
-                    ControlId = $uniqueControl.ControlId;
-                    ResourceGroupName = $failedResources.ResourceGroupName;
-                    ResourceName = $failedResources.ResourceName;
-                    ResourceId = $failedResources.ResourceId;
-                }
-            }
-        }
-        $resources | Format-Table
-        $continueRemediation = Read-Host -Prompt "Do you want to continue? (Press y for Yes)";
-        if($continueRemediation -ne "y") {continue;}
-
-        foreach ($uniqueControl in $uniqueControls){
-            $remediate = $true
-            if(Test-Path ($trackerPath) ){
-                $trackerUniqueControls = $trackerFileContent.ControlRemediationList
-                foreach($uniqueControlTracker in $trackerUniqueControls){
-                    if($uniqueControlTracker.controlId -eq $uniqueControl.controlId ){
-                        if( ($uniqueControl.FailedResourceList.Length -eq $uniqueControlTracker.FailedResourceList.Length)){
-                            $remediate = $false
-                        }
-                    }
-                }
-            }
-            if($remediate){
-                . ("./" + "RemediationScripts\" + $uniqueControl.LoadCommand)       
-                $commandString = $uniqueControl.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -FailedControlsPath " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + "-AutoRemediation y";
-                function runCommand($command) {
-                    if ($command[0] -eq '"') { Invoke-Expression "& $command" }
-                    else { Invoke-Expression $command }
-                }
-                runCommand($commandString)
-            }
-        }
-    }
-
-    # Display Summary
-    Write-Host 
-    Write-Host 
-    Set-PSReadLineOption -Colors @{
-        "Parameter"="#ff81f7"
-        "Command"="Blue"
-        "Error"=[ConsoleColor]::DarkRed
-    }
-    $summaryTable = @()
-    foreach ($file in $files) {
-        $failedSubsContent =  Get-content -path $file | ConvertFrom-Json
-        $SubscriptionId = $failedSubsContent.SubscriptionId
-
-        $trackerPath = "TrackerFilesGenerated\tracker_"+ $SubscriptionId +".Json"
-        $trackerSubsContent =  Get-content -path $trackerPath | ConvertFrom-Json
-
-
-        $failedUniqueControls = $failedSubsContent.ControlRemediationList
-        $trackerUniqueControls = $trackerSubsContent.ControlRemediationList
-
-        foreach ($controlObj in $failedUniqueControls)
-        {
-            foreach ($trackerControlObj in $trackerUniqueControls)
-            {
-                if ($controlObj.controlId -eq $trackerControlObj.controlId)
-                {
-                    $countFailedResources = $controlObj.FailedResourceList.Count
-                    $countRemediatedResources = $trackerControlObj.FailedResourceList.Count
-                    $summaryTable += [pscustomobject]@{SubscriptionId = $SubscriptionId; ControlId = $controlObj.controlId; FailedResources = $countFailedResources; RemediatedResources = $countRemediatedResources}
-                }
-            }
-        }
-    }
-    if($summaryTable.count -gt 0){
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Remediation Summary" -ForegroundColor $([Constants]::MessageType.Update)
-        $summaryTable | Format-Table
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $filesCount . $SubscriptionId
+        $filesCount = $filesCount + 1
     }
 }
+
+function StartRemediation
+{
+    $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
+    foreach($file in $failedControlsFiles)
+    {
+        $JsonContent =  Get-content -path $file | ConvertFrom-Json
+        $SubscriptionId = $JsonContent.SubscriptionId
+        $logFile = "LogFiles\log_" + $($SubscriptionId) + ".json"
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Getting failing controls details of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+
+        # Display unique controls and no of resources.
+        $controlRemediationList = $JsonContent.ControlRemediationList
+        $controlsTable = @()
+        foreach($control in $controlRemediationList)
+        {
+            $controlsTable+= [PSCustomObject]@{
+                ControlId = $control.ControlId;
+                NumberOfFailingResources = $control.FailedResourceList.Length;
+            }
+        }
+        Write-Host "Failing Controls Summary" -ForegroundColor $([Constants]::MessageType.Update)
+        $controlsTable | Format-Table
+
+        #Do you want to dry run?
+
+        #Check for previous remediation
+        # if(Test-Path $logFile)
+        # {
+        #     $info = "A previous remediation log file has been detected for the subscription.`nThe log file can be found at `n[$(Get-location)\$($logFile)]";
+        #     $warning = "In case of re-remediation, the data related to previous remediation in the log file will be lost. `nIt is recommended to backup the log file data before proceeding further.";
+        #     $warning = "Before proceeding further, it is recommended to backup the log file data of previous remediation , if needed, else the data will be lost."
+        #     Write-Host $([Constants]::SingleDashLine)
+        #     Write-Host $info -ForegroundColor $([Constants]::MessageType.Info) 
+        #     Write-Host $([Constants]::SingleDashLine)
+        #     Write-Host $warning -ForegroundColor $([Constants]::MessageType.Warning) 
+        # }
+
+        #User input for whether to continue with current remediation or not
+        Write-Host $([Constants]::SingleDashLine)
+        $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y/N)";
+
+        if(($startRemediation -eq 'Y') -or ($startRemediation -eq 'y'))
+        {
+            Write-Host "User has provided consent to continue the remediation" -ForegroundColor $([Constants]::MessageType.Info)
+            $remediationLevel = Read-Host -Prompt "At which level you want to perform remediation?
+[1] Subscription: All controls will be remediated in a single flow.
+[2] Control: Confirmation will be asked before remediating each control.
+Press any other key to skip the remediation of current subscription
+Enter the choice (1/2)";
+
+            #Create new log file for the current subscription
+            try
+            {
+                if(Test-Path $logFile)
+                {
+                    Remove-Item $logFile
+                }
+                $null = New-Item -ItemType File -Path $logFile -Force -ErrorAction Stop
+                $logFileSchema = @{}
+                $logFileSchema.Add("SubscriptionId", $SubscriptionId)
+                #$logFileSchema.Add("hasBeenRead", "0")
+                $controlList = @()
+                foreach($control in $controlRemediationList)
+                {
+                    $jsonObject = @{}
+                    $jsonObject.Add("ControlId", $control.ControlId)
+                    $jsonObject.Add("NumberOfFailingResources", $control.FailedResourceList.Length)
+                    $remediatedResources = New-Object System.Collections.ArrayList
+                    $jsonObject.Add("RemediatedResources", $remediatedResources)
+                    $skippedResources = New-Object System.Collections.ArrayList
+                    $jsonObject.Add("SkippedResources", $skippedResources)
+                    $controlList+=$jsonObject
+                }
+                $logFileSchema.Add("ControlList", $controlList)
+                $logFileSchema | ConvertTo-json -depth 100  | Out-File $logFile
+            }
+            catch
+            {
+                throw $_.Exception.Message
+            }
+
+            # variable to track unexecuted resources
+            $skippedResources = @();
+            foreach($control in $controlRemediationList)
+            { 
+                if(($remediationLevel -ne '1') -and ($remediationLevel -ne '2'))
+                {
+                    break;
+                }
+                if($remediationLevel -eq '2'){
+                    $controlLevelRemediation =  Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y/N)"
+                    if(($controlLevelRemediation -ne 'Y') -and ($controlLevelRemediation -ne 'y'))
+                    {
+                        #enter into log 
+                        foreach($failedResource in $control.FailedResourceList)
+                        {
+                            $resource = @{}
+                            $resource.Add("ResourceGroupName", $failedResource.ResourceGroupName)
+                            $resource.Add("ResourceName", $failedResource.ResourceName)
+                            $skippedResources += $resource
+                        }
+                        $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+                        foreach($logControl in $log.ControlList)
+                        {
+                            if($logControl.ControlId -eq $control.ControlId){
+                                $logControl.SkippedResources=$skippedResources
+                            }
+                        }
+                        $log | ConvertTo-json -depth 100  | Out-File $logFile
+
+                        Write-Host $([Constants]::SingleDashLine)
+                        Write-Host "Skipped remediation of failing resources of control id : [$($control.ControlId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+
+                        continue;
+                    }
+                }
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Remediating control having control id [$($control.ControlId)] : using [$($control.LoadCommand)] bulk remediation script." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)
+
+                #command to execute the corresponding control remediation script.
+                # what if corresponding remediation script is not present?
+                #if(Test-Path ($(Get-location)/$control.LoadCommand)) {
+                    . ("./" + "RemediationScripts\" + $control.LoadCommand)       
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + "-AutoRemediation y";
+                    function runCommand($command) {
+                        if ($command[0] -eq '"') { Invoke-Expression "& $command" }
+                        else { Invoke-Expression $command }
+                    }
+                    runCommand($commandString)
+                #}else{
+                #    Write-Host "The Remediation Script [$(control.LoadCommand)] for control [$(control.ControlId)] is not present in folder [$(Get-location)/RemediationScripts]" -ForegroundColor $([Constants]::MessageType.Error)
+                    #Operation Terminate or continue?
+                #}
+
+                Write-Host $([Constants]::DoubleDashLine)
+            }
+
+            # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
+           if(($remediationLevel -eq 1) -or ($remediationLevel -eq 2))
+           {
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Completed remediation of subscription id : [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine) 
+           }
+           else
+           {
+                #tracking unexecuted resources
+                $skippedResources = @();
+                foreach($control in $controlRemediationList)
+                {
+                    foreach($failedResource in $control.FailedResourceList)
+                    {
+                        $resource = @{}
+                        $resource.Add("ResourceGroupName",$failedResource.ResourceGroupName)
+                        $resource.Add("ResourceName", $failedResource.ResourceName)
+                        $skippedResources += $resource
+                        #Write-Host $skippedResources
+                    }
+                    $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+                    foreach($logControl in $log.ControlList)
+                    {
+                        if($logControl.ControlId -eq $control.ControlId)
+                        {
+                            #$logControl.RemediatedResources=$logResources
+                            $logControl.SkippedResources=$skippedResources
+                        }
+                    }
+                    $log | ConvertTo-json -depth 100  | Out-File $logFile
+                }
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Skipped remediation of subscription id : [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+           }
+        }
+    }
+}
+
+# TODO : Do we need line 212-217 and how to print that the showed remediation is previous one in case it get's displayed.
+
+function PrintRemediationSummary
+{
+    $logFiles = @(Get-ChildItem LogFiles\*.json);
+    if($logFiles.Count -eq 0)
+    {
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "None of the failing controls have been remediated." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+    }
+    else
+    {
+        Write-Host "Remediation Summary" -ForegroundColor $([Constants]::MessageType.Update)
+        $remediationSummary = @()
+        foreach($logFile in $logFiles)
+        {
+            $log = Get-Content -Path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList)
+            {
+                $remediationSummary+=[PSCustomObject]@{
+                    "SubscriptionId" = $log.SubscriptionId;
+                    "ControlId" = $logControl.ControlId;
+                    "NumberOfFailingResources"= $logControl.NumberOfFailingResources;
+                    "NumberOfRemediatedResources" = $logControl.RemediatedResources.Length;
+                    "NumberOfSkippedResources" = $logControl.SkippedResources.Length;
+                }
+            }
+            $log.hasBeenRead="1"
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
+        $remediationSummary | Format-Table
+        Write-Host "More details can be found at folder [$(Get-location)/LogFiles]" -ForegroundColor $([Constants]::MessageType.Warning)
+    }
+}
+
+function StartExecution
+{
+    #get time stamp
+    PrintGeneralInformation
+    PrintSubscriptions
+    StartRemediation #pass it
+    PrintRemediationSummary #pass it
+}
+
 class Constants
 {
     static [Hashtable] $MessageType = @{
@@ -103,122 +260,8 @@ class Constants
         Default = [System.ConsoleColor]::White
     }
 
-    static [string] $DoubleDashLine    = "=========================================================================================="
+    static [string] $DoubleDashLine    = "================================================================================"
     static [string] $SingleDashLine    = "--------------------------------------------------------------------------------"
-}   
+} 
 
-function PrintSubscription{
-    $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
-    $filesCount = 1;
-    foreach($file in $failedControlsFiles){
-        $JsonContent =  Get-content -path $file | ConvertFrom-Json
-        $SubscriptionId = $JsonContent.SubscriptionId
-        Write-Host $filesCount . $SubscriptionId
-        $filesCount = $filesCount + 1
-    }
-}
-function StartOperation{
-    $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
-    #$trackerFile = $trackerPath = "TrackerFilesGenerated\tracker_" + $($SubscriptionId) +".Json"
-    $filesCount = 1;
-    foreach($file in $failedControlsFiles){
-        $JsonContent =  Get-content -path $file | ConvertFrom-Json
-        $SubscriptionId = $JsonContent.SubscriptionId
-        $trackerFile = "TrackerFilesGenerated\tracker_" + $($SubscriptionId) + ".json"
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Starting operation on Subscription Id: " $SubscriptionId -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::SingleDashLine)
-        # Write-Host "`n"
-        # Display unique controls and no of resources.
-        $controlRemediationList = $JsonContent.ControlRemediationList
-        $controlsTable = @()
-        foreach($control in $controlRemediationList){
-            $controlsTable+= [PSCustomObject]@{
-                ControlId = $control.ControlId;
-                NumberOfFailedResources = $control.FailedResourceList.Length;
-            }
-        }
-        $controlsTable | Format-Table
-        #DO you want to dry run
-
-        if(Test-Path $trackerFile){
-            Write-Host "The remediation operation has already been performed on the subscription. You can check the log file at $($trackerFile)".
-            $startRemediation = Read-Host -Prompt "Do you want to again remediate the subscription? (Y/N)";
-        }else{
-            $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y/N)";
-        }
-        if($startRemediation -eq 'Y'){
-            try{
-                if(Test-Path $trackerFile){
-                    Remove-Item $trackerFile
-                }
-                $null = New-Item -ItemType File -Path $trackerFile -Force -ErrorAction Stop
-                $JsonObjDic = @{}
-                $JsonObjDic.Add("SubscriptionId",$SubscriptionId)
-                $JsonArray = @()
-                foreach($control in $controlRemediationList){
-                    $JsonObject = @{}
-                    $JsonObject.Add("ControlId",$control.ControlId)
-                    $list = New-Object System.Collections.ArrayList
-                    $JsonObject.Add("RemediatedResources", $list)
-                    $JsonArray+=$JsonObject
-                }
-                $JsonObjDic.Add("RemediatedList",$JsonArray)
-                $JsonObjDic | ConvertTo-json -depth 100  | Out-File $trackerFile
-            }catch{
-                throw $_.Exception.Message
-            }
-            foreach($control in $controlRemediationList){
-                #$tracker = Get-content -Raw -path $trackerFile | ConvertFrom-Json 
-               
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Executing remediation script : " $control.LoadCommand -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "`n"
-                Write-Host $([Constants]::DoubleDashLine)
-
-                . ("./" + "RemediationScripts\" + $control.LoadCommand)       
-                $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + "-AutoRemediation y";
-                function runCommand($command) {
-                    if ($command[0] -eq '"') { Invoke-Expression "& $command" }
-                    else { Invoke-Expression $command }
-                }
-                runCommand($commandString)
-
-                Write-Host $([Constants]::DoubleDashLine)
-            }
-        }
-        #tracker file formation
-        #Do we need tracker file? No
-        # Print the remediation summary.
-        #$tracker = Get-Content -Raw -Path $trackerFile | ConvertFrom-Json
-    }
-}
-function PrintSummary{
-    Write-Host "Remediation Summary" -ForegroundColor $([Constants]::MessageType.Update)
-    $trackerFiles = @(Get-ChildItem TrackerFilesGenerated\*.json);
-    $remediationSummary = @()
-    foreach($file in $trackerFiles){
-        $JsonContent = Get-Content -Path $file | ConvertFrom-Json
-        foreach($tracker in $JsonContent.RemediatedList){
-            $remediationSummary+=[PSCustomObject]@{
-                "SubscriptionId" = $JsonContent.SubscriptionId;
-                "ControlId" = $tracker.ControlId;
-                "NumberOfRemediatedResources" = $tracker.RemediatedResources.Length;
-            }
-        }
-    }
-    $remediationSummary | Format-Table
-}
-#Execution begins here
-$introduction = "The Script remediate all the failing scan results for which the metadata has been downloaded. (present at 'FailedControls' folder of the current folder)";
-$subscriptionDetails = "The Subscriptions are : ";
-Write-Host $introduction -ForegroundColor $([Constants]::MessageType.Info)
-Write-Host "Disclaimer : Each remediation script requires different permission to run." -ForegroundColor $([Contants]::MessageType.Warning)
-Write-Host "`n"
-Write-Host $subscriptionDetails 
-PrintSubscription
-Write-Host "`n"
-Write-Host $([Constants]::DoubleDashLine)
-StartOperation
-PrintSummary
+StartExecution

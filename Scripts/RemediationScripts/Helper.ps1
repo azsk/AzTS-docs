@@ -129,4 +129,5 @@ class ResourceResolver
             	Add-Content -Value $messageToPrint -Path $path
         }
     }
+	
 }
