@@ -648,8 +648,9 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
         "OffByPolicy"
     ],
     "SubnetsToExcludeFromEvaluation": [
-        "gatewaysubnet",
-        "azurefirewallsubnet"
+        "azurefirewallsubnet",
+	"gatewaysubnet",
+        "routeserversubnet"
     ]
 }
  ``` 
