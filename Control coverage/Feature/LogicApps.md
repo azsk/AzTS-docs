@@ -63,7 +63,7 @@ Specifying the IP range ensures that the triggers can be invoked only from a res
 
 - ARM API to list all the logic apps under subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01
   <br />
-  **Properties:** [\*].accessControl.triggers.allowedCallerIpAddresses.[\*].addressRange
+  **Properties:** [\*].properties.accessControl.triggers.allowedCallerIpAddresses.[\*].addressRange
   <br />
   <br />
 
@@ -119,7 +119,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 - ARM API to list all the logic apps under subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01
   <br />
-  **Properties:** [\*].accessControl.contents.allowedCallerIpAddresses.[\*].addressRange
+  **Properties:** [\*].properties.accessControl.contents.allowedCallerIpAddresses.[\*].addressRange
   <br />
   <br />
 
