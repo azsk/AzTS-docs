@@ -32,7 +32,7 @@ POST https://<WebAPI-URL>/adhocscan/RequestScan?api-version=1.0
 ```
 > _Note:_<br/>
 >_1. 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#setup-for-azts-admin-only)._<br/>
->_2. 'api-version' is a required parameter. Current supported version: **1.0**_
+>_2. 'api-version' is an optional parameter. Current and default supported version: **1.0**_
 
 <br/>
 
