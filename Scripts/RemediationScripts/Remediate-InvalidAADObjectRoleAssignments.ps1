@@ -164,7 +164,7 @@ function Remove-AzTSInvalidAADAccounts
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     
-    Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking deprecated account with 'AccountAdministrator' role due to insufficient privilege. `n 3. Exclude checking role assignments at MG scope. `n 4. Checking only for user type assignments." -ForegroundColor Yellow
+    Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking deprecated account with 'AccountAdministrator' role due to insufficient privilege. `n    (To remove deprecated account role assignment with 'AccountAdministrator' role, please reach out to Azure Support) `n 3. Exclude checking role assignments at MG scope. `n 4. Checking only for user type assignments." -ForegroundColor Yellow
     Write-Host "------------------------------------------------------"
     Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
@@ -376,7 +376,6 @@ function Remove-AzTSInvalidAADAccounts
         # If there is any classic deprecated assignment present for 'AccountAdministrator' role remove from the collection
         # As AccounAdministrator assignment can't be removed using pwsh/script
         $invalidClassicRoles = $invalidClassicRoles | Where-Object { $_.RoleDefinitionName -notlike "*AccountAdministrator*"}
-
     }
 
     # Getting count of deprecated/invalid accounts
