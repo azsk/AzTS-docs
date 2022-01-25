@@ -39,7 +39,7 @@ POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanRes
 |----|----|----|----|----|
 | SubscriptionId | path | GUID | Subscription id to fetch control scan result. | Yes |
 | api-version | query | string | Version of the API to use. | No |
-| skiptoken | query | string | To get the next page of data set. | No |
+| skiptoken | query | string | Skip token for getting the next page of data set. If not passed, gets the first page of control scan result.| No |
 
 **Request Header**
 
@@ -59,7 +59,7 @@ POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanRes
 |------|------|------|
 | data | json object | Set of control scan result for current request. |
 | pageSize| int | Maximum records returned by the API at a time (i.e. 100). |
-| skipToken | string | To get the next page of data set. Returned only when the total number of requested control scan results exceed maximum page size. API will not return skipToken, if the current requested page is the last page of API response. |
+| skipToken | string | Skip token for getting the next page of data set. Returned only when the total number of requested control scan results exceed maximum page size. |
 | totalPages | int | Represents total number of pages available to get all control scan result for current request. |
 | totalRecords | int | Represents total number of control scan result for current request.|
 
