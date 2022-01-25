@@ -23,7 +23,9 @@ Below resource types can be checked for validating the security controls:
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
+|[KeyVault](Feature/KeyVault.md)|Microsoft.KeyVault/vaults|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
+|[LogicApps](Feature/LogicApps.md)|Microsoft.Logic/workflows|
 |[NotificationHub](Feature/NotificationHub.md)|Microsoft.NotificationHubs/namespaces/notificationHubs|
 |[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
