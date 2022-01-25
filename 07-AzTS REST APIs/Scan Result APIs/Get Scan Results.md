@@ -70,6 +70,18 @@ POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanRes
     "ScanRequestId":  "20210914014045"
 }
 ```
+
+**Response Body**
+|Name|Type|Description|
+|----|----|----|
+| data | json object | Set of control scan result for requested subscription. |
+| pageSize| int | Maximum records returned by the API at a time (i.e. 100). |
+| skipToken | string | Contains the next page number to fetch the next set of records. API will not return skipToken, if the current requested page is the last page of API response. |
+| totalPages | int | Represents total number of pages available to get all control scan result for requested subscription. |
+| totalRecords | int | Represents total number of control scan result for requested subscription.|
+
+<br/>
+
 **Sample Response**
 > **Note:** The response object shown here might be shortened for readability.
 
