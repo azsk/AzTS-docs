@@ -272,7 +272,6 @@ function Enable-StorageEncryptionInTransit
         # Connecting to AzAccount using user assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
         if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "User"))
         {
-            # Connect to AzAccount using user assigned managed identity.
             Write-Host $([Constants]::SingleDashLine)    
             Write-Host "Connecting to AzAccount..."
             $currentContext = Connect-AzAccount -Identity -AccountId $ClientId -ErrorAction Stop
@@ -290,7 +289,6 @@ function Enable-StorageEncryptionInTransit
             Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-
 
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
@@ -381,7 +379,7 @@ function Enable-StorageEncryptionInTransit
     $resourceSummary = @()
  
     # Adding property 'ResourceName' which will contain Storage Account name and being used by common helper method
-    #load the script in the helper.ps file in the Remediation Script directory.. to run -ExcludeResourceGroupNames and -ExcludeResourceNames Parameter .
+    # Load the script in the helper.ps file in the Remediation Script directory.. to run -ExcludeResourceGroupNames and -ExcludeResourceNames Parameter .
     if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
     {
         $storageAccounts | ForEach-Object {
@@ -406,7 +404,6 @@ function Enable-StorageEncryptionInTransit
         }  
         Write-Host $resourceSummary
     }
-    
     
     Write-Host "Total Storage Account(s) excluded  from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "Total Storage Account(s) for remediation: [$(($storageAccounts | Measure-Object).Count)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -469,8 +466,6 @@ function Enable-StorageEncryptionInTransit
                     {
                         Write-Host "'Force' flag is provided. Secure transfer will be enabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                     }
-
-
                 }
    
                 Write-Host $([Constants]::DoubleDashLine)
@@ -542,7 +537,6 @@ function Enable-StorageEncryptionInTransit
         break
     }
 }
-
 
 # Script to rollback changes done by remediation script
 function Disable-StorageEncryptionInTransit
@@ -667,8 +661,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Fetching remediation log..."
    
     Write-Host "Performing rollback operation to disable 'secure transfer' for Storage Account(s) of subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine) 
-
+    Write-Host $([Constants]::DoubleDashLine)
 
     if (-not $Force)
     {
@@ -685,8 +678,8 @@ function Disable-StorageEncryptionInTransit
     {
         Write-Host "'Force' flag is provided. secure transfer will be disabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
-    Write-Host $([Constants]::SingleDashLine)
 
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[step 4 of 4] : Disable secure transfer on the Storage Account in the Subscription."
     
     try
