@@ -255,33 +255,42 @@ function Enable-StorageEncryptionInTransit
         }
     }
 
+    $isContextSet = Get-AzContext
     if ($UseSystemAssignedManagedIdentity)
     {
-        Write-Host $([Constants]::SingleDashLine)    
-        Write-Host "Connecting to AzAccount..."
-        $currentContext = Connect-AzAccount -Identity -ErrorAction Stop
-        Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
+        # Connecting to AzAccount using system assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
+        if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "User"))
+        {
+            Write-Host $([Constants]::SingleDashLine)    
+            Write-Host "Connecting to AzAccount..."
+            $currentContext = Connect-AzAccount -Identity -ErrorAction Stop
+            Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
+        }
     }
     elseif ($UseUserAssignedManagedIdentity)
     {
-        Write-Host $([Constants]::SingleDashLine)    
-        Write-Host "Connecting to AzAccount..."
-        $currentContext = Connect-AzAccount -Identity -AccountId $ClientId -ErrorAction Stop
-        Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
+        # Connecting to AzAccount using user assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
+        if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "User"))
+        {
+            # Connect to AzAccount using user assigned managed identity.
+            Write-Host $([Constants]::SingleDashLine)    
+            Write-Host "Connecting to AzAccount..."
+            $currentContext = Connect-AzAccount -Identity -AccountId $ClientId -ErrorAction Stop
+            Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
+        }
     }
     else
     {
-        #Connect to AzAccount
-        $isContextSet = Get-AzContext
-
-        if ([string]::IsNullOrEmpty($isContextSet))
-        {  
+        # Connecting to AzAccount using user's account, if, 1. Context is not set to any account. or 2. Context is already set with 'ManagedService' account type.
+        if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "ManagedService"))
+        { 
             Write-Host $([Constants]::SingleDashLine)    
             Write-Host "Connecting to AzAccount..."
             Connect-AzAccount -ErrorAction Stop
             Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+
 
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
@@ -431,11 +440,12 @@ function Enable-StorageEncryptionInTransit
         Write-Host "Storage Account(s) with enabled 'secure transfer': [$($totalStgWithEnableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host "Storage Account(s) with disabled 'secure transfer': [$($totalStgWithDisableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
 
-        #Start remediation Storage Account(s) with 'secure transfer' enabled.
+        # Start remediation Storage Account(s) with 'secure transfer' enabled.
         if ($totalStgWithDisableHTTPS -gt 0)
         {
             if (-not $DryRun)
-            {  
+            {
+                # While remediating using managed identities: 1. No back up will be taken. 2. No confirmation pop up will be prompted.
                 if (-not $UseUserAssignedManagedIdentity -and -not $UseSystemAssignedManagedIdentity)
                 {
                     Write-Host  $([Constants]::DoubleDashLine)
