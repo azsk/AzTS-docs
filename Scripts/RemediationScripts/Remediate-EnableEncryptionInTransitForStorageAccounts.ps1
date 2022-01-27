@@ -259,7 +259,7 @@ function Enable-StorageEncryptionInTransit
     if ($UseSystemAssignedManagedIdentity)
     {
         # Connecting to AzAccount using system assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
-        if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "User"))
+        if ([string]::IsNullOrEmpty($isContextSet) -or  $isContextSet.Account.Type -eq "User")
         {
             Write-Host $([Constants]::SingleDashLine)    
             Write-Host "Connecting to AzAccount..."
@@ -270,7 +270,7 @@ function Enable-StorageEncryptionInTransit
     elseif ($UseUserAssignedManagedIdentity)
     {
         # Connecting to AzAccount using user assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
-        if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "User"))
+        if ([string]::IsNullOrEmpty($isContextSet) -or $isContextSet.Account.Type -eq "User")
         {
             Write-Host $([Constants]::SingleDashLine)    
             Write-Host "Connecting to AzAccount..."
@@ -281,7 +281,7 @@ function Enable-StorageEncryptionInTransit
     else
     {
         # Connecting to AzAccount using user's account, if, 1. Context is not set to any account. or 2. Context is already set with 'ManagedService' account type.
-        if (([string]::IsNullOrEmpty($isContextSet)) -or (![string]::IsNullOrEmpty($isContextSet) -and $isContextSet.Account.Type -eq "ManagedService"))
+        if ([string]::IsNullOrEmpty($isContextSet) -or $isContextSet.Account.Type -eq "ManagedService")
         { 
             Write-Host $([Constants]::SingleDashLine)    
             Write-Host "Connecting to AzAccount..."
