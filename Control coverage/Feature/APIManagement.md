@@ -16,6 +16,7 @@
 - [Azure_APIManagement_AuthZ_Enable_Requires_Subscription](#azure_apimanagement_authz_enable_requires_subscription)
 - [Azure_APIManagement_AuthN_Use_Managed_Service_Identity](#azure_apimanagement_authn_use_managed_service_identity)
 - [Azure_APIManagement_Audit_Enable_Alerts](#azure_apimanagement_audit_enable_alerts)
+- [Azure_APIManagement_Audit_Enable_Diagnostics_Log](#azure_apimanagement_audit_enable_diagnostics_log)
 
 <!-- /TOC -->
 <br/>
@@ -561,5 +562,86 @@ Metric alert for occurrence of unauthorized gateway requests help the admin to i
   <br />
   <br />
 
+## Azure_APIManagement_Audit_Enable_Diagnostics_Log 
+
+### Display Name 
+Diagnostics logs must be enabled for API Management service 
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
+
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "GatewayLogs",
+        "WebSocketConnectionLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+ ``` 
+
+### Control Spec 
+
+> **Passed:** 
+> 1. Required diagnostic logs are enabled.
+>
+>       and
+>
+> 2. At least one of the below setting configured:
+> a. Log Analytics.
+> b. Storage account (with min Retention period of 365 or forever(Retention period 0).
+> c. Event Hub.
+> 
+> **Failed:** 
+> 1. Diagnostics setting is disabled for resource.
+> 
+>       or
+>
+> 2. Diagnostic settings meet the following conditions:
+> a. All diagnostic logs are not enabled.
+> b. None of the below setting is configured:
+> i. Log Analytics.
+> ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
+> iii. Event Hub.
+> 
+> **Error:** 
+> Required logs are not configured in control settings.
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 You can change the diagnostic settings from the Azure Portal by following the steps given here: https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list diagnostic setting details of API Management resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** 
+name<br />
+properties.logs.category<br />
+properties.logs.enabled<br />
+properties.logs.retentionPolicy.enabled<br />
+properties.logs.retentionPolicy.days<br />
+properties.workspaceId<br />
+properties.storageAccountId<br />
+properties.eventHubName<br />
+ <br />
+
+<br />
 ___
 
