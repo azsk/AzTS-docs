@@ -10,7 +10,8 @@
     Enable Secure transfer to Storage Accounts
 
 # Pre-requisites:
-    You will need atleast contributor role on Storage Account(s) of subscription.
+    1. You will need atleast contributor role on Storage Account(s) of subscription.
+    2. AzAccount must be connected.
 
 # Steps performed by the script :
    To Remediate:
@@ -50,20 +51,10 @@
         3. To enable encryption in transit on the Storage Account in a Subscription, from a previously taken snapshot:
            Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
         
-        4. To enable encryption in transit on the Storage Account in a Subscription using System Assigned Managed Identity:
-           Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -UseSystemAssignedManagedIdentity
-
-        5. To enable encryption in transit on the Storage Account in a Subscription using User Assigned Managed Identity:
-           Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -UseUserAssignedManagedIdentity -ClientId '00000000-xxxx-0000-xxxx-000000000000'
-           
-           Important Note (For remediation using User/System Managed Identity):  
-           i. 'DryRun' option will not be available.
-           ii. Back up will not be taken before remediation.
-           iii. You will not be able to rollback the remediated resources via script.
-           iv. 'Force' switch will be enabled by default, you will not get any confirmation before actual remediation.
+        4. To enable encryption in transit on the Storage Account in a Subscription without taking back up before actual remediation:
+           Enable-StorageEncryptionInTransit -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
 
         To know more about the options supported by the remediation command, execute:
-        
         Get-Help Enable-StorageEncryptionInTransit -Detailed
    
     To rollback: 
@@ -106,6 +97,7 @@ function Setup-Prerequisites
    
     $availableModules = $(Get-Module -ListAvailable Az.Accounts,Az.Storage)
     $requiredModules = @("Az.Accounts" , "Az.Storage")
+
     # Check if the required modules are installed 
     $requiredModules | ForEach-Object { 
         if ($availableModules.Name -notcontains $_) 
@@ -144,16 +136,10 @@ function Enable-StorageEncryptionInTransit
         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
-
-        .Parameter UseSystemAssignedManagedIdentity
-        Specifies that script is run by system assigned managed identity.
-
-        .Parameter UseUserAssignedManagedIdentity
-        Specifies that script is run by user assigned managed identity.
-
-        .Parameter ClientId
-        Specifies the client id of user assigned managed identity.
         
+        .PARAMETER SkipBackup
+        Specifies that no back up will be taken by the script before remediation.
+
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
@@ -182,14 +168,10 @@ function Enable-StorageEncryptionInTransit
         None
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'WetRun')]
     param (
-        
         [String]
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
         [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
-        [Parameter(ParameterSetName = "SystemAssignedMI", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
-        [Parameter(ParameterSetName = "UserAssignedMI", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
         $SubscriptionId,
 
         [Switch]
@@ -199,8 +181,6 @@ function Enable-StorageEncryptionInTransit
         [Switch]
         [Parameter(ParameterSetName = "DryRun", HelpMessage="Specifies validation of prerequisites for the command")]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies validation of prerequisites for the command")]
-        [Parameter(ParameterSetName = "SystemAssignedMI", HelpMessage="Specifies validation of prerequisites for the command")]
-        [Parameter(ParameterSetName = "UserAssignedMI", HelpMessage="Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [Switch]
@@ -208,16 +188,8 @@ function Enable-StorageEncryptionInTransit
         $DryRun,
 
         [Switch]
-        [Parameter(ParameterSetName = "SystemAssignedMI", HelpMessage="Specifies that script is run by system assigned managed identity")]
-        $UseSystemAssignedManagedIdentity,
-
-        [Switch]
-        [Parameter(ParameterSetName = "UserAssignedMI", HelpMessage="Specifies that script is run by user assigned managed identity")]
-        $UseUserAssignedManagedIdentity,
-
-        [String]
-        [Parameter(ParameterSetName = "UserAssignedMI", Mandatory=$true, HelpMessage="Specifies the client id of user assigned managed identity")]
-        $ClientId,
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies no back up will be taken by the script before remediation")]
+        $SkipBackup,
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
@@ -226,20 +198,16 @@ function Enable-StorageEncryptionInTransit
         [string]
         [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-        [Parameter(ParameterSetName = "SystemAssignedMI",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-        [Parameter(ParameterSetName = "UserAssignedMI",  HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
         $ExcludeResourceGroupNames,
 
         [string]
         [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-        [Parameter(ParameterSetName = "SystemAssignedMI",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-        [Parameter(ParameterSetName = "UserAssignedMI",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
         $ExcludeResourceNames
     )
 
     Write-Host " $([Constants]::DoubleDashLine)"
-    Write-Host "[Step 1 of 5] : Checking for prerequisites..." 
+    Write-Host "[Step 1 of 4] : Checking for prerequisites..." 
     
     if ($PerformPreReqCheck)
     {
@@ -256,38 +224,11 @@ function Enable-StorageEncryptionInTransit
     }
 
     $isContextSet = Get-AzContext
-    if ($UseSystemAssignedManagedIdentity)
+
+    if ([string]::IsNullOrEmpty($isContextSet))
     {
-        # Connecting to AzAccount using system assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
-        if ([string]::IsNullOrEmpty($isContextSet) -or  $isContextSet.Account.Type -eq "User")
-        {
-            Write-Host $([Constants]::SingleDashLine)    
-            Write-Host "Connecting to AzAccount..."
-            $currentContext = Connect-AzAccount -Identity -ErrorAction Stop
-            Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
-        }
-    }
-    elseif ($UseUserAssignedManagedIdentity)
-    {
-        # Connecting to AzAccount using user assigned managed identity, if, 1. Context is not set to any account. or 2. Context is already set with 'User' account type.
-        if ([string]::IsNullOrEmpty($isContextSet) -or $isContextSet.Account.Type -eq "User")
-        {
-            Write-Host $([Constants]::SingleDashLine)    
-            Write-Host "Connecting to AzAccount..."
-            $currentContext = Connect-AzAccount -Identity -AccountId $ClientId -ErrorAction Stop
-            Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
-        }
-    }
-    else
-    {
-        # Connecting to AzAccount using user's account, if, 1. Context is not set to any account. or 2. Context is already set with 'ManagedService' account type.
-        if ([string]::IsNullOrEmpty($isContextSet) -or $isContextSet.Account.Type -eq "ManagedService")
-        { 
-            Write-Host $([Constants]::SingleDashLine)    
-            Write-Host "Connecting to AzAccount..."
-            Connect-AzAccount -ErrorAction Stop
-            Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
-        }
+        Write-Host "AzAccount is not connected. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break
     }
 
     # Setting context for current subscription.
@@ -299,17 +240,6 @@ function Enable-StorageEncryptionInTransit
     Write-Host $([Constants]::DoubleDashLine)
 
     Write-Host "*** To enable secure transfer for Storage Account(s) in a Subscription, Contributor and higher privileges on the Storage Account are required.***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "[Step 2 of 5] : Validating the account type..."
-    Write-Host "Validating account type of [$($currentSub.Account.Id)]... Account type must be [User] or [ManagedService] to run the script for subscription [$($SubscriptionId)].." 
-    
-    # Safe Check: Checking whether the current account is of type [User] or [MI].
-    if($currentSub.Account.Type -ne "User" -and $currentSub.Account.Type -ne "ManagedService")
-    {
-        Write-Host "Warning: This script can only be run by user or managed identity." -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
-    
-    Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Fetching Storage Account(s)..." 
    
@@ -375,7 +305,7 @@ function Enable-StorageEncryptionInTransit
     Write-Host "Total Storage Account found: [$($totalStorageAccount)] " -ForegroundColor $([Constants]::MessageType.update)
     Write-Host $([Constants]::DoubleDashLine)
 
-    Write-Host "[Step 3 of 5] : Removing the excluded resource group and resource from the list of subscription." 
+    Write-Host "[Step 2 of 4] : Removing the excluded resource group and resource from the list of subscription." 
     $resourceSummary = @()
  
     # Adding property 'ResourceName' which will contain Storage Account name and being used by common helper method
@@ -416,7 +346,7 @@ function Enable-StorageEncryptionInTransit
         #Storage Account with disabled Https only
         $stgWithDisableHTTPS = @()
        
-        Write-Host "[step 4 of 5] : Getting the Count of Storage Account in a subscription which are having disabled 'secure transfer'."
+        Write-Host "[step 3 of 4] : Getting the Count of Storage Account in a subscription which are having disabled 'secure transfer'."
         $storageAccounts | ForEach-Object {
             if ($_.EnableHttpsTrafficOnly)
             {
@@ -442,8 +372,7 @@ function Enable-StorageEncryptionInTransit
         {
             if (-not $DryRun)
             {
-                # While remediating using managed identities: 1. No back up will be taken. 2. No confirmation pop up will be prompted.
-                if (-not $UseUserAssignedManagedIdentity -and -not $UseSystemAssignedManagedIdentity)
+                if (-not $SkipBackup)
                 {
                     Write-Host  $([Constants]::DoubleDashLine)
                     Write-Host "Exporting the Storage Account to csv file so that it can be used to rollback."
@@ -451,25 +380,26 @@ function Enable-StorageEncryptionInTransit
                     $stgWithDisableHTTPS | Export-CSV -Path "$($folderpath)\StorageWithDisableHTTPS.csv" -NoTypeInformation
                     Write-Host "Path: $($folderPath)\StorageWithDisableHTTPS.csv" -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
-                    if (-not $Force)
+                }
+
+                if (-not $Force)
+                {
+                    Write-Host "Do you want to enable secure transfer on the storage account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                    $userInput = Read-Host -Prompt "(Y|N)"
+
+                    if($userInput -ne "Y")
                     {
-                        Write-Host "Do you want to enable secure transfer on the storage account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                        $userInput = Read-Host -Prompt "(Y|N)"
-    
-                        if($userInput -ne "Y")
-                        {
-                            Write-Host "Secure transfer will not be enabled for any of the storage account. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
-                            break
-                        }
+                        Write-Host "Secure transfer will not be enabled for any of the storage account. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
+                        break
                     }
-                    else
-                    {
-                        Write-Host "'Force' flag is provided. Secure transfer will be enabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-                    }
+                }
+                else
+                {
+                    Write-Host "'Force' flag is provided. Secure transfer will be enabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
    
                 Write-Host $([Constants]::DoubleDashLine)
-                Write-Host "[step 5 of 5] : Enable 'secure transfer' for the Storage Account(s) of subscription."
+                Write-Host "[step 4 of 4] : Enable 'secure transfer' for the Storage Account(s) of subscription."
 
                 #Storage Account passed from remediation
                 $remediationSuccess = @() 
@@ -596,7 +526,7 @@ function Disable-StorageEncryptionInTransit
     Write-Host "Starting rollback operation to disable secure transfer on Storage Account(s) from subscription [$($SubscriptionId)]...." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
      
-    Write-Host "[step 1 of 4] : Checking for prerequisites." 
+    Write-Host "[step 1 of 3] : Checking for prerequisites..." 
 
     if ($PerformPreReqCheck)
     {
@@ -627,20 +557,8 @@ function Disable-StorageEncryptionInTransit
     Write-Host $([Constants]::SingleDashLine) 
     Write-Host "Starting with subscription [$($SubscriptionId)]..." 
     Write-Host $([Constants]::DoubleDashLine)
-
-    Write-Host "[step 2 of 4] : Validating the Account type."
-
     Write-Host " ***To perform rollback operation for disabling secure transfer user must have atleast contributor access on Storage Account(s) of subscription: [$($SubscriptionId)]  ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Validating whether the current user [$($currentSub.Account.Id)] have valid account type [User] to run the script for subscription [$($SubscriptionId)]..." 
 
-    # Safe Check: Checking whether the current account is of type User 
-    if($currentSub.Account.Type -ne "User")
-    {
-        Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
-        break;
-    }
-
-    Write-Host "Successfully validated" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine) 
     Write-Host "Fetching remediation log to perform rollback operation on  Storage Account(s) from subscription [$($SubscriptionId)]..." 
     Write-Host $([Constants]::DoubleDashLine)
@@ -655,7 +573,7 @@ function Disable-StorageEncryptionInTransit
     }
    
     # Fetching remediated log 
-    Write-Host "[step 3 of 4] : Getting the list of resources for rollback."
+    Write-Host "[step 2 of 3] : Getting the list of resources for rollback."
     $remediatedResourceLog = Import-Csv -LiteralPath $FilePath
     
     Write-Host "Fetching remediation log..."
@@ -680,7 +598,7 @@ function Disable-StorageEncryptionInTransit
     }
 
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[step 4 of 4] : Disable secure transfer on the Storage Account in the Subscription."
+    Write-Host "[step 3 of 3] : Disable secure transfer on the Storage Account in the Subscription."
     
     try
     {
