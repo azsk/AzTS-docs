@@ -546,9 +546,8 @@ function Disable-StorageEncryptionInTransit
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
-        Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount -ErrorAction Stop
-        Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "AzAccount is not connected. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break
     }
 
     # Setting context for current subscription.
@@ -588,7 +587,7 @@ function Disable-StorageEncryptionInTransit
     
         if($userInput -ne "Y")
         {
-            Write-Host "secure transfer will not be disabled for any of the storage account. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Secure transfer will not be disabled for any of the storage account. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
             break
         }
     }
