@@ -9,8 +9,8 @@
     Use HTTPS for App Services.
 
 # Prerequisites:
-    1. Contributor and higher privileges on the App Services in a Subscription.
-    2. AzAccount must be connected.
+    1. Contributor or higher privileges on the App Services in a Subscription.
+    2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
     To remediate:
@@ -207,7 +207,7 @@ function Enable-HttpsForAppServices
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "AzAccount is not connected. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
@@ -221,7 +221,7 @@ function Enable-HttpsForAppServices
     Write-Host "Account Type: $($context.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To enable HTTPS for App Services in a Subscription, Contributor and higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To enable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
 
@@ -639,7 +639,7 @@ function Disable-HttpsForAppServices
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "AzAccount is not connected. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
@@ -653,7 +653,7 @@ function Disable-HttpsForAppServices
     Write-Host "Account Type: $($context.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To disable HTTPS for App Services in a Subscription, Contributor and higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To disable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
     

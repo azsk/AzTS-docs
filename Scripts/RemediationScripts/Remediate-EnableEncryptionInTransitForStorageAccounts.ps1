@@ -11,7 +11,7 @@
 
 # Pre-requisites:
     1. You will need atleast contributor role on Storage Account(s) of subscription.
-    2. AzAccount must be connected.
+    2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script :
    To Remediate:
@@ -227,7 +227,7 @@ function Enable-StorageEncryptionInTransit
 
     if ([string]::IsNullOrEmpty($isContextSet))
     {
-        Write-Host "AzAccount is not connected. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
@@ -239,7 +239,7 @@ function Enable-StorageEncryptionInTransit
     Write-Host "Starting with subscription [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::DoubleDashLine)
 
-    Write-Host "*** To enable secure transfer for Storage Account(s) in a Subscription, Contributor and higher privileges on the Storage Account are required.***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To enable secure transfer for Storage Account(s) in a Subscription, Contributor or higher privileges on the Storage Account are required.***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Fetching Storage Account(s)..." 
    
@@ -546,7 +546,7 @@ function Disable-StorageEncryptionInTransit
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
-        Write-Host "AzAccount is not connected. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
