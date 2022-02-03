@@ -9,7 +9,7 @@
 			},
 			"allowedValues": [
 				"DeployIfNotExists",
-				"AuditIfNotExists".
+				"AuditIfNotExists",
 				"Disabled"
 			],
 			"defaultValue": "DeployIfNotExists"
