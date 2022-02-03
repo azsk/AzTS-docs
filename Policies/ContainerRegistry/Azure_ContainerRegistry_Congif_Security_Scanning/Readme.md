@@ -8,7 +8,7 @@ Control can be covered with the below mentioned Azure policy:
 
 #### Policy Details
 
-Following policy can be used to grant access to security scanner identity to container registry for image scans and non-compliant resources can be remediated by policy remediation task.
+Following policy can be used to grant access to security scanner identity to container registry for image scans. Following policy can be used with 'DeployIfNotExists' effect to avoid further non-compliant resource creation and existing non-compliant resources can be remediated by policy remediation task.
 
 #### Policy Definition
 [Security - Container Registry - DeploySecuritScannerIdentity](Security%20-%20Container%20Registry%20-%20DeploySecurityScannerIdentity.json)
