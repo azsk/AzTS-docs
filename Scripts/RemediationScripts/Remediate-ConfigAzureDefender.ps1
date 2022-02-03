@@ -162,7 +162,7 @@ function Set-ConfigAzureDefender
     }
 
     # Declaring required resource types and pricing tier
-    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","KubernetesService","ContainerRegistry","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
+    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","Containers","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
     $reqASCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $isProviderRegister = $true
