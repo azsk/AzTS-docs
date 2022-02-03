@@ -31,7 +31,6 @@
     NOTE: Please first run the script using the -dryrun switch and provide the output file of dryrun by adding corresponding SC-ALT account mapping, only as input for remediation .
     NOTE: Rollback is not supported.
 
-
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
@@ -53,7 +52,6 @@
         Get-Help Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments -Detailed
        
 ###>
-
 
 function Setup-Prerequisites
 {
@@ -86,8 +84,7 @@ function Setup-Prerequisites
     # List of available modules
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
-    # Check if the required modules are installed.
-    
+    # Check if the required modules are installed.    
     if($availableModules.Name -contains "AZ.Accounts")
     {
         $module = Get-Module "Az.Accounts"
@@ -357,7 +354,6 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
         #Fetching permanent role assignment(s) from the file.
         $roleAssignmentCsvDetails = Import-Csv -LiteralPath $RoleAssignmentDetailsFilePath
         
-
         $roleAssignmentCsvDetails | ForEach-Object {
             $roleAssignment = $_
             try
@@ -621,7 +617,6 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
             }
         }
 
-
         if(($PIMcreated|Measure-Object).Count -ne 0) 
         {
             Write-Host "`nPIM Role assignment is successfully created for below role assignments." -ForegroundColor $([Constants]::MessageType.Update)
@@ -727,7 +722,6 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
 
-        
         if ($($permanentRemoved | Measure-Object).Count -gt 0)
         {
             Write-Host "PIM role assignment(s) with SC-ALT account for critical permanent role assignment(s) are successfully created and critical permanent role assignment(s) are successfully removed for which PIM role assignment(s) is successfully created in the Subscription or in resource group:`n" -ForegroundColor $([Constants]::MessageType.Update)
@@ -926,7 +920,6 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
         $criticalPIMAndPermanentRoleAssignments | Format-Table -Property $colsProperty -Wrap
 
         $nonScAltRoleAssignment = $criticalPIMAndPermanentRoleAssignments| Where-Object { $_.ExpandedPropertiesPrincipalType -eq "User" -and $_.IsScAltAccount -eq $false}
- 
  
         $nonScAltRoleAssignment = $nonScAltRoleAssignment | Sort-Object -Property PrincipalEmail | Select-Object PrincipalEmail , ScAltEmail | Get-Unique -AsString
 
