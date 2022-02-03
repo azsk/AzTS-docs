@@ -23,7 +23,7 @@
 	
 # Steps performed by the script:
     To remediate:
-        1. Validate and install the modules required to run the script.
+        1. Install the modules required to run the script and validate the user.
         2. Get the list of critical permanent role assignment(s) in a Subscription or in a resource group.
         3. Back up details of critical permanent role assignment(s) that are to be remediated.
         4. Create PIM role assignment(s) with SC-ALT account for critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) and remove critical permanent role assignment(s) for which the PIM role assignment(s) is successfully created in the Subscription or in resource group.
@@ -42,15 +42,15 @@
     To remediate:
         1. To review the critical role assignment(s) on a Subscription that will be remediated:
     
-           Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+           Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. To create PIM role assignment(s) with SC-ALT account for critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) and remove critical permanent role assignment(s) for which the PIM role assignment(s) is successfully created in the Subscription or in resource group, from a previously taken snapshot:
           
-           Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RoleAssignmentDetailsFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\CriticalPermanentAndPIMRoleAssignment.csv -SCALTMappingFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\nonScAltRoleAssignment.csv
+           Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RoleAssignmentDetailsFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\CriticalPermanentAndPIMRoleAssignment.csv -SCALTMappingFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\nonScAltRoleAssignment.csv
 
         To know more about the options supported by the remediation command, execute:
         
-        Get-Help Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments -Detailed
+        Get-Help Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments -Detailed
        
 ###>
 
@@ -132,7 +132,7 @@ function Setup-Prerequisites
 
     if($availableModules.Name -contains "AzureAD")
     {
-        Write-Host "AzureAD module is present ..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "AzureAD module is present." -ForegroundColor $([Constants]::MessageType.Info)
     }
     else
     {
@@ -143,7 +143,7 @@ function Setup-Prerequisites
 }
 
 
-function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
+function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
 {
     <#
         .SYNOPSIS
@@ -169,16 +169,16 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         Specifies the path to the file to be used as input for the remediation.
 
         .INPUTS
-        None. You cannot pipe objects to Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments.
+        None. You cannot pipe objects to Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.
 
         .OUTPUTS
-        None. Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments does not return anything that can be piped and used as an input to another command.
+        None. Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RoleAssignmentDetailsFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\CriticalPermanentAndPIMRoleAssignment.csv -SCALTMappingFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\nonScAltRoleAssignment.csv
+        PS> Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RoleAssignmentDetailsFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\CriticalPermanentAndPIMRoleAssignment.csv -SCALTMappingFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveCriticalPermanentAndPIMRoleAssignments"\nonScAltRoleAssignment.csv
    
         .LINK
         None
@@ -209,12 +209,13 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Validate and install the modules required to run the script."
 
     if ($PerformPreReqCheck)
     {
         try
         {
+            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user..."
+            Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
@@ -223,6 +224,10 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
+    }
+    else
+    {
+        Write-Host "[Step 1 of 4] Validating the user... "
     }
 
     # Connect to Azure account
@@ -276,7 +281,6 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         break
     }
     Write-Host "[$($context.Account.Id)] is allowed to run this script." -ForegroundColor $([Constants]::MessageType.Update)
-    Write-Host "*** To Create PIM role assignment(s) with SC-ALT account for critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) and remove critical permanent role assignment(s) for which PIM role assignment(s) is successfully created in the Subscription or in resource group, Owner and higher privileges on the subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     write-Host "Checking if the current user has required role[Owner, User Access Administrator , ServiceAdministrator]..."
@@ -298,7 +302,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
     $roleAssignmentDetails = @()
     $roleAssignmentsDetails = @()
 
-    Write-Host "Checking if subscription [$($SubscriptionId)] contains one or more  ServiceAdministrator role assignment(s)..."
+    Write-Host "Checking if subscription [$($SubscriptionId)] contains one or more ServiceAdministrator role assignment(s)..."
 
     $roleAssignmentsDetails = Get-AzRoleAssignment -scope "/subscriptions/$($SubscriptionId)" -IncludeClassicAdministrators
     $administratorRoles = $roleAssignmentsDetails | Where-Object {$_.Scope -eq "/subscriptions/$($SubscriptionId)" -and ($_.RoleDefinitionName -split";" -contains "ServiceAdministrator")}
@@ -322,6 +326,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
     
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all role assignment(s)..."
+    Write-Host $([Constants]::SingleDashLine)
 
     # No file path provided as input to the script. Fetch all role assignment(s) in the Subscription.
     if ([String]::IsNullOrWhiteSpace($RoleAssignmentDetailsFilePath))
@@ -346,7 +351,8 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
             break
         }
 
-        Write-Host "Fetching all role assignment(s) from $($RoleAssignmentDetailsFilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all role assignment(s) from: " -ForegroundColor $([Constants]::MessageType.Info)
+        write-Host "$($RoleAssignmentDetailsFilePath)"
 
         #Fetching permanent role assignment(s) from the file.
         $roleAssignmentCsvDetails = Import-Csv -LiteralPath $RoleAssignmentDetailsFilePath
@@ -395,7 +401,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         $colsProperty = @()
         if(($currentUserRoleAssignment|Measure-Object).Count -gt 0)
         {
-           Write-Host "Found $(($currentUserRoleAssignment|Measure-Object).Count) role assignment of current logged in user. Please migrate these role assignments to SC-ALT PIM role assignments after script execution." -ForegroundColor $([Constants]::MessageType.Info)
+           Write-Host "`nFound $(($currentUserRoleAssignment|Measure-Object).Count) role assignment of current logged in user. Please migrate these role assignments manually to SC-ALT PIM role assignments after script execution." -ForegroundColor $([Constants]::MessageType.Update)
            $colsProperty = @{Expression={$_.PrincipalEmail};Label="PrincipalName";Width=40;Alignment="left"},
                         @{Expression={$_.RoleDefinitionDisplayName};Label="Role";Width=20;Alignment="left"},
                         @{Expression={$_.ExpandedPropertiesPrincipalType};Label="PrincipalType";Width=30;Alignment="left"},
@@ -418,8 +424,9 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         }
             
         Write-Host "Found $($totalRoleAssignments) role assignment(s) except for the current user [$($context.Account.Id)]." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
 
-        Write-Host "Checking for critical role assignment(s)..." 
+        Write-Host "Checking for critical permanent and non SC-ALT PIM role assignment(s)..." 
 
         #List for storing critical pim role assignment.
         $criticalPIMRoleAssignments = @()
@@ -443,7 +450,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         $criticalPermanentRoleAssignments += $roleAssignmentDetails |  Where-Object { $_.ScopeType -eq "subscription" -and ($_.ExpandedPropertiesPrincipalType -eq "User" -or $_.ExpandedPropertiesPrincipalType -eq "Group") -and [system.convert]::ToBoolean($_.LinkedRoleEligibilityScheduleInstanceId) -eq $false  -and ($_.RoleDefinitionDisplayName -eq "User Access Adminstrator" -or $_.RoleDefinitionDisplayName -eq "Contributor" -or $_.RoleDefinitionDisplayName -eq "Owner") -and $_.RoleAssignmentType -eq "Permanent"  }
 
         # Storing critical permanent role assignment on the resource group level.
-        $criticalPermanentRoleAssignments += $roleAssignmentDetails | Where-Object { $_.ScopeType -eq "resourcegroup" -and ($_.ExpandedPropertiesPrincipalType -eq "User" -or $_.ExpandedPropertiesPrincipalType -eq "Group") -and [system.convert]::ToBoolean($_.LinkedRoleEligibilityScheduleInstanceId) -eq $false -and ($_.RoleDefinitionDisplayName -eq "User Access Adminstrator" -or $_.RoleDefinitionDisplayName -eq "Owner" -or ) -and $_.RoleAssignmentType -eq "Permanent"  }
+        $criticalPermanentRoleAssignments += $roleAssignmentDetails | Where-Object { $_.ScopeType -eq "resourcegroup" -and ($_.ExpandedPropertiesPrincipalType -eq "User" -or $_.ExpandedPropertiesPrincipalType -eq "Group") -and [system.convert]::ToBoolean($_.LinkedRoleEligibilityScheduleInstanceId) -eq $false -and ($_.RoleDefinitionDisplayName -eq "User Access Adminstrator" -or $_.RoleDefinitionDisplayName -eq "Owner" ) -and $_.RoleAssignmentType -eq "Permanent"  }
         
         $criticalPIMAndPermanentRoleAssignments += $criticalPIMRoleAssignments
         $criticalPIMAndPermanentRoleAssignments += $criticalPermanentRoleAssignments
@@ -451,11 +458,11 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         # Checking for critical permanent role assignment.                                                               
         if(($criticalPIMAndPermanentRoleAssignments| Measure-Object).Count -eq 0)
         {
-            Write-Host "No critical role assignment found.Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "No critical permanent and non SC-ALT PIM role assignment(s) found.Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             break
         }
 
-        Write-Host "Found $(($criticalPIMAndPermanentRoleAssignments|Measure-Object).Count) critical role assignment(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found $(($criticalPIMAndPermanentRoleAssignments|Measure-Object).Count) critical permanent and non SC-ALT PIM role assignment(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
         $colsProperty = @{Expression={$_.PrincipalEmail};Label="PrincipalName";Width=40;Alignment="left"},
                         @{Expression={$_.RoleDefinitionDisplayName};Label="Role";Width=20;Alignment="left"},
@@ -476,12 +483,14 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
 
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 3 of 4] Backing up critical role assignment(s) details to $($backupFolderPath)"
+        Write-Host $([Constants]::SingleDashLine)
     
         # Backing up role assignment(s) details.
         $backupFile = "$($backupFolderPath)\CriticalPermanentAndPIMRoleAssignment.csv"
 
         $criticalPIMAndPermanentRoleAssignments | Export-CSV -Path $backupFile -NoTypeInformation
-        Write-Host "Critical role assignment(s) details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Critical role assignment(s) details have been backed up to:" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "$($backupFile)"
 
         $nonScAltRoleAssignmentDictionary = @{}
         if (!([String]::IsNullOrWhiteSpace($SCALTMappingFilePath)))
@@ -497,6 +506,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
 
     if (-not $DryRun)
     { 
+        Write-Host "[Step 4 of 4] Migrating all the critical permanent and non SC-ALT privileged role assignments which are listed in [step 2 of 4]...`n"
         Write-Host "Do you want to Create:`n 1.PIM role assignment(s) with SC-ALT account for:`n   * critical permanent role assignment(s) and `n   * critical PIM non SC-ALT role assignment(s) `n 2.Remove critical permanent role assignment(s) for which PIM role assignment(s) is successfully created in the Subscription or in resource group.`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -505,8 +515,6 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
             Write-Host "PIM role assignment(s) with SC-ALt account for critical permanent role assignment(s) and critical PIM non SC-ALT role assignment(s) will not be created and critical permanent role assignment(s) will not be removed for which PIM role assignment(s) is successfully created in the Subscription or in resource group. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
             break
         }
-     
-        Write-Host "[Step 4 of 4] Create PIM role assignment(s) with SC-ALT account for critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) and remove critical permanent role assignment(s) for which the PIM role assignment(s) is successfully created in the Subscription or in resource group."
 
         # List of PIM role assignment(s) with SC-ALt account successfully created.
         $PIMcreated = @()
@@ -526,8 +534,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         # List to store pim for which pim SC-ALT is created.
         $pimWithNonSCALTAccount = @()
 
-        Write-Host "Please inform all the users whose permanent role assignment will be deleted." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "PIM role assignments will be created for 30 days time interval,they need to renewed after 30 days if you wish to continue using them." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "PIM role assignments will be created for 30 days time interval,they need to renewed after 30 days if the user wish to continue using them." -ForegroundColor $([Constants]::MessageType.Info)
 
         # To create PIM role assignment(s) with SC-ALt account for critical permanent role assignment(s).
         $criticalPIMAndPermanentRoleAssignments | ForEach-Object{
@@ -569,16 +576,12 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
                     else
                     {
                         $PIMNotCreated += $_
-                        Write-Host "Error creating PIM role assignment with SC-ALT  for critical role assignment.  Role Name: [$($_.RoleDefinitionDisplayName)] , Email: [$($_.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                        Write-Host "Skipping this role assignment. " -ForegroundColor $([Constants]::MessageType.Warning)
                         $failureReasons.Add($_.Name , "Error occured while creating PIM with SC-ALT account")
                     }
                 }
                 catch
                 {
                     $PIMNotCreated += $_
-                    Write-Host "Error creating PIM role assignment with SC-ALT account for critical role assignment. Role Name: [$($roleAssignment.RoleDefinitionDisplayName)] , Email: [$($roleAssignment.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this role assignment. " -ForegroundColor $([Constants]::MessageType.Warning)
                     $failureReasons.Add($_.Name , "Error occured while creating PIM with SC-ALt account")
                 }
             }
@@ -601,34 +604,40 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
                         else
                         {
                             $PIMNotCreated += $_
-                            Write-Host "Error creating PIM role assignment with non SC-ALT account for critical role assignment.  Role Name: [$($_.RoleDefinitionDisplayName)] , Email: [$($_.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                            Write-Host "Skipping this role assignment. " -ForegroundColor $([Constants]::MessageType.Warning)
                             $failureReasons.Add($_.Name , "Error occured while creating PIM with non SC-ALt account")
                         }
                     }
                     else
                     {
                         $PIMNotCreated += $_
-                        Write-Host "No SC-ALT Email found for priviliged role assignment. Role Name: [$($_.RoleDefinitionDisplayName)] , Email: [$($_.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                        Write-Host "Skipping this role assignment."  -ForegroundColor $([Constants]::MessageType.Warning)
                         $failureReasons.Add($_.Name , "No SC-ALt account found")
                     }    
                 }
                 catch
                 {
                     $PIMNotCreated += $_
-                    Write-Host "Error creating PIM role assignment with non SC-ALT account for critical role assignment. Role Name: [$($roleAssignment.RoleDefinitionDisplayName)] , Email: [$($roleAssignment.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this role assignment. " -ForegroundColor $([Constants]::MessageType.Warning)
                     $failureReasons.Add($_.Name , "Error occured while creating PIM with non SC-ALt account")
                 }
             }
         }
 
+
+        if(($PIMcreated|Measure-Object).Count -ne 0) 
+        {
+            Write-Host "`nPIM Role assignment is successfully created for below role assignments." -ForegroundColor $([Constants]::MessageType.Update)
+            $PIMcreated | Format-Table -Property $colsProperty -Wrap
+        }
+
+        if(($PIMNotCreated|Measure-Object).Count -ne 0)
+        {
+            Write-Host "`nError occured while creating PIM Role assignment for below role assignments." -ForegroundColor $([Constants]::MessageType.Error)
+            $PIMNotcreated | Format-Table -Property $colsProperty -Wrap
+        }
+
         if(($PIMcreated|Measure-Object).Count -ne 0)
         {
-            Write-Host "PIM Role assignment is successfully created for below role assignments." -ForegroundColor $([Constants]::MessageType.Update)
-            $PIMcreated | Format-Table -Property $colsProperty -Wrap
-
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Please inform all the users whose permanent role assignment will be deleted." -ForegroundColor $([Constants]::MessageType.Info)`n
             Write-Host "*** All the critical Permanent role assignment will be deleted for which PIM role assignment(s) with SC-ALT account is created at Subscription level or resource group level.***"
         }
         #Remove critical permanent role assignment for which PIM role assignment is successfully created. 
@@ -638,8 +647,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
                 try
                 {
                     # Remove critical permanent role assignment(s) for which PIM role assignment is successfully created.             
-                    Remove-AzRoleAssignment -Scope $_.Scope -RoleDefinitionName $_.RoleDefinitionDisplayName -SignInName $_.PrincipalEmail 
-                    Write-Host "Critical permanent role assignment(s) is successfully deleted. Role Name: [$($_.RoleDefinitionDisplayName)] , Email: [$($_.PrincipalEmail)]" 
+                    Remove-AzRoleAssignment -Scope $_.Scope -RoleDefinitionName $_.RoleDefinitionDisplayName -SignInName $_.PrincipalEmail
                     if($?)
                     {
                         $permanentRemoved += $_ 
@@ -647,16 +655,12 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
                     else
                     {
                         $permanentNotRemoved += $_
-                        Write-Host "Error removing critical permanent role assignment for which PIM role assignment is successfully created. Role Name: [$($_.RoleDefinitionDisplayName)] , Email: [$($_.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                        Write-Host "Skipping this role assignment. " -ForegroundColor $([Constants]::MessageType.Warning)
                         $failureReasons.Add($_.Name , "Error occured while removing permanent role assignment")
                     }
                 }
                 catch
                 {
                     $permanentNotRemoved += $_
-                    Write-Host "Error removing critical permanent role assignment for which PIM role assignment is successfully created. Role Name: [$($_.RoleDefinitionDisplayName)] , Email: [$($_.PrincipalEmail)]" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this role assignment. " -ForegroundColor $([Constants]::MessageType.Warning)
                     $failureReasons.Add($_.Name , "Error occured while removing permanent role assignment")
                 }
             }
@@ -665,6 +669,19 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
                 $pimWithNonSCALTAccount  += $_
             }     
         }
+        
+        if(($permanentRemoved|Measure-Object).count -gt 0)
+        {    
+            Write-Host "`nPermanent Role assignment(s) is successfully deleted for below role assignment(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            $permanentRemoved | Format-Table -Property $colsProperty -Wrap
+        }
+        if(($permanentNotRemoved|Measure-Object).count -gt 0)
+        {    
+
+            Write-Host "`nError occured while deleting permanent role assignment(s) for below role assignment(s)." -ForegroundColor $([Constants]::MessageType.Error)
+            $permanentNotRemoved | Format-Table -Property $colsProperty -Wrap
+        }
+
 
         # List for storing skipped role assignments.
         $skippedRoleAssignments = @()
@@ -704,10 +721,9 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
         $colsProperty2 = @{Expression={$_.RoleDefinitionDisplayName};Label="DisplayName";Width=20;Alignment="left"},
                         @{Expression={$_.PrincipalEmail};Label="PrincipalName";Width=30;Alignment="left"},
                         @{Expression={$_.ExpandedPropertiesPrincipalType};Label="PrincipalType";Width=20;Alignment="left"},
-                        @{Expression={$_.Scope};Label="Scope";Width=50;Alignment="left"},
+                        @{Expression={$_.Scope};Label="Scope";Width=60;Alignment="left"},
                         @{Expression={$_.ReasonForFailure};Label="Reason For Failure";Width=60;Alignment="left"}
-
-
+        
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -742,7 +758,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
             Write-Host "`n Refer $($permanentRemovedRoleAssignmentsFile) for list of permanent role assignment which is successfully deleted."
         }
 
-        Write-Host "NOTE: 1. [RemediatedRoleAssignments.csv] file contains list of role assignments which are successfully remediated.`n      2. [SkippedRoleAssignments.csv] file contains list of role assignments which are skipped from remediation. `n      3. [PermanentRemovedRoleAssignments.csv] file contains list of permanent role assignments which are deleted successfully.`n      4. [ToBeDeletedPIMRoleAssignments.csv] file contains list of PIM(Non SC-ALT) role assignments which needs to be removed explicitly.`n      5. [ToBeMigratedCurrentUserRoleAssignments.csv] file contains list of current user role assignments which needs to be migrated to SC-ALT PIM explicitly." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "`nNOTES:`n      1. [RemediatedRoleAssignments.csv] file contains list of role assignments which are successfully remediated.`n      2. [SkippedRoleAssignments.csv] file contains list of role assignments which are skipped from remediation. `n      3. [PermanentRemovedRoleAssignments.csv] file contains list of permanent role assignments which are deleted successfully.`n      4. [ToBeDeletedPIMRoleAssignments.csv] file contains list of PIM(Non SC-ALT) role assignments which needs to be removed explicitly.`n      5. [ToBeMigratedCurrentUserRoleAssignments.csv] file contains list of current user role assignments which needs to be migrated to SC-ALT PIM explicitly." -ForegroundColor $([Constants]::MessageType.Warning)
 
         Write-Host "`nNext Steps:" -ForegroundColor $([Constants]::MessageType.Info)
         
@@ -751,7 +767,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
             # Write this to a file.
             $nonScAltRoleAssignmentsFile = "$($backupFolderPath)\ToBeDeletedPIMRoleAssignments.csv"
             $pimWithNonSCALTAccount | Export-CSV -Path $nonScAltRoleAssignmentsFile  -NoTypeInformation
-            Write-Host "*   Refer $($nonScAltRoleAssignmentsFile) to remove PIM (Non SC-ALT) assignments.`n" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "*   Refer $($nonScAltRoleAssignmentsFile) to remove PIM (Non SC-ALT) assignments.`n" 
         }
         
         if(($currentUserRoleAssignment|measure-object).Count -gt 0)
@@ -759,7 +775,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
             # Write this to a file.
             $currentuserRoleAssignmentFile = "$($backupFolderPath)\ToBeMigratedCurrentUserRoleAssignments.csv"
             $currentUserRoleAssignment | Export-CSV -Path $currentuserRoleAssignmentFile -NoTypeInformation
-            write-host "*   Refer $($currentuserRoleAssignmentFile) to migrate these role assignments to SC-ALT PIM role assignments." -ForegroundColor $([Constants]::MessageType.Info)
+            write-host "*   Refer $($currentuserRoleAssignmentFile) to migrate these role assignments to SC-ALT PIM role assignments."
         }
     }
     else
@@ -924,32 +940,37 @@ function Migrate-PermanentAndNonSCALTPrivilegedToPrivilegedRoleAssignments
  
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 3 of 4] Backing up permanent role assignment(s) details..."
+        Write-Host $([Constants]::SingleDashLine)
     
         # Backing up role assignment(s) details.
         $backupFile1 = "$($backupFolderPath)\CriticalPermanentAndPIMRoleAssignment.csv"
 
         $criticalPIMAndPermanentRoleAssignments | Export-CSV -Path $backupFile1 -NoTypeInformation
-        Write-Host "Permanent and PIM non SC-ALT role assignment(s) details have been backed up to $($backupFile1)" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Permanent and PIM non SC-ALT role assignment(s) details have been backed up to:" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "$($backupFile1)"
 
         if(($nonScAltRoleAssignment | Measure-Object).Count -ne 0)
         {
             $backupFile2 = "$($backupFolderPath)\NonSCALTRoleAssignment.csv"
             $nonScAltRoleAssignment | Export-CSV -Path $backupFile2 -NoTypeInformation
-            Write-Host "Non SC-ALT user details have been backed up to $($backupFile2)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Non SC-ALT user details have been backed up to:" -ForegroundColor $([Constants]::MessageType.Update)
+            write-Host "$($backupFile2)"
         }
         
         Write-Host $([Constants]::DoubleDashLine)
-        write-Host "[step 4 of 4]: Create PIM role assignment(s) with SC-ALT account for critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) and remove critical permanent role assignment(s) for which the PIM role assignment(s) is successfully created in the Subscription or in resource group."
-        Write-Host "Important steps before remediation`n" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host  "**** Only those critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) will be remediated for which corresponding SC-ALT account mapping will be provided or which are already mapped to SC-ALT account. ****" -ForegroundColor $([Constants]::MessageType.Warning)
+        write-Host "[step 4 of 4]: Skipped as -DryRun switch is provided."
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host  "NOTE: Only those critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) will be remediated for which corresponding SC-ALT account mapping will be provided or which are already mapped to SC-ALT account." -ForegroundColor $([Constants]::MessageType.Warning)
         if(($nonScAltRoleAssignment | Measure-Object).Count -ne 0)
         {
-            Write-Host "`nPlease provide corresponding mapping of critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) to their SC-ALT account if available in the empty cell of 'ScAltEmail' column in the file $($backupFile2).`n" 
-            Write-Host "Run the same command with -RoleAssignmentDetailsFilePath $($backupFile1) and -SCALTMappingFilePath $($backupFile2) without -DryRun." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "`nNext steps:" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "*    Please provide corresponding mapping of critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) to their SC-ALT account if available in the empty cell of 'ScAltEmail' column in the file $($backupFile2)." 
+            Write-Host "*    Run the same command with -RoleAssignmentDetailsFilePath $($backupFile1) and -SCALTMappingFilePath $($backupFile2) without -DryRun." 
         }
         else
         {
-            Write-Host "Run the same command with -RoleAssignmentDetailsFilePath $($backupFile1) without -DryRun." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "`nNext steps:" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "*    Run the same command with -RoleAssignmentDetailsFilePath $($backupFile1) without -DryRun." 
         }  
     }  
 }
