@@ -15,6 +15,8 @@
 - [Azure_APIManagement_AuthN_Secure_API_Using_Client_Certificates](#azure_apimanagement_authn_secure_api_using_client_certificates)
 - [Azure_APIManagement_AuthZ_Enable_Requires_Subscription](#azure_apimanagement_authz_enable_requires_subscription)
 - [Azure_APIManagement_AuthN_Use_Managed_Service_Identity](#azure_apimanagement_authn_use_managed_service_identity)
+- [Azure_APIManagement_Audit_Enable_Alerts](#azure_apimanagement_audit_enable_alerts)
+- [Azure_APIManagement_Audit_Enable_Diagnostics_Log](#azure_apimanagement_audit_enable_diagnostics_log)
 
 <!-- /TOC -->
 <br/>
@@ -23,7 +25,7 @@ ___
 
 ## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme 
 
-### DisplayName 
+### Display Name 
 Ensure API Management service is accessible only over HTTPS
 
 ### Rationale 
@@ -65,7 +67,7 @@ ___
 
 ## Azure_APIManagement_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Latest TLS version should be used in your APIM 
 
 ### Rationale 
@@ -120,7 +122,7 @@ ___
 
 ## Azure_APIManagement_DP_Remove_Default_Products 
 
-### DisplayName 
+### Display Name 
 Delete the two sample products 'Starter' and 'Unlimited' to avoid accidental exposure of APIs 
 
 ### Rationale 
@@ -147,7 +149,7 @@ By default, each API Management instance comes with two sample products: Starter
 
 - **Azure Portal** 
 
-	 To delete sample products go to Azure Portal --> your API management instance --> Products --> Select 'Starter'/'Unlimited' Product --> Delete. 
+	 To delete sample products, go to Azure Portal --> your API management instance --> Products --> Select 'Starter'/'Unlimited' Product --> Delete. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -160,7 +162,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Verify_Delegated_Authentication 
 
-### DisplayName 
+### Display Name 
 Delegated authentication should be implemented securely 
 
 ### Rationale 
@@ -201,7 +203,7 @@ ___
 
 ## Azure_APIManagement_AuthZ_Validate_JWT 
 
-### DisplayName 
+### Display Name 
 Ensure that JWT validation is enabled if using OAuth 2.0 or OpenID connect 
 
 ### Rationale 
@@ -243,7 +245,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Disable_Management_API 
 
-### DisplayName 
+### Display Name 
 Do not use API Management REST API 
 
 ### Rationale 
@@ -284,7 +286,7 @@ ___
 
 ## Azure_APIManagement_AuthZ_Enable_User_Authorization_For_API 
 
-### DisplayName 
+### Display Name 
 Ensure that either OAuth 2.0 or OpenID Connect are used to authorize developer accounts in API Management 
 
 ### Rationale 
@@ -304,7 +306,7 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 
 - **Azure Portal** 
 
-	 To enable user authorization for an API go to Azure Portal --> your API management instance --> APIs --> Select API --> Settings -> User Authorization -> Enable 'OAuth 2.0' or 'OpenID connect'. Please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-oauth2. 
+	 To enable user authorization for an API, go to Azure Portal --> your API management instance --> APIs --> Select API --> Settings -> User Authorization -> Enable 'OAuth 2.0' or 'OpenID connect'. Please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-oauth2. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -323,7 +325,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN 
 
-### DisplayName 
+### Display Name 
 Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials 
 
 ### Rationale 
@@ -376,7 +378,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Secure_API_Using_Client_Certificates 
 
-### DisplayName 
+### Display Name 
 Use client certificates for authentication between gateway and backend APIs 
 
 ### Rationale 
@@ -415,11 +417,11 @@ ___
 
 ## Azure_APIManagement_AuthZ_Enable_Requires_Subscription 
 
-### DisplayName 
+### Display Name 
 'Requires Subscription' option must be turned on for all products in an API Management instance 
 
 ### Rationale 
-When publishing APIs through Azure API Management (APIM), the easiest and most common way to secure access to the APIs is by using Subscription Keys. To obtain a Subscription Key for accessing APIs, a Subscription is required. This ensures that a Client applications that need to consume the published APIs must subscribe before making calls to those APIs. 
+When publishing APIs through Azure API Management (APIM), the easiest and most common way to secure access to the APIs is by using Subscription Keys. To obtain a Subscription Key for accessing APIs, a Subscription is required. This ensures that client applications that need to consume the published APIs must subscribe before making calls to those APIs. 
 
 ### Control Settings 
 ```json 
@@ -455,7 +457,7 @@ ___
 
 ## Azure_APIManagement_AuthN_Use_Managed_Service_Identity 
 
-### DisplayName 
+### Display Name 
 Use Managed Service Identity (MSI) for accessing other AAD-protected resources from the API management instance 
 
 ### Rationale 
@@ -494,5 +496,152 @@ Managed Service Identity (MSI) allows your API Management instance to easily acc
 
 <br />
 
-___ 
+___
+
+## Azure_APIManagement_Audit_Enable_Alerts
+
+### DisplayName
+Metric alert rules must be configured for critical actions on API Management service
+
+### Rationale
+Metric alert for occurrence of unauthorized gateway requests help the admin to identify security breach attempts.
+
+### Control Spec
+
+> **Passed:**
+> All the required metric alerts have been configured for the resource.
+>
+> **Failed:**
+> No metric alerts are configured in the Subscription.
+> (or)
+> One or more required metric alerts are either not configured, or, are misconfigured.
+>
+> **Verify:**
+> Metric alerts are disabled from being fetched.
+>
+> **Error:**
+> No metric alerts configured in Control Settings.
+>
+### Recommendation
+
+
+- **Azure Portal**
+
+  To setup an alert rule:
+  1. Go to API Management instance -> 'Alerts' -> 'New Alert Rule' -> 'Add condition'.
+  2. Select Signal type as 'Metrics' -> Select 'Requests' -> In 'Split by dimensions', in 'Dimension name', select 'Gateway Response Code Category'. In 'Dimension values', select 4xx. If this option is not listed in the drop-down, click 'Add custom value' and add '4xx' for 'Gateway Response Code Category'. Configure 'Alert logic' as follows: a. Operator = 'Greater Than' b. Aggregation type = 'Total' c. Threshold value = '0' and d. Aggregation granularity (Period) = '1 hour'.
+  3. Select an existing Action Group or create a new one of type 'Email/SMS message/Push/Voice'. Select 'Email' option and specify the email id.
+
+  Refer: [Set up an alert rule](https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-use-azure-monitor#set-up-an-alert-rule-for-unauthorized-request) for instructions to configure this alert.
+
+<!--
+- **PowerShell**
+
+	```powershell
+	```
+
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+-->
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all alert rule definitions in a Subscription:
+  /subscriptions/{0}/providers/Microsoft.Insights/metricAlerts?api-version=2018-03-01
+  <br />
+  **Properties:** [\*].id, [\*].name, [\*].properties.enabled, [\*].properties.scopes, [\*].properties.windowSize, [\*].properties.criteria, [\*].properties.actions
+  <br />
+
+- ARM API to list all action groups in a Subscription:
+  /subscriptions/{0}/providers/microsoft.insights/actionGroups?api-version=2019-06-01
+  <br />
+  **Properties:** [\*].id, [\*].name, [\*].properties.enabled, [\*].properties.emailReceivers
+  <br />
+  <br />
+
+## Azure_APIManagement_Audit_Enable_Diagnostics_Log 
+
+### Display Name 
+Diagnostics logs must be enabled for API Management service 
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
+
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "GatewayLogs",
+        "WebSocketConnectionLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+ ``` 
+
+### Control Spec 
+
+> **Passed:** 
+> 1. Required diagnostic logs are enabled.
+>
+>       and
+>
+> 2. At least one of the below setting configured:
+> a. Log Analytics.
+> b. Storage account (with min Retention period of 365 or forever(Retention period 0).
+> c. Event Hub.
+> 
+> **Failed:** 
+> 1. Diagnostics setting is disabled for resource.
+> 
+>       or
+>
+> 2. Diagnostic settings meet the following conditions:
+> a. All diagnostic logs are not enabled.
+> b. None of the below setting is configured:
+> i. Log Analytics.
+> ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
+> iii. Event Hub.
+> 
+> **Error:** 
+> Required logs are not configured in control settings.
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 You can change the diagnostic settings from the Azure Portal by following the steps given here: https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list diagnostic setting details of API Management resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** 
+name<br />
+properties.logs.category<br />
+properties.logs.enabled<br />
+properties.logs.retentionPolicy.enabled<br />
+properties.logs.retentionPolicy.days<br />
+properties.workspaceId<br />
+properties.storageAccountId<br />
+properties.eventHubName<br />
+ <br />
+
+<br />
+___
 

@@ -15,7 +15,7 @@ ___
 
 ## Azure_KeyVault_AuthZ_Configure_Advanced_Access_Policies 
 
-### DisplayName 
+### Display Name 
 Advanced access policies must be configured on a need basis 
 
 ### Rationale 
@@ -66,7 +66,7 @@ ___
 
 ## Azure_KeyVault_SI_Enable_SoftDelete 
 
-### DisplayName 
+### Display Name 
 Soft delete must be enabled to allow recovery of deleted Key Vault and any objects (keys, secrets, etc.) contained in it 
 
 ### Rationale 
@@ -112,7 +112,7 @@ ___
 
 ## Azure_KeyVault_Audit_Enable_Diagnostics_Log 
 
-### DisplayName 
+### Display Name 
 Diagnostics logs must be enabled with a retention period of at least 365 days 
 
 ### Rationale 
@@ -146,7 +146,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 > 
 >       or
 >
-> 2. Diagnostic setting meet the following conditions:
+> 2. Diagnostic settings meet the following conditions:
 > a. All diagnostic logs are not enabled.
 > b. None of the below setting is configured:
 > i. Log Analytics.

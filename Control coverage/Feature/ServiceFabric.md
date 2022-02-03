@@ -19,7 +19,7 @@ ___
 
 ## Azure_ServiceFabric_AuthZ_Security_Mode_Enabled 
 
-### DisplayName 
+### Display Name 
 Service Fabric cluster security must be enabled using security mode option 
 
 ### Rationale 
@@ -66,7 +66,7 @@ ___
 
 ## Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only 
 
-### DisplayName 
+### Display Name 
 Use Azure Active directory for client authentication on Service Fabric clusters 
 
 ### Rationale 
@@ -103,7 +103,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get Azure Active Directory details and its related property: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+- ARM API to get Azure Active Directory details and its related property: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** property.azureActiveDirectory.tenantId
  <br />
 
@@ -113,7 +113,7 @@ ___
 
 ## Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel 
 
-### DisplayName 
+### Display Name 
 The ClusterProtectionLevel property must be set to EncryptAndSign 
 
 ### Rationale 
@@ -132,7 +132,7 @@ With cluster protection level set to 'EncryptAndSign', all the node-to-node mess
 
 - **Azure Portal** 
 
-	 Service Fabric provides three levels of protection (None, Sign and EncryptAndSign) for node to node communication using cluster primary certificate. The protection level can be specified using property 'ClusterProtectionLevel' inside Service Fabric ARM template. The value of 'ClusterProtectionLevel' must be set to 'EncryptAndSign' to ensure that all the node-to-node messages are encrypted and digitally signed. Configure 'ClusterProtectionLevel' using ARM template as follows: ARM Template --> Resources --> Select resource type 'Microsoft.ServiceFabric/clusters' --> 'fabricSettings' --> Add 'ClusterProtectionLevel' property with value 'EncryptAndSign'. 
+	 Service Fabric provides three levels of protection (None, Sign and EncryptAndSign) for node-to-node communication using cluster primary certificate. The protection level can be specified using property 'ClusterProtectionLevel' inside Service Fabric ARM template. The value of 'ClusterProtectionLevel' must be set to 'EncryptAndSign' to ensure that all the node-to-node messages are encrypted and digitally signed. Configure 'ClusterProtectionLevel' using ARM template as follows: ARM Template --> Resources --> Select resource type 'Microsoft.ServiceFabric/clusters' --> 'fabricSettings' --> Add 'ClusterProtectionLevel' property with value 'EncryptAndSign'. 
 
 <!-- - **PowerShell** 
 
@@ -150,7 +150,7 @@ With cluster protection level set to 'EncryptAndSign', all the node-to-node mess
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get cluster protection level : /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+- ARM API to get cluster protection level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** property.fabricSettings.ClusterProtectionLevel.value
  <br />
 
@@ -160,7 +160,7 @@ ___
 
 ## Azure_ServiceFabric_AuthN_NSG_Enabled 
 
-### DisplayName 
+### Display Name 
 Enable Firewall/NSGs on subnet of Service Fabric cluster 
 
 ### Rationale 
@@ -188,7 +188,7 @@ Use of appropriate NSG rules can limit exposure of Service Fabric cluster in mul
 
 - **Azure Portal** 
 
-	 NSG contains a list of Access Control List (ACL) rules that allow or deny network traffic to Service Fabric node instances in a Virtual Network. NSGs can be associated with either subnets or individual node/VM instances within a subnet. NSG must be used in following scenarios: (1) Restrict RDP connection only from admin machine IP,  (2) Restrict microservice incoming request from trusted source IP, (3) Lock down the remote address ranges allowed for microservice deployments. Refer: https://azure.microsoft.com/en-in/documentation/articles/virtual-networks-create-nsg-arm-pportal/ 
+	 NSG contains a list of Access Control List (ACL) rules that allow or deny network traffic to Service Fabric node instances in a Virtual Network. NSGs can be associated with either subnets or individual node/VM instances within a subnet. NSG must be used in following scenarios: (1) Restrict RDP connection only from admin machine IP, (2) Restrict microservice incoming request from trusted source IP, (3) Lock down the remote address ranges allowed for microservice deployments. Refer: https://azure.microsoft.com/en-in/documentation/articles/virtual-networks-create-nsg-arm-pportal/ 
 
 <!-- - **PowerShell** 
 
@@ -232,7 +232,7 @@ ___
 
 ## Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports 
 
-### DisplayName 
+### Display Name 
 Monitor publicly exposed ports on load balancers used by Service Fabric cluster 
 
 ### Rationale 
@@ -298,7 +298,7 @@ ___
 
 ## Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port 
 
-### DisplayName 
+### Display Name 
 Reverse proxy port must not be exposed publicly 
 
 ### Rationale 
@@ -310,13 +310,13 @@ Configuring the reverse proxy's port in Load Balancer with public IP will expose
 > Reverse proxy endpoints ports list is empty
 > 
 > **Failed:** 
-> Reverse proxy endpoints ports found and ports are opened using public load balancer on SF
+> Reverse proxy endpoints ports found, and ports are opened using public load balancer on SF
 > 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 Check that reverse proxy port is not be exposed through Azure Load Balancer rules as follows: Azure Portal --> Load Balancers --> <Load Balancer Name> --> Load Balancing Rules --> Validate reverse proxy port is not exposed. 
+	 Check that reverse proxy port is not exposed through Azure Load Balancer rules as follows: Azure Portal --> Load Balancers --> <Load Balancer Name> --> Load Balancing Rules --> Validate reverse proxy port is not exposed. 
 
 <!--
 - **PowerShell** 
@@ -334,7 +334,7 @@ Configuring the reverse proxy's port in Load Balancer with public IP will expose
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get reverse proxy details at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+- ARM API to get reverse proxy details at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.nodeTypes.reverseProxyEndpointPort
  <br />
 
@@ -348,7 +348,7 @@ ___
 
 ## Azure_ServiceFabric_SI_Set_Auto_Update_Cluster 
 
-### DisplayName 
+### Display Name 
 Upgrade mode should be set to automatic for cluster 
 
 ### Rationale 
@@ -383,7 +383,7 @@ Clusters with unsupported fabric version can become targets for compromise from 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get status of upgrade mode at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01  <br />
+- ARM API to get status of upgrade mode at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.UpgradeMode
  <br />
 

@@ -11,6 +11,7 @@
 - [Azure_DBforPostgreSQL_Audit_Enable_Logging_On_Server](#azure_dbforpostgresql_audit_enable_logging_on_server)
 - [Azure_DBforPostgreSQL_AuthN_Enable_Connection_Throttling](#azure_dbforpostgresql_authn_enable_connection_throttling)
 - [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](#azure_dbforpostgresql_dp_use_secure_tls_version)
+- [Azure_DBforPostgreSQL_Audit_Enable_Diagnostics_Log](#azure_dbforpostgresql_audit_enable_diagnostics_log)
 
 <!-- /TOC -->
 <br/>
@@ -19,7 +20,7 @@ ___
 
 ## Azure_DBforPostgreSQL_AuthZ_Enable_SSL_Connection 
 
-### DisplayName 
+### Display Name 
 SSL connection must be enabled for Azure Database for PostgreSQL 
 
 ### Rationale 
@@ -66,7 +67,7 @@ ___
 
 ## Azure_DBforPostgreSQL_NetSec_Dont_Allow_Universal_IP_Range 
 
-### DisplayName 
+### Display Name 
 Do not use Any-to-Any IP range for Azure Database for PostgreSQL servers 
 
 ### Rationale 
@@ -122,7 +123,7 @@ ___
 
 ## Azure_DBforPostgreSQL_AuthZ_Firewall_Deny_AzureServices_Access 
 
-### DisplayName 
+### Display Name 
 Use the 'Allow access to Azure services' flag for DBforPostgreSQL only if required 
 
 ### Rationale 
@@ -177,7 +178,7 @@ ___
 
 ## Azure_DBforPostgreSQL_Audit_Enable_ATP 
 
-### DisplayName 
+### Display Name 
 Enable Threat detection for PostgreSQL 
 
 ### Rationale 
@@ -233,7 +234,7 @@ ___
 
 ## Azure_DBforPostgreSQL_Audit_Enable_Logging_On_Server 
 
-### DisplayName 
+### Display Name 
 Enable PostgreSQL server parameters log_connections and log_disconnections 
 
 ### Rationale 
@@ -251,7 +252,7 @@ PostgreSQL sever logging parameters enable log collection of important system ev
 
 - **Azure Portal** 
 
-	 To configure logging for your server, go to Server Parameters --> Set following log parameter: a) 'log_connections': 'ON' b) 'log_disconnections': 'ON' . Refer: https://docs.microsoft.com/en-us/azure/postgresql/concepts-server-logs#configure-logging 
+	 To configure logging for your server, go to Server Parameters --> Set following log parameter: a) 'log_connections': 'ON' b) 'log_disconnections': 'ON'. Refer: https://docs.microsoft.com/en-us/azure/postgresql/concepts-server-logs#configure-logging 
 
 <!---- **PowerShell** 
 
@@ -280,7 +281,7 @@ ___
 
 ## Azure_DBforPostgreSQL_AuthN_Enable_Connection_Throttling 
 
-### DisplayName 
+### Display Name 
 Ensure server parameter 'connection_throttling' is set to 'ON' 
 
 ### Rationale 
@@ -327,7 +328,7 @@ ___
 
 ## Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use approved version of TLS for Azure Database for PostgreSQL 
 
 ### Rationale 
@@ -380,5 +381,85 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 <br />
 
+## Azure_DBforPostgreSQL_Audit_Enable_Diagnostics_Log 
+
+### Display Name 
+Diagnostics logs must be enabled for Azure Database for PostgreSQL 
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
+
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "PostgreSQLLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+ ``` 
+
+### Control Spec 
+
+> **Passed:** 
+> 1. Required diagnostic logs are enabled.
+>
+>       and
+>
+> 2. At least one of the below setting configured:
+> a. Log Analytics.
+> b. Storage account (with min Retention period of 365 or forever(Retention period 0).
+> c. Event Hub.
+> 
+> **Failed:** 
+> 1. Diagnostics setting is disabled for resource.
+> 
+>       or
+>
+> 2. Diagnostic settings meet the following conditions:
+> a. All diagnostic logs are not enabled.
+> b. None of the below setting is configured:
+> i. Log Analytics.
+> ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
+> iii. Event Hub.
+> 
+> **Error:** 
+> Required logs are not configured in control settings.
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 You can change the diagnostic settings from the Azure Portal by following the steps given here: https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings 
+
+<!-- - **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list diagnostic setting details of DBForPostgreSQL server resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** 
+name<br />
+properties.logs.category<br />
+properties.logs.enabled<br />
+properties.logs.retentionPolicy.enabled<br />
+properties.logs.retentionPolicy.days<br />
+properties.workspaceId<br />
+properties.storageAccountId<br />
+properties.eventHubName<br />
+ <br />
+
+<br />
 ___ 
 

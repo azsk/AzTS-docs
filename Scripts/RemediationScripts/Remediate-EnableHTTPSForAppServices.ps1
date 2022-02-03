@@ -9,7 +9,8 @@
     Use HTTPS for App Services.
 
 # Prerequisites:
-    Contributor and higher privileges on the App Services in a Subscription.
+    1. Contributor or higher privileges on the App Services in a Subscription.
+    2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
     To remediate:
@@ -37,30 +38,28 @@
 # Examples:
     To remediate:
         1. To review the App Services in a Subscription that will be remediated:
-    
            Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. To enable HTTPS on the production slot and all non-production slots of all App Services in a Subscription:
-       
            Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To enable HTTPS on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
-       
            Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAppServices\AppServicesWithoutHTTPSEnabled.csv
 
+        4. To enable HTTPS only on the production slot and all non-production slots of all App Services in a Subscription without taking back up before actual remediation:
+           Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
+
         To know more about the options supported by the remediation command, execute:
-        
         Get-Help Enable-HttpsForAppServices -Detailed
 
     To roll back:
         1. To disable HTTPS on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
            Disable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAppServices\RemediatedAppServices.csv
         
-        2. To disable HTTPS on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
+        2. To disable HTTPS on the production slot of all App Services in a Subscription, from a previously taken snapshot:
            Disable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -ExcludeNonProductionSlots -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAppServices\RemediatedAppServices.csv
 
         To know more about the options supported by the roll back command, execute:
-        
         Get-Help Disable-HttpsForAppServices -Detailed        
 ###>
 
@@ -132,6 +131,9 @@ function Enable-HttpsForAppServices
         
         .PARAMETER DryRun
         Specifies a dry run of the actual remediation.
+
+        .PARAMETER SkipBackup
+        Specifies that no back up will be taken by the script before remediation.
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
@@ -174,13 +176,17 @@ function Enable-HttpsForAppServices
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
         $DryRun,
 
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies no back up will be taken by the script before remediation")]
+        $SkipBackup,
+
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
         $FilePath
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to enable HTTPS for App Services in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 3] Preparing to enable HTTPS for App Services in Subscription: $($SubscriptionId)"
 
     if ($PerformPreReqCheck)
     {
@@ -201,9 +207,8 @@ function Enable-HttpsForAppServices
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
-        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
-        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break
     }
 
     # Setting up context for the current Subscription.
@@ -216,18 +221,9 @@ function Enable-HttpsForAppServices
     Write-Host "Account Type: $($context.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
-
-    # Checking if the current account type is "User"
-    if ($context.Account.Type -ne "User")
-    {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
-
-    Write-Host "*** To enable HTTPS for App Services in a Subscription, Contributor and higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To enable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all App Services..."
+    Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
 
     $appServicesResourceType = "Microsoft.Web/sites"
     $appServiceResources = @()
@@ -353,7 +349,7 @@ function Enable-HttpsForAppServices
         break
     }
 
-    Write-Host "Found $($totalAppServicesWithoutHttpsEnabled) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found $($totalAppServicesWithoutHttpsEnabled) App Service(s) with HTTPS disabled." -ForegroundColor $([Constants]::MessageType.Update)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHttpsForAppServices"
@@ -362,18 +358,19 @@ function Enable-HttpsForAppServices
     {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
- 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Backing up App Services details to $($backupFolderPath)"
-    
-    # Backing up App Services details.
-    $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
 
-    $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
+    Write-Host $([Constants]::DoubleDashLine)
 
     if (-not $DryRun)
     {
-        Write-Host "App Services details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
+        if (-not $SkipBackup)
+        {
+            Write-Host "Backing up App Services details to $($backupFolderPath)"
+            $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
+            $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
+            Write-Host "App Services details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
+        }
+
         Write-Host "HTTPS will be enabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
 
         if (-not $Force)
@@ -394,7 +391,7 @@ function Enable-HttpsForAppServices
         }
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enabling HTTPS for App Services..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "[Step 3 of 3] Enabling HTTPS for App Services..." -ForegroundColor $([Constants]::MessageType.Warning)
 
         # To hold results from the remediation.
         $appServicesRemediated = @()
@@ -547,6 +544,10 @@ function Enable-HttpsForAppServices
     }
     else
     {
+        Write-Host "[Step 3 of 4] Backing up App Services details to $($backupFolderPath)"
+        # Backing up App Services details.
+        $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
+        $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4] App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable HTTPS for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
@@ -638,9 +639,8 @@ function Disable-HttpsForAppServices
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
-        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
-        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break
     }
 
     # Setting up context for the current Subscription.
@@ -653,16 +653,7 @@ function Disable-HttpsForAppServices
     Write-Host "Account Type: $($context.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
-
-    # Checking if the current account type is "User"
-    if ($context.Account.Type -ne "User")
-    {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
-
-    Write-Host "*** To disable HTTPS for App Services in a Subscription, Contributor and higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To disable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
     

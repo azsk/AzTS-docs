@@ -17,7 +17,7 @@ ___
 
 ## Azure_CosmosDB_AuthZ_Enable_Firewall 
 
-### DisplayName 
+### Display Name 
 Cosmos DB firewall should be enabled 
 
 ### Rationale 
@@ -63,7 +63,7 @@ ___
 
 ## Azure_CosmosDB_AuthZ_Verify_IP_Range 
 
-### DisplayName 
+### Display Name 
 Configure only the required IP addresses on Cosmos DB firewall 
 
 ### Rationale 
@@ -89,7 +89,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 - **Azure Portal** 
 
-	 Do not use high ranges like 0.0.0.0/0, 0.0.0.0/1, 128.0.0.0/1, etc. Maximum IPs in a range should be less that 256 and total IPs including all ranges should be less than 2048. To modify - Azure Portal --> Resource --> Firewall and Virtual networks. Turn 'ON' - 'Enable IP Access Control' and add/or remove IP addresses and/or ranges and save. Note: In case the IP range is indeterminate (for instance, if the client is a PaaS endpoint), you may need to attest this control. 
+	 Do not use high ranges like 0.0.0.0/0, 0.0.0.0/1, 128.0.0.0/1, etc. Maximum IPs in a range should be less than 256 and total IPs including all ranges should be less than 2048. To modify - Azure Portal --> Resource --> Firewall and Virtual networks. Turn 'ON' - 'Enable IP Access Control' and add/or remove IP addresses and/or ranges and save. Note: In case the IP range is indeterminate (for instance, if the client is a PaaS endpoint), you may need to attest this control. 
 
 <!--
 - **PowerShell** 
@@ -117,7 +117,7 @@ ___
 
 ## Azure_CosmosDB_Deploy_Use_Replication 
 
-### DisplayName 
+### Display Name 
 Use global replication 
 
 ### Rationale 
@@ -162,7 +162,7 @@ ___
 
 ## Azure_CosmosDB_Deploy_Use_Automatic_Failover 
 
-### DisplayName 
+### Display Name 
 Use automatic failover 
 
 ### Rationale 
@@ -209,7 +209,7 @@ ___
 
 ## Azure_CosmosDB_Enable_Adv_Threat_Protection 
 
-### DisplayName 
+### Display Name 
 Enable Threat detection for CosmosDB database 
 
 ### Rationale 

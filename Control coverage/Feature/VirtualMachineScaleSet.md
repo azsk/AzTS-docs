@@ -24,7 +24,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_Audit_Enable_Diagnostics
 
-### DisplayName
+### Display Name
 Diagnostics (IaaSDiagnostics extension on Windows; LinuxDiagnostic extension on Linux) must be enabled on Virtual Machine Scale Set.
 
 ### Rationale
@@ -84,7 +84,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_Config_Enable_NSG
 
-### DisplayName
+### Display Name
 NSG must be configured for Virtual Machine Scale Set.
 
 ### Rationale
@@ -143,7 +143,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_Deploy_Monitoring_Agent
 
-### DisplayName
+### Display Name
 Log analytics agent should be installed on Virtual Machine Scale Set.
 
 ### Rationale
@@ -211,7 +211,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_NetSec_Dont_Open_Management_Ports
 
-### DisplayName
+### Display Name
 Management ports must not be open on Virtual Machine Scale Sets.
 
 ### Rationale
@@ -284,7 +284,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_NetSec_Justify_PublicIPs
 
-### DisplayName
+### Display Name
 Public IPs on a Virtual Machine Scale Set instances should be carefully reviewed.
 
 ### Rationale
@@ -293,7 +293,7 @@ Public IPs provide direct access over the internet exposing the VMSS instance to
 ### Control Spec
 
 > **Passed:**
-> No Public IP is associated with VMSS or VMSS has Public IP is associated with it but its not part of ExpressRoute connected virtual network.
+> No Public IP is associated with VMSS or VMSS has Public IP associated with it but it is not part of ExpressRoute connected virtual network.
 >
 > **Failed:**
 > VMSS is part of an ExpressRoute connected virtual network and has Public IP associated with it.
@@ -347,7 +347,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Enable_Antimalware
 
-### DisplayName
+### Display Name
 Antimalware must be enabled with real time protection on Virtual Machine Scale Set.
 
 ### Rationale
@@ -376,10 +376,10 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 ### Control Spec
 
 > **Passed:**
-> Antimalware Malware extension is deployed at VMSS model and all it's VM instances with Auto Upgrade to minor version enabled and Realtime protection enabled
+> Antimalware Malware extension is deployed at VMSS model and all its VM instances with Auto Upgrade to minor version enabled and Realtime protection enabled
 >
 > **Failed:**
-> AntiMalware extension is not deployed at VMSS model or at one or more VM instances or AntiMalware extension is present but Auto Upgrade to minor version is disabled or AntiMalware extension is present but Auto Realtime protection is disabled.
+> AntiMalware extension is not deployed at VMSS model or at one or more VM instances or AntiMalware extension is present, but Auto Upgrade to minor version is disabled, or AntiMalware extension is present but Auto Realtime protection is disabled.
 >
 > **Error:**
 >Required Extension details is not properly defined in control settings.
@@ -437,7 +437,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Enable_Auto_OS_Upgrade
 
-### DisplayName
+### Display Name
 Enable automatic OS image upgrade on Virtual Machine Scale Set.
 
 ### Rationale
@@ -492,7 +492,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Latest_Model_Applied
 
-### DisplayName
+### Display Name
 All VMs in VM Scale Set must be up-to-date with the latest scale set model.
 
 ### Rationale
@@ -555,7 +555,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches
 
-### DisplayName
+### Display Name
 System updates on virtual machine scale sets must be installed.
 
 ### Rationale
@@ -610,7 +610,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities
 
-### DisplayName
+### Display Name
 Vulnerabilities in security configuration on your virtual machine scale sets must be remediated.
 
 ### Rationale
@@ -667,7 +667,7 @@ ___
 
 ## Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption
 
-### DisplayName
+### Display Name
 Disk encryption should be applied on virtual machine scale sets.
 
 ### Rationale
@@ -686,7 +686,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 ### Control Spec
 
 > **Passed:**
-> Azure disk encryption extension is installed and existing disks (OS and Data) are encrypted.
+> Azure disk encryption extension is installed, and existing disks (OS and Data) are encrypted.
 >
 > **Failed:**
 > Azure disk encryption extension is not installed One or more existing disks (OS or Data) are in a non-compliant state

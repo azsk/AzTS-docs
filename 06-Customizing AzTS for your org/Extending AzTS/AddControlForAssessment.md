@@ -58,15 +58,15 @@ Once you select the Display Name, **Assessment Properties** field will get auto 
 
 |Settings| Description| Examples|
 |-------------|------|---------|
-|Automated| Whether the control is manual or automated| e.g. Yes/No (keep it Yes for policy based controls)|
+|Automated| Whether the control is manual or automated| e.g. Yes/No (keep it Yes for policy-based controls)|
 |Description| A basic description on what the control is about| e.g. App Service must only be accessible over HTTPS. |
 |Tags| Labels that denote the control being of a specific type or belonging to a specific domain | For e.g. Baseline, Automated etc.|
 |Control Severity| The severity of the control| e.g. High: Should be remediated as soon as possible. Medium: Should be considered for remediation. Low: Remediation should be prioritized after high and medium.|
 |Control Requirements| Prerequisites for the control.| e.g. Monitoring and auditing must be enabled and correctly configured according to prescribed organizational guidance|
-|Rationale|  Logical intention for the added control | e.g. Auditing enables log collection of important system events pertinent to security. Regular monitoring of audit logs can help to detect any suspicious and malicious activity early and respond in a timely manner.|
+|Rationale| Logical intention for the added control | e.g. Auditing enables log collection of important system events pertinent to security. Regular monitoring of audit logs can help to detect any suspicious and malicious activity early and respond in a timely manner.|
 |Recommendations| Steps or guidance on how to remediate non-compliant resources | e.g. Refer https://azure.microsoft.com/en-in/documentation/articles/key-vault-get-started/ for configuring Key Vault and storing secrets |
 |Custom Tags| Tags can be used for filtering and referring controls in the future while reporting| e.g. Production, Phase2 etc. |
-|Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For ASC assessment/recommendation based contols this should be empty) |
+|Control Settings| Settings specific to the control to be provided for the scan | e.g. Required TLS version for all App services in your tenant (Note: For ASC assessment/recommendation based controls this should be empty) |
 |Comments | These comments show up in the changelog for the feature. | e.g. Added new policy based control for App Service |
 
 **Step 13:** Click on **Add** button to save new control.

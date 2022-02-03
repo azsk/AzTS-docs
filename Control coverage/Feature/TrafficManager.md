@@ -14,7 +14,7 @@ ___
 
 ## Azure_TrafficManager_DP_Enable_HTTPS 
 
-### DisplayName 
+### Display Name 
 Traffic Manager profile should use HTTPS protocol for endpoint monitoring 
 
 ### Rationale 
@@ -40,7 +40,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - **Azure Portal** 
 
-	 To enable HTTPS protocol for endpoint monitoring, go to Azure Portal --> your Traffic Manager Profile --> Configuration -->  Select HTTPS --> Save. 
+	 To enable HTTPS protocol for endpoint monitoring, go to Azure Portal --> your Traffic Manager Profile --> Configuration --> Select HTTPS --> Save. 
 <!--
 - **PowerShell** 
 

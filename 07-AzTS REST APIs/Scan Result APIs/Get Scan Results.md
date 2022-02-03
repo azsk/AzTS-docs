@@ -28,15 +28,18 @@ You must have permission over subscription or resource group in the subscription
 POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanResult?api-version=1.0
 ```
 > _Note:_<br/>
-> _1. 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#set-up-for-azts-admin-only)._<br/>
-> _2. 'api-version' is a required parameter. Current supported version: **1.0**_
+> _1. 'WebAPI-URL' varies per AzTS setup. You need to reach out to AzTS admin to get value for `<WebAPI-URL`> as mentioned [here](../README.md#setup-for-azts-admin-only)._<br/>
+> _2. API will return 100 records of control scan result at a time. In order to get next set of records, you have to pass skipToken (available in API response) as part of next API request._<br/>
+> _3. 'api-version' is an optional parameter. Current and default supported version: **1.0**_
 
 <br/>
 
 **URI Parameters**
-|Name|Type|Description|Required?|
-|----|----|----|----|
-| SubscriptionId |  GUID|Subscription Id | Yes |
+|Name|In|Type|Description|Required?|
+|----|----|----|----|----|
+| SubscriptionId | path | GUID | Subscription id to fetch control scan result. | Yes |
+| api-version | query | string | Version of the API to use. | No |
+| skiptoken | query | string | Skip token for getting the next page of data set. If not passed, gets the first page of control scan result.| No |
 
 **Request Header**
 
@@ -51,11 +54,22 @@ POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanRes
 | ControlIdList| List`<string`>|List of Control Ids to get scan results only for specific controls.| No |
 | ResourceNameList | List`<string`>| List of resources to get scan results only for certain resources.| No |
 
+**Response Body**
+|Name|Type|Description|
+|------|------|------|
+| data | json object | Set of control scan result for current request. |
+| pageSize| int | Maximum records returned by the API at a time (i.e. 100). |
+| skipToken | string | Skip token for getting the next page of data set. Returned only when the total number of requested control scan results exceed maximum page size. |
+| totalPages | int | Represents total number of pages available to get all control scan result for current request. |
+| totalRecords | int | Represents total number of control scan result for current request.|
+
+<br/>
 
 ## **Example** 
 <br/>
 
 **Sample Request**
+
 ``` 
  POST https://AzSK-AzTS-WebApi-xxxxx/adhocscan/subscription/{subscriptionId}/ControlScanResult?api-version=1.0
 ```
@@ -68,30 +82,49 @@ POST https://<WebAPI-URL>/adhocscan/subscription/{subscriptionId}/ControlScanRes
     "ScanRequestId":  "20210914014045"
 }
 ```
+
 **Sample Response**
+> **Note:** The response object shown here might be shortened for readability.
+
 ``` JSON
-[
-    {
-        "ControlName": "Azure_Storage_DP_Encrypt_In_Transit",
-        "ControlDisplayName": "Enable Secure transfer to storage accounts",
-        "Status": "Failed",
-        "ResourceName": "htc-str-pre-prod-1",
-        "ResourceGroupName": "AzSKTestRG",
-        "ResourceID": "/subscriptions/48f73dab-a34c-49a5-b5f5-db1285d422c/resourceGroups/HTCRG/providers/Microsoft.Storage/storageAccounts/htc-str-pre-prod-1",
-        "IsBaseline": "true",
-        "Severity": "High",
-        "StatusReason": "Storage secure transfer is not enabled",
-        "SubscriptionId": "48f73dab-a34c-49a5-b5f5-db1285d422c",
-        "OrgTenantId": "524c134f-eae7-4d9e-b007-ebf8f9d6468f",
-        "ExceptionExpiryDate": "",
-        "Justification": "",
-        "Description": "HTTPS protocol must be used for accessing Storage Account resources",
-        "Category": "Encrypt data in transit",
-        "Remediation": "Run command 'Set-AzStorageAccount -ResourceGroupName <RGName> -Name <StorageAccountName> -EnableHttpsTrafficOnly `$true'. Run 'Get-Help Set-AzStorageAccount -full' for more help.",
-        "ExceptionWorkFlowStatus": ""
-    }
-]
+{
+    "data":
+    [
+        {
+            "ControlName": "Azure_Storage_DP_Encrypt_In_Transit",
+            "ControlDisplayName": "Enable Secure transfer to storage accounts",
+            "Status": "Failed",
+            "ResourceName": "htc-str-pre-prod-1",
+            "ResourceGroupName": "TestRG",
+            "ResourceID": "/subscriptions/48f73dab-a34c-49a5-b5f5-db1285d422c/resourceGroups/HTCRG/providers/Microsoft.Storage/storageAccounts/htc-str-pre-prod-1",
+            "IsBaseline": "true",
+            "Severity": "High",
+            "StatusReason": "Storage secure transfer is not enabled",
+            "SubscriptionId": "48f73dab-a34c-49a5-b5f5-db1285d422c",
+            "OrgTenantId": "524c134f-eae7-4d9e-b007-ebf8f9d6468f",
+            "ExceptionExpiryDate": "",
+            "Justification": "",
+            "Description": "HTTPS protocol must be used for accessing Storage Account resources",
+            "Category": "Encrypt data in transit",
+            "Remediation": "Run command 'Set-AzStorageAccount -ResourceGroupName <RGName> -Name <StorageAccountName> -EnableHttpsTrafficOnly `$true'. Run 'Get-Help Set-AzStorageAccount -full' for more help.",
+            "ExceptionWorkFlowStatus": ""
+        }
+    ],
+    "pageSize": 100,
+    "skipToken": "eyJQYWdlTnVtYmVyIjoyfQ==",
+    "totalPages": 5,
+    "totalRecords": 450,    
+}
 ```
+
+To get the next page of the results, send a request to the URL with skipToken. The skipToken contains next page number of control scan result. Continue sending requests with the skipToken until it no longer contains a skipToken in the returned results.
+
+**Sample Request**
+
+``` 
+ POST https://AzSK-AzTS-WebApi-xxxxx/adhocscan/subscription/{subscriptionId}/ControlScanResult?api-version=1.0&skipToken=eyJQYWdlTnVtYmVyIjoyfQ==
+```
+<br/> 
 
 > **Note:**
 > 1. If 'RequestBody' is empty or scanRequestId is in the past, then API will return latest scan results.

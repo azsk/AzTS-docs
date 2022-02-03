@@ -26,7 +26,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Use_PublicIPs 
 
-### DisplayName 
+### Display Name 
 Remove public IPs on ER connected VMs
 
 ### Rationale 
@@ -47,11 +47,11 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 
 - **Azure Portal** 
 	
-	Step 1 : Go to Azure portal --> Virtual Machines --> Select the virtual machine you want to disassociate the public IP address from.
+	Step 1: Go to Azure portal --> Virtual Machines --> Select the virtual machine you want to disassociate the public IP address from.
 
-	Step 2 : Under **Overview** section of the VM, select the **Public IP address** which will navigate to the Public IP address resource type.​
+	Step 2: Under **Overview** section of the VM, select the **Public IP address** which will navigate to the Public IP address resource type.​
 
-	Step 3 : Under Overview of Public IP, select **"Dissociate"** to remove the Public IP address.​
+	Step 3: Under Overview of Public IP, select **"Dissociate"** to remove the Public IP address.​
 
 - **PowerShell** 
 
@@ -70,11 +70,11 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level:- <br />
+- ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** properties.ipConfigurations[*].properties.subnet.id, properties.ipConfigurations[*].properties.publicIPAddress.id
 
-- ARM API to list Virtual Network Gateways at subscription level:- <br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
 **Properties:** properties.gatewayType
 
@@ -84,7 +84,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Use_Multi_NIC_VMs 
 
-### DisplayName 
+### Display Name 
 There must not be multiple NICs on ExpressRoute-connected VMs
 
 ### Rationale 
@@ -122,11 +122,11 @@ Using multiple NICs, one can route traffic between the ER-connected virtual netw
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level:-<br /> 
+- ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** properties.ipConfigurations[*].properties.subnet.id, properties.virtualMachine.id
 
-- ARM API to list Virtual Network Gateways at subscription level:-<br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
 **Properties:** properties.gatewayType
 
@@ -136,7 +136,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Enable_IPForwarding_for_NICs 
 
-### DisplayName 
+### Display Name 
 Set 'EnableIPForwarding' flag to false for NICs in the ExpressRoute-connected vNet
 
 ### Rationale 
@@ -157,11 +157,11 @@ Using IP Forwarding one can change the routing of packets from an ER-connected v
 
 - **Azure Portal** 
 
-	Step 1 : Go to Azure portal --> Network interfaces --> Select the Network interface for which you want to disable the 'IP Forwarding'.
+	Step 1: Go to Azure portal --> Network interfaces --> Select the Network interface for which you want to disable the 'IP Forwarding'.
 
-	Step 2 : Go to Settings --> IP Configurations.​
+	Step 2: Go to Settings --> IP Configurations.​
 
-	Step 3 : Set 'IP forwarding' switch to 'Disabled'.
+	Step 3: Set 'IP forwarding' switch to 'Disabled'.
 
 	For more information refer: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-udr-overview 
 
@@ -180,11 +180,11 @@ Using IP Forwarding one can change the routing of packets from an ER-connected v
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level:-<br />
+- ARM API to list Network Interfaces at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** properties.ipConfigurations[*].properties.subnet.id, properties.enableIPForwarding
 
-- ARM API to list Virtual Network Gateways at subscription level:-<br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
 **Properties:** properties.gatewayType
 
@@ -194,7 +194,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Add_UDRs_on_Subnets 
 
-### DisplayName 
+### Display Name 
 There must not be a UDR on any subnet in an ExpressRoute-connected vNet 
 
 ### Rationale 
@@ -249,15 +249,15 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level:-<br />
+- ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
  **Properties:** properties.subnets[*].properties.routeTable.id
 
-- ARM API to list Virtual Network Gateways at subscription level:-<br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
  **Properties:** properties.gatewayType
 
-- ARM API to list all Route Tables at subscription level:-<br />
+- ARM API to list all Route Tables at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/routeTables?api-version=2020-03-01 <br />
  **Properties:** properties.routes[*].name, properties.routes[*].properties.addressPrefix, properties.routes[*].properties.nextHopType
 
@@ -267,7 +267,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Add_VPN_Gateways 
 
-### DisplayName 
+### Display Name 
 There must not be another virtual network gateway (GatewayType = Vpn) in an ExpressRoute-connected vNet 
 
 ### Rationale 
@@ -304,11 +304,11 @@ Using other gateway types on an ER-connected virtual network can lead to pathway
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Virtual Networks and their subnets at subscription level:-<br />
+- ARM API to list Virtual Networks and their subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
  **Properties:** properties.subnets[*].id
 
-- ARM API to list Virtual Network Gateways at subscription level:-<br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
  **Properties:** properties.gatewayType
 
@@ -318,7 +318,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Dont_Use_VNet_Peerings 
 
-### DisplayName 
+### Display Name 
 Peering must not be allowed on ExpressRoute connected Virtual Network
 
 ### Rationale 
@@ -351,6 +351,10 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
         {
             "RemoteNetworkIdPrefix": "",
             "ResourceGroup": "ERNetwork-DB"
+        },
+	{
+            "RemoteNetworkIdPrefix": "",
+            "ResourceGroup": "ERNetwork-EML"
         }
     ]
 }
@@ -359,10 +363,10 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
 ### Control Spec 
 
 > **Passed:** 
-> No peering found on ERvNet. Or, only exempted peering are defined in ERvNet.
+> No peering found on ERvNet. Or, only exempted peerings are defined in ERvNet.
 > 
 > **Failed:** 
-> One or more non exempted peering found on ERvNet.
+> One or more non exempted peerings found on ERvNet.
 >  
 > **NotApplicable:** 
 > Current VNet resource object is not connected to ExpressRoute gateway.
@@ -387,11 +391,11 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Virtual Networks and their peering at subscription level:-<br />
+- ARM API to list Virtual Networks and their peering at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br /> 
  **Properties:** properties.virtualNetworkPeerings[*].id, properties.virtualNetworkPeerings[*].properties.remoteVirtualNetwork.id
 
-- ARM API to list Virtual Network Gateways at subscription level:-<br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
  **Properties:** properties.gatewayType
 
@@ -401,7 +405,7 @@ ___
 
 ## Azure_ERvNet_SI_Add_Only_Network_Resources 
 
-### DisplayName 
+### Display Name 
 Add only Microsoft.Network/* resources to the ERNetwork resource group
 
 ### Rationale 
@@ -446,7 +450,7 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Virtual Networks in a Subscription:-<br />
+- ARM API to list all Virtual Networks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
  **Properties:** properties.id
 
@@ -456,7 +460,7 @@ ___
 
 ## Azure_ERvNet_SI_Dont_Remove_Resource_Lock 
 
-### DisplayName 
+### Display Name 
 Ensure that the ERNetwork resource group is protected with a resource lock
 
 ### Rationale 
@@ -506,11 +510,11 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Virtual Networks in a Subscription:-<br />
+- ARM API to list all Virtual Networks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
  **Properties:** properties.id
 
-- ARM API to list all Locks in a Subscription:-<br />
+- ARM API to list all Locks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/locks?api-version=2015-01-01 <br />
  **Properties:** properties.level, id
 
@@ -520,7 +524,7 @@ ___
 
 ## Azure_ERvNet_NetSec_Revoke_PublicIPs_On_Sub 
 
-### DisplayName 
+### Display Name 
 There must not be any Public IPs on Subscription with ExpressRoute connection
 
 ### Rationale 
@@ -563,7 +567,7 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Public IP addresses in a Subscription:-<br />
+- ARM API to list all Public IP addresses in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2019-11-01 <br />
  **Properties:** id
 
@@ -573,7 +577,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_Peering 
 
-### DisplayName 
+### Display Name 
 Assure virtual network peering is not allowed 
 
 ### Rationale 
@@ -619,7 +623,7 @@ Resources in the peered virtual networks can communicate with each other directl
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Virtual Networks in a Subscription:-<br />
+- ARM API to list all Virtual Networks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
  **Properties:** properties.virtualNetworkPeerings
 
@@ -629,7 +633,7 @@ ___
 
 ## Azure_VNet_NetSec_Configure_NSG 
 
-### DisplayName 
+### Display Name 
 Associate Subnets with a Network Security Group 
 
 ### Rationale 
@@ -644,8 +648,9 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
         "OffByPolicy"
     ],
     "SubnetsToExcludeFromEvaluation": [
-        "gatewaysubnet",
-        "azurefirewallsubnet"
+        "azurefirewallsubnet",
+	"gatewaysubnet",
+        "routeserversubnet"
     ]
 }
  ``` 
@@ -679,8 +684,8 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Virtual Networks and their constituent Subnets at subscription level:-<br />
- /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01  <br />
+- ARM API to list Virtual Networks and their constituent Subnets at subscription level: <br />
+ /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
  **Properties:** properties.subnets[*].properties.networkSecurityGroup.id
  
 <br />
@@ -689,7 +694,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_PublicIPs 
 
-### DisplayName 
+### Display Name 
 Minimize the number of Public IPs (i.e. NICs with PublicIP) on a virtual network 
 
 ### Rationale 
@@ -716,13 +721,13 @@ Or, no Public IP is configured for any NIC on the vNet.
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level:- <br />
+- ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
  **Properties:** properties.ipConfigurations[*].properties.subnet.id,
 properties.ipConfigurations[*].properties.publicIPAddress.id
 
-- ARM API to list Virtual Network Gateways at subscription level:- <br />
-/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01  <br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
  **Properties:** properties.gatewayType
 
 <br />
@@ -731,7 +736,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_Gateways 
 
-### DisplayName 
+### Display Name 
 Presence of any virtual network gateways (GatewayType = VPN/ExpressRoute) in the virtual network must be justified 
 
 ### Rationale 
@@ -757,12 +762,12 @@ Virtual network gateways enable network traffic between a virtual network and ot
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Virtual Networks and their subnets at subscription level:-<br />
+- ARM API to list Virtual Networks and their subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br /> 
  **Properties:** properties.subnets[*].id
 
-- ARM API to list Virtual Network Gateways at subscription level:- <br />
-/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01  <br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
 **Properties:** properties.gatewayType
 
 <br />
@@ -771,7 +776,7 @@ ___
 
 ## Azure_VNet_NetSec_Justify_IPForwarding_for_NICs 
 
-### DisplayName 
+### Display Name 
 Use of IP Forwarding on any NIC in a virtual network should be scrutinized 
 
 ### Rationale 
@@ -797,12 +802,12 @@ Or, there are no NICs with EnableIPForwarding turned on the vNet.
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level:- <br />
+- ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br /> 
 **Properties:** properties.ipConfigurations[*].properties.subnet.id,
 properties.enableIPForwarding
 
-- ARM API to list Virtual Network Gateways at subscription level:- <br />
+- ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br /> 
 **Properties:** properties.gatewayType
 

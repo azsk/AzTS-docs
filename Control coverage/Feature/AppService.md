@@ -24,7 +24,7 @@ ___
 
 ## Azure_AppService_DP_Use_CNAME_With_SSL 
 
-### DisplayName 
+### Display Name 
 Custom domain with SSL binding must be configured for App Service 
 
 ### Rationale 
@@ -64,11 +64,11 @@ ___
 
 ## Azure_AppService_Config_Disable_Remote_Debugging 
 
-### DisplayName 
+### Display Name 
 Remote debugging should be turned off for Web Applications 
 
 ### Rationale 
-Remote debugging requires inbound ports to be opened on App Service. These ports become easy targets for compromise from various internet based attacks. 
+Remote debugging requires inbound ports to be opened on App Service. These ports become easy targets for compromise from various internet-based attacks. 
 
 ### Control Spec 
 
@@ -108,11 +108,11 @@ ___
 
 ## Azure_AppService_Config_Disable_Web_Sockets 
 
-### DisplayName 
+### Display Name 
 Web Sockets should be disabled for App Service 
 
 ### Rationale 
-WebSockets protocol (WS) is vulnerable to different types of security attacks. Usage of Web Sockets with in web applications has to be carefully reviewed. 
+WebSockets protocol (WS) is vulnerable to different types of security attacks. Usage of Web Sockets within web applications has to be carefully reviewed. 
 
 ### Control Spec 
 
@@ -160,7 +160,7 @@ ___
 
 ## Azure_AppService_BCDR_Use_AlwaysOn 
 
-### DisplayName 
+### Display Name 
 'Always On' should be configured for App Service 
 
 ### Rationale 
@@ -209,7 +209,7 @@ ___
 
 ## Azure_AppService_BCDR_Use_Multiple_Instances 
 
-### DisplayName 
+### Display Name 
 App Service must be deployed on a minimum of two instances to ensure availability 
 
 ### Rationale 
@@ -266,7 +266,7 @@ ___
 
 ## Azure_AppService_Audit_Enable_Logging_and_Monitoring 
 
-### DisplayName 
+### Display Name 
 Monitoring must be enabled for App Service 
 
 ### Rationale 
@@ -317,7 +317,7 @@ ___
 
 ## Azure_AppService_DP_Dont_Allow_HTTP_Access 
 
-### DisplayName 
+### Display Name 
 Use HTTPS for app services 
 
 ### Rationale 
@@ -336,14 +336,14 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - **PowerShell** 
 
- To enable only https traffic on default 'Production' slot,run command
+ To enable only https traffic on default 'Production' slot, run command
  
 ```powershell
 Set-AzWebApp -Name <WebAppName> -ResourceGroupName <RGName> -HttpsOnly $true 
 ```
 Run Get-Help Set-AzWebApp -full for more help.
 
-To enable only https traffic on any non-production slot,run command 
+To enable only https traffic on any non-production slot, run command 
 	 
 ```powershell
 Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -HttpsOnly $true
@@ -368,7 +368,7 @@ ___
 
 ## Azure_AppService_DP_Review_CORS_Request_Credential 
 
-### DisplayName 
+### Display Name 
 Review use of credentials in CORS request for App Service
 
 ### Rationale 
@@ -404,7 +404,7 @@ ___
 
 ## Azure_AppService_DP_Restrict_CORS_Access 
 
-### DisplayName 
+### Display Name 
 Ensure that CORS access is granted to a limited set of trusted origins 
 
 ### Rationale 
@@ -441,7 +441,7 @@ ___
 
 ## Azure_AppService_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use Approved TLS Version in App Service 
 
 ### Rationale 
@@ -492,11 +492,11 @@ ___
 
 ## Azure_AppService_AuthZ_Configure_IP_Restrictions 
 
-### DisplayName 
+### Display Name 
 Setup IP-based access restrictions for App Service if feasible 
 
 ### Rationale 
-Using the IP/VNet subnet rules based access restriction ensures that access to the data or the service is restricted to a specific set of IPs. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
+Using the IP/VNet subnet rules-based access restriction ensures that access to the data or the service is restricted to a specific set of IPs. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
 
 ### Control Spec 
 
@@ -533,7 +533,7 @@ ___
 
 ## Azure_AppService_AuthN_Use_Managed_Service_Identity 
 
-### DisplayName 
+### Display Name 
 Use Managed Service Identity (MSI) for accessing other AAD-protected resources from the app service 
 
 ### Rationale 

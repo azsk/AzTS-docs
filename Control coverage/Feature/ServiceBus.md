@@ -13,7 +13,7 @@ ___
 
 ## Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace 
 
-### DisplayName 
+### Display Name 
 All authorization rules except RootManageSharedAccessKey should be removed from Service Bus namespace 
 
 ### Rationale 

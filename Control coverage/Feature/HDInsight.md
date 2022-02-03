@@ -15,7 +15,7 @@ ___
 
 ## Azure_HDInsight_Deploy_Supported_Cluster_Version 
 
-### DisplayName 
+### Display Name 
 HDInsight must have supported HDI cluster version 
 
 ### Rationale 
@@ -69,7 +69,7 @@ ___
 
 ## Azure_HDInsight_NetSec_Restrict_Cluster_Network_Access 
 
-### DisplayName 
+### Display Name 
 HDInsight cluster access must be restricted using virtual network or Azure VPN gateway service with NSG traffic rules 
 
 ### Rationale 
@@ -116,7 +116,7 @@ ___
 
 ## Azure_HDInsight_DP_Use_Secure_TLS_Version 
 
-### DisplayName 
+### Display Name 
 Use approved version of TLS for HDInsight cluster 
 
 ### Rationale 
@@ -145,7 +145,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 - **Azure Portal** 
 
-	 The TLS setting can only be configured during cluster creation using either the Azure portal, or a Resource Manager template. Refer : https://docs.microsoft.com/en-us/azure/hdinsight/transport-layer-security 
+	 The TLS setting can only be configured during cluster creation using either the Azure portal, or a Resource Manager template. Refer: https://docs.microsoft.com/en-us/azure/hdinsight/transport-layer-security 
 
 <!-- - **PowerShell** 
 

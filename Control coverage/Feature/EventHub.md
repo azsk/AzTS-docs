@@ -14,11 +14,11 @@ ___
 
 ## Azure_EventHub_AuthZ_Dont_Use_Policies_At_Event_Hub_Namespace 
 
-### DisplayName 
+### Display Name 
 Event Hub clients (event senders or receivers) must not use 'namespace' level access policies 
 
 ### Rationale 
-A 'namespace' level access policy provides access to all Event Hubs in a namespace. However, using an access policy at an entity (Event Hub) level provides access only to the specific entity. Thus using the latter is in line with the principle of least privilege. 
+A 'namespace' level access policy provides access to all Event Hubs in a namespace. However, using an access policy at an entity (Event Hub) level provides access only to the specific entity. Thus, using the latter is in line with the principle of least privilege. 
 
 ### Control Settings 
 ```json 
@@ -32,7 +32,7 @@ A 'namespace' level access policy provides access to all Event Hubs in a namespa
 ### Control Spec 
 
 > **Passed:** 
-> No namespace level access policies have been configured for the Event Hub.
+> No namespace level access policies (except RootManageSharedAccessKey) have been configured for the Event Hub.
 > 
 > **Failed:** 
 > One or more namespace level access policies have been configured for the Event Hub.
@@ -75,7 +75,7 @@ ___
 
 ## Azure_EventHub_AuthZ_Use_Min_Permissions_Access_Policies 
 
-### DisplayName 
+### Display Name 
 Access policies must be defined with minimum required permissions to the Event Hub 
 
 ### Rationale 

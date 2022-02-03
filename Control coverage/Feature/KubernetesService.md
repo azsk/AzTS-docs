@@ -19,7 +19,7 @@ ___
 
 ## Azure_KubernetesService_Deploy_Enable_Cluster_RBAC 
 
-### DisplayName 
+### Display Name 
 Cluster RBAC must be enabled in Kubernetes Service 
 
 ### Rationale 
@@ -63,11 +63,11 @@ ___
 
 ## Azure_KubernetesService_AuthN_Enabled_AAD 
 
-### DisplayName 
+### Display Name 
 AAD should be enabled in Kubernetes Service 
 
 ### Rationale 
-Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control.All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
 
 ### Control Spec 
 
@@ -107,7 +107,7 @@ ___
 
 ## Azure_KubernetesService_Deploy_Use_Latest_Version 
 
-### DisplayName 
+### Display Name 
 [Preview]: Kubernetes Services should be upgraded to a non-vulnerable Kubernetes version 
 
 ### Rationale 
@@ -123,7 +123,7 @@ Running on older versions could mean you are not using latest security classes. 
 ### Control Spec 
 
 > **Passed:** 
-> AKS is running on one of the defined version
+> AKS is running on one of the defined versions.
 > 
 > **Failed:** 
 > AKS is not running on the required Kubernetes version.
@@ -158,7 +158,7 @@ ___
 
 ## Azure_KubernetesService_Audit_Enable_Monitoring 
 
-### DisplayName 
+### Display Name 
 Monitoring must be enabled for Azure Kubernetes Service 
 
 ### Rationale 
@@ -202,7 +202,7 @@ ___
 
 ## Azure_KubernetesService_NetSec_Dont_Open_Management_Ports 
 
-### DisplayName 
+### Display Name 
 Do not leave management ports open on Kubernetes nodes 
 
 ### Rationale 
@@ -261,7 +261,7 @@ ___
 
 ## Azure_KubernetesService_Audit_Enable_Diagnostics_Log 
 
-### DisplayName 
+### Display Name 
 Diagnostics logs must be enabled for Kubernetes service 
 
 ### Rationale 
@@ -298,7 +298,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 >
 >       or
 >
-> 2. Diagnostic setting meet the following conditions:
+> 2. Diagnostic settings meet the following conditions:
 > a. All diagnostic logs are not enabled.
 > b. None of the below setting is configured:
 > i. Log Analytics.
@@ -345,7 +345,7 @@ ___
 
 ## Azure_KubernetesService_DP_Disable_HTTP_Application_Routing 
 
-### DisplayName 
+### Display Name 
 HTTP application routing should be disabled in Kubernetes Service 
 
 ### Rationale 
