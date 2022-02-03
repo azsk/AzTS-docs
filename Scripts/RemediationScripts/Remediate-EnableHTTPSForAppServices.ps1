@@ -349,7 +349,7 @@ function Enable-HttpsForAppServices
         break
     }
 
-    Write-Host "Found $($totalAppServicesWithoutHttpsEnabled) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found $($totalAppServicesWithoutHttpsEnabled) App Service(s) with HTTPS disabled." -ForegroundColor $([Constants]::MessageType.Update)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHttpsForAppServices"
