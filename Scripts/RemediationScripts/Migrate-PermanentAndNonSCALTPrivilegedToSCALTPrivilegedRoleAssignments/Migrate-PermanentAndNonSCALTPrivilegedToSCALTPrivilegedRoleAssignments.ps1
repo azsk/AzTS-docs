@@ -951,7 +951,8 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
         }
         
         Write-Host $([Constants]::DoubleDashLine)
-        write-Host "[step 4 of 4]: Skipped as -DryRun switch is provided."
+        write-Host "[step 4 of 4] Migrating all the critical permanent and non SC-ALT privileged role assignments which are listed in [step 2 of 4]..."
+        Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host  "NOTE: Only those critical permanent role assignment(s) and PIM non SC-ALT role assignment(s) will be remediated for which corresponding SC-ALT account mapping will be provided or which are already mapped to SC-ALT account." -ForegroundColor $([Constants]::MessageType.Warning)
         if(($nonScAltRoleAssignment | Measure-Object).Count -ne 0)
