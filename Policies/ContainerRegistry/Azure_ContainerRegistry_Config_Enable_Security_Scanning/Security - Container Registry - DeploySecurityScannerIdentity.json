@@ -18,7 +18,7 @@
 	  "type": "String",
 	  "metadata": {
 		"displayName": "PrincipalId",
-		"description": "Used to take Principal Id as input"
+		"description": "PrincipalId of the required scanning identity"
 	  }
 	}
   },
@@ -40,7 +40,7 @@
 		  "allOf": [
 			{
 			  "field": "Microsoft.Authorization/roleAssignments/principalId",
-			  "equals": "933b2294-7959-4e6f-a006-3e75ab109a4e"
+			  "equals": "[parameters('principalId')]"
 			},
 			{
 			  "field": "Microsoft.Authorization/roleAssignments/roleDefinitionId",

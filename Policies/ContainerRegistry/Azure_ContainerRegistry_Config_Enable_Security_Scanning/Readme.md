@@ -1,7 +1,7 @@
 ## Azure_ContainerRegistry_Config_Enable_Security_Scanning
 
 ### DisplayName 
-[Security scanner identity must be granted access to Container Registry for image scans](../../../Control%20coverage/Feature/ContainerRegistry.md#azure_container_registry_config_enable_security_scanning)
+[Security scanner identity must be granted access to Container Registry for image scans](../../../Control%20coverage/Feature/ContainerRegistry.md#azure_containerregistry_config_enable_security_scanning)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:
