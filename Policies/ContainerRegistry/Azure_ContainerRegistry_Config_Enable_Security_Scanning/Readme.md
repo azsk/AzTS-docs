@@ -18,6 +18,7 @@ Following policy can be used to grant access to security scanner identity on con
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | The effect determines what happens when the policy rule is evaluated to match| DeployIfNotExists |No |
+| PrincipalId | Principal id for security scanning identity | NA |Yes
 
 
 ### Notes
