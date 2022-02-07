@@ -185,6 +185,9 @@ function Remove-AnonymousAccessOnContainers
         Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
         break
     }
+
+    # Control Id
+    $controlIds = "Azure_Storage_AuthN_Dont_Allow_Anonymous"
     
     # Connect to AzAccount
     $isContextSet = Get-AzContext
@@ -198,44 +201,94 @@ function Remove-AnonymousAccessOnContainers
     # Setting context for current subscription.
     $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
 
-    Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
-    Write-Host $([Constants]::SingleDashLine)  
-    Write-Host "Starting with subscription [$($SubscriptionId)]..."
+    if(-not($AutoRemediation)){
+        Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
+        Write-Host $([Constants]::SingleDashLine)  
+        Write-Host "Starting with subscription [$($SubscriptionId)]..."
+    }
 
-    Write-Host "`n"
-    Write-Host "*** To perform remediation for disabling anonymous access on containers user must have atleast contributor access on storage account(s) of subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host "`n" 
+    #Write-Host $([Constants]::SingleDashLine) 
+    Write-Host "To perform remediation for disabling anonymous access on containers user must have atleast contributor access on storage account(s) of subscription: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine) 
 
-    Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..."
+    Write-Host "Validating current user [$($currentSub.Account.Id)]"
     
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "The current user account type is [$($currentSub.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        if($AutoRemediation){
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Skipping the current subscription" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            #TODO
+            #use a function, don't write redundant code.
+            $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+            $controls = $controlForRemediation.ControlRemediationList
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+            $logSkippedResources = @()
+            $resourceDetails.FailedResourceList | ForEach-Object {
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logSkippedResources += $logResource
+            }
+            $logFile = "LogFiles\"+ $($timeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                                $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
         break;
     }
     
-    # # Safe Check: Current user must have Owner/Contributor/User Access Administrator access over the subscription.
-    # $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    # Safe Check: Current user must have Owner/Contributor/User Access Administrator access over the subscription.
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    # $requiredRoleDefinitionName = @("Owner", "Contributor", "User Access Administrator")
-    # if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
-    # {
-    #     Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
-    #     return;
-    # }
-    # else
-    # {
-    #     Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
-    # }
+    $requiredRoleDefinitionName = @("Owner", "Contributor", "User Access Administrator")
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    {
+        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
+        if($AutoRemediation){
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Skipping the current subscription" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+            $controls = $controlForRemediation.ControlRemediationList
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+            $logSkippedResources = @()
+            $resourceDetails.FailedResourceList | ForEach-Object {
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logSkippedResources += $logResource
+            }
+            $logFile = "LogFiles\"+ $($timeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                                $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
+        return;
+    }
+    else
+    {
+        Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
+    }
 
     Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
-    Write-Host "`n"
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "Fetching storage account(s)..."
     
     # Array to store resource context
     $resourceContext = @()
-    $controlIds = "Azure_Storage_AuthN_Dont_Allow_Anonymous"
     
     # If json path not given fetch all storage account.
     if([string]::IsNullOrWhiteSpace($Path))
@@ -254,7 +307,7 @@ function Remove-AnonymousAccessOnContainers
         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
         if($AutoRemediation){
             $controls = $controlForRemediation.ControlRemediationList
-            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
             
             if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.FailedResourceList | Measure-Object).Count -eq 0)
             {
@@ -276,7 +329,7 @@ function Remove-AnonymousAccessOnContainers
             
         }else{
             $controls = $controlForRemediation.FailedControlSet
-            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
             if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
             {
                 Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
@@ -296,6 +349,7 @@ function Remove-AnonymousAccessOnContainers
             }
         }
     }
+    Write-Host $([Constants]::SingleDashLine)
 
     $totalStorageAccount = ($resourceContext | Measure-Object).Count
     if($totalStorageAccount -eq 0)
@@ -317,31 +371,31 @@ function Remove-AnonymousAccessOnContainers
     $resourceSummary += "$($resourceContext | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object -Property "ResourceGroupName" |Format-Table |Out-String)"
         
 
-    # # Adding property 'ResourceName' which will contain storage account name and being used by common helper method
-    # if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
-    # {
-    #     $resourceContext | ForEach-Object {
-    #         $_ | Add-Member -NotePropertyName ResourceName -NotePropertyValue $_.StorageAccountName -ErrorAction SilentlyContinue
-    #     }
+    # Adding property 'ResourceName' which will contain storage account name and being used by common helper method
+    if(-not($AutoRemediation) -and (-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames)))
+    {
+         $resourceContext | ForEach-Object {
+             $_ | Add-Member -NotePropertyName ResourceName -NotePropertyValue $_.StorageAccountName -ErrorAction SilentlyContinue
+         }
     
-    #     # Apply resource or resource group exclusion logic
-    #     try{
-    #         $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
-    #         $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext) 
-    #     }
-    #     catch
-    #     {
-    #         Write-Host "Please load Helper.ps1 file in current PowerShell session before executing the script." -ForegroundColor $([Constants]::MessageType.Error)
-    #         Break
-    #     }
+         # Apply resource or resource group exclusion logic
+         try{
+             $resourceResolver = [ResourceResolver]::new([string] $excludeResourceNames , [string] $excludeResourceGroupNames);
+             $resourceContext = $resourceResolver.ApplyResourceFilter([PSObject] $resourceContext) 
+         }
+         catch
+         {
+             Write-Host "Please load Helper.ps1 file in current PowerShell session before executing the script." -ForegroundColor $([Constants]::MessageType.Error)
+             Break
+         }
 
-    #     if($resourceResolver.messageToPrint -ne $null)
-    #     {
-    #         $resourceSummary += $([Constants]::SingleDashLine)
-    #         $resourceSummary += "Excluded resource/resource group summary: "
-    #         $resourceSummary += $resourceResolver.messageToPrint
-    #     }   
-    # }
+         if($resourceResolver.messageToPrint -ne $null)
+         {
+             $resourceSummary += $([Constants]::SingleDashLine)
+             $resourceSummary += "Excluded resource/resource group summary: "
+             $resourceSummary += $resourceResolver.messageToPrint
+         }   
+    }
     
     Write-Host "Total excluded storage account(s) from remediation:" [$($totalStorageAccount - ($resourceContext | Measure-Object).Count)]
     Write-Host "Checking config of storage account(s) for remediation: [$(($resourceContext | Measure-Object).Count)]"
@@ -373,7 +427,8 @@ function Remove-AnonymousAccessOnContainers
                 Write-Host "Storage account(s) with enabled 'Allow Blob Public Access': [$($totalStgWithEnableAllowBlobPublicAccess)]"
                 Write-Host "Storage account(s) with disabled 'Allow Blob Public Access': [$($totalStgWithDisableAllowBlobPublicAccess)]"
 
-                Write-Host "`n"
+                #Write-Host "`n"
+                Write-Host $([Constants]::SingleDashLine)
 
                 $logRemediatedResources = @()
                 $logSkippedResources=@()
@@ -407,8 +462,8 @@ function Remove-AnonymousAccessOnContainers
                         Write-Host "Path: $($folderpath)\DisabledAllowBlobPublicAccess.json"
                     }
                          
-                    Write-Host "`n"
-                    Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s)..."
+                    #Write-Host "`n"
+                    Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] storage account(s)"
                     $stgWithEnableAllowBlobPublicAccess = $stgWithEnableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
@@ -439,6 +494,11 @@ function Remove-AnonymousAccessOnContainers
                         }
                         catch
                         {
+                            $logResource = @{}
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                            $logResource.Add("ResourceName",($_.StorageAccountName))
+                            $logSkippedResources += $logResource
+                            
                             $item =  New-Object psobject -Property @{  
                                 StorageAccountName = $_.StorageAccountName                
                                 ResourceGroupName = $_.ResourceGroupName
@@ -447,7 +507,8 @@ function Remove-AnonymousAccessOnContainers
                         }
                     }
 
-                    Write-Host "`n"
+                    #Write-Host "`n"
+                    Write-Host $([Constants]::SingleDashLine)
                     if(($skippedStorageAccountFromRemediation | Measure-Object).Count -eq 0)
                     {
                         Write-Host "Successfully disabled 'Allow Blob Public Access'." -ForegroundColor $([Constants]::MessageType.Update)
@@ -459,6 +520,7 @@ function Remove-AnonymousAccessOnContainers
                         $resourceSummary += "Remediation was not successful on following storage account(s), due to insufficient permission"
                         $resourceSummary += "$($skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table |Out-String)"
                     }
+                    Write-Host $([Constants]::SingleDashLine)
                 }
                 else
                 {
@@ -606,10 +668,10 @@ function Remove-AnonymousAccessOnContainers
             break;
         }
     }
-    if(-not ($AutoRemediation) ){
+    if(-not($AutoRemediation) ){
         $resourceSummary += [Constants]::DoubleDashLine
         [ResourceResolver]::RemediationSummary($resourceSummary, $folderPath)
-       Write-Host $([Constants]::DoubleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
     }
 }
 

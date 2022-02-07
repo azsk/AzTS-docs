@@ -166,7 +166,7 @@ Enter the choice (1/2)";
                     #Operation Terminate or continue?
                 #}
 
-                Write-Host $([Constants]::DoubleDashLine)
+                #Write-Host $([Constants]::DoubleDashLine)
             }
 
             # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
@@ -241,6 +241,9 @@ function PrintRemediationSummary($timestamp)
         }
         $remediationSummary | Format-Table
         Write-Host "More details can be found at folder [$(Get-location)/LogFiles]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "NOTE: You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 
