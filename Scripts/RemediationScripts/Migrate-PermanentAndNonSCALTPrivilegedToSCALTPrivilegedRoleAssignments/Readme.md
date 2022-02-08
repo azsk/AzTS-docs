@@ -18,15 +18,38 @@
 ### Prerequisites: 
     Owner and higher privileged role assignment on the Subscription is required and atleast one service adminstrator role assignment must be present on the subscription level.
 
+### Critical roles considered by control:
+#### 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access
+	     Critical roles at subscription level :
+	     *   Owner
+	     *   Contributor
+	     *   User Access Administrator
+#### 2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG
+        Critical roles at resource group level :
+        *   Owner
+        *   User Access Administrator
+#### 3. Azure_Subscription_Use_Only_Alt_Credentials
+        Critical roles at subscription level :
+        *   Owner
+        *   Contributor
+        *   User Access Administrator
+
+        Critical roles at resource group level :
+        *   Owner
+        *   User Access Administrator
+
 ### Important Points:
-    1. First run the script using the -dryrun switch and for migration user needs to pass two files one for all the critical role assignments
+    1. First run the script using the -DryRun switch and for migration user needs to pass two files one for all the critical role assignments
        needs to migrated(Mandatory) and other file with their SC-ALT mapping(Not Mandatory) which are provided as output of dryrun.
-    2. Script will only remediate the role assignment if corresponding SC-ALT account mapping is provided by the user or already mapped to 
-       SC-ALT account, Otherwise the role assignment will be skipped from remediation.
-    3. The user critical role assignments will not be removed.
+    2. Script will only migrate the role assignment if corresponding SC-ALT account mapping is provided by the user or already mapped to 
+       SC-ALT account, Otherwise the role assignment will be skipped from migration.
+    3. The user critical role assignment(s) will not be removed.
     4. The user needs to renew the PIM role assignments because they are created for a specific time interval which is 30 days.
     5. Rollback is not supported in this script.
-    6. The Azure_Subscription_Use_Only_Alt_Credentials control will be partially remediated(corresponding PIM SC-ALT role assignment(s) will be
+    6. The Azure_Subscription_Use_Only_Alt_Credentials control will be partially migrated(corresponding PIM SC-ALT role assignment(s) will be
        created but the PIM non SC-ALT role assignment(s) will not be removed).
-    7. User needs to delete the PIM non SC-ALT role assignment and migrate user's critical role assignment to SC-ALT PIM and after the script
+    7. User needs to delete the PIM non SC-ALT role assignment and migrate user's critical role assignment to SC-ALT PIM and after the script 
        execution.
+
+
+
