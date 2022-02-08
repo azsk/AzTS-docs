@@ -1,0 +1,110 @@
+{
+  "mode": "All",
+  "parameters": {
+	"effect": {
+	  "type": "String",
+	  "metadata": {
+		"displayName": "Effect",
+		"description": "Enable or disable the execution of the policy"
+	  },
+	  "allowedValues": [
+		"DeployIfNotExists",
+		"AuditIfNotExists",
+		"Disabled"
+	  ],
+	  "defaultValue": "DeployIfNotExists"
+	},
+	"principalId": {
+	  "type": "String",
+	  "metadata": {
+		"displayName": "PrincipalId",
+		"description": "PrincipalId of the required scanning identity"
+	  }
+	}
+  },
+  "policyRule": {
+	"if": {
+	  "field": "type",
+	  "equals": "Microsoft.ContainerRegistry/registries"
+	},
+	"then": {
+	  "effect": "[parameters('effect')]",
+	  "details": {
+		"type": "Microsoft.Authorization/roleAssignments",
+		"evaluationDelay": "PT2M",
+		"existenceScope": "subscription",
+		"roleDefinitionIds": [
+		  "/providers/microsoft.authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+		],
+		"existenceCondition": {
+		  "allOf": [
+			{
+			  "field": "Microsoft.Authorization/roleAssignments/principalId",
+			  "equals": "[parameters('principalId')]"
+			},
+			{
+			  "field": "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+			  "equals": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
+			},
+			{
+			  "anyOf": [
+				{
+				  "field": "Microsoft.Authorization/roleAssignments/scope",
+				  "equals": "[field('id')]"
+				},
+				{
+				  "field": "Microsoft.Authorization/roleAssignments/scope",
+				  "equals": "[concat('/subscriptions/',subscription().subscriptionId)]"
+				},
+				{
+				  "field": "Microsoft.Authorization/roleAssignments/scope",
+				  "equals": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourcegroup().name)]"
+				}
+			  ]
+			}
+		  ]
+		},
+		"deployment": {
+		  "properties": {
+			"mode": "incremental",
+			"template": {
+			  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+			  "contentVersion": "1.0.0.0",
+			  "parameters": {
+				"scope": {
+				  "type": "string"
+				},
+				"principalId": {
+				  "type": "string"
+				}
+			  },
+			  "variables": {
+				"roleDefinitionID": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
+			  },
+			  "resources": [
+				{
+				  "type": "Microsoft.Authorization/roleAssignments",
+				  "apiVersion": "2021-04-01-preview",
+				  "name": "[guid(parameters('principalID'), variables('roleDefinitionID'), resourceGroup().id)]",
+				  "scope": "[parameters('scope')]",
+				  "properties": {
+					"roleDefinitionId": "[variables('roleDefinitionID')]",
+					"principalId": "[parameters('principalID')]"
+				  }
+				}
+			  ]
+			},
+			"parameters": {
+			  "scope": {
+				"value": "[field('id')]"
+			  },
+			  "principalID": {
+				"value": "[parameters('principalId')]"
+			  }
+			}
+		  }
+		}
+	  }
+	}
+  }
+}
