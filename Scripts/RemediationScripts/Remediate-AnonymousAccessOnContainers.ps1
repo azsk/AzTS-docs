@@ -67,7 +67,6 @@ DisplayName:
            
         2. Run below command to rollback changes made by remediation script at Storage account level:
            Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType 'EnableAnonymousAccessOnContainers>' -Path '<Json file path containing remediated log>'
-             
 
 To know more about parameter execute:
     a. Get-Help Remove-AnonymousAccessOnContainers -Detailed
@@ -79,10 +78,11 @@ To know more about parameter execute:
 function Pre_requisites
 {
     <#
-    .SYNOPSIS
-    This command would check pre requisites modules.
-    .DESCRIPTION
-    This command would check pre requisites modules to perform remediation.
+        .SYNOPSIS
+        This command would check pre requisites modules.
+
+        .DESCRIPTION
+        This command would check pre requisites modules to perform remediation.
 	#>
 
     Write-Host "Required modules are: Az.Account, Az.Resources, Az.Storage" -ForegroundColor $([Constants]::MessageType.Info)
@@ -240,7 +240,7 @@ function Remove-AnonymousAccessOnContainers
         break
     }
     
-    # Connect to AzAccount
+    # Check current login context.
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
@@ -258,48 +258,57 @@ function Remove-AnonymousAccessOnContainers
     Write-Host "`n"
     Write-Host "*** WARNING: To perform remediation for disabling anonymous access on containers user must have atleast contributor access on Storage account(s) of subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::DoubleDashLine) 
-
-    Write-Host "Fetching Storage account(s)..."
     
     # Array to store resource context
     $resourceContext = @()
     $controlIds = "Azure_Storage_AuthN_Dont_Allow_Anonymous"
     
     # If json path not given fetch all Storage account.
-    if([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($FilePath))
+    if([string]::IsNullOrWhiteSpace($Path) -and [string]::IsNullOrWhiteSpace($FilePath))
     {
+        Write-Host "Fetching all Storage Account(s) in subscription: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
         $resourceContext = Get-AzStorageAccount
     }
     else
     {
-        if (-not (Test-Path -Path $Path))
-        {
-            Write-Host "Error: Json file containing Storage account(s) detail not found for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-            break;        
-        }
-
         # Fetching Storage accounts details for remediation.
-        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
-        $controls = $controlForRemediation.FailedControlSet
-        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
-
-        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
+        if (![string]::IsNullOrWhiteSpace($Path))
         {
-            Write-Host "No Storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-            break
-        }
-
-        $resourceDetails.ResourceDetails | ForEach-Object { 
-            try
+            if (-not (Test-Path -Path $Path))
             {
-                $resourceContext += Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName
-                $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
+                Write-Host "Error: Json file containing Storage account(s) detail not found for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+                break;        
             }
-            catch
+
+            $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+            $controls = $controlForRemediation.FailedControlSet
+            $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
+
+            if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.ResourceDetails | Measure-Object).Count -eq 0)
             {
-                Write-Host "Valid resource group(s) or resource name(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "No Storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
+
+            $resourceDetails.ResourceDetails | ForEach-Object { 
+                try
+                {
+                    $resourceContext += Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName
+                    $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
+                }
+                catch
+                {
+                    Write-Host "Valid resource group(s) or resource name(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    break
+                }
+            }
+        }
+
+        elseif (![string]::IsNullOrWhiteSpace($FilePath))
+        {
+            Write-Host "Fetching all Storage Account from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+
+            $resourceContext = Import-Csv -LiteralPath $FilePath
         }
     }
 
@@ -318,10 +327,10 @@ function Remove-AnonymousAccessOnContainers
         $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\DisableAnonymousAccessOnContainers"
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
+
     $resourceSummary = @()
     $resourceSummary += "Total resource(s) for remediation: $($totalStorageAccount)"
     $resourceSummary += "$($resourceContext | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object -Property "ResourceGroupName" |Format-Table |Out-String)"
-        
 
     # Adding property 'ResourceName' which will contain Storage account name and being used by common helper method
     if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
@@ -380,7 +389,6 @@ function Remove-AnonymousAccessOnContainers
     
                 Write-Host "Storage account(s) with enabled 'Allow Blob Public Access': [$($totalStgWithEnableAllowBlobPublicAccess)]"
                 Write-Host "Storage account(s) with disabled 'Allow Blob Public Access': [$($totalStgWithDisableAllowBlobPublicAccess)]"
-
                 Write-Host "`n"
 
                 # Start remediation Storage account(s) with 'Allow Blob Public Access' enabled.
@@ -450,6 +458,7 @@ function Remove-AnonymousAccessOnContainers
                                 StorageAccountName = $_.StorageAccountName                
                                 ResourceGroupName = $_.ResourceGroupName
                             }
+
                             $skippedStorageAccountsFromRemediation += $item
                         }
                     }
@@ -503,17 +512,18 @@ function Remove-AnonymousAccessOnContainers
                     break
                 }
             }
-            catch{
+            catch
+            {
                 Write-Host "Error occurred while remediating changes. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
         }
+
         "DisableAnonymousAccessOnContainers" 
         {
             Write-Host "`n"
             Write-Host "Warning: Selected remediation type will disable anonymous access for specific containers, provided in input json file." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "`n"
-           
             Write-Host "Checking anonymous access on containers of Storage account(s)..."
 
             # Performing remediation
@@ -528,7 +538,6 @@ function Remove-AnonymousAccessOnContainers
                     $containersWithAnonymousAccess = @();
                     $anonymousAccessContainersNameAndPublicAccess = @();
                     $context = $_.context;
-                    
 
                     # Taking containers details from input json file for remediation
                     $allContainers += Get-AzStorageContainer -Context $context -ErrorAction Stop
@@ -559,7 +568,7 @@ function Remove-AnonymousAccessOnContainers
                             };
                         
                             # If successfully removed anonymous access from Storage account's containers.
-                            if($flag)
+                            if ($flag)
                             {
                                 $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
                                 $item =  New-Object psobject -Property @{  
@@ -607,7 +616,7 @@ function Remove-AnonymousAccessOnContainers
             }
 
             # Creating the log file
-            if(($ContainersWithDisableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
+            if (($ContainersWithDisableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
             {               
                     Write-Host "Backing up config of Storage account(s) details for subscription: [$($SubscriptionId)] on which remediation is successfully performed. Please do not delete this file. Without this file you won't be able to rollback any changes done through remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                     $ContainersWithDisableAnonymousAccessOnStorage | ConvertTo-Json -Depth 10| Out-File "$($folderPath)\ContainersWithDisableAnonymousAccess.json"
@@ -615,7 +624,7 @@ function Remove-AnonymousAccessOnContainers
                     Write-Host $([Constants]::DoubleDashLine)
             }
 
-            if(($ContainersWithEnableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
+            if (($ContainersWithEnableAnonymousAccessOnStorage | Measure-Object).Count -gt 0)
             {
                 Write-Host "`n"
                 Write-Host "Generating the log file containing details of all the Storage account(s) on which remediating script unable to disable containers with anonymous access due to error occurred or insufficient permission over Storage account(s) for subscription: [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -624,8 +633,9 @@ function Remove-AnonymousAccessOnContainers
                 Write-Host $([Constants]::DoubleDashLine)
             }
         }
-        Default {
 
+        Default 
+        {
             Write-Host "No valid remediation type selected." -ForegroundColor $([Constants]::MessageType.Error)
             break;
         }
@@ -702,7 +712,7 @@ function Set-AnonymousAccessOnContainers
         break
     }    
     
-    # Checking current context.
+    # Check current login context.
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
@@ -846,6 +856,7 @@ function Set-AnonymousAccessOnContainers
                 }
             }
         }
+
         "EnableAnonymousAccessOnContainers" 
         {  
             # Fetching remediated log for 'DisableAnonymousAccessOnContainers' remediation type.
@@ -853,9 +864,9 @@ function Set-AnonymousAccessOnContainers
             try
             {
                 $remediatedResourceLog | ForEach-Object { 
-                            $resourceContext += Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName    
-                            $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
-                        }
+                    $resourceContext += Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName    
+                    $resourceContext | Add-Member -NotePropertyName AnonymousAccessContainer -NotePropertyValue $_.ContainersWithAnonymousAccess -ErrorAction SilentlyContinue
+                }
             }
             catch
             {
@@ -866,10 +877,10 @@ function Set-AnonymousAccessOnContainers
             $totalResourceToRollBack = ($resourceContext | Measure-Object).Count
             Write-Host "Found [$($totalResourceToRollBack)] Storage account(s) to perform rollback operation."
             Write-Host "Performing rollback operation to enable anonymous access on containers of Storage account(s) from subscription [$($SubscriptionId)]..."
-        
 
             # Performing rollback
-            try{
+            try
+            {
                 if($totalResourceToRollBack -gt 0)
                 {
                     $resourceContext | ForEach-Object{
@@ -879,41 +890,42 @@ function Set-AnonymousAccessOnContainers
                         $containerWithAnonymousAccess += $_.AnonymousAccessContainer
 
                         # Checking 'Allow Blob Public Access' is enabled or not at storage level. If found enabled then we can rollback access otherwise not permitted.
-                        if(($null -eq $_.AllowBlobPublicAccess) -or $_.AllowBlobPublicAccess)
+                        if (($null -eq $_.AllowBlobPublicAccess) -or $_.AllowBlobPublicAccess)
+                        {
+                            if (($containerWithAnonymousAccess | Measure-Object).Count -gt 0)
                             {
-                                if(($containerWithAnonymousAccess | Measure-Object).Count -gt 0)
-                                {
-                                    $containerWithAnonymousAccess | ForEach-Object {
-                                        try
-                                        {
-                                            Set-AzStorageContainerAcl -Name $_.Name -Permission $_.PublicAccess -Context $context -ErrorAction SilentlyContinue | Out-Null
-                                        }
-                                        catch
-                                        {
-                                            $flag = $false
-                                            break;
-                                        }
-                                    };
+                                $containerWithAnonymousAccess | ForEach-Object {
+                                    try
+                                    {
+                                        Set-AzStorageContainerAcl -Name $_.Name -Permission $_.PublicAccess -Context $context -ErrorAction SilentlyContinue | Out-Null
+                                    }
+                                    catch
+                                    {
+                                        $flag = $false
+                                        break;
+                                    }
+                                };
 
-                                    if($flag)
-                                    {
-                                        $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
-                                    }
-                                    else 
-                                    {
-                                        Write-Host "Skipping to enable anonymous access on containers of storage [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning);
-                                    }
-                                }
-                                else
+                                if ($flag)
                                 {
-                                    Write-Host "No containers found with enabled anonymous access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update);
-                                }	
+                                    $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
+                                }
+                                else 
+                                {
+                                    Write-Host "Skipping to enable anonymous access on containers of storage [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning);
+                                }
                             }
-                            else 
+                            else
                             {
-                                Write-Host "Public access is not permitted on this Storage account [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning);
-                            }
+                                Write-Host "No containers found with enabled anonymous access [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update);
+                            }	
+                        }
+                        else 
+                        {
+                            Write-Host "Public access is not permitted on this Storage account [StorageAccountName]: [$($_.StorageAccountName)] [ResourceGroupName]: [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning);
+                        }
                     }
+
                     Write-Host $([Constants]::DoubleDashLine)
                 }
                 else
@@ -928,6 +940,7 @@ function Set-AnonymousAccessOnContainers
                 break
             }
         }
+
         Default 
         {
             Write-Host "No valid rollback type selected." -ForegroundColor $([Constants]::MessageType.Error)
