@@ -63,9 +63,9 @@ DisplayName:
 
     To rollback:
         1. Run below command to rollback changes made by remediation script at Storage account level:
-           Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType 'EnableAllowBlobPublicAccessOnStorage' -FileePath '<csv file path containing remediated log>'
+           Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType 'EnableAllowBlobPublicAccessOnStorage' -FilePath '<csv file path containing remediated log>'
            
-        2. Run below command to rollback changes made by remediation script at Storage account level:
+        2. Run below command to rollback changes made by remediation script at Container level:
            Set-AnonymousAccessOnContainers -SubscriptionId '<Sub_Id>' -RollBackType 'EnableAnonymousAccessOnContainers>' -Path '<Json file path containing remediated log>'
 
 To know more about parameter execute:
@@ -550,14 +550,14 @@ function Remove-AnonymousAccessOnContainers
                             $containersWithAnonymousAccess | ForEach-Object {
                                 try
                                 {
-                                    Set-AzStorageContainerAcl -Name $_.Name -Permission Off -Context $context | Out-Null
-                                    
                                     # Creating objects with container name and public access type, It will help while doing rollback operation.
                                     $item =  New-Object psobject -Property @{  
                                             Name = $_.Name                
                                             PublicAccess = $_.PublicAccess
                                         }
-                                        $anonymousAccessContainersNameAndPublicAccess += $item
+                                    
+                                    Set-AzStorageContainerAcl -Name $_.Name -Permission Off -Context $context | Out-Null
+                                    $anonymousAccessContainersNameAndPublicAccess += $item 
                                 }
                                 catch
                                 {
@@ -735,16 +735,17 @@ function Set-AnonymousAccessOnContainers
 
     # Array to store resource context
     $resourceContext = @()
-    if (-not (Test-Path -Path $FilePath))
-    {
-        Write-Host "Error: Control file path is not found." -ForegroundColor $([Constants]::MessageType.Error)
-        break;        
-    }
+    
 
     switch ($RollBackType) 
     {
         "EnableAllowBlobPublicAccessOnStorage" 
-        {  
+        {
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "Error: Control file path is not found." -ForegroundColor $([Constants]::MessageType.Error)
+                break;        
+            }
             # Fetching remediated log for 'DisableAllowBlobPublicAccessOnStorage' remediation type.
             $storageAccountDetails = Import-Csv -LiteralPath $FilePath
             $validStorageAccountDetails = $storageAccountDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.StorageAccountName) }
@@ -858,7 +859,12 @@ function Set-AnonymousAccessOnContainers
         }
 
         "EnableAnonymousAccessOnContainers" 
-        {  
+        {
+            if (-not (Test-Path -Path $Path))
+            {
+                Write-Host "Error: Control file path is not found." -ForegroundColor $([Constants]::MessageType.Error)
+                break;        
+            }
             # Fetching remediated log for 'DisableAnonymousAccessOnContainers' remediation type.
             $remediatedResourceLog = Get-content -path $Path | ConvertFrom-Json
             try
