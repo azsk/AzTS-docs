@@ -435,10 +435,11 @@ function Remove-AnonymousAccessOnContainers
                     $stgWithEnableAllowBlobPublicAccess = $stgWithEnableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         $item =  New-Object psobject -Property @{  
-                                    StorageAccountName = $_.StorageAccountName                
-                                    ResourceGroupName = $_.ResourceGroupName
-                                    ResourceId = $_.Id
-                                }
+                            StorageAccountName = $_.StorageAccountName                
+                            ResourceGroupName = $_.ResourceGroupName
+                            ResourceId = $_.Id
+                        }
+                        
                         try
                         {
                             $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false -ErrorAction SilentlyContinue
