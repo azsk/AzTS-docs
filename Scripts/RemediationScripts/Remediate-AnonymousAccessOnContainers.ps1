@@ -111,7 +111,7 @@ function Pre_requisites
         Write-Host "Az.Storage module is available." -ForegroundColor $([Constants]::MessageType.Update)
         $currentModule = $availableModules | Where-Object { $_.Name -eq "Az.Storage" }
         $currentModuleVersion = ($currentModule.Version  | measure -Maximum).Maximum -as [string]
-        if([version]('{0}.{1}.{2}' -f $currentModuleVersion.split('.')) -lt [version]('{0}.{1}.{2}' -f "3.5.0".split('.')))
+        if([version]('{0}.{1}.{2}' -f $currentModuleVersion.split('.')) -lt [version]('{0}.{1}.{2}' -f "3.7.0".split('.')))
         {
             Write-Host "Updating module Az.Storage..." -ForegroundColor $([Constants]::MessageType.Update)
             Update-Module -Name "Az.Storage"
@@ -434,14 +434,14 @@ function Remove-AnonymousAccessOnContainers
                     Write-Host "Disabling 'Allow Blob Public Access' on [$($totalStgWithEnableAllowBlobPublicAccess)] Storage account(s)..."
                     $stgWithEnableAllowBlobPublicAccess = $stgWithEnableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
+                        $item =  New-Object psobject -Property @{  
+                                    StorageAccountName = $_.StorageAccountName                
+                                    ResourceGroupName = $_.ResourceGroupName
+                                    ResourceId = $_.Id
+                                }
                         try
                         {
                             $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false -ErrorAction SilentlyContinue
-                            $item =  New-Object psobject -Property @{  
-                                StorageAccountName = $_.StorageAccountName                
-                                ResourceGroupName = $_.ResourceGroupName
-                                ResourceId = $_.Id
-                            }
 
                             if($output -ne $null)
                             {
@@ -454,11 +454,6 @@ function Remove-AnonymousAccessOnContainers
                         }
                         catch
                         {
-                            $item =  New-Object psobject -Property @{  
-                                StorageAccountName = $_.StorageAccountName                
-                                ResourceGroupName = $_.ResourceGroupName
-                            }
-
                             $skippedStorageAccountsFromRemediation += $item
                         }
                     }
@@ -469,7 +464,7 @@ function Remove-AnonymousAccessOnContainers
                     }
                     else
                     {
-                        Write-Host "'Allow Blob Public Access' successfully enabled for $($($remediatedStorageAccounts | Measure-Object).Count) out of $($totalStgWithEnableAllowBlobPublicAccess) Storage account(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "'Allow Blob Public Access' successfully disabled for $($($remediatedStorageAccounts | Measure-Object).Count) out of $($totalStgWithEnableAllowBlobPublicAccess) Storage account(s)." -ForegroundColor $([Constants]::MessageType.Warning)
                     }
 
                     Write-Host "`n"
