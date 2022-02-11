@@ -236,7 +236,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
         # Synapse Workspace names are unique.
         if (($synapseWorkspaces | Measure-Object).Count -gt 0)
         {
-            $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName } -PassThru
+            $standaloneSqlServers = Compare-Object -ReferenceObject @($sqlServers | Select-Object) -DifferenceObject @($synapseWorkspaces | Select-Object) -Property { $_.ResourceName } -PassThru
         }
 
         $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},

@@ -238,7 +238,7 @@ function Enable-TransparentDataEncryptionForSqlServers
         # Filter SQL Servers not associated with a Synapse Workspace.
         # Synapse Workspace and the associated SQL Server have the same name.
         # Synapse Workspace names are unique.
-        $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.ResourceName } -PassThru
+        $standaloneSqlServers = Compare-Object -ReferenceObject @($sqlServers | Select-Object) -DifferenceObject @($synapseWorkspaces | Select-Object) -Property { $_.ResourceName } -PassThru
 
         $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
                                                                      @{N='ResourceGroupName';E={$_.ResourceGroupName}},
