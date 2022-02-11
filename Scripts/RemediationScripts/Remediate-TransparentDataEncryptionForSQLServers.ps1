@@ -241,18 +241,18 @@ function Enable-TransparentDataEncryptionForSqlServers
         $standaloneSqlServers = Compare-Object -ReferenceObject @($sqlServers | Select-Object) -DifferenceObject @($synapseWorkspaces | Select-Object) -Property { $_.ResourceName } -PassThru
 
         $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
-                                                                    @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                    @{N='ServerName';E={$_.ResourceName}},
-                                                                    @{N='ResourceType';E={$_.ResourceType}},
-                                                                    @{N='IsSynapseWorkspace';E={$false}}
+                                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                     @{N='ServerName';E={$_.ResourceName}},
+                                                                     @{N='ResourceType';E={$_.ResourceType}},
+                                                                     @{N='IsSynapseWorkspace';E={$false}}
 
         # Add Synapse Workspaces to this list.
         $sqlServerResources += $synapseWorkspaces | Select-Object @{N='ResourceId';E={$_.ResourceId}},
-                                                                @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                @{N='ServerName';E={$_.ResourceName}},
-                                                                @{N='ResourceType';E={$_.ResourceType}},
-                                                                @{N='IsSynapseWorkspace';E={$true}}
-        
+                                                                  @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                  @{N='ServerName';E={$_.ResourceName}},
+                                                                  @{N='ResourceType';E={$_.ResourceType}},
+                                                                  @{N='IsSynapseWorkspace';E={$true}}
+
         $totalSqlServers = ($sqlServerResources | Measure-Object).Count
 
         if ($totalSqlServers -eq 0)

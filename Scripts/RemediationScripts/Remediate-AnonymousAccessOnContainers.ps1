@@ -179,7 +179,7 @@ function Remove-AnonymousAccessOnContainers
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage = "Select remediation type")]
         [ValidateSet("DisableAllowBlobPublicAccessOnStorage", "DisableAnonymousAccessOnContainers")]
         [string]
-	$RemediationType,
+	    $RemediationType,
 
         [Switch]
         [Parameter(ParameterSetName = "RemediationAtStorageLevel", HelpMessage="Specifies a forceful remediation without any prompts")]
@@ -191,16 +191,16 @@ function Remove-AnonymousAccessOnContainers
         $Path,
 
         [string]
-	[Parameter(ParameterSetName = "RemediationAtStorageLevel", Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
+	    [Parameter(ParameterSetName = "RemediationAtStorageLevel", Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "RemediationAtContainerLevel", Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-	[Parameter(ParameterSetName = "DryRun", Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
-	$ExcludeResourceGroupNames,
+	    [Parameter(ParameterSetName = "DryRun", Mandatory = $false, HelpMessage="Comma separated resource group name(s) to be excluded from remediation")]
+	    $ExcludeResourceGroupNames,
 
-	[string]
-	[Parameter(ParameterSetName = "RemediationAtStorageLevel", Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-	[Parameter(ParameterSetName = "RemediationAtContainerLevel", Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
+        [string]
+        [Parameter(ParameterSetName = "RemediationAtStorageLevel", Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
+        [Parameter(ParameterSetName = "RemediationAtContainerLevel", Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "DryRun", Mandatory = $false, HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-	$ExcludeResourceNames,
+	    $ExcludeResourceNames,
 
         [switch]
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]

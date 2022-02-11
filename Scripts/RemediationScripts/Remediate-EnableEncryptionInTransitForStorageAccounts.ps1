@@ -116,7 +116,6 @@ function Setup-Prerequisites
 #function to perform remediation.
 function Enable-StorageEncryptionInTransit
 {
-    
      <#
         .SYNOPSIS
         This command would help in remediating "Azure_Storage_DP_Encrypt_In_Transit" control.
