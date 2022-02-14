@@ -43,17 +43,39 @@ Using the native enterprise directory for authentication ensures that there is a
 >
 ### Recommendation
 
-<!--
+
 - **Azure Portal**
--->
+
+  * **For standard SQL servers:**
+  
+  ```azure portal
+  Search for and select SQL server --> Active Directory admin --> Set admin. --> Search and select the user or group to be an administrator --> select Save.
+  ```
+  * **For Synapse Analytics Workspaces:**
+
+  ```azure portal
+  Search for and select Azure Synapse Analytics. --> Active Directory admin --> Set admin. --> Search and select the user or group to be an administrator --> select Save.
+  ```
+
+
 
 - **PowerShell**
 
-	```powershell
+  * **For standard SQL servers:**
+
+  ```powershell
 	Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin Display Name}'
 	```
 
-	Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator to configure an Azure Active Directory (AAD) administrator on a SQL server.
+  Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator to configure an Azure Active Directory (AAD) administrator on a SQL server.
+
+  * **For Synapse Analytics Workspaces:**
+
+  ```powershell
+  Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}' -DisplayName '{AzureAdAdmin Display Name}'
+  ```
+
+  Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlactivedirectoryadministrator to configure an Azure Active Directory (AAD) administrator on a Synapse Analytics Workspace.
 
 <!--
 - **Enforcement Policy**
