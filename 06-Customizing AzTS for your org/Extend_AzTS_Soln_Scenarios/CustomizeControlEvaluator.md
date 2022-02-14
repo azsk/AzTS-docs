@@ -3,7 +3,6 @@
 Using Org policy customization, we can modify the Control logic or Control Result status for an existing control. Below is a walk-through example of how to do so leveraging the AzTS-Extended solution that you build using the steps mentioned [here](./SettingUpSolution.md).
 <br/><br/>A typical setting you may want to tweak is the Status Reason for a control according to your org's needs. 
 Let us customize the Status Reason for the "Azure_Storage_NetSec_Restrict_Network_Access" existing control.
-This setting resides in a file called FeatureNameControlEvaluator.cs. 
 <br/>Because the first-time org policy setup does not customize anything from this, we will need to follow the following steps to modify the Control Evaluator:
 
 ### Steps:
@@ -15,7 +14,7 @@ This setting resides in a file called FeatureNameControlEvaluator.cs.
         "FeatureName": "Storage"
     }
     ```
-3.  Add the control json with all parameters given in template. The following meta-data are required for a control to be scanned:
+3.  Add the control json with all parameters given in template and enable **Customization** with type **Override** or **Enhance**. The following meta-data are required for a control to be scanned:
     ``` JSON
     "Controls": [
         {
@@ -25,7 +24,11 @@ This setting resides in a file called FeatureNameControlEvaluator.cs.
         "Automated": "Yes",
         "MethodName": "CheckStorageNetworkAccess",
         "Enabled": true,
-        "DisplayName": "Ensure that Firewall and Virtual Network access is granted to a minimal set of trusted origins"
+        "DisplayName": "Ensure that Firewall and Virtual Network access is granted to a minimal set of trusted origins",
+        "Customization":{
+            "Enabled":true,
+            "Type":"Override"
+            }
         }
     ]
     ```
@@ -35,7 +38,7 @@ This setting resides in a file called FeatureNameControlEvaluator.cs.
     2. For **ControlID** above: Initial part of the control ID is pre-populated based on the service/feature and security domain you choose for the control (Azure_FeatureName_SecurityDomain_XXX). Please don't use spaces between words instead use underscore '_' to separate words in control ID. To see some of the examples of existing control IDs please check out this [list](https://github.com/azsk/AzTS-docs/tree/main/Control%20coverage#azure-services-supported-by-azts).
     3. Keep **Enabled** switch to 'Yes' to scan a control.
     4. **DisplayName** is the user friendly name for the control. It does not necessarily needed to be modified.
-    5. For **MethodName** above: You can customize the MethodName here. Just make sure to use the same method name in the Control Evaluator in the next steps.
+    5. For **Customization** above: You can turn **ON/OFF** customization for this control here and you can either enhance the existing control behavior or override the behavior by provide the respective parameter in the **Type** field.
 
 4. Copy _FeatureNameControlEvaluatorExt.cs_ and rename it accordingly. For example: StorageControlEvaluatorExt.cs
 5. Change the FeatureNameEvaluatorExt and FeatureNameControlEvaluator according to the baseControlEvaluator name (line 13) as shown below.
