@@ -34,13 +34,13 @@ Using the native enterprise directory for authentication ensures that there is a
 >
 > **Failed:**
 > No Azure Active Directory (AAD) administrators are assigned on the SQL server.
->
+><!--
 > **Verify:**
 > Not Applicable.
 >
 > **NotApplicable:**
 > Not Applicable.
->
+>-->
 ### Recommendation
 
 
