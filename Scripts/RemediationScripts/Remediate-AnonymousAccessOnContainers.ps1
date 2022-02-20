@@ -283,6 +283,7 @@ function Remove-AnonymousAccessOnContainers
         Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
     }
 
+
     Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Fetching storage account(s)..."
@@ -427,17 +428,17 @@ function Remove-AnonymousAccessOnContainers
                 Write-Host "Storage account(s) with enabled 'Allow Blob Public Access': [$($totalStgWithEnableAllowBlobPublicAccess)]"
                 Write-Host "Storage account(s) with disabled 'Allow Blob Public Access': [$($totalStgWithDisableAllowBlobPublicAccess)]"
 
-                #Write-Host "`n"
+                
                 Write-Host $([Constants]::SingleDashLine)
 
                 $logRemediatedResources = @()
                 $logSkippedResources=@()
-                #Write-Host $totalStgWithDisableAllowBlobPublicAccess   #delete_this_statement
+         
                 if($totalStgWithDisableAllowBlobPublicAccess -gt 0){
-                    #Write-Host "hehe1"   #delete_this_statement
+                    
                     $stgWithDisableAllowBlobPublicAccess = $stgWithDisableAllowBlobPublicAccess | Sort-Object -Property "ResourceGroupName"
                     $stgWithDisableAllowBlobPublicAccess | ForEach-Object {
-                    # Write-Host "hehe2" #delete
+                    
                             $logResource = @{}
                             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                             $logResource.Add("ResourceName",($_.StorageAccountName))
@@ -468,10 +469,11 @@ function Remove-AnonymousAccessOnContainers
                     $stgWithEnableAllowBlobPublicAccess | ForEach-Object {
                         try
                         {
-                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false -ErrorAction SilentlyContinue
+                            
+                            $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false -ErrorAction SilentlyContinue -Verbose:$false
                             if($output -ne $null)
                             {
-                                $_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"}
+                                #$_ | Select-Object @{Expression={($_.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$_.StorageAccountName};Label="StorageAccountName"} -Wait
                                 $logResource = @{}
                                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                                 $logResource.Add("ResourceName",($_.StorageAccountName))
@@ -491,6 +493,7 @@ function Remove-AnonymousAccessOnContainers
 
                                 $skippedStorageAccountFromRemediation += $item
                             }
+                            
                         }
                         catch
                         {
@@ -498,13 +501,13 @@ function Remove-AnonymousAccessOnContainers
                             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                             $logResource.Add("ResourceName",($_.StorageAccountName))
                             $logSkippedResources += $logResource
-                            
                             $item =  New-Object psobject -Property @{  
                                 StorageAccountName = $_.StorageAccountName                
                                 ResourceGroupName = $_.ResourceGroupName
                             }
                             $skippedStorageAccountFromRemediation += $item
                         }
+                 
                     }
 
                     #Write-Host "`n"
@@ -512,15 +515,25 @@ function Remove-AnonymousAccessOnContainers
                     if(($skippedStorageAccountFromRemediation | Measure-Object).Count -eq 0)
                     {
                         Write-Host "Successfully disabled 'Allow Blob Public Access'." -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host $([Constants]::DoubleDashLine)
                     }
-                    else 
+                    elseif($skippedStorageAccountFromRemediation -eq $totalStgWithEnableAllowBlobPublicAccess)
                     {
-                        Write-Host "Remediation was not successful on the following storage account(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Unable to disable 'Allow Blob Public Access' on the following storage account(s) due to insufficient permission." -ForegroundColor $([Constants]::MessageType.Error)
                         $skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table
                         $resourceSummary += "Remediation was not successful on following storage account(s), due to insufficient permission"
                         $resourceSummary += "$($skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table |Out-String)"
+                        Write-Host $([Constants]::DoubleDashLine) 
                     }
-                    Write-Host $([Constants]::SingleDashLine)
+                    else 
+                    {
+                     
+                         Write-Host "Successfully disabled 'Allow Blob Public Access' except few of the following subscriptions due to insufficient permission." -ForegroundColor $([Constants]::MessageType.Update)   
+                         $skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table
+                         $resourceSummary += "Remediation was not successful on following storage account(s), due to insufficient permission"
+                         $resourceSummary += "$($skippedStorageAccountFromRemediation | Select-Object -Property "ResourceGroupName", "StorageAccountName"| Sort-Object |Format-Table |Out-String)"
+                         Write-Host $([Constants]::DoubleDashLine)
+                    }
                 }
                 else
                 {
@@ -529,8 +542,6 @@ function Remove-AnonymousAccessOnContainers
                 }
                 if($AutoRemediation){
                     $logFile = "LogFiles\"+ $($timeStamp) + "\log_" + $($SubscriptionId) +".json"
-                    #Write-Host $timeStamp
-                   # Write-Host $logFile
                     $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
                     foreach($logControl in $log.ControlList){
                         if($logControl.ControlId -eq $controlIds){
