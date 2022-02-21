@@ -42,9 +42,9 @@
 
            Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
-        2. To enable Azure AD admin on the SQL Servers in a Subscription:
+        2. To review the SQL Server details in a Subscription that will be remediated with pre-requisites check:
 
-           Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000
+           Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun -PerformPreReqCheck
 
         3. To enable Azure AD admin on the SQL Servers in a Subscription, from a previously taken snapshot:
 
@@ -279,7 +279,7 @@ function Enable-ADAdminForSqlServers
         $sqlServerResources = $sqlServersDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
     }
 
-    $totalSqlServers = $sqlServerResources.Count
+    $totalSqlServers = ($sqlServerResources|Measure-Object).Count
 
     if ($totalSqlServers -eq 0)
     {
@@ -294,11 +294,11 @@ function Enable-ADAdminForSqlServers
 
     # Includes SQL Servers where Azure AD admin is disabled.
     $sqlServersWithADAdminDisabled = @()
+    Write-Host "checking if Azure AD admin is enabled on SQL Server(s)..."
 
     $sqlServerResources | ForEach-Object {
         try
         {
-            Write-Host "Fetching SQL Server resource: Resource ID - $($_.ResourceId)"
             $sqlServerInstance = $_
 
             if($_.IsSynapseWorkspace -eq $true)
@@ -314,7 +314,6 @@ function Enable-ADAdminForSqlServers
             if (($adAdmin|Measure-Object).Count -ne 0)
             {
                 $sqlServersWithADAdminEnabled += $sqlServerInstance
-                Write-Host "Azure AD admin is already enabled on the SQL Server. Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ServerName)." -ForegroundColor $([Constants]::MessageType.Info)
             }
             else
             {
@@ -324,7 +323,6 @@ function Enable-ADAdminForSqlServers
         catch
         {
             $SQLServersWithADAdminDisabled += $sqlServerInstance 
-            Write-Host "Error fetching Azure AD admin configuration: Resource Group Name - [$($_.ResourceGroupName)], Resource Name - [$($_.ServerName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
         }
     }
 
@@ -348,10 +346,10 @@ function Enable-ADAdminForSqlServers
     $backupFile = "$($backupFolderPath)\SQLServersWithADAdminDisabled.csv"
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 3 of 4] Backing up SQL Server details..."
+   
+    $SQLServersWithADAdminDisabled | Export-CSV -Path $backupFile -NoTypeInformation -ErrorAction Stop
     Write-Host "SQL Server(s) details have been backed up to:" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "$($backupFile)"
-
-    $SQLServersWithADAdminDisabled | Export-CSV -Path $backupFile -NoTypeInformation -ErrorAction Stop
     Write-Host $([Constants]::DoubleDashLine)
 
     if (-not $DryRun)
@@ -372,36 +370,40 @@ function Enable-ADAdminForSqlServers
 
         # Includes SQL Servers that were skipped during remediation. There were errors remediating them.
         $skippedSqlServers = @()
-
+       
+        Write-Host "Enabling Azure AD admin for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
         $SQLServersWithADAdminDisabled  | ForEach-Object {
-            Write-Host "Checking SQL Server Resource ID: $($_.ResourceId)" 
             $sqlServerInstance = $_
             try
             {
-                if($_.IsSynapseWorkspace -eq $true)
+                if(![String]::IsNullOrWhiteSpace($_.DisplayName))
                 {
-                    $adAdmin = Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -DisplayName $_.DisplayName
-                }
-                else
-                {
-                    $adAdmin = Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -DisplayName $_.DisplayName
-                }
+                    if($_.IsSynapseWorkspace -eq $true)
+                    {
+                        $adAdmin = Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -DisplayName $_.DisplayName
+                    }
+                    else
+                    {
+                        $adAdmin = Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -DisplayName $_.DisplayName
+                    }
 
-                if (($adAdmin|Measure-Object).Count -ne 0)
-                {
-                    $remediatedSqlServers += $sqlServerInstance 
+                    if (($adAdmin|Measure-Object).Count -ne 0)
+                    {
+                        $remediatedSqlServers += $sqlServerInstance 
+                    }
+                    else
+                    {
+                        $skippedSqlServers += $sqlServerInstance                   
+                    }
                 }
                 else
                 {
-                    $skippedSqlServers += $sqlServerInstance                    }
-            }
-            
+                   $skippedSqlServers += $sqlServerInstance   
+                } 
+            } 
             catch
             {
                 $skippedSqlServers += $sqlServerInstance
-                Write-Host "Error enabling Azure AD admin on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this SQL Server. Azure AD admin will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
-                return
             }
         }
 
@@ -415,7 +417,7 @@ function Enable-ADAdminForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
-                        
+               
         Write-Host $([Constants]::SingleDashLine)
 
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -429,7 +431,7 @@ function Enable-ADAdminForSqlServers
             $remediatedSqlServersFile = "$($backupFolderPath)\RemediatedSQLServers.csv"
             $remediatedSqlServers | Export-CSV -Path $remediatedSqlServersFile -NoTypeInformation
             Write-Host "This information has been saved to $($remediatedSqlServersFile)"
-            Write-Host "Use this file only for rollback.`n" -ForegroundColor $([Constants]::MessageType.update)
+            Write-Host "Use this file only for rollback.`n" -ForegroundColor $([Constants]::MessageType.Info)
         }
 
         if ($($skippedSqlServers | Measure-Object).Count -gt 0)
@@ -523,7 +525,7 @@ function Disable-ADAdminForSqlServers
     }
     else
     {
-        Write-Host "Validating the user..."
+        Write-Host "[Step 1 of 3] Validating the user..."
     }
 
     # Connect to Azure account
@@ -577,7 +579,7 @@ function Disable-ADAdminForSqlServers
 
     $sqlServerDetails = Import-Csv -LiteralPath $FilePath
     $validSqlServerDetails = $sqlServerDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ServerName)}
-    $totalSqlServers = $($validSqlServerDetails.Count)
+    $totalSqlServers = $(($validSqlServerDetails|measure-object).Count)
 
     if ($totalSqlServers -eq 0)
     {
@@ -616,6 +618,8 @@ function Disable-ADAdminForSqlServers
     # Includes SQL Servers, to which, previously made changes were successfully rolled back.
     $rolledBackSqlServers = @()
 
+    Write-Host "Disabling Azure AD admin for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+
     # Includes SQL Servers that were skipped during roll back. There were errors rolling back the changes made previously.
     $skippedSqlServers = @()
     $validSqlServerDetails | ForEach-Object {
@@ -623,7 +627,6 @@ function Disable-ADAdminForSqlServers
         $sqlServerInstance = $_
         try
         {
-            Write-Host "Checking SQL Server Resource ID: $($_.ResourceId)"
             if($_.IsSynapseWorkspace -eq $true)
             {
                 $adAdmin = Remove-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
@@ -646,8 +649,6 @@ function Disable-ADAdminForSqlServers
         catch
         {
             $skippedSqlServers += $sqlServerInstance 
-            Write-Host "Error rolling back Azure AD admin on the SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping this SQL Server." -ForegroundColor $([Constants]::MessageType.Info)
         }
     }
 
