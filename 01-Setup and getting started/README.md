@@ -583,6 +583,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
                     -Location EastUS2 `
                     -EnableAzTSUI `
                     -AzureEnvironmentName AzureCloud `
+                    -SubscriptionsToScan @("43143eaf-1942-4780-8c4a-fefb12d8b2e1","26860b59-b5fb-4bb2-8478-a2bd393a0e5b","bbbe2e73-fc26-492b-9ef4-adec8560c4fe") `
                     -GrantGraphPermissionToScanIdentity:$true `
                     -GrantGraphPermissionToInternalIdentity:$true `
                     -SREEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
