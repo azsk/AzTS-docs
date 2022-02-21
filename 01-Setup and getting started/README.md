@@ -19,7 +19,13 @@
 
 ## **1. Steps to install AzTS Solution**
 
-In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes.
+In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes. There are two options to setup AzTS solution:
+
+**Option A:** Divides the setup into multiple steps, provides separate command for each step and details of the operation performed in each step. This option is recommended as in many organization single user might not have all required Azure AD and Azure RBAC role, so each phase/step can be performed by different users easily.
+
+**Option B:** Provides a quik way to install AzTS solution by wrapping up multiple steps into a single consolidated command. This option is recommended if you want to quickly try out capabilities of AzTS and have all the required Azure AD and Azure RBAC permissions.
+
+## **Option A:**
 
 > _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
@@ -435,6 +441,155 @@ To view scan result in AzTS UI:
 
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
+## **Option B:**
+
+This setup is divided into three steps:
+
+1. [Validate prerequisites on machine](README.md#step-1-of-3-validate-prerequisites-on-machine)
+2. [Download and extract deployment package](README.md#step-2-of-3-download-and-extract-deployment-package)
+3. [Run Setup Command](README.md#step-6-of-6-run-setup-command)
+
+Let's start!
+
+### **Step 1 of 3. Validate prerequisites on machine**  
+
+  1. a.  Installation steps are supported using following OS options: 	
+
+      - Windows 10
+      - Windows Server 2019
+  
+  </br>
+
+  1. b. PowerShell 5.0 or higher
+  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
+  Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
+  If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
+
+      ![PowerShell Version](../Images/00_PS_Version.png)
+
+</br>
+
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
+### **Step 2 of 3. Download and extract deployment package**
+ 
+ Deployment package mainly contains:
+ 1. **ARM templates** which contains resource configuration details that need to be created as part of the setup.
+ 2.  **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
+
+If you have already downloaded the deployment package zip, directly go to step (2.d).
+
+2.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
+
+2.b. Extract zip to local folder location. <br/>
+
+2.c. Unblock the content. The below command will help to unblock files. <br/>
+
+  ``` PowerShell
+  Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
+  ```
+
+2.d. Point current path to deployment folder and load AzTS setup script <br/>
+
+
+  ``` PowerShell
+  # Point current path to extracted folder location and load setup script from the deployment folder 
+
+  CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+  # Load AzTS Setup script in session
+  . ".\AzTSConsolidatedSetup.ps1"
+
+  # Note: Make sure you copy  '.' present at the start of the line.
+
+  ```
+
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
+### **Step 3 of 3. Run consolidated Setup Command** 
+
+This is the last step. You need to run install command present as part setup script with all required parameters (parameters details given below).
+This consolidated setup command, will:
+1. Check and install missing Az PowerShell modules required to deploy AzTS scan solution resources
+2. Setup central scanning managed identity. For scanning, AzTS requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
+3. Create Azure AD application for secure authentication. This is required to secure the login and authentication process from AzTS UI.
+4. Create infra resources and schedule daily security control scan on target subscriptions
+
+> **Note:**
+> 1. _Setup may take up to 10 minutes to complete._
+> 2. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableVnetIntegration` switch._
+> 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` switch._
+> 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` and `-EnableWAF` switch._
+>
+> &nbsp;
+
+3. Run consolidated installation command with required parameters. 
+
+  ``` PowerShell
+# -----------------------------------------------------------------#
+# Step 1: Login to Azure and Azure Active Directory (AAD)
+# -----------------------------------------------------------------#
+
+# Clear existing login, if any
+Disconnect-AzAccount
+Disconnect-AzureAD
+
+# Connect to AzureAD and AzAccount
+# Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+$TenantId = "<TenantId>"
+Connect-AzAccount -Tenant $TenantId
+Connect-AzureAD -TenantId $TenantId
+
+# -----------------------------------------------------------------#
+# Step 2: Run installation command.
+# -----------------------------------------------------------------#
+
+$DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
+                    -MIHostingSubId <HostSubscriptionIdForScanningIdentity>`
+                    -MIHostingRGName  'HostRGNameForScanningIdentity' `
+                    -MIName 'ScanningIdentityName' `
+                    -HostTenantId 'HostTenantId' `
+                    -SubscriptionId 'HostSubscriptionIdForScanningInfra'`
+                    -ScanHostRGName 'HostRGForScanningInfra'`
+                    -Location 'ResourceLocation'`
+                    -SubscriptionsToScan @("<SubId1>","<SubId2>","<SubId3>") `
+                    -SREEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
+                    [-GrantGraphPermissionToScanIdentity:$true] `
+                    [-GrantGraphPermissionToInternalIdentity:$true] `
+                    [-SetupAzModules] `
+                    [-AzureEnvironmentName AzureCloud] `
+                    [-EnableAutoUpdates] `
+                    [-EnableAzTSUI] `
+                    [-EnableVnetIntegration] `
+                    [-EnableWAF] `
+                    -Verbose
+
+  <# Note : Parameters that are provided in square brackets[] in the above installation command are optional.
+  #>
+  ```
+
+  Example:
+  ```PowerShell
+  # Example:
+
+    $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
+                    -MIHostingSubId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
+                    -MIHostingRGName AzTS-ScanIdentity-RG `
+                    -MIName 'AzTSScanManagedIdentity' `
+                    -HostTenantId 9561c875-8a2a-47d0-a348-0f5adcfadbb6 `
+                    -SubscriptionId 26860b59-b5fb-4bb2-8478-a2bd393a0e5b `
+                    -ScanHostRGName AzTS-Solution-RG `
+                    -Location EastUS2 `
+                    -EnableAzTSUI `
+                    -AzureEnvironmentName AzureCloud `
+                    -GrantGraphPermissionToScanIdentity:$true `
+                    -GrantGraphPermissionToInternalIdentity:$true `
+                    -SREEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
+                    -EnableAutoUpdates `
+                    -Verbose
+
+```
 
 </br>
 
