@@ -435,7 +435,7 @@ To view scan result in AzTS UI:
     - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
-
+[Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **Option B:**
@@ -591,8 +591,8 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 
 |Param Name|Description|Required?
 |----|----|----|
-|SubscriptionId| Subscription id in which scanner identity is to be created. |TRUE|
-|ScanHostRGName| Name of ResourceGroup where scanner identity will be created. |TRUE|
+|MIHostingSubId| Subscription id in which scanner identity is to be created. |TRUE|
+|MIHostingRGName| Name of ResourceGroup where scanner identity will be created. |TRUE|
 |MIName| Name of the scanning identity to be created/used by the scanner.  |TRUE|
 |HostTenantId| Tenant id in which Azure Tenant Security Solution needs to be installed. |TRUE|
 |SubscriptionId| Hosting Subscription id in which Azure Tenant Security Solution needs to be installed. |TRUE|
