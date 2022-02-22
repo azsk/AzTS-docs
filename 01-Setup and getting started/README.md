@@ -549,7 +549,6 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
                     -MIHostingSubId <HostSubscriptionIdForScanningIdentity>`
                     -MIHostingRGName  'HostRGNameForScanningIdentity' `
                     -MIName 'ScanningIdentityName' `
-                    -HostTenantId 'HostTenantId' `
                     -SubscriptionId 'HostSubscriptionIdForScanningInfra'`
                     -ScanHostRGName 'HostRGForScanningInfra'`
                     -Location 'ResourceLocation'`
@@ -577,7 +576,6 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
                     -MIHostingSubId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
                     -MIHostingRGName AzTS-ScanIdentity-RG `
                     -MIName 'AzTSScanManagedIdentity' `
-                    -HostTenantId 9561c875-8a2a-47d0-a348-0f5adcfadbb6 `
                     -SubscriptionId 26860b59-b5fb-4bb2-8478-a2bd393a0e5b `
                     -ScanHostRGName AzTS-Solution-RG `
                     -Location EastUS2 `
@@ -598,7 +596,6 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 |MIHostingSubId| Subscription id in which scanner identity is to be created. |TRUE|
 |MIHostingRGName| Name of ResourceGroup where scanner identity will be created. |TRUE|
 |MIName| Name of the scanning identity to be created/used by the scanner.  |TRUE|
-|HostTenantId| Tenant id in which Azure Tenant Security Solution needs to be installed. |TRUE|
 |SubscriptionId| Hosting Subscription id in which Azure Tenant Security Solution needs to be installed. |TRUE|
 |ScanHostRGName| Name of ResourceGroup where setup resources will be created. |TRUE|
 |Location| Location where all resources will get created. |TRUE|
