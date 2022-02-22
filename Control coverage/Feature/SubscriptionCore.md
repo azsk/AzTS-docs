@@ -694,6 +694,10 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
         {
             "Type": "Dns",
             "DisplayName": "DNS"
+        },
+        {
+            "Type": "Containers",
+            "DisplayName": "Containers"
         }
     ]
 }
