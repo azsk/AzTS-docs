@@ -413,10 +413,6 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
   ![Resources](../Images/12_TSS_CommandOutput.png)
 
-
-
-
-
 > **Note:** 
 >
 > 1. Tenant Security Solution does not support customization of the App Service name.
@@ -591,8 +587,57 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
                     -Verbose
 
 ```
+**Parameter details:**
+
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId| Subscription id in which scanner identity is to be created. |TRUE|
+|ScanHostRGName| Name of ResourceGroup where scanner identity will be created. |TRUE|
+|MIName| Name of the scanning identity to be created/used by the scanner.  |TRUE|
+|HostTenantId| Tenant id in which Azure Tenant Security Solution needs to be installed. |TRUE|
+|SubscriptionId| Hosting Subscription id in which Azure Tenant Security Solution needs to be installed. |TRUE|
+|ScanHostRGName| Name of ResourceGroup where setup resources will be created. |TRUE|
+|Location| Location where all resources will get created. |TRUE|
+|SREEmailIds| Email ids to which alert notification should be sent. | TRUE |
+|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
+|SubscriptionsToScan| List of subscription(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target subscription.|TRUE|
+|ManagementGroupsToScan| List of target management group(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target management group. Providing root management group name is recommended.|FALSE|
+|GrantGraphPermissionToScanIdentity| Switch to grant Graph permission to scanning identity. This is to exclude controls dependent on Graph API response from the scan result, if scanner identity does not have graph permission. The default value is false.|FALSE|
+|GrantGraphPermissionToInternalIdentity| Switch to grant Graph permissions to internal managed identity. The default value is false.|FALSE|
+|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity (in case using existing managed identity) does not have Graph permission. The default value is false.|FALSE|
+|EnableAutoUpdates | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
+|EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
+|EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
+|EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
+|CentralStorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
+|SetupAzModules| Switch to validate required modules, command will check needed modules with required version and will install required modules if not available in the system |FALSE|
+|Verbose| Switch used to output detailed log |FALSE|
 
 </br>
+> **Note:** 
+>
+> 1. Tenant Security Solution does not support customization of the App Service name.
+>
+> 2. By default max timeout limit of function app is set to 9 minutes. This can be modified based on the requirement of your organization. To increase function timeout, you can upgrade to a higher App Service plan and use the `AzureFunctionsJobHost__functionTimeout` app setting in App Service to set the timeout value.
+>
+> </br>
+<br>
+
+**Congratulations! Installation is complete with this step.**
+</br>
+
+**Next steps:**
+
+To view scan result in AzTS UI:
+1. Copy the AzTS UI link provided at the end of the installation command.
+2. We recommend creating a custom domain name for your UI. For steps to create a custom domain, refer to this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
+3. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete to show the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+4. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value in the Service Filter dropdown in AzTS UI. To add service mapping, follow the steps provided here: 
+    - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
+    - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
+
+
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **2. Manually trigger AzTS on-demand scan for entire tenant**
 
