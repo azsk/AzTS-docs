@@ -3,20 +3,15 @@
 
 # Cross- and multi-Tenant AzTS Onboarding
 
-### [Overview](#Overview-1)
-- [Onboard AzTS Solution per Tenant](#1-onboard-azts-solution-per-tenant)
-- [Single AzTS setup to scan cross- and multi-tenant](#2-single-azts-setup-to-scan-cross--and-multi-tenant)
-- [ Onboard AzTS Solution per Tenant with central visibility for scan result](#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result)
-
----------------------
-
 ## Overview
 
 Enterprise IT organizations creates multiple tenants to manage and deliver resources based on business needs. To get security visibility across multiple tenants, AzTS provides three kinds of solutions.
 
-1. Onboard AzTS Solution per Tenant: Standalone installation, scanning and reporting 
-2. Single AzTS setup to scan cross- and multi-tenant: Use delegated identity on target tenant(s), scan from single AzTS setup
-3. Onboard AzTS Solution per Tenant with central visibility for scan result   
+- [Onboard AzTS Solution per Tenant](#1-onboard-azts-solution-per-tenant): Standalone installation, scanning and reporting 
+- [Single AzTS setup to scan cross- and multi-tenant](#2-single-azts-setup-to-scan-cross--and-multi-tenant): Use delegated identity on target tenant(s), scan from single AzTS setup
+  - [Azure Lighthouse approach](#2a-azure-lighthouse-approach)
+  - [Multi-tenant AAD Application approach (**Recommended**)](#2b-multi-tenant-aad-application-approach-recommended)
+- [ Onboard AzTS Solution per Tenant with central visibility for scan result](#3-onboard-azts-solution-per-tenant-with-central-visibility-for-scan-result)   
 
 
 
@@ -32,8 +27,13 @@ Below diagram depicts high-level flow for standalone setup.
 
 ## 2. Single AzTS setup to scan cross- and multi-tenant
 
-Single AzTS setup can be used on trusted tenants and get visibility/reporting at single location.
-AzTS leverages [Azure Lighthouse](https://docs.microsoft.com/en-us/azure/lighthouse/overview) delegated reader access to central scanning Managed Identity on cross-tenant subscriptions and perform AzTS scan seamlessly. 
+Single AzTS setup can be used on trusted tenants to get visibility/reporting at single location. AzTS supports two approaches to this solution.
+
+&nbsp;a. Azure Lighthouse approach.<br>
+&nbsp;b. Multi-tenant AAD Application approach (**Recommended**)
+
+### 2a. Azure Lighthouse approach
+In this approach AzTS leverages [Azure Lighthouse](https://docs.microsoft.com/en-us/azure/lighthouse/overview) delegated reader access to central scanning Managed Identity on cross-tenant subscriptions and perform AzTS scan seamlessly. 
 
 Below diagram depicts high level flow for Azure Lighthouse approach
 
@@ -55,7 +55,7 @@ Follow below steps to onboard subscription from different tenants to AzTS scanni
    Go Azure Portal --> Subscription where central scanning MI resource created --> Click on MI Hosting RG --> Click on MI resource --> Copy object id 
 
 3. Provide reader access to AzTS scanning MI on cross-tenant subscriptions using Azure Lighthouse. 
->> Note: Below step needs be performed only on cross tenant subscriptions and not on hosting tenant subscriptions where AzTS solution is installed.  
+> **Note:** Below step needs be performed only on cross tenant subscriptions and not on hosting tenant subscriptions where AzTS solution is installed.  
 
 ```PowerShell
 # 1. Install Azure Lighthouse PS module
@@ -75,6 +75,12 @@ Install-Module -Name Az.ManagedServices -AllowClobber -Scope CurrentUser -reposi
 
 After access is provided to target subscription, next scheduled trigger will pick up subscription from cross tenant and perform scan. You can follow steps [here](../02-Monitoring%20security%20using%20AzTS/README.md) to create security compliance dashboard.
 
+### 2b. Multi-tenant AAD Application approach (Recommended)
+In this approach AzTS uses multi-tenant AAD application as the central scanning identity to overcome limitations of Azure Lighthouse approach and to get security visibility across trusted tenants.
+
+Below diagram depicts high level flow for Multi-tenant AAD Application approach
+
+![Internals](../Images/05-CrossTenant_Multi_Tenant_AAD_Application.PNG)
 
 ## 3. Onboard AzTS Solution per Tenant with central visibility for scan result
 
