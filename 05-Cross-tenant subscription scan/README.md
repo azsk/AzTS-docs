@@ -82,6 +82,19 @@ Below diagram depicts high level flow for Multi-tenant AAD Application approach
 
 ![Internals](../Images/05-CrossTenant_Multi_Tenant_AAD_Application.PNG)
 
+Follow below steps to setup the AzTS Solution and onboard tenants to be scanned
+
+1. Setup AzTS Solution in **multi-tenant mode** on host tenant subscription
+
+    Follow [steps](/01-Setup%20and%20getting%20started/README.md) on host subscription to setup AzTS solution in multi-tenant mode. If you have already performed setup for multi-tenant mode, you can skip this step. 
+    
+2. Onboard the tenants to be scanned to the AzTS solution
+    
+    Follow [steps](/01-Setup%20and%20getting%20started/README.md) to onboard all the tenants for which we need security visibility.
+    > **Note:** Host tenant should also be onboarded to AzTS solution if security visibility is needed for it.
+
+After the tenants to be scanned are onboarded, next scheduled trigger will pick up subscriptions across onboarded tenants and perform the scan
+
 ## 3. Onboard AzTS Solution per Tenant with central visibility for scan result
 
 To overcome limitation of second approach and to get visibility across trusted tenants, you can install standalone AzTS setup per tenant and leverage central repository to get security scan telemetry. 
