@@ -252,7 +252,7 @@ function Enable-ADAdminForSqlServers
                                                                       @{N='ServerName';E={$_.Name}},
                                                                       @{N='ResourceType';E={$_.ResourceType}},
                                                                       @{N='IsSynapseWorkspace';E={$false}},
-                                                                      @{N='DisplayName';E={""}}
+                                                                      @{N='EmailId';E={""}}
                                                                        
          # Add Synapse Workspaces to this list.
          $sqlServerResources += $synapseWorkspaces | Select-Object @{N='ResourceId';E={$_.ResourceId}},
@@ -260,7 +260,7 @@ function Enable-ADAdminForSqlServers
                                                                    @{N='ServerName';E={$_.Name}},
                                                                    @{N='ResourceType';E={$_.ResourceType}},
                                                                    @{N='IsSynapseWorkspace';E={$true}},
-                                                                   @{N='DisplayName';E={""}}
+                                                                   @{N='EmailId';E={""}}
     }  
     else
     {
@@ -334,9 +334,15 @@ function Enable-ADAdminForSqlServers
         break
     }
 
+    $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
+                         @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
+                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
+
     Write-Host "`nFound $($totalSQLServersWithADAdminDisabled) SQL Server(s) with Azure AD admin disabled." -ForegroundColor $([Constants]::MessageType.Update)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableADAdminForSQLServers"
-
+   
+    $SQLServersWithADAdminDisabled | Format-Table -Property $colsProperty3 -Wrap
+    
     if (-not (Test-Path -Path $backupFolderPath))
     {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
@@ -376,15 +382,15 @@ function Enable-ADAdminForSqlServers
             $sqlServerInstance = $_
             try
             {
-                if(![String]::IsNullOrWhiteSpace($_.DisplayName))
+                if(![String]::IsNullOrWhiteSpace($_.EmailId))
                 {
                     if($_.IsSynapseWorkspace -eq $true)
                     {
-                        $adAdmin = Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -DisplayName $_.DisplayName
+                        $adAdmin = Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -DisplayName $_.EmailId
                     }
                     else
                     {
-                        $adAdmin = Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -DisplayName $_.DisplayName
+                        $adAdmin = Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -DisplayName $_.EmailId
                     }
 
                     if (($adAdmin|Measure-Object).Count -ne 0)
@@ -411,7 +417,7 @@ function Enable-ADAdminForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.DisplayName};Label="Display Name";Width=35;Alignment="left"}
+                         @{Expression={$_.EmailId};Label="Display Name";Width=35;Alignment="left"}
 
         $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
@@ -452,7 +458,7 @@ function Enable-ADAdminForSqlServers
         Write-Host "[Step 4 of 4] Enabling Azure AD admin for SQL Servers..."
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Please provide corresponding AD Administrator Display Name for SQL Servers in the 'DisplayName' column of the below file:"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Please provide corresponding AD Administrator Display Name for SQL Servers in the 'EmailId' column of the below file:"  -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "$($backupFile)"
         Write-Host "`nNext steps:"  -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun switch, to enable Azure AD admin for all SQL Servers listed in the file."
@@ -590,6 +596,13 @@ function Disable-ADAdminForSqlServers
     Write-Host "Found $($totalSqlServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableADAdminForSQLServers"
 
+    $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
+                         @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
+                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
+
+   
+    $validSqlServerDetails | Format-Table -Property $colsProperty3 -Wrap
+
     if (-not (Test-Path -Path $backupFolderPath))
     {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
@@ -656,7 +669,7 @@ function Disable-ADAdminForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.DisplayName};Label="Display Name";Width=35;Alignment="left"}
+                         @{Expression={$_.EmailId};Label="Display Name";Width=35;Alignment="left"}
 
     $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
