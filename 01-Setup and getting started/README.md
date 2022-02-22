@@ -604,8 +604,9 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 |Location| Location where all resources will get created. |TRUE|
 |SREEmailIds| Email ids to which alert notification should be sent. | TRUE |
 |AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
-|SubscriptionsToScan| List of subscription(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target subscription.|TRUE|
-|ManagementGroupsToScan| List of target management group(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target management group. Providing root management group name is recommended.|FALSE|
+|SubscriptionsToScan| List of subscription(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target subscription. So, you need to be 'Owner' on all target subscriptions to perform role assignment.
+|ManagementGroupsToScan| List of target management group(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target management group. For this you need to be 'Owner' on management group level to perform role assignment.
+To scan all the subscriptions in your tenant, you can provide root management group as input. But Azure AD Global Administrators role will be required to grant required RBAC role to scanning identity at this scope.|FALSE|
 |GrantGraphPermissionToScanIdentity| Switch to grant Graph permission to scanning identity. This is to exclude controls dependent on Graph API response from the scan result, if scanner identity does not have graph permission. The default value is false.|FALSE|
 |GrantGraphPermissionToInternalIdentity| Switch to grant Graph permissions to internal managed identity. The default value is false.|FALSE|
 |ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity (in case using existing managed identity) does not have Graph permission. The default value is false.|FALSE|
