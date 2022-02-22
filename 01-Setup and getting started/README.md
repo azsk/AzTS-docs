@@ -445,7 +445,7 @@ This setup is divided into three steps:
 
 1. [Validate prerequisites on machine](README.md#step-1-of-3-validate-prerequisites-on-machine)
 2. [Download and extract deployment package](README.md#step-2-of-3-download-and-extract-deployment-package)
-3. [Run Setup Command](README.md#step-6-of-6-run-setup-command)
+3. [Run Setup Command](README.md#step-3-of-3-run-consolidated-setup-command)
 
 Let's start!
 
@@ -506,7 +506,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 
 ### **Step 3 of 3. Run consolidated Setup Command** 
 
-This is the last step. You need to run install command present as part setup script with all required parameters (parameters details given below).
+This is the last step. You need to run install command `Install-AzSKTenantSecuritySolutionConsolidated` present as part of setup script with all required parameters (parameters details given below).
 This consolidated setup command, will:
 1. Check and install missing Az PowerShell modules required to deploy AzTS scan solution resources
 2. Setup central scanning managed identity. For scanning, AzTS requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
