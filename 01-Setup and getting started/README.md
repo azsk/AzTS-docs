@@ -436,6 +436,7 @@ To view scan result in AzTS UI:
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
 [Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
+</br>
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **Option B:**
@@ -517,6 +518,9 @@ This consolidated setup command, will:
 > 2. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableVnetIntegration` switch._
 > 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` switch._
 > 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` and `-EnableWAF` switch._
+> 6. _As a security best practice, we recommend creating central scanning identity in an isolated subscription with limited permission to secure access to this identity._
+> 7. _Scanner MI requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToScanIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator or Privileged Role Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file._
+> 8. _AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToInternalIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br> Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file._
 >
 > &nbsp;
 
@@ -614,13 +618,15 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 |Verbose| Switch used to output detailed log |FALSE|
 
 </br>
+
 > **Note:** 
 >
 > 1. Tenant Security Solution does not support customization of the App Service name.
 >
 > 2. By default max timeout limit of function app is set to 9 minutes. This can be modified based on the requirement of your organization. To increase function timeout, you can upgrade to a higher App Service plan and use the `AzureFunctionsJobHost__functionTimeout` app setting in App Service to set the timeout value.
 >
-> </br>
+> 
+</br>
 <br>
 
 **Congratulations! Installation is complete with this step.**
