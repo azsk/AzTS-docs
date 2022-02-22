@@ -458,7 +458,7 @@ function Enable-ADAdminForSqlServers
         Write-Host "[Step 4 of 4] Enabling Azure AD admin for SQL Servers..."
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Please provide corresponding AD Administrator Display Name for SQL Servers in the 'EmailId' column of the below file:"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Please provide corresponding AD Administrator Email Id for SQL Servers in the 'EmailId' column of the below file:"  -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "$($backupFile)"
         Write-Host "`nNext steps:"  -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun switch, to enable Azure AD admin for all SQL Servers listed in the file."
