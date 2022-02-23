@@ -14,7 +14,7 @@
 ## Prerequisite
 
 Below are the prerequisites for any tenant to be onboarded to AzTS solution for security visibility:
-1. SPN for the central scanning identity i.e. multi-tenant AAD application, which was created in step 4 of the deployment procedure, must be created in the tenant.
+1. SPN for the central scanning identity i.e. multi-tenant AAD application (created in step 4 of the deployment procedure) must be created in the tenant.
 2. The SPN must be granted below graph permission in the tenant.
 
     a. MSGraphPermissions
@@ -26,11 +26,13 @@ Below are the prerequisites for any tenant to be onboarded to AzTS solution for 
     
         Directory.Read.All
         
-3. The SPN must be granted "Reader" permission to all the subscriptions in the tenant.
+3. The SPN must be granted "Reader" permission on all the subscriptions in the tenant for which security visibility is required.
 4. The tenant should have Azure active directory license which supports Privileged Identity Management (PIM).
-5. Microsoft Defender for cloud should be enabled with standard tier for all the subscription in the tenant.
+5. Microsoft Defender for cloud should be enabled with standard tier for all the subscription in the tenant for which security visibility is required.
 
-> **Note:**<br>**1.** Above mentioned prerequisites needs to be provisioned for **each tenant** that is to be onboarded to AzTS solution for security visibility.<br>**2.** Prerequisites #1 to #3 are mandatory for every tenant that is to be onboarded to AzTS solution. Kindly refer these commands to provision the same.<br>**3.** For prerequisite #3 its recommended to grant the SPN, "Reader" permission on root management group. This would ensure that any new subscription added to the tenant would be automatically picked up in next scan.<br>**4.** Prerequisites #4 and #5 are non-mandatory but will impact control evaluation if not done.
+> **Note:**<br>**1.** Above mentioned prerequisites needs to be provisioned for **each tenant** that is to be onboarded to AzTS solution for security visibility.<br>**2.** Prerequisites #1 to #3 are **mandatory** for every tenant that is to be onboarded to AzTS solution. Kindly refer these commands to provision the same.<br>**3.** For prerequisite #3 its recommended to grant the SPN, "Reader" permission on root management group if security visibility is required for all the subscriptions in the tenant. This would ensure that any new subscription being added to the tenant would be automatically picked up in next scan.<br>**4.** Prerequisites #4 and #5 are **non-mandatory** but will impact certain control evaluation if not done.
+
+[Back to top...](#on-this-page)
 
 --------------------------------------------------
 <br>
@@ -38,10 +40,10 @@ Below are the prerequisites for any tenant to be onboarded to AzTS solution for 
 ## Access token generation
 
 Access token for invoking the onboarding/offboarding APIs can be generated using the below steps:
-1. [Register an Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) in the **host tenant**. This will be used to get an access token for invoking onboarding/offboarding APIs. Skip this step if Azure AD application is already present.
-> **Note:** Same AAD application can be used to onboard/offboard more tenants to the AzTS solution in future. Avoid multiple AAD application creation.
-2. [Create secret for above application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-credentials) and store it at secure location for later reference.
-3. Generate the access token using the below commands in powershell session
+1. [Register an Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) in the **host tenant**. This application would be used to get an access token for invoking onboarding/offboarding APIs. Skip this step if the application is already available.
+> **Note:** Same AAD application can be used to onboard/offboard more tenants to the AzTS solution in future. Avoid creating multiple AAD applications for onboarding/offboarding tenants.
+2. [Create secret for above application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-credentials) and store it at secure location for later reference. Skip this step if the secret is already available.
+3. Generate the access token using the below commands in a powershell session
 ``` PowerShell
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
 
@@ -51,14 +53,16 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 
 ```
 
-> **Note:**<br>- **tenant-id** is the host tenant id for AzTS solution.<br>- **client-id** is the application id of the AAD application created in Step 1.<br>- **client-secret** is the secret of the AAD app created in step 2.<br>- **webapi-scope** could be fetched from here.
+> **Note:**<br>- **tenant-id** is the host tenant id for AzTS solution.<br>- **client-id** is the application id of the AAD application created in Step 1.<br>- **client-secret** is the secret of the AAD application created in step 2.<br>- **webapi-scope** could be fetched from here.
+
+[Back to top...](#on-this-page)
 
 --------------------------------------------------
 <br>
 
 ## Onboarding
 
-Tenants could be onboarded to the multi-tenant AzTS solution using the newly introduced onboarding API, details for which are mentioned below.
+Tenants could be onboarded to the multi-tenant AzTS solution using the newly introduced onboarding API, details for which are mentioned below. Any tenant being onboarded to the multi-tenant AzTS solution must satisfy these [prerequisites](#prerequisite).
 
 **Request URL**
 
@@ -76,7 +80,7 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 
 |Param Name|Description|Required?|
 |----|----|----|
-| Authorization| Bearer token which can be generated by following steps [here](../Authentication%20flow%20for%20AzTS%20REST%20APIs.md#authentication-flow-for-azts-rest-apis). | Yes|
+| Authorization| Bearer token which can be generated by following steps [here](#access-token-generation). | Yes|
 
 **Request Body**
 |Name|Type|Description|Required?|
@@ -136,6 +140,8 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 200 OK
 ```
 
+[Back to top...](#on-this-page)
+
 --------------------------------------------------
 <br>
 
@@ -159,7 +165,7 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 
 |Param Name|Description|Required?|
 |----|----|----|
-| Authorization| Bearer token which can be generated by following steps [here](../Authentication%20flow%20for%20AzTS%20REST%20APIs.md#authentication-flow-for-azts-rest-apis). | Yes|
+| Authorization| Bearer token which can be generated by following steps [here](#access-token-generation). | Yes|
 
 **Request Body**
 |Name|Type|Description|Required?|
@@ -207,7 +213,4 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 200 OK
 ```
 
-
-
-
-<br/>
+[Back to top...](#on-this-page)
