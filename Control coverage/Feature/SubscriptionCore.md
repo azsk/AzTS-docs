@@ -6,7 +6,7 @@
 - [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
 - [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles)
 - [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
-- [Azure_Subscription_AuthZ_Remove_Management_Certs](#Azure_Subscription_AuthZ_Remove_Management_Certs)
+- [Azure_Subscription_AuthZ_Remove_Management_Certs - <b>DEPRECATED!!!</b>](#Azure_Subscription_AuthZ_Remove_Management_Certs)
 - [Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts](#Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts)
 - [Azure_Subscription_AuthZ_Custom_RBAC_Roles](#Azure_Subscription_AuthZ_Custom_RBAC_Roles)
 - [Azure_Subscription_SI_Classic_Resources](#Azure_Subscription_SI_Classic_Resources)
@@ -239,6 +239,7 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 ___ 
 
 ## Azure_Subscription_AuthZ_Remove_Management_Certs 
+[<b>Deprecation Notice!!!</b> - As on 23rd Feb. 2022, this Control has been suspended from getting evaluated as a consequence of the [deprecation](https://docs.microsoft.com/en-us/azure/defender-for-cloud/upcoming-changes#deprecating-the-recommendation-to-use-service-principals-to-protect-your-subscriptions) of the underlying Defender for Cloud recommendation used for the evaluation.]
 
 ### Display Name 
 Do not use management certificates 
@@ -694,6 +695,10 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
         {
             "Type": "Dns",
             "DisplayName": "DNS"
+        },
+        {
+            "Type": "Containers",
+            "DisplayName": "Containers"
         }
     ]
 }
