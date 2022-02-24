@@ -50,20 +50,6 @@ function StartRemediation($timestamp)
         Write-Host "Failing Controls Summary" -ForegroundColor $([Constants]::MessageType.Update)
         $controlsTable | Format-Table
 
-        #Do you want to dry run?
-
-        #Check for previous remediation
-        # if(Test-Path $logFile)
-        # {
-        #     $info = "A previous remediation log file has been detected for the subscription.`nThe log file can be found at `n[$(Get-location)\$($logFile)]";
-        #     $warning = "In case of re-remediation, the data related to previous remediation in the log file will be lost. `nIt is recommended to backup the log file data before proceeding further.";
-        #     $warning = "Before proceeding further, it is recommended to backup the log file data of previous remediation , if needed, else the data will be lost."
-        #     Write-Host $([Constants]::SingleDashLine)
-        #     Write-Host $info -ForegroundColor $([Constants]::MessageType.Info) 
-        #     Write-Host $([Constants]::SingleDashLine)
-        #     Write-Host $warning -ForegroundColor $([Constants]::MessageType.Warning) 
-        # }
-
         #User input for whether to continue with current remediation or not
         Write-Host $([Constants]::SingleDashLine)
         $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y/N)";
@@ -87,7 +73,6 @@ Enter the choice (1/2)";
                 $null = New-Item -ItemType File -Path $logFile -Force -ErrorAction Stop
                 $logFileSchema = @{}
                 $logFileSchema.Add("SubscriptionId", $SubscriptionId)
-                #$logFileSchema.Add("hasBeenRead", "0")
                 $controlList = @()
                 foreach($control in $controlRemediationList)
                 {
@@ -146,27 +131,15 @@ Enter the choice (1/2)";
                 }
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Remediating control having control id [$($control.ControlId)] using [$($control.LoadCommand)] bulk remediation script." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::SingleDashLine)
-
-                #command to execute the corresponding control remediation script.
-                # what if corresponding remediation script is not present?
-                #if(Test-Path ($(Get-location)/$control.LoadCommand)) {
-                    [string]$timeStampString = $timestamp
-                   # Write-Host $timeStampString
-                    . ("./" + "RemediationScripts\" + $control.LoadCommand)       
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation y" + " -timeStamp " + "`'" + $timeStampString +  "`'";
-                   # Write-Host $commandString
-                    function runCommand($command) {
-                        if ($command[0] -eq '"') { Invoke-Expression "& $command" }
-                        else { Invoke-Expression $command }
-                    }
-                    runCommand($commandString)
-                #}else{
-                #    Write-Host "The Remediation Script [$(control.LoadCommand)] for control [$(control.ControlId)] is not present in folder [$(Get-location)/RemediationScripts]" -ForegroundColor $([Constants]::MessageType.Error)
-                    #Operation Terminate or continue?
-                #}
-
-                #Write-Host $([Constants]::DoubleDashLine)
+                
+                [string]$timeStampString = $timestamp
+                . ("./" + "RemediationScripts\" + $control.LoadCommand)       
+                $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -timeStamp " + "`'" + $timeStampString +  "`'";
+                function runCommand($command) {
+                    if ($command[0] -eq '"') { Invoke-Expression "& $command" }
+                    else { Invoke-Expression $command }
+                }
+                runCommand($commandString)
             }
 
             # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
@@ -209,12 +182,9 @@ Enter the choice (1/2)";
     }
 }
 
-# TODO : Do we need line 212-217 and how to print that the showed remediation is previous one in case it get's displayed.
-
 function PrintRemediationSummary($timestamp)
 {
     $logFiles = @(Get-ChildItem LogFiles\$($timestamp)\*.json);
-    #Write-Host $($timestamp)   #delete
     if($logFiles.Count -eq 0)
     {
         Write-Host $([Constants]::SingleDashLine)
@@ -249,7 +219,6 @@ function PrintRemediationSummary($timestamp)
 
 function StartExecution
 {
-    #get time stamp
     $timestamp = $(get-date -f MMddyyyyHHmmss)
     $directory = "$(Get-location)/LogFiles/$($timestamp)"
     $null = New-Item -Type Directory -path $directory -Force -ErrorAction Stop
