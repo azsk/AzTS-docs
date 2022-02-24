@@ -467,16 +467,17 @@ To view scan result in AzTS UI:
 
 
 ## **2. Onboard individual tenants**
-To onboard any tenant to AzTS scanner, following four steps need to be performed for each tenant to be onboarded:
+To onboard any tenant to AzTS scanner, following **four steps need to be performed for each tenant** to be onboarded:
 
-1. [Login into AAD of target tenant](README.md#step-1-of-6-validate-prerequisites-on-machine)
-1. [Create SPN for central AAD App in each Tenant/Directory](README.md#step-1-of-6-validate-prerequisites-on-machine)
-2. [Grant Graph permissions to SPN in each Tenant/Directory](README.md#step-2-of-6-installing-required-az-modules)
-3. [Grant 'Reader' Access to SPN on Azure subscriptions](README.md#step-3-of-6-download-and-extract-deployment-package)
+1. [Connect with Active Directory of target tenant](MultiTenantSetupWithAADApp.md#step-1-of-4-connect-with-active-directory-of-target-tenant)
+2. [Create SPN for central scanning identity (AAD App) in each Tenant/Directory](MultiTenantSetupWithAADApp.md#step-2-of-4-create-spn-for-central-aad-app-in-each-tenant)
+3. [Grant 'Reader' Access to SPN on Azure subscriptions](MultiTenantSetupWithAADApp.md#step-3-of-4-grant-reader-access-to-spn-on-azure-subscriptions)
+4. [Grant Graph permissions to SPN in each Tenant/Directory](MultiTenantSetupWithAADApp.md#step-4-of-4-grant-graph-permissions-to-spn-in-each-tenant)
 
-### **Step 1 of 4. Login into AAD of target tenant**
 
-First you need to login into Azure Active Directory (AD) of target tenant which you want to onboard using the following PowerShell command.
+### **Step 1 of 4. Connect with Active Directory of target tenant**
+
+First you need to login into Azure Active Directory (AAD) of target tenant which you want to onboard using the following PowerShell command.
 
 ``` PowerShell
 # Clear existing login, if any
@@ -492,7 +493,7 @@ Connect-AzAccount -Tenant $TenantId
 Connect-AzureAD -TenantId $TenantId
 ```
 
-### **Step 2 of 4. Create SPN for central AAD App in each Tenant/Directory**
+### **Step 2 of 4. Create SPN for central AAD App in each Tenant**
 
 The central scanning App created as part of setup need to be instantiated (i.e. Service prinicipal aka SPN needs to be created) in each tenant. `Create-AzSKTenantSecuritySolutionMultiTenantIdentitySPN` command creates SPN for the central scanning App:
 
@@ -517,18 +518,48 @@ $spnDetails.ObjectId
 
 </br>
 
-### **Step 3 of 4. Grant Graph permissions to SPN in each Tenant/Directory**
+### **Step 3 of 4. Grant 'Reader' Access to SPN on Azure subscriptions**
+To do the scanning, AzTS solution scanning identity requires 'Reader' access on subscriptions of the target tenant on which scan needs to be performed. Command `Grant-AzSKAzureRoleToMultiTenantIdentitySPN` assigns 'Reader' access to SPN (created in step #2 above) of central scanning identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
+
+> _Note:_
+> 1. _If subscriptions are organized under [Management Groups](https://docs.microsoft.com/en-us/azure/governance/management-groups/overview) (MG), you can assign reader role for SPN using MG role assignment using [Azure Portal](https://docs.microsoft.com/en-us/azure/security-center/security-center-management-groups#assign-azure-roles-to-other-users). For this you need to be 'Owner' on management group level to perform role assignment._
+> 
+> 2. _All subscriptions and management groups fold up to the one root management group within the directory. To scan all the subscriptions in your tenant, you can assign reader role at root management group scope. Azure AD Global Administrators are the only users who can grant access at this scope._
+> 
+
+</br>
 
 ``` PowerShell
-    Grant-AzSKGraphPermissionToMultiTenantScannerIdentity
+    Grant-AzSKAzureRoleToMultiTenantIdentitySPN `
+                                        -AADIdentityObjectId $spnDetails.ObjectId `
+                                        -TargetSubscriptionIds @("SubId1", "SubId2")
 ```
 
-### **Step 4 of 4. Grant 'Reader' Access to SPN on Azure subscriptions**
+### **Step 4 of 4. Grant Graph permissions to SPN in each Tenant**
+AzTS solution scanning identity requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). This permission is required for the evaluation of RBAC based controls in AzTS.
+</br
+
 ``` PowerShell
-    Grant-AzSKAzureRoleToMultiTenantIdentitySPN
+
+# Grant Graph Permission to the to SPN (created in step #2 above) of central scanning identity.
+# Required Permission: Global Administrator or Privileged Role Administrator.
+
+Grant-AzSKGraphPermissionToMultiTenantScannerIdentity `
+                            -AADIdentityObjectId $spnDetails.ObjectId `
+                            -MSGraphPermissionsRequired @("PrivilegedAccess.Read.AzureResources", "Directory.Read.All") `
+                            -ADGraphPermissionsRequired @("Directory.Read.All") 
+
 ```
 
 
+> **Note:** 
+> 1. _This step requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: Global Administrator or Privileged Role Administrator. If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for SPN of central scanning identity in Azure Active Directory._
+> 
+> 2. _You can proceed without this step, however, the AzTS Soln will run with limited functionality such as the solution will not be able to scan RBAC controls, classic administrator of a subscription will not be able to use the user interface provided by AzTS Soln (AzTS UI) to request on-demand scan, view control failures etc.,_
+>
+> </br>
+
+</br>
 Once you have completed above mentioned steps (1-4), you can use [onboarding API](LinkTBD) to complete the onboarding process. 
 
 ## **3. FAQs**
