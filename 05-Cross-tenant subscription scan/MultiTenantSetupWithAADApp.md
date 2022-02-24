@@ -458,7 +458,7 @@ To view scan result in AzTS UI:
 1. Copy the AzTS UI link provided at the end of the installation command.
 2. We recommend creating a custom domain name for your UI. For steps to create a custom domain, refer to this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
 3. [Onboard tenants](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning) for scanning.
-4. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete to show the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+4. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete to show the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](/01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
 5. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value in the Service Filter dropdown in AzTS UI. To add service mapping, follow the steps provided here: 
     - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
@@ -540,7 +540,7 @@ To do the scanning, AzTS solution scanning identity requires 'Reader' access on 
 
 ### **Step 4 of 4. Grant Graph permissions to SPN in each Tenant**
 AzTS solution scanning identity requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). This permission is required for the evaluation of RBAC based controls in AzTS.
-</br
+</br>
 
 ``` PowerShell
 
@@ -566,6 +566,7 @@ Grant-AzSKGraphPermissionToMultiTenantScannerIdentity `
 Once you have completed above mentioned steps (1-4), you can use [onboarding API](LinkTBD) to complete the onboarding process. 
 
 </br>
+
 [Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ## **3. FAQs**
