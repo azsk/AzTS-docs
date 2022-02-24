@@ -3,7 +3,7 @@
 
 </br>
 
-# Setting up multi tenant Azure Tenant Security (AzTS) Solution - Step by Step
+# Setting up multi-tenant Azure Tenant Security (AzTS) Solution - Step by Step
  
 </br>
 
@@ -15,9 +15,9 @@
 --------------------------------------------------
 </br>
 
-## **1. Steps to install multi tenant AzTS Solution**
+## **1. Steps to install multi-tenant AzTS Solution**
 
-In this section, we will walk through the steps of setting up multi tenant AzTS Solution with central AAD App based scanning model. This setup can take up to 30 minutes.
+In this section, we will walk through the steps of setting up multi-tenant AzTS Solution with central AAD App based scanning model. This setup can take up to 30 minutes.
 
 This setup is divided into following seven steps:
 
@@ -132,8 +132,6 @@ If you have already downloaded the deployment package zip, directly go to step (
 The AzTS setup provisions your subscriptions with the ability to do daily scans for security controls.
 To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same applicaton needs to be created in each target tenant and will have 'reader' access on subscriptions in each target tenant.
 
-</br>
-
 Before creating central multi-tenant AAD app, please log in to Azure account and Azure Active Directory (AD) where you want to host the AzTS solution using the following PowerShell command.
 
 ``` PowerShell
@@ -150,8 +148,8 @@ Connect-AzAccount -Tenant $TenantId
 Connect-AzureAD -TenantId $TenantId
 ```
 
- **4.a. Create central multi tenant AAD application for scanning:** 
- The PowerShell command creates a multi tenant AAD application and new secret (with 6 months expiry). You should have permission to create new multi tenant AAD application in host tenant. 
+ **4.a. Create central multi-tenant AAD application for scanning:** 
+ The PowerShell command creates a multi-tenant AAD application and new secret (with 6 months expiry). You should have permission to create new multi-tenant AAD application in host tenant. 
 
 
 > **Note:** <br> _As a security best practice, please do not put secret in any local file or any other place exept Key Vault._
@@ -188,7 +186,7 @@ $appDetails.ObjectId
 
 </br>
 
-**4.b. Securely store central scanning App credentials:** Credentials generated for central scanning App in the above step need to be stoared securely in KeyVault. Following command will create a Key Vault and store App's credentials as secret.  
+**4.b. Securely store central scanning App credentials:** Credentials generated for central scanning App in the above step need to be stored securely in KeyVault. Following command will create a Key Vault and store App's credentials as secret.  
 </br>
 
 ``` PowerShell
@@ -207,7 +205,7 @@ $secretStoreDetails= Set-AzSKTenantSecuritySolutionSecretStorage `
 > **Note:** 
 > 1. _As a security best practice, we recommend storing central scanning identity credentials in an isolated subscription with limited permission to secure access to this identity._
 > 
-> 2. _If you provide any existing Key Vault details in above command, all existing access policies will be cleaned as only AzTS solution is intended to have access on this Key Vault.,_
+> 2. _If you provide any existing Key Vault details in above command, all existing access policies will be cleaned as only AzTS solution is intended to have access on this Key Vault._
 >
 > </br>
 
@@ -267,10 +265,11 @@ $ADApplicationDetails.UIAzureADAppId
 ```
 
 </br>
+
 [Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 6 of 7. Run Setup Command**
-You need to run install command present as part setup script with host subscription id (sub where scanning infra resources will get created). Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on the subscription where the solution needs to be installed.
+You need to run install command present as part setup script with host subscription Id (subscription where scanning infra resources will get created). Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on the subscription where the solution needs to be installed.
 
 > **Note:**
 > 1. _Setup may take up to 5 minutes to complete._
@@ -397,10 +396,11 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 > </br>
 
 </br>
+
 [Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 7 of 7. Grant required permission to internal MI**
-AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan result. This internal MI needs following two additional permissions:
+AzTS Solution creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan result. This internal MI needs following two additional permissions:
 1. Provide 'Reader' access and 'Secret Read' permission over Key Vault.
 2. Grant MS Graph read access. (Optional)
 
@@ -446,6 +446,9 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
 </br>
 
 **Congratulations! Installation is complete with this step.**
+
+</br>
+
 **This setup process does not onboard any tenant by default for scanning, to scan any tenant you need to follow onboarding process present [here](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning)**
 </br>
 
@@ -461,6 +464,7 @@ To view scan result in AzTS UI:
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
 </br>
+
 [Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 
