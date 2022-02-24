@@ -444,6 +444,7 @@ function Remove-AnonymousAccessOnContainers
                             $logResource = @{}
                             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                             $logResource.Add("ResourceName",($_.StorageAccountName))
+                            $logResource.Add("Reason","The Storage account `Allow Blob Public Access` property is already disabled.")    
                             $logSkippedResources += $logResource
                         }
                 }
@@ -515,12 +516,19 @@ function Remove-AnonymousAccessOnContainers
                             }
                             else
                             {
+                                $IsResourceLocked = Get-AzResourceLock -ResourceGroupName ($_.ResourceGroupName) -ResourceName ($_.StorageAccountName) -ResourceType "Microsoft.Storage/storageAccounts"
                                 $logResource = @{}
                                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                                 $logResource.Add("ResourceName",($_.StorageAccountName))
+                                if($IsResourceLocked -ne $null)
+                                {
+                                    $logResource.Add("Reason", "The Storage account (resource) is locked. For remediation, it must be unlocked.")
+                                }
+                                else
+                                {
+                                    $logResource.Add("Reason","The user or Managed Identity don't have sufficient access to remediate the Storage account.")    
+                                }
                                 $logSkippedResources += $logResource
-
-                                
 
                                 $skippedStorageAccountFromRemediation += $item
                             }
@@ -531,6 +539,7 @@ function Remove-AnonymousAccessOnContainers
                             $logResource = @{}
                             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                             $logResource.Add("ResourceName",($_.StorageAccountName))
+                            $logResource.Add("Reason",($_.Exception.Message))   
                             $logSkippedResources += $logResource
                             
                             $skippedStorageAccountFromRemediation += $item

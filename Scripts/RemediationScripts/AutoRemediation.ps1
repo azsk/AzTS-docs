@@ -217,11 +217,34 @@ function PrintRemediationSummary($timestamp)
     }
 }
 
+function SetExecutionPolicy
+{
+    #Check for execution policy settings
+    $executionPolicy = Get-ExecutionPolicy -Scope CurrentUser
+    if(($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Restricted) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Undefined) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::AllSigned))
+    {
+        Write-Host "Currently PowerShell execution policy is set to '$executionPolicy' mode. `n The policy to be set to 'RemoteSigned'. `nSelect Y to change policy for current user [Y/N]: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        $executionPolicyAns = Read-Host 
+
+        if($executionPolicyAns.Trim().ToLower() -eq "y" )
+        {
+            Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+            Write-Host "Execution Policy is set to Remote Signed." -ForegroundColor $([Constants]::MessageType.Update)
+        }
+        else 
+        {
+            Write-Host "Terminating the current execution of script as Execution Policy is not set to Remote Signed." -ForegroundColor $([Constants]::MessageType.Error)
+            return 
+        }
+    }
+}
+
 function StartExecution
 {
     $timestamp = $(get-date -f MMddyyyyHHmmss)
     $directory = "$(Get-location)/LogFiles/$($timestamp)"
     $null = New-Item -Type Directory -path $directory -Force -ErrorAction Stop
+    SetExecutionPolicy
     PrintGeneralInformation
     PrintSubscriptions
     StartRemediation ($timestamp)
