@@ -3,14 +3,14 @@
 
 </br>
 
-# Setting up Azure Tenant Security (AzTS) Solution - Step by Step
+# Setting up multi tenant Azure Tenant Security (AzTS) Solution - Step by Step
  
 </br>
 
 ## On this page:
-  - [Steps to install multi tenant AzTS Solution](README.md#1-steps-to-install-multi-tenant-AzTS-solution)
-  - [Onboard individual tenants](README.md#2onboard-individual-tenants)
-  - [FAQs](README.md#faqs)
+  - [Steps to install multi tenant AzTS Solution](MultiTenantSetupWithAADApp.md#1-steps-to-install-multi-tenant-azts-solution)
+  - [Onboard tenants for scanning](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning)
+  - [FAQs](MultiTenantSetupWithAADApp.md#3-faqs)
 
 --------------------------------------------------
 </br>
@@ -21,15 +21,13 @@ In this section, we will walk through the steps of setting up multi tenant AzTS 
 
 This setup is divided into following seven steps:
 
-1. [Validate prerequisites on machine](README.md#step-1-of-6-validate-prerequisites-on-machine)
-2. [Installing required Az modules](README.md#step-2-of-6-installing-required-az-modules)
-3. [Download and extract deployment package](README.md#step-3-of-6-download-and-extract-deployment-package)
-4. [Setup central scanning managed identity](README.md#step-4-of-6-setup-central-scanning-managed-identity)
-5. [Create Azure AD application for secure authentication](README.md#step-5-of-6-create-azure-ad-application-for-secure-authentication)
-6. [Run Setup Command](README.md#step-6-of-6-run-setup-command)
-7. [Grant required permission to internal MI](README.md#step-6-of-6-run-setup-command)
-
-> _**Note**: You will need help of Azure Active Directory (AD) administrator in step 4, 5 and 6 to grant Microsoft.Graph permission._
+1. [Validate prerequisites on machine](MultiTenantSetupWithAADApp.md#step-1-of-7-validate-prerequisites-on-machine)
+2. [Installing required Az modules](MultiTenantSetupWithAADApp.md#step-2-of-7-installing-required-az-modules)
+3. [Download and extract deployment package](MultiTenantSetupWithAADApp.md#step-3-of-7-download-and-extract-deployment-package)
+4. [Setup central scanning identity](MultiTenantSetupWithAADApp.md#step-4-of-7-setup-central-scanning-identity)
+5. [Create Azure AD application for secure authentication](MultiTenantSetupWithAADApp.md#step-5-of-7-create-azure-ad-application-for-secure-authentication)
+6. [Run Setup Command](MultiTenantSetupWithAADApp.md#step-6-of-7-run-setup-command)
+7. [Grant required permission to internal MI](MultiTenantSetupWithAADApp.md#step-7-of-7-grant-required-permission-to-internal-mi)
 
 Let's start!
 
@@ -43,7 +41,7 @@ Let's start!
   </br>
 
   1. b. PowerShell 5.0 or higher
-  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
+  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](../01-Setup%20and%20getting%20started/PowerShellTips.md) to get a basic understanding.
   Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
 
@@ -51,7 +49,7 @@ Let's start!
 
 </br>
 
-[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 2 of 7. Installing required Az modules**
 
@@ -92,7 +90,7 @@ Install-Module -Name Az.KeyVault -AllowClobber -Scope CurrentUser -repository PS
 Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
 ```
 
-[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 3 of 7. Download and extract deployment package**
  
@@ -127,7 +125,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 
   ```
 
-[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 4 of 7. Setup central scanning identity**  
 
@@ -226,7 +224,7 @@ $secretStoreDetails= Set-AzSKTenantSecuritySolutionSecretStorage `
 
 </br>
 
-[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 5 of 7. Create Azure AD application for secure authentication**
 
@@ -268,7 +266,8 @@ $ADApplicationDetails.UIAzureADAppId
 
 ```
 
-
+</br>
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 6 of 7. Run Setup Command**
 You need to run install command present as part setup script with host subscription id (sub where scanning infra resources will get created). Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on the subscription where the solution needs to be installed.
@@ -398,7 +397,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 > </br>
 
 </br>
-[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 7 of 7. Grant required permission to internal MI**
 AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan result. This internal MI needs following two additional permissions:
@@ -447,7 +446,7 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
 </br>
 
 **Congratulations! Installation is complete with this step.**
-**This setup process does not onboard any tenant by default for scanning, to scan any tenant you need to follow onboarding process present [here](README.md#2onboard-individual-tenants)**
+**This setup process does not onboard any tenant by default for scanning, to scan any tenant you need to follow onboarding process present [here](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning)**
 </br>
 
 **Next steps:**
@@ -455,18 +454,18 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
 To view scan result in AzTS UI:
 1. Copy the AzTS UI link provided at the end of the installation command.
 2. We recommend creating a custom domain name for your UI. For steps to create a custom domain, refer to this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
-3. [Onboard tenants](README.md#2onboard-individual-tenants) for scanning.
+3. [Onboard tenants](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning) for scanning.
 4. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete to show the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
 5. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value in the Service Filter dropdown in AzTS UI. To add service mapping, follow the steps provided here: 
     - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
 </br>
-[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 
 
-## **2. Onboard individual tenants**
+## **2. Onboard tenants for scanning**
 To onboard any tenant to AzTS scanner, following **four steps need to be performed for each tenant** to be onboarded:
 
 1. [Connect with Active Directory of target tenant](MultiTenantSetupWithAADApp.md#step-1-of-4-connect-with-active-directory-of-target-tenant)
@@ -561,6 +560,9 @@ Grant-AzSKGraphPermissionToMultiTenantScannerIdentity `
 
 </br>
 Once you have completed above mentioned steps (1-4), you can use [onboarding API](LinkTBD) to complete the onboarding process. 
+
+</br>
+[Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ## **3. FAQs**
 TBD
