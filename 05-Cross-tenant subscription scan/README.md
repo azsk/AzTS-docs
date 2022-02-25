@@ -76,7 +76,7 @@ Install-Module -Name Az.ManagedServices -AllowClobber -Scope CurrentUser -reposi
 After access is provided to target subscription, next scheduled trigger will pick up subscription from cross tenant and perform scan. You can follow steps [here](../02-Monitoring%20security%20using%20AzTS/README.md) to create security compliance dashboard.
 
 ### 2b. Multi-tenant AAD Application approach (Recommended)
-In this approach AzTS uses multi-tenant AAD application as the central scanning identity to overcome limitations of Azure Lighthouse approach and to get security visibility across trusted tenants.
+In this approach AzTS uses multi-tenant AAD application as the central scanning identity having required access over all the trusted tenants to overcome limitations of Azure Lighthouse approach and to get security visibility across trusted tenants.
 
 Below diagram depicts high level flow for Multi-tenant AAD Application approach
 
@@ -86,11 +86,11 @@ Follow below steps to setup the AzTS Solution and onboard tenants to be scanned
 
 1. Setup AzTS Solution in **multi-tenant mode** on host tenant subscription
 
-    Follow [steps](/01-Setup%20and%20getting%20started/README.md) on host subscription to setup AzTS solution in multi-tenant mode. If you have already performed setup for multi-tenant mode, you can skip this step. 
+    Follow [steps](MultiTenantSetupWithAADApp.md/#1-steps-to-install-multi-tenant-azts-solution) on host subscription to setup AzTS solution in multi-tenant mode. If you have already performed setup for multi-tenant mode, you can skip this step. 
     
 2. Onboard the tenants to be scanned to the AzTS solution
     
-    Follow [steps](/01-Setup%20and%20getting%20started/README.md) to onboard all the tenants for which we need security visibility.
+    Follow [steps](OnboardTenantToAzTS.md/#onboarding) to onboard all the tenants for which we need security visibility.
     > **Note:** Host tenant should also be onboarded to AzTS solution if security visibility is needed for it.
 
 After the tenants to be scanned are onboarded, next scheduled trigger will pick up subscriptions across onboarded tenants and perform the scan
