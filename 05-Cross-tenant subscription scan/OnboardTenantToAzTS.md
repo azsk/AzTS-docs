@@ -7,6 +7,7 @@
   - [Access token generation](#access-token-generation)
   - [Onboarding](#onboarding)
   - [Offboarding](#offboarding)
+  - [FAQs](#faqs)
 
 --------------------------------------------------
 <br>
@@ -45,15 +46,21 @@ Access token for invoking the onboarding/offboarding APIs can be generated using
 2. [Create secret for above application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-credentials) and store it at secure location for later reference. Skip this step if the secret is already available.
 3. Generate the access token using the below commands in a powershell session
 ``` PowerShell
+# Install the MSAL module. Skip if already installed
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
 
 $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
 
+# Here <tenant-id> is the host tenant id for AzTS solution.
+# <client-id> is the application id of the AAD application created in Step 1 above.
+# <client-secret> is the secret of the AAD application created in step 2 above.
+# <webapi-scope> is api://<application id of AzTS Web API ADD application>. This was created in step #5 of the AzTS deployment.
+# if the application id for AzTS Web API ADD application is "ab2xxxxx-xxxx-xxxx-xxxx-xxxxxxf18688" then <webapi-scope> would be api://ab2xxxxx-xxxx-xxxx-xxxx-xxxxxxf18688
+# Kindly refer FAQ section at bottom of this page for knowing how to get application id of AzTS Web API ADD application if you dont have it handy.
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSecret $ClientSecret -Scopes "<webapi-scope>/.default"
 
 ```
 
-> **Note:**<br>- **tenant-id** is the host tenant id for AzTS solution.<br>- **client-id** is the application id of the AAD application created in Step 1.<br>- **client-secret** is the secret of the AAD application created in step 2.<br>- **webapi-scope** could be fetched from here.
 
 [Back to top...](#on-this-page)
 
@@ -62,10 +69,11 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 
 ## Onboarding
 
-Tenants could be onboarded to the multi-tenant AzTS solution using the newly introduced onboarding API, details for which are mentioned below. Any tenant being onboarded to the multi-tenant AzTS solution must satisfy these [prerequisites](#prerequisite).
+Tenants could be onboarded to the multi-tenant AzTS solution using the newly introduced onboarding API, details for which are mentioned below.
 
 **Request URL**
 
+> **Note:** Kindly refer the FAQs section at bottom of this page for knowing how to get `<AzTS WebAPI-URL>`
 ``` PowerShell
 POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-version=1.0
 ```
@@ -105,7 +113,7 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 **Sample Request**
 
 ``` 
- POST https://AzSK-AzTS-WebApi-xxxxx/multitenantaction/onboardoffboardtenants?api-version=1.0
+ POST https://azsk-azts-webapi-xxxxx.azurewebsites.net/multitenantaction/onboardoffboardtenants?api-version=1.0
 ```
 <br/> 
 
@@ -151,6 +159,7 @@ Tenants could be offboarded from the multi-tenant AzTS solution using the newly 
 
 **Request URL**
 
+> **Note:** Kindly refer the FAQs section at bottom of this page for knowing how to get `<AzTS WebAPI-URL>`
 ``` PowerShell
 POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-version=1.0
 ```
@@ -186,7 +195,7 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 **Sample Request**
 
 ``` 
- POST https://AzSK-AzTS-WebApi-xxxxx/multitenantaction/onboardoffboardtenants?api-version=1.0
+ POST https://azsk-azts-webapi-xxxxx.azurewebsites.net/multitenantaction/onboardoffboardtenants?api-version=1.0
 ```
 <br/> 
 
@@ -212,5 +221,29 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 ``` JSON
 200 OK
 ```
+
+[Back to top...](#on-this-page)
+
+--------------------------------------------------
+<br>
+
+## FAQs
+
+**How to get application id for the AzTS Web API ADD application?**
+
+1. Go to Azure Portal.
+2. Go to **Resource Groups**.
+3. Select your Resource Group where you have done AzTS setup.
+4. Select the App Service for API '**AzSK-AzTS-WebAPI-xxxxx**'.
+5. In the app's left menu, select **Configuration > Application settings**.
+6. Search the app setting **AADClientAppDetails__ApplicationId**. This is application id for the AzTS Web API ADD application.
+
+**How to get the AzTS Web API URL?**
+
+1. Go to Azure Portal.
+2. Go to **Resource Groups**.
+3. Select your Resource Group where you have configured AzTS setup.
+4. Select the App Service for API '**AzSK-AzTS-WebAPI-xxxxx**'.
+5. In Overview section, copy URL.
 
 [Back to top...](#on-this-page)
