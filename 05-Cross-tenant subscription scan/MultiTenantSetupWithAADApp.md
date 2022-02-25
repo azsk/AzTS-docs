@@ -17,7 +17,7 @@
 
 ## **1. Steps to install multi-tenant AzTS Solution**
 
-In this section, we will walk through the steps of setting up multi-tenant AzTS Solution with central AAD App based scanning model. This setup can take up to 30 minutes.
+In this section, we will walk through the steps for setting up multi-tenant AzTS Solution with central AAD App based scanning model. This setup may take up to 30 minutes.
 
 This setup is divided into following seven steps:
 
@@ -129,10 +129,9 @@ If you have already downloaded the deployment package zip, directly go to step (
 
 ### **Step 4 of 7. Setup central scanning identity**  
 
-The AzTS setup provisions your subscriptions with the ability to do daily scans for security controls.
-To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same applicaton needs to be created in each target tenant and will have 'reader' access on subscriptions in each target tenant.
+The AzTS setup performs daily scans of your subscriptions for security controls. To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same applicaton needs to be created in each target tenant and will have 'Reader' access on subscriptions in each target tenant.
 
-Before creating central multi-tenant AAD app, please log in to Azure account and Azure Active Directory (AD) where you want to host the AzTS solution using the following PowerShell command.
+Before creating central multi-tenant AAD app, please log in to Azure account and Azure Active Directory (AAD) where you want to host the AzTS solution using the following PowerShell command.
 
 ``` PowerShell
 # Clear existing login, if any
@@ -156,7 +155,7 @@ Connect-AzureAD -TenantId $TenantId
 
 ``` PowerShell
 # -----------------------------------------------------------------#
-# Step 1: Create central scanning user-assigned managed identity
+# Step 1: Create central scanning identity (multi-tenant AAD Application)
 # -----------------------------------------------------------------#
 
 $appDetails = Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity `
@@ -181,7 +180,7 @@ $appDetails.ObjectId
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
-| DisplayName| Display Name of the Scanner Identity (AAD Application) to be created.| Yes|
+| DisplayName| Display name of the Scanner Identity (AAD Application) to be created.| Yes|
 |ObjectId| Object Id of the AAD Application, if want to use any existing App.|No|
 
 </br>
@@ -203,7 +202,7 @@ $secretStoreDetails= Set-AzSKTenantSecuritySolutionSecretStorage `
 ```
 
 > **Note:** 
-> 1. _As a security best practice, we recommend storing central scanning identity credentials in an isolated subscription with limited permission to secure access to this identity._
+> 1. _As a security best practice, we recommend storing central scanning identity credentials (i.e. Key Vault holding secret/credentials) in an isolated subscription with limited permission to secure access to credentials._
 > 
 > 2. _If you provide any existing Key Vault details in above command, all existing access policies will be cleaned as only AzTS solution is intended to have access on this Key Vault._
 >
@@ -298,13 +297,13 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -Location <ResourceLocation> `
                 -ScanIdentitySecretUri <KeyVaultSecretUrl> `
                 -EnableMultiTenantScan `
-                [-WebAPIAzureADAppId <WebAPIAzureADApplicationId>] `
-                [-UIAzureADAppId <UIAzureADApplicationId>] `
+                -WebAPIAzureADAppId <WebAPIAzureADApplicationId> `
+                -UIAzureADAppId <UIAzureADApplicationId> `
                 [-AzureEnvironmentName AzureCloud] `
                 [-ScanIdentityHasGraphPermission:$true] `
                 -SendAlertNotificationToEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
                 [-EnableAutoUpdater] `
-                [-EnableAzTSUI] `
+                -EnableAzTSUI `
                 [-EnableVnetIntegration] `
                 [-EnableWAF] `
                 -Verbose
@@ -349,7 +348,7 @@ For '-ScanIdentitySecretUri' parameter,
                               OR
           (b) Run Set-AzSKTenantSecuritySolutionSecretStorage command provided in step 4.b.
                               OR
-          (c) you can get this resources id by going into Azure Portal --> Subscription where key vault resource created --> KeyVaultHostingRG --> Click on Key Vault resource --> Secrets --> Select 'SecretName' --> Copy 'Secret Identifier'.
+          (c) you can get this secret identifier by going into Azure Portal --> Subscription where key vault resource created --> KeyVaultHostingRG --> Click on Key Vault resource --> Secrets --> Select 'SecretName' --> Copy 'Secret Identifier'.
 
 #>
 
@@ -371,7 +370,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |----|----|----|
 |SubscriptionId|Hosting subscription id where Azure Tenant solution will be deployed. |TRUE|
 |ScanHostRGName| Name of ResourceGroup where setup resources will be created. |TRUE|
-|ScanIdentitySecretUri| Key Vault SecretUri of the Scanner App's Connection String.  |TRUE|
+|ScanIdentitySecretUri| Key Vault SecretUri of the Scanner App's credentials.  |TRUE|
 |Location|Location where all resources will get created. |TRUE|
 |EnableMultiTenantScan | Switch to enable multi-tenant scanning. |TRUE|
 |WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | FALSE |
@@ -402,7 +401,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 ### **Step 7 of 7. Grant required permission to internal MI**
 AzTS Solution creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan result. This internal MI needs following two additional permissions:
 1. Provide 'Reader' access and 'Secret Read' permission over Key Vault.
-2. Grant MS Graph read access. (Optional)
+2. Grant MS Graph read access.
 
 **7.a. Provide access over Key Vault:** 
 Internal MI need permission over Key Vault & Secret created in Step #4 to access central scanning identity's credential. Run follow command to grant required permissions:
@@ -439,9 +438,8 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
 ```
 
 > **Note:** 
-> 01. _This step requires admin consent. To complete this step, the signed-in user must be a member of one of the following administrator roles: </br> Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) created in this step._
+> _This step requires admin consent. To complete this step, the signed-in user must be a member of one of the following administrator roles: </br> Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) created in this step._
 > 
-> 2. _You can proceed without this step. However, please note that if this permission is not granted, users who log in to the AzTS UI will not be able to view subscriptions where they have been granted access to a subscription through a security group._
 
 </br>
 
@@ -470,15 +468,16 @@ To view scan result in AzTS UI:
 
 
 ## **2. Onboard tenants for scanning**
-To onboard any tenant to AzTS scanner, following **four steps need to be performed for each tenant** to be onboarded:
+To onboard any tenant to AzTS scanner, following **steps need to be performed for each tenant**:
 
-1. [Connect with Active Directory of target tenant](MultiTenantSetupWithAADApp.md#step-1-of-4-connect-with-active-directory-of-target-tenant)
-2. [Create SPN for central scanning identity (AAD App) in each Tenant/Directory](MultiTenantSetupWithAADApp.md#step-2-of-4-create-spn-for-central-aad-app-in-each-tenant)
-3. [Grant 'Reader' Access to SPN on Azure subscriptions](MultiTenantSetupWithAADApp.md#step-3-of-4-grant-reader-access-to-spn-on-azure-subscriptions)
-4. [Grant Graph permissions to SPN in each Tenant/Directory](MultiTenantSetupWithAADApp.md#step-4-of-4-grant-graph-permissions-to-spn-in-each-tenant)
+1. [Connect with Active Directory of target tenant](MultiTenantSetupWithAADApp.md#step-1-of-5-connect-with-active-directory-of-target-tenant)
+2. [Create SPN for central scanning identity (AAD App) in target tenant](MultiTenantSetupWithAADApp.md#step-2-of-5-create-spn-for-central-aad-app-in-target-tenant)
+3. [Grant 'Reader' Access to SPN on Azure subscriptions](MultiTenantSetupWithAADApp.md#step-3-of-5-grant-reader-access-to-spn-on-azure-subscriptions)
+4. [Grant Graph permissions to SPN in each Tenant/Directory](MultiTenantSetupWithAADApp.md#step-4-of-5-grant-graph-permissions-to-spn-in-target-tenant)
+5. [Enable scanning for target tenant](MultiTenantSetupWithAADApp.md#step-5-of-5-enable-scanning-for-target-tenant)
 
 
-### **Step 1 of 4. Connect with Active Directory of target tenant**
+### **Step 1 of 5. Connect with Active Directory of target tenant**
 
 First you need to login into Azure Active Directory (AAD) of target tenant which you want to onboard using the following PowerShell command.
 
@@ -496,9 +495,9 @@ Connect-AzAccount -Tenant $TenantId
 Connect-AzureAD -TenantId $TenantId
 ```
 
-### **Step 2 of 4. Create SPN for central AAD App in each Tenant**
+### **Step 2 of 5. Create SPN for central AAD App in target tenant**
 
-The central scanning App created as part of setup need to be instantiated (i.e. Service prinicipal aka SPN needs to be created) in each tenant. `Create-AzSKTenantSecuritySolutionMultiTenantIdentitySPN` command creates SPN for the central scanning App:
+Service principal (SPN) for the central scanning App (multi-tenant App created as part of AzTS setup) need to be created in target tenant (tenant to be onboarded for scan). `Create-AzSKTenantSecuritySolutionMultiTenantIdentitySPN` command creates SPN for the central scanning App:
 
 ``` PowerShell
 # -----------------------------------------------------------------#
@@ -521,8 +520,8 @@ $spnDetails.ObjectId
 
 </br>
 
-### **Step 3 of 4. Grant 'Reader' Access to SPN on Azure subscriptions**
-To do the scanning, AzTS solution scanning identity requires 'Reader' access on subscriptions of the target tenant on which scan needs to be performed. Command `Grant-AzSKAzureRoleToMultiTenantIdentitySPN` assigns 'Reader' access to SPN (created in step #2 above) of central scanning identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
+### **Step 3 of 5. Grant 'Reader' Access to SPN on Azure subscriptions**
+To do the scanning, AzTS solution scanning identity requires 'Reader' access on subscriptions of the target tenant for which scan needs to be performed. Command `Grant-AzSKAzureRoleToMultiTenantIdentitySPN` assigns 'Reader' access to SPN (created in step #2 above) of central scanning identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
 
 > _Note:_
 > 1. _If subscriptions are organized under [Management Groups](https://docs.microsoft.com/en-us/azure/governance/management-groups/overview) (MG), you can assign reader role for SPN using MG role assignment using [Azure Portal](https://docs.microsoft.com/en-us/azure/security-center/security-center-management-groups#assign-azure-roles-to-other-users). For this you need to be 'Owner' on management group level to perform role assignment._
@@ -538,7 +537,7 @@ To do the scanning, AzTS solution scanning identity requires 'Reader' access on 
                                         -TargetSubscriptionIds @("SubId1", "SubId2")
 ```
 
-### **Step 4 of 4. Grant Graph permissions to SPN in each Tenant**
+### **Step 4 of 5. Grant Graph permissions to SPN in target tenant**
 AzTS solution scanning identity requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). This permission is required for the evaluation of RBAC based controls in AzTS.
 </br>
 
@@ -562,8 +561,14 @@ Grant-AzSKGraphPermissionToMultiTenantScannerIdentity `
 >
 > </br>
 
-</br>
-Once you have completed above mentioned steps (1-4), you can use [onboarding API](LinkTBD) to complete the onboarding process. 
+### **Step 5 of 5. Enable scanning for target tenant**
+
+This is the final step to onboard target tenant for scanning. Once you have completed above mentioned steps (1-4) for the tenant, you can use [onboarding API](OnboardTenantToAzTS.md#onboarding) to complete the onboarding process and enable security scan for the tenant.
+
+> **Note:** 
+> _You can perform this step for multiple tenants in a single go as well to save time. So, if you have multiple tenants, please complete steps #1 to #4 for all tenants and then use [onboarding API](OnboardTenantToAzTS.md#onboarding) to onboard and enable security scanning for mulitple tenants in a single request._
+> 
+
 
 </br>
 
