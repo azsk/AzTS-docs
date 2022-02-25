@@ -195,8 +195,6 @@ $secretStoreDetails= Set-AzSKTenantSecuritySolutionSecretStorage `
                             -ResourceGroupName <RGName> `
                             -Location <Location>`
                             -KeyVaultName <KeyVaultName> `
-                            -AADAppId $appDetails.ApplicationId`
-                            -AADAppHostTenantId <HostTenantId>`
                             -AADAppPasswordCredential $appDetails.Secret
 
 ```
@@ -215,8 +213,6 @@ $secretStoreDetails= Set-AzSKTenantSecuritySolutionSecretStorage `
 | ResourceGroupName| Name of the Resource Group where Key Vault resource to be created.|Yes|
 | Location| Location for Key Vault resource. Default is 'EastUS2'.| False|
 | KeyVaultName| Name of the Key Vault resource to be created.|Yes|
-| AADAppId| Central scanning App's Application Id.| Yes|
-| AADAppHostTenantId| AzTS solution Host Tenant Id.|Yes|
 | AADAppPasswordCredential|  Central scanning App's password credentials.|Yes|
 
 </br>
@@ -296,6 +292,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -ScanHostRGName <HostResourceGroupName> `
                 -Location <ResourceLocation> `
                 -ScanIdentitySecretUri <KeyVaultSecretUrl> `
+                -ScanIdentityApplicationId <ScanningIdentityAppId> `
                 -EnableMultiTenantScan `
                 -WebAPIAzureADAppId <WebAPIAzureADApplicationId> `
                 -UIAzureADAppId <UIAzureADApplicationId> `
@@ -329,6 +326,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                     -SubscriptionId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
                     -ScanHostRGName AzSK-AzTS-Solution-RG `
                     -ScanIdentitySecretUri 'https://keyvault-name.azure.net/secrets/SecretName/' `
+                    -ScanIdentityApplicationId 'xy0000yy-00yy-00yy-00yy-xy00000000yy'
                     -Location EastUS2 `
                     -EnableAzTSUI `
                     -EnableMultiTenantScan `
@@ -362,6 +360,16 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
           (c) you can get this application ids by going into Azure Portal --> Azure Active Directory --> App registrations --> All applications --> Search the application by name --> Click on the AD application --> Overview --> Copy Application (client) ID.
 
 #>
+
+<#
+For '-ScanIdentityApplicationId' parameter,
+          (a) use value created for "$appDetails.ApplicationId" from step 4a.
+                                    OR
+          (b) Run Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity command provided in step 4a.
+                                    OR
+          (c) you can get this application ids by going into Azure Portal --> Azure Active Directory --> App registrations --> All applications --> Search the multi-tenant application by name --> Click on the AD application --> Overview --> Copy Application ID.
+
+#>
 ```
 
 **Parameter details:**
@@ -373,6 +381,7 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 |ScanIdentitySecretUri| Key Vault SecretUri of the Scanner App's credentials.  |TRUE|
 |Location|Location where all resources will get created. |TRUE|
 |EnableMultiTenantScan | Switch to enable multi-tenant scanning. |TRUE|
+|ScanIdentityApplicationId | Application Id of central scanning identity. |TRUE|
 |WebAPIAzureADAppId| Application (client) id of the Azure AD application to be used by the API. | FALSE |
 |UIAzureADAppId | Application (client) id of the Azure AD application to be used by the UI. | FALSE|
 |SendAlertNotificationToEmailIds| Send monitoring alerts notification to the specified email ids. | TRUE |
