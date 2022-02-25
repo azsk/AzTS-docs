@@ -524,7 +524,7 @@ $spnDetails.ObjectId
 To do the scanning, AzTS solution scanning identity requires 'Reader' access on subscriptions of the target tenant for which scan needs to be performed. Command `Grant-AzSKAzureRoleToMultiTenantIdentitySPN` assigns 'Reader' access to SPN (created in step #2 above) of central scanning identity on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.
 
 > _Note:_
-> 1. _If subscriptions are organized under [Management Groups](https://docs.microsoft.com/en-us/azure/governance/management-groups/overview) (MG), you can assign reader role for SPN using MG role assignment using [Azure Portal](https://docs.microsoft.com/en-us/azure/security-center/security-center-management-groups#assign-azure-roles-to-other-users). For this you need to be 'Owner' on management group level to perform role assignment._
+> 1. _If subscriptions are organized under [Management Groups](https://docs.microsoft.com/en-us/azure/governance/management-groups/overview) (MG), you can assign reader role for SPN using MG role assignment either using [Azure Portal](https://docs.microsoft.com/en-us/azure/security-center/security-center-management-groups#assign-azure-roles-to-other-users) or by providing MG group name(s) as input for `-TargetManagementGroupNames` paramter in `Grant-AzSKAzureRoleToMultiTenantIdentitySPN` command given below. For this you need to be 'Owner' on management group level to perform role assignment._
 > 
 > 2. _All subscriptions and management groups fold up to the one root management group within the directory. To scan all the subscriptions in your tenant, you can assign reader role at root management group scope. Azure AD Global Administrators are the only users who can grant access at this scope._
 > 
@@ -534,7 +534,8 @@ To do the scanning, AzTS solution scanning identity requires 'Reader' access on 
 ``` PowerShell
     Grant-AzSKAzureRoleToMultiTenantIdentitySPN `
                                         -AADIdentityObjectId $spnDetails.ObjectId `
-                                        -TargetSubscriptionIds @("SubId1", "SubId2")
+                                        -TargetSubscriptionIds @("SubId1", "SubId2") `
+                                        [-TargetManagementGroupNames @("MGName1", "MGName2")]
 ```
 
 ### **Step 4 of 5. Grant Graph permissions to SPN in target tenant**
