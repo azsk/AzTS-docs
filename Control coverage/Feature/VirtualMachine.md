@@ -721,7 +721,7 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 > Guest config extension is not present in VM, or System assigned MI is disabled for VM.
 > 
 > **NotApplicable:** 
-> VM is part of ADB cluster.
+> VM is part of ADB/AKS cluster.
 > 
 > **Not Scanned:** 
 > VM OS type is null or empty.
