@@ -129,7 +129,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 
 ### **Step 4 of 7. Setup central scanning identity**  
 
-The AzTS setup performs daily scans of your subscriptions for security controls. To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same applicaton needs to be created in each target tenant and will have 'Reader' access on subscriptions in each target tenant.
+The AzTS setup performs daily scans of your subscriptions for security controls. To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same application needs to be created in each target tenant and will have 'Reader' access on subscriptions in each target tenant.
 
 Before creating central multi-tenant AAD app, please log in to Azure account and Azure Active Directory (AAD) where you want to host the AzTS solution using the following PowerShell command.
 
@@ -151,7 +151,7 @@ Connect-AzureAD -TenantId $TenantId
  The PowerShell command creates a multi-tenant AAD application and new secret (with 6 months expiry). You should have permission to create new multi-tenant AAD application in host tenant. 
 
 
-> **Note:** <br> _As a security best practice, please do not put secret in any local file or any other place exept Key Vault._
+> **Note:** <br> _As a security best practice, please do not put secret in any local file or any other place except Key Vault._
 
 ``` PowerShell
 # -----------------------------------------------------------------#
@@ -202,7 +202,7 @@ $secretStoreDetails= Set-AzSKTenantSecuritySolutionSecretStorage `
 ```
 
 > **Note:** 
-> 1. _As a security best practice, we recommend storing central scanning identity credentials (i.e. Key Vault holding secret/credentials) in an isolated subscription with limited permission to secure access to credentials._
+> 1. _As a security best practice, we recommend storing central scanning identity credentials (i.e., Key Vault holding secret/credentials) in an isolated subscription with limited permission to secure access to credentials._
 > 
 > 2. _If you provide any existing Key Vault details in above command, all existing access policies will be cleaned as only AzTS solution is intended to have access on this Key Vault._
 >
@@ -401,7 +401,7 @@ For '-ScanIdentityApplicationId' parameter,
 >
 > 1. Tenant Security Solution does not support customization of the App Service name.
 >
-> 2. By default max timeout limit of function app is set to 9 minutes. This can be modified based on the requirement of your organization. To increase function timeout, you can upgrade to a higher App Service plan and use the `AzureFunctionsJobHost__functionTimeout` app setting in App Service to set the timeout value.
+> 2. By default, max timeout limit of function app is set to 9 minutes. This can be modified based on the requirement of your organization. To increase function timeout, you can upgrade to a higher App Service plan and use the `AzureFunctionsJobHost__functionTimeout` app setting in App Service to set the timeout value.
 >
 > </br>
 
@@ -458,7 +458,7 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
 
 </br>
 
-**This setup process does not onboard any tenant by default for scanning, to scan any tenant you need to follow onboarding process present [here](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning)**
+**This setup process does not onboard any tenant by default for scanning, to scan any tenant you need to follow onboarding process present [here](MultiTenantSetupWithAADApp.md#2-onboard-tenants-for-scanning).**
 </br>
 
 **Next steps:**
@@ -587,7 +587,7 @@ Grant-AzSKGraphPermissionToMultiTenantScannerIdentity `
 This is the final step to onboard target tenant for scanning. Once you have completed above mentioned steps (1-4) for the tenant, you can use [onboarding API](OnboardTenantToAzTS.md#onboarding) to complete the onboarding process and enable security scan for the tenant.
 
 > **Note:** 
-> _You can perform this step for multiple tenants in a single go as well to save time. So, if you have multiple tenants, please complete steps #1 to #4 for all tenants and then use [onboarding API](OnboardTenantToAzTS.md#onboarding) to onboard and enable security scanning for mulitple tenants in a single request._
+> _You can perform this step for multiple tenants in a single go as well to save time. So, if you have multiple tenants, please complete steps #1 to #4 for all tenants and then use [onboarding API](OnboardTenantToAzTS.md#onboarding) to onboard and enable security scanning for multiple tenants in a single request._
 > 
 
 
