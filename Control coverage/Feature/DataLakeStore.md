@@ -1,6 +1,60 @@
-## Data Lake Storage
+# DataLakeStore
 
-| ControlId | Dependent Azure API(s) and Properties | Control spec-let |
-|-----------|-------------------------------------|------------------|
-| <b>ControlId:</b><br>Azure_DataLakeStore_DP_Encrypt_At_Rest<br><b>DisplayName:</b><br>Data Lake Store sensitive data must be encrypted at rest<br><b>Description: </b><br> Sensitive data must be encrypted at rest | <b> ARM API to get the specified Data Lake Store account: </b> <br> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeStore/accounts/{accountName}? <br> api-version=2016-11-01 <br><b>Properties:</b><br> properties.encryptionState | <b>Passed: </b><br>Encryption is enabled.<br><b>Failed: </b><br>Encryption is disabled. |
+**Resource Type:** Microsoft.DataLakeStore/accounts 
+
+<!-- TOC -->
+
+- [Azure_DataLakeStore_DP_Encrypt_At_Rest](#azure_datalakestore_dp_encrypt_at_rest)
+
+<!-- /TOC -->
+<br/>
+
+___ 
+
+## Azure_DataLakeStore_DP_Encrypt_At_Rest 
+
+### Display Name 
+Data Lake Store sensitive data must be encrypted at rest 
+
+### Rationale 
+Using this feature ensures that sensitive data is stored encrypted at rest. This minimizes the risk of data loss from physical theft and also helps meet regulatory compliance requirements. 
+
+### Control Spec 
+
+> **Passed:** 
+> Encryption is enabled.
+> 
+> **Failed:** 
+> Encryption is disabled.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Ensure that encryption is not disabled when creating a new Data Lake Store. Refer: https://docs.microsoft.com/en-us/azure/data-lake-store/data-lake-store-security-overview#data-protection. Encryption cannot be enabled after the fact for Data Lake Store. 
+
+<!---- **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get the specified Data Lake Store account: 
+/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeStore/accounts/{accountName}?api-version=2016-11-01 
+<br />
+ 
+**Properties:** properties.encryptionState
+ <br />
+
+<br />
+
+___ 
 

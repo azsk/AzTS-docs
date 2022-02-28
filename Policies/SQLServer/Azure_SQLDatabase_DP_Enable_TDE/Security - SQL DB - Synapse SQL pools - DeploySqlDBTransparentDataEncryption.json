@@ -1,0 +1,74 @@
+{
+    "mode": "Indexed",
+    "parameters": {
+        "effect": {
+          "type": "String",
+          "metadata": {
+            "displayName": "Effect",
+            "description": "Enable or disable the execution of the policy"
+          },
+          "allowedValues": [
+            "DeployIfNotExists",
+            "Disabled"
+          ],
+          "defaultValue": "DeployIfNotExists"
+        }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Synapse/workspaces/sqlPools"
+          },
+          {
+            "field": "name",
+            "notEquals": "master"
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "type": "Microsoft.Synapse/workspaces/sqlPools/transparentDataEncryption",
+          "name": "current",
+          "existenceCondition": {
+            "field": "Microsoft.Synapse/workspaces/sqlPools/transparentDataEncryption/status",
+            "equals": "enabled"
+          },
+          "roleDefinitionIds": [
+            "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+          ],
+          "deployment": {
+            "properties": {
+              "mode": "incremental",
+              "template": {
+                "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "fullDbName": {
+                    "type": "string"
+                  }
+                },
+                "resources": [
+                  {
+                    "name": "[concat(parameters('fullDbName'), '/current')]",
+                    "type": "Microsoft.Synapse/workspaces/sqlPools/transparentDataEncryption",
+                    "apiVersion": "2021-06-01",
+                    "properties": {
+                      "status": "Enabled"
+                    }
+                  }
+                ]
+              },
+              "parameters": {
+                "fullDbName": {
+                  "value": "[field('fullName')]"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
