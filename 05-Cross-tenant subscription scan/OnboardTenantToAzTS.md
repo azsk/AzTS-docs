@@ -44,6 +44,7 @@ Access token for invoking the onboarding/offboarding APIs can be generated using
 1. [Register an Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) in the **host tenant**. This application would be used to get an access token for invoking onboarding/offboarding APIs. Skip this step if the application is already available.
 > **Note:** Same AAD application can be used to onboard/offboard more tenants to the AzTS solution in future. Avoid creating multiple AAD applications for onboarding/offboarding tenants.
 2. [Create secret for above application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#add-credentials) and store it at secure location for later reference. Skip this step if the secret is already available.
+> **Note:** Above two steps involving creation of Azure AD application and its secret could also be completed using [Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity](MultiTenantSetupWithAADApp.md#step-4-of-7-setup-central-scanning-identity) command available as a part of deployment script.
 3. Generate the access token using the below commands in a powershell session
 ``` PowerShell
 # Install the MSAL module. Skip if already installed
@@ -59,6 +60,9 @@ $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
 # Kindly refer FAQ section at bottom of this page for knowing how to get application id of AzTS Web API ADD application if you dont have it handy.
 $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSecret $ClientSecret -Scopes "<webapi-scope>/.default"
 
+# Copy the access token to the clipboard for use
+$token.AccessToken | Set-Clipboard
+
 ```
 
 
@@ -69,13 +73,13 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-id>' -ClientSe
 
 ## Onboarding
 
-Tenants could be onboarded to the multi-tenant AzTS solution using the newly introduced onboarding API, details for which are mentioned below.
+Tenants could be onboarded to the multi-tenant AzTS solution using the onboarding API, details for which are mentioned below.
 
 **Request URL**
 
-> **Note:** Kindly refer the FAQs section at bottom of this page for knowing how to get `<AzTS WebAPI-URL>`
+> **Note:** Kindly refer FAQ #2 in the FAQs section at bottom of this page for knowing how to get `<AzTS WebAPI-URL>`
 ``` PowerShell
-POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-version=1.0
+POST <AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-version=1.0
 ```
 <br/>
 
@@ -93,9 +97,11 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 **Request Body**
 |Name|Type|Description|Required?|
 |----|----|----|----|
-| Tenants |List`<TenantDetails>`| List of `TenantDetails` object representing Tenants to be onboarded to AzTS. | Yes |
+| Tenants |List<[TenantDetails](#tenantdetails)>| List of [TenantDetails](#tenantdetails) object representing Tenants to be onboarded to AzTS. | Yes |
   
-**TenantDetails**
+
+#### TenantDetails
+
 |Name|Type|Description|Required?|
 |----|----|----|----|
 | TenantId |string| Tenant Id. | Yes |
@@ -155,13 +161,13 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 
 ## Offboarding
 
-Tenants could be offboarded from the multi-tenant AzTS solution using the newly introduced offboarding API, details for which are mentioned below.
+Tenants could be offboarded from the multi-tenant AzTS solution using the offboarding API, details for which are mentioned below.
 
 **Request URL**
 
-> **Note:** Kindly refer the FAQs section at bottom of this page for knowing how to get `<AzTS WebAPI-URL>`
+> **Note:** Kindly refer FAQ #2 in the FAQs section at bottom of this page for knowing how to get `<AzTS WebAPI-URL>`
 ``` PowerShell
-POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-version=1.0
+POST <AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-version=1.0
 ```
 <br/>
 
@@ -179,9 +185,9 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 **Request Body**
 |Name|Type|Description|Required?|
 |----|----|----|----|
-| Tenants |List`<TenantDetails>`| List of `TenantDetails` object representing Tenants to be offboarded from AzTS. | Yes |
+| Tenants |List<[TenantDetails](#tenantdetails-1)>| List of [TenantDetails](#tenantdetails-1) object representing Tenants to be offboarded from AzTS. | Yes |
   
-**TenantDetails**
+#### TenantDetails
 |Name|Type|Description|Required?|
 |----|----|----|----|
 | TenantId |string| Tenant Id. | Yes |
@@ -229,7 +235,7 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 
 ## FAQs
 
-**How to get application id for the AzTS Web API ADD application?**
+**1. How to get application id for the AzTS Web API ADD application?**
 
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
@@ -238,7 +244,7 @@ POST https://<AzTS WebAPI-URL>/multitenantaction/onboardoffboardtenants?api-vers
 5. In the app's left menu, select **Configuration > Application settings**.
 6. Search the app setting **AADClientAppDetails__ApplicationId**. This is application id for the AzTS Web API ADD application.
 
-**How to get the AzTS Web API URL?**
+**2. How to get the AzTS Web API URL?**
 
 1. Go to Azure Portal.
 2. Go to **Resource Groups**.
