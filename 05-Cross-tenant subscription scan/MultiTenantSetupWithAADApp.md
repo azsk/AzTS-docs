@@ -159,7 +159,8 @@ Connect-AzureAD -TenantId $TenantId
 # -----------------------------------------------------------------#
 
 $appDetails = Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity `
-                                                -DisplayName <AADAppDisplayName> 
+                                                -DisplayName <AADAppDisplayName> `
+                                                -AdditionalOwnerUPNs @('User1@Contoso.com', 'User2@Contoso.com')
 
 # -----------------------------------------------------------------#
 # Step 2: Save ApplicationId and ObjectId generated for AAD App using the above command. This will be used in AzTS Soln installation later.
@@ -182,10 +183,11 @@ $appDetails.ObjectId
 |----|----|----|
 | DisplayName| Display name of the Scanner Identity (AAD Application) to be created.| Yes|
 |ObjectId| Object Id of the AAD Application, if want to use any existing App.|No|
+|AdditionalOwnerUPNs| Specify additional owners for the AAD Application to be created.|No|
 
 </br>
 
-**4.b. Securely store central scanning App credentials:** Credentials generated for central scanning App in the above step need to be stored securely in KeyVault. Following command will create a Key Vault and store App's credentials as secret.  
+**4.b. Securely store central scanning App credentials:** Credentials generated for central scanning app in the above step need to be stored securely in Key Vault. Following command will create a Key Vault and store app's credentials as secret.  
 </br>
 
 ``` PowerShell
@@ -264,7 +266,7 @@ $ADApplicationDetails.UIAzureADAppId
 [Back to top…](MultiTenantSetupWithAADApp.md#setting-up-multi-tenant-azure-tenant-security-azts-solution---step-by-step)
 
 ### **Step 6 of 7. Run Setup Command**
-You need to run install command present as part setup script with host subscription Id (subscription where scanning infra resources will get created). Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on the subscription where the solution needs to be installed.
+You need to run install command present as part of setup script with host subscription Id (subscription where scanning infra resources will get created). Setup will create infra resources and schedule daily security control scan on target subscriptions. Please validate you have 'Owner' access on the subscription where the solution needs to be installed.
 
 > **Note:**
 > 1. _Setup may take up to 5 minutes to complete._
@@ -517,6 +519,15 @@ $spnDetails = Create-AzSKTenantSecuritySolutionMultiTenantIdentitySPN `
                                                 -AppId <Scanning Apps Unique Identifier> 
 
 # -----------------------------------------------------------------#
+
+<#
+For '-AppId' parameter, 
+          (a) use value created for "$appDetails.ApplicationId" from step #4.a of installation section above.
+                              OR
+          (b) Run Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity command provided in step 4.a of installation section above.
+#>
+
+
 #  Save SPN's Object Id
 $spnDetails.ObjectId
 
@@ -525,7 +536,7 @@ $spnDetails.ObjectId
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
-| AppId| Unique identifier of the AAD application of which ServicePrincipal need to be created.| Yes|
+| AppId| Application Id of the central scanning identity (multi-tenant AAD application) created as part of AzTS installation| Yes|
 
 </br>
 
