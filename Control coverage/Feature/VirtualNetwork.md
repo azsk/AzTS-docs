@@ -72,7 +72,7 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
-**Properties:** properties.ipConfigurations[*].properties.subnet.id, properties.ipConfigurations[*].properties.publicIPAddress.id
+**Properties:** properties.ipConfigurations[\*].properties.subnet.id, properties.ipConfigurations[\*].properties.publicIPAddress.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
