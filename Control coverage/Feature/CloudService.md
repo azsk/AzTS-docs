@@ -162,11 +162,11 @@ Antimalware provides real-time protection, scheduled scanning, malware remediati
  <br />
 
 - ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
-**Properties:** [*].name
+**Properties:** [\*].name
  <br />
 
 - ARM API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
-**Properties:** name: 'PaaSAntimalware-****', [*].properties.name, [*].properties.state
+**Properties:** name: 'PaaSAntimalware-****', [\*].properties.name, [\*].properties.state
  <br />
 
 <br />
@@ -217,11 +217,11 @@ Remote desktop access requires inbound ports to be opened. These ports become ea
  <br />
 
 - ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
-**Properties:** [*].name
+**Properties:** [\*].name
  <br />
 
 - ARM API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
-**Properties:** [*].properties.name, [*].properties.state
+**Properties:** [\*].properties.name, [\*].properties.state
  <br />
 
 <br />
