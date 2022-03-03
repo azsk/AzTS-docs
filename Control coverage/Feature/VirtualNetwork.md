@@ -306,7 +306,7 @@ Using other gateway types on an ER-connected virtual network can lead to pathway
 
 - ARM API to list Virtual Networks and their subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
- **Properties:** properties.subnets[*].id
+ **Properties:** properties.subnets[\*].id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
@@ -723,8 +723,7 @@ Or, no Public IP is configured for any NIC on the vNet.
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
- **Properties:** properties.ipConfigurations[*].properties.subnet.id,
-properties.ipConfigurations[*].properties.publicIPAddress.id
+ **Properties:** properties.ipConfigurations[\*].properties.subnet.id,properties.ipConfigurations[\*].properties.publicIPAddress.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
