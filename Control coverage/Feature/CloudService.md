@@ -35,7 +35,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - **Azure Portal** 
 
-	 Get an SSL certificate from a trusted certificate provider. Upload that certificate to cloud service. Update input endpoints by renaming HTTP to HTTPS in .csdef. Refer: https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-configure-ssl-certificate 
+	 Get an SSL certificate from a trusted certificate provider. Refer to [Configuring TLS for an application in Azure](Refer to Configuring TLS for an application in Azure for more information on how to use this certificate and configure TLS for the Cloud Service endpoints.) for more information on how to use this certificate and configure TLS for the Cloud Service endpoints. 
 
 <!--
 - **PowerShell** 
