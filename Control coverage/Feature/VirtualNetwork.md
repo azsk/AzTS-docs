@@ -393,7 +393,7 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
 
 - ARM API to list Virtual Networks and their peering at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br /> 
- **Properties:** properties.virtualNetworkPeerings[*].id, properties.virtualNetworkPeerings[*].properties.remoteVirtualNetwork.id
+ **Properties:** properties.virtualNetworkPeerings[\*].id, properties.virtualNetworkPeerings[\*].properties.remoteVirtualNetwork.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
