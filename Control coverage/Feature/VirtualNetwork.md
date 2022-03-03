@@ -251,7 +251,7 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 - ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
- **Properties:** properties.subnets[*].properties.routeTable.id
+ **Properties:** properties.subnets[\*].properties.routeTable.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
@@ -259,7 +259,7 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 - ARM API to list all Route Tables at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/routeTables?api-version=2020-03-01 <br />
- **Properties:** properties.routes[*].name, properties.routes[*].properties.addressPrefix, properties.routes[*].properties.nextHopType
+ **Properties:** properties.routes[\*].name, properties.routes[\*].properties.addressPrefix, properties.routes[\*].properties.nextHopType
 
 <br />
 
