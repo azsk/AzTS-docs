@@ -433,7 +433,7 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 - **Azure Portal** 
 
-	 Move all other resources except Microsoft.Network/* to another resource group. To move a resource, simply go to the Overview tab for it in the Azure portal and select the Move option. 
+	 Move all other resources except Microsoft.Network/* to another resource group. To move a resource to another resource group, refer [Move resources to a new resource group or subscription](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/move-resource-group-and-subscription).
 <!--- 
 - **PowerShell** 
 
