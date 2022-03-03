@@ -487,16 +487,15 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 ### Recommendation 
 
-<!--- 
 - **Azure Portal** 
 
-	 Create a ReadOnly resource lock for every ER Network resource group using command New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}'. Run 'Get-Help New-AzResourceLock -full' for more help. 
---->
+	 Refer [Configure locks](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources?tabs=json#configure-locks) to create a resource lock via Azure Portal.
+
 - **PowerShell** 
 
 	Create a ReadOnly resource lock for every ER Network resource group using command 'New-AzResourceLock'.
 	 ```powershell 
-	 	New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}'
+	 New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}'
 	 ```  
 	 Run 'Get-Help New-AzResourceLock -full' for more help.
 
