@@ -287,10 +287,9 @@ Using other gateway types on an ER-connected virtual network can lead to pathway
 > 
 ### Recommendation 
 
-<!----
 - **Azure Portal** 
 
-	 Remove any VPN Gateways from the ExpressRoute-connected virtual network. Refer: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-delete-vnet-gateway-powershell  --->
+	 Remove any VPN Gateways from the ExpressRoute-connected virtual network. Refer: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-delete-vnet-gateway-portal
 
 - **PowerShell** 
 
