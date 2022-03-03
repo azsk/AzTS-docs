@@ -496,7 +496,7 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 	Create a ReadOnly resource lock for every ER Network resource group using command 'New-AzResourceLock'.
 	 ```powershell 
-	 	New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}
+	 	New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}'
 	 ```  
 	 Run 'Get-Help New-AzResourceLock -full' for more help.
 
