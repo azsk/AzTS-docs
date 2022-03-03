@@ -233,7 +233,7 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 - **Azure Portal** 
 
-	 Remove association between any UDRs you may have added and respective subnets. Refer [Dissociate a route table from a subnet](Dissociate a route table from a subnet) for instructions to dissociate a route table from a subnet.
+	 Remove association between any UDRs you may have added and respective subnets. Refer [Dissociate a route table from a subnet](https://docs.microsoft.com/en-us/azure/virtual-network/manage-route-table#dissociate-a-route-table-from-a-subnet) for instructions to dissociate a route table from a subnet.
 
 <!--
 - **PowerShell** 
