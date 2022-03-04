@@ -221,10 +221,10 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 ### Control Spec 
 
 > **Passed:** 
-> No UDRs found on any Subnet of ERvNet. Or, only exempted UDR(s) are defined in subnet of ERvNet.
+> No User Defined Routes (UDRs) found on any subnet of ERvNet. Or, only exempted User Defined Route(s) (UDRs) are defined in subnet of ERvNet.
 > 
 > **Failed:** 
-> UDRs are attached to one or more subnets in ERvNet.
+> User Defined Routes (UDRs) are attached to one or more subnets in ERvNet.
 > 
 > **NotApplicable:** 
 > Current VNet resource object is not connected to ExpressRoute gateway.
