@@ -72,7 +72,7 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
-**Properties:** properties.ipConfigurations[*].properties.subnet.id, properties.ipConfigurations[*].properties.publicIPAddress.id
+**Properties:** properties.ipConfigurations[\*].properties.subnet.id, properties.ipConfigurations[\*].properties.publicIPAddress.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
@@ -221,24 +221,25 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 ### Control Spec 
 
 > **Passed:** 
-> No UDRs found on any Subnet of ERvNet. Or, only exempted UDR(s) are defined in subnet of ERvNet.
+> No User Defined Routes (UDRs) found on any subnet of ERvNet. Or, only exempted User Defined Route(s) (UDRs) are defined in subnet of ERvNet.
 > 
 > **Failed:** 
-> UDRs are attached to one or more subnets in ERvNet.
+> User Defined Routes (UDRs) are attached to one or more subnets in ERvNet.
 > 
 > **NotApplicable:** 
 > Current VNet resource object is not connected to ExpressRoute gateway.
 > 
 ### Recommendation 
 
-<!----
 - **Azure Portal** 
 
-	 Remove association between any UDRs you may have added and respective subnets using the 'Remove-AzureSubnetRouteTable' command. Run 'Get-Help Remove-AzureSubnetRouteTable -full' for more help. --->
+	 Remove association between any UDRs you may have added and respective subnets. Refer [Dissociate a route table from a subnet](https://docs.microsoft.com/en-us/azure/virtual-network/manage-route-table#dissociate-a-route-table-from-a-subnet) for instructions to dissociate a route table from a subnet.
 
+<!--
 - **PowerShell** 
 
-	 Remove association between any UDRs you may have added and respective subnets using the 'Remove-AzureSubnetRouteTable' command. Run 'Get-Help Remove-AzureSubnetRouteTable -full' for more help.  
+	 Remove association between any UDRs you may have added and respective subnets using the 'Remove-AzureSubnetRouteTable' command. Run 'Get-Help Remove-AzureSubnetRouteTable -full' for more help.
+-->
 
 <!----
 - **Enforcement Policy** 
@@ -251,7 +252,7 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 - ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
- **Properties:** properties.subnets[*].properties.routeTable.id
+ **Properties:** properties.subnets[\*].properties.routeTable.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
@@ -259,7 +260,7 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 - ARM API to list all Route Tables at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/routeTables?api-version=2020-03-01 <br />
- **Properties:** properties.routes[*].name, properties.routes[*].properties.addressPrefix, properties.routes[*].properties.nextHopType
+ **Properties:** properties.routes[\*].name, properties.routes[\*].properties.addressPrefix, properties.routes[\*].properties.nextHopType
 
 <br />
 
@@ -286,10 +287,9 @@ Using other gateway types on an ER-connected virtual network can lead to pathway
 > 
 ### Recommendation 
 
-<!----
 - **Azure Portal** 
 
-	 Remove any VPN Gateways from the ExpressRoute-connected virtual network. Refer: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-delete-vnet-gateway-powershell  --->
+	 Remove any VPN Gateways from the ExpressRoute-connected virtual network. Refer: https://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-delete-vnet-gateway-portal
 
 - **PowerShell** 
 
@@ -306,7 +306,7 @@ Using other gateway types on an ER-connected virtual network can lead to pathway
 
 - ARM API to list Virtual Networks and their subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
- **Properties:** properties.subnets[*].id
+ **Properties:** properties.subnets[\*].id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
@@ -393,7 +393,7 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
 
 - ARM API to list Virtual Networks and their peering at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br /> 
- **Properties:** properties.virtualNetworkPeerings[*].id, properties.virtualNetworkPeerings[*].properties.remoteVirtualNetwork.id
+ **Properties:** properties.virtualNetworkPeerings[\*].id, properties.virtualNetworkPeerings[\*].properties.remoteVirtualNetwork.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
@@ -433,7 +433,7 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 - **Azure Portal** 
 
-	 Move all other resources except Microsoft.Network/* to another resource group. To move a resource, simply go to the Overview tab for it in the Azure portal and select the Move option. 
+	 Move all other resources except Microsoft.Network/* to another resource group. To move a resource to another resource group, refer [Move resources to a new resource group or subscription](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/move-resource-group-and-subscription).
 <!--- 
 - **PowerShell** 
 
@@ -487,16 +487,15 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 
 ### Recommendation 
 
-<!--- 
 - **Azure Portal** 
 
-	 Create a ReadOnly resource lock for every ER Network resource group using command New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}'. Run 'Get-Help New-AzResourceLock -full' for more help. 
---->
+	 Refer [Configure locks](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/lock-resources?tabs=json#configure-locks) to create a resource lock via Azure Portal.
+
 - **PowerShell** 
 
 	Create a ReadOnly resource lock for every ER Network resource group using command 'New-AzResourceLock'.
 	 ```powershell 
-	 	New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}
+	 New-AzResourceLock -LockName '{LockName}' -LockLevel 'ReadOnly' -Scope '/subscriptions/{SubscriptionId}/resourceGroups/{ERNetworkResourceGroup}'
 	 ```  
 	 Run 'Get-Help New-AzResourceLock -full' for more help.
 
@@ -723,8 +722,7 @@ Or, no Public IP is configured for any NIC on the vNet.
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
- **Properties:** properties.ipConfigurations[*].properties.subnet.id,
-properties.ipConfigurations[*].properties.publicIPAddress.id
+ **Properties:** properties.ipConfigurations[\*].properties.subnet.id,properties.ipConfigurations[\*].properties.publicIPAddress.id
 
 - ARM API to list Virtual Network Gateways at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworkGateways?api-version=2019-04-01 <br />
