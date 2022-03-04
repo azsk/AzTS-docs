@@ -76,7 +76,7 @@ Install-Module -Name Az.ManagedServices -AllowClobber -Scope CurrentUser -reposi
 After access is provided to target subscription, next scheduled trigger will pick up subscription from cross tenant and perform scan. You can follow steps [here](../02-Monitoring%20security%20using%20AzTS/README.md) to create security compliance dashboard.
 
 ### 2b. Multi-tenant AAD Application approach (Recommended)
-In this approach AzTS uses multi-tenant AAD application as the central scanning identity having required access over all the trusted tenants to overcome limitations of Azure Lighthouse approach and to get security visibility across trusted tenants.
+In this approach AzTS uses [multi-tenant AAD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-convert-app-to-be-multi-tenant#:~:text=For%20a%20multi-tenant%20application%2C%20the%20initial%20registration%20for,consent%20to%20the%20permissions%20requested%20by%20the%20application.) as the central scanning identity having required access over all the trusted tenants to overcome limitations of Azure Lighthouse approach and to get security visibility across trusted tenants.
 
 Below diagram depicts high level flow for multi-tenant AAD application based scanning approach.
 
