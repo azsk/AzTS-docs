@@ -215,10 +215,10 @@ function Remove-ClassicAdminAccounts
     }
     
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n"   
 
@@ -269,7 +269,7 @@ function Remove-ClassicAdminAccounts
      
         $classicRoleAssignments | Export-CSV -Path $backupFile -NoTypeInformation
 
-        Write-Host "Classic role assignments details have been backed up to $($backupFile)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Classic role assignments details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "`nPlease review and remove the assignments you want to retain from CSV, script will remove all role assignments available in given CSV." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "There MUST be at most 2 classic admins [Co-admin/Service Admin] in a subscription to pass the control." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -281,14 +281,17 @@ function Remove-ClassicAdminAccounts
     {
         if (-not (Test-Path -Path $FilePath))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "ERROR: Input file [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
 
-        Write-Host "[Step 3 of 4] Fetching all classic role assignments from $($FilePath)... `n"
+        Write-Host "[Step 3 of 4] Fetching all classic role assignments from [$($FilePath)]... `n"
 
         $classicRoleAssignmentDetails = Import-Csv -LiteralPath $FilePath
-        
+
+        # Excluding 'AccountAdministrator' classic role from the collection as 'AccounAdministrator' assignment can't be removed using script.
+        $classicRoleAssignmentDetails = $classicRoleAssignmentDetails | Where-Object { $_.RoleDefinitionName -notlike "AccountAdministrator"}
+
         $totalClassicRoleAssignments = $($classicRoleAssignmentDetails | Measure-Object).Count
 
         if ($totalClassicRoleAssignments -eq 0)
@@ -297,13 +300,11 @@ function Remove-ClassicAdminAccounts
             exit;
         }
 
-        # Excluding 'AccountAdministrator' classic role from the collection as 'AccounAdministrator' assignment can't be removed using script.
-        $classicRoleAssignmentDetails = $classicRoleAssignmentDetails | Where-Object { $_.RoleDefinitionName -notlike "AccountAdministrator"}
-
-        Write-Host "Found $($totalClassicRoleAssignments) classic role assignments in the subscription." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found [$($totalClassicRoleAssignments)] classic role assignments in the subscription." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
-        Write-Host "`n*** All classic role assignments from the given CSV will be removed from subscription. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "`n*** Below listed classic role assignments from the given CSV will be removed from subscription. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+        $classicRoleAssignmentDetails | Select-Object -Property SignInName, RoleDefinitionName, RoleAssignmentId | ft
 
         if (-not $Force)
         {
@@ -350,20 +351,19 @@ function Remove-ClassicAdminAccounts
                             if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                             {
                                 $removedAssignments += $currentRoleAssignment | Select-Object @{N='SignInName';E={$currentRoleAssignment.SignInName}},
-                                                                                @{N='RoleDefinitionName';E={$currentRole}},
-                                                                                @{N='RoleAssignmentId';E={$currentRoleAssignment.RoleAssignmentId}}
+                                                                                              @{N='RoleDefinitionName';E={$currentRole}},
+                                                                                              @{N='RoleAssignmentId';E={$currentRoleAssignment.RoleAssignmentId}}
                             }
                         }
                         elseif ($_ -eq "AccountAdministrator")
                         {
-                            Write-Host "Account Administrator role can not be removed." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Account Administrator role cannot be removed." -ForegroundColor $([Constants]::MessageType.Warning)
                         }
                     }
                 }
                 catch
                 {
-                    $isRemoved = $false
-                    Write-Host "`nNot able to remove classic role assignment. ErrorMessage [$($_)]`n" -ForegroundColor $([Constants]::MessageType.Error)  
+                    Write-Host "`nError occurred while removing classic role assignment. ErrorMessage [$($_)]`n" -ForegroundColor $([Constants]::MessageType.Error)  
                 }
             }
 
@@ -376,7 +376,7 @@ function Remove-ClassicAdminAccounts
                 Write-Host "`nBacking up remediation summary...`n"
                 $remediationSummaryFilePath = "$($backupFolderPath)\RemediationSummary.csv"
                 $removedAssignments | Export-CSV -Path $remediationSummaryFilePath -NoTypeInformation
-                Write-Host "Remediation summary have been backed up to $($remediationSummaryFilePath)`n" -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Remediation summary have been backed up to [$($remediationSummaryFilePath)]`n" -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host "You may want to use this file to perform any rollback operation for removed role assignments." -ForegroundColor $([Constants]::MessageType.Info)
             }
         }
@@ -439,7 +439,7 @@ function Restore-ClassicAdminAccounts
     )
 
     Write-Host "`n"
-    Write-Host "[Step 1 of 4] Preparing to restore classic role assignments in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 4] Preparing to restore classic role assignments in Subscription [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "`n"
 
@@ -495,10 +495,10 @@ function Restore-ClassicAdminAccounts
     }
     
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n"   
 
@@ -517,11 +517,11 @@ function Restore-ClassicAdminAccounts
     {
         if (-not (Test-Path -Path $FilePath))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "ERROR: Input file [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
 
-        Write-Host "[Step 3 of 4] Fetching remediated classic role assignments from $($FilePath)... `n"
+        Write-Host "[Step 3 of 4] Fetching remediated classic role assignments from [$($FilePath)]... `n"
 
         $classicRoleAssignmentDetails = Import-Csv -LiteralPath $FilePath
         
@@ -536,7 +536,7 @@ function Restore-ClassicAdminAccounts
         # Excluding 'AccountAdministrator' classic role from the collection as 'AccounAdministrator' assignment can't be removed using script.
         $classicRoleAssignmentDetails = $classicRoleAssignmentDetails | Where-Object { $_.RoleDefinitionName -notlike "AccountAdministrator"}
 
-        Write-Host "Found $($totalClassicRoleAssignments) classic role assignments in the subscription." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found [$($totalClassicRoleAssignments)] classic role assignments in the given CSV." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
         Write-Host "`n*** All classic role assignments from the given CSV will be restored in subscription. ***" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -549,13 +549,13 @@ function Restore-ClassicAdminAccounts
 
             if($userInput -ne "Y")
             {
-                Write-Host "Classic role assignments will not be restored from subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Classic role assignments will not be restored for subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                 break
             }
         }
         else
         {
-            Write-Host "'Force' flag is provided. Classic role assignments will be restored from subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Classic role assignments will be restored for subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         Write-Host $([Constants]::SingleDashLine)
@@ -594,7 +594,7 @@ function Restore-ClassicAdminAccounts
                 }
                 catch
                 {
-                    Write-Host "`nNot able to restore classic role assignment. ErrorMessage [$($_)]`n" -ForegroundColor $([Constants]::MessageType.Error)  
+                    Write-Host "`nError occurred while restoring classic role assignment. ErrorMessage [$($_)]`n" -ForegroundColor $([Constants]::MessageType.Error)  
                 }
             }
 
@@ -607,7 +607,7 @@ function Restore-ClassicAdminAccounts
                 Write-Host "`nBacking up rollback summary...`n"
                 $rollBackSummaryFilePath = "$($backupFolderPath)\RollbackSummary.csv"
                 $restoredAssignments | Export-CSV -Path $rollBackSummaryFilePath -NoTypeInformation
-                Write-Host "Rollback summary have been backed up to $($rollBackSummaryFilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Rollback summary have been backed up to [$($rollBackSummaryFilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
             }
         }
     }
@@ -694,7 +694,7 @@ class ClassicRoleAssignments
             $armUri = "https://management.azure.com" + $roleAssignmentId + "?api-version=2015-06-01"
             if ($isServiceAdminAccount)
             {
-                Write-Host "Service Administrator role assignment cannot be restored." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Service Administrator role assignment cannot be restored.`n" -ForegroundColor $([Constants]::MessageType.Warning)
             }
             else
             {
