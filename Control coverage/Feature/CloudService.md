@@ -35,7 +35,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - **Azure Portal** 
 
-	 Get an SSL certificate from a trusted certificate provider. Refer to [Configuring TLS for an application in Azure](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-configure-ssl-certificate-portal) for more information on how to use this certificate and configure TLS for the Cloud Service endpoints. 
+	 Get an SSL certificate from a trusted certificate provider. Refer [Configuring TLS for an application in Azure](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-configure-ssl-certificate-portal) for more information on how to use this certificate and configure TLS for the Cloud Service endpoints. 
 
 <!--
 - **PowerShell** 
