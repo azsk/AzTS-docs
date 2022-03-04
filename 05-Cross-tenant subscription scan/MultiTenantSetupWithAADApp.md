@@ -411,7 +411,7 @@ For '-ScanIdentityApplicationId' parameter,
 
 ### **Step 7 of 7. Grant required permission to internal MI**
 AzTS Solution creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan result. This internal MI needs following two additional permissions:
-1. Provide 'Reader' access and 'Secret Read' permission over Key Vault.
+1. 'Secret Read' permission over Key Vault.
 2. Grant MS Graph read access.
 
 **7.a. Provide access over Key Vault:** 
