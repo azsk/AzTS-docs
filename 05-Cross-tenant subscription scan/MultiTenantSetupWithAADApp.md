@@ -274,6 +274,7 @@ You need to run install command present as part of setup script with host subscr
 > 3. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableVnetIntegration` switch._
 > 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolution` with `-EnableAzTSUI` switch._
 > 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolution` with `-EnableAzTSUI` and `-EnableWAF` switch._
+> 6. _By default Function apps (AzSK-AzTS-MetadataAggregator-xxxxx, AzSK-AzTS-WorkItemProcessor-xxxx, AzSK-AzTS-AutoUpdater-xxxxx) run on a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. To avoid this, upgrade the Function app hosting plan (pricing tier) which will give you the flexibility to increase the function timeout value. For this you can pass sku name and function time out value as a additional parameter in installation command for e.g., `-TemplateParameters @{"skuName" = "EP1"; "MetadataAggregatorFunctionTimeout" = "01:00:00"; "WorkItemProcessorFunctionTimeout" = "01:00:00"}`. You can do this later as well after installation by following the steps mentioned [here](/01-Setup%20and%20getting%20started#the-subscription-scan-in-azts-is-getting-terminated-due-to-function-timeout-how-can-i-fix-it-or-how-can-i-upgrade-the-pricing-tier-of-azts-function-apps)._
 >
 > &nbsp;
 
@@ -305,11 +306,11 @@ $DeploymentResult = Install-AzSKTenantSecuritySolution `
                 -EnableAzTSUI `
                 [-EnableVnetIntegration] `
                 [-EnableWAF] `
+                #[-TemplateParameters @{"skuName" = "EP1"; "MetadataAggregatorFunctionTimeout" = "00:30:00"; "WorkItemProcessorFunctionTimeout" = "00:35:00"} ] `
                 -Verbose
 
   <# Note : Parameters that are provided in square brackets[] in the above installation command are optional parameters. UIAzureADAppId and WebAPIAzureADAppId are mandatory parameters if you are enabling AzTSUI and WAF.
   #>
-  
 
   # -----------------------------------------------------------------#
   # Step 3: Save internal user-assigned managed identity name generated using the below command. This will be used to grant Graph permission to internal MI.
