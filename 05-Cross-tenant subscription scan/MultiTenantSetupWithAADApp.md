@@ -40,7 +40,7 @@ Let's start!
   
   </br>
 
-  1. b. PowerShell 5.0 or higher
+  1. b. PowerShell 5.0 or higher: </br>
   All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](../01-Setup%20and%20getting%20started/PowerShellTips.md) to get a basic understanding.
   Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
@@ -129,7 +129,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 
 ### **Step 4 of 7. Setup central scanning identity**  
 
-The AzTS setup performs daily scans of your subscriptions for security controls. To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same application needs to be created in each target tenant and will have 'Reader' access on subscriptions in each target tenant.
+The AzTS setup performs daily scans of your subscriptions for security controls. To do the scanning, it requires a central multi-tenant AAD (Azure Active Directory) application in Host tenant. Later SPN (Service principal) of the same application needs to be created in each target tenant and should have 'Reader' access on subscriptions in each target tenant.
 
 Before creating central multi-tenant AAD app, please log in to Azure account and Azure Active Directory (AAD) where you want to host the AzTS solution using the following PowerShell command.
 
