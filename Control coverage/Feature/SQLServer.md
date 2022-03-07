@@ -55,7 +55,7 @@ Using the native enterprise directory for authentication ensures that there is a
   * **For Synapse Analytics Workspaces:**
 
     ```azure portal
-    Search for and select 'Azure Synapse Analytics'. --> Under Settings section select 'SQL Active Directory admin' --> Select 'Set admin'. -->  Search and select the 'user' or 'group' to be an administrator -->Select 'Select' button --> select 'Save'.
+    Search for and select 'Azure Synapse Analytics'. --> Under Settings section select 'SQL Active Directory admin' --> Select 'Set admin'. -->  Search and select the 'user' or 'group' to be an administrator --> Select 'Select' button --> select 'Save'.
     ```
 
 
