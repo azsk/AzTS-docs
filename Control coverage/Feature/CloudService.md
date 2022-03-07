@@ -89,7 +89,7 @@ Cloud services where automatic updates are disabled are likely to miss important
 
 - **Azure Portal** 
 
-	To enable automatic updates: Go to Azure portal --> your Cloud Service --> under configure tab --> set operating system version to automatic. 
+	To enable automatic updates: Go to Azure portal --> your 'Cloud Service' --> under 'settings' section select 'Configuration' tab --> set 'OS version' to 'automatic' from drop-down menu --> Select 'Save'.
 
 <!--
 - **PowerShell** 
