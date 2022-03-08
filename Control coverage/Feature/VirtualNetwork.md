@@ -145,10 +145,10 @@ Using IP Forwarding one can change the routing of packets from an ER-connected v
 ### Control Spec 
 
 > **Passed:** 
-> No NICs found on the ERvNet. Or, no NICs found with EnableIPForwarding turned on the ERvNet.
+> No Network Interfaces (NICs) found on the ERvNet. Or, no Network Interfaces (NICs) found with IP Forwarding enabled on the ERvNet.
 > 
 > **Failed:** 
-> IP Forwarding is enabled for one or more NIC(s) in ERvNet.
+> IP Forwarding is enabled for one or more Network Interface(s) (NICs) in ERvNet.
 > 
 > **NotApplicable:** 
 > Current VNet resource object is not connected to ExpressRoute gateway.
