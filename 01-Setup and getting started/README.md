@@ -509,7 +509,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 This is the last step. You need to run install command `Install-AzSKTenantSecuritySolutionConsolidated` present as part of setup script with all required parameters (parameters details given below).
 This consolidated setup command, will:
 1. Check and install missing Az PowerShell modules required to deploy AzTS scan solution resources
-2. Setup central scanning managed identity. For scanning, AzTS requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
+2. Setup central scanning identity. For scanning, AzTS requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
 3. Create Azure AD application for secure authentication. This is required to secure the login and authentication process from AzTS UI.
 4. Create infra resources and schedule daily security control scan on target subscriptions
 
@@ -519,7 +519,7 @@ This consolidated setup command, will:
 > 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` switch._
 > 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` and `-EnableWAF` switch._
 > 6. _As a security best practice, we recommend creating central scanning identity in an isolated subscription with limited permission to secure access to this identity._
-> 7. _Scanner MI requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToScanIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file._
+> 7. _Scanner identity (MI) requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToScanIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file._
 > 8. _AzTS Soln creates an Internal MI identity used to perform internal operations such as pushing scan results to different storages (like Log Analytics workspace and Storage account). Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToInternalIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file._
 >
 > &nbsp;
@@ -546,9 +546,9 @@ Connect-AzureAD -TenantId $TenantId
 # -----------------------------------------------------------------#
 
 $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
-                    -MIHostingSubId <HostSubscriptionIdForScanningIdentity>`
-                    -MIHostingRGName  'HostRGNameForScanningIdentity' `
-                    -MIName 'ScanningIdentityName' `
+                    -ScanningIdentityHostSubId <HostSubscriptionIdForScanningIdentity>`
+                    -ScanningIdentityHostRGName  'HostRGNameForScanningIdentity' `
+                    -ScanningIdentityName 'ScanningIdentityName' `
                     -SubscriptionId 'HostSubscriptionIdForScanningInfra'`
                     -ScanHostRGName 'HostRGForScanningInfra'`
                     -Location 'ResourceLocation'`
@@ -573,9 +573,9 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
   # Example:
 
     $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
-                    -MIHostingSubId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
-                    -MIHostingRGName AzTS-ScanIdentity-RG `
-                    -MIName 'AzTSScanManagedIdentity' `
+                    -ScanningIdentityHostSubId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
+                    -ScanningIdentityHostRGName AzTS-ScanIdentity-RG `
+                    -ScanningIdentityName 'AzTSScanManagedIdentity' `
                     -SubscriptionId 26860b59-b5fb-4bb2-8478-a2bd393a0e5b `
                     -ScanHostRGName AzTS-Solution-RG `
                     -Location EastUS2 `
@@ -593,9 +593,9 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 
 |Param Name|Description|Required?
 |----|----|----|
-|MIHostingSubId| Subscription id in which scanner identity is to be created. |TRUE|
-|MIHostingRGName| Name of ResourceGroup where scanner identity will be created. |TRUE|
-|MIName| Name of the scanning identity to be created/used by the scanner.  |TRUE|
+|ScanningIdentityHostSubId| Subscription id in which scanner identity (MI) is to be created. |TRUE|
+|ScanningIdentityHostRGName| Name of ResourceGroup where scanner identity (MI) will be created. |TRUE|
+|ScanningIdentityName| Name of the scanning identity (MI) to be created/used by the scanner.  |TRUE|
 |SubscriptionId| Hosting Subscription id in which Azure Tenant Security Solution needs to be installed. |TRUE|
 |ScanHostRGName| Name of ResourceGroup where setup resources will be created. |TRUE|
 |Location| Location where all resources will get created. |TRUE|
@@ -610,7 +610,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 |EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
 |EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
 |EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
-|CentralStorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
+|StorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
 |SetupAzModules| Switch to validate required modules, command will check needed modules with required version and will install required modules if not available in the system |FALSE|
 |Verbose| Switch used to output detailed log |FALSE|
 
