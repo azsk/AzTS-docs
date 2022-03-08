@@ -35,7 +35,9 @@
         Step 1. To fetch classic role assignments from a Subscription that will be remediated:
                 Remove-ClassicAdminAccounts -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -PerformPreReqCheck -DryRun
 
-        Step 2. To remove all classic role assignments available in given CSV from a Subscription:
+        Step 2. In the exported CSV file, set value to the column 'IsRemoved' to 'Yes' to remove classic role assignments.
+
+        Step 3. To remove all classic role assignments available in given CSV from a Subscription:
                 Remove-ClassicAdminAccounts -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202202201059\ClassicRoleAssignments\ClassicRoleAssignments.csv'
 
         To know more about the options supported by the remediation command, execute:
@@ -533,9 +535,6 @@ function Restore-ClassicAdminAccounts
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    # Backing up classic role assignment details.
-    # $backupFile = "$($backupFolderPath)\ClassicRoleAssignments.csv"
-
     if (![string]::IsNullOrEmpty($FilePath))
     {
         if (-not (Test-Path -Path $FilePath))
@@ -611,8 +610,8 @@ function Restore-ClassicAdminAccounts
                             if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                             {
                                 $restoredAssignments += $currentRoleAssignment | Select-Object @{N='SignInName';E={$currentRoleAssignment.SignInName}},
-                                                                                @{N='RoleDefinitionName';E={$currentRole}},
-                                                                                @{N='RoleAssignmentId';E={$currentRoleAssignment.RoleAssignmentId}}
+                                                                                               @{N='RoleDefinitionName';E={$currentRole}},
+                                                                                               @{N='RoleAssignmentId';E={$currentRoleAssignment.RoleAssignmentId}}
                             }
                         }
                     }
