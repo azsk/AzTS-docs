@@ -19,13 +19,13 @@
 
 ## **1. Steps to install AzTS Solution**
 
-In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes. There are two options to setup AzTS solution:
+In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes. There are two methods to setup AzTS solution:
 
-[**Option A:**](README.md#option-a) Divides the setup into multiple steps, provides separate command for each step and details of the operation performed in each step. This option is recommended as in many organization single user might not have all required Azure AD and Azure RBAC role, so each phase/step can be performed by different users easily.
+[**Method A:**](README.md#method-a) This method provides granular level details of the different steps involved in setting up AzTS. Setup process is divided into multiple steps and seprate command is provided for each step.
 
-[**Option B:**](README.md#option-b) Provides a quik way to install AzTS solution by wrapping up multiple steps into a single consolidated command. This option is recommended if you want to quickly try out capabilities of AzTS and have all the required Azure AD and Azure RBAC permissions.
+[**Method B:**](README.md#method-b) Provides a quik way to install AzTS solution by wrapping up multiple steps into a single consolidated command. 
 
-## **Option A:**
+## **Method A:**
 
 > _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
@@ -439,7 +439,7 @@ To view scan result in AzTS UI:
 </br>
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
-## **Option B:**
+## **Method B:**
 
 This setup is divided into three steps:
 
@@ -520,7 +520,7 @@ This consolidated setup command, will:
 > 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` and `-EnableWAF` switch._
 > 6. _As a security best practice, we recommend creating central scanning identity in an isolated subscription with limited permission to secure access to this identity._
 > 7. _Scanner MI requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToScanIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file._
-> 8. _AzTS Soln creates an Internal MI identity used to perform internal operations such as access LA workspace and storage for sending scan results. Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToInternalIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file._
+> 8. _AzTS Soln creates an Internal MI identity used to perform internal operations such as pushing scan results to different storages (like Log Analytics workspace and Storage account). Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToInternalIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file._
 >
 > &nbsp;
 
@@ -553,7 +553,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
                     -ScanHostRGName 'HostRGForScanningInfra'`
                     -Location 'ResourceLocation'`
                     -SubscriptionsToScan @("<SubId1>","<SubId2>","<SubId3>") `
-                    -SREEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') `
+                    -SREEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') ` #Email Ids of Site Reliability Engineers or Users who should receive monitoring alerts
                     [-GrantGraphPermissionToScanIdentity:$true] `
                     [-GrantGraphPermissionToInternalIdentity:$true] `
                     [-SetupAzModules] `
@@ -599,7 +599,7 @@ $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
 |SubscriptionId| Hosting Subscription id in which Azure Tenant Security Solution needs to be installed. |TRUE|
 |ScanHostRGName| Name of ResourceGroup where setup resources will be created. |TRUE|
 |Location| Location where all resources will get created. |TRUE|
-|SREEmailIds| Email ids to which alert notification should be sent. | TRUE |
+|SREEmailIds| Email Ids of Site Reliability Engineers or Users to which alert notification should be sent. | TRUE |
 |AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
 |SubscriptionsToScan| List of subscription(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target subscription. So, you need to be 'Owner' on all target subscriptions to perform role assignment.|TRUE|
 |ManagementGroupsToScan| List of target management group(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target management group. For this you need to be 'Owner' on management group level to perform role assignment. </br> To scan all the subscriptions in your tenant, you can provide root management group as input. But Azure AD Global Administrators role will be required to grant required RBAC role to scanning identity at this scope.|FALSE|
