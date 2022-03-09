@@ -324,8 +324,8 @@ Peering must not be allowed on ExpressRoute connected Virtual Network
 ### Rationale 
 A virtual network peering on an ER-connected circuit establishes a link to another virtual network whereby traffic egress and ingress can evade inspection from network security appliances. This creates a direct risk to corpnet security. 
 
-### Control Settings 
-```json 
+### Control Settings
+```json
 {
     "ApprovedPeerings": [
         {
@@ -356,9 +356,10 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
             "RemoteNetworkIdPrefix": "",
             "ResourceGroup": "ERNetwork-EML"
         }
-    ]
+    ],
+    "ExemptedSubscriptions": []
 }
- ```  
+ ```
 
 ### Control Spec 
 
@@ -581,6 +582,13 @@ Assure virtual network peering is not allowed
 
 ### Rationale 
 Resources in the peered virtual networks can communicate with each other directly. If the two peered networks are on different sides of a security boundary (e.g., corpnet v. private vNet), this can lead to exposure of corporate data. Hence any VNet peerings should be closely scrutinized and approved by the network security team.
+
+### Control Settings
+```json
+{
+    "ExemptedSubscriptions": []
+}
+ ```
 
 ### Control Spec 
 
