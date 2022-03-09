@@ -748,7 +748,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
         {   
             # Write this to a file.
             $permanentRemovedRoleAssignmentsFile = "$($backupFolderPath)\PermanentRemovedRoleAssignments.csv"
-            $skippedRoleAssignments | Export-CSV -Path $permanentRemovedRoleAssignmentsFile -NoTypeInformation
+            $permanentDeleted | Export-CSV -Path $permanentRemovedRoleAssignmentsFile -NoTypeInformation
             Write-Host "`n Refer $($permanentRemovedRoleAssignmentsFile) for list of permanent role assignment which is successfully deleted."
         }
 
