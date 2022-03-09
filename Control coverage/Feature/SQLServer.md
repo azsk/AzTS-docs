@@ -34,26 +34,48 @@ Using the native enterprise directory for authentication ensures that there is a
 >
 > **Failed:**
 > No Azure Active Directory (AAD) administrators are assigned on the SQL server.
->
+><!--
 > **Verify:**
 > Not Applicable.
 >
 > **NotApplicable:**
 > Not Applicable.
->
+>-->
 ### Recommendation
 
-<!--
+
 - **Azure Portal**
--->
+
+  * **For standard SQL servers:**
+  
+    ```azure portal
+    Search for and select 'SQL server' --> Under 'Settings' section select 'Azure Active Directory'--> Select 'Set admin'. --> Search and select the 'user' or 'group' to be an administrator --> Select 'Select' button --> select 'Save'.
+    ```
+
+  * **For Synapse Analytics Workspaces:**
+
+    ```azure portal
+    Search for and select 'Azure Synapse Analytics'. --> Under Settings section select 'SQL Active Directory admin' --> Select 'Set admin'. -->  Search and select the 'user' or 'group' to be an administrator --> Select 'Select' button --> select 'Save'.
+    ```
+
 
 - **PowerShell**
 
-	```powershell
-	Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin Display Name}'
-	```
+  * **For standard SQL servers:**
 
-	Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator to configure an Azure Active Directory (AAD) administrator on a SQL server.
+    ```powershell
+	  Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin Display Name}'
+	  ```
+
+    Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator to configure an Azure Active Directory (AAD) administrator on a SQL server.
+
+  * **For Synapse Analytics Workspaces:**
+
+    ```powershell
+    Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}' -DisplayName '{AzureAdAdmin Display Name}'
+    ```
+
+    Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlactivedirectoryadministrator to configure an Azure Active Directory (AAD) administrator on a Synapse Analytics Workspace.
 
 <!--
 - **Enforcement Policy**
@@ -112,21 +134,21 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
   * **For standard SQL servers:**
 
-	```powershell
-	Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DatabaseName '{DatabaseName}' -State 'Enabled'
-	```
+    ```powershell
+	  Set-AzSqlDatabaseTransparentDataEncryption -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DatabaseName '{DatabaseName}' -State 'Enabled'
+	  ```
 
-	Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqldatabasetransparentdataencryption to enable Transparent Data Encryption on a SQL database in a SQL server.
+	  Refer https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqldatabasetransparentdataencryption to enable Transparent Data Encryption on a SQL database in a SQL server.
 	
   * **For Synapse workspaces:**
 
-	```powershell
-	Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceId '{ Resource ID of the SQL pool }' -State 'Enabled'
-	```
+	  ```powershell
+	  Set-AzSynapseSqlPoolTransparentDataEncryption -ResourceId '{ Resource ID of the SQL pool }' -State 'Enabled'
+	  ```
 
-	Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlpooltransparentdataencryption to enable Transparent Data Encryption on a SQL pool.
+	 Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlpooltransparentdataencryption to enable Transparent Data Encryption on a SQL pool.
 
-	**Note:** If **Blob Auditing** or **Threat Detection** is enabled on the server, they will always apply to the database, regardless of the database level settings.
+  **Note:** If **Blob Auditing** or **Threat Detection** is enabled on the server, they will always apply to the database, regardless of the database level settings.
 
 <!--
 - **Enforcement Policy**

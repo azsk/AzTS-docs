@@ -1,8 +1,8 @@
 
 ### Overview:
     1. This script is used to create PIM role assignment(s) with SC-ALT account for:
-        a. critical permanent role assignment(s) and 
-        b. PIM non SC-ALT role assignment(s) 
+        a. Critical permanent role assignment(s) and 
+        b. Critical PIM non SC-ALT role assignment(s) 
     2. Remove critical permanent role assignment(s) for which the PIM role assignment(s) is successfully created in the Subscription or in resource group.
 
 ### Control ID:
@@ -40,15 +40,15 @@
 
 ### Important Points:
     1. First run the script using the -DryRun switch and for migration user needs to pass two files one for all the critical role assignments
-       needs to migrated(Mandatory) and other file with their SC-ALT mapping(Not Mandatory) which are provided as output of dryrun.
-    2. Script will only migrate the role assignment if corresponding SC-ALT account mapping is provided by the user or already mapped to 
-       SC-ALT account, Otherwise the role assignment will be skipped from migration.
+       needs to migrated(Mandatory) and other file with their SC-ALT mapping(Not Mandatory in case all the role assignments are mapped to SC-ALT) which are provided as output of dryrun.
+    2. Script will only migrate the role assignment(s) if corresponding SC-ALT account mapping is provided by the user or already mapped to 
+       SC-ALT account, Otherwise the role assignment(s) will be skipped from migration.
     3. The user critical role assignment(s) will not be removed.
     4. The user needs to renew the PIM role assignments because they are created for a specific time interval which is 30 days.
     5. Rollback is not supported in this script.
     6. The Azure_Subscription_Use_Only_Alt_Credentials control will be partially migrated(corresponding PIM SC-ALT role assignment(s) will be
        created but the PIM non SC-ALT role assignment(s) will not be removed).
-    7. User needs to delete the PIM non SC-ALT role assignment and migrate user's critical role assignment to SC-ALT PIM and after the script 
+    7. User needs to delete the PIM non SC-ALT role assignment(s) and migrate user's critical role assignment(s) to SC-ALT PIM after the script 
        execution.
 
 
