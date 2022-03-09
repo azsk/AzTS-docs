@@ -202,7 +202,7 @@ function Remove-ClassicAdminAccounts
     Write-Host $([Constants]::SingleDashLine)
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription.
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id
 
     Write-Host "*** To remove classic role assignments in a Subscription, user must have [Owner/User Access Administrator] role at subscription. ***" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -213,7 +213,7 @@ function Remove-ClassicAdminAccounts
     Write-Host "Account Type: [$($context.Account.Type)]"
 
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and ($_.Scope -eq "/subscriptions/$($SubscriptionId)" -or $_.Scope -contains "/providers/Microsoft.Management/managementGroups") } | Measure-Object).Count -le 0 )
     {
         Write-Host "WARNING: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         return;
@@ -318,7 +318,7 @@ function Remove-ClassicAdminAccounts
 
         if (-not $Force)
         {
-            Write-Host "Do you want to remove all classic role assignments from the given CSV? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "Do you want to remove all above listed classic role assignments from the subscription? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -506,7 +506,7 @@ function Restore-ClassicAdminAccounts
     Write-Host $([Constants]::SingleDashLine)
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription.
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id
 
     Write-Host "*** To remove classic role assignments in a Subscription, user must have [Owner/User Access Administrator] role at subscription. *** `n" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -517,7 +517,7 @@ function Restore-ClassicAdminAccounts
     Write-Host "Account Type: [$($context.Account.Type)]"
 
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and ($_.Scope -eq "/subscriptions/$($SubscriptionId)" -or $_.Scope -contains "/providers/Microsoft.Management/managementGroups") } | Measure-Object).Count -le 0 )
     {
         Write-Host "WARNING: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         return;
