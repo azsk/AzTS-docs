@@ -83,6 +83,7 @@ $appDetails.ApplicationId
 3. Generate the access token using the below commands in a powershell session.
 ``` PowerShell
 # Install the MSAL module. Skip if already installed
+# MSAL module with version "4.35.1.3" is recommended
 Install-Module -Name MSAL.PS -AllowClobber -Scope CurrentUser -repository PSGallery
 
 $ClientSecret = '<client-secret>' | ConvertTo-SecureString -AsPlainText -Force
