@@ -423,7 +423,11 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
   Grant-AzSKAccessOnKeyVaultToUserAssignedIdentity `
                       -SubscriptionId  <HostSubIdForKeyVault>  `
                       -ResourceId <KeyVaultResourceId> `
-                      -UserAssignedIdentityObjectId $InternalIdentityObjectId 
+                      -UserAssignedIdentityObjectId $InternalIdentityObjectId `
+                      [-DeployMonitoringAlert ]` # Switch to deploy monitoring alerts on top of Key Vault audit logs
+                      [-SendAlertsToEmailIds ('<EmailId1>', '<EmailId2>', '<EmailId3>') ]`
+                      [-ScanIdentitySecretUri <KeyVaultSecretUrl>] `
+                      [-LAWorkspaceResourceId <LogAnalyticsWSResourceId>] #Resource Id of Log Analytics workspace created in step 4.b as Audit log destination for Key Vault
 
   <#
 
@@ -433,6 +437,26 @@ Internal MI need permission over Key Vault & Secret created in Step #4 to access
           (b) Run Set-AzSKTenantSecuritySolutionSecretStorage command provided in step 4.b.
                               OR
           (c) you can get this resources id by going into Azure Portal --> Subscription where key vault resource created --> KeyVaultHostingRG --> Click on Key Vault resource --> Properties --> Copy 'ResourceId'.
+
+#>
+
+<#
+For '-ScanIdentitySecretUri' parameter, 
+          (a) use value created for "$secretStoreDetails.outputs.secretURI.value" from prerequisite section step 4.
+                              OR
+          (b) Run Set-AzSKTenantSecuritySolutionSecretStorage command provided in step 4.b.
+                              OR
+          (c) you can get this secret identifier by going into Azure Portal --> Subscription where key vault resource created --> KeyVaultHostingRG --> Click on Key Vault resource --> Secrets --> Select 'SecretName' --> Copy 'Secret Identifier'.
+
+#>
+
+<#
+For '-LAWorkspaceResourceId' parameter, 
+          (a) use value created for "$secretStoreDetails.Outputs.logAnalyticsResourceId.Value" from prerequisite section step 4.
+                              OR
+          (b) Run Set-AzSKTenantSecuritySolutionSecretStorage command provided in step 4.b.
+                              OR
+          (c) you can get this secret identifier by going into Azure Portal --> Subscription where key vault resource created --> KeyVaultHostingRG --> Click on Key Vault resource --> Diagnostic settings --> 'AzSK-AzTS-AuditSetting-XXXXX' --> Click on LA Source Name --> Copy Resource Id of LAWS.
 
 #>
 
