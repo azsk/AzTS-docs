@@ -422,7 +422,7 @@ POST <AzTS WebAPI-URL>/multitenantaction/gettenantdetails?api-version=1.0
 3. Select your Resource Group where you have done AzTS setup.
 4. Select the App Service for API '**AzSK-AzTS-WebAPI-xxxxx**'.
 5. In the app's left menu, select **Configuration > Application settings**.
-6. Search the app setting **AADClientAppDetails__ApplicationId**. This is application id for the AzTS Web API ADD application.
+6. Search the app setting **AADClientAppDetails__ClientId**. This is application id for the AzTS Web API ADD application.
 
 **2. How to get the AzTS Web API URL?**
 
