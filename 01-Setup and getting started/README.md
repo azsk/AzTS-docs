@@ -471,9 +471,10 @@ Let's start!
 
 ### **Step 2 of 3. Download and extract deployment package**
  
- Deployment package mainly contains:
- 1. **ARM templates** which contains resource configuration details that need to be created as part of the setup.
- 2.  **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
+Deployment package mainly contains:<br/>
+
+1- **ARM templates** which contains resource configuration details that need to be created as part of the setup.<br/>
+2- **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
 
 If you have already downloaded the deployment package zip, directly go to step (2.d).
 
