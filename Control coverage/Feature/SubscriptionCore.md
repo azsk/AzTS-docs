@@ -280,7 +280,7 @@ ___
 ## Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts 
 
 ### Display Name 
-Pending Azure Security Center (ASC) alerts must be resolved 
+Resolve active Microsoft Defender for Cloud (MDC) alerts of medium severity or higher
 
 ### Rationale 
 Based on the policies that are enabled in the subscription, Azure Security Center raises alerts (which are typically indicative of resources that ASC suspects might be under attack or needing immediate attention). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
@@ -843,7 +843,7 @@ ___
 ## Azure_Subscription_Config_ASC_Setup_SecurityContacts 
 
 ### Display Name 
-A security contact and alerts must be configured for your subscription 
+Configure security contacts and alerts of medium severity or higher on your subscription 
 
 ### Rationale 
 Security contact information will be used by Microsoft to contact you if the Microsoft Security Response Center (MSRC) discovers that your customer data has been accessed by an unlawful or unauthorized party. 
