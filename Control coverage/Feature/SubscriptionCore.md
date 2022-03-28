@@ -6,7 +6,7 @@
 - [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
 - [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles)
 - [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
-- [Azure_Subscription_AuthZ_Remove_Management_Certs](#Azure_Subscription_AuthZ_Remove_Management_Certs)
+- [Azure_Subscription_AuthZ_Remove_Management_Certs - <b>DEPRECATED!!!</b>](#Azure_Subscription_AuthZ_Remove_Management_Certs)
 - [Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts](#Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts)
 - [Azure_Subscription_AuthZ_Custom_RBAC_Roles](#Azure_Subscription_AuthZ_Custom_RBAC_Roles)
 - [Azure_Subscription_SI_Classic_Resources](#Azure_Subscription_SI_Classic_Resources)
@@ -239,6 +239,7 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 ___ 
 
 ## Azure_Subscription_AuthZ_Remove_Management_Certs 
+[<b>Deprecation Notice!!!</b> - As on 23rd Feb. 2022, this Control has been suspended from getting evaluated as a consequence of the [deprecation](https://docs.microsoft.com/en-us/azure/defender-for-cloud/upcoming-changes#deprecating-the-recommendation-to-use-service-principals-to-protect-your-subscriptions) of the underlying Defender for Cloud recommendation used for the evaluation.]
 
 ### Display Name 
 Do not use management certificates 
@@ -279,7 +280,7 @@ ___
 ## Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts 
 
 ### Display Name 
-Pending Azure Security Center (ASC) alerts must be resolved 
+Resolve active Microsoft Defender for Cloud (MDC) alerts of medium severity or higher
 
 ### Rationale 
 Based on the policies that are enabled in the subscription, Azure Security Center raises alerts (which are typically indicative of resources that ASC suspects might be under attack or needing immediate attention). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
@@ -694,6 +695,10 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
         {
             "Type": "Dns",
             "DisplayName": "DNS"
+        },
+        {
+            "Type": "Containers",
+            "DisplayName": "Containers"
         }
     ]
 }
@@ -838,7 +843,7 @@ ___
 ## Azure_Subscription_Config_ASC_Setup_SecurityContacts 
 
 ### Display Name 
-A security contact and alerts must be configured for your subscription 
+Configure security contacts and alerts of medium severity or higher on your subscription 
 
 ### Rationale 
 Security contact information will be used by Microsoft to contact you if the Microsoft Security Response Center (MSRC) discovers that your customer data has been accessed by an unlawful or unauthorized party. 
