@@ -206,7 +206,11 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 ### Control Settings 
 ```json 
 {
-    "NoOfClassicAdminsLimit": 2
+    "NoOfClassicAdminsLimit": 2,
+    "EligibleClassicRoles": [
+        "CoAdministrator",
+        "ServiceAdministrator"
+    ]
 }
  ```  
 
@@ -226,7 +230,7 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 
 - **Azure Portal** 
 
-	 You need to remove any 'Classic Administrators/Co-Administrators' who should not be in the role. Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. <br />(e) Select the co-administrator account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the co-administrators that need to be removed from the subscription. 
+	 Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. <br />(e) Select the co-administrator account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the co-administrators that need to be removed from the subscription. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -280,7 +284,7 @@ ___
 ## Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts 
 
 ### Display Name 
-Pending Azure Security Center (ASC) alerts must be resolved 
+Resolve active Microsoft Defender for Cloud (MDC) alerts of medium severity or higher 
 
 ### Rationale 
 Based on the policies that are enabled in the subscription, Azure Security Center raises alerts (which are typically indicative of resources that ASC suspects might be under attack or needing immediate attention). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
@@ -288,7 +292,7 @@ Based on the policies that are enabled in the subscription, Azure Security Cente
 ### Control Settings 
 ```json 
 {
-    "ASCAlertsGraceInDays": {
+    "MDCAlertsGraceInDays": {
         "High": 0,
         "Medium": 30
     }
@@ -298,22 +302,22 @@ Based on the policies that are enabled in the subscription, Azure Security Cente
 ### Control Spec 
 
 > **Passed:** 
-> There are no active ASC Alerts OR there is no active alert which is beyond defined grace.
+> There are no active MDC Alerts OR there is no active alert which is beyond defined grace.
 > 
 > **Failed:** 
-> There are ASC alerts in the subscription which are active beyond the defined grace. <br />Alert Severity: High, Grace period: 0 <br />Alert Severity: Medium, Grace period: 30
+> There are MDC alerts in the subscription which are active beyond the defined grace. <br />Alert Severity: High, Grace period: 0 <br />Alert Severity: Medium, Grace period: 30
 > 
 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 You need to address all active alerts on Azure Security Center. Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Security Center. <br />(c) Click on Security Alerts under 'Threat Protection' category. <br />(d) Take appropriate actions on all active alerts. 
+	 You need to address all active alerts on Microsoft Defender for Cloud. Please follow these steps: (a) Logon to https://portal.azure.com/ <br />(b) Navigate to 'Microsoft Defender for Cloud'. <br />(c) Click on 'Security alerts'. <br />(d) Take appropriate action on all active alerts. 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the alerts that are associated with the subscription: - /subscriptions/{subscriptionId}/providers/microsoft.Security/alerts?api-version=2015-06-01-preview <br />
-**Properties:** [\*].properties.state, [\*].properties.reportedSeverity, [\*].properties.reportedTimeUtc
+- ARM API to list all the alerts that are associated with the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/alerts?api-version=2021-01-01 <br />
+**Properties:** [\*].properties.status, [\*].properties.severity, [\*].properties.timeGeneratedUtc
  <br />
 
 <br />
@@ -886,8 +890,7 @@ Security contact information will be used by Microsoft to contact you if the Mic
 ### Recommendation 
 
 - **Azure Portal** 
-
-	 On Azure portal, go to Security Center -> Pricing & settings (select subscription id) -> Email notifications -> <br />a. Select 'Owner' and 'Account Admin' as email recipients or explicitly specify the email recipients <br />b. Select checkbox to notify about alerts <br />c. Alert severity should be set to atleast 'Medium' -> Save. 
+    Go to Azure Portal -> Microsoft Defender for Cloud -> Environment settings -> Select your subscription -> Go to 'Email notifications' <br /> a. In the 'Email recipients', Select 'Owner' **and** 'Service Admin' as email recipients **and** specify at least one email recipient. <br /> b. In the 'Notification types', Select the check box to notify about alerts and select the alert severity to 'Medium' or 'Low' (**Medium** = Get alerts for _Medium_ + _High_ severity and **Low** = Get alerts for _Low_ + _Medium_ + _High_ severity) -> Save. 
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -966,18 +969,15 @@ By using Conditional Access policies for privileged roles, you can apply the rig
 
 ### Recommendation 
 
-- **PowerShell** 
+- **Azure Portal** 
 
-	 ```powershell 
-     # This powershell command is from Secure DevOps Kit for Azure (AzSK), https://github.com/azsk/DevOpsKit-docs
-     # For more information about the command please visit: https://github.com/azsk/DevOpsKit-docs/blob/master/01-Subscription-Security/Readme.md#azsk-privileged-identity-management-pim-helper-cmdlets
+     To configure Conditional Access Policy, refer https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/pim-resource-roles-configure-role-settings. 
+     <br>
+     > _**Note:** Follow the same steps for 'Owner', 'Contributor' and 'User Access Administrator' roles._
+     <br>
 
-	 # Run the below command for Owner, Contributor and User Access Administrator roles for the subscription
-     Set-AzSKPIMConfiguration -ConfigureRoleSettings -SubscriptionId `$subid -RoleName `$roleName  -ApplyConditionalAccessPolicyForRoleActivation `$true
-
-     # Run the below command for Owner, UAA at Resource Group level
-     Set-AzSKPIMConfiguration -ConfigureRoleSettings -SubscriptionId `$subid -ResourceGroupName `$RGName -RoleName `$roleName -ApplyConditionalAccessPolicyForRoleActivation `$true
-	 ```  
+     To create Policy for your organization, refer https://docs.microsoft.com/en-us/azure/active-directory/authentication/tutorial-enable-azure-mfa?bc=/azure/active-directory/conditional-access/breadcrumb/toc.json&toc=/azure/active-directory/conditional-access/toc.json#create-a-conditional-access-policy.
+	  
 
 ### Azure Policy or ARM API used for evaluation 
 
