@@ -19,7 +19,13 @@
 
 ## **1. Steps to install AzTS Solution**
 
-In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes.
+In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes. There are two methods to setup AzTS solution:
+
+[**Method A:**](README.md#method-a) This method provides granular level details of the different steps involved in setting up AzTS. Setup process is divided into multiple steps and seprate command is provided for each step.
+
+[**Method B:**](README.md#method-b) Provides a quik way to install AzTS solution by wrapping up multiple steps into a single consolidated command. 
+
+## **Method A:**
 
 > _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
@@ -45,7 +51,7 @@ Let's start!
   
   </br>
 
-  1. b. PowerShell 5.0 or higher
+  1. b. PowerShell 5.0 or higher: </br>
   All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
   Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
@@ -407,10 +413,6 @@ For '-WebAPIAzureADAppId' and '-UIAzureADAppId' parameter,
 
   ![Resources](../Images/12_TSS_CommandOutput.png)
 
-
-
-
-
 > **Note:** 
 >
 > 1. Tenant Security Solution does not support customization of the App Service name.
@@ -433,10 +435,213 @@ To view scan result in AzTS UI:
     - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
+[Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
+</br>
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
+## **Method B:**
+
+This setup is divided into three steps:
+
+1. [Validate prerequisites on machine](README.md#step-1-of-3-validate-prerequisites-on-machine)
+2. [Download and extract deployment package](README.md#step-2-of-3-download-and-extract-deployment-package)
+3. [Run Setup Command](README.md#step-3-of-3-run-consolidated-setup-command)
+
+Let's start!
+
+### **Step 1 of 3. Validate prerequisites on machine**  
+
+  1. a.  Installation steps are supported using following OS options: 	
+
+      - Windows 10
+      - Windows Server 2019
+  
+  </br>
+
+  1. b. PowerShell 5.0 or higher
+  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
+  Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
+  If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
+
+      ![PowerShell Version](../Images/00_PS_Version.png)
+
+</br>
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
+### **Step 2 of 3. Download and extract deployment package**
+ 
+Deployment package mainly contains:<br/>
+
+1- **ARM templates** which contains resource configuration details that need to be created as part of the setup.<br/>
+2- **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
+
+If you have already downloaded the deployment package zip, directly go to step (2.d).
+
+2.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
+
+2.b. Extract zip to local folder location. <br/>
+
+2.c. Unblock the content. The below command will help to unblock files. <br/>
+
+  ``` PowerShell
+  Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
+  ```
+
+2.d. Point current path to deployment folder and load AzTS setup script <br/>
+
+
+  ``` PowerShell
+  # Point current path to extracted folder location and load setup script from the deployment folder 
+
+  CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+  # Load AzTS Setup script in session
+  . ".\AzTSConsolidatedSetup.ps1"
+
+  # Note: Make sure you copy  '.' present at the start of the line.
+
+  ```
+
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
+### **Step 3 of 3. Run consolidated Setup Command** 
+
+This is the last step. You need to run install command `Install-AzSKTenantSecuritySolutionConsolidated` present as part of setup script with all required parameters (parameters details given below).
+This consolidated setup command, will:
+1. Check and install missing Az PowerShell modules required to deploy AzTS scan solution resources
+2. Setup central scanning identity. For scanning, AzTS requires a [User-assigned Managed Identity](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (central scanning identity owned by you) which has 'Reader' access on target subscriptions on which scan needs to be performed.
+3. Create Azure AD application for secure authentication. This is required to secure the login and authentication process from AzTS UI.
+4. Create infra resources and schedule daily security control scan on target subscriptions
+
+> **Note:**
+> 1. _Setup may take up to 10 minutes to complete._
+> 2. _To restrict network traffic and to ensure that all inbound communication to critical backend resources of AzTS solution are routed through private network(VNet), install AzTS setup with **VNet integration**. For this you will need to run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableVnetIntegration` switch._
+> 4. _AzTSDeploymentTemplate provides capability to deploy AzTS UI and API which can be used to see compliance summary against each subscription and scan your subscription(s) manually. To deploy AzTS UI and API run installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` switch._
+> 5. _If you want to provide additional security to AzTS UI and configure custom rules for accessing public endpoints, you must enable Web Application Firewall (WAF). To know more about WAF visit [here](https://docs.microsoft.com/en-us/azure/web-application-firewall/overview). To enable WAF for AzTS UI and API run the installation command `Install-AzSKTenantSecuritySolutionConsolidated` with `-EnableAzTSUI` and `-EnableWAF` switch._
+> 6. _As a security best practice, we recommend creating central scanning identity in an isolated subscription with limited permission to secure access to this identity._
+> 7. _Scanner identity (MI) requires MS Graph permission to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToScanIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file._
+> 8. _AzTS Soln creates an Internal MI identity used to perform internal operations such as pushing scan results to different storages (like Log Analytics workspace and Storage account). Internal MI is also used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. To grant this permission as part of setup flow, please specify `-GrantGraphPermissionToInternalIdentity` switch in installation command. This requires admin consent. Therefore, the signed-in user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.</br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file._
+>
+> &nbsp;
+
+3. Run consolidated installation command with required parameters. 
+
+  ``` PowerShell
+# -----------------------------------------------------------------#
+# Step 1: Login to Azure and Azure Active Directory (AAD)
+# -----------------------------------------------------------------#
+
+# Clear existing login, if any
+Disconnect-AzAccount
+Disconnect-AzureAD
+
+# Connect to AzureAD and AzAccount
+# Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+$TenantId = "<TenantId>"
+Connect-AzAccount -Tenant $TenantId
+Connect-AzureAD -TenantId $TenantId
+
+# -----------------------------------------------------------------#
+# Step 2: Run installation command.
+# -----------------------------------------------------------------#
+
+$DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
+                    -ScanningIdentityHostSubId <HostSubscriptionIdForScanningIdentity>`
+                    -ScanningIdentityHostRGName  'HostRGNameForScanningIdentity' `
+                    -ScanningIdentityName 'ScanningIdentityName' `
+                    -SubscriptionId 'HostSubscriptionIdForScanningInfra'`
+                    -ScanHostRGName 'HostRGForScanningInfra'`
+                    -Location 'ResourceLocation'`
+                    -SubscriptionsToScan @("<SubId1>","<SubId2>","<SubId3>") `
+                    -SREEmailIds @('<EmailId1>', '<EmailId2>', '<EmailId3>') ` #Email Ids of Site Reliability Engineers or Users who should receive monitoring alerts
+                    [-GrantGraphPermissionToScanIdentity:$true] `
+                    [-GrantGraphPermissionToInternalIdentity:$true] `
+                    [-SetupAzModules] `
+                    [-AzureEnvironmentName AzureCloud] `
+                    [-EnableAutoUpdates] `
+                    [-EnableAzTSUI] `
+                    [-EnableVnetIntegration] `
+                    [-EnableWAF] `
+                    -Verbose
+
+  <# Note : Parameters that are provided in square brackets[] in the above installation command are optional.
+  #>
+  ```
+
+  Example:
+  ```PowerShell
+  # Example:
+
+    $DeploymentResult = Install-AzSKTenantSecuritySolutionConsolidated `
+                    -ScanningIdentityHostSubId bbbe2e73-fc26-492b-9ef4-adec8560c4fe `
+                    -ScanningIdentityHostRGName AzTS-ScanIdentity-RG `
+                    -ScanningIdentityName 'AzTSScanManagedIdentity' `
+                    -SubscriptionId 26860b59-b5fb-4bb2-8478-a2bd393a0e5b `
+                    -ScanHostRGName AzTS-Solution-RG `
+                    -Location EastUS2 `
+                    -EnableAzTSUI `
+                    -AzureEnvironmentName AzureCloud `
+                    -SubscriptionsToScan @("43143eaf-1942-4780-8c4a-fefb12d8b2e1","26860b59-b5fb-4bb2-8478-a2bd393a0e5b","bbbe2e73-fc26-492b-9ef4-adec8560c4fe") `
+                    -GrantGraphPermissionToScanIdentity:$true `
+                    -GrantGraphPermissionToInternalIdentity:$true `
+                    -SREEmailIds @('User1@Contoso.com', 'User2@Contoso.com', 'User3@Contoso.com') `
+                    -EnableAutoUpdates `
+                    -Verbose
+
+```
+**Parameter details:**
+
+|Param Name|Description|Required?
+|----|----|----|
+|ScanningIdentityHostSubId| Subscription id in which scanner identity (MI) is to be created. |TRUE|
+|ScanningIdentityHostRGName| Name of ResourceGroup where scanner identity (MI) will be created. |TRUE|
+|ScanningIdentityName| Name of the scanning identity (MI) to be created/used by the scanner.  |TRUE|
+|SubscriptionId| Hosting Subscription id in which Azure Tenant Security Solution needs to be installed. |TRUE|
+|ScanHostRGName| Name of ResourceGroup where setup resources will be created. |TRUE|
+|Location| Location where all resources will get created. |TRUE|
+|SREEmailIds| Email Ids of Site Reliability Engineers or Users to which alert notification should be sent. | TRUE |
+|AzureEnvironmentName| Name of the Azure cloud where Azure Tenant solution will be deployed. The default value is AzureCloud.|FALSE|
+|SubscriptionsToScan| List of subscription(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target subscription. So, you need to be 'Owner' on all target subscriptions to perform role assignment.|TRUE|
+|ManagementGroupsToScan| List of target management group(s) to be scanned by Azure Tenant Security scanning solution. Scanning identity will be granted 'Reader' access on target management group. For this you need to be 'Owner' on management group level to perform role assignment. </br> To scan all the subscriptions in your tenant, you can provide root management group as input. But Azure AD Global Administrators role will be required to grant required RBAC role to scanning identity at this scope.|FALSE|
+|GrantGraphPermissionToScanIdentity| Switch to grant Graph permission to scanning identity. This is to exclude controls dependent on Graph API response from the scan result, if scanner identity does not have graph permission. The default value is false.|FALSE|
+|GrantGraphPermissionToInternalIdentity| Switch to grant Graph permissions to internal managed identity. The default value is false.|FALSE|
+|ScanIdentityHasGraphPermission|Switch to enable features dependent on Microsoft Graph API from the scan. Set this to false if user-assigned managed identity (in case using existing managed identity) does not have Graph permission. The default value is false.|FALSE|
+|EnableAutoUpdates | Switch to enable AzTS auto updater. Autoupdater helps to get latest feature released for AzTS components covering updates for security controls. If this is disabled, you can manually update AzTS components by re-running setup command.|FALSE|
+|EnableAzTSUI | Switch to enable AzTS UI. AzTS UI is created to see compliance status for subscription owners and perform adhoc scan. |FALSE|
+|EnableVnetIntegration | Switch to enable VNet integration for AzTS setup. Enabling VNet integration for AzTS setup, ensures that all critical resources like storage, function apps, log analytics workspace etc that are part of AzTS setup, are not accessible over public internet. |FALSE|
+|EnableWAF | Switch to enable Web Application Firewall (WAF) for AzTS UI and API. To provide additional security and to protect web applications from common exploits and vulnerabilities, it is recommended to enable WAF. By default [managed rule sets](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/afds-overview#azure-managed-rule-sets) are configured and prevention mode is enabled for your WAF policy. You can create [custom rules](https://docs.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal#custom-rules) for your WAF policy as per your requirement. |FALSE|
+|StorageAccountConnectionString|Connection string of the storage account to be used to store the scan logs centrally.|FALSE|
+|SetupAzModules| Switch to validate required modules, command will check needed modules with required version and will install required modules if not available in the system |FALSE|
+|Verbose| Switch used to output detailed log |FALSE|
+
 </br>
+
+> **Note:** 
+>
+> 1. Tenant Security Solution does not support customization of the App Service name.
+>
+> 2. By default max timeout limit of function app is set to 9 minutes. This can be modified based on the requirement of your organization. To increase function timeout, you can upgrade to a higher App Service plan and use the `AzureFunctionsJobHost__functionTimeout` app setting in App Service to set the timeout value.
+>
+> 
+</br>
+<br>
+
+**Congratulations! Installation is complete with this step.**
+</br>
+
+**Next steps:**
+
+To view scan result in AzTS UI:
+1. Copy the AzTS UI link provided at the end of the installation command.
+2. We recommend creating a custom domain name for your UI. For steps to create a custom domain, refer to this [link](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-custom-domain).
+3. AzTS UI is \*not\* available for use immediately after installation, as it requires one round of scan to complete to show the scan result in UI. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. Therefore, you can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after installation.
+4. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value in the Service Filter dropdown in AzTS UI. To add service mapping, follow the steps provided here: 
+    - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
+    - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
+
+
+[Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **2. Manually trigger AzTS on-demand scan for entire tenant**
 
