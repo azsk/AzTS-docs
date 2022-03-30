@@ -33,7 +33,7 @@ Operation Group: Scan Result
 |----|----|
 | [Request scan](./Scan%20Result%20APIs/Request%20Scan.md#request-scan---post) |Request ad-hoc scan for subscription(s).|
 | [Get scan results](./Scan%20Result%20APIs/Get%20Scan%20Results.md#get-scan-results---post) | Get scan results for a subscription.|
-| [Get compliance summary](./Scan%20Result%20APIs/Get%20compliance%20summary.md#get-compliance-summary---post) | Get compliance summary for subscription(s).|
+| [Get compliance summary](./Scan%20Result%20APIs/Get%20Compliance%20Summary.md#get-compliance-summary---post) | Get compliance summary for subscription(s).|
 
 ## Feedback
 
