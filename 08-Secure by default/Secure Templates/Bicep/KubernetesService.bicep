@@ -32,9 +32,9 @@ resource clusterName_resource 'Microsoft.ContainerService/managedClusters@2021-0
   }
   properties: {
     dnsPrefix: dnsPrefix
-    enableRBAC: true
+    enableRBAC: true //[Azure_KubernetesService_Deploy_Enable_Cluster_RBAC]
     aadProfile: {
-      managed: true
+      managed: true //[Azure_KubernetesService_AuthN_Enabled_AAD]
       adminGroupObjectIDs: adminGroupObjectIDs
       enableAzureRBAC: true
     }
