@@ -1,6 +1,13 @@
 {
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1008.15138",
+      "templateHash": "7863612785290773218"
+    }
+  },
   "parameters": {
     "adminUsername": {
       "type": "string",
@@ -24,7 +31,7 @@
     },
     "publicIpName": {
       "type": "string",
-      "defaultValue": "[toLower(format('{0}-{1}', parameters('vmName'), 'publicIp'))]",
+      "defaultValue": "[toLower(format('{0}-publicIp', parameters('vmName')))]",
       "metadata": {
         "description": "Name for the Public IP used to access the Virtual Machine."
       }
@@ -74,11 +81,11 @@
     },
     "virtualNetworkName": {
       "type": "string",
-      "defaultValue": "[format('{0}-{1}', 'vNetForVM', parameters('vmName'))]"
+      "defaultValue": "[format('vNetForVM-{0}', parameters('vmName'))]"
     },
     "nicName": {
       "type": "string",
-      "defaultValue": "[format('{0}-{1}', 'NicForVM', parameters('vmName'))]"
+      "defaultValue": "[format('NicForVM-{0}', parameters('vmName'))]"
     },
     "networkSecurityGroupName": {
       "type": "string",
@@ -90,13 +97,13 @@
     },
     "laWorkSpaceResourceId": {
       "type": "string",
-       "metadata": {
+      "metadata": {
         "description": "Resource Id of the LA Workspace to push logs from Microsoft Monitoring Agent."
       }
     },
     "deployMicrosoftMonitoringAgent": {
       "type": "bool",
-       "metadata": {
+      "metadata": {
         "description": "If “Auto-provisioning” for MMA is turned on in Azure Defender configuration, you can skip installation of MMA agent during VM creation as MDC will auto deploy MMA agent with desired configuations."
       }
     },
@@ -108,6 +115,7 @@
       }
     }
   },
+  "functions": [],
   "variables": {
     "addressPrefix": "10.0.0.0/16",
     "subnetName": "Subnet",
@@ -150,8 +158,7 @@
       "name": "[parameters('networkSecurityGroupName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "securityRules": [
-        ]
+        "securityRules": []
       }
     },
     {
@@ -262,12 +269,9 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('VMName'), '/AzurePolicyforWindows')]",
       "apiVersion": "2020-12-01",
+      "name": "[format('{0}/{1}', parameters('vmName'), 'AzurePolicyforWindows')]",
       "location": "[parameters('location')]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMName'))]"
-      ],
       "properties": {
         "publisher": "Microsoft.GuestConfiguration",
         "type": "ConfigurationforWindows",
@@ -276,17 +280,17 @@
         "enableAutomaticUpgrade": true,
         "settings": {},
         "protectedSettings": {}
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
     },
     {
       "condition": "[parameters('deployMicrosoftMonitoringAgent')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('VMName'), '/MicrosoftMonitoringAgent')]",
       "apiVersion": "2020-12-01",
+      "name": "[format('{0}/{1}', parameters('vmName'), 'MicrosoftMonitoringAgent')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', parameters('VMName'))]"
-      ],
       "properties": {
         "publisher": "Microsoft.EnterpriseCloud.Monitoring",
         "type": "MicrosoftMonitoringAgent",
@@ -298,7 +302,10 @@
         "protectedSettings": {
           "workspaceKey": "[if(parameters('deployMicrosoftMonitoringAgent'), listKeys(parameters('laWorkSpaceResourceId'), '2020-08-01').primarySharedKey, 'NotRequired')]"
         }
-      }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
     }
   ],
   "outputs": {
