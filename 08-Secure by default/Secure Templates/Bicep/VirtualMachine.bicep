@@ -103,7 +103,7 @@ resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-
         properties: {
           addressPrefix: subnetPrefix
           networkSecurityGroup: {
-            id: networkSecurityGroupName_resource.id
+            id: networkSecurityGroupName_resource.id //[Azure_VirtualMachine_Config_Enable_NSG]
           }
         }
       }
@@ -183,6 +183,7 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   }
 }
 
+//[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
 resource VMName_AzurePolicyforWindows 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
   parent: vmName_resource
   name: 'AzurePolicyforWindows'
@@ -198,6 +199,7 @@ resource VMName_AzurePolicyforWindows 'Microsoft.Compute/virtualMachines/extensi
   }
 }
 
+//[Azure_VirtualMachine_SI_Enable_Monitoring_Agent]
 resource VMName_MicrosoftMonitoringAgent 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = if (deployMicrosoftMonitoringAgent) {
   parent: vmName_resource
   name: 'MicrosoftMonitoringAgent'

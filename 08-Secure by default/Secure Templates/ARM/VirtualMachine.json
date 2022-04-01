@@ -178,7 +178,7 @@
             "properties": {
               "addressPrefix": "[variables('subnetPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]" //[Azure_VirtualMachine_Config_Enable_NSG]
               }
             }
           }
@@ -268,12 +268,13 @@
       ]
     },
     {
+      //[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2020-12-01",
       "name": "[format('{0}/{1}', parameters('vmName'), 'AzurePolicyforWindows')]",
       "location": "[parameters('location')]",
       "properties": {
-        "publisher": "Microsoft.GuestConfiguration",
+        "publisher": "Microsoft.GuestConfiguration", 
         "type": "ConfigurationforWindows",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,
@@ -286,6 +287,7 @@
       ]
     },
     {
+      //[Azure_VirtualMachine_SI_Enable_Monitoring_Agent]
       "condition": "[parameters('deployMicrosoftMonitoringAgent')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2020-12-01",
