@@ -1,90 +1,96 @@
-param vmName string
-
 @description('Username for the Virtual Machine.')
 param adminUsername string
 
 @description('Password for the Virtual Machine.')
+@minLength(12)
 @secure()
 param adminPassword string
 
-@description('Unique DNS Name for the Storage Account where the Virtual Machine\'s disks will be placed.')
-param newStorageAccountName string
-
 @description('Unique DNS Name for the Public IP used to access the Virtual Machine.')
-param dnsNameForPublicIP string
+param dnsLabelPrefix string = toLower('${vmName}-${uniqueString(resourceGroup().id, vmName)}')
 
-@description('The Windows version for the VM. This will pick a fully patched image of this given Windows version. Allowed values: 2008-R2-SP1, 2012-Datacenter, 2012-R2-Datacenter.')
+@description('Name for the Public IP used to access the Virtual Machine.')
+param publicIpName string = toLower('${vmName}-publicIp')
+
+@description('Allocation method for the Public IP used to access the Virtual Machine.')
 @allowed([
-  '2008-R2-SP1'
-  '2012-Datacenter'
-  '2012-R2-Datacenter'
+  'Dynamic'
+  'Static'
 ])
-param windowsOSVersion string = '2012-R2-Datacenter'
-param newNsgName string
-param nicName string = 'NicForVM'
-param virtualNetworkName string = 'VirtualNetworkForVM'
-param vmExtensionName string = 'AntiMalware'
+param publicIPAllocationMethod string = 'Dynamic'
 
-@description('The name of an existing storage account to which diagnostics data will be transferred.')
-param existingdiagnosticsStorageAccountName string
+@description('SKU for the Public IP used to access the Virtual Machine.')
+@allowed([
+  'Basic'
+  'Standard'
+])
+param publicIpSku string = 'Basic'
 
-@description('The resource group for the storage account specified in existingdiagnosticsStorageAccountName')
-param existingdiagnosticsStorageResourceGroup string
+@description('The Windows version for the VM. This will pick a fully patched Gen2 image of this given Windows version.')
+param OSVersion string = '2019-datacenter-gensecond'
 
-var apiVersion = '2015-06-15'
-var imagePublisher = 'MicrosoftWindowsServer'
-var imageOffer = 'WindowsServer'
-var OSDiskName = 'osdiskforwindowssimple'
+@description('Size of the virtual machine.')
+param vmSize string = 'Standard_D2s_v3'
+
+@description('Location for all resources.')
+param location string = resourceGroup().location
+param virtualNetworkName string = 'vNetForVM-${vmName}'
+param nicName string = 'NicForVM-${vmName}'
+param networkSecurityGroupName string = 'default-NSG'
+param storageAccountName string = 'diagsforvm${uniqueString(resourceGroup().id)}'
+
+@description('Resource Id of the LA Workspace to push logs from Microsoft Monitoring Agent.')
+param laWorkSpaceResourceId string
+
+@description('If “Auto-provisioning” for MMA is turned on in Azure Defender configuration, you can skip installation of MMA agent during VM creation as MDC will auto deploy MMA agent with desired configuations.')
+param deployMicrosoftMonitoringAgent bool
+
+@description('Name of the virtual machine.')
+param vmName string = 'sample-vm'
+
 var addressPrefix = '10.0.0.0/16'
 var subnetName = 'Subnet'
 var subnetPrefix = '10.0.0.0/24'
-var storageAccountType = 'Standard_LRS'
-var publicIPAddressName_var = 'PublicIpAddressForVM'
-var publicIPAddressType = 'Dynamic'
-var vmStorageAccountContainerName = 'vhds'
-var vmSize = 'Standard_A2'
-var vnetID = virtualNetworkName_resource.id
-var subnetRef = '${vnetID}/subnets/${subnetName}'
-var accountid = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${existingdiagnosticsStorageResourceGroup}/providers/Microsoft.Storage/storageAccounts/${existingdiagnosticsStorageAccountName}'
-var wadlogs = '<WadCfg> <DiagnosticMonitorConfiguration overallQuotaInMB="4096" xmlns="http://schemas.microsoft.com/ServiceHosting/2010/10/DiagnosticsConfiguration"> <DiagnosticInfrastructureLogs scheduledTransferLogLevelFilter="Error"/> <WindowsEventLog scheduledTransferPeriod="PT1M" > <DataSource name="Application!*[System[(Level = 1 or Level = 2)]]" /> <DataSource name="Security!*[System[(Level = 1 or Level = 2)]]" /> <DataSource name="System!*[System[(Level = 1 or Level = 2)]]" /></WindowsEventLog>'
-var wadperfcounters1 = '<PerformanceCounters scheduledTransferPeriod="PT1M"><PerformanceCounterConfiguration counterSpecifier="\\Processor(_Total)\\% Processor Time" sampleRate="PT15S" unit="Percent"><annotation displayName="CPU utilization" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Processor(_Total)\\% Privileged Time" sampleRate="PT15S" unit="Percent"><annotation displayName="CPU privileged time" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Processor(_Total)\\% User Time" sampleRate="PT15S" unit="Percent"><annotation displayName="CPU user time" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Processor Information(_Total)\\Processor Frequency" sampleRate="PT15S" unit="Count"><annotation displayName="CPU frequency" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\System\\Processes" sampleRate="PT15S" unit="Count"><annotation displayName="Processes" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Process(_Total)\\Thread Count" sampleRate="PT15S" unit="Count"><annotation displayName="Threads" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Process(_Total)\\Handle Count" sampleRate="PT15S" unit="Count"><annotation displayName="Handles" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Memory\\% Committed Bytes In Use" sampleRate="PT15S" unit="Percent"><annotation displayName="Memory usage" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Memory\\Available Bytes" sampleRate="PT15S" unit="Bytes"><annotation displayName="Memory available" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Memory\\Committed Bytes" sampleRate="PT15S" unit="Bytes"><annotation displayName="Memory committed" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\Memory\\Commit Limit" sampleRate="PT15S" unit="Bytes"><annotation displayName="Memory commit limit" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\% Disk Time" sampleRate="PT15S" unit="Percent"><annotation displayName="Disk active time" locale="en-us"/></PerformanceCounterConfiguration>'
-var wadperfcounters2 = '<PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\% Disk Read Time" sampleRate="PT15S" unit="Percent"><annotation displayName="Disk active read time" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\% Disk Write Time" sampleRate="PT15S" unit="Percent"><annotation displayName="Disk active write time" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\Disk Transfers/sec" sampleRate="PT15S" unit="CountPerSecond"><annotation displayName="Disk operations" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\Disk Reads/sec" sampleRate="PT15S" unit="CountPerSecond"><annotation displayName="Disk read operations" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\Disk Writes/sec" sampleRate="PT15S" unit="CountPerSecond"><annotation displayName="Disk write operations" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\Disk Bytes/sec" sampleRate="PT15S" unit="BytesPerSecond"><annotation displayName="Disk speed" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\Disk Read Bytes/sec" sampleRate="PT15S" unit="BytesPerSecond"><annotation displayName="Disk read speed" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\PhysicalDisk(_Total)\\Disk Write Bytes/sec" sampleRate="PT15S" unit="BytesPerSecond"><annotation displayName="Disk write speed" locale="en-us"/></PerformanceCounterConfiguration><PerformanceCounterConfiguration counterSpecifier="\\LogicalDisk(_Total)\\% Free Space" sampleRate="PT15S" unit="Percent"><annotation displayName="Disk free space (percentage)" locale="en-us"/></PerformanceCounterConfiguration></PerformanceCounters>'
-var wadcfgxstart = '${wadlogs}${wadperfcounters1}${wadperfcounters2}<Metrics resourceId="'
-var wadmetricsresourceid = '/subscriptions/${subscription().subscriptionId}/resourceGroups/${resourceGroup().name}/providers/Microsoft.Compute/virtualMachines/'
-var wadcfgxend = '"><MetricAggregation scheduledTransferPeriod="PT1H"/><MetricAggregation scheduledTransferPeriod="PT1M"/></Metrics></DiagnosticMonitorConfiguration></WadCfg>'
 
-resource newNsgName_resource 'Microsoft.Network/networkSecurityGroups@2017-06-01' = {
-  name: newNsgName
-  location: resourceGroup().location
-  properties: {
-    securityRules: []
+resource storageAccountName_resource 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
   }
-  dependsOn: []
-}
-
-resource newStorageAccountName_resource 'Microsoft.Storage/storageAccounts@2015-06-15' = {
-  name: newStorageAccountName
-  location: resourceGroup().location
   properties: {
-    accountType: storageAccountType
     supportsHttpsTrafficOnly: true
+    allowBlobPublicAccess: false
+    minimumTlsVersion: 'TLS1_2'
   }
+  kind: 'Storage'
 }
 
-resource publicIPAddressName 'Microsoft.Network/publicIPAddresses@2015-06-15' = {
-  name: publicIPAddressName_var
-  location: resourceGroup().location
+resource publicIpName_resource 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+  name: publicIpName
+  location: location
+  sku: {
+    name: publicIpSku
+  }
   properties: {
-    publicIPAllocationMethod: publicIPAddressType
+    publicIPAllocationMethod: publicIPAllocationMethod
     dnsSettings: {
-      domainNameLabel: dnsNameForPublicIP
+      domainNameLabel: dnsLabelPrefix
     }
   }
 }
 
-resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2015-06-15' = {
+resource networkSecurityGroupName_resource 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  name: networkSecurityGroupName
+  location: location
+  properties: {
+    securityRules: []
+  }
+}
+
+resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: virtualNetworkName
-  location: resourceGroup().location
+  location: location
   properties: {
     addressSpace: {
       addressPrefixes: [
@@ -97,7 +103,7 @@ resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2015-06-
         properties: {
           addressPrefix: subnetPrefix
           networkSecurityGroup: {
-            id: newNsgName_resource.id
+            id: networkSecurityGroupName_resource.id
           }
         }
       }
@@ -105,31 +111,33 @@ resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2015-06-
   }
 }
 
-resource nicName_resource 'Microsoft.Network/networkInterfaces@2015-06-15' = {
+resource nicName_resource 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   name: nicName
-  location: resourceGroup().location
+  location: location
   properties: {
-    enableIPForwarding: false
     ipConfigurations: [
       {
         name: 'ipconfig1'
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: publicIPAddressName.id
+            id: publicIpName_resource.id
           }
           subnet: {
-            id: subnetRef
+            id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
           }
         }
       }
     ]
   }
+  dependsOn: [
+    virtualNetworkName_resource
+  ]
 }
 
-resource vmName_resource 'Microsoft.Compute/virtualMachines@2015-06-15' = {
+resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: vmName
-  location: resourceGroup().location
+  location: location
   identity: {
     type: 'SystemAssigned'
   }
@@ -141,21 +149,22 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2015-06-15' = {
       computerName: vmName
       adminUsername: adminUsername
       adminPassword: adminPassword
+      windowsConfiguration: {
+        enableAutomaticUpdates: true
+      }
     }
     storageProfile: {
       imageReference: {
-        publisher: imagePublisher
-        offer: imageOffer
-        sku: windowsOSVersion
+        publisher: 'MicrosoftWindowsServer'
+        offer: 'WindowsServer'
+        sku: OSVersion
         version: 'latest'
       }
       osDisk: {
-        name: 'osdisk'
-        vhd: {
-          uri: 'http://${newStorageAccountName}.blob.core.windows.net/${vmStorageAccountContainerName}/${OSDiskName}.vhd'
-        }
-        caching: 'ReadWrite'
         createOption: 'FromImage'
+        managedDisk: {
+          storageAccountType: 'StandardSSD_LRS'
+        }
       }
     }
     networkProfile: {
@@ -168,76 +177,43 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2015-06-15' = {
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: true
-        storageUri: 'http://${existingdiagnosticsStorageAccountName}.blob.core.windows.net'
+        storageUri: storageAccountName_resource.properties.primaryEndpoints.blob
       }
     }
   }
-  dependsOn: [
-    newStorageAccountName_resource
-  ]
 }
 
-resource vmName_Microsoft_Insights_VMDiagnosticsSettings 'Microsoft.Compute/virtualMachines/extensions@[variables(\'apiVersion\')]' = {
-  name: '${vmName}/Microsoft.Insights.VMDiagnosticsSettings'
-  location: resourceGroup().location
-  tags: {
-    displayName: 'AzureDiagnostics'
-  }
-  properties: {
-    publisher: 'Microsoft.Azure.Diagnostics'
-    type: 'IaaSDiagnostics'
-    typeHandlerVersion: '1.5'
-    autoUpgradeMinorVersion: true
-    settings: {
-      xmlCfg: base64(concat(wadcfgxstart, wadmetricsresourceid, vmName, wadcfgxend))
-      storageAccount: existingdiagnosticsStorageAccountName
-    }
-    protectedSettings: {
-      storageAccountName: existingdiagnosticsStorageAccountName
-      storageAccountKey: listkeys(accountid, apiVersion).key1
-      storageAccountEndPoint: 'https://core.windows.net'
-    }
-  }
-  dependsOn: [
-    vmName_resource
-  ]
-}
-
-resource vmName_vmExtensionName 'Microsoft.Compute/virtualMachines/extensions@2015-05-01-preview' = {
+resource VMName_AzurePolicyforWindows 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
   parent: vmName_resource
-  name: '${vmExtensionName}'
-  location: resourceGroup().location
-  properties: {
-    publisher: 'Microsoft.Azure.Security'
-    type: 'IaaSAntimalware'
-    typeHandlerVersion: '1.1'
-    settings: {
-      AntimalwareEnabled: 'true'
-      Exclusions: {
-        Paths: 'C:\\Users'
-        Extensions: '.txt'
-        Processes: 'taskmgr.exe'
-      }
-      RealtimeProtectionEnabled: 'true'
-      ScheduledScanSettings: {
-        isEnabled: 'true'
-        scanType: 'Quick'
-        day: '7'
-        time: '120'
-      }
-    }
-    protectedSettings: null
-  }
-}
-
-resource vmName_GuestConfigForWindows 'Microsoft.Compute/virtualMachines/extensions@2015-05-01-preview' = {
-  parent: vmName_resource
-  name: 'GuestConfigForWindows'
-  location: resourceGroup().location
+  name: 'AzurePolicyforWindows'
+  location: location
   properties: {
     publisher: 'Microsoft.GuestConfiguration'
-    type: 'ConfigurationForWindows'
-    typeHandlerVersion: '1.11'
+    type: 'ConfigurationforWindows'
+    typeHandlerVersion: '1.0'
     autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: true
+    settings: {}
+    protectedSettings: {}
   }
 }
+
+resource VMName_MicrosoftMonitoringAgent 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = if (deployMicrosoftMonitoringAgent) {
+  parent: vmName_resource
+  name: 'MicrosoftMonitoringAgent'
+  location: resourceGroup().location
+  properties: {
+    publisher: 'Microsoft.EnterpriseCloud.Monitoring'
+    type: 'MicrosoftMonitoringAgent'
+    typeHandlerVersion: '1.0'
+    autoUpgradeMinorVersion: true
+    settings: {
+      workspaceId: (deployMicrosoftMonitoringAgent ? reference(laWorkSpaceResourceId, '2020-08-01').customerId : 'NotRequired')
+    }
+    protectedSettings: {
+      workspaceKey: (deployMicrosoftMonitoringAgent ? listKeys(laWorkSpaceResourceId, '2020-08-01').primarySharedKey : 'NotRequired')
+    }
+  }
+}
+
+output hostname string = publicIpName_resource.properties.dnsSettings.fqdn
