@@ -26,7 +26,7 @@ param publicIPAllocationMethod string = 'Dynamic'
 ])
 param publicIpSku string = 'Basic'
 
-@description('The Windows version for the VM. This will pick a fully patched Gen2 image of this given Windows version.')
+@description('The Windows version for the VM. This will pick a fully patched Gen2 image of this given Windows version. To get the list of all OS images refer: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage.')
 param OSVersion string = '2019-datacenter-gensecond'
 
 @description('Size of the virtual machine.')

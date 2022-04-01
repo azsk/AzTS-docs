@@ -62,7 +62,7 @@
       "type": "string",
       "defaultValue": "2019-datacenter-gensecond",
       "metadata": {
-        "description": "The Windows version for the VM. This will pick a fully patched Gen2 image of this given Windows version."
+        "description": "The Windows version for the VM. This will pick a fully patched Gen2 image of this given Windows version. To get the list of all OS images refer: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/cli-ps-findimage."
       }
     },
     "vmSize": {
