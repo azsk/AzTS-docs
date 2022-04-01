@@ -436,7 +436,21 @@ To view scan result in AzTS UI:
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
 
 [Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
+
+> **Note:** 
+>
+> Creating a custom domain name requires additional configuration:
+> 1. Add redirect URIs to the AzSK-AzTS-UI-xxxxx application registration to reflect your custom domain name. For example:
+>    - https://azts.yourdomain.com
+>    - https://azts.yourdomain.com/auth.html
+> 2. Configure Cross-Origin Resource Sharing (CORS) within the AzSK-AzTS-WebApi-xxxx app service to allow cross-origin calls from your custom domain. For example:
+>    - https://azts.yourdomain.com 
+> 
+> For further information, refer to the links below:
+> 1. [Quickstart: Register an application with the Microsoft identity platform](https://docs.microsoft.com/en-gb/azure/active-directory/develop/quickstart-register-app#add-a-redirect-uri)
+> 2. [Tutorial: Host a RESTful API with CORS in Azure App Service](https://docs.microsoft.com/en-us/azure/app-service/app-service-web-tutorial-rest-api#add-cors-functionality)
 </br>
+
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
 ## **Method B:**
