@@ -109,7 +109,7 @@
     },
     "vmName": {
       "type": "string",
-      "defaultValue": "sample-vm",
+      "defaultValue": "sampleWindows-VM",
       "metadata": {
         "description": "Name of the virtual machine."
       }

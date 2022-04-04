@@ -46,7 +46,7 @@ param laWorkSpaceResourceId string
 param deployMicrosoftMonitoringAgent bool
 
 @description('Name of the virtual machine.')
-param vmName string = 'sample-vm'
+param vmName string = 'sampleWindows-VM'
 
 var addressPrefix = '10.0.0.0/16'
 var subnetName = 'Subnet'
