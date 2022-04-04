@@ -40,7 +40,7 @@ param nicName string = '${vmName}-nic'
 @description('Network security group name. This NSG will be associated with subnet.')
 param networkSecurityGroupName1 string = '${vmName}-subnet-nsg'
 
-@description('Size of the virtual machine. This NSG will be associated with VM NIC.')
+@description('Network security group name. This NSG will be associated with VM NIC.')
 param networkSecurityGroupName2 string = '${vmName}-nic-nsg'
 
 param storageAccountName string = 'diagsforvm${uniqueString(resourceGroup().id)}'

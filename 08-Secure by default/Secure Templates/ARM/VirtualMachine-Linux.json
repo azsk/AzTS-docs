@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "7427603790391076112"
+      "templateHash": "11388114394164481264"
     }
   },
   "parameters": {
@@ -81,11 +81,18 @@
         "description": "Name of the subnet in the virtual network."
       }
     },
-    "networkSecurityGroupName": {
+    "networkSecurityGroupName1": {
       "type": "string",
-      "defaultValue": "[format('{0}-nsg', parameters('vmName'))]",
+      "defaultValue": "[format('{0}-subnet-nsg', parameters('vmName'))]",
       "metadata": {
-        "description": "Name of the Network Security Group"
+        "description": "Network security group name. This NSG will be associated with subnet."
+      }
+    },
+    "networkSecurityGroupName2": {
+      "type": "string",
+      "defaultValue": "[format('{0}-nic-nsg', parameters('vmName'))]",
+      "metadata": {
+        "description": "Network security group name. This NSG will be associated with VM NIC."
       }
     },
     "publicIPAddressName": {
@@ -171,9 +178,13 @@
               }
             }
           }
-        ]
+        ],
+        "networkSecurityGroup": {
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName2'))]" //[Azure_VirtualMachine_Config_Enable_NSG]
+        }
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName2'))]",
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), format('{0}', parameters('subnetName')))]"
       ]
@@ -181,7 +192,16 @@
     {
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2021-02-01",
-      "name": "[parameters('networkSecurityGroupName')]",
+      "name": "[parameters('networkSecurityGroupName1')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('networkSecurityGroupName2')]",
       "location": "[parameters('location')]",
       "properties": {
         "securityRules": []
@@ -209,11 +229,11 @@
         "privateEndpointNetworkPolicies": "Enabled",
         "privateLinkServiceNetworkPolicies": "Enabled",
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]" //[Azure_VirtualMachine_Config_Enable_NSG]
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName1'))]" //[Azure_VirtualMachine_Config_Enable_NSG]
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName1'))]",
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
       ]
     },

@@ -98,7 +98,7 @@
       "type": "string",
       "defaultValue": "[format('{0}-nic-nsg', parameters('vmName'))]",
       "metadata": {
-        "description": "Size of the virtual machine. This NSG will be associated with VM NIC."
+        "description": "Network security group name. This NSG will be associated with VM NIC."
       }
     },
     "storageAccountName": {

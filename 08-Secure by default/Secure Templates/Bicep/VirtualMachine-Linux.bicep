@@ -33,8 +33,11 @@ param virtualNetworkName string = '${vmName}-vNet'
 @description('Name of the subnet in the virtual network.')
 param subnetName string = 'default'
 
-@description('Name of the Network Security Group')
-param networkSecurityGroupName string = '${vmName}-nsg'
+@description('Network security group name. This NSG will be associated with subnet.')
+param networkSecurityGroupName1 string = '${vmName}-subnet-nsg'
+
+@description('Network security group name. This NSG will be associated with VM NIC.')
+param networkSecurityGroupName2 string = '${vmName}-nic-nsg'
 
 @description('Name for the Public IP used to access the Virtual Machine.')
 param publicIPAddressName string = toLower('${vmName}-publicIp')
@@ -93,11 +96,22 @@ resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    networkSecurityGroup: {
+      id: nsg2.id //[Azure_VirtualMachine_Config_Enable_NSG]
+    }
   }
 }
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
-  name: networkSecurityGroupName
+resource nsg1 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  name: networkSecurityGroupName1
+  location: location
+  properties: {
+    securityRules: []
+  }
+}
+
+resource nsg2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  name: networkSecurityGroupName2
   location: location
   properties: {
     securityRules: []
@@ -124,7 +138,7 @@ resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
     privateEndpointNetworkPolicies: 'Enabled'
     privateLinkServiceNetworkPolicies: 'Enabled'
     networkSecurityGroup: {
-      id: nsg.id //[Azure_VirtualMachine_Config_Enable_NSG]
+      id: nsg1.id //[Azure_VirtualMachine_Config_Enable_NSG]
     }
   }
 }
