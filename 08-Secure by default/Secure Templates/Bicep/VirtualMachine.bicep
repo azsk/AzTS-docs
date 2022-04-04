@@ -36,7 +36,13 @@ param vmSize string = 'Standard_D2s_v3'
 param location string = resourceGroup().location
 param virtualNetworkName string = '${vmName}-vNet'
 param nicName string = '${vmName}-nic'
-param networkSecurityGroupName string = '${vmName}-nsg'
+
+@description('Network security group name. This NSG will be associated with subnet.')
+param networkSecurityGroupName1 string = '${vmName}-subnet-nsg'
+
+@description('Size of the virtual machine. This NSG will be associated with VM NIC.')
+param networkSecurityGroupName2 string = '${vmName}-nic-nsg'
+
 param storageAccountName string = 'diagsforvm${uniqueString(resourceGroup().id)}'
 
 @description('Resource Id of the LA Workspace to push logs from Microsoft Monitoring Agent.')
@@ -46,7 +52,7 @@ param laWorkSpaceResourceId string
 param deployMicrosoftMonitoringAgent bool
 
 @description('Name of the virtual machine.')
-param vmName string = 'sampleWindows-VM'
+param vmName string = 'sample-VM'
 
 var addressPrefix = '10.0.0.0/16'
 var subnetName = 'Subnet'
@@ -80,13 +86,22 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   }
 }
 
-resource nsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
-  name: networkSecurityGroupName
+resource nsg1 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  name: networkSecurityGroupName1
   location: location
   properties: {
     securityRules: []
   }
 }
+
+resource nsg2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+  name: networkSecurityGroupName2
+  location: location
+  properties: {
+    securityRules: []
+  }
+}
+
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: virtualNetworkName
@@ -103,7 +118,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
         properties: {
           addressPrefix: subnetPrefix
           networkSecurityGroup: {
-            id: nsg.id //[Azure_VirtualMachine_Config_Enable_NSG]
+            id: nsg1.id //[Azure_VirtualMachine_Config_Enable_NSG]
           }
         }
       }
@@ -129,6 +144,9 @@ resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         }
       }
     ]
+    networkSecurityGroup: {
+      id: nsg2.id //[Azure_VirtualMachine_Config_Enable_NSG]
+    }
   }
   dependsOn: [
     vnet
