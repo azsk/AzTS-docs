@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "7863612785290773218"
+      "templateHash": "16261243873457137719"
     }
   },
   "parameters": {
@@ -81,15 +81,15 @@
     },
     "virtualNetworkName": {
       "type": "string",
-      "defaultValue": "[format('vNetForVM-{0}', parameters('vmName'))]"
+      "defaultValue": "[format('{0}-vNet', parameters('vmName'))]"
     },
     "nicName": {
       "type": "string",
-      "defaultValue": "[format('NicForVM-{0}', parameters('vmName'))]"
+      "defaultValue": "[format('{0}-nic', parameters('vmName'))]"
     },
     "networkSecurityGroupName": {
       "type": "string",
-      "defaultValue": "default-NSG"
+      "defaultValue": "[format('{0}-nsg', parameters('vmName'))]"
     },
     "storageAccountName": {
       "type": "string",
@@ -274,7 +274,7 @@
       "name": "[format('{0}/{1}', parameters('vmName'), 'AzurePolicyforWindows')]",
       "location": "[parameters('location')]",
       "properties": {
-        "publisher": "Microsoft.GuestConfiguration", 
+        "publisher": "Microsoft.GuestConfiguration",
         "type": "ConfigurationforWindows",
         "typeHandlerVersion": "1.0",
         "autoUpgradeMinorVersion": true,

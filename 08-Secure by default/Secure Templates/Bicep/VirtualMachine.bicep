@@ -34,9 +34,9 @@ param vmSize string = 'Standard_D2s_v3'
 
 @description('Location for all resources.')
 param location string = resourceGroup().location
-param virtualNetworkName string = 'vNetForVM-${vmName}'
-param nicName string = 'NicForVM-${vmName}'
-param networkSecurityGroupName string = 'default-NSG'
+param virtualNetworkName string = '${vmName}-vNet'
+param nicName string = '${vmName}-nic'
+param networkSecurityGroupName string = '${vmName}-nsg'
 param storageAccountName string = 'diagsforvm${uniqueString(resourceGroup().id)}'
 
 @description('Resource Id of the LA Workspace to push logs from Microsoft Monitoring Agent.')
@@ -52,7 +52,7 @@ var addressPrefix = '10.0.0.0/16'
 var subnetName = 'Subnet'
 var subnetPrefix = '10.0.0.0/24'
 
-resource storageAccountName_resource 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -66,7 +66,7 @@ resource storageAccountName_resource 'Microsoft.Storage/storageAccounts@2021-04-
   kind: 'Storage'
 }
 
-resource publicIpName_resource 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   name: publicIpName
   location: location
   sku: {
@@ -80,7 +80,7 @@ resource publicIpName_resource 'Microsoft.Network/publicIPAddresses@2021-02-01' 
   }
 }
 
-resource networkSecurityGroupName_resource 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
   name: networkSecurityGroupName
   location: location
   properties: {
@@ -88,7 +88,7 @@ resource networkSecurityGroupName_resource 'Microsoft.Network/networkSecurityGro
   }
 }
 
-resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -103,7 +103,7 @@ resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-
         properties: {
           addressPrefix: subnetPrefix
           networkSecurityGroup: {
-            id: networkSecurityGroupName_resource.id //[Azure_VirtualMachine_Config_Enable_NSG]
+            id: nsg.id //[Azure_VirtualMachine_Config_Enable_NSG]
           }
         }
       }
@@ -111,7 +111,7 @@ resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-
   }
 }
 
-resource nicName_resource 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   name: nicName
   location: location
   properties: {
@@ -121,7 +121,7 @@ resource nicName_resource 'Microsoft.Network/networkInterfaces@2021-02-01' = {
         properties: {
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: publicIpName_resource.id
+            id: publicIP.id
           }
           subnet: {
             id: resourceId('Microsoft.Network/virtualNetworks/subnets', virtualNetworkName, subnetName)
@@ -131,11 +131,11 @@ resource nicName_resource 'Microsoft.Network/networkInterfaces@2021-02-01' = {
     ]
   }
   dependsOn: [
-    virtualNetworkName_resource
+    vnet
   ]
 }
 
-resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: vmName
   location: location
   identity: {
@@ -170,22 +170,22 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: nicName_resource.id
+          id: nic.id
         }
       ]
     }
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: true
-        storageUri: storageAccountName_resource.properties.primaryEndpoints.blob
+        storageUri: storageAccount.properties.primaryEndpoints.blob
       }
     }
   }
 }
 
 //[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
-resource VMName_AzurePolicyforWindows 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
-  parent: vmName_resource
+resource vmExtension_AzurePolicyforWindows 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
+  parent: vm
   name: 'AzurePolicyforWindows'
   location: location
   properties: {
@@ -200,8 +200,8 @@ resource VMName_AzurePolicyforWindows 'Microsoft.Compute/virtualMachines/extensi
 }
 
 //[Azure_VirtualMachine_SI_Enable_Monitoring_Agent]
-resource VMName_MicrosoftMonitoringAgent 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = if (deployMicrosoftMonitoringAgent) {
-  parent: vmName_resource
+resource vmExtension_MicrosoftMonitoringAgent 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = if (deployMicrosoftMonitoringAgent) {
+  parent: vm
   name: 'MicrosoftMonitoringAgent'
   location: resourceGroup().location
   properties: {
@@ -218,4 +218,4 @@ resource VMName_MicrosoftMonitoringAgent 'Microsoft.Compute/virtualMachines/exte
   }
 }
 
-output hostname string = publicIpName_resource.properties.dnsSettings.fqdn
+output hostname string = publicIP.properties.dnsSettings.fqdn
