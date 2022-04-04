@@ -139,7 +139,7 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: vmName
   location: location
   identity: {
-    type: 'SystemAssigned'
+    type: 'SystemAssigned' //[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
   }
   properties: {
     hardwareProfile: {

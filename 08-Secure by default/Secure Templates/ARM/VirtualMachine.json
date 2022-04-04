@@ -220,7 +220,7 @@
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
       "identity": {
-        "type": "SystemAssigned"
+        "type": "SystemAssigned" //[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
       },
       "properties": {
         "hardwareProfile": {

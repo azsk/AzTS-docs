@@ -75,7 +75,7 @@ var linuxConfiguration = {
   }
 }
 
-resource networkInterfaceName_resource 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   name: networkInterfaceName
   location: location
   properties: {
@@ -84,11 +84,11 @@ resource networkInterfaceName_resource 'Microsoft.Network/networkInterfaces@2021
         name: 'ipconfig1'
         properties: {
           subnet: {
-            id: virtualNetworkName_subnetName.id
+            id: subnet.id
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: publicIPAddressName_resource.id
+            id: publicIP.id
           }
         }
       }
@@ -96,7 +96,7 @@ resource networkInterfaceName_resource 'Microsoft.Network/networkInterfaces@2021
   }
 }
 
-resource networkSecurityGroupName_resource 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
   name: networkSecurityGroupName
   location: location
   properties: {
@@ -104,7 +104,7 @@ resource networkSecurityGroupName_resource 'Microsoft.Network/networkSecurityGro
   }
 }
 
-resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -116,20 +116,20 @@ resource virtualNetworkName_resource 'Microsoft.Network/virtualNetworks@2021-02-
   }
 }
 
-resource virtualNetworkName_subnetName 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
-  parent: virtualNetworkName_resource
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = {
+  parent: vnet
   name: '${subnetName}'
   properties: {
     addressPrefix: subnetAddressPrefix
     privateEndpointNetworkPolicies: 'Enabled'
     privateLinkServiceNetworkPolicies: 'Enabled'
     networkSecurityGroup: {
-      id: networkSecurityGroupName_resource.id
+      id: nsg.id //[Azure_VirtualMachine_Config_Enable_NSG]
     }
   }
 }
 
-resource publicIPAddressName_resource 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   name: publicIPAddressName
   location: location
   sku: {
@@ -144,11 +144,11 @@ resource publicIPAddressName_resource 'Microsoft.Network/publicIPAddresses@2021-
   }
 }
 
-resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-11-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
   name: vmName
   location: location
   identity: {
-    type: 'SystemAssigned'
+    type: 'SystemAssigned' //[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
   }
   properties: {
     hardwareProfile: {
@@ -171,7 +171,7 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-11-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: networkInterfaceName_resource.id
+          id: nic.id
         }
       ]
     }
@@ -184,8 +184,9 @@ resource vmName_resource 'Microsoft.Compute/virtualMachines@2021-11-01' = {
   }
 }
 
-resource vmName_AzurePolicyforLinux 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
-  parent: vmName_resource
+//[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
+resource vmExtension_AzurePolicyforLinux 'Microsoft.Compute/virtualMachines/extensions@2020-12-01' = {
+  parent: vm
   name: 'AzurePolicyforLinux'
   location: location
   properties: {
@@ -199,8 +200,9 @@ resource vmName_AzurePolicyforLinux 'Microsoft.Compute/virtualMachines/extension
   }
 }
 
-resource vmName_OmsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2018-06-01' = if (deployMicrosoftMonitoringAgent) {
-  parent: vmName_resource
+//[Azure_VirtualMachine_SI_Enable_Monitoring_Agent]
+resource vmExtension_OmsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2018-06-01' = if (deployMicrosoftMonitoringAgent) {
+  parent: vm
   name: 'OmsAgentForLinux'
   location: location
   properties: {
@@ -218,5 +220,5 @@ resource vmName_OmsAgentForLinux 'Microsoft.Compute/virtualMachines/extensions@2
 }
 
 output adminUsername string = adminUsername
-output hostname string = publicIPAddressName_resource.properties.dnsSettings.fqdn
-output sshCommand string = 'ssh ${adminUsername}@${publicIPAddressName_resource.properties.dnsSettings.fqdn}'
+output hostname string = publicIP.properties.dnsSettings.fqdn
+output sshCommand string = 'ssh ${adminUsername}@${publicIP.properties.dnsSettings.fqdn}'

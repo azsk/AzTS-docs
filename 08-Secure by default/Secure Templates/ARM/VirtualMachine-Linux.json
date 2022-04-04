@@ -209,7 +209,7 @@
         "privateEndpointNetworkPolicies": "Enabled",
         "privateLinkServiceNetworkPolicies": "Enabled",
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]" //[Azure_VirtualMachine_Config_Enable_NSG]
         }
       },
       "dependsOn": [
@@ -278,6 +278,7 @@
       ]
     },
     {
+      //[Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension]
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2020-12-01",
       "name": "[format('{0}/{1}', parameters('vmName'), 'AzurePolicyforLinux')]",
@@ -296,6 +297,7 @@
       ]
     },
     {
+      //[Azure_VirtualMachine_SI_Enable_Monitoring_Agent]
       "condition": "[parameters('deployMicrosoftMonitoringAgent')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2018-06-01",
