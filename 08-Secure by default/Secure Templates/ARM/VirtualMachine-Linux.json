@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11388114394164481264"
+      "templateHash": "6603951135467848082"
     }
   },
   "parameters": {
@@ -161,7 +161,7 @@
   "resources": [
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('networkInterfaceName')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -191,7 +191,7 @@
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('networkSecurityGroupName1')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -200,7 +200,7 @@
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('networkSecurityGroupName2')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -209,7 +209,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('virtualNetworkName')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -222,7 +222,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[format('{0}/{1}', parameters('virtualNetworkName'), format('{0}', parameters('subnetName')))]",
       "properties": {
         "addressPrefix": "[variables('subnetAddressPrefix')]",
@@ -239,7 +239,7 @@
     },
     {
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('publicIPAddressName')]",
       "location": "[parameters('location')]",
       "sku": {
