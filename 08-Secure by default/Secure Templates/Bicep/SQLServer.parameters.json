@@ -1,0 +1,48 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerName": {
+      "value": "<name of the SQL server>"
+    },
+    "sqlServerAdministratorLogin": {
+      "reference": {
+        "keyVault": {
+          "id": "<ID of the key vault>"
+        },
+        "secretName": "<name of the secret containing the SQL server administrator login name>",
+        "secretVersion": "<version of the secret containing the SQL server administrator login name>"
+      }
+    },
+    "sqlServerAdministratorLoginPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "<ID of the key vault>"
+        },
+        "secretName": "<name of the secret containing the SQL server administrator login password>",
+        "secretVersion": "<version of the secret containing the SQL server administrator password>"
+      }
+    },
+    "sqlServerAdministratorSettings": {
+      "value": {
+        "sqlServerAdministratorLoginName": "<login name of the SQL server administrator>",
+        "sqlServerAdministratorSID": "<UUID of the SQL server administrator>"
+      }
+    },
+    "sqlServerThreatDetectionEmailAddresses": {
+      "value": [
+        "<email-address-01>",
+        "<email-address-02>",
+        "...",
+        "<email-address-0N>"
+      ]
+    },
+    "sqlDatabases": {
+      "value": [
+        {
+          "name": "<name of the SQL database>"
+        }
+      ]
+    }
+  }
+}

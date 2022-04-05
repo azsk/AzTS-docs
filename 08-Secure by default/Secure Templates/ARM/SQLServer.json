@@ -1,0 +1,271 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1318.3566",
+      "templateHash": "16210633609991045925"
+    }
+  },
+  "parameters": {
+    "sqlServerName": {
+      "type": "string",
+      "defaultValue": "[format('sql-server-{0}', uniqueString(resourceGroup().id, utcNow()))]",
+      "maxLength": 63,
+      "minLength": 1,
+      "metadata": {
+        "description": "The name of the new SQL database server to create.\r\nUse only lowercase letters, numbers and hyphens.\r\nThe name must not start or end with a hyphen and must be 1 - 63 characters in length.\r\nThe name must be unique across Azure.\r\n"
+      }
+    },
+    "sqlServerLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The Azure region of the database server. The default location is same as the enclosing Resource Group's location."
+      }
+    },
+    "sqlServerAdministratorLogin": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The account name to use for the database server administrator."
+      }
+    },
+    "sqlServerAdministratorLoginPassword": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The password to use for the database server administrator."
+      }
+    },
+    "sqlServerAdministratorSettings": {
+      "type": "object",
+      "metadata": {
+        "description": "Specify the SQL server administrator settings."
+      }
+    },
+    "sqlServerAuditingStorageAccountSettings": {
+      "type": "object",
+      "defaultValue": {
+        "useExistingStorageAccount": false,
+        "storageAccountName": "[format('sa{0}', toLower(utcNow()))]",
+        "storageAccountKind": "StorageV2",
+        "storageAccountSkuName": "Standard_LRS"
+      },
+      "metadata": {
+        "description": "Specify the name of the storage account for storing the SQL server auditing logs.\r\nThis storage account must be in the same Resource Group as that of the SQL server being created.\r\nIf no storage account is configured, a new storage account will be created with the same name and used for SQL server auditing.\r\n"
+      }
+    },
+    "sqlServerAuditingStorageAccountRetentionPeriodInDays": {
+      "type": "int",
+      "defaultValue": 0,
+      "minValue": 0,
+      "metadata": {
+        "description": "Specify the retention period for the SQL server auditing logs in the storage account. Specify '0' to retain the logs for ever."
+      }
+    },
+    "sqlServerThreatDetectionEmailAddresses": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies an array of e-mail addresses to which the alert is sent."
+      }
+    },
+    "sqlDatabases": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "Specifies the list of SQL databases to be created in the SQL database server."
+      }
+    }
+  },
+  "variables": {
+    "useExistingStorageAccountForSqlServerAuditing": "[parameters('sqlServerAuditingStorageAccountSettings').useExistingStorageAccount]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers/administrators", // Azure_SQLDatabase_AuthZ_Use_AAD_Admin - Enable Azure AD admin for the SQL Database.
+      "apiVersion": "2021-08-01-preview",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'ActiveDirectory')]",
+      "properties": {
+        "administratorType": "ActiveDirectory",
+        "login": "[parameters('sqlServerAdministratorSettings').sqlServerAdministratorLoginName]",
+        "sid": "[parameters('sqlServerAdministratorSettings').sqlServerAdministratorSID]",
+        "tenantId": "[tenant().tenantId]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/auditingSettings",
+      "apiVersion": "2021-08-01-preview",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'default')]",
+      "properties": {
+        "isStorageSecondaryKeyInUse": false,
+        "retentionDays": "[parameters('sqlServerAuditingStorageAccountRetentionPeriodInDays')]",
+        "state": "Enabled", // Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server - To enable auditing on the SQL server.
+        "storageAccountAccessKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]",
+        "storageAccountSubscriptionId": "[subscription().subscriptionId]",
+        "storageEndpoint": "[if(variables('useExistingStorageAccountForSqlServerAuditing'), reference(resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName), '2021-08-01').primaryEndpoints.blob, reference(resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName), '2021-08-01').primaryEndpoints.blob)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName)]",
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/securityAlertPolicies",
+      "apiVersion": "2021-08-01-preview",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'Default')]",
+      "properties": {
+        "disabledAlerts": [], // Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server - Ensure no alerts are disabled.
+        "emailAccountAdmins": true, // Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server - Ensure email to administrators on alerts is enabled.
+        "emailAddresses": "[parameters('sqlServerThreatDetectionEmailAddresses')]", // Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server - Configure email addresses to receive alerts on the SQL server.
+        "retentionDays": "[parameters('sqlServerAuditingStorageAccountRetentionPeriodInDays')]",
+        "state": "Enabled", // Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server - To configure threat detection on the SQL server.
+        "storageAccountAccessKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value]",
+        "storageEndpoint": "[if(variables('useExistingStorageAccountForSqlServerAuditing'), reference(resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName), '2021-08-01').primaryEndpoints.blob, reference(resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName), '2021-08-01').primaryEndpoints.blob)]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('sqlServerAuditingStorageAccountSettings').storageAccountName)]",
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2021-08-01-preview",
+      "name": "[parameters('sqlServerName')]",
+      "location": "[parameters('sqlServerLocation')]",
+      "properties": {
+        "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
+        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]"
+      }
+    },
+    {
+      "condition": "[not(variables('useExistingStorageAccountForSqlServerAuditing'))]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-08-01",
+      "name": "[parameters('sqlServerAuditingStorageAccountSettings').storageAccountName]",
+      "kind": "[parameters('sqlServerAuditingStorageAccountSettings').storageAccountKind]",
+      "location": "[parameters('sqlServerLocation')]",
+      "sku": {
+        "name": "[parameters('sqlServerAuditingStorageAccountSettings').storageAccountSkuName]"
+      }
+    },
+    {
+      "copy": {
+        "name": "sqlDatabaseResource",
+        "count": "[length(parameters('sqlDatabases'))]"
+      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "[parameters('sqlDatabases')[copyIndex()].name]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "sqlServerName": {
+            "value": "[parameters('sqlServerName')]"
+          },
+          "sqlDatabaseName": {
+            "value": "[parameters('sqlDatabases')[copyIndex()].name]"
+          },
+          "sqlDatabaseLocation": {
+            "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName')), '2021-08-01-preview', 'full').location]"
+          },
+          "sqlDatabaseEnableTde": {
+            "value": true
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.4.1318.3566",
+              "templateHash": "11905024487555639022"
+            }
+          },
+          "parameters": {
+            "sqlServerName": {
+              "type": "string",
+              "maxLength": 63,
+              "minLength": 1,
+              "metadata": {
+                "description": "Specify the name of an existing SQL database server in which the database is to be created.\r\nUse only lowercase letters, numbers and hyphens.\r\nThe name must not start or end with a hyphen and must be 1 - 63 characters in length.\r\n"
+              }
+            },
+            "sqlDatabaseName": {
+              "type": "string",
+              "defaultValue": "[format('{0}-sql-database-{1}', parameters('sqlServerName'), utcNow())]",
+              "maxLength": 128,
+              "minLength": 1,
+              "metadata": {
+                "description": "Specify the name of the new SQL database to create.\r\nThe following characters are not allowed: \\'<>*%&:\\\\/?\\' or control characters.\r\nThe name must not start or end with a period or space and must be 1 - 128 characters in length.\r\nThe name of a database must be unique within the enclosing SQL server.\r\n"
+              }
+            },
+            "sqlDatabaseLocation": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "Specify the Azure region where the SQL database is to be created. The default location is same as the enclosing Resource Group's location."
+              }
+            },
+            "sqlDatabaseSku": {
+              "type": "object",
+              "defaultValue": {
+                "name": "Basic",
+                "capacity": 5,
+                "tier": "Basic"
+              },
+              "metadata": {
+                "description": "Specify the SKU of the SQL database to create."
+              }
+            },
+            "sqlDatabaseEnableTde": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Specify whether Transparent Data Encryption (TDE) is to be enabled on the SQL database. Valid values: true, false. The default value is 'true'."
+              },
+              "allowedValues": [
+                false,
+                true
+              ]
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+              "apiVersion": "2021-08-01-preview",
+              "name": "[format('{0}/{1}/{2}', parameters('sqlServerName'), parameters('sqlDatabaseName'), 'current')]",
+              "properties": {
+                "state": "[if(parameters('sqlDatabaseEnableTde'), 'Enabled', 'Disabled')]" // Azure_SQLDatabase_DP_Enable_TDE - Enable Transparent Data Encryption (TDE) on the SQL database.
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('sqlDatabaseName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Sql/servers/databases",
+              "apiVersion": "2021-08-01-preview",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('sqlDatabaseName'))]",
+              "location": "[parameters('sqlDatabaseLocation')]",
+              "sku": {
+                "name": "[parameters('sqlDatabaseSku').name]",
+                "capacity": "[parameters('sqlDatabaseSku').capacity]",
+                "tier": "[parameters('sqlDatabaseSku').tier]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    }
+  ]
+}

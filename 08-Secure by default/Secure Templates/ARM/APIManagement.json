@@ -5,12 +5,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "1704003398237385952"
+      "templateHash": "9274402871757231961"
     }
   },
   "parameters": {
     "apiManagementServiceName": {
       "type": "string",
+      "defaultValue": "[format('api-management-{0}', uniqueString(resourceGroup().id, utcNow()))]",
       "maxLength": 50,
       "minLength": 1,
       "metadata": {
