@@ -58,7 +58,7 @@ var addressPrefix = '10.0.0.0/16'
 var subnetName = 'Subnet'
 var subnetPrefix = '10.0.0.0/24'
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
+resource storageAccount 'Microsoft.Storage/storageAccounts@2021-08-01' = {
   name: storageAccountName
   location: location
   sku: {
@@ -72,7 +72,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   kind: 'Storage'
 }
 
-resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
+resource publicIP 'Microsoft.Network/publicIPAddresses@2021-05-01' = {
   name: publicIpName
   location: location
   sku: {
@@ -86,7 +86,7 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   }
 }
 
-resource nsg1 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+resource nsg1 'Microsoft.Network/networkSecurityGroups@2021-05-01' = {
   name: networkSecurityGroupName1
   location: location
   properties: {
@@ -94,7 +94,7 @@ resource nsg1 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
   }
 }
 
-resource nsg2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
+resource nsg2 'Microsoft.Network/networkSecurityGroups@2021-05-01' = {
   name: networkSecurityGroupName2
   location: location
   properties: {
@@ -103,7 +103,7 @@ resource nsg2 'Microsoft.Network/networkSecurityGroups@2021-02-01' = {
 }
 
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
+resource vnet 'Microsoft.Network/virtualNetworks@2021-05-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -126,7 +126,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+resource nic 'Microsoft.Network/networkInterfaces@2021-05-01' = {
   name: nicName
   location: location
   properties: {
@@ -153,7 +153,7 @@ resource nic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
   ]
 }
 
-resource vm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+resource vm 'Microsoft.Compute/virtualMachines@2021-11-01' = {
   name: vmName
   location: location
   identity: {

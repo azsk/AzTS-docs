@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "1998880440814753613"
+      "templateHash": "5568285598775395735"
     }
   },
   "parameters": {
@@ -134,7 +134,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2021-04-01",
+      "apiVersion": "2021-08-01",
       "name": "[parameters('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": {
@@ -149,7 +149,7 @@
     },
     {
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('publicIpName')]",
       "location": "[parameters('location')]",
       "sku": {
@@ -164,7 +164,7 @@
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('networkSecurityGroupName1')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -173,7 +173,7 @@
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('networkSecurityGroupName2')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -182,7 +182,7 @@
     },
     {
       "type": "Microsoft.Network/virtualNetworks",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('virtualNetworkName')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -209,7 +209,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2021-05-01",
       "name": "[parameters('nicName')]",
       "location": "[parameters('location')]",
       "properties": {
@@ -239,7 +239,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2021-03-01",
+      "apiVersion": "2021-11-01",
       "name": "[parameters('vmName')]",
       "location": "[parameters('location')]",
       "identity": {
