@@ -9,7 +9,8 @@
     Use Approved TLS Version in App Service.
 
 # Prerequisites:
-    Contributor and higher privileges on the App Services in a Subscription.
+    1. Contributor and higher privileges on the App Services in a Subscription.
+    2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
     To remediate:
@@ -37,30 +38,28 @@
 # Examples:
     To remediate:
         1. To review the App Services in a Subscription that will be remediated:
-    
            Set-RequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. To set minimum required TLS version on the production slot and all non-production slots of all App Services in a Subscription:
-       
            Set-RequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To set minimum required TLS version on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
-       
            Set-RequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForAppServices\AppServicesWithoutMinReqTLSVersion.csv
 
+        4. To set minimum required TLS version on the production slot and all non-production slots of all App Services in a Subscription without taking back up before actual remediation:
+           Set-RequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
+
         To know more about the options supported by the remediation command, execute:
-        
         Get-Help Set-RequiredTLSVersion -Detailed
 
     To roll back:
         1. To reset minimum required TLS version on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
            Reset-RequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForAppServices\RemediatedAppServices.csv
         
-        2. To reset minimum required TLS version on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
+        2. To reset minimum required TLS version on the production slot of all App Services in a Subscription, from a previously taken snapshot:
            Reset-RequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -ExcludeNonProductionSlots -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForAppServices\RemediatedAppServices.csv
 
         To know more about the options supported by the roll back command, execute:
-        
         Get-Help Reset-RequiredTLSVersion -Detailed        
 ###>
 
@@ -92,7 +91,7 @@ function Setup-Prerequisites
     $requiredModules = @("Az.Accounts", "Az.Websites", "Az.Resources", "Azure")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..."
+    Write-Host "Checking if the required modules are present..." 
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -112,6 +111,51 @@ function Setup-Prerequisites
 
 function Set-RequiredTLSVersion
 {
+    <#
+        .SYNOPSIS
+        Remediates 'Azure_AppService_DP_Dont_Allow_HTTP_Access' Control.
+
+        .DESCRIPTION
+        Remediates 'Azure_AppService_DP_Dont_Allow_HTTP_Access' Control.
+        Enables HTTPS on the production slot and all non-production slots in all App Services in the Subscription. 
+        
+        .PARAMETER SubscriptionId
+        Specifies the ID of the Subscription to be remediated.
+        
+        .PARAMETER Force
+        Specifies a forceful remediation without any prompts.
+        
+        .Parameter PerformPreReqCheck
+        Specifies validation of prerequisites for the command.
+        
+        .PARAMETER DryRun
+        Specifies a dry run of the actual remediation.
+
+        .PARAMETER SkipBackup
+        Specifies that no back up will be taken by the script before remediation.
+        
+        .PARAMETER FilePath
+        Specifies the path to the file to be used as input for the remediation.
+
+        .INPUTS
+        None. You cannot pipe objects to Enable-HttpsForAppServices.
+
+        .OUTPUTS
+        None. Enable-HttpsForAppServices does not return anything that can be piped and used as an input to another command.
+
+        .EXAMPLE
+        PS> Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+
+        .EXAMPLE
+        PS> Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+
+        .EXAMPLE
+        PS> Enable-HttpsForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableHTTPSForAppServices\AppServicesWithoutHTTPSEnabled.csv
+
+        .LINK
+        None
+    #>
+
     param (
     [String]
     [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
@@ -130,6 +174,10 @@ function Set-RequiredTLSVersion
     [Switch]
     [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
     $DryRun,
+
+    [Switch]
+    [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies no back up will be taken by the script before remediation")]
+    $SkipBackup,
 
     [String]
     [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
@@ -158,9 +206,8 @@ function Set-RequiredTLSVersion
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
-        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
-        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break
     }
 
     # Setting up context for the current Subscription.
@@ -172,15 +219,6 @@ function Set-RequiredTLSVersion
     Write-Host "Account Name: $($context.Account.Id)"
     Write-Host "Account Type: $($context.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)
-
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
-
-    # Checking if the current account type is "User"
-    if ($context.Account.Type -ne "User")
-    {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
 
     Write-Host "*** To Set Minimum TLS version for App Services in a Subscription, Contributor and higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
@@ -194,7 +232,7 @@ function Set-RequiredTLSVersion
     # No file path provided as input to the script. Fetch all App Services in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        Write-Host "Fetching all App Services and their respective deployments slots in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all App Services and their respective deployments slots in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Default)
 
         # Get all App Services in a Subscription
         $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
@@ -208,7 +246,7 @@ function Set-RequiredTLSVersion
             break
         }
 
-        Write-Host "Fetching all App Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all App Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Default)
 
         $appServiceDetails = Import-Csv -LiteralPath $FilePath
         $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
@@ -254,10 +292,9 @@ function Set-RequiredTLSVersion
         break
     }
   
-    Write-Host "Found $($totalAppServices) App Service(s) and $($totalAppServicesSlots) deployment slot(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found $($totalAppServices) App Service(s) and $($totalAppServicesSlots) non-production slot(s)." -ForegroundColor $([Constants]::MessageType.Info)
 
-    # ASK: how to get this value from config files 
-    $minTLSVersion = 1.2
+    $requiredMinTLSVersion = 1.2
 
     if ($DryRun)
     {
@@ -277,19 +314,19 @@ function Set-RequiredTLSVersion
             {
                 #Write-Host "Fetching App Service configuration: Resource Name - $($resourceName), Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName)"
             
-                $MinTLSVersionSetOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).SiteConfig.MinTlsVersion
+                $MinTLSVersionSetOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).SiteConfig.MinTLSVersion
 
-                if($MinTLSVersionSetOnProductionSlot -cge $minTLSVersion)
+                if($MinTLSVersionSetOnProductionSlot -ge $requiredMinTLSVersion)
                 {
-                    $appServicesWithMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                       @{N='ResourceName';E={$resourceName}},
+                    $appServicesWithMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceName';E={$resourceName}},
+                                                                                       @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                                        @{N='CurrentMinTLSVersionSet';E={$MinTLSVersionSetOnProductionSlot}},
                                                                                        @{N='ResourceID';E={$resourceId}}
                 }
                 else
                 {
-                    $appServicesWithoutMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                       @{N='ResourceName';E={$resourceName}},
+                    $appServicesWithoutMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceName';E={$resourceName}},
+                                                                                       @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                                        @{N='CurrentMinTLSVersionSet';E={$MinTLSVersionSetOnProductionSlot}},
                                                                                        @{N='ResourceID';E={$resourceId}}
                 }
@@ -304,19 +341,19 @@ function Set-RequiredTLSVersion
                     $nonProductionSlots | ForEach-Object {
                         $nonProductionSlot = $_
                         $nonProductionSlotName = $_.Split("/")[1] 
-                        $MinTLSVersionSetOnNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $nonProductionSlotName).SiteConfig.MinTlsVersion
+                        $MinTLSVersionSetOnNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $nonProductionSlotName).SiteConfig.MinTLSVersion
 
-                        if($MinTLSVersionSetOnNonProductionSlot -cge $minTLSVersion)
+                        if($MinTLSVersionSetOnNonProductionSlot -ge $requiredMinTLSVersion)
                         {
-                            $appServicesWithMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                           @{N='ResourceName';E={$nonProductionSlot}},
+                            $appServicesWithMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceName';E={$nonProductionSlot}},
+                                                                                           @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                                            @{N='CurrentMinTLSVersionSet';E={$MinTLSVersionSetOnNonProductionSlot}},
                                                                                            @{N='ResourceID';E={$resourceId}}
                         }
                         else
                         {
-                            $appServicesWithoutMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                           @{N='ResourceName';E={$nonProductionSlot}},
+                            $appServicesWithoutMinTLSVersion += $appServiceResource | Select-Object @{N='ResourceName';E={$nonProductionSlot}},
+                                                                                           @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                                            @{N='CurrentMinTLSVersionSet';E={$MinTLSVersionSetOnNonProductionSlot}},
                                                                                            @{N='ResourceID';E={$resourceId}}
                         }
@@ -330,7 +367,7 @@ function Set-RequiredTLSVersion
             }
         }
     
-        Write-Host "Found $(($appServicesWithMinTLSVersion | Measure-Object).Count) App Service(s)/Non-production slot(s) set to Minimum TLS Version:" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found $(($appServicesWithMinTLSVersion | Measure-Object).Count) App Service(s)/Non-production slot(s) set to Minimum TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
         $appServicesWithMinTLSVersion | Format-table
     
         $totalAppServicesWithoutMinTLSVersion = ($appServicesWithoutMinTLSVersion | Measure-Object).Count
@@ -341,22 +378,26 @@ function Set-RequiredTLSVersion
             break
         }
 
-        Write-Host "Found $(($appServicesWithoutMinTLSVersion | Measure-Object).Count) App Service(s)/Non-production slot(s) not set to Minimum TLS Version." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found $(($appServicesWithoutMinTLSVersion | Measure-Object).Count) App Service(s)/Non-production slot(s) not set to Minimum TLS Version." -ForegroundColor $([Constants]::MessageType.Info)
         $appServicesWithoutMinTLSVersion | Format-table
 
-
+        
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 3 of 4] Backing up App Services details to $($backupFolderPath)"
-    
-        # Backing up App Services details.
-        $backupFile = "$($backupFolderPath)\AppServicesWithoutMinReqTLSVersion.csv"
+        
+        if(-not $SkipBackup)
+        {
+            Write-Host "[Step 3 of 4] Backing up App Services details to $($backupFolderPath)"
+        
+            # Backing up App Services details.
+            $backupFile = "$($backupFolderPath)\AppServicesWithoutMinReqTLSVersion.csv"
 
-        $appServicesWithoutMinTLSVersion | Export-CSV -Path $backupFile -NoTypeInformation
-        Write-Host "App Services details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
+            $appServicesWithoutMinTLSVersion | Export-CSV -Path $backupFile -NoTypeInformation
+            Write-Host "App Services details have been backed up to: $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
 
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to set minimum TLS Version for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::DoubleDashLine)
+            Write-Host "[Step 4 of 4] App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to set minimum TLS Version for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        }
     }
     else
     {
@@ -378,7 +419,7 @@ function Set-RequiredTLSVersion
         }
         else
         {
-            Write-Host "'Force' flag is provided. Minimum TLS Versoin will be set on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Minimum TLS Version will be set on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         Write-Host $([Constants]::DoubleDashLine)
@@ -413,18 +454,18 @@ function Set-RequiredTLSVersion
                 {
                     $appService | Add-Member -NotePropertyName PreviousMinTLSVersion -NotePropertyValue $CurrentMinTLSVersionSet
                     
-                    $UpdatedMinTLSVersion = $(Set-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -MinTlsVersion $minTLSVersion).Siteconfig.MinTlsVersion
+                    $UpdatedMinTLSVersion = $(Set-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -MinTLSVersion $requiredMinTLSVersion).Siteconfig.MinTLSVersion
 
-                    if($UpdatedMinTLSVersion -cge $minTLSVersion)
+                    if($UpdatedMinTLSVersion -ge $requiredMinTLSVersion)
                     {
                         Write-Host "Successfully set minimum TLS version on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
-                        $appService.CurrentMinTLSVersionSet = $minTLSVersion
+                        $appService.CurrentMinTLSVersionSet = $requiredMinTLSVersion
                         $appServicesRemediated += $appService
                     }
                     else
                     {
                         $appServicesSkipped += $appService
-                        Write-Host "-- Error setting minimum TLS version on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Error setting minimum TLS version on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host "Skipping this App Service." -ForegroundColor $([Constants]::MessageType.Error)
                         return;
                     }
@@ -446,18 +487,18 @@ function Set-RequiredTLSVersion
 
                     $slotResourceName = $resourceName.Split('/')[0]
                     $slotName = $resourceName.Split('/')[1]
-                    $UpdatedMinTLSVersion = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $slotResourceName -Slot $slotName -MinTlsVersion $minTLSVersion).Siteconfig.MinTlsVersion
+                    $UpdatedMinTLSVersion = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $slotResourceName -Slot $slotName -MinTLSVersion $requiredMinTLSVersion).Siteconfig.MinTLSVersion
 
-                    if($UpdatedMinTLSVersion -cge $minTLSVersion)
+                    if($UpdatedMinTLSVersion -ge $requiredMinTLSVersion)
                     {
                         Write-Host "Successfully set minimum TLS version on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
-                        $appService.CurrentMinTLSVersionSet = $minTLSVersion
+                        $appService.CurrentMinTLSVersionSet = $requiredMinTLSVersion
                         $appServicesRemediated += $appService
                     }
                     else
                     {
                         $appServicesSkipped += $appService
-                        Write-Host "-- Error setting minimum TLS version on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Error setting minimum TLS version on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host "Skipping this App Service." -ForegroundColor $([Constants]::MessageType.Error)
                         return;
                     }
@@ -474,7 +515,7 @@ function Set-RequiredTLSVersion
             $params = @{
                 ResourceName      = "freyatestwebapp/testing2"
                 ResourceGroupName = "freyamehtaTestRG"
-                PropertyObject    = @{ minTlsVersion = 1.2 }
+                PropertyObject    = @{ requiredMinTLSVersion = 1.2 }
                 ResourceType      = 'Microsoft.Web/sites/slots'
             }
 
@@ -613,9 +654,8 @@ function Reset-RequiredTLSVersion
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
-        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
-        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break
     }
 
     # Setting up context for the current Subscription.
@@ -627,15 +667,6 @@ function Reset-RequiredTLSVersion
     Write-Host "Account Name: $($context.Account.Id)"
     Write-Host "Account Type: $($context.Account.Type)"
     Write-Host $([Constants]::SingleDashLine)
-
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
-
-    # Checking if the current account type is "User"
-    if ($context.Account.Type -ne "User")
-    {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
 
     Write-Host "*** To Reset Minimum TLS version for for App Services in a Subscription, Contributor and higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::DoubleDashLine)
@@ -670,7 +701,8 @@ function Reset-RequiredTLSVersion
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host "Minimum TLS Version will be reset on the production slot for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "Minimum TLS Version will be reset on the production slot for the following App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+    $validAppServiceDetails | Format-Table
 
     $slotsBeingRolledBackMessage = "production slot"
 
@@ -702,8 +734,7 @@ function Reset-RequiredTLSVersion
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Resetting Minimum TLS Version for App Service:" -ForegroundColor $([Constants]::MessageType.Warning)
-    $validAppServiceDetails | Format-Table
+    Write-Host "[Step 3 of 3] Resetting Minimum TLS Version for App Service..." -ForegroundColor $([Constants]::MessageType.Warning)
 
     # Includes App Services, to which, previously made changes were successfully rolled back.
     $appServicesRolledBack = @()
@@ -725,7 +756,7 @@ function Reset-RequiredTLSVersion
             if(-not ($resourceName.Contains("/")))
             {
                 #Appservice
-                $CurrentMinTLSVersion = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -ErrorAction SilentlyContinue).SiteConfig.MinTlsVersion
+                $CurrentMinTLSVersion = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -ErrorAction SilentlyContinue).SiteConfig.MinTLSVersion
                 
                 if($CurrentMinTLSVersion -eq $PreviousMinTLSVersion)
                 {
@@ -738,7 +769,7 @@ function Reset-RequiredTLSVersion
                     return
                 }
                 
-                $UpdatedMinTLSVersion = $(Set-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -MinTlsVersion $PreviousMinTLSVersion).Siteconfig.MinTlsVersion
+                $UpdatedMinTLSVersion = $(Set-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -MinTLSVersion $PreviousMinTLSVersion).Siteconfig.MinTLSVersion
                 
                 if($UpdatedMinTLSVersion -ne $PreviousMinTLSVersion)
                 {
@@ -757,14 +788,12 @@ function Reset-RequiredTLSVersion
                                                                         @{N='CurrentMinTLSVersionSet';E={$UpdatedMinTLSVersion}},
                                                                         @{N='ResourceID';E={$resourceId}}
             }
-            else
+            elseif(-not $ExcludeNonProductionSlots)
             {
                 #Appservice slot
                 $slotResourceName = $resourceName.Split('/')[0]
                 $slotName = $resourceName.Split('/')[1]
-
-
-                $CurrentMinTLSVersion = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $nonProductionSlotName).SiteConfig.MinTlsVersion
+                $CurrentMinTLSVersion = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $nonProductionSlotName).SiteConfig.MinTLSVersion
             
                 if($CurrentMinTLSVersion -eq $PreviousMinTLSVersion)
                 {
@@ -777,7 +806,7 @@ function Reset-RequiredTLSVersion
                     return
                 }
                 
-                $UpdatedMinTLSVersion = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $slotResourceName -Slot $slotName -MinTlsVersion $PreviousMinTLSVersion).Siteconfig.MinTlsVersion
+                $UpdatedMinTLSVersion = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $slotResourceName -Slot $slotName -MinTLSVersion $PreviousMinTLSVersion).Siteconfig.MinTLSVersion
 
                 if($UpdatedMinTLSVersion -ne $PreviousMinTLSVersion)
                 {
