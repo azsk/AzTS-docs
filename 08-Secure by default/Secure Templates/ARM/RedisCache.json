@@ -1,0 +1,82 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1318.3566",
+      "templateHash": "17779107242278664193"
+    }
+  },
+  "parameters": {
+    "redisCacheName": {
+      "type": "string",
+      "defaultValue": "[format('redis-cache-{0}', uniqueString(resourceGroup().id, utcNow()))]",
+      "metadata": {
+        "description": "Specify the name of the Azure Redis Cache instance to create."
+      }
+    },
+    "redisCacheLocation": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Specify the Azure region of the Azure Redis Cache instance to create. The default location is same as the enclosing Resource Group's location."
+      }
+    },
+    "redisCacheSku": {
+      "type": "string",
+      "defaultValue": "Standard",
+      "metadata": {
+        "description": "Specify the pricing tier of the new Azure Redis Cache instance. The default SKU is 'Standard'."
+      },
+      "allowedValues": [
+        "Basic",
+        "Premium",
+        "Standard"
+      ]
+    },
+    "redisCacheFamily": {
+      "type": "string",
+      "defaultValue": "C",
+      "metadata": {
+        "description": "Specify the family for the SKU. 'C' = Basic/Standard, 'P' = Premium. The default SKU family is 'C'."
+      },
+      "allowedValues": [
+        "C",
+        "P"
+      ]
+    },
+    "redisCacheCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Specify the size of the new Azure Redis Cache instance. Valid values: for C (Basic/Standard) family (0, 1, 2, 3, 4, 5, 6), for P (Premium) family (1, 2, 3, 4)."
+      },
+      "allowedValues": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Cache/Redis",
+      "apiVersion": "2019-07-01",
+      "name": "[parameters('redisCacheName')]",
+      "location": "[parameters('redisCacheLocation')]",
+      "properties": {
+        "sku": {
+          "capacity": "[parameters('redisCacheCapacity')]",
+          "family": "[parameters('redisCacheFamily')]",
+          "name": "[parameters('redisCacheSku')]"
+        },
+        "enableNonSslPort": false // Azure_RedisCache_DP_Use_SSL_Port - Disable non-SSL port.
+      }
+    }
+  ]
+}
