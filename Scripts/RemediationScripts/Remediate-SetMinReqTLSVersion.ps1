@@ -379,7 +379,7 @@ function Set-AppServiceRequiredTLSVersion
         }
 
         Write-Host "Following $(($appServicesWithMinTLSVersion | Measure-Object).Count) App Service(s)/Non-production slot(s) are on required minimum TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
-        $appServicesWithMinTLSVersion | Format-table
+        $appServicesWithMinTLSVersion | Format-table -AutoSize -Wrap
     
         $totalAppServicesWithoutMinTLSVersion = ($appServicesWithoutMinTLSVersion | Measure-Object).Count
 
@@ -390,7 +390,7 @@ function Set-AppServiceRequiredTLSVersion
         }
 
         Write-Host "Following $(($appServicesWithoutMinTLSVersion | Measure-Object).Count) App Service(s)/Non-production slot(s) are not on required minimum TLS Version." -ForegroundColor $([Constants]::MessageType.Info)
-        $appServicesWithoutMinTLSVersion | Format-table
+        $appServicesWithoutMinTLSVersion | Format-table -AutoSize -Wrap
 
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 3 of 4] Backing up App Services details..."
@@ -408,8 +408,8 @@ function Set-AppServiceRequiredTLSVersion
     }
     else {
         $appServicesWithoutMinTLSVersion = $validAppServiceDetails
-        Write-Host "Following resources (found from the provided $($FilePath)) do not have required minimum TLS version:"
-        $appServicesWithoutMinTLSVersion | Format-Table
+        #Write-Host "Following resources (found from the provided $($FilePath)) do not have required minimum TLS version:"
+        $appServicesWithoutMinTLSVersion | Format-Table -AutoSize -Wrap
 
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 3 of 4] Backing up App Services details..." 
@@ -551,11 +551,11 @@ function Set-AppServiceRequiredTLSVersion
             Write-Host "Minimum TLS Version successfully set on $($($appServicesRemediated | Measure-Object).Count) out of $($totalAppServicesWithoutMinTLSVersion) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
         }
 
-        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=30;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
-                        @{Expression={$_.PreviousMinTLSVersion};Label="Previous TLS Version Set";Width=20;Alignment="left"},
-                        @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version Set";Width=20;Alignment="left"}
+        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=5;Alignment="left"},
+                        @{Expression={$_.ResourceName};Label="Resource Name";Width=5;Alignment="left"},
+                        @{Expression={$_.PreviousMinTLSVersion};Label="Previous TLS Version Set";Width=5;Alignment="left"},
+                        @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version Set";Width=5;Alignment="left"}
 
 
         Write-Host $([Constants]::DoubleDashLine)
@@ -564,7 +564,7 @@ function Set-AppServiceRequiredTLSVersion
         if ($($appServicesRemediated | Measure-Object).Count -gt 0)
         {
             Write-Host "Minimum TLS Version successfully set on the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Default)
-            $appServicesRemediated | Format-Table -Property $colsProperty -Wrap
+            $appServicesRemediated | Format-Table -Property $colsProperty -Wrap -AutoSize
 
             # Write this to a file.
             $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServices.csv"
@@ -577,13 +577,13 @@ function Set-AppServiceRequiredTLSVersion
         if ($($appServicesSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host "`nError setting minimum TLS version on the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $appServicesSkipped | Format-Table -Property $colsProperty -Wrap
+            $appServicesSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
             
             # Write this to a file.
             $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServices.csv"
             $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "This information has been saved to $($appServicesSkippedFile)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "**Note:** This information has been saved to $($appServicesSkippedFile)" -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -726,7 +726,7 @@ function Reset-AppServiceRequiredTLSVersion
     }
 
     Write-Host "Minimum TLS Version will be reset on the production slot for the following App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
-    $validAppServiceDetails | Format-Table
+    $validAppServiceDetails | Format-Table -AutoSize -Wrap
 
     $slotsBeingRolledBackMessage = "production slot"
 
@@ -777,7 +777,7 @@ function Reset-AppServiceRequiredTLSVersion
 
         try
         {
-            Write-Host "Resetting App Service configuration: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName)"
+            Write-Host "Resetting App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]"
             if(-not ($resourceName.Contains("/")))
             {
                 #Appservice
@@ -869,10 +869,10 @@ function Reset-AppServiceRequiredTLSVersion
         Write-Host "Minimum TLS Version successfully set on the $($slotsBeingRolledBackMessage) for $($($appServicesRolledBack | Measure-Object).Count) out of $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
-    $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                    @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
-                    @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=20;Alignment="left"}
+    $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"},
+                    @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=10;Alignment="left"},
+                    @{Expression={$_.ResourceName};Label="Resource Name";Width=10;Alignment="left"},
+                    @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=5;Alignment="left"}
 
     if ($($appServicesRolledBack | Measure-Object).Count -gt 0 -or $($appServicesSkipped | Measure-Object).Count -gt 0)
     {
@@ -882,7 +882,7 @@ function Reset-AppServiceRequiredTLSVersion
         if ($($appServicesRolledBack | Measure-Object).Count -gt 0)
         {
             Write-Host "Minimum TLS Version successfully set on the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $appServicesRolledBack | Format-Table -Property $colsProperty -Wrap
+            $appServicesRolledBack | Format-Table -Property $colsProperty -Wrap -AutoSize
 
             # Write this to a file.
             $appServicesRolledBackFile = "$($backupFolderPath)\RolledBackAppServices.csv"
@@ -893,12 +893,12 @@ function Reset-AppServiceRequiredTLSVersion
         if ($($appServicesSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host "`nError setting minimum TLS Version for the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $appServicesSkipped | Format-Table -Property $colsProperty -Wrap
+            $appServicesSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
             
             # Write this to a file.
             $appServicesSkippedFile = "$($backupFolderPath)\RollbackSkippedAppServices.csv"
             $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to $($appServicesSkippedFile)"
+            Write-Host "**Note:** This information has been saved to $($appServicesSkippedFile)"
         }
     }
      
