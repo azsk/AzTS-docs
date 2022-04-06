@@ -465,7 +465,7 @@ function Set-AppServiceRequiredTLSVersion
                 #App Service
                 try
                 {
-                    Write-Host "Setting minimum TLS Version for App Service: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName)" -ForegroundColor $([Constants]::MessageType.Default)
+                    Write-Host "Setting minimum TLS Version for App Service: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Default)
 
                     $appService | Add-Member -NotePropertyName PreviousMinTLSVersion -NotePropertyValue $CurrentMinTLSVersionSet
                     
@@ -503,7 +503,7 @@ function Set-AppServiceRequiredTLSVersion
 
                     $slotResourceName = $resourceName.Split('/')[0]
                     $slotName = $resourceName.Split('/')[1]
-                    Write-Host "Setting minimum TLS Version for non-production slot: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($slotResourceName), Slot Name - $($slotName)" -ForegroundColor $([Constants]::MessageType.Default)
+                    Write-Host "Setting minimum TLS Version for non-production slot: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($slotResourceName)], Slot Name - [$($slotName)]" -ForegroundColor $([Constants]::MessageType.Default)
                     $UpdatedMinTLSVersion = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $slotResourceName -Slot $slotName -MinTLSVersion $requiredMinTLSVersion).Siteconfig.MinTLSVersion
 
                     if($UpdatedMinTLSVersion -ge $requiredMinTLSVersion)
