@@ -554,8 +554,8 @@ function Set-AppServiceRequiredTLSVersion
         $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=5;Alignment="left"},
                         @{Expression={$_.ResourceName};Label="Resource Name";Width=5;Alignment="left"},
-                        @{Expression={$_.PreviousMinTLSVersion};Label="Previous TLS Version Set";Width=5;Alignment="left"},
-                        @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version Set";Width=5;Alignment="left"}
+                        @{Expression={$_.PreviousMinTLSVersion};Label="Previous TLS Version";Width=5;Alignment="left"},
+                        @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=5;Alignment="left"}
 
 
         Write-Host $([Constants]::DoubleDashLine)
