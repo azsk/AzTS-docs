@@ -1,0 +1,121 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1318.3566",
+      "templateHash": "9274402871757231961"
+    }
+  },
+  "parameters": {
+    "apiManagementServiceName": {
+      "type": "string",
+      "defaultValue": "[format('api-management-{0}', uniqueString(resourceGroup().id, utcNow()))]",
+      "maxLength": 50,
+      "minLength": 1,
+      "metadata": {
+        "description": "Specify a name for the API Management service. Use only alphanumerics and hyphens. The name must start with a letter and end with an alphanumeric. The name must be unique across Azure."
+      }
+    },
+    "apiManagementServiceRegion": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Specify the Azure region the API Management service is to be hosted in. Not every resource is available in every region. The default location is same as the enclosing Resource Group's location."
+      }
+    },
+    "publisherName": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the name of your organization for use in the developer portal and e-mail notifications."
+      }
+    },
+    "publisherEmail": {
+      "type": "string",
+      "metadata": {
+        "description": "Specify the e-mail address to receive all system notifications sent from API Management."
+      }
+    },
+    "skuName": {
+      "type": "string",
+      "defaultValue": "Developer",
+      "metadata": {
+        "description": "Specify the name of the SKU to be used for the API Management service. The default SKU type is 'Developer'."
+      },
+      "allowedValues": [
+        "Basic",
+        "Consumption",
+        "Developer",
+        "Isolated",
+        "Premium",
+        "Standard"
+      ]
+    },
+    "skuCapacity": {
+      "type": "int",
+      "defaultValue": 1,
+      "minValue": 0,
+      "metadata": {
+        "description": "Specify the capacity of the SKU to be used for the API Management service. The capacity for 'Consumption' SKU is 0. The capacity for 'Developer' SKU is 1."
+      }
+    }
+  },
+  "variables": {
+    "protocolAndCipherSettingsDefault": {
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11": false,
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10": false,
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11": false,
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10": false,
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30": false,
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Protocols.Server.Http2": false
+    },
+    "protocolAndCipherSettingsExtended": {
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168": false,
+      "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30": false
+    },
+    "isConsumptionTier": "[if(equals(parameters('skuName'), 'Consumption'), true(), false())]",
+    "skuCapacityFinal": "[if(variables('isConsumptionTier'), 0, parameters('skuCapacity'))]"
+  },
+  "resources": [
+    {
+      "condition": "[not(variables('isConsumptionTier'))]",
+      "type": "Microsoft.ApiManagement/service/tenant",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('apiManagementServiceName'), 'access')]",
+      "properties": {
+        "enabled": false // Azure_APIManagement_AuthN_Disable_Management_API - Disable Management REST API.
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+      ]
+    },
+    {
+      "condition": "[not(variables('isConsumptionTier'))]",
+      "type": "Microsoft.ApiManagement/service/portalsettings",
+      "apiVersion": "2021-08-01",
+      "name": "[format('{0}/{1}', parameters('apiManagementServiceName'), 'signup')]",
+      "properties": {
+        "enabled": false // Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN - Disable basic authentication.
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ApiManagement/service",
+      "apiVersion": "2021-08-01",
+      "name": "[parameters('apiManagementServiceName')]",
+      "location": "[parameters('apiManagementServiceRegion')]",
+      "sku": {
+        "capacity": "[variables('skuCapacityFinal')]",
+        "name": "[parameters('skuName')]"
+      },
+      "properties": {
+        "publisherEmail": "[parameters('publisherEmail')]",
+        "publisherName": "[parameters('publisherName')]",
+        "customProperties": "[if(variables('isConsumptionTier'), variables('protocolAndCipherSettingsDefault'), union(variables('protocolAndCipherSettingsDefault'), variables('protocolAndCipherSettingsExtended')))]" // Azure_APIManagement_DP_Use_Secure_TLS_Version - Disable insecure protocols and ciphers.
+      }
+    }
+  ]
+}

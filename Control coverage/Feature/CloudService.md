@@ -35,7 +35,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - **Azure Portal** 
 
-	 Get an SSL certificate from a trusted certificate provider. Upload that certificate to cloud service. Update input endpoints by renaming HTTP to HTTPS in .csdef. Refer: https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-configure-ssl-certificate 
+	 Get an SSL certificate from a trusted certificate provider. Refer [Configuring TLS for an application in Azure](https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-configure-ssl-certificate-portal) for more information on how to use this certificate and configure TLS for the Cloud Service endpoints. 
 
 <!--
 - **PowerShell** 
@@ -89,7 +89,7 @@ Cloud services where automatic updates are disabled are likely to miss important
 
 - **Azure Portal** 
 
-	To enable automatic updates: Go to Azure portal --> your Cloud Service --> under configure tab --> set operating system version to automatic. 
+	To enable automatic updates: Go to Azure portal --> your 'Cloud Service' --> under 'settings' section select 'Configuration' tab --> set 'OS version' to 'automatic' from drop-down menu --> Select 'Save'.
 
 <!--
 - **PowerShell** 
@@ -162,11 +162,11 @@ Antimalware provides real-time protection, scheduled scanning, malware remediati
  <br />
 
 - ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
-**Properties:** [*].name
+**Properties:** [\*].name
  <br />
 
 - ARM API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
-**Properties:** name: 'PaaSAntimalware-****', [*].properties.name, [*].properties.state
+**Properties:** name: 'PaaSAntimalware-****', [\*].properties.name, [\*].properties.state
  <br />
 
 <br />
@@ -217,11 +217,11 @@ Remote desktop access requires inbound ports to be opened. These ports become ea
  <br />
 
 - ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
-**Properties:** [*].name
+**Properties:** [\*].name
  <br />
 
 - ARM API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
-**Properties:** [*].properties.name, [*].properties.state
+**Properties:** [\*].properties.name, [\*].properties.state
  <br />
 
 <br />
