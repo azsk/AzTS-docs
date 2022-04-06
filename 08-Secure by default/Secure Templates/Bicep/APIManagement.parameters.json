@@ -1,24 +1,24 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "apiManagementServiceName": {
-            "value": "<name of the API Management service>"
-        },
-        "apiManagementServiceRegion": {
-            "value": "<Azure region the API Management service is to be hosted in>"
-        },
-        "publisherName": {
-            "value": "<name of your organization for use in the developer portal and e-mail notifications>"
-        },
-        "publisherEmail": {
-            "value": "<e-mail address to receive all system notifications sent from API Management>"
-        },
-        "skuName": {
-            "value": "<name of the SKU to be used for the API Management service>"
-        },
-        "skuCapacity": {
-            "value": 1
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "apiManagementServiceName": {
+      "value": "<name of the API Management service>"
+    },
+    "apiManagementServiceRegion": {
+      "value": "<Azure region the API Management service is to be hosted in>"
+    },
+    "publisherName": {
+      "value": "<name of your organization for use in the developer portal and e-mail notifications>"
+    },
+    "publisherEmail": {
+      "value": "<e-mail address to receive all system notifications sent from API Management>"
+    },
+    "skuName": {
+      "value": "<name of the SKU to be used for the API Management service>"
+    },
+    "skuCapacity": {
+      "value": 1
     }
+  }
 }

@@ -1,161 +1,58 @@
-@description('The name of the new database server to create.')
-param serverName string
+@description('''
+Specify the name of an existing SQL database server in which the database is to be created.
+Use only lowercase letters, numbers and hyphens.
+The name must not start or end with a hyphen and must be 1 - 63 characters in length.
+''')
+@minLength(1)
+@maxLength(63)
+param sqlServerName string
 
-@description('The location of the database server.')
-param serverLocation string
+@description('''
+Specify the name of the new SQL database to create.
+The following characters are not allowed: \'<>*%&:\\/?\' or control characters.
+The name must not start or end with a period or space and must be 1 - 128 characters in length.
+The name of a database must be unique within the enclosing SQL server.
+''')
+@minLength(1)
+@maxLength(128)
+param sqlDatabaseName string = '${sqlServerName}-sql-database-${utcNow()}'
 
-@description('The account name to use for the database server administrator.')
-param administratorLogin string
+@description('Specify the Azure region where the SQL database is to be created. The default location is same as the enclosing Resource Group\'s location.')
+param sqlDatabaseLocation string = resourceGroup().location
 
-@description('The password to use for the database server administrator.')
-@secure()
-param administratorLoginPassword string
-
-@description('The name of the new database to create.')
-param databaseName string
-
-@description('The database collation for governing the proper use of characters.')
-param collation string = 'SQL_Latin1_General_CP1_CI_AS'
-
-@description('The type of database to create. The available options are: Web, Business, Basic, Standard, and Premium.')
-param edition string = 'Basic'
-
-@description('The maximum size, in bytes, for the database')
-param maxSizeBytes string = '1073741824'
-
-@description('The name corresponding to the performance level for edition. The available options are: Shared, Basic, S0, S1, S2, S3, P1, P2, and P3.')
-param requestedServiceObjectiveName string = 'Basic'
-
-@description('The name of the new storage account to create.')
-param storageAccountName string
-
-@description('Email address for alerts.')
-param emailAddresses string = 'user@contoso.com'
-param AAD_Admin_Login string
-param AAD_Admin_ObjectID string
-param AAD_TenantId string
-param storageEndpoint string = 'https://${storageAccountName}.blob.core.windows.net'
+@description('Specify the SKU of the SQL database to create.')
+param sqlDatabaseSku object = {
+  name: 'Basic'
+  capacity: 5
+  tier: 'Basic'
+}
 
 @allowed([
-  'Standard_LRS'
-  'Standard_ZRS'
-  'Standard_GRS'
-  'Standard_RAGRS'
-  'Premium_LRS'
+  false
+  true
 ])
-param storageType string = 'Standard_GRS'
+@description('Specify whether Transparent Data Encryption (TDE) is to be enabled on the SQL database. Valid values: true, false. The default value is \'true\'.')
+param sqlDatabaseEnableTde bool = true
 
-resource serverName_resource 'Microsoft.Sql/servers@2014-04-01-preview' = {
-  name: serverName
-  location: serverLocation
-  properties: {
-    administratorLogin: administratorLogin
-    administratorLoginPassword: administratorLoginPassword
-    version: '12.0'
-  }
+resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' existing = {
+  name: sqlServerName
 }
-
-resource serverName_databaseName 'Microsoft.Sql/servers/databases@2014-04-01-preview' = {
-  parent: serverName_resource
-  name: '${databaseName}'
-  location: serverLocation
-  properties: {
-    edition: edition
-    collation: collation
-    maxSizeBytes: maxSizeBytes
-    requestedServiceObjectiveName: requestedServiceObjectiveName
+  
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-08-01-preview' = {
+  name: sqlDatabaseName
+  location: sqlDatabaseLocation
+  parent: sqlServer
+  sku: {
+    name: sqlDatabaseSku.name
+    capacity: sqlDatabaseSku.capacity
+    tier: sqlDatabaseSku.tier
   }
-}
 
-resource serverName_databaseName_current 'Microsoft.Sql/servers/databases/transparentDataEncryption@2014-04-01-preview' = {
-  parent: serverName_databaseName
-  name: 'current'
-  location: null
-  properties: {
-    status: 'Enabled'
+  // Azure_SQLDatabase_DP_Enable_TDE - Enable Transparent Data Encryption (TDE) on the SQL database.
+  resource sqlDatabaseTde 'transparentDataEncryption@2021-08-01-preview' = {
+    name: 'current'
+    properties: {
+      state: sqlDatabaseEnableTde ? 'Enabled' : 'Disabled' // Azure_SQLDatabase_DP_Enable_TDE - Enable Transparent Data Encryption (TDE) on the SQL database.
+    }
   }
-  dependsOn: [
-    serverName_resource
-  ]
-}
-
-resource serverName_databaseName_Default 'Microsoft.Sql/servers/databases/auditingSettings@2015-05-01-preview' = {
-  parent: serverName_databaseName
-  name: 'default'
-  location: serverLocation
-  properties: {
-    state: 'Enabled'
-    storageEndpoint: storageEndpoint
-    storageAccountAccessKey: listKeys(resourceId('Microsoft.Storage/storageAccounts', storageAccountName), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value
-    retentionDays: 0
-    auditActionsAndGroups: [
-      'SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP'
-      'DATABASE_LOGOUT_GROUP'
-      'USER_CHANGE_PASSWORD_GROUP'
-    ]
-    storageAccountSubscriptionId: subscription().subscriptionId
-    isStorageSecondaryKeyInUse: false
-  }
-  dependsOn: [
-    serverName_resource
-  ]
-}
-
-resource serverName_AllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallrules@2014-04-01-preview' = {
-  parent: serverName_resource
-  location: serverLocation
-  name: 'AllowAllWindowsAzureIps'
-  properties: {
-    endIpAddress: '0.0.0.0'
-    startIpAddress: '0.0.0.0'
-  }
-}
-
-resource serverName_Default 'Microsoft.Sql/servers/auditingSettings@2015-05-01-preview' = {
-  parent: serverName_resource
-  name: 'Default'
-  location: serverLocation
-  properties: {
-    State: 'Enabled'
-    storageEndpoint: storageEndpoint
-    storageAccountAccessKey: listKeys(resourceId('Microsoft.Storage/storageAccounts', storageAccountName), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value
-    retentionDays: 0
-    auditActionsAndGroups: null
-    storageAccountSubscriptionId: subscription().subscriptionId
-    isStorageSecondaryKeyInUse: false
-  }
-}
-
-resource Microsoft_Sql_servers_securityAlertPolicies_serverName_Default 'Microsoft.Sql/servers/securityAlertPolicies@2015-05-01-preview' = {
-  parent: serverName_resource
-  name: 'Default'
-  properties: {
-    state: 'Enabled'
-    disabledAlerts: ''
-    emailAddresses: emailAddresses
-    emailAccountAdmins: 'Enabled'
-    storageEndpoint: storageEndpoint
-    storageAccountAccessKey: listKeys(resourceId('Microsoft.Storage/storageAccounts', storageAccountName), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value
-    retentionDays: 0
-  }
-  dependsOn: [
-    serverName_databaseName
-    serverName_Default
-  ]
-}
-
-resource serverName_activeDirectory 'Microsoft.Sql/servers/administrators@2014-04-01-preview' = {
-  parent: serverName_resource
-  name: 'activeDirectory'
-  location: serverLocation
-  properties: {
-    administratorType: 'ActiveDirectory'
-    login: AAD_Admin_Login
-    sid: AAD_Admin_ObjectID
-    tenantId: AAD_TenantId
-  }
-  dependsOn: [
-    serverName_databaseName
-    serverName_Default
-  ]
 }
