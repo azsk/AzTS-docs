@@ -551,11 +551,11 @@ function Set-AppServiceRequiredTLSVersion
             Write-Host "Minimum TLS Version successfully set on $($($appServicesRemediated | Measure-Object).Count) out of $($totalAppServicesWithoutMinTLSVersion) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
         }
 
-        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"},
+        $colsProperty = @{Expression={$_.ResourceName};Label="Resource Name";Width=5;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=5;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=5;Alignment="left"},
                         @{Expression={$_.PreviousMinTLSVersion};Label="Previous TLS Version";Width=5;Alignment="left"},
-                        @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=5;Alignment="left"}
+                        @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=5;Alignment="left"},
+                        @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"}
 
 
         Write-Host $([Constants]::DoubleDashLine)
@@ -869,10 +869,10 @@ function Reset-AppServiceRequiredTLSVersion
         Write-Host "Minimum TLS Version successfully set on the $($slotsBeingRolledBackMessage) for $($($appServicesRolledBack | Measure-Object).Count) out of $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
-    $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"},
+    $colsProperty =  @{Expression={$_.ResourceName};Label="Resource Name";Width=10;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=10;Alignment="left"},
-                    @{Expression={$_.ResourceName};Label="Resource Name";Width=10;Alignment="left"},
-                    @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=5;Alignment="left"}
+                    @{Expression={$_.CurrentMinTLSVersion};Label="Current TLS Version";Width=5;Alignment="left"},
+                    @{Expression={$_.ResourceId};Label="Resource ID";Width=10;Alignment="left"}
 
     if ($($appServicesRolledBack | Measure-Object).Count -gt 0 -or $($appServicesSkipped | Measure-Object).Count -gt 0)
     {
