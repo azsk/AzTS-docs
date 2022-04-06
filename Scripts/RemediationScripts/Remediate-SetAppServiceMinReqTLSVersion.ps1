@@ -807,7 +807,7 @@ function Reset-AppServiceRequiredTLSVersion
                     return
                 }
 
-                Write-Host "Successfully resetted minimum TLS version on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully reset minimum TLS version on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
                 $appServicesRolledBack += $appService | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                         @{N='ResourceName';E={$resourceName}},
                                                                         @{N='CurrentMinTLSVersion';E={$UpdatedMinTLSVersion}},
@@ -844,7 +844,7 @@ function Reset-AppServiceRequiredTLSVersion
                     return
                 }
 
-                Write-Host "Successfully resetted minimum TLS version on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully reset minimum TLS version on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
                 $appServicesRolledBack += $appService | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                         @{N='ResourceName';E={$resourceName}},
                                                                         @{N='CurrentMinTLSVersion';E={$UpdatedMinTLSVersion}},
