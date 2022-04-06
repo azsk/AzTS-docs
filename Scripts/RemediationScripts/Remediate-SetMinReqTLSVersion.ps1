@@ -742,7 +742,7 @@ function Reset-AppServiceRequiredTLSVersion
 
     if (-not $Force)
     {
-        Write-Host "Do you want to reset minimum TLS Version on the $($slotsBeingRolledBackMessage) for all App Services?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to reset minimum TLS Version on the $($slotsBeingRolledBackMessage) for all App Services?" -ForegroundColor $([Constants]::MessageType.Info) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
 
