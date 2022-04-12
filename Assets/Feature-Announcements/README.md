@@ -1,28 +1,32 @@
-# CDN
+## Introducing Feature Announcements for AzTS-UI
 
-**Resource Type:** Microsoft.Cdn/profiles
+*Curtain opens. Tom enters.*
+
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/opening.gif" width="100%" />
+
+<br/>
+Hey folks, I am Tom, here to present the latest feature in AzTS-UI: **New Feature Announcement**
 
 
+These messages can be composed in markdown. Infact this message is being fetched from [GitHub.](https://github.com/MSFT-Chirag/AzTS-docs/blob/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/README.md) This means we can post any leverage any exisitng markdowns already hosted in GitHub and show them in the AzTS-UI.
 
-![Alt Text](http://i.stack.imgur.com/SBv4T.gif)
-___ 
+<br/>
 
-## Azure_CDN_DP_Enable_Https 
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/piano.gif" width="100%" />
 
-### Display Name 
-CDN endpoints must use HTTPS protocol while providing data to the client browser/machine or while fetching data from the origin server 
+This feature can also be used to highlight any significant developments in the framework like : 
 
-### Rationale 
-Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks. 
 
-### Control Spec 
+ 1. Multi-tenant scanning ability.
+ 2. New controls and services.
+ 3. Secure templates addition.
+ 4. Credentials scanning.
+ 
+Additionally, a semster-wise newsletter can be drafted in markdown and shown over here.
 
-> **Passed:** 
-One of the following conditions is met:
->- CDN endpoints are configured with HTTPS protocol only or HTTP to HTTPs redirection rule.
->- No CDN endpoints are present in the CDN profile.
-> 
-> **Failed:** 
-> CDN endpoints are not configured with HTTPS protocol only or HTTP to HTTPs redirection rule.
+See you soon. 
+<br/>
+> **RIP ~~Pikachu~~ and ~~Shaktiman~~.**
 
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/Secure-Templates.gif" width="100%" />
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/flying.gif" width="100%" />
+
