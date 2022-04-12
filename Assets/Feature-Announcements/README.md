@@ -2,7 +2,7 @@
 
 *Curtain opens. Tom enters.*
 
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/opening.gif" width="100%" />
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/opening.gif" width="50%" />
 
 <br/>
 Hey folks, I am Tom, here to present the latest feature in AzTS-UI: **New Feature Announcement**
@@ -12,7 +12,7 @@ These messages can be composed in markdown. Infact this message is being fetched
 
 <br/>
 
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/piano.gif" width="100%" />
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/piano.gif" width="50%" />
 <br/>
 <br/>
 
@@ -31,6 +31,5 @@ See you soon.
 > **RIP ~~Pikachu~~ and ~~Shaktiman~~.**
 
 <br/>
-<br/>
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/flying.gif" width="100%" />
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/flying.gif" width="50%" />
 
