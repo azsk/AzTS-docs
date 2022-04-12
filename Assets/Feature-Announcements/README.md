@@ -5,7 +5,7 @@
 <img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/opening.gif" width="50%" />
 
 <br/>
-Hey folks, I am Tom, here to present the latest feature in AzTS-UI: **New Feature Announcement**
+Hey folks, I am Tom, here to present the latest feature in AzTS-UI: <b style="color:#FFA500">New Feature Announcement. </b>
 
 
 These messages can be composed in markdown. Infact this message is being fetched from [GitHub.](https://github.com/MSFT-Chirag/AzTS-docs/blob/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/README.md) This means we can post any leverage any exisitng markdowns already hosted in GitHub and show them in the AzTS-UI.
@@ -26,9 +26,9 @@ This feature can also be used to highlight any significant developments in the f
  
 Additionally, a semster-wise newsletter can be drafted in markdown and shown over here.
 
-See you soon. 
-<br/>
-> **RIP ~~Pikachu~~ and ~~Shaktiman~~.**
+<b style="color:#FFA500">See you soon.</b>
+
+**RIP ~~Pikachu~~ and ~~Shaktiman~~.**
 
 <br/>
 <img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/flying.gif" width="50%" />
