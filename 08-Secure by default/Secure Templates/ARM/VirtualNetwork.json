@@ -1,72 +1,93 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "virualNetworkName": {
-          "type": "String",
-            "metadata": {
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1008.15138",
+      "templateHash": "16541473992782397555"
+    }
+  },
+  "parameters": {
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
         "description": "Name of the Virtual Netwok"
-            }
-        },
-      "NSGname": {
-        "type": "String",
-          "metadata": {
-        "description": "Name of the Security Group"
       }
-        },
-      "addressPrefix": {
-        "type": "String",
-          "metadata": {
-        "description": "Address prefix in the format '10.3.0.0/29'"
-        }
-      },
-        "subnetName": {
-            "defaultValue": "default",
-          "type": "String",
-            "metadata": {
+    },
+    "subnetName": {
+      "type": "string",
+      "defaultValue": "default",
+      "metadata": {
         "description": "Name of the SubNet"
       }
-        }
     },
-    "variables": {},
-    "resources": [
-        {
-            "type": "Microsoft.Network/networkSecurityGroups",//[Azure_VNet_NetSec_Configure_NSG]
-            "name": "[parameters('NSGname')]",
-            "apiVersion": "2017-06-01",
-            "location": "centralus",
-            "properties": {
-                "securityRules": []
-            },
-            "dependsOn": []
+    "addressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "Address prefix in the format '10.3.0.0/29'"
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "Address prefix in the format '10.3.0.0/29'"
+      }
+    },
+    "networkSecurityGroupName": {
+      "type": "string",
+      "defaultValue": "[format('{0}-subnet-nsg', parameters('subnetName'))]",
+      "metadata": {
+        "description": "Network security group name. This NSG will be associated with subnet."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
+  },
+  "functions": [],
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('networkSecurityGroupName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": []
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-05-01",
+      "name": "[parameters('virtualNetworkName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('addressPrefix')]"
+          ]
         },
-        {
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[parameters('virualNetworkName')]",
-            "apiVersion": "2017-06-01",
-            "location": "centralus",
+        "subnets": [
+          {
+            "name": "[parameters('subnetName')]",
             "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                       "[parameters('addressPrefix')]"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "default",
-                        "properties": {
-                            "addressPrefix": "[parameters('addressPrefix')]",
-                            "networkSecurityGroup": {
-                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSGname'))]"
-                            }
-                        }
-                    }
-                ]
-               },
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSGname'))]"
-            ]
-        }
-        
-    ]
+              "addressPrefix": "[parameters('subnetPrefix')]",
+              "networkSecurityGroup": { //[Azure_VNet_NetSec_Configure_NSG]
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]"
+      ]
+    }
+  ]
 }
