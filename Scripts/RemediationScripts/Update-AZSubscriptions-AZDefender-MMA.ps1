@@ -173,18 +173,18 @@ function Update-AZDefenderMMA
         Write-Host "Starting with updating defender plans to Standard" -ForegroundColor Cyan
         
         # Get current pricing tier 
-        $ascpricing = Get-AzSecurityPricing 
-        if(($ascpricing | Measure-Object).Count -gt 0)
+        $mdcpricing = Get-AzSecurityPricing 
+        if(($mdcpricing | Measure-Object).Count -gt 0)
         {                        
-            $ascpricing | Where-Object { $_.PricingTier -ne "Standard" } | ForEach-Object { Set-AzSecurityPricing -Name $_.Name -PricingTier Standard }
+            $mdcpricing | Where-Object { $_.PricingTier -ne "Standard" } | ForEach-Object { Set-AzSecurityPricing -Name $_.Name -PricingTier Standard }
             Write-Host "Completed updating defender plans to Standard" -ForegroundColor Green
         }
         else
         {
-            Write-Host "Not able to fetch the ASC Pricing details" -ForegroundColor Red
+            Write-Host "Not able to fetch the MDC Pricing details" -ForegroundColor Red
         }
         Write-Host "--------------------------------------------"; 
-        # 2)  Set auto provisioning for extensions in Azure Security Center. This script will set a single subscription for the current context
+        # 2)  Set auto provisioning for extensions in Microsoft Defender for Cloud. This script will set a single subscription for the current context
         Write-Host "Starting to update auto-provision settings to On" -ForegroundColor Cyan
         Set-AzSecurityAutoProvisioningSetting -Name "default" -EnableAutoProvision | Out-Null
         Write-Host "Completed updating auto-provision settings to On" -ForegroundColor Green

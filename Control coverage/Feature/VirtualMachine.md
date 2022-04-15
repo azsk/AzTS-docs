@@ -7,15 +7,15 @@
 - [Azure_VirtualMachine_Config_Enable_NSG](#azure_virtualmachine_config_enable_nsg)
 - [Azure_VirtualMachine_NetSec_Justify_PublicIPs](#azure_virtualmachine_netsec_justify_publicips)
 - [Azure_VirtualMachine_DP_Enable_Disk_Encryption](#azure_virtualmachine_dp_enable_disk_encryption)
-- [Azure_VirtualMachine_SI_ASC_OS_Vulnerabilities](#azure_virtualmachine_si_asc_os_vulnerabilities)
-- [Azure_VirtualMachine_SI_ASC_Recommendations](#azure_virtualmachine_si_asc_recommendations)
+- [Azure_VirtualMachine_SI_MDC_OS_Vulnerabilities](#azure_virtualmachine_si_MDC_os_vulnerabilities)
+- [Azure_VirtualMachine_SI_MDC_Recommendations](#azure_virtualmachine_si_mdc_recommendations)
 - [Azure_VirtualMachine_Audit_Enable_Diagnostics](#azure_virtualmachine_audit_enable_diagnostics)
 - [Azure_VirtualMachine_SI_Enable_Vuln_Solution](#azure_virtualmachine_si_enable_vuln_solution)
 - [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](#azure_virtualmachine_si_deploy_guestconfig_extension)
 - [Azure_VirtualMachine_SI_Enable_Monitoring_Agent](#azure_virtualmachine_si_enable_monitoring_agent)
 - [Azure_VirtualMachine_NetSec_Dont_Open_Restricted_Ports](#azure_virtualmachine_netsec_dont_open_restricted_ports)
 - [Azure_VirtualMachine_SI_Deploy_Data_Collection_Extension](#azure_virtualmachine_si_deploy_data_collection_extension)
-- [Azure_VirtualMachine_NetSec_Apply_ASC_Network_Recommendations](#azure_virtualmachine_netsec_apply_asc_network_recommendations)
+- [Azure_VirtualMachine_NetSec_Apply_MDC_Network_Recommendations](#azure_virtualmachine_netsec_apply_mdc_network_recommendations)
 - [Azure_VirtualMachine_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachine_si_remediate_security_vulnerabilities)
 - [Azure_VirtualMachine_SI_Remediate_Container_Security_Vulnerabilities](#azure_virtualmachine_si_remediate_container_security_vulnerabilities)
 - [Azure_VirtualMachine_Just_In_Time_Network_Access_Control](#azure_virtualmachine_just_in_time_network_access_control)
@@ -72,7 +72,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 
 - **Azure Portal** 
 
-	 To install antimalware, Go to Azure Portal --> VM Properties --> Extensions --> Add 'Microsoft Antimalware' --> Enable Real-Time Protection and Scheduled Scan --> Click Ok. If antimalware is already present on VM, validate and resolve endpoint protection recommendations in ASC. Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-install-endpoint-protection, https://docs.microsoft.com/en-us/azure/security/azure-security-antimalware 
+	 To install antimalware, Go to Azure Portal --> VM Properties --> Extensions --> Add 'Microsoft Antimalware' --> Enable Real-Time Protection and Scheduled Scan --> Click Ok. If antimalware is already present on VM, validate and resolve endpoint protection recommendations in MDC. Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-install-endpoint-protection, https://docs.microsoft.com/en-us/azure/security/azure-security-antimalware 
 <!--
 - **PowerShell** 
 
@@ -270,10 +270,10 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 ### Control Spec 
 
 > **Passed:** 
->ASC assessment found with Healthy status code.
+>MDC assessment found with Healthy status code.
 > 
 > **Failed:** 
-> ASC assessment found with Unhealthy status code.
+> MDC assessment found with Unhealthy status code.
 > <!--
 > **Verify:** 
 > Verify condition
@@ -285,7 +285,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 - **Azure Portal** 
 
-	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-disk-encryption?toc=%2fazure%2fsecurity%2ftoc.json. Note: After enabling disk encryption, it takes some time for changes to reflect in Azure Security Center (ASC). Thus, if you scan immediately, the control may still fail even though the VM itself shows as encrypted. Please wait a few hours to ascertain the fix. 
+	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-disk-encryption?toc=%2fazure%2fsecurity%2ftoc.json. Note: After enabling disk encryption, it takes some time for changes to reflect in Microsoft Defender for Cloud (MDC). Thus, if you scan immediately, the control may still fail even though the VM itself shows as encrypted. Please wait a few hours to ascertain the fix. 
 <!--
 - **PowerShell** 
 
@@ -313,18 +313,18 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 ___ 
 
-## Azure_VirtualMachine_SI_ASC_OS_Vulnerabilities 
+## Azure_VirtualMachine_SI_MDC_OS_Vulnerabilities 
 
 ### Display Name 
-Virtual Machine must be in a healthy state in Azure Security Center 
+Virtual Machine must be in a healthy state in Microsoft Defender for Cloud 
 
 ### Rationale 
-Azure Security Center raises alerts (which are typically indicative of resources that are not compliant with some baseline security protection). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
+Microsoft Defender for Cloud raises alerts (which are typically indicative of resources that are not compliant with some baseline security protection). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
 
 ### Control Settings 
 ```json 
 {
-    "ASCApprovedBaselineStatuses": {
+    "MDCApprovedBaselineStatuses": {
         "Linux": [
             "Healthy"
         ],
@@ -338,10 +338,10 @@ Azure Security Center raises alerts (which are typically indicative of resources
 ### Control Spec 
 
 > **Passed:** 
-> Azure Security Center (ASC) Assessment status is in the approved status(es) list.
+> Microsoft Defender for Cloud (MDC) Assessment status is in the approved status(es) list.
 > 
 > **Failed:** 
-> Azure Security Center (ASC) Assessment status is not in the approved status(es) list.
+> Microsoft Defender for Cloud (MDC) Assessment status is not in the approved status(es) list.
 > 
 <!--
 > **Verify:** 
@@ -429,7 +429,7 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
 
 - **Azure Portal** 
 
-	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates. It takes 24 hours to reflect the latest status at ASC. 
+	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates. It takes 24 hours to reflect the latest status at MDC. 
 
 - **PowerShell** 
 
@@ -457,21 +457,21 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
 
 ___ 
 -->
-## Azure_VirtualMachine_SI_ASC_Recommendations 
+## Azure_VirtualMachine_SI_MDC_Recommendations 
 
 ### Display Name 
-Virtual Machine must implement all the flagged ASC recommendations 
+Virtual Machine must implement all the flagged MDC recommendations 
 
 ### Rationale 
-Azure Security Center provide various security recommendations for resources that are not compliant with some baseline security protection. It is important that these recommendations are resolved promptly in order to eliminate the exposure to attacks. 
+Microsoft Defender for Cloud provide various security recommendations for resources that are not compliant with some baseline security protection. It is important that these recommendations are resolved promptly in order to eliminate the exposure to attacks. 
 
 ### Control Spec 
 
 > **Passed:** 
-> No Azure Security Center Assessment for the Virtual Machine is "Unhealthy".
+> No Microsoft Defender for Cloud Assessment for the Virtual Machine is "Unhealthy".
 > 
 > **Failed:** 
->One or more Azure Security Center Assessments for the Virtual Machine are "Unhealthy".
+>One or more Microsoft Defender for Cloud Assessments for the Virtual Machine are "Unhealthy".
 <!--
 > **Verify:** 
 > Verify condition
@@ -483,7 +483,7 @@ Azure Security Center provide various security recommendations for resources tha
 
 - **Azure Portal** 
 
-	 First, examine the detailed AzSK log file for this VM to find out the specific recommendations this control is currently failing for. Review the ASC documentation for those recommendations and implement the suggested fixes. (Note: Not all ASC recommendations are flagged by AzSK. So the first step is critical.). <br>1.For Disk encryption should be applied on virtual machines Refer:https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview <br> 2.For Adaptive application controls for defining safe applications should be enabled on your machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/adaptive-network-hardening <br> 3.For A vulnerability assessment solution should be enabled on your virtual machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/deploy-vulnerability-assessment-vm#deploy-the-integrated-scanner-to-your-azure-and-hybrid-machines.
+	 First, examine the detailed AzSK log file for this VM to find out the specific recommendations this control is currently failing for. Review the MDC documentation for those recommendations and implement the suggested fixes. (Note: Not all MDC recommendations are flagged by AzSK. So the first step is critical.). <br>1.For Disk encryption should be applied on virtual machines Refer:https://docs.microsoft.com/en-us/azure/virtual-machines/windows/disk-encryption-overview <br> 2.For Adaptive application controls for defining safe applications should be enabled on your machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/adaptive-network-hardening <br> 3.For A vulnerability assessment solution should be enabled on your virtual machines Refer:https://docs.microsoft.com/en-us/azure/defender-for-cloud/deploy-vulnerability-assessment-vm#deploy-the-integrated-scanner-to-your-azure-and-hybrid-machines.
 <!--
 - **PowerShell** 
 
@@ -982,7 +982,7 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 
 ___ 
 
-## Azure_VirtualMachine_NetSec_Apply_ASC_Network_Recommendations 
+## Azure_VirtualMachine_NetSec_Apply_MDC_Network_Recommendations 
 
 ### Display Name 
 Apply Adaptive Network Hardening to Internet facing virtual machines 
@@ -1011,10 +1011,10 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 ### Control Spec 
 
 > **Passed:** 
-> Azure Security Center (ASC) Assessment status is "Healthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Azure Security Center (ASC) Assessment status is "Unhealthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Unhealthy".
 > 
 ### Recommendation 
 
@@ -1072,10 +1072,10 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec 
 
 > **Passed:** 
-> Azure Security Center (ASC) Assessment status is "Healthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Azure Security Center (ASC) Assessment status is "Unhealthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Unhealthy".
 > 
 ### Recommendation 
 
@@ -1133,10 +1133,10 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec 
 
 > **Passed:** 
-> Azure Security Center (ASC) Assessment status is "Healthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Azure Security Center (ASC) Assessment status is "Unhealthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Unhealthy".
 > 
 ### Recommendation 
 
@@ -1199,10 +1199,10 @@ For new deployments, require Just-In-Time network access control on virtual mach
 ### Control Spec 
 
 > **Passed:** 
-> Azure Security Center (ASC) Assessment status is "Healthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Azure Security Center (ASC) Assessment status is "Unhealthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Unhealthy".
 >  
 > **NotApplicable:** 
 > VM is part of either Azure Databricks cluster or Azure Kubernetes service cluster.
@@ -1268,10 +1268,10 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec 
 
 > **Passed:** 
-> Azure Security Center (ASC) Assessment status is "Healthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Healthy".
 > 
 > **Failed:** 
-> Azure Security Center (ASC) Assessment status is "Unhealthy".
+> Microsoft Defender for Cloud (MDC) Assessment status is "Unhealthy".
 >
 ### Recommendation 
 

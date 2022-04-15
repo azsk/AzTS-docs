@@ -19,7 +19,7 @@ The AzTS Solution was created with the following explicit objectives (some of wh
  * Ability to scan large number of subscriptions in a central scan model in a cost-effective and time-efficient manner
  * Being able to scale scanning capability up or down without externally imposed constraints (e.g., runbook memory, runtime limits)
  * Speeding up our effort to transition to native features (being able to respond to changes in Azure more rapidly and deploy modifications to controls)
- * Enable incremental transition of our controls from custom code to Azure/ASC policy-based approach (using ASC/policy-based controls where available today and continue to migrate as more controls become available)
+ * Enable incremental transition of our controls from custom code to Azure/MDC policy-based approach (using MDC/policy-based controls where available today and continue to migrate as more controls become available)
 
 [Back to top…](README.md#on-this-page)
 

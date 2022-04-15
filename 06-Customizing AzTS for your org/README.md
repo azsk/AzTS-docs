@@ -38,7 +38,7 @@ This feature is currently being worked upon and will be released soon (ETA: Jan 
 
 - [SVT customization](Readme.md#customizing-the-svts)
    - [Update/extend existing control by custom Azure policy](#)
-   - [Update/extend existing control by custom ASC Assessment](#)
+   - [Update/extend existing control by custom MDC Assessment](#)
    - [Add new control for existing SVT](#)
    - [Add new SVT altogether (non-existing SVT)](#)
 

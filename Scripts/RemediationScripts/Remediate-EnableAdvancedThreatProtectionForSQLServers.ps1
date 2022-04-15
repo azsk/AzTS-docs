@@ -288,18 +288,18 @@ function Enable-AdvancedThreatProtectionForSqlServers
     $emailAddressesConfiguredAtSubscriptionLevel = [String]::Empty
     $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $false
 
-    # Get contact details from Azure Security Center.
-    $ascContactDetails = Get-AzSecurityContact -ErrorAction Stop
+    # Get contact details from Microsoft Defender for Cloud.
+    $mdcContactDetails = Get-AzSecurityContact -ErrorAction Stop
 
-    if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and ($ascContactDetails | Measure-Object).Count -gt 0)
+    if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails) -and ($mdcContactDetails | Measure-Object).Count -gt 0)
     {
-        if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
+        if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails[0].Email))
         {
             $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
-            $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ','
+            $emailAddressesConfiguredAtSubscriptionLevel = $mdcContactDetails.Email -join ','
         }
 
-        if ($ascContactDetails[0].AlertsToAdmins -eq "on")
+        if ($mdcContactDetails[0].AlertsToAdmins -eq "on")
         {
             $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $true
         }
@@ -521,18 +521,18 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             $isAtpEnabledAtSubscriptionLevelNow = $true
 
                             # Enabling Advanced Threat Protection at the Subscription level will also configure contact details. Hence, query them again.
-                            # Get contact details from Azure Security Center.
-                            $ascContactDetails = Get-AzSecurityContact -ErrorAction Stop
+                            # Get contact details from Microsoft Defender for Cloud.
+                            $mdcContactDetails = Get-AzSecurityContact -ErrorAction Stop
 
-                            if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and ($ascContactDetails | Measure-Object).Count -gt 0)
+                            if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails) -and ($mdcContactDetails | Measure-Object).Count -gt 0)
                             {
-                                if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email))
+                                if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails[0].Email))
                                 {
                                     $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
-                                    $emailAddressesConfiguredAtSubscriptionLevel = $ascContactDetails.Email -join ','
+                                    $emailAddressesConfiguredAtSubscriptionLevel = $mdcContactDetails.Email -join ','
                                 }
 
-                                if ($ascContactDetails[0].AlertsToAdmins -eq "on")
+                                if ($mdcContactDetails[0].AlertsToAdmins -eq "on")
                                 {
                                     $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $true
                                 }
@@ -573,7 +573,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
         if (-not ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -and $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true))
         {
-            Write-Host "Contact details are not configured in Azure Security Center." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Contact details are not configured in Microsoft Defender for Cloud." -ForegroundColor $([Constants]::MessageType.Warning)
 
             if (-not $isPrivilegedRoleChecked)
             {
@@ -582,7 +582,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
             if ($hasPrivilegedRolesInSubscription)
             {
-                Write-Host "Do you want to configure contact details in Azure Security Center? These details will be used to send out email notifications in the event of an alert." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                Write-Host "Do you want to configure contact details in Microsoft Defender for Cloud? These details will be used to send out email notifications in the event of an alert." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
                 $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -590,17 +590,17 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 {
                     try
                     {
-                        Write-Host "Configuring contact details in Azure Security Center for the Subscription: $($SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Configuring contact details in Microsoft Defender for Cloud for the Subscription: $($SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "*** The email address from this session - $($context.Account.Id) will be used as a recipient for email notifications on an alert. ***" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "*** Please use the Azure Portal to configure additional email addresses, if required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "*** Also, email notifications to Admins and Subscription Owners will be enabled. ***" -ForegroundColor $([Constants]::MessageType.Warning)
 
-                        $ascContactDetails = Set-AzSecurityContact -Name "$($context.Account.Id)" -Email "$($context.Account.Id)" -AlertAdmin -NotifyOnAlert -ErrorAction Continue
+                        $mdcContactDetails = Set-AzSecurityContact -Name "$($context.Account.Id)" -Email "$($context.Account.Id)" -AlertAdmin -NotifyOnAlert -ErrorAction Continue
 
                         # Check if contact details are successfully configured on the Subscription.
-                        if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
+                        if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails) -and $mdcContactDetails.Count -gt 0)
                         {
-                            if (-not [String]::IsNullOrWhiteSpace($ascContactDetails[0].Email) -and $ascContactDetails[0].AlertsToAdmins -eq "on")
+                            if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails[0].Email) -and $mdcContactDetails[0].AlertsToAdmins -eq "on")
                             {
                                 $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
                                 $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $true
@@ -633,8 +633,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
             }
             else
             {
-                Write-Host "Warning: Current user [$($context.Account.Id)] does not have the required permissions to configure contact details in Azure Security Center." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host "One of the following roles is required to configure contact details in Azure Security Center: [$($privilegedRoleDefinitionNames -join ", ")]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Warning: Current user [$($context.Account.Id)] does not have the required permissions to configure contact details in Microsoft Defender for Cloud." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "One of the following roles is required to configure contact details in Microsoft Defender for Cloud: [$($privilegedRoleDefinitionNames -join ", ")]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
@@ -835,7 +835,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     # If no email address has already been configured for the SQL Server, and if email notifications to Admins and Subscription Owners is not enabled, check if contact details have been configured at the Subscription level.
                     if ($notificationRecipientsEmails.Length -eq 0 -and $emailAdmins -eq $false)
                     {
-                        # Azure Security Center supports comma-separated email addresses.
+                        # Microsoft Defender for Cloud supports comma-separated email addresses.
                         # Advanced Threat Protection supports semi-colon-separated email addresses.
                       
                         $notificationRecipientsEmails = $emailAddressesConfiguredAtSubscriptionLevel
@@ -1180,7 +1180,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
     }
 
     Write-Host "*** To disable Auditing and Advanced Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "*** If Advanced Threat Protection for SQL Servers was enabled at the Subscription level, or if contact details were configured in Azure Security Center using this script, Contributor and higher privileges on the Subscription are required for rolling back those changes. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** If Advanced Threat Protection for SQL Servers was enabled at the Subscription level, or if contact details were configured in Microsoft Defender for Cloud using this script, Contributor and higher privileges on the Subscription are required for rolling back those changes. ***" -ForegroundColor $([Constants]::MessageType.Info)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all SQL Server details..."
@@ -1252,24 +1252,24 @@ function Disable-AdvancedThreatProtectionForSqlServers
         # If contact details were added during the remediation, the current user's details would have been used.
         # This is assuming remediation and roll back are being done by the same user.
 
-        # Get contact details from Azure Security Center.
-        $ascContactDetails = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
+        # Get contact details from Microsoft Defender for Cloud.
+        $mdcContactDetails = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
-        if (-not [String]::IsNullOrWhiteSpace($ascContactDetails) -and $ascContactDetails.Count -gt 0)
+        if (-not [String]::IsNullOrWhiteSpace($mdcContactDetails) -and $mdcContactDetails.Count -gt 0)
         {
             # Current user was added as a contact during the remediation.
-            # Reset contact details in Azure Security Center.
+            # Reset contact details in Microsoft Defender for Cloud.
             Remove-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
             $isContactRemoved = Get-AzSecurityContact -Name "$($context.Account.Id)" -ErrorAction Continue
 
             if (($isContactRemoved | Measure-Object).Count -eq 0)
             {
-                Write-Host "Contact details of the current user successfully removed from Azure Security Center." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Contact details of the current user successfully removed from Microsoft Defender for Cloud." -ForegroundColor $([Constants]::MessageType.Update)
             }
             else
             {
-                Write-Host "*** Error removing contact details from Azure Security Center. Please remove them manually. ***" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "*** Error removing contact details from Microsoft Defender for Cloud. Please remove them manually. ***" -ForegroundColor $([Constants]::MessageType.Error)
             }
         }
         else
