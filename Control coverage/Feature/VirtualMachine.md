@@ -860,10 +860,10 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Control Spec 
 
 > **Passed:** 
-> NSG is configured and no inbound port is open, or NSG is configured and no restricted ports are open.
+> NSG is configured and no inbound port is open, or NSG is configured and no restricted ports are open. Restricted ports, if open, are only via JIT (with Source not as "Any").
 > 
 > **Failed:** 
-> No NSG is configured on VM, or NSG is configured but restricted ports are open.
+> No NSG is configured on VM, or NSG is configured but restricted ports are open. Restricted ports are open via JIT, but with Source as "Any".
 > 
 > **NotApplicable:** 
 > VM instance is part of ADB cluster.
