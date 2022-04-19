@@ -23,7 +23,7 @@ In this section, we will walk through the steps of setting up AzTS Solution. Thi
 
 [**Method A:**](README.md#method-a) This method provides granular level details of the different steps involved in setting up AzTS. Setup process is divided into multiple steps and seprate command is provided for each step.
 
-[**Method B:**](README.md#method-b) Provides a quik way to install AzTS solution by wrapping up multiple steps into a single consolidated command. 
+[**Method B:**](README.md#method-b) Provides a quick way to install AzTS solution by wrapping up multiple steps into a single consolidated command. 
 
 ## **Method A:**
 
