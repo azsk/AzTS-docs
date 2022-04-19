@@ -1,0 +1,93 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1008.15138",
+      "templateHash": "17163568923069681127"
+    }
+  },
+  "parameters": {
+    "appServiceName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Web App"
+      }
+    },
+    "servicePlanName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the App Service Plan"
+      }
+    },
+    "isAdditionalSlotRequired": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Is additional deployment slot required?"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The location of App Service resource."
+      }
+    }
+  },
+  "functions": [],
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-03-01",
+      "name": "[parameters('servicePlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "S1",
+        "tier": "Standard",
+        "size": "S1",
+        "capacity": 2
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2016-08-01",
+      "name": "[parameters('appServiceName')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
+        "httpsOnly": true, //Azure_AppService_DP_Dont_Allow_HTTP_Access
+        "siteConfig": {
+          "remoteDebuggingEnabled": false, //Azure_AppService_Config_Disable_Remote_Debugging
+          "minTlsVersion": "1.2" //Azure_AppService_DP_Use_Secure_TLS_Version
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('isAdditionalSlotRequired')]",
+      "type": "Microsoft.Web/sites/slots",
+      "apiVersion": "2015-08-01",
+      "name": "[format('{0}/AdditionalSlot', parameters('appServiceName'))]",
+      "location": "[parameters('location')]",
+      "kind": "app",
+      "tags": {
+        "displayName": "WebAppSlots"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]",
+        "httpsOnly": true //Azure_AppService_DP_Dont_Allow_HTTP_Access
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]",
+        "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
+      ]
+    }
+  ]
+}
