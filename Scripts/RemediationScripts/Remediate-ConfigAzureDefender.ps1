@@ -4,7 +4,7 @@
     This script is used to configure Azure Defender on subscription.
 
 # ControlId:
-    Azure_Subscription_Config_MDC_Defender
+    Azure_Subscription_Config_MDC_Defender_Plans
 
 # Pre-requisites:
     You will need Owner or Contributor role on subscription.
@@ -89,9 +89,9 @@ function Set-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
@@ -271,9 +271,9 @@ function Remove-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck

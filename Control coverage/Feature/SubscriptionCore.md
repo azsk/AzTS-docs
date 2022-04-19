@@ -13,7 +13,7 @@
 - [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](#Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
 - [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](#Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
 - [Azure_Subscription_Config_Add_Required_Tags](#Azure_Subscription_Config_Add_Required_Tags)
-- [Azure_Subscription_Config_MDC_Defender](#Azure_Subscription_Config_MDC_Defender)
+- [Azure_Subscription_Config_MDC_Defender_Plans](#Azure_Subscription_Config_MDC_Defender_Plans)
 - [Azure_Subscription_Use_Only_Alt_Credentials](#Azure_Subscription_Use_Only_Alt_Credentials)
 - [Azure_Subscription_Config_MDC_Enable_AutoProvisioning](#Azure_Subscription_Config_MDC_Enable_AutoProvisioning)
 - [Azure_Subscription_Config_MDC_Setup_SecurityContacts](#Azure_Subscription_Config_MDC_Setup_SecurityContacts)
@@ -655,7 +655,7 @@ Certain tags are expected to be present in all resources to support enterprise w
 
 ___ 
 
-## Azure_Subscription_Config_MDC_Defender 
+## Azure_Subscription_Config_MDC_Defender_Plans 
 
 ### Display Name 
 Enable all Azure Defender plans in Microsoft Defender for Cloud 
@@ -721,7 +721,7 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
 
 - **Azure Portal** 
 
-	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-pricing. For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_Config_MDC_Defender 
+	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-pricing. For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_Config_MDC_Defender_Plans
 
 ### Azure Policy or ARM API used for evaluation 
 
