@@ -4,7 +4,7 @@
     This script is used to configure Azure Defender on subscription.
 
 # ControlId:
-    Azure_Subscription_Config_ASC_Defender
+    Azure_Subscription_Config_MDC_Defender_Plans
 
 # Pre-requisites:
     You will need Owner or Contributor role on subscription.
@@ -89,9 +89,9 @@ function Set-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
@@ -162,8 +162,8 @@ function Set-ConfigAzureDefender
     }
 
     # Declaring required resource types and pricing tier
-    $reqASCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","Containers","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
-    $reqASCTier = "Standard";
+    $reqMDCTierResourceTypes = "VirtualMachines","SqlServers","AppServices","StorageAccounts","Containers","KeyVaults","SqlServerVirtualMachines","Dns","Arm";
+    $reqMDCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $isProviderRegister = $true
 
@@ -203,17 +203,17 @@ function Set-ConfigAzureDefender
         Write-Host "$reqProviderName provider successfully registered." -ForegroundColor Green
     }
 
-    Write-Host "Step 2 of 3: Checking [$($reqASCTier)] pricing tier for [$($reqASCTierResourceTypes -join ", ")] resource types..."
-    $nonCompliantASCTierResourcetype = @()
-    $nonCompliantASCTierResourcetype = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqASCTier -and $reqASCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
+    Write-Host "Step 2 of 3: Checking [$($reqMDCTier)] pricing tier for [$($reqMDCTierResourceTypes -join ", ")] resource types..."
+    $nonCompliantMDCTierResourcetype = @()
+    $nonCompliantMDCTierResourcetype = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
 
-    $nonCompliantASCTypeCount = ($nonCompliantASCTierResourcetype | Measure-Object).Count
+    $nonCompliantMDCTypeCount = ($nonCompliantMDCTierResourcetype | Measure-Object).Count
 
-    Write-Host "Found [$($nonCompliantASCTypeCount)] resource types without [$($reqASCTier)]"
-    Write-Host "[NonCompliantASCType]: [$($nonCompliantASCTierResourcetype.Name -join ", ")]"
+    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)]"
+    Write-Host "[NonCompliantMDCType]: [$($nonCompliantMDCTierResourcetype.Name -join ", ")]"
 
     # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant resource types are found) then no need to execute below steps.
-    if($isProviderRegister -and ($nonCompliantASCTypeCount -eq 0))
+    if($isProviderRegister -and ($nonCompliantMDCTypeCount -eq 0))
     {
         Write-Host "[$($reqProviderName)] provider is already registered and there are no non-compliant resource types. In this case, remediation is not required." -ForegroundColor Green
         Write-Host "======================================================"
@@ -221,11 +221,11 @@ function Set-ConfigAzureDefender
     }
 
     # Creating data object for resource types without 'Standard' pricing tier to export into json, it will help while doing rollback operation. 
-    $nonCompliantASCResource =  New-Object psobject -Property @{
+    $nonCompliantMDCResource =  New-Object psobject -Property @{
             SubscriptionId = $SubscriptionId 
             IsProviderRegister = $isProviderRegister
         }
-    $nonCompliantASCResource | Add-Member -Name 'NonCompliantASCType' -Type NoteProperty -Value $nonCompliantASCTierResourcetype
+    $nonCompliantMDCResource | Add-Member -Name 'NonCompliantMDCType' -Type NoteProperty -Value $nonCompliantMDCTierResourcetype
 
     # Creating the log file
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
@@ -235,32 +235,32 @@ function Set-ConfigAzureDefender
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
 
-    Write-Host "Step 3 of 3: Taking backup of resource types without [$($reqASCTier)] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won't be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
-    $nonCompliantASCResource | ConvertTo-json | out-file "$($folderpath)\NonCompliantASCType.json"  
-    Write-Host "Path: $($folderpath)\NonCompliantASCType.json"     
+    Write-Host "Step 3 of 3: Taking backup of resource types without [$($reqMDCTier)] tier and [$($reqProviderName)] provider registration status. Please do not delete this file. Without this file you won't be able to rollback any changes done through Remediation script." -ForegroundColor Cyan
+    $nonCompliantMDCResource | ConvertTo-json | out-file "$($folderpath)\NonCompliantMDCType.json"  
+    Write-Host "Path: $($folderpath)\NonCompliantMDCType.json"     
     Write-Host "`n"
 
     # Performing remediation
-    if($nonCompliantASCTypeCount -gt 0)
+    if($nonCompliantMDCTypeCount -gt 0)
     {
         try 
         {
-            Write-Host "Setting [$($reqASCTier)] pricing tier..."
-            $nonCompliantASCTierResourcetype | ForEach-Object {
-                (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqASCTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
+            Write-Host "Setting [$($reqMDCTier)] pricing tier..."
+            $nonCompliantMDCTierResourcetype | ForEach-Object {
+                (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
             }
         }
         catch 
         {
-            Write-Host "Error occurred while setting $reqASCTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
+            Write-Host "Error occurred while setting $reqMDCTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
             return
         }
-        Write-Host "Successfully set [$($reqASCTier)] pricing tier for non-compliant resource types." -ForegroundColor Green
+        Write-Host "Successfully set [$($reqMDCTier)] pricing tier for non-compliant resource types." -ForegroundColor Green
         Write-Host "======================================================"
     }
     else
     {
-        Write-Host "Required resource types compliant with [$($reqASCTier)] pricing tier." -ForegroundColor Green
+        Write-Host "Required resource types compliant with [$($reqMDCTier)] pricing tier." -ForegroundColor Green
         Write-Host "======================================================"
         return   
     }
@@ -271,9 +271,9 @@ function Remove-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_ASC_Defender' control.
+    This command would help in remediating 'Azure_Subscription_Config_MDC_Defender_Plans' control.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
@@ -358,7 +358,7 @@ function Remove-ConfigAzureDefender
     }
 
     # Declaring required resource types and pricing tier
-    $reqASCTier = "Standard";
+    $reqMDCTier = "Standard";
     $reqProviderName = "Microsoft.Security"
     $remediatedLog = Get-Content -Raw -Path $Path | ConvertFrom-Json
 
@@ -371,11 +371,11 @@ function Remove-ConfigAzureDefender
         {
             Write-Host "Configuring Azure Defender as per remediation log on subscription [$($SubscriptionId)]..."
             
-            if($null -ne $remediatedLog.NonCompliantASCType -and ($remediatedLog.NonCompliantASCType | Measure-Object).Count -gt 0)
+            if($null -ne $remediatedLog.NonCompliantMDCType -and ($remediatedLog.NonCompliantMDCType | Measure-Object).Count -gt 0)
             {
                 try 
                 {
-                    $remediatedLog.NonCompliantASCType | ForEach-Object {
+                    $remediatedLog.NonCompliantMDCType | ForEach-Object {
                         (Set-AzSecurityPricing -Name $_.Name -PricingTier $_.PricingTier) | Select-Object -Property Id, Name, PricingTier
                     }
                 }

@@ -107,22 +107,22 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 ### Control Spec
 
 > **Passed:**
-> Azure Security Center (ASC) reports the assessment status for the SQL server as `Healthy`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as `Healthy`.
 > (or)
 > Transparent Data Encryption is enabled on all databases in the SQL server.
 >
 > **Failed:**
-> Azure Security Center (ASC) reports the assessment status for the SQL server as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
 > (or)
 > Transparent Data Encryption is not enabled on all databases in the SQL server.
 >
 > **Verify:**
-> Azure Security Center (ASC) reports the assessment status for the SQL server as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
 >
 > **NotApplicable:**
 > Not Applicable.
 >
-> **Note:** If no Azure Security Center (ASC) assessment is found for the SQL server, response from the ARM API is considered for the evaluation.
+> **Note:** If no Microsoft Defender for Cloud (MDC) assessment is found for the SQL server, response from the ARM API is considered for the evaluation.
 >
 ### Recommendation
 
@@ -553,13 +553,13 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 ### Control Spec
 
 > **Passed:**
-> Azure Security Center (ASC) reports the assessment status for the SQL server as `Healthy`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as `Healthy`.
 >
 > **Failed:**
-> Azure Security Center (ASC) reports the assessment status for the SQL server as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy`, `Exempt`, `Exempt by Rule` or `Disabled parent assessment`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy`, `Exempt`, `Exempt by Rule` or `Disabled parent assessment`.
 >
 > **Verify:**
-> Azure Security Center (ASC) reports the assessment status for the SQL server as `Not Applicable` with `cause` other than `OffByPolicy`, `Exempt`, `Exempt by Rule` or `Disabled parent assessment`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as `Not Applicable` with `cause` other than `OffByPolicy`, `Exempt`, `Exempt by Rule` or `Disabled parent assessment`.
 >
 > **NotApplicable:**
 > Not Applicable.

@@ -83,22 +83,22 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 ### Control Spec
 
 > **Passed:**
-> Azure Security Center (ASC) reports the assessment status for the storage account as `Healthy`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the storage account as `Healthy`.
 > (or)
 > Storage account supports encryption in transit using HTTPS protocol.
 >
 > **Failed:**
-> Azure Security Center (ASC) reports the assessment status for the storage account as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the storage account as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
 > (or)
 > Storage account does not support encryption in transit using HTTPS protocol.
 >
 > **Verify:**
-> Azure Security Center (ASC) reports the assessment status for the storage account as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the storage account as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
 >
 > **NotApplicable:**
 > Not Applicable.
 >
-> **Note:** If no Azure Security Center (ASC) assessment is found for the storage account, response from the ARM API is considered for the evaluation.
+> **Note:** If no Microsoft Defender for Cloud (MDC) assessment is found for the storage account, response from the ARM API is considered for the evaluation.
 >
 ### Recommendation
 

@@ -13,10 +13,10 @@
 - [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](#Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
 - [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](#Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
 - [Azure_Subscription_Config_Add_Required_Tags](#Azure_Subscription_Config_Add_Required_Tags)
-- [Azure_Subscription_Config_ASC_Defender](#Azure_Subscription_Config_ASC_Defender)
+- [Azure_Subscription_Config_MDC_Defender_Plans](#Azure_Subscription_Config_MDC_Defender_Plans)
 - [Azure_Subscription_Use_Only_Alt_Credentials](#Azure_Subscription_Use_Only_Alt_Credentials)
-- [Azure_Subscription_Config_ASC_Enable_AutoProvisioning](#Azure_Subscription_Config_ASC_Enable_AutoProvisioning)
-- [Azure_Subscription_Config_ASC_Setup_SecurityContacts](#Azure_Subscription_Config_ASC_Setup_SecurityContacts)
+- [Azure_Subscription_Config_MDC_Enable_AutoProvisioning](#Azure_Subscription_Config_MDC_Enable_AutoProvisioning)
+- [Azure_Subscription_Config_MDC_Setup_SecurityContacts](#Azure_Subscription_Config_MDC_Setup_SecurityContacts)
 - [Azure_Subscription_SI_No_Billing_Activity](#Azure_Subscription_SI_No_Billing_Activity)
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
 
@@ -43,13 +43,13 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 ### Control Spec 
 
 > **Passed:** 
-> No deprecated account is found at subscription scope (in both ASC and Reader scan).
+> No deprecated account is found at subscription scope (in both MDC and Reader scan).
 > 
 > **Failed:** 
-> Deprecated account is found at subscription scope (in any one of ASC and Reader scan).
+> Deprecated account is found at subscription scope (in any one of MDC and Reader scan).
 > 
 > **Verify:** 
-> ASC assessment status is not applicable or policy is missing.
+> MDC assessment status is not applicable or policy is missing.
 
 ### Recommendation 
 
@@ -59,7 +59,7 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Azure Security Center Recommendation - [Deprecated accounts should be removed from subscriptions](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/00c6d40b-e990-6acf-d4f3-471e747a27c4)
+- Microsoft Defender for Cloud Recommendation - [Deprecated accounts should be removed from subscriptions](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/00c6d40b-e990-6acf-d4f3-471e747a27c4)
 
 - ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalId
@@ -254,13 +254,13 @@ Just like classic admins, management certificates were used in the v1 model for 
 ### Control Spec 
 
 > **Passed:** 
-> ASC assessment status is healthy.
+> MDC assessment status is healthy.
 > 
 > **Failed:** 
-> ASC assessment status is unhealthy. (or) ASC assessment status is "NotApplicable" with "cause" as either "OffByPolicy" or "Exempt".
+> MDC assessment status is unhealthy. (or) MDC assessment status is "NotApplicable" with "cause" as either "OffByPolicy" or "Exempt".
 > 
 > **Verify:** 
-> ASC assessment status is not applicable (with "cause" other than "OffByPolicy" and "Exempt"), OR ASC assessment status was not found.
+> MDC assessment status is not applicable (with "cause" other than "OffByPolicy" and "Exempt"), OR MDC assessment status was not found.
 > 
 
 ### Recommendation 
@@ -271,7 +271,7 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 ### Azure Policy or ARM API used for evaluation 
 
-- Azure Security Center Recommendation - [Service principals should be used to protect your subscriptions instead of Management Certificates](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/2acd365d-e8b5-4094-bce4-244b7c51d67c)
+- Microsoft Defender for Cloud Recommendation - [Service principals should be used to protect your subscriptions instead of Management Certificates](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/2acd365d-e8b5-4094-bce4-244b7c51d67c)
 
 - ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.Id, [\*].properties.displayName, [\*].properties.status.code, [\*].properties.status, [\*].properties.additionalData
@@ -287,7 +287,7 @@ ___
 Resolve active Microsoft Defender for Cloud (MDC) alerts of medium severity or higher
 
 ### Rationale 
-Based on the policies that are enabled in the subscription, Azure Security Center raises alerts (which are typically indicative of resources that ASC suspects might be under attack or needing immediate attention). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
+Based on the policies that are enabled in the subscription, Microsoft Defender for Cloud raises alerts (which are typically indicative of resources that MDC suspects might be under attack or needing immediate attention). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
 
 ### Control Settings 
 ```json 
@@ -655,10 +655,10 @@ Certain tags are expected to be present in all resources to support enterprise w
 
 ___ 
 
-## Azure_Subscription_Config_ASC_Defender 
+## Azure_Subscription_Config_MDC_Defender_Plans 
 
 ### Display Name 
-Enable all Azure Defender plans in Azure Security Center 
+Enable all Azure Defender plans in Microsoft Defender for Cloud 
 
 ### Rationale 
 Azure Defender enables advanced threat detection capabilities, which use built-in behavioral analytics and machine learning to identify attacks and zero-day exploits, access and application controls to reduce exposure to network attacks and malware, and more. 
@@ -666,8 +666,8 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
 ### Control Settings 
 ```json 
 {
-    "ReqASCTier": "Standard",
-    "ReqASCTierResourceTypes": [
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
         {
             "Type": "VirtualMachines",
             "DisplayName": "Servers"
@@ -711,17 +711,17 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
 ### Control Spec 
 
 > **Passed:** 
-> All required resource types are configured with ASC standard tier.
+> All required resource types are configured with MDC standard tier.
 > 
 > **Failed:** 
-> Any of resource types is not configured with ASC standard tier or if security center provider is not registered.
+> Any of resource types is not configured with MDC standard tier or if security center provider is not registered.
 > 
 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-pricing. For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_Config_ASC_Defender 
+	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-pricing. For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_Config_MDC_Defender_Plans
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -798,13 +798,13 @@ The regular / day to day use accounts are subject to a lot of credential theft a
 
 ___ 
 
-## Azure_Subscription_Config_ASC_Enable_AutoProvisioning 
+## Azure_Subscription_Config_MDC_Enable_AutoProvisioning 
 
 ### Display Name 
 Turn on Microsoft Monitoring Agent (MMA) to enable Security Monitoring 
 
 ### Rationale 
-ASC monitors various security parameters on a VM such as missing updates, OS security settings, endpoint protection status, and health and threat detections, etc using a monitoring agent. This agent needs to be provisioned and running on VMs for the monitoring work. When automatic provisioning is ON, ASC provisions the Microsoft Monitoring Agent (MMA) on all supported Azure VMs and any new ones that are created. 
+MDC monitors various security parameters on a VM such as missing updates, OS security settings, endpoint protection status, and health and threat detections, etc using a monitoring agent. This agent needs to be provisioned and running on VMs for the monitoring work. When automatic provisioning is ON, MDC provisions the Microsoft Monitoring Agent (MMA) on all supported Azure VMs and any new ones that are created. 
 
 ### Control Spec 
 
@@ -824,16 +824,6 @@ ASC monitors various security parameters on a VM such as missing updates, OS sec
 
 	 For setting AutoProvisioning settings for your subscription, go to azure portal https://portal.azure.com. On the portal go to --> Security center --> Pricing & Settings --> Select your subscription --> Settings --> Data Collection
 
-- **PowerShell** 
-
-	 ```powershell 
-     # This powershell command is from Secure DevOps Kit for Azure (AzSK), https://github.com/azsk/DevOpsKit-docs
-     # For more information about the command please visit: https://github.com/azsk/DevOpsKit-docs/blob/master/01-Subscription-Security/Readme.md#azsk-azure-security-center-asc-configuration-1
-	 
-     # Run this command for setting up AutoProvisioning settings
-     Set-AzSKAzureSecurityCenterPolicies -SubscriptionId '<SubscriptionId>'
-	 ```  
-
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list auto provisioning settings at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/autoProvisioningSettings/default?api-version=2017-08-01-preview <br />
@@ -844,7 +834,7 @@ ASC monitors various security parameters on a VM such as missing updates, OS sec
 
 ___ 
 
-## Azure_Subscription_Config_ASC_Setup_SecurityContacts 
+## Azure_Subscription_Config_MDC_Setup_SecurityContacts 
 
 ### Display Name 
 Configure security contacts and alerts of medium severity or higher on your subscription 
@@ -873,14 +863,14 @@ Security contact information will be used by Microsoft to contact you if the Mic
 ### Control Spec 
 
 > **Passed:** 
-> ASC security contact setting meet the following conditions:
+> MDC security contact setting meet the following conditions:
 >   <br />a. 'Owner' and 'Account Admin' should be selected as email recipients.
 >   <br />b. At least one email id is specified as email recipients.
 >   <br />c. Alert notification should be enabled.
 >   <br />d. Alert notification severity should be at least set to 'Medium' such that notification is triggered for both Medium and High severity alert.
 > 
 > **Failed:** 
-> Fail if security center provider is not registered OR if ASC security contact setting does not meet the following conditions:
+> Fail if security center provider is not registered OR if MDC security contact setting does not meet the following conditions:
 >   <br />a. 'Owner' and 'Account Admin' should be selected as email recipients.
 >   <br />b. At least one email id is specified as email recipients.
 >   <br />c. Notify about alerts is enabled.

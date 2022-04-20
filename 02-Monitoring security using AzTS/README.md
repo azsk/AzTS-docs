@@ -13,7 +13,7 @@
 -------------------------
 
 ## Tenant Security Solution - under the covers (how it works)
- Tenant Security Solution is built by extending what the DevOps Kit has been doing and leveraging the best of Azure native features. It is a hybrid model, which leverages the native Azure security capabilities like Azure Security Center (ASC), Azure Policies, etc., to evaluate the security controls and continue to leverage DevOps Kit scanning capabilities in the form of custom code controls to address any coverage gaps.  
+ Tenant Security Solution is built by extending what the DevOps Kit has been doing and leveraging the best of Azure native features. It is a hybrid model, which leverages the native Azure security capabilities like Microsoft Defender for Cloud (MDC), Azure Policies, etc., to evaluate the security controls and continue to leverage DevOps Kit scanning capabilities in the form of custom code controls to address any coverage gaps.  
 
 It has been designed to handle huge scales in highly performant and cost-efficient manner.
 
@@ -109,7 +109,7 @@ The compliance report contains 2 tabs. There is an overall/summary view of compl
 ![Compliance summary](../Images/13_TSS_PBIDashboardComplianceDetails.png) 
 
 
-In Inventory dashboard, 4 tabs are present. Inventory Overview tab shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. SecureScore tab provides details about Secure Score for subscriptions (single score based on Security Center assessment). Assessments Metadata tab provides details about ASC assessments like recommendation, severity, etc. VM Extension status tab contains details about virtual machines scanned like OS type, extensions, power state, etc. Examples of these tabs are shown below:
+In Inventory dashboard, 4 tabs are present. Inventory Overview tab shows distribution of resource types and RBAC role memberships across all Azure subscriptions in the organization. SecureScore tab provides details about Secure Score for subscriptions (single score based on Security Center assessment). Assessments Metadata tab provides details about MDC assessments like recommendation, severity, etc. VM Extension status tab contains details about virtual machines scanned like OS type, extensions, power state, etc. Examples of these tabs are shown below:
 
 ###### Inventory view:
 

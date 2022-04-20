@@ -564,10 +564,10 @@ Un-patched VMSSs are easy targets for compromise from various malware/trojan att
 ### Control Spec
 
 > **Passed:**
-> ASC assessment found with Healthy status code.
+> MDC assessment found with Healthy status code.
 >
 > **Failed:**
-> ASC assessment found with Unhealthy status code.
+> MDC assessment found with Unhealthy status code.
 >
 > **Verify:**
 > Not Applicable.
@@ -578,7 +578,7 @@ Un-patched VMSSs are easy targets for compromise from various malware/trojan att
 
 ### Recommendation
 
-- Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates. It takes 24 hours to reflect the latest status at ASC.
+- Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-apply-system-updates. It takes 24 hours to reflect the latest status at MDC.
 
 <!--
 - **PowerShell**
@@ -619,10 +619,10 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 ### Control Spec
 
 > **Passed:**
-> ASC assessment found with Healthy status code.
+> MDC assessment found with Healthy status code.
 >
 > **Failed:**
-> ASC assessment found with Unhealthy status code.
+> MDC assessment found with Unhealthy status code.
 >
 > **Verify:**
 > Not Applicable.

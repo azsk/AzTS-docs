@@ -6,10 +6,10 @@
 ## Add new control for existing SVT
 
 Azure Tenant Security Solution (AzTS) provides capability to add new controls(for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
-Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Azure Security Center assessment.
+Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Microsoft Defender for Cloud assessment.
 
    - [Add new control based on custom Azure policy](AddControlForPolicy.md)
-   - [Add new control based on ASC Assessment](AddControlForAssessment.md) 
+   - [Add new control based on MDC Assessment](AddControlForAssessment.md) 
 
 
 

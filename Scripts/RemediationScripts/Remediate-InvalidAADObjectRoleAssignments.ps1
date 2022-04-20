@@ -233,25 +233,25 @@ function Remove-AzTSInvalidAADAccounts
             $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
             $currentRoleAssignmentList | select -Unique -Property 'ObjectId' | ForEach-Object { $distinctObjectIds += $_.ObjectId }
 
-            # Getting ASC reported deprecated account object ids.
-            $ascUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Security/assessments/00c6d40b-e990-6acf-d4f3-471e747a27c4?api-version=2020-01-01"
+            # Getting MDC reported deprecated account object ids.
+            $mdcUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Security/assessments/00c6d40b-e990-6acf-d4f3-471e747a27c4?api-version=2020-01-01"
             $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
             $classicAssignments = [ClassicRoleAssignments]::new()
             $headers = $classicAssignments.GetAuthHeader()
-            $ascDeprecated = [ASCDeprecatedAccounts]::new()
-            $response = $ascDeprecated.GetASCDeprecatedAccounts([string] $ascUri, [string] $method, [psobject] $headers)
+            $mdcDeprecated = [MDCDeprecatedAccounts]::new()
+            $response = $mdcDeprecated.GetMDCDeprecatedAccounts([string] $mdcUri, [string] $method, [psobject] $headers)
         
-            $ascDeprecatedAccountResponseAsString = $response.properties.additionalData.deprecatedAccountsObjectIdList.Trim("[").Trim("]")
-            $ascDeprecatedAccountList = @();
-            if (![string]::IsNullOrWhiteSpace($ascDeprecatedAccountResponseAsString))
+            $mdcDeprecatedAccountResponseAsString = $response.properties.additionalData.deprecatedAccountsObjectIdList.Trim("[").Trim("]")
+            $mdcDeprecatedAccountList = @();
+            if (![string]::IsNullOrWhiteSpace($mdcDeprecatedAccountResponseAsString))
             {
-                $ascDeprecatedAccountList = $ascDeprecatedAccountResponseAsString.Split(",").Trim("`"")
+                $mdcDeprecatedAccountList = $mdcDeprecatedAccountResponseAsString.Split(",").Trim("`"")
             }
 
-            $ascDeprecatedRoleAssignmentList = @();
-            if (($ascDeprecatedAccountList | Measure-Object).Count -gt 0)
+            $mdcDeprecatedRoleAssignmentList = @();
+            if (($mdcDeprecatedAccountList | Measure-Object).Count -gt 0)
             {
-                $ascDeprecatedRoleAssignmentList = $currentRoleAssignmentList | Where-Object {  $ascDeprecatedAccountList -contains $_.ObjectId}
+                $mdcDeprecatedRoleAssignmentList = $currentRoleAssignmentList | Where-Object {  $mdcDeprecatedAccountList -contains $_.ObjectId}
             }          
         }    
         else
@@ -330,11 +330,11 @@ function Remove-AzTSInvalidAADAccounts
             }
         }
         
-        $invalidClassicRoles += $ascDeprecatedRoleAssignmentList | Where-Object {[string]::IsNullOrWhiteSpace($_.ObjectId)}; 
+        $invalidClassicRoles += $mdcDeprecatedRoleAssignmentList | Where-Object {[string]::IsNullOrWhiteSpace($_.ObjectId)}; 
         
         # Get list of all invalidAADObject guid assignments followed by object ids.
         $invalidAADObjectRoleAssignments = $currentRoleAssignmentList | Where-Object {  $invalidAADObjectIds -contains $_.ObjectId}
-        $invalidAADObjectRoleAssignments += $ascDeprecatedRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
+        $invalidAADObjectRoleAssignments += $mdcDeprecatedRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
         Write-Host "Checking current User account is valid AAD Object guid or not..."
     }
 
@@ -582,17 +582,17 @@ class ClassicRoleAssignments
     }
 }
 
-class ASCDeprecatedAccounts
+class MDCDeprecatedAccounts
 {
-    [PSObject] GetASCDeprecatedAccounts([string] $ascUri, [string] $method, [psobject] $headers)
+    [PSObject] GetMDCDeprecatedAccounts([string] $mdcUri, [string] $method, [psobject] $headers)
     {
         $content = $null
         try
         {
             $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::$method
             
-            # API to get ASC reported deprecated accounts list
-            $response = Invoke-WebRequest -Method $method -Uri $ascUri -Headers $headers -UseBasicParsing
+            # API to get MDC reported deprecated accounts list
+            $response = Invoke-WebRequest -Method $method -Uri $mdcUri -Headers $headers -UseBasicParsing
             $content = ConvertFrom-Json $response.Content
         }
         catch
