@@ -1,35 +1,9 @@
-## Introducing Feature Announcements for AzTS-UI
+## Introducing Secure Templates for AzTS-UI
 
-*Curtain opens. Tom enters.*
-
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/opening.gif" width="50%" />
-
-<br/>
-Hey folks, I am Tom, here to present the latest feature in AzTS-UI: <b style="color:#FFA500">New Feature Announcement. </b>
-
-
-These messages can be composed in markdown. Infact this message is being fetched from [GitHub.](https://github.com/MSFT-Chirag/AzTS-docs/blob/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/README.md) This means we can post any leverage any exisitng markdowns already hosted in GitHub and show them in the AzTS-UI.
-
+This gallery includes ARM templates for various resources which can be used as reference when creating your own templates.
+These 'compliant' templates have been created after passing applicable AzTS controls for corresponding resources.
 <br/>
 
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/piano.gif" width="50%" />
-<br/>
-<br/>
+<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/Secure-Templates.gif" width="75%" />
 
-This feature can also be used to highlight any significant developments in the framework like : 
-
-
- 1. Multi-tenant scanning ability.
- 2. New controls and services.
- 3. Secure templates addition.
- 4. Credentials scanning.
- 
-Additionally, a semster-wise newsletter can be drafted in markdown and shown over here.
-
-<b style="color:#FFA500">See you soon.</b>
-
-**RIP ~~Pikachu~~ and ~~Shaktiman~~.**
-
-<br/>
-<img src="https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/users/MSFT-Chirag/FeatureConfetti/Assets/Feature-Announcements/flying.gif" width="50%" />
 
