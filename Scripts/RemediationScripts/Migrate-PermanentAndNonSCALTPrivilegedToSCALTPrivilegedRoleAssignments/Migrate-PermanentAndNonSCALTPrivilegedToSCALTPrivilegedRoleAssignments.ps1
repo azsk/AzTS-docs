@@ -94,7 +94,7 @@ function Setup-Prerequisites
         }
         else
         {
-             Write-Host "Installing Az.Accounts module with required version(2.5.4)..." -ForegroundColor $([Constants]::MessageType.Info)
+             Write-Host "Installing Az.Accounts module..." -ForegroundColor $([Constants]::MessageType.Info)
              Install-Module -Name "Az.Accounts" -MinimumVersion 2.5.4 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
              Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update)        
         }    
@@ -109,21 +109,21 @@ function Setup-Prerequisites
     if ($availableModules.Name -contains "Az.Resources")
     {
         $module = Get-Module "Az.Resources"
-        if($module.Version -eq "5.0.0")
+        if($module.Version -ge "5.0.0")
         {
             Write-Host "Az.Resources module is present." -ForegroundColor $([Constants]::MessageType.Info)        
         }
         else
         {
-            Write-Host "Installing Az.Resources module with required version(5.0.0)..." -ForegroundColor $([Constants]::MessageType.Info)
-            Install-Module -Name "Az.Resources" -RequiredVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -AllowPrerelease -AllowClobber -Force -ErrorAction Stop 
+            Write-Host "Installing Az.Resources module..." -ForegroundColor $([Constants]::MessageType.Info)
+            Install-Module -Name "Az.Resources" -MinimumVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -AllowPrerelease -AllowClobber -Force -ErrorAction Stop 
             Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)  
         }
     }
     else
     {
         Write-Host "Installing Az.Resources module...." -ForegroundColor $([Constants]::MessageType.Update)
-        Install-Module -Name "Az.Resources" -RequiredVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -Force -AllowPrerelease -AllowClobber -ErrorAction Stop
+        Install-Module -Name "Az.Resources" -MinimumVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -Force -AllowPrerelease -AllowClobber -ErrorAction Stop
         Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)
     }
 
