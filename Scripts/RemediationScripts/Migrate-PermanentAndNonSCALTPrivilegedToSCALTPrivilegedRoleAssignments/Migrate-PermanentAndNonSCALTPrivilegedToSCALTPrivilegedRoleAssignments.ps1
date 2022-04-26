@@ -90,21 +90,21 @@ function Setup-Prerequisites
     if ($availableModules.Name -contains "Az.Resources")
     {
         $module = Get-Module "Az.Resources"
-        if($module.Version -ge "5.5.0")
+        if($module.Version -ge "5.6.0")
         {
             Write-Host "Az.Resources module is present." -ForegroundColor $([Constants]::MessageType.Info)        
         }
         else
         {
             Write-Host "Installing Az.Resources module..." -ForegroundColor $([Constants]::MessageType.Update)
-            Install-Module -Name "Az.Resources" -MinimumVersion 5.5.0 -Scope CurrentUser -Repository 'PSGallery'  -AllowClobber -Force -ErrorAction Stop 
+            Install-Module -Name "Az.Resources" -MinimumVersion 5.6.0 -Scope CurrentUser -Repository 'PSGallery'  -AllowClobber -Force -ErrorAction Stop 
             Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)  
         }
     }
     else
     {
         Write-Host "Installing Az.Resources module...." -ForegroundColor $([Constants]::MessageType.Info)
-        Install-Module -Name "Az.Resources"  -MinimumVersion 5.5.0 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
+        Install-Module -Name "Az.Resources"  -MinimumVersion 5.6.0 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
         Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)
     }
 
