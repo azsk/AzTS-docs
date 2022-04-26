@@ -85,55 +85,37 @@ function Setup-Prerequisites
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
     # Check if the required modules are installed.    
-    if($availableModules.Name -contains "AZ.Accounts")
-    {
-        $module = Get-Module "Az.Accounts"
-        if($module.Version -ge "2.5.4")
-        {
-            Write-Host "Az.Accounts module is present." -ForegroundColor $([Constants]::MessageType.Info)
-        }
-        else
-        {
-             Write-Host "Installing Az.Accounts module..." -ForegroundColor $([Constants]::MessageType.Info)
-             Install-Module -Name "Az.Accounts" -MinimumVersion 2.5.4 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
-             Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update)        
-        }    
-    }
-    else
-    {
-        Write-Host "Installing Az.Accounts module...." -ForegroundColor $([Constants]::MessageType.Update)
-        Install-Module -Name "Az.Accounts" -MinimumVersion 2.5.4 -Scope CurrentUser -Repository 'PSGallery' -Force -AllowClobber -ErrorAction Stop
-        Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update)
-    }
+
 
     if ($availableModules.Name -contains "Az.Resources")
     {
         $module = Get-Module "Az.Resources"
-        if($module.Version -ge "5.0.0")
+        if($module.Version -ge "5.5.0")
         {
             Write-Host "Az.Resources module is present." -ForegroundColor $([Constants]::MessageType.Info)        
         }
         else
         {
-            Write-Host "Installing Az.Resources module..." -ForegroundColor $([Constants]::MessageType.Info)
-            Install-Module -Name "Az.Resources" -MinimumVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -AllowPrerelease -AllowClobber -Force -ErrorAction Stop 
+            Write-Host "Installing Az.Resources module..." -ForegroundColor $([Constants]::MessageType.Update)
+            Install-Module -Name "Az.Resources" -MinimumVersion 5.5.0 -Scope CurrentUser -Repository 'PSGallery'  -AllowClobber -Force -ErrorAction Stop 
             Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)  
         }
     }
     else
     {
-        Write-Host "Installing Az.Resources module...." -ForegroundColor $([Constants]::MessageType.Update)
-        Install-Module -Name "Az.Resources" -MinimumVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -Force -AllowPrerelease -AllowClobber -ErrorAction Stop
+        Write-Host "Installing Az.Resources module...." -ForegroundColor $([Constants]::MessageType.Info)
+        Install-Module -Name "Az.Resources"  -MinimumVersion 5.5.0 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
         Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)
     }
 
+
     if($availableModules.Name -contains "AzureAD")
     {
-        Write-Host "AzureAD module is present." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "AzureAD module is present." -ForegroundColor $([Constants]::MessageType.update)
     }
     else
     {
-        Write-Host "Installing AzureAD module...." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Installing AzureAD module...." -ForegroundColor $([Constants]::MessageType.Info)
         Install-Module -Name AzureAD -Scope CurrentUser -Repository "PSGallery" -Force -AllowClobber -ErrorAction Stop
         Write-Host "AzureAD module is installed." -ForegroundColor $([Constants]::MessageType.Update)
     }
@@ -250,24 +232,19 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
     $docLink = "https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/pim-resource-roles-discover-resources#discover-resources"
     $scope = "/subscriptions/$($SubscriptionId)"
     Write-Host "Checking if subscription [$($SubscriptionId)] is onboarded to PIM or not..."
-        try
-        {
-            $pimEligibleRoleAssignments = Get-AzRoleEligibilityScheduleInstance -Scope $scope
-            if (-not $?)
-            {
-                throw "Subscription [$($SubscriptionId)] is not onboarded to PIM."
-            }
-            else
-            {
-                Write-Host "Subscription [$($context.Subscription.SubscriptionId)] is onboarded to PIM." -ForegroundColor $([Constants]::MessageType.Update)
-            } 
-        }
-        catch
+             
+        $pimEligibleRoleAssignments = Get-AzRoleEligibilityScheduleInstance -Scope $scope
+        if (-not $?)
         {
             Write-Host "Subscription is not onboarded to PIM. Please onboard the subscription to PIM and again run the script." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "*** To onboard the subscription to PIM please follow the steps mentioned here $($docLink). ***" -ForegroundColor $([Constants]::MessageType.Info)
             return
         }
+        else
+        {
+            Write-Host "Subscription [$($context.Subscription.SubscriptionId)] is onboarded to PIM." -ForegroundColor $([Constants]::MessageType.Update)
+        } 
+        
 
     Write-Host "Checking if [$($context.Account.Id)] is of account type [user]..."
 
