@@ -52,8 +52,8 @@
        execution.
 
 ## FAQs:
-     Q.1. If i am getting this error "Unable to find type [Microsoft.Azure.Commands.Common.Authentication.AzureSession]" what i need to do ?
-     A.1 Please run this command "Install-Module -Name Az.Accounts -Scope CurrentUser -Force -Repository "PSGallery" -Force  -AllowClobber -ErrorAction Stop" before loading the script.
+     Q.1. While running the remediation script I am getting error "Unable to find type [Microsoft.Azure.Commands.Common.Authentication.AzureSession]". How can I resolve this error?
+     A.1 Please run this command "Install-Module -Name Az.Accounts -Scope CurrentUser -Repository "PSGallery" -Force  -AllowClobber -ErrorAction Stop" in a new session then run command 'Connect-AzAccount' and then load the script.
 
 
 
