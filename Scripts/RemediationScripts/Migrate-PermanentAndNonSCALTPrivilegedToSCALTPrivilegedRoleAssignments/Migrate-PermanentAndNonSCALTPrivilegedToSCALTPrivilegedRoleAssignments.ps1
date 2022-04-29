@@ -9,7 +9,7 @@
     Do not grant permanent access for critical subscription level roles , Do not grant permanent access for critical resource group level roles , Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
 
 # Prerequisites:
-    1. please load the Az.Accounts module before loading this script. If module is not installed use - ''Install-Module -Name Az.Accounts -Scope CurrentUser -Force -Repository "PSGallery" '. 
+    1. Run these commands "Install-Module -Name Az.Accounts -Scope CurrentUser -Repository "PSGallery" -Force  -AllowClobber -ErrorAction Stop" in a new session, followed by 'Connect-AzAccount' and then load this script.
     2. Owner and higher privileged role assignment on the Subscription is required and atleast one service adminstrator role assignment must be present on the subscription level.
 
 # Important Points:
@@ -77,7 +77,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources", "AzureAD")
+    $requiredModules = @("Az.Accounts","Az.Resources", "AzureAD")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
@@ -85,55 +85,58 @@ function Setup-Prerequisites
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
     # Check if the required modules are installed.    
+
     if($availableModules.Name -contains "AZ.Accounts")
     {
         $module = Get-Module "Az.Accounts"
-        if($module.Version -ge "2.5.4")
+        if($module.Version -ge "2.7.6")
         {
-            Write-Host "Az.Accounts module is present." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Az.Accounts module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-             Write-Host "Installing Az.Accounts module with required version(2.5.4)..." -ForegroundColor $([Constants]::MessageType.Info)
-             Install-Module -Name "Az.Accounts" -MinimumVersion 2.5.4 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
-             Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update)        
+             Write-Host "Installing Az.Accounts module..." -ForegroundColor $([Constants]::MessageType.Info)
+             Install-Module -Name "Az.Accounts" -MinimumVersion 2.7.6 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
+             Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update) 
         }    
     }
     else
     {
-        Write-Host "Installing Az.Accounts module...." -ForegroundColor $([Constants]::MessageType.Update)
-        Install-Module -Name "Az.Accounts" -MinimumVersion 2.5.4 -Scope CurrentUser -Repository 'PSGallery' -Force -AllowClobber -ErrorAction Stop
-        Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Installing Az.Accounts module...." -ForegroundColor $([Constants]::MessageType.Info)
+        Install-Module -Name "Az.Accounts" -MinimumVersion 2.7.6 -Scope CurrentUser -Repository 'PSGallery' -Force -AllowClobber -ErrorAction Stop
+        Write-Host "Az.Accounts module is installed." -ForegroundColor $([Constants]::MessageType.Update) 
     }
+
 
     if ($availableModules.Name -contains "Az.Resources")
     {
         $module = Get-Module "Az.Resources"
-        if($module.Version -eq "5.0.0")
+        if($module.Version -ge "5.5.0")
         {
-            Write-Host "Az.Resources module is present." -ForegroundColor $([Constants]::MessageType.Info)        
+            Write-Host "Az.Resources module is present." -ForegroundColor $([Constants]::MessageType.Update)        
         }
         else
         {
-            Write-Host "Installing Az.Resources module with required version(5.0.0)..." -ForegroundColor $([Constants]::MessageType.Info)
-            Install-Module -Name "Az.Resources" -RequiredVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -AllowPrerelease -AllowClobber -Force -ErrorAction Stop 
+            Write-Host "Installing Az.Resources module..." -ForegroundColor $([Constants]::MessageType.Info)
+            Install-Module -Name "Az.Resources" -MinimumVersion 5.6.0 -Scope CurrentUser -Repository 'PSGallery'  -AllowClobber -Force -ErrorAction Stop 
             Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)  
         }
     }
     else
     {
-        Write-Host "Installing Az.Resources module...." -ForegroundColor $([Constants]::MessageType.Update)
-        Install-Module -Name "Az.Resources" -RequiredVersion 5.0.0-preview -Scope CurrentUser -Repository 'PSGallery' -Force -AllowPrerelease -AllowClobber -ErrorAction Stop
+        Write-Host "Installing Az.Resources module...." -ForegroundColor $([Constants]::MessageType.Info)
+        Install-Module -Name "Az.Resources"  -MinimumVersion 5.6.0 -Scope CurrentUser -Repository 'PSGallery' -Force  -AllowClobber -ErrorAction Stop
         Write-Host "Az.Resources module is installed." -ForegroundColor $([Constants]::MessageType.Update)
     }
 
+
     if($availableModules.Name -contains "AzureAD")
     {
-        Write-Host "AzureAD module is present." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "AzureAD module is present." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
-        Write-Host "Installing AzureAD module...." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Installing AzureAD module...." -ForegroundColor $([Constants]::MessageType.Info)
         Install-Module -Name AzureAD -Scope CurrentUser -Repository "PSGallery" -Force -AllowClobber -ErrorAction Stop
         Write-Host "AzureAD module is installed." -ForegroundColor $([Constants]::MessageType.Update)
     }
@@ -251,23 +254,25 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
     $scope = "/subscriptions/$($SubscriptionId)"
     Write-Host "Checking if subscription [$($SubscriptionId)] is onboarded to PIM or not..."
         try
-        {
-            $pimEligibleRoleAssignments = Get-AzRoleEligibilityScheduleInstance -Scope $scope
-            if (-not $?)
-            {
-                throw "Subscription [$($SubscriptionId)] is not onboarded to PIM."
-            }
-            else
-            {
-                Write-Host "Subscription [$($context.Subscription.SubscriptionId)] is onboarded to PIM." -ForegroundColor $([Constants]::MessageType.Update)
-            } 
+        {    
+         $pimEligibleRoleAssignments = Get-AzRoleEligibilityScheduleInstance -Scope $scope -ErrorAction stop
         }
         catch
+        {
+            Write-Host "$($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            return
+        }
+        if (-not $pimEligibleRoleAssignments)
         {
             Write-Host "Subscription is not onboarded to PIM. Please onboard the subscription to PIM and again run the script." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "*** To onboard the subscription to PIM please follow the steps mentioned here $($docLink). ***" -ForegroundColor $([Constants]::MessageType.Info)
             return
         }
+        else
+        {
+            Write-Host "Subscription [$($context.Subscription.SubscriptionId)] is onboarded to PIM." -ForegroundColor $([Constants]::MessageType.Update)
+        } 
+        
 
     Write-Host "Checking if [$($context.Account.Id)] is of account type [user]..."
 
@@ -281,7 +286,7 @@ function Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments
     
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     write-Host "Checking if the current user has required role[Owner, User Access Administrator , ServiceAdministrator]..."
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id  -IncludeClassicAdministrators
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id  -IncludeClassicAdministrators -ErrorAction SilentlyContinue
 
     $requiredRoleDefinitionNames = @("Owner", "User Access Administrator" , "ServiceAdministrator")
     if(($currentLoginRoleAssignments | Where { ($_.Scope -like "/providers/Microsoft.Management/managementGroups*" -or $_.Scope -eq "/subscriptions/$($SubscriptionId)") -and ($_.RoleDefinitionName -split";" -contains "Owner" -or $_.RoleDefinitionName -split";" -contains "User Access Contributor" -or $_.RoleDefinitionName -split";" -contains "ServiceAdministrator")} | Measure-Object).Count -eq 0 )
