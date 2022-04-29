@@ -43,7 +43,7 @@ $token = Get-MsalToken -TenantId '<tenant-id>' -ClientId '<client-app-id>' -Redi
 
 Client credential flow uses the client credentials (client id and client secret) to generate the token. This is a two-step process.
 
-1. You will need to [register a new Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) or use an existing AAD application and ask AzTS admin to provide permissions by following steps mentioned in [this FAQ](./Set%20up.md#an-end-user-wants-to-access-azts-rest-api-using-spn-credentials-ie-using-client-credential-authentication-flow-what-are-the-steps-to-grant-access-to-an-spnazure-ad-application-created-by-end-user-to-be-able-to-access-azts-rest-api).
+1. You will need to [register a new Azure AD application](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app#register-an-application) or use an existing AAD application and ask AzTS admin to provide permissions by following steps mentioned in [this FAQ](./Setup.md#an-end-user-wants-to-access-azts-rest-api-using-spn-credentials-ie-using-client-credential-authentication-flow-what-are-the-steps-to-grant-access-to-an-spnazure-ad-application-created-by-end-user-to-be-able-to-access-azts-rest-api).
 
 2. Then use the following PowerShell command to generate access token. This token will be generated against specified Service Principal Name (SPN) and **SPN must have one of the following permissions at Azure subscription or resource group scope** to use AzTS APIs.
 
