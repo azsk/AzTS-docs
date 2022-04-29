@@ -9,7 +9,7 @@
     Do not grant permanent access for critical subscription level roles , Do not grant permanent access for critical resource group level roles , Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
 
 # Prerequisites:
-    1. Run this command "Install-Module -Name Az.Accounts -Scope CurrentUser -Repository "PSGallery" -Force  -AllowClobber -ErrorAction Stop" in a new session then run 'Connect-AzAccount' and then load this script.
+    1. Run these commands "Install-Module -Name Az.Accounts -Scope CurrentUser -Repository "PSGallery" -Force  -AllowClobber -ErrorAction Stop" in a new session, followed by 'Connect-AzAccount' and then load this script.
     2. Owner and higher privileged role assignment on the Subscription is required and atleast one service adminstrator role assignment must be present on the subscription level.
 
 # Important Points:
