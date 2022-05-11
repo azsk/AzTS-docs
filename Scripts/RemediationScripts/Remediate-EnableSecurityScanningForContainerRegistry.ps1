@@ -1,15 +1,16 @@
 <###
 # Overview:
-    This script is used to grant access to security scanner identities for image scans on Container Registry(s) in a Subscription.
+    This script is used to grant access to security scanner identities for image scans on Container Registry in a Subscription.
 
 # Control ID:
     Azure_ContainerRegistry_Config_Enable_Security_Scanning
 
 # Display Name:
-    Security scanner identity must be granted access to Container Registry(s) for image scans.
+    Security scanner identity must be granted access to Container Registry for image scans.
 
 # Prerequisites:
-    Owner and higher privileges on the Container Registry(s) in a Subscription.
+    Reader or higher priviliged role on the subscription is required to fetch role assignment details.
+    Owner or higher priviliged role on the Container Registry(s) is required for remediation.
 
 # Steps performed by the script:
     To remediate:
@@ -38,15 +39,15 @@
     To remediate:
         1. To review the Container Registry(s) in a Subscription that will be remediated:
     
-           Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+           Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. To grant access to security scanner identities for image scans on Container Registry(s) in the Subscription:
        
-           Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+           Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To grant access to security scanner identities for image scans on Container Registry(s) in the Subscription, from a previously taken snapshot:
        
-           Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForContainerRegistry\ContainerRegistryWithoutSecurityScanningEnabled.csv
+           Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForContainerRegistry\ContainerRegistryWithoutSecurityScanningEnabled.csv
 
         To know more about the options supported by the remediation command, execute:
         
@@ -141,13 +142,13 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         None. Enable-SecurityScanningIdentityForContainerRegistry does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForContainerRegistry\ContainerRegistryWithoutSecurityScanningEnabled.csv
+        PS> Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForContainerRegistry\ContainerRegistryWithoutSecurityScanningEnabled.csv
 
         .LINK
         None
@@ -171,6 +172,11 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         [Switch]
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
         $DryRun,
+
+        [String]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the object(user) to be assigned as a reader role")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the object(user) to be assigned as a reader role")]
+        $ObjectId,
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
@@ -221,19 +227,20 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..."
+	
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id
 
-    # Checking if the current account type is "User"
-    if ($context.Account.Type -ne "User")
+    if(($currentLoginRoleAssignments | Where { $_.Scope -like "/providers/Microsoft.Management/managementGroups*" -or $_.Scope -eq "/subscriptions/$($SubscriptionId)"}| Measure-Object).Count -eq 0 )
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "Current $($context.Account.Type) [$($context.Account.Id)] does not have required permissions. At least Reader or higher priviliged role on the subscription is required to fetch role assignment details..." -ForegroundColor $([Constants]::MessageType.Error)
+        return;
     }
     else
     {
-        Write-Host "[$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Update)
-    }   
+        Write-Host "Current $($context.Account.Type) [$($context.Account.Id)] has the required role on subscription [$($SubscriptionId)]." -ForegroundColor $([Constants]::MessageType.Update)
+    }
 
-    Write-Host "*** To grant access to security scanner identities for image scans on Container Registry(s) in the Subscription, Owner and higher privileges on the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+   
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Container Registry(s)..."
     Write-Host $([Constants]::SingleDashLine)
@@ -247,7 +254,13 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         Write-Host "Fetching all Container Registry(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
         # Get all Container Registry(s) in a Subscription
-        $containerRegistryDetails = Get-AzContainerRegistry -ErrorAction Stop
+        $containerRegistryDetails =  Get-AzResource -ResourceType Microsoft.ContainerRegistry/registries -ErrorAction Stop
+
+        # Seperating required properties
+        $containerRegistryDetails = $containerRegistryDetails | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                          @{N='ResourceName';E={$_.Name}},
+                                                                          @{N='ObjectId';E={$ObjectId}}
     }
     else
     {
@@ -257,7 +270,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             break
         }
 
-        Write-Host "Fetching all Container Registry(s) from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all Container Registry(s) from [$($FilePath)]..." 
 
         $containerRegistryResources = Import-Csv -LiteralPath $FilePath
         $validcontainerRegistryResources = $containerRegistryResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
@@ -267,14 +280,12 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
             try
             {
-                Write-Host "Fetching Container Registry(s) resource: Resource ID - $($resourceId)"
-                $containerRegistryResource = Get-AzContainerRegistry -ResourceGroupName $_.ResourcegroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+                $containerRegistryResource =  Get-AzResource -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
                 $containerRegistryDetails += $containerRegistryResource
             }
             catch
             {
                 Write-Host "Error fetching Container Registry(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this Container Registry(s) resource..." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
     }
@@ -289,10 +300,6 @@ function Enable-SecurityScanningIdentityForContainerRegistry
   
     Write-Host "Found [$($totalContainerRegistry)] Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Update)
     
-    # Seperating required properties
-    $containerRegistryDetails = $containerRegistryDetails | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                          @{N='ResourceName';E={$_.Name}}
                                                                           
     Write-Host $([Constants]::SingleDashLine)
     # List for storing role assignment details.
@@ -306,9 +313,8 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     # Fetching all role assignment.
     $roleAssignmentDetails = Get-AzRoleAssignment 
 
-
     # Seperating the central account. 
-    $centralReaderAccounts = $roleAssignmentDetails | Where-Object {$_.ObjectType -eq "ServicePrincipal" -and $_.RoleDefinitionName -eq "Reader" -and $_.DisplayName -eq "aqua-csp-dsre" -and $_.ObjectId -eq "933b2294-7959-4e6f-a006-3e75ab109a4e"} 
+    $centralReaderAccounts = $roleAssignmentDetails | Where-Object {$_.RoleDefinitionName -eq "Reader" -and $_.ObjectId -eq $ObjectId} 
 
     Write-Host "Found [$(($centralReaderAccounts| Measure-Object).Count)] central reader security scanner role assignment(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
@@ -324,7 +330,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     {
         $containerRegistryDetails | ForEach-Object {
             $containerRegistry = $_
-            $CentralReaderAccount = $centralReaderAccounts | Where-Object {$_.Scope -eq $containerRegistry.ResourceId -or ($_.Scope).Split('/')[4] -eq $containerRegistry.ResourceGroupName}
+            $CentralReaderAccount = $centralReaderAccounts | Where-Object {$_.Scope -eq $containerRegistry.ResourceId -or(($_.Scope).Split('/').Count -eq 5 -and ($_.Scope).Split('/')[4] -eq $containerRegistry.ResourceGroupName)}
 
             if(($centralReaderAccount | Measure-Object).count -eq 0)
             {
@@ -334,7 +340,6 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         
     }
    
-    
     $totalContainerRegistryWithoutSecurityScanningEnabled  = ($containerRegistryWithoutSecurityScanningEnabled | Measure-Object).Count
 
     if ($totalContainerRegistryWithoutSecurityScanningEnabled  -eq 0)
@@ -345,7 +350,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
     Write-Host "Found $($totalContainerRegistryWithoutSecurityScanningEnabled) Container Registry(s) for which access is not granted to security scanning identities." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=40;Alignment="left"},
+    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceId};Label="ResourceId";Width=100;Alignment="left"}
         
@@ -407,7 +412,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             $containerRegistry = $_
             try
             {
-                $roleAssignment = New-AzRoleAssignment -Scope $_.ResourceId -ObjectId "933b2294-7959-4e6f-a006-3e75ab109a4e" -RoleDefinitionName "Reader" -ObjectType 'ServicePrincipal'
+                $roleAssignment = New-AzRoleAssignment -Scope $_.ResourceId -ObjectId $ObjectId -RoleDefinitionName "Reader" -ObjectType 'ServicePrincipal'
                 if($roleAssignment -ne $null)
                 {
                     $containerRegistryRemediated += $containerRegistry
@@ -561,18 +566,18 @@ function Disable-SecurityScanningIdentityForContainerRegistry
 
     Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..."
 
-    # Checking if the current account type is "User"
-    if ($context.Account.Type -ne "User")
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id
+
+    if(($currentLoginRoleAssignments | Where { $_.Scope -like "/providers/Microsoft.Management/managementGroups*" -or $_.Scope -eq "/subscriptions/$($SubscriptionId)"}| Measure-Object).Count -eq 0 )
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "Current $($context.Account.Type) [$($context.Account.Id)] does not have required permissions. At least Reader or higher priviliged role on the subscription is required to fetch role assignment details..." -ForegroundColor $([Constants]::MessageType.Error)
+        return;
     }
     else
     {
-        Write-Host "[$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Update)
-    } 
+        Write-Host "Current $($context.Account.Type) [$($context.Account.Id)] has the required role on subscription [$($SubscriptionId)]." -ForegroundColor $([Constants]::MessageType.Update)
+    }
 
-    Write-Host "*** To grant access to security scanner identities for image scans on Container Registry(s) in the Subscription, Owner and higher privileges on the subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Container Registry(s)..."
     Write-Host $([Constants]::SingleDashLine)
@@ -583,8 +588,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         break
     }
 
-    Write-Host "Fetching all Container Registry(s) from [$($FilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
-
+    Write-Host "Fetching all Container Registry(s) from [$($FilePath)]..."
     $containerRegistryDetails = Import-Csv -LiteralPath $FilePath
 
     $validcontainerRegistryDetails = $containerRegistryDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
@@ -599,7 +603,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
 
     Write-Host "Found [$(($validcontainerRegistryDetails|Measure-Object).Count)] Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=40;Alignment="left"},
+    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceId};Label="ResourceId";Width=100;Alignment="left"}
         
@@ -664,6 +668,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
             $containerRegistrySkipped += $containerRegistry
         }
     }
+
 
     if ($($ContainerRegistryRolledBack | Measure-Object).Count -gt 0 -or $($ContainerRegistrySkipped | Measure-Object).Count -gt 0)
     {
