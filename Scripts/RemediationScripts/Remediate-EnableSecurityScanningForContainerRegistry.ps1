@@ -1,6 +1,6 @@
 <###
 # Overview:
-    This script is used to grant access to security scanner identities for image scans on Container Registry in a Subscription.
+    This script is used to grant access to security scanner identity for image scans on Container Registry in a Subscription.
 
 # Control ID:
     Azure_ContainerRegistry_Config_Enable_Security_Scanning
@@ -15,25 +15,25 @@
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
-        2. Get the list of Container Registry(s) in a Subscription that do not have access to security scanner identities for image scan.
+        2. Get the list of Container Registry(s) in a Subscription that do not have access to security scanner identity for image scan.
         3. Back up details of Container Registry(s) that are to be remediated.
-        4. Grant access to security scanner identities for image scans on Container Registry(s) in the Subscription.
+        4. Grant access to security scanner identity for image scans on Container Registry(s) in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script and validating the user.
         2. Get the list of Container Registry(s) in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Remove access to security scanner identities on all Container Registry(s) in the Subscription.
+        3. Remove access to security scanner identity on all Container Registry(s) in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to grant access to security scanner identities for image scans on Container Registry(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to grant access to security scanner identity for image scans on Container Registry(s) in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remove access to security scanner identities on all Container Registry(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to remove access to security scanner identity on all Container Registry(s) in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -41,11 +41,11 @@
     
            Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. To grant access to security scanner identities for image scans on Container Registry(s) in the Subscription:
+        2. To grant access to security scanner identity for image scans on Container Registry(s) in the Subscription:
        
            Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To grant access to security scanner identities for image scans on Container Registry(s) in the Subscription, from a previously taken snapshot:
+        3. To grant access to security scanner identity for image scans on Container Registry(s) in the Subscription, from a previously taken snapshot:
        
            Enable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ObjectId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForContainerRegistry\ContainerRegistryWithoutSecurityScanningEnabled.csv
 
@@ -54,7 +54,7 @@
         Get-Help Enable-SecurityScanningIdentityForContainerRegistry -Detailed
 
     To roll back:
-        1. To remove access from security scanner identities for image scans on Container Registry(s) in the Subscription, from a previously taken snapshot:
+        1. To remove access from security scanner identity for image scans on Container Registry(s) in the Subscription, from a previously taken snapshot:
            Disable-SecurityScanningIdentityForContainerRegistry -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForContainerRegistry\RemediatedContainerRegistry.csv
        
         To know more about the options supported by the roll back command, execute:
@@ -118,7 +118,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
         .DESCRIPTION
         Remediates 'Azure_ContainerRegistry_Config_Enable_Security_Scanning' Control.
-        Grant access to security scanner identities for image scans on Container Registry(s) in the Subscription. 
+        Grant access to security scanner identity for image scans on Container Registry(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -174,8 +174,8 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         $DryRun,
 
         [String]
-        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the object(user) to be assigned as a reader role")]
-        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the object(user) to be assigned as a reader role")]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the Object Id of the AAD Identity to be assigned as a reader role")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the Object Id of the AAD Identity to be assigned as a reader role")]
         $ObjectId,
 
         [String]
@@ -281,7 +281,11 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             try
             {
                 $containerRegistryResource =  Get-AzResource -ResourceType Microsoft.ContainerRegistry/registries -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-                $containerRegistryDetails += $containerRegistryResource
+                
+                $containerRegistryDetails += $containerRegistryResource  | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                          @{N='ResourceName';E={$_.Name}},
+                                                                          @{N='ObjectId';E={$ObjectId}}
             }
             catch
             {
@@ -294,7 +298,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
     if ($totalContainerRegistry -eq 0)
     {
-        Write-Host "No Container Registry(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Container Registry(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
   
@@ -305,23 +309,27 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     # List for storing role assignment details.
     $roleAssignmentDetails = @()
 
-    # List for storing sub level scanning identity role assignment details.
+    # List for storing sub level secuirty scanning identity role assignment details.
     $subLevelRoleAssignmentDetails = @()
 
-    Write-Host "Fetching central reader security scanner role assignments..."
+    Write-Host "Fetching role assignments of central security scanner identity..."
 
-    # Fetching all role assignment.
-    $roleAssignmentDetails = Get-AzRoleAssignment 
-
-    # Seperating the central account. 
-    $centralReaderAccounts = $roleAssignmentDetails | Where-Object {$_.RoleDefinitionName -eq "Reader" -and $_.ObjectId -eq $ObjectId} 
-
-    Write-Host "Found [$(($centralReaderAccounts| Measure-Object).Count)] central reader security scanner role assignment(s)." -ForegroundColor $([Constants]::MessageType.Update)
-
-    # list for storing Container Registry(s) for which central reader role is not assigned.
+    # Fetching central role assignment.
+    $centralReaderAccounts = Get-AzRoleAssignment -ObjectId $ObjectId  -RoleDefinitionName "Reader"
+    
+    if((($centralReaderAccounts| Measure-Object).Count) -eq 0)
+    {
+        Write-Host "No central security scanner role assignment found." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    else
+    {
+        Write-Host "Found [$(($centralReaderAccounts| Measure-Object).Count)] central security scanner role assignment(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+   
+    # list for storing Container Registry(s) for which central security scanner role is not assigned.
     $containerRegistryWithoutSecurityScanningEnabled = @()
 
-    Write-Host "Separating Container Registry(s) for which access is not granted to security scanning identities..."
+    Write-Host "Separating Container Registry(s) for which access is not granted to security scanner identity..."
 
     #seperating the sub level role assignments.
     $subLevelRoleAssignmentDetails = $centralReaderAccounts | Where-Object {$_.Scope -eq "/subscriptions/$($SubscriptionId)"}
@@ -344,11 +352,11 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
     if ($totalContainerRegistryWithoutSecurityScanningEnabled  -eq 0)
     {
-        Write-Host "No Container Registry(s) found for granting access to security scanner identities for image scans. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Container Registry(s) found for granting access to security scanner identity for image scans. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
-    Write-Host "Found $($totalContainerRegistryWithoutSecurityScanningEnabled) Container Registry(s) for which access is not granted to security scanning identities." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalContainerRegistryWithoutSecurityScanningEnabled)] Container Registry(s) for which access is not granted to security scanner identity." -ForegroundColor $([Constants]::MessageType.Update)
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
@@ -367,36 +375,46 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 3 of 4] Backing up Container Registry(s) details..."
     Write-Host $([Constants]::SingleDashLine)
+
+    if ([String]::IsNullOrWhiteSpace($FilePath))
+    {
+        
     
-    # Backing up Container Registry(s) details.
-    $backupFile = "$($backupFolderPath)\ContainerRegistryWithoutSecurityScanningEnabled.csv"
+        # Backing up Container Registry(s) details.
+        $backupFile = "$($backupFolderPath)\ContainerRegistryWithoutSecurityScanningEnabled.csv"
 
-    $containerRegistryWithoutSecurityScanningEnabled | Export-CSV -Path $backupFile -NoTypeInformation
+        $containerRegistryWithoutSecurityScanningEnabled | Export-CSV -Path $backupFile -NoTypeInformation
 
-    Write-Host "Container Registry(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Container Registry(s) details have been backed up to" -NoNewline
+        Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    else
+    {
+        Write-Host "Skipped as -FilePath is provided" -ForegroundColor $([Constants]::MessageType.Warning)
+    }
 
     if (-not $DryRun)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Grant access to security scanner identities for image scans on Container Registry(s) in the Subscription..." 
+        Write-Host "[Step 4 of 4] Grant access to security scanner identity for image scans on Container Registry(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         
 
         if (-not $Force)
         {
-            Write-Host "Do you want to grant access to security scanner identities for image scans on Container Registry(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Do you want to grant access to security scanner identity for image scans on Container Registry(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
             {
-                Write-Host "Access is not granted to security scanner identities for image scans on Container Registry(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Access is not granted to security scanner identity for image scans on Container Registry(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
         else
         {
-            Write-Host "'Force' flag is provided. Access will be granted to security scanner identities for image scans on Container Registry(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Access will be granted to security scanner identity for image scans on Container Registry(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         # List for storing remediated Container Registry(s)
@@ -405,14 +423,14 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         # List for storing skipped Container Registry(s)
         $containerRegistrySkipped = @()
 
-        Write-Host "Creating Reader role for security scanner identities for image scanning on Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Creating Reader role for security scanner identity for image scanning on Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Info)
 
         # Loop through the list of Container Registry(s) which needs to be remediated.
         $containerRegistryWithoutSecurityScanningEnabled | ForEach-Object {
             $containerRegistry = $_
             try
             {
-                $roleAssignment = New-AzRoleAssignment -Scope $_.ResourceId -ObjectId $ObjectId -RoleDefinitionName "Reader" -ObjectType 'ServicePrincipal'
+                $roleAssignment = New-AzRoleAssignment -Scope $_.ResourceId -ObjectId $ObjectId -RoleDefinitionName "Reader" 
                 if($roleAssignment -ne $null)
                 {
                     $containerRegistryRemediated += $containerRegistry
@@ -433,37 +451,41 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         
         if ($($ContainerRegistryRemediated | Measure-Object).Count -gt 0)
         {
-            Write-Host "Access is successfully granted to security scanner identities for image scans on the following Container Registry(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Access is successfully granted to security scanner identity for image scans on the following Container Registry(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
            
             $ContainerRegistryRemediated | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
             $ContainerRegistryRemediatedFile = "$($backupFolderPath)\RemediatedContainerRegistry.csv"
             $ContainerRegistryRemediated | Export-CSV -Path $ContainerRegistryRemediatedFile -NoTypeInformation
-            Write-Host "This information has been saved to [$($ContainerRegistryRemediatedFile)]"
+
+            Write-Host "This information has been saved to" -NoNewline
+            Write-Host " [$($ContainerRegistryRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
             Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
         if ($($ContainerRegistrySkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "`nError granting access to security scanner identities for image scans on the following Container Registry(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "`nError granting access to security scanner identity for image scans on the following Container Registry(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
             $ContainerRegistrySkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
             $ContainerRegistrySkippedFile = "$($backupFolderPath)\SkippedContainerRegistry.csv"
             $ContainerRegistrySkipped | Export-CSV -Path $ContainerRegistrySkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to [$($ContainerRegistrySkippedFile)]"
+            Write-Host "This information has been saved to"  -NoNewline
+            Write-Host " [$($ContainerRegistrySkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Grant access to security scanner identities for image scans on Container Registry(s) in the Subscription..."
+        Write-Host "[Step 4 of 4] Grant access to security scanner identity for image scans on Container Registry(s) in the Subscription..."
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "`nNext steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, to grant access to security scanner identities for image scans on Container Registry(s) listed in the file."
+        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, to grant access to security scanner identity for image scans on Container Registry(s) listed in the file."
     }
 }
 
@@ -475,7 +497,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_ContainerRegistry_Config_Enable_Security_Scanning' Control.
-        Remove access to security scanner identities for image scans on Container Registry(s) in the Subscription. 
+        Remove access to security scanner identity for image scans on Container Registry(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -588,7 +610,8 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         break
     }
 
-    Write-Host "Fetching all Container Registry(s) from [$($FilePath)]..."
+    Write-Host "Fetching all Container Registry(s) from" -NoNewline
+    Write-Host " [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Update)
     $containerRegistryDetails = Import-Csv -LiteralPath $FilePath
 
     $validcontainerRegistryDetails = $containerRegistryDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
@@ -597,7 +620,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
 
     if ($totalContainerRegistry -eq 0)
     {
-        Write-Host "No Container Registry(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Container Registry(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
@@ -619,26 +642,26 @@ function Disable-SecurityScanningIdentityForContainerRegistry
  
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Remove access to security scanner identities on all Container Registry(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Remove access to security scanner identity on all Container Registry(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
     if( -not $Force)
     {
         
-        Write-Host "Do you want to remove access from security scanner identities on all Container Registry(s) mentioned the file in the ?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to remove access from security scanner identity on all Container Registry(s) mentioned the file in the ?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
             {
-                Write-Host "Access is not removed from security scanner identities for image scans on Container Registry(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Access is not removed from security scanner identity for image scans on Container Registry(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
-            Write-Host "Removing access for security scanner identities for image scans on Container Registry(s) in the Subscription."
+            Write-Host "Removing access for security scanner identity for image scans on Container Registry(s) in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
 
     }
     else
     {
-        Write-Host "'Force' flag is provided. Access will be removed from security scanner identities for image scans on Container Registry(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'Force' flag is provided. Access will be removed from security scanner identity for image scans on Container Registry(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     # List for storing rolled back Container Registry resource.
@@ -651,8 +674,8 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         $containerRegistry = $_
         try
         {
-            Remove-AzRoleAssignment -Scope $_.ResourceId -ObjectId "933b2294-7959-4e6f-a006-3e75ab109a4e"  -RoleDefinitionName "Reader" 
-            $RoleAssignment = Get-AzRoleAssignment -Scope $_.ResourceId -ObjectId "933b2294-7959-4e6f-a006-3e75ab109a4e" -RoleDefinitionName "Reader"
+            Remove-AzRoleAssignment -Scope $_.ResourceId -ObjectId $_.ObjectId  -RoleDefinitionName "Reader" 
+            $RoleAssignment = Get-AzRoleAssignment -Scope $_.ResourceId -ObjectId $_.ObjectId -RoleDefinitionName "Reader"
             
             if($RoleAssignment -eq $null)
             {
@@ -677,24 +700,26 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         
         if ($($ContainerRegistryRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "Access is successfully removed for security scanner identities on following Container Registry(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Access is successfully removed for security scanner identity on following Container Registry(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
             $ContainerRegistryRolledBack | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
             $ContainerRegistryRolledBackFile = "$($backupFolderPath)\RolledBackContainerRegistry.csv"
             $ContainerRegistryRolledBack | Export-CSV -Path $ContainerRegistryRolledBackFile -NoTypeInformation
-            Write-Host "This information has been saved to [$($ContainerRegistryRolledBackFile)]"
+            Write-Host "This information has been saved to" -NoNewline
+            Write-Host " [$($ContainerRegistryRolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
         }
 
         if ($($ContainerRegistrySkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "`nError removing access for security scanner identities on following Container Registry(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "`nError removing access for security scanner identity on following Container Registry(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
             $ContainerRegistrySkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
             $ContainerRegistrySkippedFile = "$($backupFolderPath)\RollbackSkippedContainerRegistry.csv"
             $ContainerRegistrySkipped | Export-CSV -Path $ContainerRegistrySkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to [$($ContainerRegistrySkippedFile)]"
+            Write-Host "This information has been saved to" -NoNewline
+            Write-Host " [$($ContainerRegistrySkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
         }
     }
 }
