@@ -338,7 +338,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     {
         $containerRegistryDetails | ForEach-Object {
             $containerRegistry = $_
-            $CentralReaderAccount = $centralReaderAccounts | Where-Object {$_.Scope -eq $containerRegistry.ResourceId -or(($_.Scope).Split('/').Count -eq 5 -and ($_.Scope).Split('/')[4] -eq $containerRegistry.ResourceGroupName)}
+            $CentralReaderAccount = $centralReaderAccounts | Where-Object {$_.Scope -eq $containerRegistry.ResourceId -or(($_.Scope).Split('/').Count -eq 5 -and ($_.Scope).Split('/')[4] -eq $containerRegistry.ResourceGroupName -and $_.Scope -notlike "/providers/Microsoft.Management/managementGroups*")}
 
             if(($centralReaderAccount | Measure-Object).count -eq 0)
             {
