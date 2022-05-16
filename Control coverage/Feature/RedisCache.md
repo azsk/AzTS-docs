@@ -94,7 +94,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 	 To disable Non-SSL port for Redis Cache, run command: 
 	 ```powershell 
-	 Set-AzRedisCache -ResourceGroupName <String> -Name <String> -EnableNonSslPort `$false 
+	 Set-AzRedisCache -ResourceGroupName <String> -Name <String> -EnableNonSslPort $false
 	 ```  
 <!--
 - **Enforcement Policy** 
