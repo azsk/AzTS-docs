@@ -85,12 +85,12 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 > **Passed:**
 > Microsoft Defender for Cloud (MDC) reports the assessment status for the storage account as `Healthy`.
 > (or)
-> Storage account supports encryption in transit using HTTPS protocol.
+> Storage account supports encryption in transit using HTTPS protocol or it does not support encryption in transit and has only NFS based file shares.
 >
 > **Failed:**
 > Microsoft Defender for Cloud (MDC) reports the assessment status for the storage account as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
 > (or)
-> Storage account does not support encryption in transit using HTTPS protocol.
+> Storage account does not support encryption in transit using HTTPS protocol and it has either no files shares or has both NFS & SMB based file shares
 >
 > **Verify:**
 > Microsoft Defender for Cloud (MDC) reports the assessment status for the storage account as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
@@ -116,6 +116,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 	```powershell
 	Get-Help Set-AzStorageAccount -full
 	```
+**NOTE:** If your Storage account contains NFS and SMB Fileshares, you would need to move your NFS Fileshares to a separate Storage account that only contains NFS Fileshares. Such Storage accounts would be exempted from evaluation of this security control. Any Storage accounts with SMB fileshare are evaluated for secure transfer with this control.
 
 <!--
 - **Enforcement Policy**
