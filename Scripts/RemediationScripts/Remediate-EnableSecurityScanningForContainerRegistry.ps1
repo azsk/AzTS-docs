@@ -314,9 +314,17 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
     Write-Host "Fetching role assignments of central security scanner identity..."
 
-    # Fetching central role assignment.
-    $centralReaderAccounts = Get-AzRoleAssignment -ObjectId $ObjectId  -RoleDefinitionName "Reader"
-    
+    try
+    {
+        # Fetching central role assignment.
+        $centralReaderAccounts = Get-AzRoleAssignment -ObjectId $ObjectId  -RoleDefinitionName "Reader" -ErrorAction Stop
+    }
+    catch
+    {
+        Write-Host "Error occured while fetching security scanning role assignment(s).Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        break;
+    }
+
     if((($centralReaderAccounts| Measure-Object).Count) -eq 0)
     {
         Write-Host "No central security scanner role assignment found." -ForegroundColor $([Constants]::MessageType.Update)
@@ -344,7 +352,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             {
                 $containerRegistryWithoutSecurityScanningEnabled += $containerRegistry
             }
-        }    
+        }        
     }
    
     $totalContainerRegistryWithoutSecurityScanningEnabled  = ($containerRegistryWithoutSecurityScanningEnabled | Measure-Object).Count
@@ -376,7 +384,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
+    {     
         # Backing up Container Registry(s) details.
         $backupFile = "$($backupFolderPath)\ContainerRegistryWithoutSecurityScanningEnabled.csv"
 
@@ -420,7 +428,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         # List for storing skipped Container Registry(s)
         $containerRegistrySkipped = @()
 
-        Write-Host "Creating Reader role for security scanner identity for image scanning on Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Creating role assignment with reader role for security scanner identity for image scanning on Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Info)
 
         # Loop through the list of Container Registry(s) which needs to be remediated.
         $containerRegistryWithoutSecurityScanningEnabled | ForEach-Object {
@@ -504,7 +512,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
-        
+
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the roll back.
 
@@ -642,7 +650,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
     if( -not $Force)
     {
         
-        Write-Host "Do you want to remove access from security scanner identity on all Container Registry(s) mentioned the file in the ?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to remove access for security scanner identity on all Container Registry(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
