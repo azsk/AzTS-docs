@@ -344,8 +344,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             {
                 $containerRegistryWithoutSecurityScanningEnabled += $containerRegistry
             }
-        }
-        
+        }    
     }
    
     $totalContainerRegistryWithoutSecurityScanningEnabled  = ($containerRegistryWithoutSecurityScanningEnabled | Measure-Object).Count
@@ -378,8 +377,6 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        
-    
         # Backing up Container Registry(s) details.
         $backupFile = "$($backupFolderPath)\ContainerRegistryWithoutSecurityScanningEnabled.csv"
 
@@ -508,9 +505,6 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
         
-        .Parameter ExcludeNonProductionSlots
-        Specifies exclusion of non-production slots from roll back.
-        
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the roll back.
 
@@ -633,7 +627,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
     $validcontainerRegistryDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableSecurityScanningIdentityForContainerRegistry"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableSecurityScanningIdentityForContainerRegistry"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -657,7 +651,6 @@ function Disable-SecurityScanningIdentityForContainerRegistry
                 break
             }
             Write-Host "Removing access for security scanner identity for image scans on Container Registry(s) in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
-
     }
     else
     {
@@ -691,7 +684,6 @@ function Disable-SecurityScanningIdentityForContainerRegistry
             $containerRegistrySkipped += $containerRegistry
         }
     }
-
 
     if ($($ContainerRegistryRolledBack | Measure-Object).Count -gt 0 -or $($ContainerRegistrySkipped | Measure-Object).Count -gt 0)
     {
