@@ -19,7 +19,7 @@ ___
 
 ## Azure_ServiceFabric_AuthZ_Security_Mode_Enabled 
 
-### Display Name 
+### Display Name
 Service Fabric cluster security must be enabled using security mode option 
 
 ### Rationale 
@@ -119,20 +119,22 @@ The ClusterProtectionLevel property must be set to EncryptAndSign
 ### Rationale 
 With cluster protection level set to 'EncryptAndSign', all the node-to-node messages are encrypted and digitally signed. This protects the intra-cluster communication from eavesdropping/tampering/man-in-the-middle attacks on the network. 
 
-### Control Spec 
+### Control Spec
 
-> **Passed:** 
-> Cluster protection level is set to "EncryptAndSign"
-> 
-> **Failed:** 
-> Cluster protection level is not set to "EncryptAndSign"
-> 
+> **Passed:**
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the Service Fabric cluster as `Healthy`. (or) Cluster protection level is set to "EncryptAndSign"
+>
+> **Failed:**
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the Service Fabric cluster as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`. (or) Cluster protection level is not set to "EncryptAndSign"
+>
+> **Note:** If no Microsoft Defender for Cloud (MDC) assessment is found for the Service Fabric cluster, response from the ARM API is considered for the evaluation.
 
-### Recommendation 
+
+### Recommendation
 
 - **Azure Portal** 
 
-	 Service Fabric provides three levels of protection (None, Sign and EncryptAndSign) for node-to-node communication using cluster primary certificate. The protection level can be specified using property 'ClusterProtectionLevel' inside Service Fabric ARM template. The value of 'ClusterProtectionLevel' must be set to 'EncryptAndSign' to ensure that all the node-to-node messages are encrypted and digitally signed. Configure 'ClusterProtectionLevel' using ARM template as follows: ARM Template --> Resources --> Select resource type 'Microsoft.ServiceFabric/clusters' --> 'fabricSettings' --> Add 'ClusterProtectionLevel' property with value 'EncryptAndSign'. 
+    Go to the Service Fabric Cluster resource > Settings > Custom fabric settings > Edit the parameter - 'ClusterProtectionLevel' (add, if absent). Set its value to 'EncryptAndSign'. > Save.
 
 <!-- - **PowerShell** 
 
@@ -148,7 +150,9 @@ With cluster protection level set to 'EncryptAndSign', all the node-to-node mess
 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policy or ARM API used for evaluation
+
+- Azure Policy (built-in): [Service Fabric clusters should have the ClusterProtectionLevel property set to EncryptAndSign](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F617c02be-7f02-4efd-8836-3180d47b6c68)
 
 - ARM API to get cluster protection level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** property.fabricSettings.ClusterProtectionLevel.value
@@ -296,27 +300,33 @@ Publicly exposed ports must be monitored to detect suspicious and malicious acti
 
 ___ 
 
-## Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port 
+## Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port
 
-### Display Name 
-Reverse proxy port must not be exposed publicly 
+### Display Name
+Reverse proxy port must not be exposed publicly
 
-### Rationale 
-Configuring the reverse proxy's port in Load Balancer with public IP will expose all microservices with HTTP endpoint. Microservices meant to be internal may be discoverable by a determined malicious user. 
+### Rationale
+Configuring the reverse proxy's port in Load Balancer with public IP will expose all microservices with HTTP endpoint. Microservices meant to be internal may be discoverable by a determined malicious user.
 
-### Control Spec 
+### Control Spec
 
-> **Passed:** 
-> Reverse proxy endpoints ports list is empty
-> 
-> **Failed:** 
-> Reverse proxy endpoints ports found, and ports are opened using public load balancer on SF
-> 
-### Recommendation 
+> **Passed:**
+>   <br>
+>   One of the following conditions are true:
+>   - No reverse proxy found.
+>   - No load balancer found on the Service Fabric cluster.
+>   - No load balancer rules found on the Service Fabric cluster.
+>   - Reverse proxy is not exposed using load balancer.
+>
+> **Failed:**
+>   <br>
+>   Reverse proxy on one or more nodes is exposed using a public load balancer on the Service Fabric cluster.
+>
+### Recommendation
 
-- **Azure Portal** 
+- **Azure Portal**
 
-	 Check that reverse proxy port is not exposed through Azure Load Balancer rules as follows: Azure Portal --> Load Balancers --> <Load Balancer Name> --> Load Balancing Rules --> Validate reverse proxy port is not exposed. 
+    Check that reverse proxy port is not exposed through Azure Load Balancer rules as follows: Azure Portal --> Load Balancers --> \<Load Balancer Name\> --> Load Balancing Rules (Under 'Settings') --> Validate reverse proxy port is not exposed.
 
 <!--
 - **PowerShell** 

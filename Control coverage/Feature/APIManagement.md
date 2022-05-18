@@ -43,15 +43,16 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 > URL Scheme settings could not be verified as the management endpoint over port 3443 is disabled.
 > 
 
-### Recommendation 
+### Recommendation
 
-- **PowerShell** 
+- **PowerShell**
 
-	 ```powershell 
-	 Set-AzApiManagementApi -Context {APIContextObject} -Protocols 'Https' -Name {APIName} -ApiId {APIId} -ServiceUrl {ServiceURL}
-	 Get-AzApiManagementApi -Context {APIContextObject} # To get the details of existing APIs
-	 # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi 
-	 ```
+        ```powershell
+        $APIContextObject = New-AzApiManagementContext -ResourceGroupName "<resource-group-name>" -ServiceName "<api-management-service-name>"
+        Set-AzApiManagementApi -Context {APIContextObject} -Protocols 'Https' -Name {APIName} -ApiId {APIId} -ServiceUrl {ServiceURL}
+        Get-AzApiManagementApi -Context {APIContextObject} # To get the details of existing APIs
+        # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
+        ```
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -76,35 +77,67 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 ### Control Settings 
 ```json 
 {
-    "UnsecureProtocolsAndCiphersConfiguration": [
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10",
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11",
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30",
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10",
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11",
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30",
-		"Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168"
+	"UnsecureProtocolsAndCiphersConfiguration": [
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10",
+			"DisplayName": "TLS 1.0 (HTTP/1.x only)",
+			"Type": "Client protocol"
+		},
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls11",
+			"DisplayName": "TLS 1.1 (HTTP/1.x only)",
+			"Type": "Client protocol"
+		},
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Ssl30",
+			"DisplayName": "SSL 3.0 (HTTP/1.x only)",
+			"Type": "Client protocol"
+		},
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls10",
+			"DisplayName": "TLS 1.0",
+			"Type": "Backend protocol"
+		},
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Tls11",
+			"DisplayName": "TLS 1.1",
+			"Type": "Backend protocol"
+		},
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Backend.Protocols.Ssl30",
+			"DisplayName": "SSL 3.0",
+			"Type": "Backend protocol"
+		},
+		{
+			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168",
+			"DisplayName": "TripleDes168",
+			"Type": "Cipher"
+		}
 	]
 }
  ``` 
 
-### Control Spec 
+### Control Spec
 
-> **Passed:** 
+> **Passed:**
 > All old versions of protocols and ciphers configurations are disabled.
-> 
-> **Failed:** 
+>
+> **Failed:**
 > Old versions of protocols and ciphers configurations are being used.
-> 
-> 
+>
+>
 
-### Recommendation 
+### Recommendation
 
-- **Azure Portal** 
+- **Azure Portal**
 
-	 Ensure that secure protocol versions are used between the client and the gateway *and* between the gateway and the backend APIs. Go to Azure Portal --> your API management instance --> Settings --> Protocol settings --> Turn OFF 3DES Ciphers, TLS protocols (1.1 and 1.0) and SSL 3.0 Protocols.
+    Ensure that secure protocol versions are used between the client and the gateway *and* between the gateway and the backend APIs. Navigate to the API Management service instance -> **Security** section -> **Protocols + ciphers** -> **Protocols** tab and ensure only **TLS 1.2** is enabled and all other protocols are disabled for both **Client protocol** and **Backend protocol**. Also, ensure **TripleDes168** is disabled under **Ciphers** tab.
 
-### Azure Policy or ARM API used for evaluation 
+- **PowerShell**
+
+    Refer [How do I remediate failing control Azure_APIManagement_DP_Use_Secure_TLS_Version?](https://github.com/azsk/DevOpsKit-docs/blob/master/00c-Addressing-Control-Failures/Readme.md#how-do-i-remediate-failing-control-azure_apimanagement_dp_use_secure_tls_version) to disable the insecure protocols and ciphers using PowerShell.
+
+### Azure Policy or ARM API used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** properties.customProperties<br />
@@ -243,36 +276,43 @@ If 'validate-jwt' policy is not configured, client can call the API without the 
 
 ___ 
 
-## Azure_APIManagement_AuthN_Disable_Management_API 
+## Azure_APIManagement_AuthN_Disable_Management_API
 
-### Display Name 
-Do not use API Management REST API 
+### Display Name
+Do not use API Management REST API
 
-### Rationale 
-The credentials used to access API Management REST API provide admin-level access without support for role-based access control and without recording audit logs. For better security it is recommended to make calls through the ARM-based REST API 
+### Rationale
+The credentials used to access API Management REST API provide admin-level access without support for role-based access control and without recording audit logs. For better security it is recommended to make calls through the ARM-based REST API.
 
-### Control Spec 
+### Control Spec
 
-> **Passed:** 
+> **Passed:**
 > 'Enable Management REST API' option is turned OFF.
-> 
-> **Failed:** 
+>
+> **Failed:**
 > 'Enable Management REST API' option is turned ON.
-> 
-> **Verify:** 
+>
+> **Verify:**
 > Management API setting could not be verified as the API Management service is connected to a Virtual Network. As a result, control plane traffic on port 3443 is denied.
-> 
-> **NotApplicable:** 
+>
+> **NotApplicable:**
 > This control does not apply to consumption tier.
-> 
+>
 
-### Recommendation 
+### Recommendation
 
-- **Azure Portal** 
+- **Azure Portal**
 
-	 To disable API Management REST API, go to APIM service --> Deployment and infrastructure --> Management API --> Enable Management REST API --> No. For better security it is recommended to make calls through the ARM based REST API mentioned here: https://docs.microsoft.com/en-us/rest/api/apimanagement. 
+    To disable API Management REST API, go to APIM service --> Deployment and infrastructure --> Management API --> Under 'Direct management API' tab --> Enable Management REST API --> No. <br> For better security it is recommended to make calls through the ARM based REST API mentioned here: https://docs.microsoft.com/en-us/rest/api/apimanagement.
 
-### Azure Policy or ARM API used for evaluation 
+- **PowerShell**
+
+    ```
+    $ApiManagementContext = New-AzApiManagementContext -ResourceGroupName "<resource-group-name>" -ServiceName "<api-management-service-name>"
+    Set-AzApiManagementTenantAccess -Context $ApiManagementContext -Enabled $false
+    ```
+
+### Azure Policy or ARM API used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />

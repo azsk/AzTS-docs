@@ -83,7 +83,7 @@ Remote debugging requires inbound ports to be opened on App Service. These ports
 
 - **Azure Portal** 
 
-	 To disable remote debugging on default 'Production' slot: Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Remote Debugging --> Click on 'OFF'. To disable remote debugging on any non-production slot: Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> Remote Debugging --> Click on 'OFF' 
+	 To disable remote debugging on default 'Production' slot: Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Remote Debugging (Under Debugging) --> Click on 'OFF' --> Save. To disable remote debugging on any non-production slot: Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> Remote Debugging (Under Debugging) --> Click on 'OFF' --> Save.
 
 ### Azure Policy or ARM API used for evaluation 
 
@@ -96,10 +96,12 @@ Remote debugging requires inbound ports to be opened on App Service. These ports
  <br />
 
  - ARM API to get configuration of App Service: <br />/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
-**Properties:** properties.RemoteDebuggingEnabled<br />
+**Properties:** properties.RemoteDebuggingEnabled
+<br />
 
  - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
-**Properties:** properties.RemoteDebuggingEnabled<br />
+**Properties:** properties.RemoteDebuggingEnabled
+<br />
  <br />
 
 <br />

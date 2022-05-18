@@ -61,29 +61,29 @@ Enabling RBAC in a cluster lets you finely control access to various operations 
 
 ___ 
 
-## Azure_KubernetesService_AuthN_Enabled_AAD 
+## Azure_KubernetesService_AuthN_Enabled_AAD
 
-### Display Name 
-AAD should be enabled in Kubernetes Service 
+### Display Name
+AAD should be enabled in Kubernetes Service
 
-### Rationale 
-Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
+### Rationale
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions.
 
-### Control Spec 
+### Control Spec
 
-> **Passed:** 
-> Azure AD applications (Server App and Client App) are configured for Kubernetes Service for authentication of the credentials provided by the client.
-> 
-> **Failed:** 
-> Azure AD applications (Server App and Client App) are not configured for Kubernetes Service for authentication of the credentials provided by the client.
-> 
-### Recommendation 
+> **Passed:**
+> Azure Active Directory (AAD) (legacy or AKS-managed) authentication is enabled on the Kubernetes cluster.
+>
+> **Failed:**
+> Azure Active Directory (AAD) authentication is disabled on the Kubernetes cluster.
+>
+### Recommendation
 
 - **Azure Portal** 
 
-	 Refer: https://docs.microsoft.com/en-us/azure/aks/aad-integration to configure AAD in Kubernetes Service. 
+    Go to Azure Portal --> Kubernetes Services --> Select Kubernetes Cluster --> Settings --> Cluster configuration --> AKS-managed Azure Active Directory --> Enabled. Refer [AKS-managed Azure Active Directory integration](https://docs.microsoft.com/en-us/azure/aks/managed-aad) to configure AKS-managed AAD in Kubernetes clusters.
 
-<!-- - **PowerShell** 
+<!-- - **PowerShell**
 
 	 ```powershell 
 	 $variable = 'apple' 
@@ -95,10 +95,10 @@ Using the native enterprise directory for authentication ensures that there is a
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policy or ARM API used for evaluation
 
 - ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
-**Properties:** properties.clientAppID, properties.serverAppID, properties.tenantID, properties.managed
+**Properties:** properties.aadProfile.clientAppID, properties.aadProfile.serverAppID, properties.aadProfile.tenantID, properties.aadProfile.managed
  <br />
 
 <br />
