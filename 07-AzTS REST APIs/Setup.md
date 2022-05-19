@@ -44,7 +44,7 @@ You'll need to add additional permissions in API permissions section of AzTS Web
 3. Select your Resource Group where you have configured AzTS setup.
 4. Select the App Service for API 'AzSK-AzTS-WebAPI-xxxxx'.
 5. In the app's left menu, select **Configuration** > **Application settings**.
-6. Search the app setting **AADClientAppDetails__ApplicationId** and use its value as WebAPI Client id.
+6. Search the app setting **AADClientAppDetails__ClientId** and use its value as WebAPI Client id.
 
 <br>
 
