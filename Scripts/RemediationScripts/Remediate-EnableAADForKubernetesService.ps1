@@ -11,6 +11,7 @@
 # Prerequisites:
     1. Contributor or higher privileges on the Kubernetes Services in a Subscription.
     2. Must be connected to Azure with an authenticated account.
+    3. RBAC must be enabled on Kubernetes cluster.
 
 # Steps performed by the script:
     To remediate:
@@ -98,9 +99,6 @@ function Enable-AADForKubernetes
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
         
-        .PARAMETER Force
-        Specifies a forceful remediation without any prompts.
-        
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
         
@@ -134,10 +132,6 @@ function Enable-AADForKubernetes
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
         [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
         $SubscriptionId,
-
-        [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies a forceful remediation without any prompts")]
-        $Force,
 
         [Switch]
         [Parameter(ParameterSetName = "DryRun", HelpMessage="Specifies validation of prerequisites for the command")]
@@ -285,11 +279,21 @@ function Enable-AADForKubernetes
         catch
         {
             $kubernetesServicesSkipped += $kubernetesServiceResource
-            Write-Host "Error fetching Kubernetes Services configuration: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
         }
     }
 
     $totalKubernetesServicesWithoutAADEnabled = ($kubernetesServicesWithoutAADEnabled | Measure-Object).Count
+    $totalSkippedKubernetesServices = ($kubernetesServicesSkipped | Measure-Object).Count
+    
+    if ($totalSkippedKubernetesServices -gt 0)
+    {
+        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
+                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
+                        @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"}
+
+        $kubernetesServicesSkipped | Format-Table -Property $colsProperty -Wrap
+    }
 
     if ($totalKubernetesServicesWithoutAADEnabled -eq 0)
     {
@@ -297,7 +301,7 @@ function Enable-AADForKubernetes
         break
     }
 
-    Write-Host "`n $($totalKubernetesServicesWithoutAADEnabled) out of $($totalKubernetesServices) Kubernetes Service(s) with AAD disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "`n$($totalKubernetesServicesWithoutAADEnabled) out of $($totalKubernetesServices) Kubernetes Service(s) with AAD disabled." -ForegroundColor $([Constants]::MessageType.Update)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableAADForKubernetesServices"
@@ -308,6 +312,11 @@ function Enable-AADForKubernetes
     }
 
     Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "`n[Step 3 of 4] Backing up Kubernetes Service details to $($backupFolderPath)"
+
+    # Backing up Kubernetes Service details.
+    $backupFile = "$($backupFolderPath)\KubernetesClusterWithAADDisabled.csv"
+    $kubernetesServicesWithoutAADEnabled | Export-CSV -Path $backupFile -NoTypeInformation
 
     if (-not $DryRun)
     {
@@ -319,13 +328,7 @@ function Enable-AADForKubernetes
                         @{Expression={$_.isAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
         $kubernetesServicesWithoutAADEnabled | Format-Table -Property $colsProperty -Wrap
-
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 3 of 4] Backing up Kubernetes Service details to $($backupFolderPath)"
-        
-        $backupFile = "$($backupFolderPath)\KubernetesClusterWithAADDisabled.csv"
-        $kubernetesServicesWithoutAADEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-        
+  
         Write-Host "Kubernetes Service details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host "AAD will be enabled for all Kubernetes Services."
         Write-Host "Do you want to add Azure AD groups as administrators on each cluster?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
@@ -337,27 +340,20 @@ function Enable-AADForKubernetes
         {
             $addAADGroup = $true
         }
-
-        if (-not $Force)
-        {
-            Write-Host "Once AAD is enabled, you won't be able to disable again." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "Do you want to enable AAD for all Kubernetes Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        
+        Write-Host "Once AAD is enabled, you won't be able to disable again." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to enable AAD for all Kubernetes Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
-            $userInput = Read-Host -Prompt "(Y|N)"
+        $userInput = Read-Host -Prompt "(Y|N)"
 
-            if($userInput -ne "Y")
-            {
-                Write-Host "AAD will not be enabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
-            }
-        }
-        else
+        if($userInput -ne "Y")
         {
-            Write-Host "'Force' flag is provided. AAD will be enabled for all Kubernetes Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "AAD will not be enabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            break
         }
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 4 of 4] Enabling AAD for Kubernetes Services..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "`n[Step 4 of 4] Enabling AAD for Kubernetes Services..."
 
         # To hold results from the remediation.
         $kubernetesClusterRemediated = @()
@@ -401,26 +397,51 @@ function Enable-AADForKubernetes
             }
             else
             {
-                Write-Host "Skipping Kubernetes resource [$($resourceName)] since RBAC is not enabled. Without RBAC, AAD cannot be enabled." -ForegroundColor $([Constants]::MessageType.Info)
                 $kubernetesClusterSkipped += $kubernetesServiceResource
                 return
-            }   
+            }
+        }
+
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+        
+        if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
+        {
+            Write-Host "AAD is successfully enabled on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+           
+            $kubernetesClusterRemediated | Format-Table -Property $colsProperty -Wrap
+
+            # Write this to a file.
+            $kubernetesClusterRemediatedFile = "$($backupFolderPath)\RemediatedKubernetesClusters.csv"
+            $kubernetesClusterRemediated | Export-CSV -Path $kubernetesClusterRemediatedFile -NoTypeInformation
+
+            Write-Host "This information has been saved to" -NoNewline
+            Write-Host " [$($kubernetesClusterRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+        }
+
+        if ($($kubernetesClusterSkipped | Measure-Object).Count -gt 0)
+        {
+            Write-Host "`nError enabling AAD on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+            $kubernetesClusterSkipped | Format-Table -Property $colsProperty -Wrap
+            
+            # Write this to a file.
+            $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
+            $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
+            Write-Host "This information has been saved to"  -NoNewline
+            Write-Host " [$($kubernetesClusterSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 3 of 4] Backing up Kubernetes Service details to $($backupFolderPath)"
-
-        # Backing up Kubernetes Service details.
-        $backupFile = "$($backupFolderPath)\KubernetesClusterWithAADDisabled.csv"
-        $kubernetesServicesWithoutAADEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-
+        Write-Host "`n[Step 4 of 4] [Step 4 of 4] Enabling AAD for Kubernetes Services..."
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 4 of 4] Kubernetes Service details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable AAD for all Kubernetes Service resources listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
-    }
 
+        Write-Host "`n**Next steps:**" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable AAD for all Kubernetes Service resources listed in the file."
+    }
 }
 
 class SetAADProfile
