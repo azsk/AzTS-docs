@@ -271,13 +271,18 @@ function Disable-RemoteDebuggingForAppServices
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n[Step 3 of 5] Fetching all App Service configurations..."
+    Write-Host "This process may take some time..."  -ForegroundColor $([Constants]::MessageType.Warning)
+    $i = 0
 
     $appServiceResources | ForEach-Object {
         $appServiceResource = $_
         $resourceId = $_.ResourceId
         $resourceGroupName = $_.ResourceGroupName
         $resourceName = $_.ResourceName
-        
+        $i++
+
+        Write-Progress -Activity 'Fetching configurations...' -Status 'Progress status: ' -PercentComplete (($i/$totalAppServices)*100)
+
         try
         {
             $nonCompliant = @()
@@ -343,11 +348,12 @@ function Disable-RemoteDebuggingForAppServices
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 4 of 5] Backing up App Services details to $($backupFolderPath)"
+    Write-Host "`n[Step 4 of 5] Backing up App Services details..."
 
     # Backing up App Services details.
     $backupFile = "$($backupFolderPath)\AppServicesWithoutRemoteDebuggingDisabled.csv"
     $appServicesWithoutRemoteDebuggingDisabled | Export-CSV -Path $backupFile -NoTypeInformation
+    Write-Host "App Services details have been successful backed up to $($backupFolderPath)" -ForegroundColor $([Constants]::MessageType.Update)
 
     if (-not $DryRun)
     {
@@ -449,7 +455,7 @@ function Disable-RemoteDebuggingForAppServices
                         # Holding output of set command to avoid unnecessary logs.
                         $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
                         $isRemoteDebuggingDisabledOnProductionSlot = -not $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slot).SiteConfig.RemoteDebuggingEnabled
-
+                        
                         if (-not $isRemoteDebuggingDisabledOnProductionSlot)
                         {
                             $nonProductionSlotsSkipped += $slot
