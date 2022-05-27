@@ -690,20 +690,21 @@ function Enable-RemoteDebuggingForAppServices
 
     $validAppServiceDetails | ForEach-Object {
         $appService = $_
-        $resourceId = $_.ResourceId
-        $resourceGroupName = $_.ResourceGroupName
-        $resourceName = $_.ResourceName
+        $resourceId = $appService.ResourceId
+        $resourceGroupName = $appService.ResourceGroupName
+        $resourceName = $appService.ResourceName
+        $nonProdSlots = $appService.NonProductionSlotsWithoutRemoteDebuggingDisabled
 
         try
         {
-            $isRemoteDebuggingDisabledOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -ErrorAction SilentlyContinue).SiteConfig.RemoteDebuggingEnabled
+            $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
+            $isRemoteDebuggingDisabledOnProductionSlot = -not $resource.SiteConfig.RemoteDebuggingEnabled
 
             if (-not $isRemoteDebuggingDisabledOnProductionSlot)
             {
                 Write-Host "Remote Debugging is already enabled on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
             }
-
-            $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
+            
             $resource.SiteConfig.RemoteDebuggingEnabled = $true
             
             # Holding output of set command to avoid unnecessary logs.
@@ -723,9 +724,12 @@ function Enable-RemoteDebuggingForAppServices
             $appService | Add-Member -NotePropertyName NonProductionSlotsWithRemoteDebuggingDisabled -NotePropertyValue ([String]::Empty)
 
             # Enable Remote Debugging on all non-production slots.
-            # Get all non-production slots for this App Service.
-            $nonProductionSlotConfigurations = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName
-
+            # Get non-production slots for this App Service from given CSV file. 
+            foreach ($slot in $nonProdSlots.Split(','))
+            {
+                $nonProductionSlotConfigurations = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slot
+            }
+                
             $isRemoteDebuggingDisabledOnAllNonProductionSlots = -not $($nonProductionSlotConfigurations.SiteConfig.RemoteDebuggingEnabled -eq $true)
 
             # All non-production slots have Remote Debugging enabled.
