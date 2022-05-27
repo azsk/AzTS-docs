@@ -723,11 +723,13 @@ function Enable-RemoteDebuggingForAppServices
             $appService | Add-Member -NotePropertyName IsRemoteDebuggingDisabledOnAnyNonProductionSlot -NotePropertyValue $false
             $appService | Add-Member -NotePropertyName NonProductionSlotsWithRemoteDebuggingDisabled -NotePropertyValue ([String]::Empty)
 
+            $nonProductionSlotConfigurations = @()
+
             # Enable Remote Debugging on all non-production slots.
             # Get non-production slots for this App Service from given CSV file. 
             foreach ($slot in $nonProdSlots.Split(','))
             {
-                $nonProductionSlotConfigurations = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slot
+                $nonProductionSlotConfigurations += Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slot
             }
                 
             $isRemoteDebuggingDisabledOnAllNonProductionSlots = -not $($nonProductionSlotConfigurations.SiteConfig.RemoteDebuggingEnabled -eq $true)
