@@ -402,7 +402,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             $ServiceFabric = $_
             try
             {
-                if($_.NodeVMCount -lt 3)
+                if($_.NodeVMCount -eq 1)
                 {
                     $ServiceFabricSkippedWithSingleNode += $ServiceFabric
                 }
@@ -446,7 +446,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
 
         if ($($ServiceFabricSkippedWithSingleNode | Measure-Object).Count -gt 0)
         {
-            Write-Host "nError occured while setting up the cluster protection level in Service Fabric(s) in the subscription: - Service Fabric with Sigle Cluster Node are not applicable for Modification." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "nError occured while setting up the cluster protection level in Service Fabric(s) in the subscription: - Service Fabric with Single Cluster Node are not applicable for Modification." -ForegroundColor $([Constants]::MessageType.Update)
            
             $ServiceFabricSkippedWithSingleNode | Format-Table -Property $colsProperty -Wrap
 
@@ -455,8 +455,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             $ServiceFabricSkippedWithSingleNode | Export-CSV -Path $ServiceFabricSkippedWithSingleNodeFile -NoTypeInformation
 
             Write-Host "This information has been saved to" -NoNewline
-            Write-Host " [$($ServiceFabricSkippedWithSingleNodeFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host " [$($ServiceFabricSkippedWithSingleNodeFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
         
         if ($($ServiceFabricSkipped | Measure-Object).Count -gt 0)
@@ -567,9 +566,13 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
     }
+    else
+    {
+        $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    }
 
     # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    
     
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
