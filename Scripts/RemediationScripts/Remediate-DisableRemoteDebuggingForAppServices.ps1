@@ -704,19 +704,21 @@ function Enable-RemoteDebuggingForAppServices
             {
                 Write-Host "Remote Debugging is already enabled on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
             }
-            
-            $resource.SiteConfig.RemoteDebuggingEnabled = $true
-            
-            # Holding output of set command to avoid unnecessary logs.
-            $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
-            $isRemoteDebuggingDisabledOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.RemoteDebuggingEnabled
-
-            if ($isRemoteDebuggingDisabledOnProductionSlot)
+            else
             {
-                $appServicesSkipped += $appService
-                Write-Host "Error enabling Remote Debugging on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this App Service. If required, manually enable Remote Debugging on the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
-                return
+                $resource.SiteConfig.RemoteDebuggingEnabled = $true
+            
+                # Holding output of set command to avoid unnecessary logs.
+                $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
+                $isRemoteDebuggingDisabledOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.RemoteDebuggingEnabled
+                
+                if ($isRemoteDebuggingDisabledOnProductionSlot)
+                {
+                    $appServicesSkipped += $appService
+                    Write-Host "Error enabling Remote Debugging on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this App Service. If required, manually enable Remote Debugging on the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
+                    return
+                }
             }
 
             # Reset the states further below, as appropriate.
