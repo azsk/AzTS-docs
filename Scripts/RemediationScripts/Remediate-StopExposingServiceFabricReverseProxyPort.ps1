@@ -211,8 +211,13 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
     }
 
+    else
+    {
+        $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    }
+
     # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    
     
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
@@ -247,8 +252,7 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
                                                                           { 
                                                                                 $_.NodeTypes.ReverseProxyEndpointPort
                                                                           }                                                                          
-                                                                          }},
-                                                                          @{N='NodeVMCount';E={$_.NodeTypes.VmInstanceCount}}
+                                                                          }}
 
     }
     else
@@ -279,8 +283,7 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
                                                                           { 
                                                                                 $_.NodeTypes.ReverseProxyEndpointPort
                                                                           }                                                                          
-                                                                          }},
-                                                                          @{N='NodeVMCount';E={$_.NodeTypes.VmInstanceCount}}
+                                                                          }}
             }
             catch
             {
@@ -346,8 +349,7 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceId};Label="ResourceId";Width=100;Alignment="left"},
                     @{Expression={$_.IsReverseProxyPortEnabled};Label="IsReverseProxyPortEnabled";Width=100;Alignment="left"},
-                    @{Expression={$_.ReverseProxyPorts};Label="Reverse Proxy Ports";Width=100;Alignment="left"},
-                    @{Expression={$_.NodeVMCount};Label="Node VM Instance Count";Width=100;Alignment="left"}
+                    @{Expression={$_.ReverseProxyPorts};Label="Reverse Proxy Ports";Width=100;Alignment="left"}
 
         
     $ServiceFabricWithReverseProxyPortExposed | Format-Table -Property $colsProperty -Wrap
@@ -452,7 +454,6 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
                                             ResourceName= $_.ResourceName;
                                             IsReverseProxyPortEnabled = $_.IsReverseProxyPortEnabled;
                                             ReverseProxyPorts = $_.ReverseProxyPorts;
-                                            NodeVMCount = $_.NodeVMCount;
                                             LBName = $loadbalancer.Name;
                                             LBRuleConfigurations = $LBRuleDetails; })
 
@@ -461,7 +462,6 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
                                             @{N='ResourceName';E= {$_.ResourceName}},
                                             @{N='IsReverseProxyPortEnabled';E= {$_.IsReverseProxyPortEnabled}},
                                             @{N='ReverseProxyPorts';E= {$_.ReverseProxyPorts}},
-                                            @{N='NodeVMCount';E= {$_.NodeVMCount}},
                                             @{N='LBName';E={$_.LBName}},
                                             @{N='LBRuleConfigurations';E={$_.LBRuleConfigurations}}
 
@@ -534,7 +534,6 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
                         @{Expression={$_.ResourceId};Label="ResourceId";Width=100;Alignment="left"},
                         @{Expression={$_.IsReverseProxyPortEnabled};Label="IsReverseProxyPortEnabled";Width=100;Alignment="left"},
                         @{Expression={$_.ReverseProxyPorts};Label="Reverse Proxy Ports";Width=100;Alignment="left"},
-                        @{Expression={$_.NodeVMCount};Label="Node VM Instance Count";Width=100;Alignment="left"}
                         @{Expression={$_.LBName};Label="LB Name";Width=30;Alignment="left"}
                         @{Expression={$_.LBRuleConfigurations};Label="LB Rule Configurations";Width=30;Alignment="left"}
 
