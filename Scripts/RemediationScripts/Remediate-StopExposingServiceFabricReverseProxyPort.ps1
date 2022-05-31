@@ -213,10 +213,11 @@ function DoNotExpose-ReverseProxyPortPublicallyForServiceFabric
 
     else
     {
+        # Setting up context for the current Subscription.
         $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-    # Setting up context for the current Subscription.
+    
     
     
     Write-Host $([Constants]::SingleDashLine)
@@ -661,9 +662,12 @@ function Expose-ReverseProxyPortPublicallyForServiceFabric
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
     }
-
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    else
+    {
+        # Setting up context for the current Subscription.
+        $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    }
+    
     
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
