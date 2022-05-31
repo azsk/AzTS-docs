@@ -210,9 +210,13 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
     }
+     else
+    {
+        # Setting up context for the current Subscription.
+        $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    }
 
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+   
     
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
@@ -568,10 +572,11 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
     }
     else
     {
+        # Setting up context for the current Subscription.
         $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-    # Setting up context for the current Subscription.
+    
     
     
     Write-Host $([Constants]::SingleDashLine)
