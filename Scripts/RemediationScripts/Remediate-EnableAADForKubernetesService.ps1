@@ -321,6 +321,9 @@ function Enable-AADForKubernetes
 
     if (-not $DryRun)
     {
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "`n[Step 5 of 5] Enabling AAD for Kubernetes Services..."
+
         $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
                         @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
@@ -331,14 +334,14 @@ function Enable-AADForKubernetes
         Write-Host "`nFollowing Kubernetes cluster(s) are having AAD disabled:" -ForegroundColor $([Constants]::MessageType.Info)
         
         $kubernetesServicesWithoutAADEnabled | Format-Table -Property $colsProperty -Wrap
-  
+
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "AAD will be enabled for all Kubernetes Services."
-        Write-Host "`nRBAC must be enabled on Kubernetes cluster." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Once AAD is enabled, you won't be able to disable again." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "For more information, please refer: https://docs.microsoft.com/en-us/azure/aks/azure-ad-rbac" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`n**Note**" -ForegroundColor $([Constants]::MessageType.Warning) 
+        Write-Host "1. RBAC must be enabled on Kubernetes cluster to enable AAD." -ForegroundColor $([Constants]::MessageType.Warning) 
+        Write-Host "2. Once AAD is enabled, you won't be able to disable it again." -ForegroundColor $([Constants]::MessageType.Warning) 
+        Write-Host "`nFor more information on using AAD authentication in AKS, please refer: https://docs.microsoft.com/en-us/azure/aks/azure-ad-rbac" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "`nDo you want to enable AAD for all Kubernetes Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-            
+
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
@@ -355,10 +358,7 @@ function Enable-AADForKubernetes
         if($input -eq "Y")
         {
             $addAADGroup = $true
-        }
-        
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 5 of 5] Enabling AAD for Kubernetes Services..."
+        } 
 
         # To hold results from the remediation.
         $kubernetesClusterRemediated = @()
@@ -383,13 +383,13 @@ function Enable-AADForKubernetes
             {
                 if ($addAADGroup)
                 {
-                    Write-Host "Please provide Azure AD Group object id: "
+                    Write-Host "Please provide Azure AD group object id (group will be registered as an admin group on the cluster):"
                     $aadClientclsIds = Read-Host
 
                     if ([String]::IsNullOrWhiteSpace($aadClientIds))
                     {
                         Write-Host "Given object id is empty."
-                        Write-Host "`nDo you want to re-enter Azure AD group's object id?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                        Write-Host "`nDo you want to re-enter Azure AD group object id?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                         
                         $input = Read-Host -Prompt "(Y|N)"
 
