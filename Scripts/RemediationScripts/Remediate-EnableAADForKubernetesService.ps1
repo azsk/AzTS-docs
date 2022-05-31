@@ -37,6 +37,8 @@
         3. To enable AAD in all Kubernetes Services in a Subscription, from a previously taken snapshot:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\EnableAADForKubernetesServices\KubernetesClusterWithAADDisabled.csv
 
+        **Note: If you want to add AAD group to AKS cluster, please provide ADD group object id for each of the cluster.
+
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-AADForKubernetes -Detailed        
 ###>
@@ -193,10 +195,10 @@ function Enable-AADForKubernetes
     # No file path provided as input to the script. Fetch all Kubernetes Services in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        Write-Host "Fetching all Kubernetes Services in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all Kubernetes Services in Subscription: [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
 
         # Get all Kubernetes Services in a Subscription
-        $kubernetesServiceResources = Get-AzResource -ResourceType $kubernetesServiceResourceType -ErrorAction Stop
+        $kubernetesServiceResources = Get-AzAksCluster -SubscriptionId $SubscriptionId -WarningAction SilentlyContinue
     }
     else
     {
@@ -209,14 +211,15 @@ function Enable-AADForKubernetes
         Write-Host "Fetching all Kubernetes Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
 
         $kubernetesServiceDetails = Import-Csv -LiteralPath $FilePath
-        $validKubernetesServiceDetails = $kubernetesServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        $validKubernetesServiceDetails = $kubernetesServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.Id) }
         
-        $validKubernetesServiceDetails | ForEach-Object {
-            $resourceId = $_.ResourceId
+        $aksResources = Get-AzAksCluster -SubscriptionId $SubscriptionId -WarningAction SilentlyContinue
 
+        $validKubernetesServiceDetails | ForEach-Object {
+            $resourceId = $_.Id
             try
             {
-                $kubernetesServiceResource = Get-AzResource -ResourceId $resourceId -ErrorAction SilentlyContinue
+                $kubernetesServiceResource = $aksResources | Where-Object {$_.Id -eq $resourceId}
                 $kubernetesServiceResources += $kubernetesServiceResource
             }
             catch
@@ -240,9 +243,6 @@ function Enable-AADForKubernetes
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n[Step 3 of 5] Fetching all Kubernetes Service configurations..."
 
-    # Includes Kubernetes Services where AAD is enabled.
-    $kubernetesServicesWithAADEnabled = @()
-
     # Includes Kubernetes Services where AAD is disabled.
     $kubernetesServicesWithoutAADEnabled = @()
 
@@ -251,32 +251,29 @@ function Enable-AADForKubernetes
 
     $kubernetesServiceResources | ForEach-Object {
         $kubernetesServiceResource = $_
-        $resourceId = $_.ResourceId
-        $resourceGroupName = $_.ResourceGroupName
-        $resourceName = $_.ResourceName
+        $resourceId = $_.ID
+        $resourceName = $_.Name
+        $resId = $resourceId.Split('/')
+        $resourceGroupName = $resId[4]
         $location = $_.Location
         $isRBACEnabled = $true
         $isAADEnabled = $false
+
         try
         {
-            $config = Get-AzAksCluster -ResourceGroupName $resourceGroupName -Name $resourceName -WarningAction SilentlyContinue
-            
             # Holds Kubernetes cluster RBAC status.
-            $isRBACEnabled = $config.EnableRBAC
-            $isAADEnabled = -not [String]::IsNullOrWhiteSpace($config.AadProfile)
+            $isRBACEnabled = $kubernetesServiceResource.EnableRBAC
+            $isAADEnabled = -not [String]::IsNullOrWhiteSpace($kubernetesServiceResource.AadProfile)
 
-            if ($isAADEnabled)
+            if (-not $isAADEnabled)
             {
-                $kubernetesServicesWithAADEnabled += $kubernetesServiceResource
-                return
+                $kubernetesServicesWithoutAADEnabled += $kubernetesServiceResource | Select-Object @{N='Id';E={$resourceId}},
+                                                                                                   @{N='Name';E={$resourceName}},
+                                                                                                   @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                                                   @{N='Location';E={$location}},
+                                                                                                   @{N='EnableRBAC';E={$isRBACEnabled}},
+                                                                                                   @{N='IsAADEnabled';E={$isAADEnabled}}
             }
-
-            $kubernetesServicesWithoutAADEnabled += $kubernetesServiceResource | Select-Object @{N='ResourceID';E={$resourceId}},
-                                                                                   @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                   @{N='ResourceName';E={$resourceName}},
-                                                                                   @{N='Location';E={$location}},
-                                                                                   @{N='IsRBACEnabled';E={$isRBACEnabled}},
-                                                                                   @{N='IsAADEnabled';E={$isAADEnabled}}
         }
         catch
         {
@@ -289,9 +286,9 @@ function Enable-AADForKubernetes
     
     if ($totalSkippedKubernetesServices -gt 0)
     {
-        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
+        $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
+                        @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"}
 
         $kubernetesServicesSkipped | Format-Table -Property $colsProperty -Wrap
@@ -324,29 +321,20 @@ function Enable-AADForKubernetes
 
     if (-not $DryRun)
     {
-        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
+        $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
+                        @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"},
-                        @{Expression={$_.isRBACEnabled};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
-                        @{Expression={$_.isAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
+                        @{Expression={$_.EnableRBAC};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
+                        @{Expression={$_.IsAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
         Write-Host "`nFollowing Kubernetes cluster(s) are having AAD disabled:" -ForegroundColor $([Constants]::MessageType.Info)
+        
         $kubernetesServicesWithoutAADEnabled | Format-Table -Property $colsProperty -Wrap
   
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "AAD will be enabled for all Kubernetes Services."
-        Write-Host "Do you want to add Azure AD groups as administrators on each cluster?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-        
-        $addAADGroup = $false
-        $input = Read-Host -Prompt "(Y|N)"
-
-        if($input -eq "Y")
-        {
-            $addAADGroup = $true
-        }
-        
-        Write-Host "RBAC must be enabled on Kubernetes cluster."
+        Write-Host "`nRBAC must be enabled on Kubernetes cluster." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Once AAD is enabled, you won't be able to disable again." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "For more information, please refer: https://docs.microsoft.com/en-us/azure/aks/azure-ad-rbac" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "`nDo you want to enable AAD for all Kubernetes Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
@@ -359,6 +347,16 @@ function Enable-AADForKubernetes
             break
         }
 
+        Write-Host "`nDo you want to add Azure AD groups as administrators on each cluster?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        
+        $addAADGroup = $false
+        $input = Read-Host -Prompt "(Y|N)"
+
+        if($input -eq "Y")
+        {
+            $addAADGroup = $true
+        }
+        
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "`n[Step 5 of 5] Enabling AAD for Kubernetes Services..."
 
@@ -370,18 +368,18 @@ function Enable-AADForKubernetes
 
         $kubernetesServicesWithoutAADEnabled | ForEach-Object {
             $kubernetesServiceResource = $_
-            $resourceId = $_.ResourceId
+            $resourceId = $_.Id
             $resourceGroupName = $_.ResourceGroupName
-            $resourceName = $_.ResourceName
+            $resourceName = $_.Name
             $location = $_.Location
-            $isRBACEnabled = $_.IsRBACEnabled
+            $isRBACEnabled = $_.EnableRBAC
             $aadClientIds = @()
 
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "`nEnabling AAD for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
 
             # Check whether RBAC is enabled on cluster or not. Without RBAC, AAD cannot be enabled.
-            if ($isRBACEnabled)
+            if ($isRBACEnabled -eq $true)
             {
                 if ($addAADGroup)
                 {
@@ -416,11 +414,11 @@ function Enable-AADForKubernetes
             }
         }
 
-        $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
+        $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
+                        @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"},
-                        @{Expression={$_.isRBACEnabled};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
+                        @{Expression={$_.EnableRBAC};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
                         @{Expression={$_.isAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
