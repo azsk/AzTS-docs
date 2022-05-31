@@ -720,7 +720,7 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
 # Defines commonly used constants.
 class Constants
 {
-    # Defines commonly used colour codes, corresponding to the severity of the log.
+    # Defines commonly used colour codes, corresponding to the severity of the log...
     static [Hashtable] $MessageType = @{
         Error = [System.ConsoleColor]::Red
         Warning = [System.ConsoleColor]::Yellow
