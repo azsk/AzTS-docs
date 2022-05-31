@@ -61,7 +61,264 @@
         
         Get-Help Enable-NonSSLPortOnRedisCache -Detailed        
 ###>
+function Remediate-Control{
+Param([String]$SubscriptionId,[Switch]$Force,[Switch]$PerformPreReqCheck,[Switch]$DryRun,[String]$FilePath)
+    Write-Host "*** To Disable Non-SSL port on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Info)
+   
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "[Step 2 of 4] Preparing to fetch all Redis Cache(s)..."
+    Write-Host $([Constants]::SingleDashLine)
+    $NonCompliantResources= GetNonCompliantResources $SubscriptionId $FilePath
+   
+    $totalNonCompliantResources  = ($NonCompliantResources | Measure-Object).Count
 
+    if ($totalNonCompliantResources  -eq 0)
+    {
+        Write-Host "No Redis Cache(s) found with Non-SSL port enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        break
+    }
+
+    Write-Host "Found [$($totalNonCompliantResources)] Redis Cache(s) for which Non-SSL port is enabled." -ForegroundColor $([Constants]::MessageType.Update)
+
+    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
+                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
+                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
+                    @{Expression={$_.Enable_Non_SSLPort};Label="Enabled Non-SSL Port";Width=10;Alignment="left"}
+        
+    $NonCompliantResources | Format-Table -Property $colsProperty -Wrap
+    BackupNonCompliantResourcesDetailsToFile $FilePath $NonCompliantResources 
+   
+    if (-not $DryRun)
+    {
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "[Step 4 of 4] Disable Non-SSL port on Redis Cache(s) in the Subscription..." 
+        Write-Host $([Constants]::SingleDashLine)
+        
+        RemediateResources $NonCompliantResources $Force
+    }
+    else
+    {
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "[Step 4 of 4] Disable Non-SSL port on Redis Cache(s) in the Subscription..."
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
+
+        Write-Host "`nNext steps:" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, Disable Non-SSL port on Redis Cache(s) listed in the file."
+    }
+
+}
+function GetNonCompliantResources{
+Param([String]$SubscriptionId,[String]$FilePath)
+
+    # list containing resource details.
+    $ResourceDetails = @()
+
+    # No file path provided as input to the script. Fetch all Redis Cache(s) in the Subscription.
+    if ([String]::IsNullOrWhiteSpace($FilePath))
+    {
+        Write-Host "Fetching all Redis Cache(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+
+        # Get all Redis Cache(s) in a Subscription
+        $Resources =  Get-AzRedisCache -ErrorAction Stop
+
+        # Seperating required properties
+        $ResourceDetails = $Resources | Select-Object @{N='ResourceId';E={$_.Id}},
+                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                          @{N='ResourceName';E={$_.Name}},
+                                                                          @{N='Enable_Non_SSLPort';E={$_.EnableNonSslPort}}
+    }
+    else
+    {
+        if (-not (Test-Path -Path $FilePath))
+        {
+            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            break
+        }
+
+        Write-Host "Fetching all Redis Cache(s) from [$($FilePath)]..." 
+
+        $ResourcesFromFile = Import-Csv -LiteralPath $FilePath
+        $validResourcesFromFile = $ResourcesFromFile| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        
+        $validResourcesFromFile| ForEach-Object {
+            $resourceId = $_.ResourceId
+
+            try
+            {
+                $Resource =  Get-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+            
+                $ResourceDetails += $Resource  | Select-Object @{N='ResourceId';E={$_.Id}},
+                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                          @{N='ResourceName';E={$_.Name}},
+                                                                          @{N='Enable_Non_SSLPort';E={$_.EnableNonSslPort}}
+            }
+            catch
+            {
+                Write-Host "Error fetching Redis Cache(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            }
+        }
+    }
+
+    $totalResources = ($ResourceDetails| Measure-Object).Count
+
+    if ($totalResources -eq 0)
+    {
+        Write-Host "No Redis Cache(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        break
+    }
+  
+    Write-Host "Found [$($totalResources)] Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                                                                          
+    Write-Host $([Constants]::SingleDashLine)
+    
+    # list for storing Redis Cache(s) for which Non-SSL port is enabled.
+    $NonCompliantResources = @()
+
+    Write-Host "Separating Redis Cache(s) for which Non-SSL port is enabled..."
+
+    $ResourceDetails | ForEach-Object {
+        $NonCompliantResource = $_
+        if($_.Enable_Non_SSLPort)
+        {
+            $NonCompliantResources += $NonCompliantResource
+        }
+    }
+    return $NonCompliantResources
+}
+
+function RemediateResources{
+Param([object[]]$NonCompliantResources, [Switch]$Force)
+        $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableNonSSLPortForRedisCache"
+        if (-not $Force)
+        {
+            Write-Host "Do you want to disable Non-SSL port on Redis Cache(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
+            
+            $userInput = Read-Host -Prompt "(Y|N)"
+
+            if($userInput -ne "Y")
+            {
+                Write-Host "Non-SSL port will not be disabled on Redis Cache(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                break
+            }
+        }
+        else
+        {
+            Write-Host "'Force' flag is provided. Non-SSL port will be disabled on Redis Cache(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        }
+
+        # List for storing remediated Redis Cache(s)
+        $ResourcesRemediated = @()
+
+        # List for storing skipped Redis Cache(s)
+        $ResourcesSkipped = @()
+
+        Write-Host "Disabling Non-SSL port on Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Info)
+
+        # Loop through the list of Redis Cache(s) which needs to be remediated.
+        $NonCompliantResources | ForEach-Object {
+            $Resource = $_
+            try
+            {
+                $ResourceToBeRemediated = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -EnableNonSslPort $false
+                if($ResourceToBeRemediated.EnableNonSslPort -eq $false)
+                {
+                    $ResourcesRemediated += $Resource
+                }
+                else
+                {
+                    $ResourcesSkipped += $Resource
+                }
+            }
+            catch
+            {
+                $ResourcesSkipped += $Resource
+            }
+        }
+
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+        
+        if ($($ResourcesRemediated | Measure-Object).Count -gt 0)
+        {
+            Write-Host "Non-SSL port is disabled on the following Redis Cache(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+           
+            $ResourcesRemediated | Format-Table -Property $colsProperty -Wrap
+
+            # Write this to a file.
+            $ResourcesRemediatedFile = "$($backupFolderPath)\RemediatedRedisCache.csv"
+            $ResourcesRemediated | Export-CSV -Path $ResourcesRemediatedFile -NoTypeInformation
+
+            Write-Host "This information has been saved to" -NoNewline
+            Write-Host " [$($ResourcesRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+        }
+
+        if ($($ResourcesSkipped | Measure-Object).Count -gt 0)
+        {
+            Write-Host "`nError disabling Non-SSL port on the following Redis Cache(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+            $ResourcesSkipped | Format-Table -Property $colsProperty -Wrap
+            
+            # Write this to a file.
+            $ResourcesSkippedFile = "$($backupFolderPath)\SkippedRedisCache.csv"
+            $ResourcesSkipped | Export-CSV -Path $ResourcesSkippedFile -NoTypeInformation
+            Write-Host "This information has been saved to"  -NoNewline
+            Write-Host " [$($ResourcesSkipped)]" -ForegroundColor $([Constants]::MessageType.Update)
+        }
+}
+function SetContext{
+    # Connect to Azure account
+    $global:context = Get-AzContext
+
+    if ([String]::IsNullOrWhiteSpace($context))
+    {
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Connecting to Azure account..."
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+
+    # Setting up context for the current Subscription.
+    $global:context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
+    Write-Host $([Constants]::SingleDashLine)
+}
+function BackupNonCompliantResourcesDetailsToFile 
+{
+Param([String]$FilePath,[object[]] $NonCompliantResources)
+    # Back up snapshots to `%LocalApplicationData%'.
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableNonSSLPortForRedisCache"
+
+    if (-not (Test-Path -Path $backupFolderPath))
+    {
+        New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
+    }
+ 
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "[Step 3 of 4] Backing up Redis Cache(s) details..."
+    Write-Host $([Constants]::SingleDashLine)
+
+    if ([String]::IsNullOrWhiteSpace($FilePath))
+    {           
+        # Backing up Redis Cache(s) details.
+        $backupFile = "$($backupFolderPath)\$($([Constants]::backupFileName))"
+
+        $NonCompliantResources | Export-CSV -Path $backupFile -NoTypeInformation
+
+        Write-Host "Redis Cache(s) details have been backed up to" -NoNewline
+        Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    else
+    {
+        Write-Host "Skipped as -FilePath is provided" -ForegroundColor $([Constants]::MessageType.Warning)
+    }
+}
 
 function Setup-Prerequisites
 {
@@ -108,7 +365,6 @@ function Setup-Prerequisites
         }
     }
 }
-
 
 function Disable-NonSSLPortOnRedisCache
 {
@@ -200,247 +456,8 @@ function Disable-NonSSLPortOnRedisCache
         Write-Host "[Step 1 of 4] Validating the user... "
     }
 
-    # Connect to Azure account
-    $context = Get-AzContext
-
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Connecting to Azure account..."
-        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
-        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
-    }
-
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-    Write-Host "Account Name: [$($context.Account.Id)]"
-    Write-Host "Account Type: [$($context.Account.Type)]"
-    Write-Host $([Constants]::SingleDashLine)
-	    
-    Write-Host "*** To Disable Non-SSL port on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Info)
-   
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all Redis Cache(s)..."
-    Write-Host $([Constants]::SingleDashLine)
-    
-    # list to store Container details.
-    $RedisCacheDetails = @()
-
-    # No file path provided as input to the script. Fetch all Redis Cache(s) in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "Fetching all Redis Cache(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        # Get all Redis Cache(s) in a Subscription
-        $RedisCacheDetails =  Get-AzRedisCache -ErrorAction Stop
-
-        # Seperating required properties
-        $RedisCacheDetails = $RedisCacheDetails | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                          @{N='ResourceName';E={$_.Name}},
-                                                                          @{N='Enable_Non_SSLPort';E={$_.EnableNonSslPort}}
-    }
-    else
-    {
-        if (-not (Test-Path -Path $FilePath))
-        {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-            break
-        }
-
-        Write-Host "Fetching all Redis Cache(s) from [$($FilePath)]..." 
-
-        $RedisCacheResources = Import-Csv -LiteralPath $FilePath
-        $validRedisCacheResources = $RedisCacheResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
-        
-        $validRedisCacheResources| ForEach-Object {
-            $resourceId = $_.ResourceId
-
-            try
-            {
-                $RedisCacheResource =  Get-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-            
-                $RedisCacheDetails += $RedisCacheResource  | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                          @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                          @{N='ResourceName';E={$_.Name}},
-                                                                          @{N='Enable_Non_SSLPort';E={$_.EnableNonSslPort}}
-            }
-            catch
-            {
-                Write-Host "Error fetching Redis Cache(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            }
-        }
-    }
-
-    $totalRedisCache = ($RedisCacheDetails| Measure-Object).Count
-
-    if ($totalRedisCache -eq 0)
-    {
-        Write-Host "No Redis Cache(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
-  
-    Write-Host "Found [$($totalRedisCache)] Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Update)
-                                                                          
-    Write-Host $([Constants]::SingleDashLine)
-    
-    # list for storing Redis Cache(s) for which Non-SSL port is enabled.
-    $RedisCacheWithNonSSLPortEnabled = @()
-
-    Write-Host "Separating Redis Cache(s) for which Non-SSL port is enabled..."
-
-    $RedisCacheDetails | ForEach-Object {
-        $RedisCache = $_
-        if($_.Enable_Non_SSLPort)
-        {
-            $RedisCacheWithNonSSLPortEnabled += $RedisCache
-        }
-    }
-   
-    $totalRedisCacheWithNonSSLPortEnabled  = ($RedisCacheWithNonSSLPortEnabled | Measure-Object).Count
-
-    if ($totalRedisCacheWithNonSSLPortEnabled  -eq 0)
-    {
-        Write-Host "No Redis Cache(s) found with Non-SSL port enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
-
-    Write-Host "Found [$($totalRedisCacheWithNonSSLPortEnabled)] Redis Cache(s) for which Non-SSL port is enabled." -ForegroundColor $([Constants]::MessageType.Update)
-
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.Enable_Non_SSLPort};Label="Enabled Non-SSL Port";Width=10;Alignment="left"}
-        
-    $RedisCacheWithNonSSLPortEnabled | Format-Table -Property $colsProperty -Wrap
-
-    # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableNonSSLPortForRedisCache"
-
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
-        New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
-    }
- 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Backing up Redis Cache(s) details..."
-    Write-Host $([Constants]::SingleDashLine)
-
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        
-    
-        # Backing up Redis Cache(s) details.
-        $backupFile = "$($backupFolderPath)\RedisCacheWithNonSSLPortEnabled.csv"
-
-        $RedisCacheWithNonSSLPortEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-
-        Write-Host "Redis Cache(s) details have been backed up to" -NoNewline
-        Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
-    }
-    else
-    {
-        Write-Host "Skipped as -FilePath is provided" -ForegroundColor $([Constants]::MessageType.Warning)
-    }
-
-    if (-not $DryRun)
-    {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Disable Non-SSL port on Redis Cache(s) in the Subscription..." 
-        Write-Host $([Constants]::SingleDashLine)
-        
-
-        if (-not $Force)
-        {
-            Write-Host "Do you want to disable Non-SSL port on Redis Cache(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
-            
-            $userInput = Read-Host -Prompt "(Y|N)"
-
-            if($userInput -ne "Y")
-            {
-                Write-Host "Non-SSL port will not be disabled on Redis Cache(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-                break
-            }
-        }
-        else
-        {
-            Write-Host "'Force' flag is provided. Non-SSL port will be disabled on Redis Cache(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-        }
-
-        # List for storing remediated Redis Cache(s)
-        $RedisCacheRemediated = @()
-
-        # List for storing skipped Redis Cache(s)
-        $RedisCacheSkipped = @()
-
-        Write-Host "Disabling Non-SSL port on Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Info)
-
-        # Loop through the list of Redis Cache(s) which needs to be remediated.
-        $RedisCacheWithNonSSLPortEnabled | ForEach-Object {
-            $RedisCache = $_
-            try
-            {
-                $RedisCacheResource = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -EnableNonSslPort $false
-                if($RedisCacheResource.EnableNonSslPort -eq $false)
-                {
-                    $RedisCacheRemediated += $RedisCache
-                }
-                else
-                {
-                    $RedisCacheSkipped += $RedisCache
-                }
-            }
-            catch
-            {
-                $RedisCacheSkipped += $RedisCache
-            }
-        }
-
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
-        
-        if ($($RedisCacheRemediated | Measure-Object).Count -gt 0)
-        {
-            Write-Host "Non-SSL port is disabled on the following Redis Cache(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-           
-            $RedisCacheRemediated | Format-Table -Property $colsProperty -Wrap
-
-            # Write this to a file.
-            $RedisCacheRemediatedFile = "$($backupFolderPath)\RemediatedRedisCache.csv"
-            $RedisCacheRemediated | Export-CSV -Path $RedisCacheRemediatedFile -NoTypeInformation
-
-            Write-Host "This information has been saved to" -NoNewline
-            Write-Host " [$($RedisCacheRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
-        }
-
-        if ($($RedisCacheSkipped | Measure-Object).Count -gt 0)
-        {
-            Write-Host "`nError disabling Non-SSL port on the following Redis Cache(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
-            $RedisCacheSkipped | Format-Table -Property $colsProperty -Wrap
-            
-            # Write this to a file.
-            $RedisCacheSkippedFile = "$($backupFolderPath)\SkippedRedisCache.csv"
-            $RedisCacheSkipped | Export-CSV -Path $RedisCacheSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to"  -NoNewline
-            Write-Host " [$($RedisCacheSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
-        }
-    }
-    else
-    {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Disable Non-SSL port on Redis Cache(s) in the Subscription..."
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::DoubleDashLine)
-
-        Write-Host "`nNext steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, Disable Non-SSL port on Redis Cache(s) listed in the file."
-    }
+    SetContext
+	Remediate-Control @psBoundParameters
 }
 
 function Enable-NonSSLPortOnRedisCache
@@ -516,26 +533,7 @@ function Enable-NonSSLPortOnRedisCache
         Write-Host "[Step 1 of 3] Validating the user..." 
     }  
 
-    # Connect to Azure account
-    $context = Get-AzContext
-
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Connecting to Azure account..."
-        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
-        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
-    }
-
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-    Write-Host "Account Name: [$($context.Account.Id)]"
-    Write-Host "Account Type: [$($context.Account.Type)]"
-    Write-Host $([Constants]::SingleDashLine)
+    SetContext
 
     Write-Host "*** To Enable Non-SSL port on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -543,6 +541,7 @@ function Enable-NonSSLPortOnRedisCache
     Write-Host "[Step 2 of 3] Preparing to fetch all Redis Cache(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
+    GetResourcesToRollBack $FilePath
     if (-not (Test-Path -Path $FilePath))
     {
         Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
@@ -551,11 +550,11 @@ function Enable-NonSSLPortOnRedisCache
 
     Write-Host "Fetching all Redis Cache(s) from" -NoNewline
     Write-Host " [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Update)
-    $RedisCacheDetails = Import-Csv -LiteralPath $FilePath
+    $ResourceDetails = Import-Csv -LiteralPath $FilePath
 
-    $validRedisCacheDetails = $RedisCacheDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
+    $validResourceDetails = $ResourceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
 
-    $totalRedisCache = $(($validRedisCacheDetails|Measure-Object).Count)
+    $totalRedisCache = $(($validResourceDetails|Measure-Object).Count)
 
     if ($totalRedisCache -eq 0)
     {
@@ -563,14 +562,14 @@ function Enable-NonSSLPortOnRedisCache
         break
     }
 
-    Write-Host "Found [$(($validRedisCacheDetails|Measure-Object).Count)] Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$(($validResourceDetails|Measure-Object).Count)] Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
                     @{N='Enable_Non_SSLPort';E={$_.Enable_Non_SSLPort}}
         
-    $validRedisCacheDetails | Format-Table -Property $colsProperty -Wrap
+    $validResourceDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableNonSSLPortOnRedisCache"
@@ -582,26 +581,26 @@ function Enable-NonSSLPortOnRedisCache
  
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Enabling SSL port for all Redis Cache(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Enabling SSL port for all Redis Cache(s) in the input file..."
     Write-Host $([Constants]::SingleDashLine)
 
     if( -not $Force)
     {
         
-        Write-Host "Do you want to enable Non-SSL port on all Redis Cache(s) mentioned the file in the ?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to enable Non-SSL port on all Redis Cache(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
             {
-                Write-Host "Non-SSL port is not enabled on Redis Cache(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Non-SSL port is not enabled on Redis Cache(s) in the input file. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
-            Write-Host "Enabling Non-SSL port on Redis Cache(s) in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Enabling Non-SSL port on Redis Cache(s) in the input file." -ForegroundColor $([Constants]::MessageType.Update)
 
     }
     else
     {
-        Write-Host "'Force' flag is provided. Non-SSL port will be enabled on Redis Cache(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'Force' flag is provided. Non-SSL port will be enabled on Redis Cache(s) in the input file without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     # List for storing rolled back Redis Cache resource.
@@ -610,7 +609,7 @@ function Enable-NonSSLPortOnRedisCache
     # List for storing skipped rolled back Redis Cache resource.
     $RedisCacheSkipped = @()
 
-    $validRedisCacheDetails | ForEach-Object {
+    $validResourceDetails | ForEach-Object {
         $RedisCache = $_
         try
         {
@@ -677,4 +676,5 @@ class Constants
 
     static [String] $DoubleDashLine = "========================================================================================================================"
     static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
+    static [String] $backupFileName = "RedisCacheWithNonSSLPortEnabled.csv"
 }
