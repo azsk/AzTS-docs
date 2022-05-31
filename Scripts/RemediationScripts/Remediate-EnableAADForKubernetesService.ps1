@@ -383,8 +383,32 @@ function Enable-AADForKubernetes
             {
                 if ($addAADGroup)
                 {
-                    Write-Host "Please provide Azure AD Group client id: "
-                    $aadClientIds = Read-Host
+                    Write-Host "Please provide Azure AD Group object id: "
+                    $aadClientclsIds = Read-Host
+
+                    if ([String]::IsNullOrWhiteSpace($aadClientIds))
+                    {
+                        Write-Host "Given object id is empty."
+                        Write-Host "`nDo you want to re-enter Azure AD group's object id?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                        
+                        $input = Read-Host -Prompt "(Y|N)"
+
+                        if($input -eq "Y")
+                        {
+                            Write-Host "Please provide Azure AD Group client id: "
+                            $aadClientclsIds = Read-Host
+
+                            if ([String]::IsNullOrWhiteSpace($aadClientIds))
+                            {
+                                Write-Host "Azure AD group will not be added for Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                            }
+                        }
+                        else
+                        {
+                            $addAADGroup = $false
+                            Write-Host "Azure AD group will not be added for Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                        }
+                    }
                 }
                 else
                 {
