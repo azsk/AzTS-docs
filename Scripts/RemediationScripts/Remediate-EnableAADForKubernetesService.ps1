@@ -383,36 +383,32 @@ function Enable-AADForKubernetes
             {
                 if ($addAADGroup)
                 {
-                    Write-Host "Please provide Azure AD group object id (group will be registered as an admin group on the cluster):"
-                    $aadClientclsIds = Read-Host
-
-                    if ([String]::IsNullOrWhiteSpace($aadClientIds))
+                    $userSkippedAdminGroups = $false
+                    do
                     {
-                        Write-Host "Given object id is empty."
-                        Write-Host "`nDo you want to re-enter Azure AD group object id?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                        
-                        $input = Read-Host -Prompt "(Y|N)"
+                        Write-Host "Please provide Azure AD group object id (group will be registered as an admin group on the cluster):"
+                        $aadClientIds = Read-Host
 
-                        if($input -eq "Y")
+                        if ([String]::IsNullOrWhiteSpace($aadClientIds))
                         {
-                            Write-Host "Please provide Azure AD Group client id: "
-                            $aadClientclsIds = Read-Host
+                            Write-Host "Given object id is empty."
+                            Write-Host "`nDo you want to re-enter Azure AD group object id?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
-                            if ([String]::IsNullOrWhiteSpace($aadClientIds))
+                            $input = Read-Host -Prompt "(Y|N)"
+
+                            if($input -ne "Y")
                             {
+                                $addAADGroup = $false
+                                $userSkippedAdminGroups = $true
                                 Write-Host "Azure AD group will not be added for Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
                             }
                         }
-                        else
-                        {
-                            $addAADGroup = $false
-                            Write-Host "Azure AD group will not be added for Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
-                        }
-                    }
+
+                    }While ([String]::IsNullOrWhiteSpace($aadClientIds) -and (-not $userSkippedAdminGroups))
                 }
                 else
                 {
-                    Write-Host "AAD group will not be added to Kubernetes cluster." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "AAD group will not be added to Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
                 }
 
                 # Setting AAD profile config to Kubernetes cluster.
@@ -525,7 +521,7 @@ class SetAADProfile
             $method = "Put"
             
             # If user wants to add AAD Group to Kubernetes cluster, pass group object id as part of request body.
-            if (($aadClientIds | Measure-Object).Count -gt 0)
+            if (![String]::IsNullOrWhiteSpace($aadClientIds))
             {
                 $body =@'
 	            {
