@@ -286,7 +286,7 @@ function Configure-ConditionalAccessPolicyForPIM
         Write-Host "Current user [$($context.Account.Id)] has the required permission for subscription [$($SubscriptionId)].`n" -ForegroundColor $([Constants]::MessageType.Update)
     }
 
-    # No file path provided as input to the script. Fetch all Kubernetes Services in the Subscription.
+    # No file path provided as input to the script. Fetch currently configured Conditional Access (CA) policy in the subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
         Write-Host $([Constants]::DoubleDashLine)
@@ -360,16 +360,16 @@ function Configure-ConditionalAccessPolicyForPIM
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n[Step 4 of 5] Backing up Conditional Access policy details..."
 
-    # Backing up App Services details.
+    # Backing up currently configured Conditional Access policy.
     $backupFile = "$($backupFolderPath)\CA_Policy_Details.csv"
     $configuredPolicyDetails | Export-CSV -Path $backupFile -NoTypeInformation
     Write-Host "Conditional Access policy details have been successful backed up to $($backupFolderPath)" -ForegroundColor $([Constants]::MessageType.Update)
  
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "`n[Step 5 of 5] Configuring Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
+
     if (-not $DryRun)
     {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 5 of 5] Configuring Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
-
         try
         {
             $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
@@ -463,8 +463,6 @@ function Configure-ConditionalAccessPolicyForPIM
     }
     else
     {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 5 of 5] Configuring Conditional Access policy for subscription [$($SubscriptionId)]..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
@@ -514,8 +512,8 @@ function Disable-ConditionalAccessPolicyForPIM
 
     param (
         [String]
-        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
-        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be rolledback")]
+        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be rolledback")]
         $SubscriptionId,
 
         [Switch]
@@ -524,12 +522,12 @@ function Disable-ConditionalAccessPolicyForPIM
         $PerformPreReqCheck,
 
         [String]
-        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $false, HelpMessage="Specifies the role name on which CA policy needs to be configured")]
+        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $false, HelpMessage="Specifies the role name on which CA policy needs to be disabled")]
         [ValidateSet("Owner", "Contributor", "User Access Administrator")]
         $RoleName,
 
         [String]
-        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the remediation")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the rollback")]
         $FilePath
     )
 
