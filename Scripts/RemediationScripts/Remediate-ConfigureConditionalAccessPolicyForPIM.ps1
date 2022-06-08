@@ -286,12 +286,12 @@ function Configure-ConditionalAccessPolicyForPIM
         Write-Host "Current user [$($context.Account.Id)] has the required permission for subscription [$($SubscriptionId)].`n" -ForegroundColor $([Constants]::MessageType.Update)
     }
 
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "`n[Step 3 of 5] Fetching Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
+
     # No file path provided as input to the script. Fetch currently configured Conditional Access (CA) policy in the subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 3 of 5] Fetching currently configured Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
-
         $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
 
         if (-not $RoleName)
@@ -334,13 +334,14 @@ function Configure-ConditionalAccessPolicyForPIM
     }
     else
     {
+        Write-Host "File path is specified. Fetching policy details from $($FilePath)"
+
         if (-not (Test-Path -Path $FilePath))
         {
             Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
-
-        Write-Host "`n[Step 3 of 5] Fetching Conditional Access (CA) policy details for subscription [$($SubscriptionId)] from $($FilePath)"
+ 
         $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
 
         if (($configuredPolicyDetails | Measure-Object).Count -gt 0)
@@ -512,8 +513,8 @@ function Disable-ConditionalAccessPolicyForPIM
 
     param (
         [String]
-        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be rolledback")]
-        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be rolledback")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be rolled back")]
+        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be rolled back")]
         $SubscriptionId,
 
         [Switch]
@@ -690,7 +691,7 @@ function Disable-ConditionalAccessPolicyForPIM
     }
 
     $colsProperty = @{Expression={$_.SubscriptionId};Label="Subscription ID";Width=40;Alignment="left"},
-                    @{Expression={$_.RolledBackRoles};Label="Rolledback Roles";Width=20;Alignment="left"},
+                    @{Expression={$_.RolledBackRoles};Label="Rolled Back Roles";Width=20;Alignment="left"},
                     @{Expression={$_.SkippedRoles};Label="Skipped Roles";Width=20;Alignment="left"}
 
     Write-Host $([Constants]::DoubleDashLine)
