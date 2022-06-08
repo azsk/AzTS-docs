@@ -184,7 +184,7 @@ function Configure-ConditionalAccessPolicyForPIM
         PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\Users\v-adisha.FAREAST\AppData\Local\AzTS\Remediation\Subscriptions\abb5301a_22a4_41f9_9e5f_99badff261f8\202205300640\CA_Policy_Details\CA_Policy_Details.csv'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'.
 
         .EXAMPLE
         PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Owner'.
@@ -497,7 +497,7 @@ function Disable-ConditionalAccessPolicyForPIM
         None. Disable-ConditionalAccessPolicyForPIM does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\Users\v-adisha.FAREAST\AppData\Local\AzTS\Remediation\Subscriptions\abb5301a_22a4_41f9_9e5f_99badff261f8\202205300640\CA_Policy_Details\ConfiguredCAPolicy.csv'.
+        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'.
 
         .EXAMPLE
         PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Owner'.
