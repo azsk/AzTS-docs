@@ -1,4 +1,54 @@
-## Load remediation script to fix failed controls of Azure Tenant Security Solution - Step by Step
+# Bulk Remediation Script (BRS)
+
+## On this page:
+
+- [Overview](README.md#overview)
+- [BRS supported control list](README.md#brs_supported_control_list)
+- [How to use BRS](README.md#how_to_use_brs)
+
+-----------------
+
+## **Overview**
+Bulk remediation scripts can be used to remediate non-compliant resources/subscription for a control. These scripts are limited to the controls that have relatively lower risk to auto-remediate.
+
+## **BRS supported control list**
+|Control Id|Control Name|Link to BRS|Minimum permissions required to run the script|Supports managed identity based remediation**|Supports rollback?|
+|---|---|---|---|---|---|
+|Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN|Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials|[Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)|At least contributor at resource level|Restricted to 'User' account type.|No|
+|Azure_APIManagement_DP_Use_HTTPS_URL_Scheme|Ensure API Management service is accessible only over HTTPS|[Remediate-EnableHTTPSForAPIsInAPIManagementServices](Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1)|At least contributor at resource level|Restricted to 'User' account type.|Yes|
+|Azure_AppService_Config_Disable_Remote_Debugging|Remote debugging should be turned off for Web Applications|[Remediate-DisableRemoteDebuggingForAppServices](Remediate-DisableRemoteDebuggingForAppServices.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_AppService_DP_Dont_Allow_HTTP_Access|Use HTTPS for App Services|[Remediate-EnableHTTPSForAppServices](Remediate-EnableHTTPSForAppServices.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_AppService_DP_Use_Secure_TLS_Version|Use Approved TLS Version in App Service|[Remediate-SetAppServiceMinReqTLSVersion](Remediate-SetAppServiceMinReqTLSVersion.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_CloudService_SI_Disable_RemoteDesktop_Access|Remote Desktop (RDP) access must be disabled on cloud service roles|[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)|At least contributor at resource level|Restricted to 'User' account type.|No|
+|Azure_ContainerRegistry_Config_Enable_Security_Scanning|Security scanner identity must be granted access to Container Registry for image scans|[Remediate-EnableSecurityScanningForContainerRegistry](Remediate-EnableSecurityScanningForContainerRegistry.ps1)|At least Reader at subscription level **and** At least contributor at resource level |Yes|Yes|
+|Azure_KubernetesService_AuthN_Enabled_AAD|AAD should be enabled in Kubernetes Service|[Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)|At least contributor at resource level|Yes|No|
+|Azure_RedisCache_DP_Use_SSL_Port|Non-SSL port must not be enabled|[Remediate-DisableNonSSLPortOnRedisCache](Remediate-DisableNonSSLPortOnRedisCache.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel|The ClusterProtectionLevel property must be set to EncryptAndSign|[Remediate-SetClusterProtectionLevelForServiceFabric](Remediate-SetClusterProtectionLevelForServiceFabric.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server|Enable advanced data security on your SQL servers|[Remediate-EnableAdvancedThreatProtectionForSQLServers](Remediate-EnableAdvancedThreatProtectionForSQLServers.ps1)|At least contributor at resource level (If you want to configure certain settings at subscription level, then at least contributor at subscription level)|Restricted to 'User' account type.|Yes|
+|Azure_SQLDatabase_AuthZ_Use_AAD_Admin|Use AAD Authentication for SQL Database|[Remediate-EnableAADAuthenticationForSQLServers](Remediate-EnableAADAuthenticationForSQLServers.ps1)|At least contributor at resource level|Restricted to 'User' account type.|Yes|
+|Azure_SQLDatabase_DP_Enable_TDE|Transparent data encryption (TDE) must be enabled|[Remediate-TransparentDataEncryptionForSQLServers](Remediate-TransparentDataEncryptionForSQLServers.ps1)|At least contributor at resource level|Restricted to 'User' account type.|Yes|
+|Azure_Storage_AuthN_Dont_Allow_Anonymous|Ensure secure access to Storage account containers|[Remediate-AnonymousAccessOnContainers](Remediate-AnonymousAccessOnContainers.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_Storage_DP_Encrypt_In_Transit|Enable Secure transfer to Storage Accounts|[Remediate-EnableEncryptionInTransitForStorageAccounts](Remediate-EnableEncryptionInTransitForStorageAccounts.ps1)|At least contributor at resource level|Yes|Yes|
+|Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities|Remove external accounts from Azure subscriptions|[Remediate-DontUseNonADIdentities](Remediate-DontUseNonADIdentities.ps1)|Owner/User Access Administrator at subscription level|Restricted to 'User' account type.|Yes|
+|Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count|Limit access per subscription to 2 or less classic administrators|[Remediate-ClassicAdminRoleAssignment](Remediate-ClassicAdminRoleAssignment.ps1)|Owner/User Access Administrator at subscription level|Restricted to 'User' account type.|Yes|
+|Azure_Subscription_AuthZ_Remove_Deprecated_Accounts|Remove Orphaned accounts from your subscription(s)|[Remediate-InvalidAADObjectRoleAssignments](Remediate-InvalidAADObjectRoleAssignments.ps1)|Owner/User Access Administrator at subscription level|Restricted to 'User' account type.|No|
+|Azure_Subscription_AuthZ_Remove_Management_Certs|Do not use management certificates|[Remediate-DoNotUseManagementCertificates](Remediate-DoNotUseManagementCertificates.ps1)|ServiceAdministrator/CoAdministrator|Restricted to 'User' account type.|No|
+|Azure_Subscription_Config_ASC_Defender|Enable all Azure Defender plans in Azure Security Center|[Remediate-ConfigAzureDefender](Remediate-ConfigAzureDefender.ps1)|Owner/Contributor at subscription level|Restricted to 'User' account type.|Yes|
+|Azure_Subscription_Configure_Conditional_Access_for_PIM|Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions|[Remediate-ConfigureConditionalAccessPolicyForPIM](Remediate-ConfigureConditionalAccessPolicyForPIM.ps1)|Owner/User Access Administrator at subscription level|Restricted to 'User' account type.|Yes|
+|1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access </br>2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG </br>3. Azure_Subscription_Use_Only_Alt_Credentials|1. Do not grant permanent access for privileged subscription level roles </br>2. Do not grant permanent access for privileged roles at resource group level </br>3. Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups|[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)|Owner/User Access Administrator at subscription level|Restricted to 'User' account type.|No|
+
+</br>
+** Both System assigned and User assigned managed identities are supported. 
+* To connect Azure Account using **System assigned managed identity**, use following command:</br>
+  Connect-AzAccount -Identity
+
+* To connect Azure Account using **User assigned managed identity**, use following command:</br>
+  Connect-AzAccount -Identity -AccountId 'object-id'
+</br>
+
+## **How to use BRS**
+
+### Load remediation script to fix failed controls of Azure Tenant Security Solution - Step by Step
 In this section, we will walk through the steps of loading remediation script.
 
 **Note:** You can download remediation script present [here](../../TemplateFiles/RemediationScripts.zip?raw=1)
