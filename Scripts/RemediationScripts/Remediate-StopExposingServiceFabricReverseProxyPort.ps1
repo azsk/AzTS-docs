@@ -15,25 +15,31 @@
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
-        2. Get the list of Service Fabric(s) in a Subscription that have reverse proxy enabled and port exposed.
+        2. Get the list of Service Fabric(s) in a Subscription that have Reverse proxy enabled and port exposed.
         3. Back up details of Service Fabric(s) that are to be remediated.
-        4. Stop the reverse proxy port to be explosed publically on Service Fabric(s) in the Subscription.
+        4. Stop the Reverse proxy port to be explosed publically on Service Fabric(s) in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script and validating the user.
         2. Get the list of Service Fabric(s) in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Enabled the reverse proxy and expose the port publically for Service Fabric(s) in the Subscription.
+        3. Enabled the Reverse proxy and expose the port publically for Service Fabric(s) in the Subscription.
 
 # Instructions to execute the script:
+
+    Description: 
+        The Reverse proxy port can be exposed via Load balancer rule. The rule must expose the port as backend port which has been added as
+        Reverse proxy port for the Service Fabric.
+        To disable the Reverse proxy port, the respectiving Load balancer rule should be deleted. 
+        In this script, we are deleting the rule which is exposing the Reverse proxy port. 
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to stop the reverse porxy port to be exposed on Service Fabric(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to stop the Reverse porxy port to be exposed on Service Fabric(s) in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to expose the reverse proxy port publically on Service Fabric(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to expose the Reverse proxy port publically on Service Fabric(s) in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -41,11 +47,11 @@
     
            Disable-ReverseProxyPortForServiceFabric -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. The Reverse Proxy must not b exposed publically for Service Fabric(s) in the Subscription:
+        2. The Reverse proxy must not b exposed publically for Service Fabric(s) in the Subscription:
        
            Disable-ReverseProxyPortForServiceFabric -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. The Reverse Proxy must not b exposed publically for Service Fabric(s) in the Subscription, from a previously taken snapshot:
+        3. The Reverse proxy must not b exposed publically for Service Fabric(s) in the Subscription, from a previously taken snapshot:
        
            Disable-ReverseProxyPortForServiceFabric -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DoNotExposeReverseProxyforServiceFabric\ServiceFabricWithReverseProxyExposed.csv
 
@@ -54,7 +60,7 @@
         Get-Help Disable-ReverseProxyPortForServiceFabric -Detailed
 
     To roll back:
-        1. Expose the reverse proxy port publically for Service Fabric(s) in the Subscription, from a previously taken snapshot:
+        1. Expose the Reverse proxy port publically for Service Fabric(s) in the Subscription, from a previously taken snapshot:
            Enable-ReverseProxyPortForServiceFabric -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DoNotExposeReverseProxyPortforServiceFabric\RemediatedServiceFabric.csv
        
         To know more about the options supported by the roll back command, execute:
@@ -118,7 +124,7 @@ function Disable-ReverseProxyPortForServiceFabric
 
         .DESCRIPTION
         Remediates 'Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port' Control.
-        Prevent exposing reverse proxy port for Service Fabric(s) in the Subscription. 
+        Prevent exposing Reverse proxy port for Service Fabric(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -312,6 +318,7 @@ function Disable-ReverseProxyPortForServiceFabric
         $ServiceFabric = $_        
             if($_.IsReverseProxyPortEnabled -eq $true)
             {
+                # Fetching the Load balancer and rule details 
                 $loadBalancerInCurrentRG = Get-AzLoadBalancer -ResourceGroupName $_.ResourceGroupName
                 $loadBalancerCollection = $loadBalancerInCurrentRG | Where-Object{$_.Tag.Value -eq $_.ResourceName}
                 $isPortExposed = $false
@@ -434,13 +441,13 @@ function Disable-ReverseProxyPortForServiceFabric
         Write-Host $([Constants]::SingleDashLine)
         
 
-        Write-Host "Do you want to delete the Load balaner rules which are exposing reverse proxy port publically for Service Fabric(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to delete the Load balaner rules which are exposing Reverse proxy port publically for Service Fabric(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
             
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Load balancer Rules will be deleted to prevent exposing the reverse proxy ports for Service Fabric(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Load balancer Rules will be deleted to prevent exposing the Reverse proxy ports for Service Fabric(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             break
         }
        
@@ -451,7 +458,7 @@ function Disable-ReverseProxyPortForServiceFabric
         # List for storing skipped Service Fabric(s)
         $ServiceFabricSkipped = @()
 
-        Write-Host "Starting to delete the Load balancer rules exposing the reverse proxy ports for Service Fabric(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Starting to delete the Load balancer rules exposing the Reverse proxy ports for Service Fabric(s)." -ForegroundColor $([Constants]::MessageType.Info)
 
         # Loop through the list of Service Fabric(s) which needs to be remediated.
         $ServiceFabricWithReverseProxyPortExposed | ForEach-Object {
@@ -554,7 +561,7 @@ function Disable-ReverseProxyPortForServiceFabric
                             $userInput = Read-Host -Prompt "(Y|N)"
                             if($userInput -eq "Y")
                             {
-                            Write-Host "Please confirm the Load balancer Rule – "$lbRules[$i].Name" exposing the reverse proxy port on the Load balancer "$loadbalancer.Name"." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Please confirm the Load balancer Rule – "$lbRules[$i].Name" exposing the Reverse proxy port on the Load balancer "$loadbalancer.Name"." -ForegroundColor $([Constants]::MessageType.Warning)
                             $userInput = Read-Host -Prompt "(Y|N)"
                             if($userInput -eq "Y")
                             {                            
@@ -647,7 +654,7 @@ function Disable-ReverseProxyPortForServiceFabric
 
         if ($($ServiceFabricSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "`nError while deleting the Load balancer rules exposing the reverse proxy port for Service Fabric(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "`nError while deleting the Load balancer rules exposing the Reverse proxy port for Service Fabric(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
             $ServiceFabricSkipped | Format-Table -Property $colsPropertyNew -Wrap
             
             # Write this to a file.
@@ -660,13 +667,13 @@ function Disable-ReverseProxyPortForServiceFabric
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Add LB Rule to expose reverse proxy port Service Fabric(s) in the Subscription..."
+        Write-Host "[Step 4 of 4] Add LB Rule to expose Reverse proxy port Service Fabric(s) in the Subscription..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "`nNext steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, Stop exposing reverse proxy port for Service Fabric(s) listed in the file."
+        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, Stop exposing Reverse proxy port for Service Fabric(s) listed in the file."
     }
 }
 
@@ -678,7 +685,7 @@ function Enable-ReverseProxyPortForServiceFabric
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port' Control.
-        Create Load balancer rule to expose reverse proxy port on Service Fabric(s) in the Subscription. 
+        Create Load balancer rule to expose Reverse proxy port on Service Fabric(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -763,7 +770,7 @@ function Enable-ReverseProxyPortForServiceFabric
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To delete the Load balancer rule exposing the reverse proxy port for Service Fabric in a Subscription, Contributor or higher privileges on the Service Fabric are required.***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To delete the Load balancer rule exposing the Reverse proxy port for Service Fabric in a Subscription, Contributor or higher privileges on the Service Fabric are required.***" -ForegroundColor $([Constants]::MessageType.Info)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Service Fabric(s)..."
@@ -812,19 +819,19 @@ function Enable-ReverseProxyPortForServiceFabric
     }
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Create Load balancing rule to expose reverse proxy port publically for Service Fabric(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Create Load balancing rule to expose Reverse proxy port publically for Service Fabric(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
    
-    Write-Host "Do you want to add Load balancer rule to expose reverse proxy port for all Service Fabric(s) mentioned the file in the ?"  -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "Do you want to add Load balancer rule to expose Reverse proxy port for all Service Fabric(s) mentioned the file in the ?"  -ForegroundColor $([Constants]::MessageType.Warning)
     $userInput = Read-Host -Prompt "(Y|N)"
 
     if($userInput -ne "Y")
     {
-        Write-Host "Load balancer rule to expose reverse proxy will not be added for Service Fabric(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Load balancer rule to expose Reverse proxy will not be added for Service Fabric(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
-    Write-Host "Load balancer rule to expose reverse proxy port will be added for Service Fabric(s) in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Load balancer rule to expose Reverse proxy port will be added for Service Fabric(s) in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
 
 
     # List for storing rolled back Service Fabric resource.
@@ -844,7 +851,7 @@ function Enable-ReverseProxyPortForServiceFabric
             
             $reverseProxyPort = $_.ReverseProxyPorts
 
-            $lbRuleConfiguration = $_.LbRuleDetails | ConvertFrom-Json
+            $lbRuleConfiguration = $_.LBRuleConfigurations | ConvertFrom-Json
             $loadbalancer = Get-AzLoadBalancer -Name $_.LBName -ResourceGroupName $_.ResourceGroupName
 
             # find the backend port to expose via LB rule.
@@ -897,7 +904,7 @@ function Enable-ReverseProxyPortForServiceFabric
         
         if ($($ServiceFabricRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "Load balancer rule have been added to expose reverse proxy ports for the following Service Fabric(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Load balancer rule have been added to expose Reverse proxy ports for the following Service Fabric(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
             $ServiceFabricRolledBack | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
@@ -909,7 +916,7 @@ function Enable-ReverseProxyPortForServiceFabric
 
         if ($($ServiceFabricSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "`nError while adding the Load balancer rule to expose reverse proxy ports for Service Fabric(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "`nError while adding the Load balancer rule to expose Reverse proxy ports for Service Fabric(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
             $ServiceFabricSkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
