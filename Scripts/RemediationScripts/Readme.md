@@ -462,7 +462,7 @@ ___
 1.Do not grant permanent access for privileged subscription level roles </br>2.Do not grant permanent access for privileged roles at resource group level </br>3.Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
 
 ### Link to Bulk Remediation Script (BRS)
-[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
+[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
 
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
