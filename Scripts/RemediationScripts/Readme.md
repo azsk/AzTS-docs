@@ -3,42 +3,526 @@
 ## On this page:
 
 - [Overview](README.md#overview)
-- [BRS supported control list](README.md#brs_supported_control_list)
-- [How to use BRS](README.md#how_to_use_brs)
-
------------------
+- [List of controls with Bulk Remediation Script (BRS) support](README.md#list-of-controls-with-bulk-remediation-script-brs-support)
+- [How to use Bulk Remediation Script (BRS)](README.md#how-to-use-bulk-remediation-script-brs)
 
 ## **Overview**
 Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/subscription for a control. These scripts are limited to the controls that have relatively lower risk to bulk-remediate.
 
-## **List of controls with Bulk remediation script (BRS) support**
-|Control Id|Control Name|Link to BRS|Minimum permissions required to run the script|Supports managed identity based remediation**|Supports rollback?|
-|---|---|---|---|---|---|
-|Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN|Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials|[Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)|Contributor role at resource level|Restricted to 'User' account type.|No|
-|Azure_APIManagement_DP_Use_HTTPS_URL_Scheme|Ensure API Management service is accessible only over HTTPS|[Remediate-EnableHTTPSForAPIsInAPIManagementServices](Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1)|Contributor role at resource level|Restricted to 'User' account type.|Yes|
-|Azure_AppService_Config_Disable_Remote_Debugging|Remote debugging should be turned off for Web Applications|[Remediate-DisableRemoteDebuggingForAppServices](Remediate-DisableRemoteDebuggingForAppServices.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_AppService_DP_Dont_Allow_HTTP_Access|Use HTTPS for App Services|[Remediate-EnableHTTPSForAppServices](Remediate-EnableHTTPSForAppServices.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_AppService_DP_Use_Secure_TLS_Version|Use Approved TLS Version in App Service|[Remediate-SetAppServiceMinReqTLSVersion](Remediate-SetAppServiceMinReqTLSVersion.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_CloudService_SI_Disable_RemoteDesktop_Access|Remote Desktop (RDP) access must be disabled on cloud service roles|[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)|Contributor role at resource level|Restricted to 'User' account type.|No|
-|Azure_ContainerRegistry_Config_Enable_Security_Scanning|Security scanner identity must be granted access to Container Registry for image scans|[Remediate-EnableSecurityScanningForContainerRegistry](Remediate-EnableSecurityScanningForContainerRegistry.ps1)|Reader role at subscription level **and** Contributor role at resource level |Yes|Yes|
-|Azure_KubernetesService_AuthN_Enabled_AAD|AAD should be enabled in Kubernetes Service|[Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)|Contributor role at resource level|Yes|No|
-|Azure_RedisCache_DP_Use_SSL_Port|Non-SSL port must not be enabled|[Remediate-DisableNonSSLPortOnRedisCache](Remediate-DisableNonSSLPortOnRedisCache.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel|The ClusterProtectionLevel property must be set to EncryptAndSign|[Remediate-SetClusterProtectionLevelForServiceFabric](Remediate-SetClusterProtectionLevelForServiceFabric.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server|Enable advanced data security on your SQL servers|[Remediate-EnableAdvancedThreatProtectionForSQLServers](Remediate-EnableAdvancedThreatProtectionForSQLServers.ps1)|Contributor role at resource level (If you want to configure certain settings at subscription level, then Contributor role at subscription level)|Restricted to 'User' account type.|Yes|
-|Azure_SQLDatabase_AuthZ_Use_AAD_Admin|Use AAD Authentication for SQL Database|[Remediate-EnableAADAuthenticationForSQLServers](Remediate-EnableAADAuthenticationForSQLServers.ps1)|Contributor role at resource level|Restricted to 'User' account type.|Yes|
-|Azure_SQLDatabase_DP_Enable_TDE|Transparent data encryption (TDE) must be enabled|[Remediate-TransparentDataEncryptionForSQLServers](Remediate-TransparentDataEncryptionForSQLServers.ps1)|Contributor role at resource level|Restricted to 'User' account type.|Yes|
-|Azure_Storage_AuthN_Dont_Allow_Anonymous|Ensure secure access to Storage account containers|[Remediate-AnonymousAccessOnContainers](Remediate-AnonymousAccessOnContainers.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_Storage_DP_Encrypt_In_Transit|Enable Secure transfer to Storage Accounts|[Remediate-EnableEncryptionInTransitForStorageAccounts](Remediate-EnableEncryptionInTransitForStorageAccounts.ps1)|Contributor role at resource level|Yes|Yes|
-|Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities|Remove external accounts from Azure subscriptions|[Remediate-DontUseNonADIdentities](Remediate-DontUseNonADIdentities.ps1)|Owner/User Access Administrator role at subscription level|Restricted to 'User' account type.|Yes|
-|Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count|Limit access per subscription to 2 or less classic administrators|[Remediate-ClassicAdminRoleAssignment](Remediate-ClassicAdminRoleAssignment.ps1)|Owner/User Access Administrator role at subscription level|Restricted to 'User' account type.|Yes|
-|Azure_Subscription_AuthZ_Remove_Deprecated_Accounts|Remove Orphaned accounts from your subscription(s)|[Remediate-InvalidAADObjectRoleAssignments](Remediate-InvalidAADObjectRoleAssignments.ps1)|Owner/User Access Administrator role at subscription level|Restricted to 'User' account type.|No|
-|Azure_Subscription_AuthZ_Remove_Management_Certs|Do not use management certificates|[Remediate-DoNotUseManagementCertificates](Remediate-DoNotUseManagementCertificates.ps1)|ServiceAdministrator/CoAdministrator role|Restricted to 'User' account type.|No|
-|Azure_Subscription_Config_ASC_Defender|Enable all Azure Defender plans in Azure Security Center|[Remediate-ConfigAzureDefender](Remediate-ConfigAzureDefender.ps1)|Contributor role at subscription level|Restricted to 'User' account type.|Yes|
-|Azure_Subscription_Configure_Conditional_Access_for_PIM|Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions|[Remediate-ConfigureConditionalAccessPolicyForPIM](Remediate-ConfigureConditionalAccessPolicyForPIM.ps1)|Owner/User Access Administrator role at subscription level|Restricted to 'User' account type.|Yes|
-|1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access </br>2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG </br>3. Azure_Subscription_Use_Only_Alt_Credentials|1. Do not grant permanent access for privileged subscription level roles </br>2. Do not grant permanent access for privileged roles at resource group level </br>3. Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups|[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)|Owner/User Access Administrator role at subscription level|Restricted to 'User' account type.|No|
+## **List of controls with Bulk Remediation Script (BRS) support**
+- [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](README.md#azure_apimanagement_authn_use_aad_for_client_authn)
+- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](README.md#Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
+- [Azure_AppService_Config_Disable_Remote_Debugging](#Azure_AppService_Config_Disable_Remote_Debugging)
+- [Azure_AppService_DP_Dont_Allow_HTTP_Access](#Azure_AppService_DP_Dont_Allow_HTTP_Access)
+- [Azure_AppService_DP_Use_Secure_TLS_Version](#Azure_AppService_DP_Use_Secure_TLS_Version)
+- [Azure_CloudService_SI_Disable_RemoteDesktop_Access](#Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+- [Azure_ContainerRegistry_Config_Enable_Security_Scanning](#Azure_ContainerRegistry_Config_Enable_Security_Scanning)
+- [Azure_KubernetesService_AuthN_Enabled_AAD](#Azure_KubernetesService_AuthN_Enabled_AAD)
+- [Azure_RedisCache_DP_Use_SSL_Port](#Azure_RedisCache_DP_Use_SSL_Port)
+- [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](#Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
+- [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](#Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
+- [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](#Azure_SQLDatabase_AuthZ_Use_AAD_Admin)
+- [Azure_SQLDatabase_DP_Enable_TDE](#Azure_SQLDatabase_DP_Enable_TDE)
+- [Azure_Storage_AuthN_Dont_Allow_Anonymous](#Azure_Storage_AuthN_Dont_Allow_Anonymous)
+- [Azure_Storage_DP_Encrypt_In_Transit](#Azure_Storage_DP_Encrypt_In_Transit)
+- [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
+- [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
+- [Azure_Subscription_AuthZ_Remove_Deprecated_Accounts](#Azure_Subscription_AuthZ_Remove_Deprecated_Accounts)
+- [Azure_Subscription_AuthZ_Remove_Management_Certs](#Azure_Subscription_AuthZ_Remove_Management_Certs)
+- [Azure_Subscription_Config_MDC_Defender_Plans](#Azure_Subscription_Config_MDC_Defender_Plans)
+- [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
+
+<br />
+
+___ 
+
+
+## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
+
+### Display Name
+Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+<br />
+
+___ 
+
+
+## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
+### Display Name
+Ensure API Management service is accessible only over HTTPS
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableHTTPSForAPIsInAPIManagementServices](Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_AppService_Config_Disable_Remote_Debugging
+
+### Display Name
+Remote debugging should be turned off for Web Applications
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableRemoteDebuggingForAppServices](Remediate-DisableRemoteDebuggingForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_AppService_DP_Dont_Allow_HTTP_Access
+
+### Display Name
+Use HTTPS for App Services
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableHTTPSForAppServices](Remediate-EnableHTTPSForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_AppService_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use Approved TLS Version in App Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetAppServiceMinReqTLSVersion](Remediate-SetAppServiceMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_CloudService_SI_Disable_RemoteDesktop_Access
+
+### Display Name
+Remote Desktop (RDP) access must be disabled on cloud service roles
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+<br />
+
+___ 
+
+
+## Azure_ContainerRegistry_Config_Enable_Security_Scanning
+
+### Display Name
+Security scanner identity must be granted access to Container Registry for image scans
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSecurityScanningForContainerRegistry](Remediate-EnableSecurityScanningForContainerRegistry.ps1)
+
+### Minimum permissions required to run the script
+Reader role at subscription level **and** Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_KubernetesService_AuthN_Enabled_AAD
+
+### Display Name
+AAD should be enabled in Kubernetes Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+No
+
+<br />
+
+___ 
+
+
+## Azure_RedisCache_DP_Use_SSL_Port
+
+### Display Name
+Non-SSL port must not be enabled
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableNonSSLPortOnRedisCache](Remediate-DisableNonSSLPortOnRedisCache.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel
+
+### Display Name
+The ClusterProtectionLevel property must be set to EncryptAndSign
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetClusterProtectionLevelForServiceFabric](Remediate-SetClusterProtectionLevelForServiceFabric.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server
+
+### Display Name
+Enable advanced data security on your SQL servers
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAdvancedThreatProtectionForSQLServers](Remediate-EnableAdvancedThreatProtectionForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level (If you want to configure certain settings at subscription level, then Contributor role at subscription level)
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_SQLDatabase_AuthZ_Use_AAD_Admin
+
+### Display Name
+Use AAD Authentication for SQL Database
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAADAuthenticationForSQLServers](Remediate-EnableAADAuthenticationForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_SQLDatabase_DP_Enable_TDE
+
+### Display Name
+Transparent data encryption (TDE) must be enabled
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-TransparentDataEncryptionForSQLServers](Remediate-TransparentDataEncryptionForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_Storage_AuthN_Dont_Allow_Anonymous
+
+### Display Name
+Ensure secure access to Storage account containers
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-AnonymousAccessOnContainers](Remediate-AnonymousAccessOnContainers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_Storage_DP_Encrypt_In_Transit
+
+### Display Name
+Enable Secure transfer to Storage Accounts
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableEncryptionInTransitForStorageAccounts](Remediate-EnableEncryptionInTransitForStorageAccounts.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+
+### Display Name
+Remove external accounts from Azure subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DontUseNonADIdentities](Remediate-DontUseNonADIdentities.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count
+
+### Display Name
+Limit access per subscription to 2 or less classic administrators
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ClassicAdminRoleAssignment](Remediate-ClassicAdminRoleAssignment.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
+
+### Display Name
+Remove Orphaned accounts from your subscription(s)
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-InvalidAADObjectRoleAssignments](Remediate-InvalidAADObjectRoleAssignments.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+<br />
+
+___ 
+
+
+## Azure_Subscription_AuthZ_Remove_Management_Certs
+
+### Display Name
+Do not use management certificates
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DoNotUseManagementCertificates](Remediate-DoNotUseManagementCertificates.ps1)
+
+### Minimum permissions required to run the script
+ServiceAdministrator/CoAdministrator role
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+<br />
+
+___ 
+
+
+## Azure_Subscription_Config_ASC_Defender
+
+### Display Name
+Enable all Azure Defender plans in Azure Security Center
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigAzureDefender](Remediate-ConfigAzureDefender.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at subscription level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## Azure_Subscription_Configure_Conditional_Access_for_PIM
+
+### Display Name
+Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureConditionalAccessPolicyForPIM](Remediate-ConfigureConditionalAccessPolicyForPIM.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+<br />
+
+___ 
+
+
+## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access </br>2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG </br>3. Azure_Subscription_Use_Only_Alt_Credentials
+
+### Display Name
+1.Do not grant permanent access for privileged subscription level roles </br>2.Do not grant permanent access for privileged roles at resource group level </br>3.Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
+
+### Link to Bulk Remediation Script (BRS)
+[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation**
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+<br />
+
+___ 
+
 
 </br>
-**Both System assigned and User assigned managed identities are supported.
+** Supports managed identity based remediation
+Both System assigned and User assigned managed identities are supported.
 
 * To connect Azure Account using **System assigned managed identity**, use the following command:</br>
   Connect-AzAccount -Identity
