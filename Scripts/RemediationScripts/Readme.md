@@ -463,9 +463,39 @@ ___
 ### Display Name
 Do not grant permanent access for privileged subscription level roles </br>
 
+### Link to Bulk Remediation Script (BRS)
+[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+___ 
+
+
 ## 23. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG</br>
 ### Display Name
 Do not grant permanent access for privileged roles at resource group level </br>
+
+### Link to Bulk Remediation Script (BRS)
+[Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
+
+### Minimum permissions required to run the script
+Owner/User Access Administrator role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+No
+
+___ 
+
 
 ## 24. Azure_Subscription_Use_Only_Alt_Credentials
 ### Display Name
@@ -485,8 +515,6 @@ No
 
 ___ 
 
-
-</br>
 
 ## Supports managed identity based remediation
 Both System assigned and User assigned managed identities are supported.
