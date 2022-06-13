@@ -3,34 +3,34 @@
 ## On this page:
 
 - [Overview](Readme.md#overview)
-- [List of controls with Bulk Remediation Script (BRS) support](README.md#list-of-controls-with-bulk-remediation-script-brs-support)
-- [How to use Bulk Remediation Script (BRS)](README.md#how-to-use-bulk-remediation-script-brs)
+- [List of controls with Bulk Remediation Script (BRS) support](Readme.md#list-of-controls-with-bulk-remediation-script-brs-support)
+- [How to use Bulk Remediation Script (BRS)](Readme.md#how-to-use-bulk-remediation-script-brs)
 
 ## **Overview**
 Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/subscription for a control. These scripts are limited to the controls that have relatively lower risk to bulk-remediate.
 
 ## **List of controls with Bulk Remediation Script (BRS) support**
-- [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](README.md#azure_apimanagement_authn_use_aad_for_client_authn)
-- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](README.md#Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
-- [Azure_AppService_Config_Disable_Remote_Debugging](#Azure_AppService_Config_Disable_Remote_Debugging)
-- [Azure_AppService_DP_Dont_Allow_HTTP_Access](#Azure_AppService_DP_Dont_Allow_HTTP_Access)
-- [Azure_AppService_DP_Use_Secure_TLS_Version](#Azure_AppService_DP_Use_Secure_TLS_Version)
-- [Azure_CloudService_SI_Disable_RemoteDesktop_Access](#Azure_CloudService_SI_Disable_RemoteDesktop_Access)
-- [Azure_ContainerRegistry_Config_Enable_Security_Scanning](#Azure_ContainerRegistry_Config_Enable_Security_Scanning)
-- [Azure_KubernetesService_AuthN_Enabled_AAD](#Azure_KubernetesService_AuthN_Enabled_AAD)
-- [Azure_RedisCache_DP_Use_SSL_Port](#Azure_RedisCache_DP_Use_SSL_Port)
-- [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](#Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
-- [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](#Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
-- [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](#Azure_SQLDatabase_AuthZ_Use_AAD_Admin)
-- [Azure_SQLDatabase_DP_Enable_TDE](#Azure_SQLDatabase_DP_Enable_TDE)
-- [Azure_Storage_AuthN_Dont_Allow_Anonymous](#Azure_Storage_AuthN_Dont_Allow_Anonymous)
-- [Azure_Storage_DP_Encrypt_In_Transit](#Azure_Storage_DP_Encrypt_In_Transit)
-- [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
-- [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
-- [Azure_Subscription_AuthZ_Remove_Deprecated_Accounts](#Azure_Subscription_AuthZ_Remove_Deprecated_Accounts)
-- [Azure_Subscription_AuthZ_Remove_Management_Certs](#Azure_Subscription_AuthZ_Remove_Management_Certs)
-- [Azure_Subscription_Config_MDC_Defender_Plans](#Azure_Subscription_Config_MDC_Defender_Plans)
-- [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
+- [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](Readme.md#azure_apimanagement_authn_use_aad_for_client_authn)
+- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](Readme.md#Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
+- [Azure_AppService_Config_Disable_Remote_Debugging](Readme.md#Azure_AppService_Config_Disable_Remote_Debugging)
+- [Azure_AppService_DP_Dont_Allow_HTTP_Access](Readme.md#Azure_AppService_DP_Dont_Allow_HTTP_Access)
+- [Azure_AppService_DP_Use_Secure_TLS_Version](Readme.md#Azure_AppService_DP_Use_Secure_TLS_Version)
+- [Azure_CloudService_SI_Disable_RemoteDesktop_Access](Readme.md#Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+- [Azure_ContainerRegistry_Config_Enable_Security_Scanning](Readme.md#Azure_ContainerRegistry_Config_Enable_Security_Scanning)
+- [Azure_KubernetesService_AuthN_Enabled_AAD](Readme.md#Azure_KubernetesService_AuthN_Enabled_AAD)
+- [Azure_RedisCache_DP_Use_SSL_Port](Readme.md#Azure_RedisCache_DP_Use_SSL_Port)
+- [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](Readme.md#Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
+- [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](Readme.md#Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
+- [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](Readme.md#Azure_SQLDatabase_AuthZ_Use_AAD_Admin)
+- [Azure_SQLDatabase_DP_Enable_TDE](Readme.md#Azure_SQLDatabase_DP_Enable_TDE)
+- [Azure_Storage_AuthN_Dont_Allow_Anonymous](Readme.md#Azure_Storage_AuthN_Dont_Allow_Anonymous)
+- [Azure_Storage_DP_Encrypt_In_Transit](Readme.md#Azure_Storage_DP_Encrypt_In_Transit)
+- [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](Readme.md#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
+- [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](Readme.md#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
+- [Azure_Subscription_AuthZ_Remove_Deprecated_Accounts](Readme.md#Azure_Subscription_AuthZ_Remove_Deprecated_Accounts)
+- [Azure_Subscription_AuthZ_Remove_Management_Certs](Readme.md#Azure_Subscription_AuthZ_Remove_Management_Certs)
+- [Azure_Subscription_Config_MDC_Defender_Plans](Readme.md#Azure_Subscription_Config_MDC_Defender_Plans)
+- [Azure_Subscription_Configure_Conditional_Access_for_PIM](Readme.md#Azure_Subscription_Configure_Conditional_Access_for_PIM)
 
 <br />
 
@@ -48,7 +48,7 @@ Enterprise applications using APIM must authenticate developers/applications usi
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -69,7 +69,7 @@ Ensure API Management service is accessible only over HTTPS
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -91,7 +91,7 @@ Remote debugging should be turned off for Web Applications
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -113,7 +113,7 @@ Use HTTPS for App Services
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -135,7 +135,7 @@ Use Approved TLS Version in App Service
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -157,7 +157,7 @@ Remote Desktop (RDP) access must be disabled on cloud service roles
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -179,7 +179,7 @@ Security scanner identity must be granted access to Container Registry for image
 ### Minimum permissions required to run the script
 Reader role at subscription level **and** Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -201,7 +201,7 @@ AAD should be enabled in Kubernetes Service
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -223,7 +223,7 @@ Non-SSL port must not be enabled
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -245,7 +245,7 @@ The ClusterProtectionLevel property must be set to EncryptAndSign
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -267,7 +267,7 @@ Enable advanced data security on your SQL servers
 ### Minimum permissions required to run the script
 Contributor role at resource level (If you want to configure certain settings at subscription level, then Contributor role at subscription level)
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -289,7 +289,7 @@ Use AAD Authentication for SQL Database
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -311,7 +311,7 @@ Transparent data encryption (TDE) must be enabled
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -333,7 +333,7 @@ Ensure secure access to Storage account containers
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -355,7 +355,7 @@ Enable Secure transfer to Storage Accounts
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Yes
 
 ### Supports rollback?
@@ -377,7 +377,7 @@ Remove external accounts from Azure subscriptions
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -399,7 +399,7 @@ Limit access per subscription to 2 or less classic administrators
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -421,7 +421,7 @@ Remove Orphaned accounts from your subscription(s)
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -443,7 +443,7 @@ Do not use management certificates
 ### Minimum permissions required to run the script
 ServiceAdministrator/CoAdministrator role
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -465,7 +465,7 @@ Enable all Azure Defender plans in Azure Security Center
 ### Minimum permissions required to run the script
 Contributor role at subscription level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -487,7 +487,7 @@ Enable policy to require PIM elevation from SAW for admin roles in Azure subscri
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -509,7 +509,7 @@ ___
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](README.md#Supports_managed_identity_based_remediation) based remediation**
+### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation**
 Restricted to 'User' account type
 
 ### Supports rollback?
