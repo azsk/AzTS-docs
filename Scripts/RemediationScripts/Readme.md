@@ -31,6 +31,9 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 - [Azure_Subscription_AuthZ_Remove_Management_Certs](Readme.md#Azure_Subscription_AuthZ_Remove_Management_Certs)
 - [Azure_Subscription_Config_MDC_Defender_Plans](Readme.md#Azure_Subscription_Config_MDC_Defender_Plans)
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](Readme.md#Azure_Subscription_Configure_Conditional_Access_for_PIM)
+- [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](Readme.md#1-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
+- [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](Readme.md#2-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
+- [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#3-Azure_Subscription_Use_Only_Alt_Credentials)
 
 <br />
 
@@ -456,10 +459,14 @@ Yes
 ___ 
 
 
-## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access </br>2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG </br>3. Azure_Subscription_Use_Only_Alt_Credentials
+## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access </br>
+## 2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG </br>
+## 3. Azure_Subscription_Use_Only_Alt_Credentials
 
 ### Display Name
-1.Do not grant permanent access for privileged subscription level roles </br>2.Do not grant permanent access for privileged roles at resource group level </br>3.Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
+1.Do not grant permanent access for privileged subscription level roles </br>
+2.Do not grant permanent access for privileged roles at resource group level </br>
+3.Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
 
 ### Link to Bulk Remediation Script (BRS)
 [Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
@@ -467,7 +474,7 @@ ___
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation**
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
