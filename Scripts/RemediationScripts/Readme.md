@@ -10,37 +10,37 @@
 Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/subscription for a control. These scripts are limited to the controls that have relatively lower risk to bulk-remediate.
 
 ## **List of controls with Bulk Remediation Script (BRS) support**
-- [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](Readme.md#azure_apimanagement_authn_use_aad_for_client_authn)
-- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](Readme.md#Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
-- [Azure_AppService_Config_Disable_Remote_Debugging](Readme.md#Azure_AppService_Config_Disable_Remote_Debugging)
-- [Azure_AppService_DP_Dont_Allow_HTTP_Access](Readme.md#Azure_AppService_DP_Dont_Allow_HTTP_Access)
-- [Azure_AppService_DP_Use_Secure_TLS_Version](Readme.md#Azure_AppService_DP_Use_Secure_TLS_Version)
-- [Azure_CloudService_SI_Disable_RemoteDesktop_Access](Readme.md#Azure_CloudService_SI_Disable_RemoteDesktop_Access)
-- [Azure_ContainerRegistry_Config_Enable_Security_Scanning](Readme.md#Azure_ContainerRegistry_Config_Enable_Security_Scanning)
-- [Azure_KubernetesService_AuthN_Enabled_AAD](Readme.md#Azure_KubernetesService_AuthN_Enabled_AAD)
-- [Azure_RedisCache_DP_Use_SSL_Port](Readme.md#Azure_RedisCache_DP_Use_SSL_Port)
-- [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](Readme.md#Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
-- [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](Readme.md#Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
-- [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](Readme.md#Azure_SQLDatabase_AuthZ_Use_AAD_Admin)
-- [Azure_SQLDatabase_DP_Enable_TDE](Readme.md#Azure_SQLDatabase_DP_Enable_TDE)
-- [Azure_Storage_AuthN_Dont_Allow_Anonymous](Readme.md#Azure_Storage_AuthN_Dont_Allow_Anonymous)
-- [Azure_Storage_DP_Encrypt_In_Transit](Readme.md#Azure_Storage_DP_Encrypt_In_Transit)
-- [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](Readme.md#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
-- [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](Readme.md#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
-- [Azure_Subscription_AuthZ_Remove_Deprecated_Accounts](Readme.md#Azure_Subscription_AuthZ_Remove_Deprecated_Accounts)
-- [Azure_Subscription_AuthZ_Remove_Management_Certs](Readme.md#Azure_Subscription_AuthZ_Remove_Management_Certs)
-- [Azure_Subscription_Config_MDC_Defender_Plans](Readme.md#Azure_Subscription_Config_MDC_Defender_Plans)
-- [Azure_Subscription_Configure_Conditional_Access_for_PIM](Readme.md#Azure_Subscription_Configure_Conditional_Access_for_PIM)
-- [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](Readme.md#1-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
-- [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](Readme.md#2-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
-- [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#3-Azure_Subscription_Use_Only_Alt_Credentials)
+1. [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](Readme.md#1-azure_apimanagement_authn_use_aad_for_client_authn)
+2. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](Readme.md#2-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
+3. [Azure_AppService_Config_Disable_Remote_Debugging](Readme.md#3-Azure_AppService_Config_Disable_Remote_Debugging)
+4. [Azure_AppService_DP_Dont_Allow_HTTP_Access](Readme.md#4-Azure_AppService_DP_Dont_Allow_HTTP_Access)
+5. [Azure_AppService_DP_Use_Secure_TLS_Version](Readme.md#5-Azure_AppService_DP_Use_Secure_TLS_Version)
+6. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](Readme.md#6-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+7. [Azure_ContainerRegistry_Config_Enable_Security_Scanning](Readme.md#7-Azure_ContainerRegistry_Config_Enable_Security_Scanning)
+8. [Azure_KubernetesService_AuthN_Enabled_AAD](Readme.md#8-Azure_KubernetesService_AuthN_Enabled_AAD)
+9. [Azure_RedisCache_DP_Use_SSL_Port](Readme.md#9-Azure_RedisCache_DP_Use_SSL_Port)
+10. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](Readme.md#10-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
+11. [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](Readme.md#11-Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
+12. [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](Readme.md#12-Azure_SQLDatabase_AuthZ_Use_AAD_Admin)
+13. [Azure_SQLDatabase_DP_Enable_TDE](Readme.md#13-Azure_SQLDatabase_DP_Enable_TDE)
+14. [Azure_Storage_AuthN_Dont_Allow_Anonymous](Readme.md#14-Azure_Storage_AuthN_Dont_Allow_Anonymous)
+15. [Azure_Storage_DP_Encrypt_In_Transit](Readme.md#15-Azure_Storage_DP_Encrypt_In_Transit)
+16. [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities](Readme.md#16-Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities)
+17. [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](Readme.md#17-Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
+18. [Azure_Subscription_AuthZ_Remove_Deprecated_Accounts](Readme.md#18-Azure_Subscription_AuthZ_Remove_Deprecated_Accounts)
+19. [Azure_Subscription_AuthZ_Remove_Management_Certs](Readme.md#19-Azure_Subscription_AuthZ_Remove_Management_Certs)
+20. [Azure_Subscription_Config_MDC_Defender_Plans](Readme.md#20-Azure_Subscription_Config_MDC_Defender_Plans)
+21. [Azure_Subscription_Configure_Conditional_Access_for_PIM](Readme.md#21-Azure_Subscription_Configure_Conditional_Access_for_PIM)
+22. [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](Readme.md#22-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
+23. [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](Readme.md#23-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
+24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 
 <br />
 
 ___ 
 
 
-## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
+## 1. Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
 
 ### Display Name
 Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials
@@ -60,7 +60,7 @@ No
 ___ 
 
 
-## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
+## 2. Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
 ### Display Name
 Ensure API Management service is accessible only over HTTPS
 
@@ -79,7 +79,7 @@ Yes
 ___ 
 
 
-## Azure_AppService_Config_Disable_Remote_Debugging
+## 3. Azure_AppService_Config_Disable_Remote_Debugging
 
 ### Display Name
 Remote debugging should be turned off for Web Applications
@@ -99,7 +99,7 @@ Yes
 ___ 
 
 
-## Azure_AppService_DP_Dont_Allow_HTTP_Access
+## 4. Azure_AppService_DP_Dont_Allow_HTTP_Access
 
 ### Display Name
 Use HTTPS for App Services
@@ -119,7 +119,7 @@ Yes
 ___ 
 
 
-## Azure_AppService_DP_Use_Secure_TLS_Version
+## 5. Azure_AppService_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in App Service
@@ -139,7 +139,7 @@ Yes
 ___ 
 
 
-## Azure_CloudService_SI_Disable_RemoteDesktop_Access
+## 6. Azure_CloudService_SI_Disable_RemoteDesktop_Access
 
 ### Display Name
 Remote Desktop (RDP) access must be disabled on cloud service roles
@@ -159,7 +159,7 @@ No
 ___ 
 
 
-## Azure_ContainerRegistry_Config_Enable_Security_Scanning
+## 7. Azure_ContainerRegistry_Config_Enable_Security_Scanning
 
 ### Display Name
 Security scanner identity must be granted access to Container Registry for image scans
@@ -179,7 +179,7 @@ Yes
 ___ 
 
 
-## Azure_KubernetesService_AuthN_Enabled_AAD
+## 8. Azure_KubernetesService_AuthN_Enabled_AAD
 
 ### Display Name
 AAD should be enabled in Kubernetes Service
@@ -199,7 +199,7 @@ No
 ___ 
 
 
-## Azure_RedisCache_DP_Use_SSL_Port
+## 9. Azure_RedisCache_DP_Use_SSL_Port
 
 ### Display Name
 Non-SSL port must not be enabled
@@ -219,7 +219,7 @@ Yes
 ___ 
 
 
-## Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel
+## 10. Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel
 
 ### Display Name
 The ClusterProtectionLevel property must be set to EncryptAndSign
@@ -239,7 +239,7 @@ Yes
 ___ 
 
 
-## Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server
+## 11. Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server
 
 ### Display Name
 Enable advanced data security on your SQL servers
@@ -259,7 +259,7 @@ Yes
 ___ 
 
 
-## Azure_SQLDatabase_AuthZ_Use_AAD_Admin
+## 12. Azure_SQLDatabase_AuthZ_Use_AAD_Admin
 
 ### Display Name
 Use AAD Authentication for SQL Database
@@ -279,7 +279,7 @@ Yes
 ___ 
 
 
-## Azure_SQLDatabase_DP_Enable_TDE
+## 13. Azure_SQLDatabase_DP_Enable_TDE
 
 ### Display Name
 Transparent data encryption (TDE) must be enabled
@@ -299,7 +299,7 @@ Yes
 ___ 
 
 
-## Azure_Storage_AuthN_Dont_Allow_Anonymous
+## 14. Azure_Storage_AuthN_Dont_Allow_Anonymous
 
 ### Display Name
 Ensure secure access to Storage account containers
@@ -319,7 +319,7 @@ Yes
 ___ 
 
 
-## Azure_Storage_DP_Encrypt_In_Transit
+## 15. Azure_Storage_DP_Encrypt_In_Transit
 
 ### Display Name
 Enable Secure transfer to Storage Accounts
@@ -339,7 +339,7 @@ Yes
 ___ 
 
 
-## Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+## 16. Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
 
 ### Display Name
 Remove external accounts from Azure subscriptions
@@ -359,7 +359,7 @@ Yes
 ___ 
 
 
-## Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count
+## 17. Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count
 
 ### Display Name
 Limit access per subscription to 2 or less classic administrators
@@ -379,7 +379,7 @@ Yes
 ___ 
 
 
-## Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
+## 18. Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
 
 ### Display Name
 Remove Orphaned accounts from your subscription(s)
@@ -399,7 +399,7 @@ No
 ___ 
 
 
-## Azure_Subscription_AuthZ_Remove_Management_Certs
+## 19. Azure_Subscription_AuthZ_Remove_Management_Certs
 
 ### Display Name
 Do not use management certificates
@@ -419,7 +419,7 @@ No
 ___ 
 
 
-## Azure_Subscription_Config_ASC_Defender
+## 20. Azure_Subscription_Config_ASC_Defender
 
 ### Display Name
 Enable all Azure Defender plans in Azure Security Center
@@ -439,7 +439,7 @@ Yes
 ___ 
 
 
-## Azure_Subscription_Configure_Conditional_Access_for_PIM
+## 21. Azure_Subscription_Configure_Conditional_Access_for_PIM
 
 ### Display Name
 Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions
@@ -459,15 +459,15 @@ Yes
 ___ 
 
 
-## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access</br>
+## 22. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access</br>
 ### Display Name
 Do not grant permanent access for privileged subscription level roles </br>
 
-## 2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG</br>
+## 23. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG</br>
 ### Display Name
 Do not grant permanent access for privileged roles at resource group level </br>
 
-## 3. Azure_Subscription_Use_Only_Alt_Credentials
+## 24. Azure_Subscription_Use_Only_Alt_Credentials
 ### Display Name
 Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
 
