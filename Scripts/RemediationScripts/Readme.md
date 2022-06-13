@@ -2,7 +2,7 @@
 
 ## On this page:
 
-- [Overview](README.md#overview)
+- [Overview](Readme.md#overview)
 - [List of controls with Bulk Remediation Script (BRS) support](README.md#list-of-controls-with-bulk-remediation-script-brs-support)
 - [How to use Bulk Remediation Script (BRS)](README.md#how-to-use-bulk-remediation-script-brs)
 
