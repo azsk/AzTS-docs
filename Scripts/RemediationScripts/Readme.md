@@ -459,8 +459,8 @@ Yes
 ___ 
 
 
-## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access </br>
-## 2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG </br>
+## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access</br>
+## 2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG</br>
 ## 3. Azure_Subscription_Use_Only_Alt_Credentials
 
 ### Display Name
