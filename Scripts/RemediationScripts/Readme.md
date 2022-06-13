@@ -48,7 +48,7 @@ Enterprise applications using APIM must authenticate developers/applications usi
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](#supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](#Readme.md#supports-managed-identity-based-remediation-22) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
