@@ -48,7 +48,7 @@ Enterprise applications using APIM must authenticate developers/applications usi
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](#supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -478,7 +478,7 @@ ___
 
 </br>
 
-## **Supports managed identity based remediation**
+## Supports managed identity based remediation
 Both System assigned and User assigned managed identities are supported.
 
 * To connect Azure Account using **System assigned managed identity**, use the following command:</br>
