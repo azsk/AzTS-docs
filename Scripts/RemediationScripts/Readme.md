@@ -54,8 +54,6 @@ Restricted to 'User' account type
 ### Supports rollback?
 No
 
-<br />
-
 ___ 
 
 
@@ -69,13 +67,11 @@ Ensure API Management service is accessible only over HTTPS
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#supports_managed_identity_based_remediation) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -91,13 +87,11 @@ Remote debugging should be turned off for Web Applications
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#Supports_managed_identity_based_remediation) based remediation
+### [Supports managed identity](Readme.md#supports_managed_identity_based_remediation-22) based remediation
 Yes
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -119,8 +113,6 @@ Yes
 ### Supports rollback?
 Yes
 
-<br />
-
 ___ 
 
 
@@ -140,8 +132,6 @@ Yes
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -163,8 +153,6 @@ Restricted to 'User' account type
 ### Supports rollback?
 No
 
-<br />
-
 ___ 
 
 
@@ -184,8 +172,6 @@ Yes
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -207,8 +193,6 @@ Yes
 ### Supports rollback?
 No
 
-<br />
-
 ___ 
 
 
@@ -228,8 +212,6 @@ Yes
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -251,8 +233,6 @@ Yes
 ### Supports rollback?
 Yes
 
-<br />
-
 ___ 
 
 
@@ -272,8 +252,6 @@ Restricted to 'User' account type
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -295,8 +273,6 @@ Restricted to 'User' account type
 ### Supports rollback?
 Yes
 
-<br />
-
 ___ 
 
 
@@ -316,8 +292,6 @@ Restricted to 'User' account type
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -339,8 +313,6 @@ Yes
 ### Supports rollback?
 Yes
 
-<br />
-
 ___ 
 
 
@@ -360,8 +332,6 @@ Yes
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -383,8 +353,6 @@ Restricted to 'User' account type
 ### Supports rollback?
 Yes
 
-<br />
-
 ___ 
 
 
@@ -404,8 +372,6 @@ Restricted to 'User' account type
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -427,8 +393,6 @@ Restricted to 'User' account type
 ### Supports rollback?
 No
 
-<br />
-
 ___ 
 
 
@@ -448,8 +412,6 @@ Restricted to 'User' account type
 
 ### Supports rollback?
 No
-
-<br />
 
 ___ 
 
@@ -471,8 +433,6 @@ Restricted to 'User' account type
 ### Supports rollback?
 Yes
 
-<br />
-
 ___ 
 
 
@@ -492,8 +452,6 @@ Restricted to 'User' account type
 
 ### Supports rollback?
 Yes
-
-<br />
 
 ___ 
 
@@ -515,12 +473,11 @@ Restricted to 'User' account type
 ### Supports rollback?
 No
 
-<br />
-
 ___ 
 
 
 </br>
+
 ## **Supports managed identity based remediation**
 Both System assigned and User assigned managed identities are supported.
 
