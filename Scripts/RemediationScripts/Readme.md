@@ -521,7 +521,7 @@ ___
 
 
 </br>
-** Supports managed identity based remediation
+## **Supports managed identity based remediation**
 Both System assigned and User assigned managed identities are supported.
 
 * To connect Azure Account using **System assigned managed identity**, use the following command:</br>
