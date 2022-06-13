@@ -461,15 +461,15 @@ ___
 
 ## 1. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access</br>
 ### Display Name
-1.Do not grant permanent access for privileged subscription level roles </br>
+Do not grant permanent access for privileged subscription level roles </br>
 
 ## 2. Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG</br>
 ### Display Name
-2.Do not grant permanent access for privileged roles at resource group level </br>
+Do not grant permanent access for privileged roles at resource group level </br>
 
 ## 3. Azure_Subscription_Use_Only_Alt_Credentials
 ### Display Name
-3.Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
+Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription and resource groups
 
 ### Link to Bulk Remediation Script (BRS)
 [Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments](Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments/Migrate-PermanentAndNonSCALTPrivilegedToSCALTPrivilegedRoleAssignments.ps1)
