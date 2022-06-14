@@ -8,6 +8,10 @@
 # Display Name:
     Reverse proxy port must not be exposed publicly.
 
+
+# Force parameter:
+    This BRS does not support the force flag parameter. 
+
 # Prerequisites:
     
     Owner or higher priviliged role on the Service Fabric(s) is required for remediation.
@@ -93,7 +97,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.ServiceFabric")
+    $requiredModules = @("Az.Accounts", "Az.ServiceFabric", "Az.Compute","Az.Network")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
@@ -129,8 +133,6 @@ function Disable-ReverseProxyPortForServiceFabric
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
         
-        .PARAMETER Force
-        Specifies a forceful remediation without any prompts.
         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
@@ -321,7 +323,10 @@ function Disable-ReverseProxyPortForServiceFabric
         $ServiceFabric = $_        
             if($_.IsReverseProxyPortEnabled -eq $true)
             {
+
+                # Validating below details as to verify Load balancer rule and ERvNet type to pick those Service fabric which are valid to be remediate. 
                 # Fetching the Load balancer and rule details 
+
                 $loadBalancerInCurrentRG = Get-AzLoadBalancer -ResourceGroupName $_.ResourceGroupName
                 $loadBalancerCollection = $loadBalancerInCurrentRG | Where-Object{$_.Tag.Value -eq $_.ResourceName}
                 $isPortExposed = $false
@@ -337,7 +342,7 @@ function Disable-ReverseProxyPortForServiceFabric
                         }
                     }
                 }
-             $ServiceFabricDetails =  Get-AzServiceFabricCluster -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+             $ServiceFabricInstance =  Get-AzServiceFabricCluster -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
              
 
             # Verify if the service fabric is not of ERvNet types.
@@ -345,7 +350,9 @@ function Disable-ReverseProxyPortForServiceFabric
             # OR
             # Virtual network's subnet gatway should not be of Express Route.
 
-            foreach($node in $ServiceFabricDetails.NodeTypes)
+
+
+            foreach($node in $ServiceFabricInstance.NodeTypes)
             { 
     
                 $nodeName = $node.Name
@@ -361,8 +368,6 @@ function Disable-ReverseProxyPortForServiceFabric
                             {
                                 $virtualnetworkName = $ipconfig.Subnet.id.Split('/')[8]
                                 $virtualnetwork = Get-AzVirtualNetwork -Name $virtualnetworkName
-
-                                # The virtual network's resource group should not be one of the ERvNet RG
                                 if($ERvNetRGNames.Contains($virtualnetwork.ResourceGroupName))
                                 {
                                     $isServiceFabricERvNetType = $true
@@ -377,7 +382,6 @@ function Disable-ReverseProxyPortForServiceFabric
                                                 {
                                                 $gatewayName = $ipconfigdetails.id.Split('/')[8]
                                                 $gateway = Get-AzVirtualNetworkGateway -ResourceGroupName $_.ResourceGroupName -name $gatewayName
-                                                # Virtual network's subnet gatway should not be of Express Route.
                                                  if($gateway.GatewayType -eq "ExpressRoute")
                                                     {
                                                     $isServiceFabricERvNetType = $true
@@ -469,7 +473,7 @@ function Disable-ReverseProxyPortForServiceFabric
         # List for storing skipped Service Fabric(s)
         $ServiceFabricSkipped = @()
 
-        Write-Host "Starting to delete the Load balancer rules exposing the Reverse proxy ports for Service Fabric(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "We are starting the process to delete the Load balancer rules exposing the Reverse proxy ports for Service Fabric(s) ." -ForegroundColor $([Constants]::MessageType.Info)
 
         # Loop through the list of Service Fabric(s) which needs to be remediated.
         $ServiceFabricWithReverseProxyPortExposed | ForEach-Object {
@@ -477,7 +481,13 @@ function Disable-ReverseProxyPortForServiceFabric
             $sfName = $_.ResourceName
             try
             {
-                # Checking the Service Fabric if they are not of ERvnet types
+
+
+                # we are trying to remediate the Service Fabric available in the File Path. Fetching the details again from Azure just to double check on the details
+                # like if no modificationbeen made in Load balancer rules or ERvNet after data added to the file path. 
+
+                # Checking the Service Fabric if has  they are not of ERvnet types
+
 
                 $ServiceFabricDetails =  Get-AzServiceFabricCluster -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
              
@@ -487,7 +497,7 @@ function Disable-ReverseProxyPortForServiceFabric
                 $ports = $_.ReverseProxyPorts
                 foreach($loadbalancer in $loadBalancerCollection)
                 {
-                    $servicefabricnodename = $loadbalancer.Name.Split('-')[3]
+                    $servicefabricnodename = $loadbalancer.Name.Split('-')[2]
                     $virtualmachineSS = Get-AzVmss -ResourceGroupName $_.ResourceGroupName -VMScaleSetName $servicefabricnodename
                     $networkconfigurations = $virtualmachineSS.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations
                     $virtualnetworkName = ''
@@ -500,6 +510,8 @@ function Disable-ReverseProxyPortForServiceFabric
                                 {
                                     $virtualnetworkName = $ipconfig.Subnet.id.Split('/')[8]
                                     $virtualnetwork = Get-AzVirtualNetwork -Name $virtualnetworkName
+
+                                    # Checking the Virtual Network RG if they are not of ERvNet RG
                                     if($ERvNetRGNames.Contains($virtualnetwork.ResourceGroupName))
                                     {
                                         Write-Host "Skipping this Service Fabric node as this is of ERvNet type." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -515,6 +527,8 @@ function Disable-ReverseProxyPortForServiceFabric
                                                     {
                                                     $gatewayName = $ipconfigdetails.id.Split('/')[8]
                                                     $gateway = Get-AzVirtualNetworkGateway -ResourceGroupName $_.ResourceGroupName -name $gatewayName
+
+                                                    # Checking if the VPN gateway type is not of ExpressRoute
                                                      if($gateway.GatewayType -eq "ExpressRoute")
                                                         {
                                                         $isServiceFabricERvNetType = $true
@@ -700,9 +714,6 @@ function Enable-ReverseProxyPortForServiceFabric
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
-        
-        .PARAMETER Force
-        Force parameter will not be supported by this BRS.
         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
