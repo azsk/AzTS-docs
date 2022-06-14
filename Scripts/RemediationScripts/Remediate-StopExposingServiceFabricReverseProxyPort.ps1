@@ -246,7 +246,7 @@ function Disable-ReverseProxyPortForServiceFabric
         # Get all Service Fabric(s) in a Subscription
         $ServiceFabricDetails =  Get-AzServiceFabricCluster -ErrorAction Stop
 
-        # Seperating required properties
+        # Seperating required properties 
         $ServiceFabricDetails = $ServiceFabricDetails | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                           @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
                                                                           @{N='ResourceName';E={$_.Name}},
@@ -277,7 +277,9 @@ function Disable-ReverseProxyPortForServiceFabric
             try
             {                
                 $ServiceFabricResource =  Get-AzServiceFabricCluster -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-            
+
+                # Seperating required properties 
+                                
                 $ServiceFabricDetails += $ServiceFabricResource  | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                           @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
                                                                           @{N='ResourceName';E={$_.Name}},
@@ -311,6 +313,7 @@ function Disable-ReverseProxyPortForServiceFabric
     $ServiceFabricWithReverseProxyPortExposed = @()
 
     Write-Host "Separating Service Fabric(s) for which Reverse proxy port are exposed..."
+    # Collecting all the resource group which are of ERvNet Types.
     $ERvNetRGNames = @()
     $ERvNetRGNames += "ERNetwork","ERNetwork-DMZ","ERNetwork-PvtApp","ERNetwork-DB","ERNetwork-InetApp","ERNetwork-SVC","ERNetwork-LAB","ERNetwork-MVD","ERNetwork-WVD"
 
@@ -337,6 +340,11 @@ function Disable-ReverseProxyPortForServiceFabric
              $ServiceFabricDetails =  Get-AzServiceFabricCluster -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
              
 
+            # Verify if the service fabric is not of ERvNet types.
+            # To verify, check on the each node's VM Scale set. The virtual network's resource group should not be one of the ERvNet RG
+            # OR
+            # Virtual network's subnet gatway should not be of Express Route.
+
             foreach($node in $ServiceFabricDetails.NodeTypes)
             { 
     
@@ -353,6 +361,8 @@ function Disable-ReverseProxyPortForServiceFabric
                             {
                                 $virtualnetworkName = $ipconfig.Subnet.id.Split('/')[8]
                                 $virtualnetwork = Get-AzVirtualNetwork -Name $virtualnetworkName
+
+                                # The virtual network's resource group should not be one of the ERvNet RG
                                 if($ERvNetRGNames.Contains($virtualnetwork.ResourceGroupName))
                                 {
                                     $isServiceFabricERvNetType = $true
@@ -367,6 +377,7 @@ function Disable-ReverseProxyPortForServiceFabric
                                                 {
                                                 $gatewayName = $ipconfigdetails.id.Split('/')[8]
                                                 $gateway = Get-AzVirtualNetworkGateway -ResourceGroupName $_.ResourceGroupName -name $gatewayName
+                                                # Virtual network's subnet gatway should not be of Express Route.
                                                  if($gateway.GatewayType -eq "ExpressRoute")
                                                     {
                                                     $isServiceFabricERvNetType = $true
