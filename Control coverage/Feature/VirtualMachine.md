@@ -853,7 +853,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
         }
     ],
     "RestrictedPortsForLinux": "445,3389,22",
-    "RestrictedPortsForWindows": "445,3389,5985"
+    "RestrictedPortsForWindows": "445,3389,5985,5986"
 }
  ```  
 
