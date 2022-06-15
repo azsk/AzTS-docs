@@ -279,7 +279,7 @@ ___
 ## Azure_APIManagement_AuthN_Disable_Management_API
 
 ### Display Name
-Do not use Management REST API in APIM	
+Do not use Management REST API in APIM
 
 ### Rationale
 The credentials used to access API Management REST API provide admin-level access without support for role-based access control and without recording audit logs. For better security it is recommended to make calls through the ARM-based REST API.
