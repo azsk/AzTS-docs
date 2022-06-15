@@ -34,6 +34,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 22. [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](Readme.md#22-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
 23. [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](Readme.md#23-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
+25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 
 <br />
 
@@ -512,6 +513,26 @@ Restricted to 'User' account type
 
 ### Supports rollback?
 No
+
+___ 
+
+
+## 25. Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port
+
+### Display Name
+Reverse proxy port must not be exposed publicly.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-StopExposingServiceFabricReverseProxyPort](Remediate-StopExposingServiceFabricReverseProxyPort.ps1)
+
+### Minimum permissions required to run the script
+Owner/Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+Yes
+
+### Supports rollback?
+Yes
 
 ___ 
 
