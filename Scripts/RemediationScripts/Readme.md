@@ -489,7 +489,7 @@ Do not grant permanent access for privileged roles at resource group level </br>
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -508,7 +508,7 @@ Use Smart-Card ALT (SC-ALT) accounts to access critical roles on subscription an
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -528,7 +528,7 @@ Reverse proxy port must not be exposed publicly.
 ### Minimum permissions required to run the script
 Owner/Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -537,7 +537,7 @@ Yes
 ___ 
 
 
-## Supports managed identity based remediation
+## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
 * To connect Azure Account using **System assigned managed identity**, use the following command:</br>
