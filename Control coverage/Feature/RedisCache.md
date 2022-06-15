@@ -70,7 +70,7 @@ ___
 ## Azure_RedisCache_DP_Use_SSL_Port 
 
 ### Display Name 
-Non-SSL port must not be enabled 
+Non-SSL port must not be enabled for Redis Cache
 
 ### Rationale 
 Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks. 

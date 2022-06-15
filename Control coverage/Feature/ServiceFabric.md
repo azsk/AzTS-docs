@@ -114,7 +114,7 @@ ___
 ## Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel 
 
 ### Display Name 
-The ClusterProtectionLevel property must be set to EncryptAndSign 
+The ClusterProtectionLevel property must be set to EncryptAndSign for Service Fabric clusters
 
 ### Rationale 
 With cluster protection level set to 'EncryptAndSign', all the node-to-node messages are encrypted and digitally signed. This protects the intra-cluster communication from eavesdropping/tampering/man-in-the-middle attacks on the network. 
@@ -303,7 +303,7 @@ ___
 ## Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port
 
 ### Display Name
-Reverse proxy port must not be exposed publicly
+Reverse proxy port must not be exposed publicly for Service Fabric clusters
 
 ### Rationale
 Configuring the reverse proxy's port in Load Balancer with public IP will expose all microservices with HTTP endpoint. Microservices meant to be internal may be discoverable by a determined malicious user.
