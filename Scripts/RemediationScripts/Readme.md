@@ -52,7 +52,7 @@ Enterprise applications using APIM must authenticate developers/applications usi
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -71,7 +71,7 @@ Ensure API Management service is accessible only over HTTPS
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -91,7 +91,7 @@ Remote debugging should be turned off for Web Applications
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -111,7 +111,7 @@ Use HTTPS for App Services
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -131,7 +131,7 @@ Use Approved TLS Version in App Service
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -151,7 +151,7 @@ Remote Desktop (RDP) access must be disabled on cloud service roles
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -171,7 +171,7 @@ Security scanner identity must be granted access to Container Registry for image
 ### Minimum permissions required to run the script
 Reader role at subscription level **and** Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -191,7 +191,7 @@ AAD should be enabled in Kubernetes Service
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -211,7 +211,7 @@ Non-SSL port must not be enabled
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -231,7 +231,7 @@ The ClusterProtectionLevel property must be set to EncryptAndSign
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -251,7 +251,7 @@ Enable advanced data security on your SQL servers
 ### Minimum permissions required to run the script
 Contributor role at resource level (If you want to configure certain settings at subscription level, then Contributor role at subscription level)
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -271,7 +271,7 @@ Use AAD Authentication for SQL Database
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -291,7 +291,7 @@ Transparent data encryption (TDE) must be enabled
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -311,7 +311,7 @@ Ensure secure access to Storage account containers
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -331,7 +331,7 @@ Enable Secure transfer to Storage Accounts
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
 
 ### Supports rollback?
@@ -351,7 +351,7 @@ Remove external accounts from Azure subscriptions
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -371,7 +371,7 @@ Limit access per subscription to 2 or less classic administrators
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -391,7 +391,7 @@ Remove Orphaned accounts from your subscription(s)
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -411,7 +411,7 @@ Do not use management certificates
 ### Minimum permissions required to run the script
 ServiceAdministrator/CoAdministrator role
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -431,7 +431,7 @@ Enable all Azure Defender plans in Azure Security Center
 ### Minimum permissions required to run the script
 Contributor role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -451,7 +451,7 @@ Enable policy to require PIM elevation from SAW for admin roles in Azure subscri
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -470,7 +470,7 @@ Do not grant permanent access for privileged subscription level roles </br>
 ### Minimum permissions required to run the script
 Owner/User Access Administrator role at subscription level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediation-22) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Restricted to 'User' account type
 
 ### Supports rollback?
@@ -520,13 +520,13 @@ ___
 ## 25. Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port
 
 ### Display Name
-Reverse proxy port must not be exposed publicly.
+Reverse proxy port must not be exposed publicly
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-StopExposingServiceFabricReverseProxyPort](Remediate-StopExposingServiceFabricReverseProxyPort.ps1)
 
 ### Minimum permissions required to run the script
-Owner/Contributor role at resource level
+Contributor role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
