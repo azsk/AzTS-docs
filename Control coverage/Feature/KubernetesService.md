@@ -18,7 +18,7 @@
 ___ 
 
 ## Azure_KubernetesService_Deploy_Enable_Cluster_RBAC
-[<b>Deprecation Notice!!!</b> - As on 22nd June 2022, this Control has been suspended from getting evaluated in favour of [Azure_KubernetesService_AuthN_Enabled_AAD](https://github.com/azsk/AzTS-docs/blob/main/Control%20coverage/Feature/KubernetesService.md#azure_kubernetesservice_authn_enabled_aad).]
+[<b>Deprecation Notice!!!</b> - As on 22nd June 2022, this Control has been suspended from getting evaluated in favour of [Azure_KubernetesService_AuthN_Enabled_AAD](#azure_kubernetesservice_authn_enabled_aad).]
 
 ### Display Name 
 Cluster RBAC must be enabled in Kubernetes Service 
