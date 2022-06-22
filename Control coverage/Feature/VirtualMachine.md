@@ -852,6 +852,11 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
             "TagValue": "Databricks"
         }
     ],
+    "PrivateIpAddressPrefixesToExclude": [
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16"
+    ],
     "RestrictedPortsForLinux": "445,3389,22",
     "RestrictedPortsForWindows": "445,3389,5985,5986"
 }
@@ -860,7 +865,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 ### Control Spec 
 
 > **Passed:** 
-> NSG is configured and no inbound port is open, or NSG is configured and no restricted ports are open. Restricted ports, if open, are only via JIT (with Source not as "Any").
+> NSG is configured and no inbound port is open, or NSG is configured and no restricted ports are open. Restricted ports, if open, are only via JIT (with Source not as "Any"), or are from a private source IP address.
 > 
 > **Failed:** 
 > No NSG is configured on VM, or NSG is configured but restricted ports are open. Restricted ports are open via JIT, but with Source as "Any".
