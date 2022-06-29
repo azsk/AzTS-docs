@@ -338,27 +338,6 @@ function Enable-StorageEncryptionInTransit
     Write-Host "Total Storage Account(s) for remediation: [$(($storageAccounts | Measure-Object).Count)]" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "$([Constants]::DoubleDashLine)"
 
-    $storageAccounts | ForEach-Object {
-           if($_.Kind -eq "FileStorage"){
-                $fileshares=@()
-                $fileshares= Get-AzRMStorageShare -StorageAccountName $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName
-                if(($fileshares|Measure-Object).Count -gt 0)
-                {
-                    $SMBFileShares = @()
-                    $NFSFileShares = @()
-                    $SMBFileShares = $fileshares|Where-Object{$_.EnabledProtocols -contains "SMB"}
-                    $NFSFileShares = $fileshares|Where-Object{$_.EnabledProtocols -contains "NFS"}
-                    if($NFSFileShares.Count -gt 0 -and $SMBFileShares.Count -eq 0)
-                    {
-                        $storagewithOnlyNFSShares = $_.StorageAccountName
-                        Write-Host "Excluding Storage Accounts $($_.StorageAccountName) with type FileStorage and having only NFS fileshares"
-                        $storageAccounts=$storageAccounts|Where-Object{$_.StorageAccountName -ne $storagewithOnlyNFSShares}
-                    }
-                }
-            }
-     }
-
-
     try
     {
         #Storage Account with enabled Https only
@@ -370,6 +349,23 @@ function Enable-StorageEncryptionInTransit
         $storageAccounts | ForEach-Object {
             if ($_.EnableHttpsTrafficOnly)
             {
+                if($_.Kind -eq "FileStorage"){
+                    $fileshares=@()
+                    $fileshares= Get-AzRMStorageShare -StorageAccountName $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName
+                    if(($fileshares|Measure-Object).Count -gt 0)
+                    {
+                        $SMBFileShares = @()
+                        $NFSFileShares = @()
+                        $SMBFileShares = $fileshares|Where-Object{$_.EnabledProtocols -contains "SMB"}
+                        $NFSFileShares = $fileshares|Where-Object{$_.EnabledProtocols -contains "NFS"}
+                        if($NFSFileShares.Count -gt 0 -and $SMBFileShares.Count -eq 0)
+                        {
+                            $storagewithOnlyNFSShares = $_.StorageAccountName
+                            Write-Host "Excluding Storage Accounts $($_.StorageAccountName) with type FileStorage and having only NFS fileshares"
+                            $storageAccounts=$storageAccounts|Where-Object{$_.StorageAccountName -ne $storagewithOnlyNFSShares}
+                        }
+                    }
+                }
                 $stgWithEnableHTTPS += $_ 
             }        
             else
