@@ -393,7 +393,7 @@ function Remove-AnonymousAccessOnContainers
             Break
         }
 
-         if($resourceResolver.messageToPrint -ne $null)
+         if($null -ne $resourceResolver.messageToPrint)
          {
              $resourceSummary += $([Constants]::SingleDashLine)
              $resourceSummary += "Excluded resource/resource group summary: "
@@ -506,13 +506,15 @@ function Remove-AnonymousAccessOnContainers
                         {
                             
                             $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -AllowBlobPublicAccess $false -ErrorAction SilentlyContinue -Verbose:$false
-                            if($output -ne $null)
+                            if($null -ne $output)
                             {
                                 $logResource = @{}
                                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                                 $logResource.Add("ResourceName",($_.StorageAccountName))
                                 $logRemediatedResources += $logResource
                                 $remediatedStorageAccounts += $item
+                                Write-Host "Disabled 'Allow Blob Public Access' on storage account [$($_.StorageAccountName)], of resource group [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host $([Constants]::SingleDashLine)
                             }
                             else
                             {
@@ -520,7 +522,7 @@ function Remove-AnonymousAccessOnContainers
                                 $logResource = @{}
                                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                                 $logResource.Add("ResourceName",($_.StorageAccountName))
-                                if($IsResourceLocked -ne $null)
+                                if($null -ne $IsResourceLocked)
                                 {
                                     $logResource.Add("Reason", "The Storage account (resource) is locked. For remediation, it must be unlocked.")
                                 }
@@ -531,6 +533,8 @@ function Remove-AnonymousAccessOnContainers
                                 $logSkippedResources += $logResource
 
                                 $skippedStorageAccountFromRemediation += $item
+                                Write-Host "Skipped disabling 'Allow Blob Public Access' on storage account [$($_.StorageAccountName)], of resource group [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                                Write-Host $([Constants]::SingleDashLine)
                             }
                             
                         }
@@ -543,6 +547,8 @@ function Remove-AnonymousAccessOnContainers
                             $logSkippedResources += $logResource
                             
                             $skippedStorageAccountFromRemediation += $item
+                            Write-Host "Skipped disabling 'Allow Blob Public Access' on storage account [$($_.StorageAccountName)], of resource group [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                  
                     }
