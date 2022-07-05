@@ -7,11 +7,13 @@
 	
 1. First verify that prerequisites are already installed:  
     Ensure that you are using Windows OS and have PowerShell version 7.0 or higher by typing **$PSVersionTable** in the PS/ISE console window and looking at the PSVersion in the output as shown below.) 
- If the PSVersion is older than 7.0, update PowerShell using command 
- ```Powershell
+    <br><br>
+ ![PowerShell Version](../Images/09_PS_VERSION.png) 
+ <br><br>
+ If the PSVersion is older than 7.0, update PowerShell using command     
+```Powershell
     iex "& { $(irm aka.ms/install-powershell.ps1) } -UseMSI"
-``` 
-   ![PowerShell Version](../Images/09_PS_Version.png)   
+```
 
 2. Install the Tenant Security Solution for Azure (AzTS) PS module:  
 	  
@@ -27,6 +29,7 @@
 | Command (alias) | What it does |	Required Permission |
 |----|----|-----|
 |Invoke-AzureScan (IAS)|Scans an Azure subscription for security best practices and configuration baselines for things such as alerts, ARM policy, RBAC, MDC, etc.|Reader on subscription|
+
 
 
 ## List of commonly used parameters
@@ -53,10 +56,11 @@
  
 Security Scanner for Azure scans all the prominent features in Azure (e.g., Web Apps, Storage, SQL DB, Key Vault, etc.) by
 executing the security controls and will validate their status as 'Success' or 'Failure' based on the security guidance.
+
 The following aspects of security are also checked:
-Access control configuration - identity and access management related issues in the subscription.
-Alert configuration - configuration of activity alerts for sensitive actions for the subscription and various cloud resources.
-Microsoft Defender for Cloud configuration - configuration of MDC (security point of contact, various MDC policy settings, etc.)
+1. Access control configuration - identity and access management related issues in the subscription.
+2. Alert configuration - configuration of activity alerts for sensitive actions for the subscription and various cloud resources.
+3. Microsoft Defender for Cloud configuration - configuration of MDC (security point of contact, various MDC policy settings, etc.)
 
 ### Scan the security of Azure
 
