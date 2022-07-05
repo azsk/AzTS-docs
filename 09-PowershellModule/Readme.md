@@ -11,7 +11,7 @@
  ```Powershell
     iex "& { $(irm aka.ms/install-powershell.ps1) } -UseMSI"
 ``` 
-   ![PowerShell Version](../Images/09_PS_VERSION.PNG)   
+   ![PowerShell Version](../Images/09_PS_Version.png)   
 
 2. Install the Tenant Security Solution for Azure (AzTS) PS module:  
 	  
@@ -42,23 +42,25 @@
 |ExcludeControlIds (ecids)|
 
 ----------------------------------------------------------
-## AzTS: Subscription Health Scan
+## AzTS: Security scanner for Azure
+
+>  **Prerequisites:**
+> For all commands in this feature it is assumed that you have:
+> 1. Logged in to your Azure account using Connect-AzAccount from a PowerShell ISE.
+> 2. Selected a subscription using Set-AzContext.
 
 ### Overview
  
-The subscription health check script runs a set of automated scans to examine a subscription and flags 
-off conditions that are indications that your subscription may be at a higher risk due to various security 
-issues, misconfigurations or obsolete artifacts/settings. 
+Security Scanner for Azure scans all the prominent features in Azure (e.g., Web Apps, Storage, SQL DB, Key Vault, etc.) by
+executing the security controls and will validate their status as 'Success' or 'Failure' based on the security guidance.
+The following aspects of security are also checked:
+Access control configuration - identity and access management related issues in the subscription.
+Alert configuration - configuration of activity alerts for sensitive actions for the subscription and various cloud resources.
+Microsoft Defender for Cloud configuration - configuration of MDC (security point of contact, various MDC policy settings, etc.)
 
-The following aspects of security are checked:
-1. 	 Access control configuration - identity and access management related issues in the subscription
-2. 	 Alert configuration - configuration of activity alerts for sensitive actions for the subscription and various cloud resources
-3. 	 Microsoft Defender for Cloud configuration - configuration of MDC (security point of contact, various MDC policy settings, etc.)
-4. 	 ARM Policy and Resource Locks configuration - presence of desired set of ARM policy rules and resource locks. 
+### Scan the security of Azure
 
-### Scan the security health of your subscription 
-
-The subscription health check script can be run using the command below after replacing `<SubscriptionId`> 
+The security check script for Azure can be run using the command below after replacing `<SubscriptionId`> 
  with your subscriptionId and  `<TenantId`> with your tenantId of subscription.
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId>
@@ -69,7 +71,7 @@ The parameters used are:
 
 You need to have at least **Reader** role at the subscription scope to run this command. 
 
-### Subscription Health Scan - How to fix findings?
+### Security scanner for azure - How to fix findings?
 
 AzTS cmdlet generate outputs which are organized as under: 
 - summary information of the control evaluation (pass/fail) status in a CSV file
@@ -80,9 +82,9 @@ To address findings, you should do the following:
 3. The 'Remediation Steps' column for each control in the XLS will tell you the command/steps needed to resolve the issue.
 
 
-### Target specific controls during a subscription health scan
+### Target specific controls during security scan for azure
 
-The subscription health check supports multiple parameters as specified below:
+The security scanner for Azure supports multiple parameters as specified below:
 - SubscriptionId – Subscription ID is the identifier of your Azure subscription 
 - TenantId - Tenant ID is the identifier of your Azure subscription
 - FilterTags  - Comma separated tags to filter the security controls. e.g.: RBAC, Automated, etc.
@@ -93,7 +95,7 @@ The subscription health check supports multiple parameters as specified below:
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> [-ControlIds <ControlIds>] [-FilterTags <FilterTags>] [-ResourceTypeNames <ResourceTypeNames>] [-ExcludeControlIds <ExcludeControlIds>] [-ExcludeResourceTypeNames <ExcludeResourceTypeNames>] 
 ```
-These different parameters would enable you to execute different 'flavors' of subscription health scan.  
+These different parameters would enable you to execute different 'flavors' of secuirty scanner for azure.  
 Here are some examples:
 
 1. Execute only RBAC related controls.
@@ -116,3 +118,7 @@ Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> -ControlI
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId>  -TenantId <TenantId> ResourceTypeNames "Storage"
 ``` 
+6. Execute all the controls and do not open the output folder.
+```PowerShell
+Invoke-AzureScan -SubscriptionId <SubscriptionId>  -TenantId <TenantId> -DoNotOpenOutputFolder
+```
