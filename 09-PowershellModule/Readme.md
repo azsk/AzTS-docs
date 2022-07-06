@@ -51,11 +51,11 @@
 > For all commands in this feature it is assumed that you have:
 > 1. Logged in to your Azure account using Connect-AzAccount from a PS/ISE console.
 >```PowerShell
->    Connect-AzAccount 
+>   Connect-AzAccount 
 >```
 > 2. Selected a subscription using Set-AzContext.
 >```PowerShell
->    Set-AzContext -SubscriptionId <SubscriptionId> 
+>	Set-AzContext -SubscriptionId <SubscriptionId> 
 >```
 
 ### Overview
