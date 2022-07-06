@@ -50,13 +50,13 @@
 >  **Prerequisites:**
 > For all commands in this feature it is assumed that you have:
 > 1. Logged in to your Azure account using Connect-AzAccount from a PS/ISE console.
-```PowerShell
-    Connect-AzAccount 
-```
+>```PowerShell
+>    Connect-AzAccount 
+>```
 > 2. Selected a subscription using Set-AzContext.
-```PowerShell
-    Set-AzContext -SubscriptionId <SubscriptionId> 
-```
+>```PowerShell
+>    Set-AzContext -SubscriptionId <SubscriptionId> 
+>```
 
 ### Overview
  
@@ -96,14 +96,19 @@ To address findings, you should do the following:
 The security scanner for Azure supports multiple parameters as specified below:
 - SubscriptionId – Subscription ID is the identifier of your Azure subscription 
 - TenantId - Tenant ID is the identifier of your Azure subscription
-- FilterTags  - Comma separated tags to filter the security controls. e.g.: RBAC, Automated, etc.
-- ControlIds  - Comma separated control ids to filter the security controls. e.g.:Azure_Storage_AuthN_Dont_Allow_Anonymous,"Azure_APIManagement_DP_Use_HTTPS_URL_Scheme, etc.
-- ResourceTypeNames - Comma separated resource type to filter the security controls. e.g.:Storage,SubsciptionCore, etc.
+- FilterTags  - Comma separated tags to filter the security controls. e.g.: RBAC, Automated, etc. Complete list of Tags is available in the Help section of the command.
+- ControlIds  - Comma separated control ids to filter the security controls. e.g.:Azure_Storage_AuthN_Dont_Allow_Anonymous,Azure_APIManagement_DP_Use_HTTPS_URL_Scheme, etc. Complete list of ControlIds is available in the Help section of the command.
+- ResourceTypeNames - Comma separated resource type to filter the security controls. e.g.:Storage,SubsciptionCore, etc. Complete list of ResourceTypeNames is available in the Help section of the command.
 - ExcludeControlIds - Comma separated control ids to exclude the security controls. e.g.:Azure_Storage_AuthN_Dont_Allow_Anonymous,Azure_APIManagement_DP_Use_HTTPS_URL_Scheme, etc.
 - ExcludeResourceTypeNames - Comma separated resource type to exclude the security controls. e.g.:Storage,SubsciptionCore, etc.
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> [-ControlIds <ControlIds>] [-FilterTags <FilterTags>] [-ResourceTypeNames <ResourceTypeNames>] [-ExcludeControlIds <ExcludeControlIds>] [-ExcludeResourceTypeNames <ExcludeResourceTypeNames>] 
 ```
+> **Note**: For help section of the command:
+```PowerShell
+Get-Help Invoke-AzureScan -Detailed
+```
+
 These different parameters would enable you to Scan different 'flavors' of secuirty scanner for azure.  
 Here are some examples:
 
