@@ -42,21 +42,21 @@ function StartRemediation($timestamp)
         $controlsTable = @()
         foreach($control in $controlRemediationList)
         {
-            $failingResources = @()
+            $count=0;
             foreach($resource in $control.FailedResourceList)
             {
-                $failingResources += $resource.ResourceName
-            }
-            $controlsTable+= [PSCustomObject]@{
-                'Control Id' = $control.ControlId;
-                'Number Of Failing Resources' = $control.FailedResourceList.Length;
-                'Failing Resources' = $failingResources;
+                $controlsTable+= [PSCustomObject]@{
+                    'Control Id' = if($count -eq 0) {$control.ControlId} Else {""};
+                    'Number Of Failing Resources' = if($count -eq 0) {$control.FailedResourceList.Length} Else {""};
+                    'Failing Resources' = $resource.ResourceName;
+                }
+                $count+=1
             }
         }
         Write-Host "Failing Controls Summary" -ForegroundColor $([Constants]::MessageType.Update)
         $controlsTable | Format-Table 
 
-        #User input for whether to continue with current remediation or not
+        #User input for whether to continue with current remediation or noty
         Write-Host $([Constants]::SingleDashLine)
         $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y/N)";
 
