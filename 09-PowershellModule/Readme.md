@@ -28,7 +28,7 @@
 
 | Command (alias) | What it does |	Required Permission |
 |----|----|-----|
-|Invoke-AzureScan (IAS)|Scans an Azure subscription for security best practices and configuration baselines for things such as alerts, ARM policy, RBAC, MDC, etc.|Reader on subscription|
+|Invoke-AzureScan (IAS)|Scans an Azure subscription for security best practices and configuration baselines for things such as alerts,RBAC, MDC, etc.|Reader on subscription|
 
 
 
@@ -49,8 +49,14 @@
 
 >  **Prerequisites:**
 > For all commands in this feature it is assumed that you have:
-> 1. Logged in to your Azure account using Connect-AzAccount from a PowerShell ISE.
+> 1. Logged in to your Azure account using Connect-AzAccount from a PS/ISE console.
+```PowerShell
+    Connect-AzAccount 
+```
 > 2. Selected a subscription using Set-AzContext.
+```PowerShell
+    Set-AzContext -SubscriptionId <SubscriptionId> 
+```
 
 ### Overview
  
@@ -59,8 +65,7 @@ executing the security controls and will validate their status as 'Success' or '
 
 The following aspects of security are also checked:
 1. Access control configuration - identity and access management related issues in the subscription.
-2. Alert configuration - configuration of activity alerts for sensitive actions for the subscription and various cloud resources.
-3. Microsoft Defender for Cloud configuration - configuration of MDC (security point of contact, various MDC policy settings, etc.)
+2. Microsoft Defender for Cloud configuration - configuration of MDC (security point of contact, various MDC policy settings, etc.)
 
 ### Scan the security of Azure
 
@@ -78,7 +83,7 @@ You need to have at least **Reader** role at the subscription scope to run this 
 ### Security scanner for azure - How to fix findings?
 
 AzTS cmdlet generate outputs which are organized as under: 
-- summary information of the control evaluation (pass/fail) status in a CSV file
+- Summary information of the control evaluation (pass/fail) status in a CSV file
 
 To address findings, you should do the following:
 1. See the summary of control evaluation first in the CSV file. (Open the CSV in XLS. Use "Format as Table", "Hide Columns", "Filter", etc.)
@@ -99,30 +104,30 @@ The security scanner for Azure supports multiple parameters as specified below:
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> [-ControlIds <ControlIds>] [-FilterTags <FilterTags>] [-ResourceTypeNames <ResourceTypeNames>] [-ExcludeControlIds <ExcludeControlIds>] [-ExcludeResourceTypeNames <ExcludeResourceTypeNames>] 
 ```
-These different parameters would enable you to execute different 'flavors' of secuirty scanner for azure.  
+These different parameters would enable you to Scan different 'flavors' of secuirty scanner for azure.  
 Here are some examples:
 
-1. Execute only RBAC related controls.
+1. Scan only RBAC related controls.
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> -FilterTags "RBAC"
 ``` 
-2. Execute all the controls related to storage resource type.
+2. Scan all the controls related to storage resource type.
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId>  -TenantId <TenantId> ResourceTypeNames "Storage"
 ``` 
-3. Execute specific control related to storage resource type. 
+3. Scan specific control related to storage resource type. 
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> -ControlIds Azure_Storage_AuthN_Dont_Allow_Anonymous
 ``` 
-4. Exclude specific control related to storage resource type. 
+4. Exclude specific control related to storage resource type from scan. 
 ```PowerShell
-Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> -ControlIds Azure_Storage_AuthN_Dont_Allow_Anonymous
+Invoke-AzureScan -SubscriptionId <SubscriptionId> -TenantId <TenantId> -ExcludeControlIds Azure_Storage_AuthN_Dont_Allow_Anonymous
 ``` 
-5. Exclude all the controls related to storage resource type.
+5. Exclude all the controls related to storage resource type from scan.
 ```PowerShell
-Invoke-AzureScan -SubscriptionId <SubscriptionId>  -TenantId <TenantId> ResourceTypeNames "Storage"
+Invoke-AzureScan -SubscriptionId <SubscriptionId>  -TenantId <TenantId> -ExcludeResourceTypeNames "Storage"
 ``` 
-6. Execute all the controls and do not open the output folder.
+6. Scan all the controls and do not open the output folder.
 ```PowerShell
 Invoke-AzureScan -SubscriptionId <SubscriptionId>  -TenantId <TenantId> -DoNotOpenOutputFolder
 ```
