@@ -215,12 +215,12 @@ function Remove-AnonymousAccessOnContainers
         $FilePath,
 
         [switch]
-        [Parameter(Mandatory = $false)]
+        [Parameter(ParameterSetName = "AutoRemediation", Mandatory = $false, HelpMessage = "Specifies if script is run using another wrapper script")]
         $AutoRemediation,
 
         [string]
-        [Parameter(Mandatory = $false)]
-        $timeStamp
+        [Parameter(ParameterSetName = "TimeStamp", Mandatory = $false, HelpMessage = "specifies the time stamp")]
+        $TimeStamp
     )
 
     if($RemediationType -eq "DisableAnonymousAccessOnContainers" -and [string]::IsNullOrWhiteSpace($Path))
@@ -625,7 +625,7 @@ function Remove-AnonymousAccessOnContainers
                     Write-Host "No Storage account(s) found with enabled 'Allow Blob Public Access'." -ForegroundColor $([Constants]::MessageType.Update)
                 }
                 if($AutoRemediation){
-                    $logFile = "LogFiles\"+ $($timeStamp) + "\log_" + $($SubscriptionId) +".json"
+                    $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
                     $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
                     foreach($logControl in $log.ControlList){
                         if($logControl.ControlId -eq $controlIds){

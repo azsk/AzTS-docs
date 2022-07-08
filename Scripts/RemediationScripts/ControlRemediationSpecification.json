@@ -5,7 +5,7 @@
         {
             "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/users/sagautam/feature/auto_remediation/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
             "LoadCommand": "Remediate-AnonymousAccessOnContainers.ps1",     
             "InitCommand": "Remove-AnonymousAccessOnContainers",
             "RollbackMetadata":
