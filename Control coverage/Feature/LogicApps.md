@@ -6,6 +6,8 @@
 
 - [Azure_LogicApps_AuthZ_Provide_Triggers_Access_Control](#Azure_LogicApps_AuthZ_Provide_Triggers_Access_Control)
 - [Azure_LogicApps_AuthZ_Provide_Contents_Access_Control](#Azure_LogicApps_AuthZ_Provide_Contents_Access_Control)
+- [Azure_LogicApps_AuthN_Connectors_Use_AAD](#Azure_LogicApps_AuthN_Connectors_Use_AAD)
+- [Azure_LogicApps_DP_Connectors_Encrypt_Data_In_Transit](#Azure_LogicApps_DP_Connectors_Encrypt_Data_In_Transit)
 
 <!-- /TOC -->
 <br/>
@@ -122,5 +124,128 @@ Using the firewall feature ensures that access to the data or the service is res
   **Properties:** [\*].properties.accessControl.contents.allowedCallerIpAddresses.[\*].addressRange
   <br />
   <br />
+
+___
+
+## Azure_LogicApps_AuthN_Connectors_Use_AAD
+
+### Display Name
+Logic App connectors must use AAD-based authentication wherever possible
+
+### Rationale
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions.
+
+### Control Spec
+
+> **Passed:**
+> If any of the following conditions are met:
+>   <br />a. All connectors in Logic App using AAD Auth ( "ActiveDirectoryOAuth", "ManagedServiceIdentity").
+>   <br />b. No such connector found in resource which is currently being evaluated by AzTS.
+> 
+> **Failed:**
+> One or more connector in resource is not using AAD Auth.
+> 
+
+### Recommendation
+
+- **Azure Portal**
+
+  For HTTP based connectors, Go to Azure Portal --> Logic App --> Logic app designer --> For each non compliant connector --> Update Authentication type to either Managed Identity or Active Directory Oauth. For more details on AAD auth, refer: https://docs.microsoft.com/en-us/azure/connectors/connectors-native-http#azure-active-directory-oauth-authentication. For other connectors you must manually verify that AAD authentication is used for connectors that support it.
+
+<!--
+- **PowerShell**
+
+	```powershell
+	Set-AzStorageContainerAcl -Name '<ContainerName>' -Permission 'Off' -Context (New-AzStorageContext -StorageAccountName '<StorageAccountName>' -StorageAccountKey '<StorageAccountKey>')
+	```
+
+	For more help:
+	```powershell
+	Get-Help Set-AzStorageContainerAcl -full
+	```
+-->
+
+<!--
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+-->
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list logic apps at subscription level: 
+/subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01<br />
+**Properties:** [\*].properties.definition.actions[*].type, [\*].properties.definition.actions[*].inputs, [\*].properties.parameters.$connections.value[*].connectionId <br />
+
+- ARM API to list API Connections at subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.Web/connections?api-version=2016-06-01<br />
+**Properties:** [\*].properties.api.name
+<br />
+<br />
+
+___
+
+## Azure_LogicApps_DP_Connectors_Encrypt_Data_In_Transit
+
+### Display Name
+Data transit across Logic App connectors must use encrypted channel
+
+### Rationale
+Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks.
+
+### Control Spec
+
+> **Passed:**
+> If any of the following conditions are met:
+>   <br />a. All evaluated connector(s) in resource are using HTTPS URI.
+>   <br />b. No such connector found in resource which is currently being evaluated by AzTS.
+> 
+> **Failed:**
+> One or more connector(s) in resource not HTTPS URI.
+> 
+> **Verify:**
+> Not able to validate/parse URI(s) used in one or more connector(s).
+> 
+
+### Recommendation
+
+- **Azure Portal**
+
+  For connectors which are HTTP-based, Go to Azure Portal --> Logic App --> Logic app designer --> For each non compliant connector --> Use HTTPS URLs. For other connectors you must manually verify that encrypted connections are used by the connector protocol.
+
+<!--
+- **PowerShell**
+
+	```powershell
+	Set-AzStorageContainerAcl -Name '<ContainerName>' -Permission 'Off' -Context (New-AzStorageContext -StorageAccountName '<StorageAccountName>' -StorageAccountKey '<StorageAccountKey>')
+	```
+
+	For more help:
+	```powershell
+	Get-Help Set-AzStorageContainerAcl -full
+	```
+-->
+
+<!--
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+-->
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list logic apps at subscription level: 
+/subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01<br />
+**Properties:** [\*].properties.definition.actions[*].type, [\*].properties.definition.actions[*].inputs, [\*].properties.parameters.$connections.value[*].connectionId <br />
+
+- ARM API to list API Connections at subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.Web/connections?api-version=2016-06-01<br />
+**Properties:** [\*].properties.api.name
+<br />
+<br />
 
 ___
