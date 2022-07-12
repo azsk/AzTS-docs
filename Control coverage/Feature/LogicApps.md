@@ -175,7 +175,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 ### Azure Policy or ARM API used for evaluation
 
-- ARM API to list logic apps at subscription level: 
+- ARM API to list Logic apps at subscription level: 
 /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01<br />
 **Properties:** [\*].properties.definition.actions[*].type, [\*].properties.definition.actions[*].inputs, [\*].properties.parameters.$connections.value[*].connectionId <br />
 
@@ -238,7 +238,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policy or ARM API used for evaluation
 
-- ARM API to list logic apps at subscription level: 
+- ARM API to list Logic apps at subscription level: 
 /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01<br />
 **Properties:** [\*].properties.definition.actions[*].type, [\*].properties.definition.actions[*].inputs, [\*].properties.parameters.$connections.value[*].connectionId <br />
 
