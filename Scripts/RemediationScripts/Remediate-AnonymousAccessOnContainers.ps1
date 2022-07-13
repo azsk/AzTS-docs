@@ -215,11 +215,11 @@ function Remove-AnonymousAccessOnContainers
         $FilePath,
 
         [switch]
-        [Parameter(ParameterSetName = "AutoRemediation", Mandatory = $false, HelpMessage = "Specifies if script is run using another wrapper script")]
+        #[Parameter(ParameterSetName = "AutoRemediation", Mandatory = $false, HelpMessage = "Specifies if script is run using another wrapper script")]
         $AutoRemediation,
 
         [string]
-        [Parameter(ParameterSetName = "TimeStamp", Mandatory = $false, HelpMessage = "specifies the time stamp")]
+        #[Parameter(ParameterSetName = "TimeStamp", Mandatory = $false, HelpMessage = "specifies the time stamp")]
         $TimeStamp
     )
 
