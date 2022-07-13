@@ -139,8 +139,9 @@ Enter the choice (1/2)";
                 Write-Host "Remediating control having control id [$($control.ControlId)] using [$($control.LoadCommand)] bulk remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                 
                 [string]$timeStampString = $timestamp
-                . ("./" + "RemediationScripts\" + $control.LoadCommand)       
-                $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -timeStamp " + "`'" + $timeStampString +  "`'";
+                . ("./" + "RemediationScripts\" + $control.LoadCommand)
+                $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                
                 function runCommand($command) {
                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                     else { Invoke-Expression $command }
