@@ -202,7 +202,16 @@ function Enable-StorageEncryptionInTransit
         [string]
         [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-        $ExcludeResourceNames
+        $ExcludeResourceNames,
+
+        [string]
+        $Path,
+
+        [switch]
+        $AutoRemediation,
+
+        [string]
+        $TimeStamp
     )
 
     Write-Host " $([Constants]::DoubleDashLine)"
@@ -241,47 +250,85 @@ function Enable-StorageEncryptionInTransit
     Write-Host "*** To enable secure transfer for Storage Account(s) in a Subscription, Contributor or higher privileges on the Storage Account are required.***" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Fetching Storage Account(s)..." 
+
+    # Control Id
+    $controlIds = Azure_Storage_DP_Encrypt_In_Transit
    
     # Array to store Storage Account(s) list .
     $storageAccounts = @()
 
-    # If CSV path not given fetch all Storage Account.
-    if([string]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "Fetching all Storage Account(s) in subscription: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
-        #Get all Storage Account in a Subscription
-        $storageAccounts = Get-AzStorageAccount 
-    }
-    else
-    {   #checking if the file path is correct.
-        if (-not (Test-Path -Path $FilePath))
+    if($AutoRemediation){
+        if (-not (Test-Path -Path $Path))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error: Json file containing Storage account(s) detail not found for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            break;        
+        }
+            
+        Write-Host "Fetching all Storage Account from $($Path)" -ForegroundColor $([Constants]::MessageType.Info)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($resourceDetails.FailedResourceList | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
             break
         }
-
-        Write-Host "Fetching all Storage Account from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        $storageAccountDetails = Import-Csv -LiteralPath $FilePath
-        $validStorageAccountDetails = $storageAccountDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
-        
-        $validStorageAccountDetails | ForEach-Object {
-            $resourceId = $_.ResourceId
-
+        $validResourceDetails = $resourceDetails.FailedResourceList | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        $validResourceDetails | ForEach-Object { 
             try
             {
-                #storing the list of Storage Account .
-                $storageAccount = Get-AzStorageAccount -StorageAccountName $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
+                $storageAccount = Get-AzStorageAccount -Name $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
                 $storageAccounts += $storageAccount
             }
             catch
             {
-                Write-Host "Error fetching Storage Account: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this Storage Account..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Valid resource group(s) or resource name(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
+                break
+            }
+        }
+    }else{
+        # If CSV path not given fetch all Storage Account.
+        if([string]::IsNullOrWhiteSpace($FilePath))
+        {
+            Write-Host "Fetching all Storage Account(s) in subscription: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+            #Get all Storage Account in a Subscription
+            $storageAccounts = Get-AzStorageAccount 
+        }
+        else
+        {   #checking if the file path is correct.
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                break
+            }
+
+            Write-Host "Fetching all Storage Account from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+
+            $storageAccountDetails = Import-Csv -LiteralPath $FilePath
+            $validStorageAccountDetails = $storageAccountDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+            
+            $validStorageAccountDetails | ForEach-Object {
+                $resourceId = $_.ResourceId
+
+                try
+                {
+                    #storing the list of Storage Account .
+                    $storageAccount = Get-AzStorageAccount -StorageAccountName $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
+                    $storageAccounts += $storageAccount
+                }
+                catch
+                {
+                    Write-Host "Error fetching Storage Account: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Storage Account..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
             }
         }
     }
+    
      
     $totalStorageAccount = ($storageAccounts | Measure-Object).Count
 
@@ -309,7 +356,7 @@ function Enable-StorageEncryptionInTransit
  
     # Adding property 'ResourceName' which will contain Storage Account name and being used by common helper method
     # Load the script in the helper.ps file in the Remediation Script directory.. to run -ExcludeResourceGroupNames and -ExcludeResourceNames Parameter .
-    if(-not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
+    if(-not($AutoRemediation) -and -not [string]::IsNullOrWhiteSpace($ExcludeResourceNames) -or -not [string]::IsNullOrWhiteSpace($ExcludeResourceGroupNames))
     {
         $storageAccounts | ForEach-Object {
             $_ | Add-Member -NotePropertyName ResourceName -NotePropertyValue $_.StorageAccountName -ErrorAction SilentlyContinue
@@ -326,7 +373,7 @@ function Enable-StorageEncryptionInTransit
             break
         }
 
-        if($resourceResolver.messageToPrint -ne $null)
+        if($null -ne $resourceResolver.messageToPrint)
         {
             $resourceSummary += "Excluded resource/resource group summary:`n " 
             $resourceSummary += $resourceResolver.messageToPrint
@@ -334,7 +381,7 @@ function Enable-StorageEncryptionInTransit
         Write-Host $resourceSummary
     }
     
-    Write-Host "Total Storage Account(s) excluded  from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Total Storage Account(s) excluded from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "Total Storage Account(s) for remediation: [$(($storageAccounts | Measure-Object).Count)]" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "$([Constants]::DoubleDashLine)"
 
@@ -366,6 +413,23 @@ function Enable-StorageEncryptionInTransit
         Write-Host "Storage Account(s) with enabled 'secure transfer': [$($totalStgWithEnableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host "Storage Account(s) with disabled 'secure transfer': [$($totalStgWithDisableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
 
+        #Storage Account remediated log
+        $logRemediatedResources = @()
+        #Storage Account Skipped log
+        $logSkippedResources=@()
+
+        if($totalStgWithEnableHTTPS -gt 0){
+                    
+            $stgWithEnableHTTPS = $stgWithEnableHTTPS | Sort-Object -Property "ResourceGroupName"
+            $stgWithEnableHTTPS | ForEach-Object {
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.StorageAccountName))
+                    $logResource.Add("Reason","The Storage account `Secure Transfer` property is already enabled.")    
+                    $logSkippedResources += $logResource
+                }
+        }
+        
         # Start remediation Storage Account(s) with 'secure transfer' enabled.
         if ($totalStgWithDisableHTTPS -gt 0)
         {
@@ -381,20 +445,23 @@ function Enable-StorageEncryptionInTransit
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
-                if (-not $Force)
+                if(-not ($AutoRemediation))
                 {
-                    Write-Host "Do you want to enable secure transfer on the storage account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                    $userInput = Read-Host -Prompt "(Y|N)"
-
-                    if($userInput -ne "Y")
+                    if (-not $Force)
                     {
-                        Write-Host "Secure transfer will not be enabled for any of the storage account. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
-                        break
+                        Write-Host "Do you want to enable secure transfer on the storage account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                        $userInput = Read-Host -Prompt "(Y|N)"
+
+                        if($userInput -ne "Y")
+                        {
+                            Write-Host "Secure transfer will not be enabled for any of the storage account. Exiting..." -ForegroundColor $([Constants]::MessageType.Info)
+                            break
+                        }
                     }
-                }
-                else
-                {
-                    Write-Host "'Force' flag is provided. Secure transfer will be enabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                    else
+                    {
+                        Write-Host "'Force' flag is provided. Secure transfer will be enabled on the storage account without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                    }
                 }
    
                 Write-Host $([Constants]::DoubleDashLine)
@@ -411,14 +478,35 @@ function Enable-StorageEncryptionInTransit
                     try
                     {   
                         $output = Set-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -EnableHttpsTrafficOnly $true -ErrorAction SilentlyContinue
-                        if($output -ne $null)
+                        if($null -ne $output)
                         {
                             $remediationSuccess += $_ 
+                            $logResource = @{}
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                            $logResource.Add("ResourceName",($_.StorageAccountName))
+                            $logRemediatedResources += $logResource
+                            Write-Host "Enabled 'Secure Transfer' on storage account [$($_.StorageAccountName)], of resource group [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
                         }   
                         else
                         {   
                             Write-Host "Remediation is not successful on [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Warning) 
                             $remediationFailure += $_
+                            $IsResourceLocked = Get-AzResourceLock -ResourceGroupName ($_.ResourceGroupName) -ResourceName ($_.StorageAccountName) -ResourceType "Microsoft.Storage/storageAccounts"
+                            $logResource = @{}
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                            $logResource.Add("ResourceName",($_.StorageAccountName))
+                            if($null -ne $IsResourceLocked)
+                            {
+                                $logResource.Add("Reason", "The Storage account (resource) is locked. For remediation, it must be unlocked.")
+                            }
+                            else
+                            {
+                                $logResource.Add("Reason","The user or Managed Identity don't have sufficient access to remediate the Storage account.")    
+                            }
+                            $logSkippedResources += $logResource
+                            Write-Host "Skipped enabling 'Secure Transfer' on storage account [$($_.StorageAccountName)], of resource group [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                     }        
                     catch
@@ -426,26 +514,32 @@ function Enable-StorageEncryptionInTransit
                         Write-Host "Error occurred while remediating [$($_.StorageAccountName)] : [$($_.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error) 
                         Write-Host  "Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                         $remediationFailure += $_
+                        $logResource = @{}
+                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                        $logResource.Add("ResourceName",($_.StorageAccountName))
+                        $logResource.Add("Reason",($_.Exception.Message))   
+                        $logSkippedResources += $logResource
+                        Write-Host $([Constants]::SingleDashLine)
                     }
                 }
                          
-                Write-Host $([Constants]::SingleDashLine)
-                if(($remediationSuccess| Measure-Object).Count -ne 0)
+                #Write-Host $([Constants]::SingleDashLine)
+                if(-not($AutoRemediation) -and ($remediationSuccess| Measure-Object).Count -ne 0)
                 {
                     Write-Host "Remediation is successful on following Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Update)
-                    $remediationSuccess |Select-Object -Property ResourceGroupName , StorageAccountName , ResourceId |ft
+                    $remediationSuccess |Select-Object -Property ResourceGroupName , StorageAccountName , ResourceId | Format-Table
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
-                if(($remediationFailure| Measure-Object).Count -ne 0)
+                if(-not($AutoRemediation) -and ($remediationFailure| Measure-Object).Count -ne 0)
                 {
                     Write-Host "Remediation is not successful on following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
-                    $remediationFailure |Select-Object -Property ResourceGroupName , StorageAccountName , ResourceId |ft
+                    $remediationFailure |Select-Object -Property ResourceGroupName , StorageAccountName , ResourceId | Format-Table
                 }
             }
             else
             {
-                Write-Host " $([Constants]::SingleDashLine)"
+                Write-Host $([Constants]::SingleDashLine)
 
                 # Creating the log file
                 Write-Host "Exporting configurations of Storage Account(s) that don't have secure transfer enabled. You may want to use this CSV as a pre-check before actual remediation." 
@@ -457,8 +551,20 @@ function Enable-StorageEncryptionInTransit
         {
             Write-Host "No Storage Account(s) found with disabled secure transfer." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::DoubleDashLine)
-            break
         }
+
+        if($AutoRemediation){
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
+        break
     }
     catch
     {
