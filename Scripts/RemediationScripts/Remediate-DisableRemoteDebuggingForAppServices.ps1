@@ -167,7 +167,16 @@ function Disable-RemoteDebuggingForAppServices
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [String]
+        $Path,
+
+        [Switch]
+        $AutoRemediation,
+
+        [Stirng]
+        $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -213,30 +222,27 @@ function Disable-RemoteDebuggingForAppServices
     $appServicesResourceType = "Microsoft.Web/sites"
     $appServiceResources = @()
 
-    # No file path provided as input to the script. Fetch all App Services in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "`nFetching all App Services in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+    # Control Id
+    $controlIds = "Azure_AppService_Config_Disable_Remote_Debugging"
 
-        # Get all App Services in a Subscription
-        $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
-    }
-    else
-    {
-        if (-not (Test-Path -Path $FilePath))
+    # No file path provided as input to the script. Fetch all App Services in the Subscription.
+    if($AutoRemediation){
+        if (-not (Test-Path -Path $Path))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error: Json file containing Storage account(s) detail not found for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            break;        
+        }
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $appServiceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validAppServiceDetails = $appServiceDetails.FailedResourceList | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        if(($validAppServiceDetails | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No storage account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
             break
         }
-
-        Write-Host "Fetching all App Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        $appServiceDetails = Import-Csv -LiteralPath $FilePath
-        $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
-        
-        $validAppServiceDetails | ForEach-Object {
-            $resourceId = $_.ResourceId
-
+        $validAppServiceDetails | ForEach-Object { 
             try
             {
                 $appServiceResource = Get-AzResource -ResourceId $resourceId -ErrorAction SilentlyContinue
@@ -244,8 +250,45 @@ function Disable-RemoteDebuggingForAppServices
             }
             catch
             {
-                Write-Host "Error fetching App Service resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Valid resource group(s) or resource name(s) or resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::SingleDashLine)
+                break
+            }
+        }
+    }else{
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
+            Write-Host "`nFetching all App Services in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+
+            # Get all App Services in a Subscription
+            $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
+        }
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                break
+            }
+
+            Write-Host "Fetching all App Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+
+            $appServiceDetails = Import-Csv -LiteralPath $FilePath
+            $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+            
+            $validAppServiceDetails | ForEach-Object {
+                $resourceId = $_.ResourceId
+
+                try
+                {
+                    $appServiceResource = Get-AzResource -ResourceId $resourceId -ErrorAction SilentlyContinue
+                    $appServiceResources += $appServiceResource
+                }
+                catch
+                {
+                    Write-Host "Error fetching App Service resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                }
             }
         }
     }

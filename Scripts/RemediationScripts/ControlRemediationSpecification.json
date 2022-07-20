@@ -13,6 +13,30 @@
                     "RollbackCommand": "Set-AnonymousAccessOnContainers",
                     "Arguments":["SubscriptionId","RollBackType"]
                 }
+        },
+        {
+            "ControlId": "Azure_AppService_Config_Disable_Remote_Debugging",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
+            "LoadCommand": "Remediate-DisableRemoteDebuggingForAppServices.ps1",     
+            "InitCommand": "Enable-RemoteDebuggingForAppServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Set-AnonymousAccessOnContainers",
+                    "Arguments":["SubscriptionId","RollBackType"]
+                }
+        },
+        {
+            "ControlId": "Azure_AppService_DP_Dont_Allow_HTTP_Access",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
+            "LoadCommand": "Remediate-EnableHTTPSForAppServices.ps1",     
+            "InitCommand": "Enable-HttpsForAppServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-HttpsForAppServices",
+                    "Arguments":["SubscriptionId","RollBackType"]
+                }
         }
     ]
 } 
