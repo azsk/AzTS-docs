@@ -210,9 +210,9 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 ```json 
 {
     "ConnectorTypesToEvaluate": [ "HTTP", "HttpWebhook" ],
-	"NonCompliantConnectorTypes": [ "FTP" ],
-	"CompliantConnectorTypes": [ "Office365", "Request", "AzureBlob", "Sql", "Response" ],
-	"NotApplicableConnectorTypes": [ "Recurrence", "If", "Switch", "Until", "ForEach" ]
+    "NonCompliantConnectorTypes": [ "FTP" ],
+    "CompliantConnectorTypes": [ "Office365", "Request", "AzureBlob", "Sql", "Response" ],
+    "NotApplicableConnectorTypes": [ "Recurrence", "If", "Switch", "Until", "ForEach" ]
 }
  ```  
 
