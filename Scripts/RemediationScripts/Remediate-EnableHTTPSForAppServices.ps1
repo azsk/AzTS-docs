@@ -412,7 +412,7 @@ function Enable-HttpsForAppServices
         catch
         {
             $appServicesSkipped += $appServiceResource
-            Write-Host "Error fetching App Service configuration: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             if($AutoRemediation){
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -432,7 +432,7 @@ function Enable-HttpsForAppServices
         break
     }
 
-    Write-Host "Found $($totalAppServicesWithoutHttpsEnabled) App Service(s) with HTTPS disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalAppServicesWithoutHttpsEnabled)] out of [$($totalAppServices)] App Service(s) with HTTPS disabled." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHttpsForAppServices"
@@ -446,10 +446,10 @@ function Enable-HttpsForAppServices
     {
         if (-not $SkipBackup)
         {
-            Write-Host "Backing up App Services details to $($backupFolderPath)..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Backing up App Services details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
             $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "App Services details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "App Services details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -507,10 +507,10 @@ function Enable-HttpsForAppServices
                     if ($isHttpsEnabledOnProductionSlot)
                     {
                         $appService.IsHTTPSEnabledOnProductionSlot = $true
-                        $logResource = @{}
-                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                        $logResource.Add("ResourceName",($_.ResourceName))
-                        $logRemediatedResources += $logResource
+                        # $logResource = @{}
+                        # $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                        # $logResource.Add("ResourceName",($_.ResourceName))
+                        # $logRemediatedResources += $logResource
                         Write-Host "Successfully enabled HTTPS on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
@@ -635,13 +635,13 @@ function Enable-HttpsForAppServices
         {
             if ($($appServicesRemediated | Measure-Object).Count -gt 0)
             {
-                $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServices.csv"
+                $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForEnableHTTPS.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
                 Write-Host "The information related to App Service(s) where HTTPS successfully enabled has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
             }
             if ($($appServicesSkipped | Measure-Object).Count -gt 0)
             {
-                $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServices.csv"
+                $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForEnableHTTPS.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
                 Write-Host "The information related to App Service(s) where HTTPS was not successfully enabled has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Info)
             }
@@ -656,7 +656,7 @@ function Enable-HttpsForAppServices
                 $appServicesRemediated | Format-Table -Property $colsProperty -Wrap
 
                 # Write this to a file.
-                $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServices.csv"
+                $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForEnableHTTPS.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
                 Write-Host "This information has been saved to [$($appServicesRemediatedFile)]"
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
@@ -668,7 +668,7 @@ function Enable-HttpsForAppServices
                 $appServicesSkipped | Format-Table -Property $colsProperty -Wrap
                 
                 # Write this to a file.
-                $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServices.csv"
+                $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForEnableHTTPS.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
                 Write-Host "This information has been saved to $($appServicesSkippedFile)"
             }
@@ -687,13 +687,13 @@ function Enable-HttpsForAppServices
     }
     else
     {
-        Write-Host "[Step 3 of 4] Backing up App Services details to $($backupFolderPath)"
+        Write-Host "[Step 3 of 3] Backing up App Services details to $($backupFolderPath)"
         Write-Host $([Constants]::SingleDashLine)
         # Backing up App Services details.
         $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
         $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "[Step 4 of 4] App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "**Next steps:** App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable HTTPS for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
     }
@@ -793,17 +793,14 @@ function Disable-HttpsForAppServices
 
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    if(-not($AutoRemediation))
-    {
-        Write-Host "Subscription Name: $($context.Subscription.Name)"
-        Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-        Write-Host "Account Name: $($context.Account.Id)"
-        Write-Host "Account Type: $($context.Account.Type)"
-        Write-Host $([Constants]::SingleDashLine)
-    }
+    Write-Host "Subscription Name: $($context.Subscription.Name)"
+    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
+    Write-Host "Account Name: $($context.Account.Id)"
+    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host $([Constants]::SingleDashLine)
 
     # Note about the required access required for remediation
-    Write-Host "To enable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To disable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
@@ -814,7 +811,7 @@ function Disable-HttpsForAppServices
         break
     }
 
-    Write-Host "Fetching all App Services from $($FilePath)..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all App Services from [$($FilePath)\..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $appServiceDetails = Import-Csv -LiteralPath $FilePath
     $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
@@ -827,7 +824,7 @@ function Disable-HttpsForAppServices
         break
     }
 
-    Write-Host "Found $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHttpsForAppServices"
@@ -971,7 +968,7 @@ function Disable-HttpsForAppServices
 
                 if ($isHttpsEnabledOnNonProductionSlot)
                 {
-                    Write-Host "Error enabling HTTPS on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error disabling HTTPS on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
                 }
                 else

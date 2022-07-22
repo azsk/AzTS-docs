@@ -19,10 +19,10 @@
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
             "LoadCommand": "Remediate-DisableRemoteDebuggingForAppServices.ps1",     
-            "InitCommand": "Enable-RemoteDebuggingForAppServices",
+            "InitCommand": "Disable-RemoteDebuggingForAppServices",
             "RollbackMetadata":
                 {
-                    "RollbackCommand": "Set-AnonymousAccessOnContainers",
+                    "RollbackCommand": "Enable-RemoteDebuggingForAppServices",
                     "Arguments":["SubscriptionId","RollBackType"]
                 }
         },

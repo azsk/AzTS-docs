@@ -100,9 +100,9 @@ Enter the choice (1/2)";
             }
 
             # variable to track unexecuted resources
-            $skippedResources = @();
             foreach($control in $controlRemediationList)
             { 
+                $skippedResources = @();
                 if(($remediationLevel -ne '1') -and ($remediationLevel -ne '2'))
                 {
                     break;
