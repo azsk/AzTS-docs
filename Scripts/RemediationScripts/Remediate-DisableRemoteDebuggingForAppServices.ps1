@@ -219,10 +219,10 @@ function Disable-RemoteDebuggingForAppServices
     
     if(-not($AutoRemediation))
     {
-        Write-Host "Subscription Name: $($context.Subscription.Name)"
-        Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-        Write-Host "Account Name: $($context.Account.Id)"
-        Write-Host "Account Type: $($context.Account.Type)"
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -278,7 +278,6 @@ function Disable-RemoteDebuggingForAppServices
                 $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
-                break
             }
         }
     }
@@ -794,11 +793,10 @@ function Enable-RemoteDebuggingForAppServices
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "To enable Remote Debugging for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -871,7 +869,7 @@ function Enable-RemoteDebuggingForAppServices
 
         try
         {
-            Write-Host "Fetching App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             if ($isRemoteDebuggingDisabled -eq $false)
@@ -907,7 +905,7 @@ function Enable-RemoteDebuggingForAppServices
             $appService | Add-Member -NotePropertyName IsRemoteDebuggingDisabledOnAnyNonProductionSlot -NotePropertyValue $false
             $appService | Add-Member -NotePropertyName NonProductionSlotsWithRemoteDebuggingDisabled -NotePropertyValue ([String]::Empty)
 
-            Write-Host "Fetching non-production slot configurations for App Service: Resource ID - [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching non-production slot configurations for App Service: Resource ID - [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             $nonProductionSlotConfigurations = @()

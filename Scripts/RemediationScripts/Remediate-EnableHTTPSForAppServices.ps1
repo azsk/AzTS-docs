@@ -232,10 +232,10 @@ function Enable-HttpsForAppServices
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     if(-not($AutoRemediation))
     {
-        Write-Host "Subscription Name: $($context.Subscription.Name)"
-        Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-        Write-Host "Account Name: $($context.Account.Id)"
-        Write-Host "Account Type: $($context.Account.Type)"
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -793,10 +793,10 @@ function Disable-HttpsForAppServices
 
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
     # Note about the required access required for remediation

@@ -89,9 +89,10 @@ function Setup-Prerequisites
 
     # List of required modules
     $requiredModules = @("Az.Accounts", "Az.Websites", "Az.Resources", "Azure")
-
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..." 
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -99,15 +100,16 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "$($_) module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
             Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-    Write-Host "**Note:**  Az.Websites Module is required to be at 2.11.0 or higher version." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
 }
@@ -184,19 +186,31 @@ function Set-AppServiceRequiredTLSVersion
 
     [String]
     [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-    $FilePath
+    $FilePath,
+
+    [String]
+    $Path,
+
+    [Switch]
+    $AutoRemediation,
+
+    [String]
+    $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to set required TLS version for App Services in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 4] Preparing to set required TLS version for App Services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
@@ -217,14 +231,17 @@ function Set-AppServiceRequiredTLSVersion
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
-    Write-Host $([Constants]::SingleDashLine)
+    if(-not($AutoRemediation))
+    {
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }
 
-    Write-Host "*** To Set Minimum TLS version for App Services in a Subscription, Contributor or higher privileges on the App Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "To Set Minimum TLS version for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all App Services..."
     Write-Host $([Constants]::SingleDashLine)
 
@@ -232,49 +249,96 @@ function Set-AppServiceRequiredTLSVersion
     $appServicesSlotsResourceType = "Microsoft.Web/sites/slots"
     $appServiceResources = @()
     $appServiceSlotsResources = @()
+    $logRemediatedResources = @()
+    $logSkippedResources=@()
 
-    # No file path provided as input to the script. Fetch all App Services in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "Fetching all App Services and their respective deployments slots in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Default)
+    $controlIds = "Azure_AppService_DP_Use_Secure_TLS_Version"
 
-        # Get all App Services in a Subscription
-        $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
-        $appServiceSlotsResources = Get-AzResource -ResourceType $appServicesSlotsResourceType -ErrorAction Stop
-    }
-    else
+    if($AutoRemediation)
     {
-        if (-not (Test-Path -Path $FilePath))
+        if(-not (Test-Path -Path $Path))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
             break
         }
-
-        Write-Host "Fetching all App Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Default)
-
-        $appServiceDetails = Import-Csv -LiteralPath $FilePath
-        $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
-        
-        $validAppServiceDetails | ForEach-Object {
-            $resourceId = $_.ResourceId
-            $resourceName = $_.ResourceName
+        Write-Host "Fetching all App Services failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No app service(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            break
+        }
+        $validResources | ForEach-Object { 
             try
             {
-                #Write-Host "Fetching App Service resource: Resource Name - $($ResourceName)"
-                $appServiceResource = Get-AzResource -ResourceName $ResourceName -ErrorAction SilentlyContinue
-                if($appServiceResource.ResourceType -eq $appServicesResourceType)
-                {
-                    $appServiceResources += $appServiceResource    
-                }
-                else
-                {
-                    $appServiceSlotsResources += $appServiceResource
-                }
+                $appServiceResource = Get-AzResource -ResourceId $_.ResourceId -ErrorAction SilentlyContinue
+                $appServiceResources += $appServiceResource
             }
             catch
             {
-                Write-Host "Error fetching App Service resource: Resource Name - $($ResourceName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Valid resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "WARNING: Skipping the Resource [$($_.ResourceName)]..."
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+                break
+            }
+        }
+    }
+    else 
+    {
+        # No file path provided as input to the script. Fetch all App Services in the Subscription.
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
+            Write-Host "Fetching all App Services and their respective deployments slots in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            # Get all App Services in a Subscription
+            $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
+            $appServiceSlotsResources = Get-AzResource -ResourceType $appServicesSlotsResourceType -ErrorAction Stop
+        }
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                break
+            }
+
+            Write-Host "Fetching all App Services from $($FilePath)..." -ForegroundColor $([Constants]::MessageType.Info)
+
+            $appServiceDetails = Import-Csv -LiteralPath $FilePath
+            $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
+            Write-Host $([Constants]::SingleDashLine)
+            $validAppServiceDetails | ForEach-Object {
+                $resourceId = $_.ResourceId
+                $resourceName = $_.ResourceName
+                try
+                {
+                    #Write-Host "Fetching App Service resource: Resource Name - $($ResourceName)"
+                    $appServiceResource = Get-AzResource -ResourceName $ResourceName -ErrorAction SilentlyContinue
+                    if($appServiceResource.ResourceType -eq $appServicesResourceType)
+                    {
+                        $appServiceResources += $appServiceResource    
+                    }
+                    else
+                    {
+                        $appServiceSlotsResources += $appServiceResource
+                    }
+                }
+                catch
+                {
+                    Write-Host "Error fetching App Service resource: Resource Name - $($ResourceName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                }
             }
         }
     }
