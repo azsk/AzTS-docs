@@ -600,6 +600,17 @@ function Enable-AADForKubernetes
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
+        if($AutoRemediation){
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
     }
     else
     {
