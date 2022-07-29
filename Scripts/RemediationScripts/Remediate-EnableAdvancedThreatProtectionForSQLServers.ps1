@@ -89,8 +89,10 @@ function Setup-Prerequisites
     # List of required modules
     $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql", "Az.Synapse", "Az.Security")
 
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..."
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -98,14 +100,17 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "$($_) module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
             Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 function Enable-AdvancedThreatProtectionForSqlServers
@@ -160,18 +165,30 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [String]
+        $Path,
+
+        [Switch]
+        $AutoRemediation,
+
+        [String]
+        $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to enable Auditing and Advanced Threat Protection for SQL Server(s) in Subscription: $($SubscriptionId)"
-
+    Write-Host "[Step 1 of 4] Preparing to enable Auditing and Advanced Threat Protection for SQL Server(s) in Subscription: [$($SubscriptionId)]"
+    Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
@@ -185,90 +202,170 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
-    Write-Host $([Constants]::SingleDashLine)
+    if(-not($AutoRemediation))
+    {
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }
 
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
+    Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
         break
-    }
-
-    Write-Host "*** To enable Auditing and Advanced Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "*** However, there are certain settings that can also be configured at the Subscription level. This would need Contributor and higher privileges on the Subscription. ***" -ForegroundColor $([Constants]::MessageType.Info)
-
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all SQL Servers..."
-
-    $sqlServerResources = @()
-
-    # No file path provided as input to the script. Fetch all SQL Servers in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "Fetching all SQL Servers in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        # Get all SQL Servers in a Subscription.
-        # This will include SQL Servers associated with Synapse Workspaces as well.
-        $sqlServers = Get-AzResource -ResourceType "Microsoft.Sql/servers" -ErrorAction Stop
-
-        # Get all Synapse Workspaces in a Subscription
-        $synapseWorkspaces = Get-AzResource -ResourceType "Microsoft.Synapse/workspaces" -ErrorAction Stop
-
-        $standaloneSqlServers = $sqlServers
-
-        # Filter SQL Servers not associated with a Synapse Workspace.
-        # Synapse Workspace and the associated SQL Server have the same name.
-        # Synapse Workspace names are unique.
-        if (($synapseWorkspaces | Measure-Object).Count -gt 0)
-        {
-            $standaloneSqlServers = Compare-Object -ReferenceObject @($sqlServers | Select-Object) -DifferenceObject @($synapseWorkspaces | Select-Object) -Property { $_.ResourceName } -PassThru
-        }
-
-        $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
-                                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                     @{N='ServerName';E={$_.ResourceName}},
-                                                                     @{N='ResourceType';E={$_.ResourceType}},
-                                                                     @{N='IsSynapseWorkspace';E={$false}}
-
-        # Add Synapse Workspaces to this list.
-        $sqlServerResources += $synapseWorkspaces | Select-Object @{N='ResourceId';E={$_.ResourceId}},
-                                                                  @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                  @{N='ServerName';E={$_.ResourceName}},
-                                                                  @{N='ResourceType';E={$_.ResourceType}},
-                                                                  @{N='IsSynapseWorkspace';E={$true}}
     }
     else
     {
-        if (-not (Test-Path -Path $FilePath))
-        {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-            break
-        }
-
-        Write-Host "Fetching all SQL Servers from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        # Importing the list of SQL servers to be remediated.
-        $sqlServersDetails = Import-Csv -LiteralPath $FilePath
-
-        $sqlServerResources = $sqlServersDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        Write-Host "[$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
-    $totalSqlServers = $sqlServerResources.Count
+    Write-Host "Note:To enable Auditing and Advanced Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. " -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "However, there are certain settings that can also be configured at the Subscription level. This would need Contributor and higher privileges on the Subscription." -ForegroundColor $([Constants]::MessageType.Warning)
+
+    Write-Host "[Step 2 of 4] Preparing to fetch all SQL Servers"
+    Write-Host $([Constants]::SingleDashLine)
+    $sqlServerResources = @()
+
+    # To keep track of remediated and skipped resources
+    $logRemediatedResources = @()
+    $logSkippedResources=@()
+
+    # Control Id
+    $controlIds = "Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server"
+
+    if ($AutoRemediation) 
+    {
+        if(-not (Test-Path -Path $Path))
+        {
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            break
+        }
+        Write-Host "Fetching all SQL Servers failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No SQL Server(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            break
+        }
+        $validResources | ForEach-Object { 
+            try
+            {
+                $sqlServerResource = Get-AzResource -ResourceId $_.ResourceId -ErrorAction SilentlyContinue
+                $sqlServerResources += $sqlServerResource | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                        @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                        @{N='ServerName';E={$_.Name}},
+                                                                        @{N='ResourceType';E={$_.ResourceType}},
+                                                                        @{N='IsSynapseWorkspace';E={$false}}
+            }
+            catch
+            {
+                Write-Host "Valid resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "WARNING: Skipping the Resource [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+        
+    }
+    else
+    {
+        # No file path provided as input to the script. Fetch all SQL Servers in the Subscription.
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
+            # Get all SQL Servers in a Subscription.
+            # This will include SQL Servers associated with Synapse Workspaces as well.
+            Write-Host "Fetching all the SQL Server(s) present in the Subscription : [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            $sqlServers = Get-AzResource -ResourceType "Microsoft.Sql/servers" -ErrorAction Stop
+            Write-Host "Successfully fetched all the SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+            
+            # Get all Synapse Workspaces in a Subscription
+            Write-Host "Fetching all the Synapse Workspace(s) present in the Subscription : [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            $synapseWorkspaces = Get-AzResource -ResourceType "Microsoft.Synapse/workspaces" -ErrorAction Stop
+            Write-Host "Successfully fetched all the Synapse Workspace(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+
+            $standaloneSqlServers = $sqlServers
+
+            # Filter SQL Servers not associated with a Synapse Workspace.
+            # Synapse Workspace and the associated SQL Server have the same name.
+            # Synapse Workspace names are unique.
+            Write-Host "Filtering out SQL Server(s) associated with Synapse Workspace(s) to avoid redundancy..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            if (($synapseWorkspaces | Measure-Object).Count -gt 0)
+            {
+                $standaloneSqlServers = Compare-Object -ReferenceObject $sqlServers -DifferenceObject $synapseWorkspaces -Property { $_.Name } -PassThru
+            }
+
+            $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                        @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                        @{N='ServerName';E={$_.Name}},
+                                                                        @{N='ResourceType';E={$_.ResourceType}},
+                                                                        @{N='IsSynapseWorkspace';E={$false}}
+                                                                        
+
+            Write-Host "Succesfully filtered out SQL Server(s) associated with Synapse Workspace(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+                                                                        
+            # Add Synapse Workspaces to this list.
+            $sqlServerResources += $synapseWorkspaces | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                                                    @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                                                    @{N='ServerName';E={$_.Name}},
+                                                                    @{N='ResourceType';E={$_.ResourceType}},
+                                                                    @{N='IsSynapseWorkspace';E={$true}}
+                                                                    
+
+        }  
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                break
+            }
+
+            Write-Host "Fetching all SQL Server(s) from file [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine) 
+
+            # Importing the list of SQL servers to be remediated.
+            $sqlServersDetails = Import-Csv -LiteralPath $FilePath
+
+            $sqlServerResources = $sqlServersDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+            Write-Host "Succesfully fetched list of SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+        }
+    }
+
+    $totalSqlServers = ($sqlServerResources|Measure-Object).Count
 
     if ($totalSqlServers -eq 0)
     {
@@ -276,7 +373,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
         break
     }
 
-    Write-Host "Found $($totalSqlServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Includes SQL Servers where Auditing and Advanced Threat Protection are enabled.
     $sqlServersWithThreatDetectionEnabled = @()
@@ -318,8 +416,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
     $sqlServerResources | ForEach-Object {
         try
         {
-            Write-Host "Fetching SQL Server resource: Resource ID - $($_.ResourceId)"
-
+            Write-Host "Fetching the details of SQL Server: [$($_.ServerName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            # Write-Host $([Constants]::SingleDashLine)
             $sqlServerAuditDetails = @()
             $sqlServerAtpSetting = @()
             $isAuditingEnabled = $false
@@ -356,7 +454,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
             if ([String]::IsNullOrWhiteSpace($sqlServerAuditDetails))
             {
-                throw "Error fetching Auditing settings."
+                throw "Error fetching Auditing settings." 
             }
 
             if ([String]::IsNullOrWhiteSpace($sqlServerAtpSetting))
@@ -364,6 +462,9 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 throw "Error fetching Advanced Threat Protection settings."
             }
 
+            Write-Host "Successfully fetched the details" -ForegroundColor $([Constants]::MessageType.Update)
+            # Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Checking if Auditing and Advanced Threat Protection is enabled or not on the SQL Server: [$($_.ServerName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             # Check if Auditing is enabled on the SQL Server.
             # Auditing is enabled if one or more of BlobStorageTargetState, EventHubTargetState or LogAnalyticsTargetState is enabled.
             $isAuditingEnabled = (-not [String]::IsNullOrWhiteSpace($sqlServerAuditDetails) -and ($sqlServerAuditDetails.BlobStorageTargetState -eq "Enabled" -or
@@ -384,7 +485,14 @@ function Enable-AdvancedThreatProtectionForSqlServers
             if ($isAuditingEnabled -eq $true -and $isAtpConfigured -eq $true)
             {
                 $sqlServersWithThreatDetectionEnabled += $_
-                Write-Host "Auditing and Advanced Threat Protection is already enabled on the SQL Server. Resource ID - $($_.ResourceId), Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ServerName)." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)  
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ServerName))
+                $logResource.Add("Reason","Auditing and Advanced Threat Protection is already enabled on the SQL Server.: [$($_.ServerName)]")    
+                $logSkippedResources += $logResource 
+                Write-Host "Auditing and Advanced Threat Protection is already enabled on the SQL Server. Resource ID: [$($_.ResourceId)], Resource Group Name: [$($_.ResourceGroupName)], Resource Name: [$($_.ServerName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
             else
             {
@@ -405,6 +513,21 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                                                              @{N='IsEmailAccountAdminsConfiguredAtSubscriptionLevel';E={$isEmailAccountAdminsConfiguredAtSubscriptionLevel}},
                                                                              @{N="IsAtpEnabledAtSubscriptionLevel";E={$isAtpEnabledAtSubscriptionLevel}},
                                                                              @{N="IsAtpConfigured";E={$isAtpConfigured}}
+                if($isAuditingEnabled)
+                {
+                    Write-Host "Advanced Threat Protection is disabled on the SQL Server. Resource ID: [$($_.ResourceId)], Resource Group Name: [$($_.ResourceGroupName)], Resource Name: [$($_.ServerName)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
+                elseif($isAtpConfigured)
+                {
+                    Write-Host "Auditing is disabled on the SQL Server. Resource ID: [$($_.ResourceId)], Resource Group Name: [$($_.ResourceGroupName)], Resource Name: [$($_.ServerName)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
+                else
+                {
+                    Write-Host "Auditing and Advanced Threat Protection are disabled on the SQL Server. Resource ID: [$($_.ResourceId)], Resource Group Name: [$($_.ResourceGroupName)], Resource Name: [$($_.ServerName)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
             }
         }
         catch
@@ -427,7 +550,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                                                          @{N="IsAtpEnabledAtSubscriptionLevel";E={$isAtpEnabledAtSubscriptionLevel}},
                                                                          @{N="IsAtpConfigured";E={$isAtpConfigured}}
 
-            Write-Host "Error fetching Auditing and Advanced Threat Protection configuration: Resource ID - $($_.ResourceId), Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ServerName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching Auditing and Advanced Threat Protection configuration: Resource ID: [$($_.ResourceId)], Resource Group Name: [$($_.ResourceGroupName)], Resource Name: [$($_.ServerName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
 
@@ -439,7 +563,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
         break
     }
 
-    Write-Host "Found $($totalSqlServersWithThreatDetectionDisabled) SQL Server(s) with Auditing or Advanced Threat Protection disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalSqlServersWithThreatDetectionDisabled)] SQL Server(s) with Auditing or Advanced Threat Protection disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableThreatDetectionForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
@@ -450,28 +575,29 @@ function Enable-AdvancedThreatProtectionForSqlServers
     # Backing up SQL Server details.
     $backupFile = "$($backupFolderPath)\SQLServersWithThreatDetectionDisabled.csv"
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Backing up SQL Server details to $($backupFile)"
+    Write-Host "[Step 3 of 4] Backing up SQL Server details to [$($backupFile)]"
+    Write-Host $([Constants]::SingleDashLine)
 
     $sqlServersWithThreatDetectionDisabled | Export-CSV -Path $backupFile -NoTypeInformation
 
     if (-not $DryRun)
     {
-        Write-Host "*** There will be billing costs associated with enabling Advanced Threat Protection for SQL Servers. ***" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "*** It is recommended to understand them before enabling Advanced Threat Protection for SQL Servers. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "There will be billing costs associated with enabling Advanced Threat Protection for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "It is recommended to understand them before enabling Advanced Threat Protection for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Note: This warning can be ignored if Advanced Threat Protection is already enabled for SQL Servers or if you are aware of the costs that will be incurred." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "Do you still want to proceed?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
         $userInput = Read-Host -Prompt "(Y|N)"
-
+        Write-Host $([Constants]::SingleDashLine)
         if ($userInput -ne "Y")
         {
             Write-Host "Auditing and Advanced Threat Protection will not be enabled for any SQL Server. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             break
         }
 
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enabling Auditing and Advanced Threat Protection for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Warning)
-
+        Write-Host "[Step 4 of 4] Enabling Auditing and Advanced Threat Protection for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
         $remediatedSqlServers = @()
 
@@ -501,7 +627,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
             Write-Host "Do you want to enable Advanced Threat Protection for SQL Servers at the Subscription level? This will configure Advanced Threat Protection for all SQL Servers in the Subscription." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
             $userInput = Read-Host -Prompt "(Y|N)"
-
+            Write-Host $([Constants]::SingleDashLine)
             if ($userInput -eq "Y")
             {
                 try
@@ -511,7 +637,9 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     if ($hasPrivilegedRolesInSubscription)
                     {
                         Write-Host "Current user [$($context.Account.Id)] has the required permissions to enable Advanced Threat Protection at the Subscription level." -ForegroundColor $([Constants]::MessageType.Info)
-                        Write-Host "Enabling Advanced Threat Protection for SQL Servers in the Subscription" -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+                        Write-Host "Enabling Advanced Threat Protection for SQL Servers in the Subscription...." -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host $([Constants]::SingleDashLine)
 
                         $sqlServerPricingDetails = Set-AzSecurityPricing -Name "SqlServers" -PricingTier "Standard" -ErrorAction Continue
 
@@ -539,14 +667,16 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             }
 
                             Write-Host "Advanced Threat Protection for SQL Servers successfully enabled in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                         else
                         {
                             Write-Host "Error enabling Advanced Threat Protection for SQL Servers in the Subscription." -ForegroundColor $([Constants]::MessageType.Error)
-
+                            Write-Host $([Constants]::SingleDashLine)
                             # Not terminating the script here.
                             # ATP can still be configured at the individual SQL Server levels.
-                            Write-Host "Advanced Threat Protection can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Info)
+                            Write-Host "Advanced Threat Protection can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                     }
                     else
@@ -554,20 +684,23 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         Write-Host "Warning: Current user [$($context.Account.Id)] does not have the required permissions to configure Advanced Threat Protection at the Subscription level." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "One of the following roles is required to enable Advanced Threat Protection at the Subscription level: [$($privilegedRoleDefinitionNames -join ", ")]" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "Advanced Threat Protection can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
                     }
                 }
                 catch
                 {
-                    Write-Host "Error enabling Advanced Threat Protection for SQL servers in the Subscription. Error $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-
+                    Write-Host "Error enabling Advanced Threat Protection for SQL servers in the Subscription. Error [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host $([Constants]::SingleDashLine)
                     # Not terminating the script here.
                     # ATP can still be configured at the individual SQL Server levels.
-                    Write-Host "Advanced Threat Protection can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Advanced Threat Protection can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
             }
             else
             {
                 Write-Host "Advanced Threat Protection can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
 
@@ -585,15 +718,17 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 Write-Host "Do you want to configure contact details in Microsoft Defender for Cloud? These details will be used to send out email notifications in the event of an alert." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
                 $userInput = Read-Host -Prompt "(Y|N)"
-
+                Write-Host $([Constants]::SingleDashLine)
                 if ($userInput -eq "Y")
                 {
                     try
                     {
-                        Write-Host "Configuring contact details in Microsoft Defender for Cloud for the Subscription: $($SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host "*** The email address from this session - $($context.Account.Id) will be used as a recipient for email notifications on an alert. ***" -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host "*** Please use the Azure Portal to configure additional email addresses, if required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host "*** Also, email notifications to Admins and Subscription Owners will be enabled. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Configuring contact details in Microsoft Defender for Cloud for the Subscription: [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host $([Constants]::SingleDashLine)
+                        Write-Host "The email address from this session: [$($context.Account.Id)] will be used as a recipient for email notifications on an alert." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Please use the Azure Portal to configure additional email addresses, if required." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Also, email notifications to Admins and Subscription Owners will be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
 
                         $mdcContactDetails = Set-AzSecurityContact -Name "$($context.Account.Id)" -Email "$($context.Account.Id)" -AlertAdmin -NotifyOnAlert -ErrorAction Continue
 
@@ -605,16 +740,18 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                 $isAnyEmailAddressConfiguredAtSubscriptionLevel = $true
                                 $isEmailAccountAdminsConfiguredAtSubscriptionLevel = $true
                                 $isContactDetailsConfiguredAtSubscriptionNow = $true
-                                Write-Host "Contact details successfully configured on the Subscription: $($SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host "Contact details successfully configured on the Subscription: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host $([Constants]::SingleDashLine)
                             }
                         }
                         else
                         {
-                            Write-Host "Error configuring contact details on the Subscription $($SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Error)
+                            Write-Host "Error configuring contact details on the Subscription [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Error)
 
                             # Not terminating the script here.
                             # Contact details can still be configured at the individual SQL Server levels.
-                            Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Error)
+                            Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                     }
                     catch
@@ -623,12 +760,14 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         # Not terminating the script here.
                         # Contact details can still be configured at the individual SQL Server levels.
-                        Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
                     }
                 }
                 else
                 {
                     Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
             }
             else
@@ -636,10 +775,11 @@ function Enable-AdvancedThreatProtectionForSqlServers
                 Write-Host "Warning: Current user [$($context.Account.Id)] does not have the required permissions to configure contact details in Microsoft Defender for Cloud." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "One of the following roles is required to configure contact details in Microsoft Defender for Cloud: [$($privilegedRoleDefinitionNames -join ", ")]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Contact details can still be configured for the individual SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
 
-        Write-Host "Checking if Auditing and Advanced Threat Protection are configured for the individual SQL servers." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Checking if Auditing and Advanced Threat Protection are configured for the individual SQL servers..." -ForegroundColor $([Constants]::MessageType.Info)
 
         # Storage Account details
         [String] $storageAccountResourceGroupName = [String]::Empty
@@ -650,8 +790,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
         # Check Auditing and ATP settings at the SQL Server level.
         $sqlServersWithThreatDetectionDisabled  | ForEach-Object {
-            Write-Host "Checking SQL Server Resource ID: $($_.ResourceId)" -ForegroundColor $([Constants]::MessageType.Info)
-
+            Write-Host "Checking SQL Server Resource ID: [$($_.ResourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             try
             {
                 $sqlServerInstance = $_
@@ -707,32 +847,32 @@ function Enable-AdvancedThreatProtectionForSqlServers
                     {
                         $isStorageAccountPreferenceDecided = $true
 
-                        Write-Host "Auditing requires one or more of Storage Account, Log Analytics Workspace or Event Hub to be configured for storing the audit logs." -ForegroundColor $([Constants]::MessageType.Info)
-                        Write-Host "*** This script supports only Storage Accounts as a destination for storing the audit logs. ***" -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host "Auditing requires one or more of Storage Account, Log Analytics Workspace or Event Hub to be configured for storing the audit logs." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "This script supports only Storage Accounts as a destination for storing the audit logs." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host "Do you still want to proceed?" -ForegroundColor $([Constants]::MessageType.Info) -NoNewline
 
                         $userInput = Read-Host -Prompt "(Y|N)"
-
+                        Write-Host $([Constants]::SingleDashLine)
                         if ($userInput -ne "Y")
                         {
-                            Write-Host "If you prefer a different destination for storing the audit logs, please configure them and run this script again to configure Advanced Threat Protection." -ForegroundColor $([Constants]::MessageType.Update)
-                            Write-Host "Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host "If you prefer a different destination for storing the audit logs, please configure them and run this script again to configure Advanced Threat Protection. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
                             break
                         }
 
                         Write-Host "Do you prefer having a single Storage Account to store the auditing logs of all SQL servers in the Subscription?" -ForegroundColor $([Constants]::MessageType.Info) -NoNewline
 
                         $userInput = Read-Host -Prompt "(Y|N)"
-
+                        Write-Host $([Constants]::SingleDashLine)
                         if ($userInput -eq "Y")
                         {
                             $isCentralStorageAccount = $true
 
-                            Write-Host "You can use a previously created Storage Account to store the auditing logs by specifying its Name and Resource Group." -ForegroundColor $([Constants]::MessageType.Info)
-                            Write-Host "If no such Storage Account exists, a new Storage Account with the specified name will be created to store the auditing logs." -ForegroundColor $([Constants]::MessageType.Info)
-                            Write-Host "In this case, the Resource Group needs to be already present. If not, create the Resource Group and resume." -ForegroundColor $([Constants]::MessageType.Info)
-                            Write-Host "Please ensure that you have sufficient permissions to create/access the Storage Account." -ForegroundColor $([Constants]::MessageType.Info)
-
+                            Write-Host "You can use a previously created Storage Account to store the auditing logs by specifying its Name and Resource Group." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "If no such Storage Account exists, a new Storage Account with the specified name will be created to store the auditing logs." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "In this case, the Resource Group needs to be already present. If not, create the Resource Group and resume." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host "Please ensure that you have sufficient permissions to create/access the Storage Account." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host $([Constants]::SingleDashLine)
                             $storageAccountResourceGroupName = Read-Host -Prompt "Resource Group Name"
                             $storageAccountName = Read-Host -Prompt "Storage Account Name"
 
@@ -741,6 +881,7 @@ function Enable-AdvancedThreatProtectionForSqlServers
                             if (($storageAccount | Measure-Object).Count -ne 0)
                             {
                                 Write-Host "Centralized Storage Account already present or successfully created." -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host $([Constants]::SingleDashLine)
                             }
                             else
                             {
@@ -753,7 +894,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         }
                         else
                         {
-                            Write-Host "Individual Storage Accounts will be created for every SQL server in its respective Resource Group to store the auditing logs specific to them." -ForegroundColor $([Constants]::MessageType.Info)
+                            Write-Host "Individual Storage Accounts will be created for every SQL server in its respective Resource Group to store the auditing logs specific to them." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                     }
 
@@ -774,13 +916,15 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                         $storageAccountName = -join("auditlogs", $storageAccountNameSuffix.ToLower())
 
-                        Write-Host "Creating a Storage Account for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Creating a Storage Account for SQL Server: [$($sqlServerInstance.ServerName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host $([Constants]::SingleDashLine)
 
                         $storageAccount = Create-StorageAccountIfNotExists $storageAccountResourceGroupName $storageAccountName
 
                         if (($storageAccount | Measure-Object).Count -ne 0)
                         {
-                            Write-Host "Storage Account - $($storageAccountName) already present or successfully created." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host "Storage Account: [$($storageAccountName)] already present or successfully created." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                         else
                         {
@@ -791,7 +935,8 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         }
                     }
 
-                    Write-Host "Enabling Auditing for SQL Server: $($sqlServerInstance.ServerName)"
+                    Write-Host "Enabling Auditing for SQL Server: [$($sqlServerInstance.ServerName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host $([Constants]::SingleDashLine)
 
                     # Check if the SQL Server is a stand-alone SQL Server or is associated with a Synapse Workspace.
                     if ($sqlServerInstance.IsSynapseWorkspace -eq $false)
@@ -815,11 +960,12 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                     if ($isAuditingEnabled)
                     {
-                        Write-Host "Auditing is successfully enabled for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Auditing is successfully enabled for SQL Server: [$($sqlServerInstance.ServerName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host $([Constants]::SingleDashLine)
                     }
                     else
                     {
-                        Write-Host "Error enabling Auditing for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Error enabling Auditing for SQL Server: [$($sqlServerInstance.ServerName)]" -ForegroundColor $([Constants]::MessageType.Error)
                         throw "Error enabling Auditing for SQL Server."
                     }
                 }
@@ -880,17 +1026,22 @@ function Enable-AdvancedThreatProtectionForSqlServers
 
                     if ($isAtpConfigured -eq $true)
                     {
-                        Write-Host "Advanced Threat Protection is successfully configured for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Advanced Threat Protection is successfully configured for SQL Server: [$($sqlServerInstance.ServerName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host $([Constants]::SingleDashLine)
                     }
                     else
                     {
-                        Write-Host "Error configuring Advanced Threat Protection for SQL Server: $($sqlServerInstance.ServerName)"
+                        Write-Host "Error configuring Advanced Threat Protection for SQL Server: [$($sqlServerInstance.ServerName)]" -ForegroundColor $([Constants]::MessageType.Error)
                         throw "Error configuring Advanced Threat Protection for SQL Server."
                     }
                 }
 
                 if ($isAuditingEnabled -eq $true -and $isAtpConfigured -eq $true)
                 {
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($sqlServerInstance.ResourceGroupName))
+                    $logResource.Add("ResourceName",($sqlServerInstance.ServerName)) 
+                    $logRemediatedResources += $logResource
                     $remediatedSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
                                                                                 @{N='ResourceGroupName';E={$sqlServerInstance.ResourceGroupName}},
                                                                                 @{N='ServerName';E={$sqlServerInstance.ServerName}},
@@ -909,9 +1060,15 @@ function Enable-AdvancedThreatProtectionForSqlServers
                                                                                 @{N='IsEmailAccountAdminsConfiguredAtSubscriptionLevel';E={$isEmailAccountAdminsConfiguredAtSubscriptionLevel}},
                                                                                 @{N="IsAtpEnabledAtSubscriptionLevel";E={$isAtpEnabledAtSubscriptionLevel}},
                                                                                 @{N="IsAtpConfigured";E={$isAtpConfigured}}
+                    
                 }
                 else
                 {
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($sqlServerInstance.ResourceGroupName))
+                    $logResource.Add("ResourceName",($sqlServerInstance.ServerName))
+                    $logResource.Add("Reason","Auditing and Advanced Threat Protection was not successfully enabled for the SQL Server: [$($_.ServerName)]")    
+                    $logSkippedResources += $logResource     
                     $skippedSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
                                                                              @{N='ResourceGroupName';E={$sqlServerInstance.ResourceGroupName}},
                                                                              @{N='ServerName';E={$sqlServerInstance.ServerName}},
@@ -934,8 +1091,13 @@ function Enable-AdvancedThreatProtectionForSqlServers
             }
             catch
             {
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($sqlServerInstance.ResourceGroupName))
+                $logResource.Add("ResourceName",($sqlServerInstance.ServerName))
+                $logResource.Add("Reason","Error enabling Auditing and Advanced Threat Protection on SQL Server. Error: [$($_)]")    
+                $logSkippedResources += $logResource   
                 $skippedSqlServers += $sqlServerInstance
-                Write-Host "Error enabling Auditing and Advanced Threat Protection on SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error enabling Auditing and Advanced Threat Protection on SQL Server. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping this SQL Server. Auditing and Advanced Threat Protection will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
                 return
             }
@@ -949,38 +1111,70 @@ function Enable-AdvancedThreatProtectionForSqlServers
                         @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=20;Alignment="left"},
                         @{Expression={$_.IsAtpConfigured};Label="Is Advanced Threat Protection configured?";Width=20;Alignment="left"}
 
-        Write-Host $([Constants]::SingleDashLine)
-
-        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
-
-        if ($($remediatedSqlServers | Measure-Object).Count -gt 0)
+        if($AutoRemediation)
         {
-            Write-Host "Auditing and Advanced Threat Protection successfully enabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $remediatedSqlServers | Format-Table -Property $colsProperty -Wrap
+            if ($($remediatedSqlServers | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $remediatedSqlServersFile = "$($backupFolderPath)\RemediatedSQLServers.csv"
+                $remediatedSqlServers | Export-CSV -Path $remediatedSqlServersFile -NoTypeInformation
+                Write-Host "Auditing and Advanced Threat Protection successfully enabled for the SQL Server and this information has been saved to [$($remediatedSqlServersFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
 
-            # Write this to a file.
-            $remediatedSqlServersFile = "$($backupFolderPath)\RemediatedSQLServers.csv"
-            $remediatedSqlServers | Export-CSV -Path $remediatedSqlServersFile -NoTypeInformation
-            Write-Host "This information has been saved to $($remediatedSqlServersFile)"
+            if ($($skippedSqlServers | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
+                $skippedSqlServers | Export-CSV -Path $skippedSqlServersFile -NoTypeInformation
+                Write-Host "Error enabling Advanced Threat Protection for the SQL Server(s) and this information has been saved to [$($skippedSqlServersFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
         }
-
-        if ($($skippedSqlServers | Measure-Object).Count -gt 0)
+        else
         {
-            Write-Host "Error enabling Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $skippedSqlServers | Format-Table -Property $colsProperty -Wrap
+            Write-Host $([Constants]::DoubleDashLine)
+            Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
 
-            # Write this to a file.
-            $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
-            $skippedSqlServers | Export-CSV -Path $skippedSqlServersFile -NoTypeInformation
-            Write-Host "This information has been saved to $($skippedSqlServersFile)"
+            if ($($remediatedSqlServers | Measure-Object).Count -gt 0)
+            {
+                Write-Host "Auditing and Advanced Threat Protection successfully enabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
+                $remediatedSqlServers | Format-Table -Property $colsProperty -Wrap
+                Write-Host $([Constants]::SingleDashLine)
+
+                # Write this to a file.
+                $remediatedSqlServersFile = "$($backupFolderPath)\RemediatedSQLServers.csv"
+                $remediatedSqlServers | Export-CSV -Path $remediatedSqlServersFile -NoTypeInformation
+                Write-Host "This information has been saved to [$($remediatedSqlServersFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            if ($($skippedSqlServers | Measure-Object).Count -gt 0)
+            {
+                Write-Host "Error enabling Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+                $skippedSqlServers | Format-Table -Property $colsProperty -Wrap
+                Write-Host $([Constants]::SingleDashLine)
+
+                # Write this to a file.
+                $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
+                $skippedSqlServers | Export-CSV -Path $skippedSqlServersFile -NoTypeInformation
+                Write-Host "This information has been saved to [$($skippedSqlServersFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
         }
     }
     else
     {
+        Write-Host "[Step 4 of 4] Enabling Auditing and Advanced Threat Protection for SQL Servers"
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Next steps:"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to enable Auditing and Advanced Threat Protection for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "It is recommended to keep this file and use it for any subsequent roll back post the remediation." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] SQL Server details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "`nRun the same command with -FilePath $($backupFile) and without -DryRun, to enable Auditing and Advanced Threat Protection for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "`n*** It is recommended to keep this file and use it for any subsequent roll back post the remediation. ***" -ForegroundColor $([Constants]::MessageType.Info)
     }
 }
 
@@ -1073,16 +1267,19 @@ function Create-StorageAccountIfNotExists
         $Scope
     )
 
-    Write-Host "Checking if Storage Account - $($StorageAccountName) is present in Resource Group - $($ResourceGroupName)..."
+    Write-Host "Checking if Storage Account: [$($StorageAccountName)] is present in Resource Group - $($ResourceGroupName)..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $storageAccount = Get-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -ErrorAction Continue
 
     if (($storageAccount | Measure-Object).Count -eq 0)
     {
         Write-Host "Storage Account does not exist. Creating a new Storage Account with the specified information..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
         $storageAccount = New-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -SkuName Standard_LRS -Location "East US" -ErrorAction Continue
     }
-
+    Write-Host "Storage Account created" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
     return $storageAccount
 }
 
@@ -1134,14 +1331,17 @@ function Disable-AdvancedThreatProtectionForSqlServers
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable Auditing and Advanced Threat Protection for SQL Servers in Subscription: $($SubscriptionId)"
-
+    Write-Host "[Step 1 of 3] Preparing to disable Auditing and Advanced Threat Protection for SQL Servers in Subscription: [$($SubscriptionId)]"
+    Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
@@ -1155,55 +1355,66 @@ function Disable-AdvancedThreatProtectionForSqlServers
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
+    Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
+    else
+    {
+        Write-Host "[$($context.Account.Id)] is allowed to run this script."  -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
+    }
 
-    Write-Host "*** To disable Auditing and Advanced Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "*** If Advanced Threat Protection for SQL Servers was enabled at the Subscription level, or if contact details were configured in Microsoft Defender for Cloud using this script, Contributor and higher privileges on the Subscription are required for rolling back those changes. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Note: To disable Auditing and Advanced Threat Protection for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "If Advanced Threat Protection for SQL Servers was enabled at the Subscription level, or if contact details were configured in Microsoft Defender for Cloud using this script, Contributor and higher privileges on the Subscription are required for rolling back those changes." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 3] Preparing to fetch all SQL Server details..."
+    Write-Host "[Step 2 of 3] Preparing to fetch all SQL Server details"
+    Write-Host $([Constants]::SingleDashLine)
 
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
-    Write-Host "Fetching all SQL Servers details from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all SQL Servers details from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $sqlServerDetails = Import-Csv -LiteralPath $FilePath
     $validSqlServerDetails = $sqlServerDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ServerName)}
     $totalSqlServers = $($validSqlServerDetails.Count)
-
+    Write-Host "Successfully fetched SQL Server(s) details" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
     if ($totalSqlServers -eq 0)
     {
         Write-Host "No SQL Server found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         break
     }
 
-    Write-Host "Found $($totalSqlServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableThreatDetectionForSQLServers"
 
     if (-not (Test-Path -Path $backupFolderPath))
@@ -1212,15 +1423,16 @@ function Disable-AdvancedThreatProtectionForSqlServers
     }
 
     Write-Host "Auditing and Advanced Threat Protection will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host "*** Any Storage Accounts created to store the audit logs during the remediation, will not be deleted. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "Any Storage Accounts created to store the audit logs during the remediation, will not be deleted." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "It is recommended to examine and clean them up manually, if required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
 
     if (-not $Force)
     {
         Write-Host "Do you want to disable Auditing and Advanced Threat Protection for all SQL Servers?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
         $userInput = Read-Host -Prompt "(Y|N)"
-
+        Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
             Write-Host "Auditing and Advanced Threat Protection will not be disabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
@@ -1230,10 +1442,11 @@ function Disable-AdvancedThreatProtectionForSqlServers
     else
     {
         Write-Host "'Force' flag is provided. Auditing and Advanced Threat Protection will be disabled for SQL Servers." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Disabling Auditing and Advanced Threat Protection for SQL Servers..." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "[Step 3 of 3] Disabling Auditing and Advanced Threat Protection for SQL Servers"
+    Write-Host $([Constants]::SingleDashLine)
 
     # We are relying on the state from the dry run output, i.e. before the remediation.
     # If any email addresses were configured or email notifications were enabled for Admins and Subscription Owners were enabled, these were done prior to the remediation.
@@ -1243,8 +1456,9 @@ function Disable-AdvancedThreatProtectionForSqlServers
 
     if ($isAnyEmailAddressConfiguredAtSubscriptionLevel -eq $true -or $isEmailAccountAdminsConfiguredAtSubscriptionLevel -eq $true)
     {
-        Write-Host "Contact details were already configured at the Subscription level. These were not configured during the remediation." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Contact details were already configured at the Subscription level. These were not configured during the remediation." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "These changes will not be rolled back." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
@@ -1266,16 +1480,19 @@ function Disable-AdvancedThreatProtectionForSqlServers
             if (($isContactRemoved | Measure-Object).Count -eq 0)
             {
                 Write-Host "Contact details of the current user successfully removed from Microsoft Defender for Cloud." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
             else
             {
-                Write-Host "*** Error removing contact details from Microsoft Defender for Cloud. Please remove them manually. ***" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error removing contact details from Microsoft Defender for Cloud. Please remove them manually." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
         else
         {
             # No contact details were configured during the remediation.
             Write-Host "No contact details were configured during the remediation. Hence, there are no contact details configurations that are to be rolled back at the Subscription level." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
 
@@ -1283,8 +1500,9 @@ function Disable-AdvancedThreatProtectionForSqlServers
 
     if ($isAtpEnabledAtSubscriptionLevel -eq $true)
     {
-        Write-Host "Advanced Threat Protection for SQL Servers was already configured at the Subscription level. These were not configured during the remediation." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Advanced Threat Protection for SQL Servers was already configured at the Subscription level. These were not configured during the remediation." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "These changes will not be rolled back." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
@@ -1300,16 +1518,19 @@ function Disable-AdvancedThreatProtectionForSqlServers
             if (-not [String]::IsNullOrWhiteSpace($sqlServerPricingDetails) -and $sqlServerPricingDetails.PricingTier -eq "Free")
             {
                 Write-Host "Advanced Threat Protection for SQL Servers on the Subscription successfully disabled." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
             else
             {
-                Write-Host "*** Error disabling Advanced Threat Protection for SQL Servers on the Subscription. ***" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error disabling Advanced Threat Protection for SQL Servers on the Subscription." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
         else
         {
             # Advanced Threat Protection for SQL Servers was not enabled on the Subscription during the remediation.
             Write-Host "Advanced Threat Protection for SQL Servers was not enabled on the Subscription during the remediation. Hence, there is no rollback required at Subscription level." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
 
@@ -1333,7 +1554,8 @@ function Disable-AdvancedThreatProtectionForSqlServers
             $isAuditingEnabled = $sqlServerInstance.IsAuditingEnabled
             $isAtpConfigured = $sqlServerInstance.IsAtpConfigured
 
-            Write-Host "Rolling back any changes made to SQL Server: Resource ID - $($sqlServerInstance.ResourceId)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Rolling back any changes made to SQL Server having Resource ID: [$($sqlServerInstance.ResourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
 
             # The dry run output from prior to the remediation is used as a reference for rollback.
             # If Auditing is disabled in that output, it means, it was enabled during the remediation and this needs to be rolled back now.
@@ -1435,7 +1657,9 @@ function Disable-AdvancedThreatProtectionForSqlServers
 
             if ($isAuditingEnabled -eq $false -or $isAtpConfigured -eq $false)
             {
-                 $rolledBackSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
+                Write-Host "Successfully rolled back Auditing and Advanced Threat Protection on the SQL Server having Resource ID: [$($sqlServerInstance.ResourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+                $rolledBackSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
                                                                              @{N='ResourceGroupName';E={$sqlServerInstance.ResourceGroupName}},
                                                                              @{N='ServerName';E={$sqlServerInstance.ServerName}},
                                                                              @{N='ResourceType';E={$sqlServerInstance.ResourceType}},
@@ -1445,6 +1669,8 @@ function Disable-AdvancedThreatProtectionForSqlServers
             }
             else
             {
+                Write-Host "Error rolling back Auditing and Advanced Threat Protection on the SQL Server having Resource ID: [$($sqlServerInstance.ResourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
                 $skippedSqlServers += $sqlServerInstance | Select-Object @{N='ResourceId';E={$sqlServerInstance.ResourceId}},
                                                                          @{N='ResourceGroupName';E={$sqlServerInstance.ResourceGroupName}},
                                                                          @{N='ServerName';E={$sqlServerInstance.ServerName}},
@@ -1464,10 +1690,10 @@ function Disable-AdvancedThreatProtectionForSqlServers
                                                                      @{N='IsAuditingEnabled';E={$isAuditingEnabled}},
                                                                      @{N='IsAtpConfigured';E={$isAtpConfigured}}
 
-            Write-Host "Error rolling back Auditing and Advanced Threat Protection on the SQL Server. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping this SQL Server. The resource is either partially rolled back or not rolled back at all." -ForegroundColor $([Constants]::MessageType.Info)
-            Write-Host "It is recommended to manually roll back these changes." -ForegroundColor $([Constants]::MessageType.Info)
-            return
+            Write-Host "Error rolling back Auditing and Advanced Threat Protection on the SQL Server. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Skipping this SQL Server. The resource is either partially rolled back or not rolled back at all." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "It is recommended to manually roll back these changes." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
 
@@ -1478,7 +1704,7 @@ function Disable-AdvancedThreatProtectionForSqlServers
                     @{Expression={$_.IsAuditingEnabled};Label="Is Auditing enabled?";Width=10;Alignment="left"},
                     @{Expression={$_.IsAtpConfigured};Label="Is Advanced Threat Protection configured?";Width=20;Alignment="left"}
 
-    Write-Host $([Constants]::SingleDashLine)
+    Write-Host $([Constants]::DoubleDashLine)
 
     Write-Host "RollBack Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -1486,22 +1712,24 @@ function Disable-AdvancedThreatProtectionForSqlServers
     {
         Write-Host "Auditing and Advanced Threat Protection successfully disabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
         $rolledBackSqlServers | Format-Table -Property $colsProperty -Wrap
-
+        Write-Host $([Constants]::SingleDashLine)
         # Write this to a file.
         $rolledBackSqlServersFile = "$($backupFolderPath)\RolledBackSQLServers.csv"
         $rolledBackSqlServers | Export-CSV -Path $rolledBackSqlServersFile -NoTypeInformation
-        Write-Host "This information has been saved to $($rolledBackSqlServersFile)"
+        Write-Host "This information has been saved to [$($rolledBackSqlServersFile)]"
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     if ($($skippedSqlServers | Measure-Object).Count -gt 0)
     {
         Write-Host "Error disabling Auditing and Advanced Threat Protection for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
         $skippedSqlServers |  Format-Table -Property $colsProperty -Wrap
-
+        Write-Host $([Constants]::SingleDashLine)
         # Write this to a file.
         $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
         $skippedSqlServers | Export-CSV -Path $skippedSqlServersFile -NoTypeInformation
-        Write-Host "This information has been saved to $($skippedSqlServersFile)"
+        Write-Host "This information has been saved to [$($skippedSqlServersFile)]"
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 

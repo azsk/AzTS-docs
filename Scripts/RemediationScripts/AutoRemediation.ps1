@@ -100,9 +100,9 @@ Enter the choice (1/2)";
             }
 
             # variable to track unexecuted resources
-            $skippedResources = @();
             foreach($control in $controlRemediationList)
             { 
+                $skippedResources = @();
                 if(($remediationLevel -ne '1') -and ($remediationLevel -ne '2'))
                 {
                     break;
@@ -140,8 +140,24 @@ Enter the choice (1/2)";
                 
                 [string]$timeStampString = $timestamp
                 . ("./" + "RemediationScripts\" + $control.LoadCommand)
-                $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-
+                $commandString =""
+                if($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous"){
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_SQLDatabase_AuthZ_Use_AAD_Admin") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }
                 function runCommand($command) {
                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                     else { Invoke-Expression $command }
