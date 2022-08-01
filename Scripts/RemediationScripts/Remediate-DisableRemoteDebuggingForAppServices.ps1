@@ -328,7 +328,7 @@ function Disable-RemoteDebuggingForAppServices
         break
     }
   
-    Write-Host "Found $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
     # Includes App Services where Remote Debugging is disabled on all slots - production slot and all non-production slots.
@@ -387,7 +387,7 @@ function Disable-RemoteDebuggingForAppServices
             {
                 $appServicesWithRemoteDebuggingDisabled += $appServiceResource
                 Write-Host "Remote Debugging is disabled on the production slot and all non-production slots in the App Service." -ForegroundColor $([Constants]::MessageType.Update)
-                return
+                continue
             }
 
             if (-not $isRemoteDebuggingDisabledOnProductionSlot)
@@ -532,7 +532,7 @@ function Disable-RemoteDebuggingForAppServices
                         Write-Host "Error disabling remote debugging on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host "Skipping this App Service. Remote debugging will not be disabled for any of the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
-                        return;
+                        continue;
                     }
                 }
                 catch
@@ -546,7 +546,7 @@ function Disable-RemoteDebuggingForAppServices
                     Write-Host "Error disabling remote debugging on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this App Service. Remote debugging will not be disabled for any of the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
-                    return
+                    continue
                 }
             }
 
@@ -608,9 +608,9 @@ function Disable-RemoteDebuggingForAppServices
                 $appServicesSkipped += $appService
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.StorageAccountName))
-                $logResource.Add("Reason", "Error enabling HTTPS on the non-production slots: $($nonProductionSlotsSkippedStr).")
+                $logResource.Add("Reason", "Error disabling remote debugging for these non-production slots: [$($nonProductionSlotsSkippedStr)]")
                 $logSkippedResources += $logResource
-                Write-Host "Error disabling remote debugging for these non-production slots: $($nonProductionSlotsSkippedStr)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error disabling remote debugging for these non-production slots: [$($nonProductionSlotsSkippedStr)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 
             }
@@ -644,7 +644,8 @@ function Disable-RemoteDebuggingForAppServices
                 # Write this to a file.
                 $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForDiabledRemoteDebugging.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
-                Write-Host "The information related to App Service(s) where Remote debugging successfully disabled has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "The information related to App Service(s) where Remote debugging successfully disabled has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if ($($appServicesSkipped | Measure-Object).Count -gt 0)
@@ -652,7 +653,8 @@ function Disable-RemoteDebuggingForAppServices
                 # Write this to a file.
                 $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForDisableRemoteDebugging.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-                Write-Host "The information related to App Service(s) where Remote debugging not disabled has been saved to $($appServicesSkippedFile)"
+                Write-Host "The information related to App Service(s) where Remote debugging not disabled has been saved to $($appServicesSkippedFile)" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }else{
             Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -667,7 +669,7 @@ function Disable-RemoteDebuggingForAppServices
                 $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForDiabledRemoteDebugging.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
                 Write-Host "This information has been saved to $($appServicesRemediatedFile)"
-                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
             }
 
             if ($($appServicesSkipped | Measure-Object).Count -gt 0)
@@ -678,7 +680,7 @@ function Disable-RemoteDebuggingForAppServices
                 # Write this to a file.
                 $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForDisableRemoteDebugging.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to $($appServicesSkippedFile)"
+                Write-Host "This information has been saved to $($appServicesSkippedFile)" -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
         if($AutoRemediation){
@@ -695,14 +697,13 @@ function Disable-RemoteDebuggingForAppServices
     }
     else
     {
-        Write-Host "[Step 3 of 3] Backing up App Services details to $($backupFolderPath)"
+        Write-Host "[Step 3 of 3] Backing up App Services details to [$($backupFolderPath)]"
         Write-Host $([Constants]::SingleDashLine)
         # Backing up App Services details.
         $backupFile = "$($backupFolderPath)\AppServicesWithoutRemoteDebuggingDisabled.csv"
         $appServicesWithoutRemoteDebuggingDisabled | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "**Next steps:** App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Next steps: App Services details have been backed up to [$($backupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to disable Remote Debugging for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
     }   
 }
@@ -806,7 +807,7 @@ function Enable-RemoteDebuggingForAppServices
 
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
@@ -894,7 +895,7 @@ function Enable-RemoteDebuggingForAppServices
                     $appServicesSkipped += $appService
                     Write-Host "Error enabling Remote Debugging on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this App Service. If required, manually enable Remote Debugging on the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
-                    return
+                    continue;
                 }
             }
 
@@ -905,7 +906,7 @@ function Enable-RemoteDebuggingForAppServices
             $appService | Add-Member -NotePropertyName IsRemoteDebuggingDisabledOnAnyNonProductionSlot -NotePropertyValue $false
             $appService | Add-Member -NotePropertyName NonProductionSlotsWithRemoteDebuggingDisabled -NotePropertyValue ([String]::Empty)
 
-            Write-Host "Fetching non-production slot configurations for App Service: Resource ID - [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             $nonProductionSlotConfigurations = @()
@@ -1005,7 +1006,7 @@ function Enable-RemoteDebuggingForAppServices
                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                         @{N='IsRemoteDebuggingDisabledOnProductionSlot';E={$_.IsRemoteDebuggingDisabledOnProductionSlot}},
                                                                         @{N='IsRemoteDebuggingDisabledOnAnyNonProductionSlot';E={$_.IsRemoteDebuggingDisabledOnAnyNonProductionSlot}},
-                                                                        @{N='NonProductionSlotsWithoutRemoteDebuggingDisabled';E={$_.NonProductionSlotsWithRemoteDebuggingDisabled}},
+                                                                        @{N='NonProductionSlotsWithoutRemoteDebuggingDisabled';E={$_.NonProductionSlotsWithoutRemoteDebuggingDisabled}},
                                                                         @{N='NonProductionSlotsSkipped';E={$_.NonProductionSlotsSkipped}}
             }
             else
@@ -1015,7 +1016,7 @@ function Enable-RemoteDebuggingForAppServices
                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                         @{N='IsRemoteDebuggingDisabledOnProductionSlot';E={$_.IsRemoteDebuggingDisabledOnProductionSlot}},
                                                                         @{N='IsRemoteDebuggingDisabledOnAnyNonProductionSlot';E={$_.IsRemoteDebuggingDisabledOnAnyNonProductionSlot}},
-                                                                        @{N='NonProductionSlotsWithoutRemoteDebuggingDisabled';E={$_.NonProductionSlotsWithRemoteDebuggingDisabled}},
+                                                                        @{N='NonProductionSlotsWithoutRemoteDebuggingDisabled';E={$_.NonProductionSlotsWithoutRemoteDebuggingDisabled}},
                                                                         @{N='NonProductionSlotsSkipped';E={$_.NonProductionSlotsSkipped}}
             }
         }
@@ -1026,7 +1027,7 @@ function Enable-RemoteDebuggingForAppServices
                                                                 @{N='ResourceName';E={$resourceName}},
                                                                 @{N='IsRemoteDebuggingDisabledOnProductionSlot';E={$isRemoteDebuggingDisabledOnProductionSlot}},
                                                                 @{N='IsRemoteDebuggingDisabledOnAnyNonProductionSlot';E={$isRemoteDebuggingDisabledOnAnyNonProductionSlot}},
-                                                                @{N='NonProductionSlotsWithoutRemoteDebuggingDisabled';E={$nonProductionSlotsWithRemoteDebuggingDisabled}},
+                                                                @{N='NonProductionSlotsWithoutRemoteDebuggingDisabled';E={$nonProductionSlotsWithoutRemoteDebuggingDisabled}},
                                                                 @{N='NonProductionSlotsSkipped';E={$nonProductionSlotsSkipped}}
         }
     }
