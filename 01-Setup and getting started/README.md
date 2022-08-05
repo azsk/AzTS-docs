@@ -434,10 +434,6 @@ To view scan result in AzTS UI:
 4. Update org-subscription mapping for your subscription(s) in AzTS UI. By default, there is no service mapping for your subscription. Therefore, you see the 'Unknown' value in the Service Filter dropdown in AzTS UI. To add service mapping, follow the steps provided here: 
     - [Step 1: Prepare your org-subscription mapping](/02-Monitoring%20security%20using%20AzTS/README.md#step-1-prepare-your-org-subscription-mapping)
     - [Step 2: Upload your mapping to the Log Analytics (LA) workspace](/02-Monitoring%20security%20using%20AzTS/README.md#step-2-upload-your-mapping-to-the-log-analytics-la-workspace) 
-  5. Ensure to review role assignemnts periodically for critical resources listed below as these would contain scan data:
-    1. Storage account in AzTS host RG 
-    2. Log Analytics workspace in AzTS host RG
-  Also, as a good security practice, consider rotating keys for these resources periodically.
 
 
 [Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
@@ -843,6 +839,13 @@ After ATS_04_WorkItemScheduler completes pushing the messages in the queue, Work
 &nbsp;&nbsp;<img src="../Images/13_TSS_UIOverview.png" width="80%">
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+
+> **Note:** We recommend reviewing role assignemnts periodically for critical resources like:
+1. Subscriptions and resource groups containing managed identity and other AzTS resources.
+2. Storage account in AzTS host resource group (as this contains scan results data)
+3. Log Analytics workspace in AzTS host resource group (as this contains scan results data)
+
+  Also, as a good security practice, consider rotating keys for Storage account and  Log Analytics workspacere periodically. Once Log Analytics workspace key is rotated, Power BI dashboards used for monitoring would need updating and re-publishing.
 
 ## **4. Log Analytics Visualization**
 
