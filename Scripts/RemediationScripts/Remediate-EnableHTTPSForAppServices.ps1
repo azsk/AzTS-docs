@@ -215,7 +215,7 @@ function Enable-HttpsForAppServices
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            return
         }
     }
 
@@ -225,7 +225,7 @@ function Enable-HttpsForAppServices
     if ([String]::IsNullOrWhiteSpace($context))
     {
         Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        return
     }
 
     # Setting up context for the current Subscription.
@@ -259,7 +259,7 @@ function Enable-HttpsForAppServices
         {
             Write-Host "Error: File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
-            break
+            return
         }
         Write-Host "Fetching all App Services failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
@@ -271,7 +271,7 @@ function Enable-HttpsForAppServices
         {
             Write-Host "No app service(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
-            break
+            return
         }
         $validResources | ForEach-Object { 
             try
@@ -289,7 +289,7 @@ function Enable-HttpsForAppServices
                 $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
-                break
+                return
             }
         }
 
@@ -309,7 +309,7 @@ function Enable-HttpsForAppServices
             if (-not (Test-Path -Path $FilePath))
             {
                 Write-Host "Input file [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                break
+                return
             }
 
             Write-Host "Fetching all App Services from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -339,10 +339,10 @@ function Enable-HttpsForAppServices
     if ($totalAppServices -eq 0)
     {
         Write-Host "No App Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        return
     }
   
-    Write-Host "Found $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
     # Includes App Services where HTTPS is enabled on all slots - production slot and all non-production slots.
@@ -362,13 +362,13 @@ function Enable-HttpsForAppServices
 
         try
         {
-            Write-Host "Fetching App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching App Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $isHttpsEnabledOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).HttpsOnly
             Write-Host "App Service Configurations successfully fetched" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
-            Write-Host "Fetching non-production slot configurations for App Service: Resource ID - [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all non-production slots for this App Service.
             $nonProductionSlotConfigurations = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName
@@ -380,47 +380,53 @@ function Enable-HttpsForAppServices
             if ($isHttpsEnabledOnProductionSlot -and $isHttpsEnabledOnAllNonProductionSlots)
             {
                 $appServicesWithHttpsEnabled += $appServiceResource
-                Write-Host "HTTPS is enabled on the production slot and all non-production slots in the App Service." -ForegroundColor $([Constants]::MessageType.Update)
-                return
-            }
-
-            if (-not $isHttpsEnabledOnProductionSlot)
-            {
-                Write-Host "HTTPS is not enabled on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "HTTPS is enabled on the production slot and all non-production slots in the App Service: Resource ID: [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Skipping this App Service..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","HTTPS is enabled on the production slot and all non-production slots in the App Service.")    
+                $logSkippedResources += $logResource
             }
-
-            # Holds the list of non-production slots without HTTPS enabled
-            $nonProductionSlotsWithoutHttpsEnabled = @()
-            $nonProductionSlotsWithoutHttpsEnabledStr = [String]::Empty
-
-            if (-not $isHttpsEnabledOnAllNonProductionSlots)
+            else 
             {
-                $nonProductionSlotsWithoutHttpsEnabled = $($nonProductionSlotConfigurations | Where-Object { $_.HttpsOnly -eq $false }).Name
-                $nonProductionSlotsWithoutHttpsEnabledStr = $($nonProductionSlotsWithoutHttpsEnabled -join ', ')
-                Write-Host "HTTPS is not enabled on these non-production slots: $($nonProductionSlotsWithoutHttpsEnabledStr)" -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-            }
+                if (-not $isHttpsEnabledOnProductionSlot)
+                {
+                    Write-Host "HTTPS is not enabled on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
 
-            $appServicesWithoutHttpsEnabled += $appServiceResource | Select-Object @{N='ResourceID';E={$resourceId}},
-                                                                                   @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                                   @{N='ResourceName';E={$resourceName}},
-                                                                                   @{N='IsHTTPSEnabledOnProductionSlot';E={$isHttpsEnabledOnProductionSlot}},
-                                                                                   @{N='IsHTTPSEnabledOnAllNonProductionSlots';E={$isHttpsEnabledOnAllNonProductionSlots}},
-                                                                                   @{N='NonProductionSlotsWithoutHTTPSEnabled';E={$nonProductionSlotsWithoutHttpsEnabledStr}}
+                # Holds the list of non-production slots without HTTPS enabled
+                $nonProductionSlotsWithoutHttpsEnabled = @()
+                $nonProductionSlotsWithoutHttpsEnabledStr = [String]::Empty
+
+                if (-not $isHttpsEnabledOnAllNonProductionSlots)
+                {
+                    $nonProductionSlotsWithoutHttpsEnabled = $($nonProductionSlotConfigurations | Where-Object { $_.HttpsOnly -eq $false }).Name
+                    $nonProductionSlotsWithoutHttpsEnabledStr = $($nonProductionSlotsWithoutHttpsEnabled -join ', ')
+                    Write-Host "HTTPS is not enabled on these non-production slots: [$($nonProductionSlotsWithoutHttpsEnabledStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
+
+                $appServicesWithoutHttpsEnabled += $appServiceResource | Select-Object @{N='ResourceID';E={$resourceId}},
+                                                                                    @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                                    @{N='ResourceName';E={$resourceName}},
+                                                                                    @{N='IsHTTPSEnabledOnProductionSlot';E={$isHttpsEnabledOnProductionSlot}},
+                                                                                    @{N='IsHTTPSEnabledOnAllNonProductionSlots';E={$isHttpsEnabledOnAllNonProductionSlots}},
+                                                                                    @{N='NonProductionSlotsWithoutHTTPSEnabled';E={$nonProductionSlotsWithoutHttpsEnabledStr}}
+            }
         }
         catch
         {
             $appServicesSkipped += $appServiceResource
-            Write-Host "Error fetching App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            if($AutoRemediation){
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","Encountered error while fetching app service configuration")    
-                $logSkippedResources += $logResource
-                Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)
-            }
+            Write-Host "Error fetching App Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            $logResource = @{}
+            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+            $logResource.Add("ResourceName",($_.ResourceName))
+            $logResource.Add("Reason","Encountered error while fetching app service configuration")    
+            $logSkippedResources += $logResource
+            Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)
         }
     }
 
@@ -428,8 +434,21 @@ function Enable-HttpsForAppServices
 
     if ($totalAppServicesWithoutHttpsEnabled -eq 0)
     {
-        Write-Host "No App Services found with HTTPS not enabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host "No App Service(s) found with HTTPS not enabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
+        if($AutoRemediation -and ($appServicesWithHttpsEnabled|Measure-Object).Count -gt 0) 
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
+        return
     }
 
     Write-Host "Found [$($totalAppServicesWithoutHttpsEnabled)] out of [$($totalAppServices)] App Service(s) with HTTPS disabled." -ForegroundColor $([Constants]::MessageType.Update)
@@ -455,24 +474,30 @@ function Enable-HttpsForAppServices
 
         Write-Host "HTTPS will be enabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-        if (-not $Force)
+        if(-not $AutoRemediation)
         {
-            Write-Host "Do you want to enable HTTPS on the production slot and all non-production slots for all App Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-            
-            $userInput = Read-Host -Prompt "(Y|N)"
-
-            if($userInput -ne "Y")
+            if (-not $Force)
             {
-                Write-Host "HTTPS will not be enabled for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
+                Write-Host "Do you want to enable HTTPS on the production slot and all non-production slots for all App Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                
+                $userInput = Read-Host -Prompt "(Y|N)"
+                Write-Host $([Constants]::SingleDashLine)
+                if($userInput -ne "Y")
+                {
+                    Write-Host "HTTPS will not be enabled for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    return
+                }
+                Write-Host "User has provided consent to enable HTTPS on the production slot and all non-production slots for all App Services" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+            else
+            {
+                Write-Host "'Force' flag is provided. HTTPS will be enabled on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
-        else
-        {
-            Write-Host "'Force' flag is provided. HTTPS will be enabled on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host $([Constants]::SingleDashLine)
-        }
-        Write-Host $([Constants]::SingleDashLine)
+
         Write-Host "[Step 3 of 3] Enabling HTTPS for App Services"
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
@@ -488,7 +513,7 @@ function Enable-HttpsForAppServices
             $isHttpsEnabledOnAllNonProductionSlots = $_.IsHTTPSEnabledOnAllNonProductionSlots
             $nonProductionSlotsWithoutHttpsEnabled = $_.NonProductionSlotsWithoutHTTPSEnabled
 
-            Write-Host "Enabling HTTPS for App Service: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Enabling HTTPS for App Service: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $nonProductionSlotsWithoutHttpsEnabledStr = $nonProductionSlotsWithoutHttpsEnabled -join ', '
 
@@ -502,7 +527,11 @@ function Enable-HttpsForAppServices
                 {
                     Write-Host "Enabling HTTPS on the production slot..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
-                    $isHttpsEnabledOnProductionSlot = $(Set-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -HttpsOnly $true).HttpsOnly
+                    $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
+                    $resource.HttpsOnly = $true
+                    # Holding output of set command to avoid unnecessary logs.
+                    $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
+                    $isHttpsEnabledOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).HttpsOnly
 
                     if ($isHttpsEnabledOnProductionSlot)
                     {
@@ -519,13 +548,13 @@ function Enable-HttpsForAppServices
                         $appServicesSkipped += $appService
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                        $logResource.Add("ResourceName",($_.StorageAccountName))
+                        $logResource.Add("ResourceName",($_.ResourceName))
                         $logResource.Add("Reason", "Error enabling HTTPS on the production slot. Skipping this App Service. HTTPS will not be enabled for any of the non-production slots.")
                         $logSkippedResources += $logResource
                         Write-Host "Error enabling HTTPS on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host "Skipping this App Service. HTTPS will not be enabled for any of the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
-                        return;
+                        return
                     }
                 }
                 catch
@@ -533,7 +562,7 @@ function Enable-HttpsForAppServices
                     $appServicesSkipped += $appService
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.StorageAccountName))
+                    $logResource.Add("ResourceName",($_.ResourceName))
                     $logResource.Add("Reason", "Error enabling HTTPS on the production slot. Skipping this App Service. HTTPS will not be enabled for any of the non-production slots.")
                     $logSkippedResources += $logResource
                     Write-Host "Error enabling HTTPS on the production slot. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -556,9 +585,14 @@ function Enable-HttpsForAppServices
 
                     try
                     {
-                        Write-Host "Enabling HTTPS on the non-production slot: $($slot)..." -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host "Enabling HTTPS on the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
                         Write-Host $([Constants]::SingleDashLine)
-                        $isHttpsEnabledOnNonProductionSlot = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName -HttpsOnly $true).HttpsOnly
+                        $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
+                        $resource.HttpsOnly = $true
+                        
+                        # Holding output of set command to avoid unnecessary logs.
+                        $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
+                        $isHttpsEnabledOnNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).HttpsOnly
 
                         if ($isHttpsEnabledOnNonProductionSlot)
                         {
@@ -575,7 +609,7 @@ function Enable-HttpsForAppServices
                     catch
                     {
                         $nonProductionSlotsSkipped += $slot
-                        Write-Host "Error enabling HTTPS on the non-production slot. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Error enabling HTTPS on the non-production slot. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                 }
@@ -599,8 +633,9 @@ function Enable-HttpsForAppServices
             else
             {
                 $appServicesSkipped += $appService
+                $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.StorageAccountName))
+                $logResource.Add("ResourceName",($_.ResourceName))
                 $logResource.Add("Reason", "Error enabling HTTPS on the non-production slots: $($nonProductionSlotsSkippedStr).")
                 $logSkippedResources += $logResource
                 Write-Host "Error enabling HTTPS for these non-production slots: $($nonProductionSlotsSkippedStr)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -609,16 +644,14 @@ function Enable-HttpsForAppServices
             }
         }
 
-        Write-Host $([Constants]::SingleDashLine)
-
         if (($appServicesRemediated | Measure-Object).Count -eq $totalAppServicesWithoutHttpsEnabled)
         {
-            Write-Host "HTTPS successfully enabled on the production slot and all non-production slots for all $($totalAppServicesWithoutHttpsEnabled) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "HTTPS successfully enabled on the production slot and all non-production slots for all [$($totalAppServicesWithoutHttpsEnabled)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         else
         {
-            Write-Host "HTTPS successfully enabled on the production slot and all non-production slots for $($($appServicesRemediated | Measure-Object).Count) out of $($totalAppServicesWithoutHttpsEnabled) App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "HTTPS successfully enabled on the production slot and all non-production slots for [$($($appServicesRemediated | Measure-Object).Count)] out of [$($totalAppServicesWithoutHttpsEnabled)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -637,13 +670,15 @@ function Enable-HttpsForAppServices
             {
                 $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForEnableHTTPS.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
-                Write-Host "The information related to App Service(s) where HTTPS successfully enabled has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "The information related to App Service(s) where HTTPS successfully enabled has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
             if ($($appServicesSkipped | Measure-Object).Count -gt 0)
             {
                 $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForEnableHTTPS.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-                Write-Host "The information related to App Service(s) where HTTPS was not successfully enabled has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "The information related to App Service(s) where HTTPS was not successfully enabled has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
         else
@@ -654,23 +689,25 @@ function Enable-HttpsForAppServices
             {
                 Write-Host "HTTPS successfully enabled for the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
                 $appServicesRemediated | Format-Table -Property $colsProperty -Wrap
-
+                Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForEnableHTTPS.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($appServicesRemediatedFile)]"
-                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "This information has been saved to [$($appServicesRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if ($($appServicesSkipped | Measure-Object).Count -gt 0)
             {
                 Write-Host "Error enabling HTTPS for the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $appServicesSkipped | Format-Table -Property $colsProperty -Wrap
-                
+                Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForEnableHTTPS.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to $($appServicesSkippedFile)"
+                Write-Host "This information has been saved to [$($appServicesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
         if($AutoRemediation){
@@ -680,6 +717,7 @@ function Enable-HttpsForAppServices
                 if($logControl.ControlId -eq $controlIds){
                     $logControl.RemediatedResources=$logRemediatedResources
                     $logControl.SkippedResources=$logSkippedResources
+                    $logControl.RollbackFile = $appServicesRemediatedFile
                 }
             }
             $log | ConvertTo-json -depth 100  | Out-File $logFile
@@ -687,15 +725,15 @@ function Enable-HttpsForAppServices
     }
     else
     {
-        Write-Host "[Step 3 of 3] Backing up App Services details to $($backupFolderPath)"
+        Write-Host "[Step 3 of 3] Backing up App Services details"
         Write-Host $([Constants]::SingleDashLine)
         # Backing up App Services details.
         $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
         $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "**Next steps:** App Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "App Services details have been backed up to [$($backupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable HTTPS for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 
@@ -763,22 +801,23 @@ function Disable-HttpsForAppServices
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable HTTPS for App Services in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 3] Preparing to disable HTTPS for App Services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
+
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites"
+            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            return
         }
     }
 
@@ -788,7 +827,7 @@ function Disable-HttpsForAppServices
     if ([String]::IsNullOrWhiteSpace($context))
     {
         Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        return
     }
 
     # Setting up context for the current Subscription.
@@ -803,25 +842,25 @@ function Disable-HttpsForAppServices
     Write-Host "To disable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
-    
+    Write-Host "[Step 2 of 3] Preparing to fetch all App Services"
+    Write-Host $([Constants]::SingleDashLine)
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        return
     }
 
-    Write-Host "Fetching all App Services from [$($FilePath)\..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all App Services from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $appServiceDetails = Import-Csv -LiteralPath $FilePath
     $validAppServiceDetails = $appServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
 
-    $totalAppServices = $($validAppServiceDetails.Count)
+    $totalAppServices = $($validAppServiceDetails|Measure-Object).Count
 
     if ($totalAppServices -eq 0)
     {
         Write-Host "No App Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        return
     }
 
     Write-Host "Found [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -847,21 +886,24 @@ function Disable-HttpsForAppServices
     else
     {
         $slotsBeingRolledBackMessage += " and all non-production slots"
-        Write-Host "'ExcludeNonProductionSlots' flag is not provided. HTTPS will be disabled on ALL non-production slots in addition to the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'ExcludeNonProductionSlots' flag is not provided. HTTPS will be disabled on all non-production slots in addition to the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
     
     if (-not $Force)
     {
-        Write-Host "Do you want to disable HTTPS on the $($slotsBeingRolledBackMessage) for all App Services?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to disable HTTPS on the $($slotsBeingRolledBackMessage) for all App Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
-
+        Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
             Write-Host "HTTPS will not be disabled for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            break
+            Write-Host $([Constants]::SingleDashLine)
+            return
         }
+        Write-Host "User has provided consent to disable HTTPS on the $($slotsBeingRolledBackMessage) for all App Services" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
@@ -869,8 +911,8 @@ function Disable-HttpsForAppServices
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "[Step 3 of 3] Disabling HTTPS for App Services..." -ForegroundColor $([Constants]::MessageType.Warning)
-
+    Write-Host "[Step 3 of 3] Disabling HTTPS for App Services" 
+    Write-Host $([Constants]::SingleDashLine)
     # Includes App Services, to which, previously made changes were successfully rolled back.
     $appServicesRolledBack = @()
 
@@ -885,19 +927,23 @@ function Disable-HttpsForAppServices
 
         try
         {
-            Write-Host "Fetching App Service configuration: Resource ID - [$($resourceId)], Resource Group Name - [$($resourceGroupName)], Resource Name - [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching App Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-            $isHttpsEnabledOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -ErrorAction SilentlyContinue).HttpsOnly
+            $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
+            $isHttpsEnabledOnProductionSlot = $resource.HttpsOnly
 
             if (-not $isHttpsEnabledOnProductionSlot)
             {
-                Write-Host "HTTPS is already disabled on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "HTTPS is already disabled on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "Skipping this App Service. If required, manually disable HTTPS on the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
                 return
             }
+            $resource.HttpsOnly = $false
 
-            $isHttpsEnabledOnProductionSlot = $(Set-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -HttpsOnly $false).HttpsOnly
+            # Holding output of set command to avoid unnecessary logs.
+            $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
+            $isHttpsEnabledOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName -ErrorAction SilentlyContinue).HttpsOnly
 
             if ($isHttpsEnabledOnProductionSlot)
             {
@@ -917,6 +963,7 @@ function Disable-HttpsForAppServices
             {
                 $appServicesRolledBack += $appService
                 Write-Host "Changes previously made to the non-production slots will not be rolled back." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
                 return
             }
 
@@ -925,7 +972,7 @@ function Disable-HttpsForAppServices
             $appService | Add-Member -NotePropertyName NonProductionSlotsWithHttpsEnabled -NotePropertyValue ([String]::Empty)
 
             # Disable HTTPS on all non-production slots.
-            Write-Host "Fetching non-production slot configurations for App Service: Resource ID - [$($resourceId)]"
+            Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all non-production slots for this App Service.
             $nonProductionSlotConfigurations = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName
@@ -937,6 +984,7 @@ function Disable-HttpsForAppServices
             {
                 $appServicesRolledBack += $appService
                 Write-Host "HTTPS is not enabled on any of the non-production slots in the App Service." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
                 return
             }
 
@@ -962,9 +1010,14 @@ function Disable-HttpsForAppServices
                 # Slot names are of the form: app-service-name/slot-name
                 $slotName = $slot.Split('/')[1]
 
-                Write-Host "Disabling HTTPS on the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Disabling HTTPS on the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
-                $isHttpsEnabledOnNonProductionSlot = $(Set-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName -HttpsOnly $false).HttpsOnly
+                $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
+                $resource.HttpsOnly = $false
+                
+                # Holding output of set command to avoid unnecessary logs.
+                $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
+                $isHttpsEnabledOnNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).HttpsOnly
 
                 if ($isHttpsEnabledOnNonProductionSlot)
                 {
@@ -994,26 +1047,26 @@ function Disable-HttpsForAppServices
             else
             {
                 $appServicesSkipped += $appService
-                Write-Host "Error disabling HTTPS for these non-production slots: $($nonProductionSlotsSkippedStr)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error disabling HTTPS for these non-production slots: [$($nonProductionSlotsSkippedStr)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
         catch
         {
             $appServicesSkipped += $appService
-            Write-Host "Error disabling HTTPS for the App Service. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error disabling HTTPS for the App Service. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
 
     if (($appServicesSkipped | Measure-Object).Count -eq 0)
     {
-        Write-Host "HTTPS successfully disabled on the $($slotsBeingRolledBackMessage) for all $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "HTTPS successfully disabled on the $($slotsBeingRolledBackMessage) for all [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
-        Write-Host "HTTPS successfully disabled on the $($slotsBeingRolledBackMessage) for $($($appServicesRolledBack | Measure-Object).Count) out of $($totalAppServices) App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "HTTPS successfully disabled on the $($slotsBeingRolledBackMessage) for [$($($appServicesRolledBack | Measure-Object).Count)] out of [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -1039,7 +1092,7 @@ function Disable-HttpsForAppServices
             # Write this to a file.
             $appServicesRolledBackFile = "$($backupFolderPath)\RolledBackAppServices.csv"
             $appServicesRolledBack | Export-CSV -Path $appServicesRolledBackFile -NoTypeInformation
-            Write-Host "This information has been saved to $($appServicesRolledBackFile)"
+            Write-Host "This information has been saved to [$($appServicesRolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -1051,7 +1104,7 @@ function Disable-HttpsForAppServices
             # Write this to a file.
             $appServicesSkippedFile = "$($backupFolderPath)\RollbackSkippedAppServices.csv"
             $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to $($appServicesSkippedFile)"
+            Write-Host "This information has been saved to [$($appServicesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
