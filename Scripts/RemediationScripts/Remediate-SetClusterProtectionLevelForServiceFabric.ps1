@@ -89,8 +89,10 @@ function Setup-Prerequisites
     # List of required modules
     $requiredModules = @("Az.Accounts", "Az.ServiceFabric")
 
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..."
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)    
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -98,15 +100,17 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
-             Write-Host "[$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "[$($_)] module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
 }
 
 
@@ -175,7 +179,16 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [String]	
+        $Path,
+
+        [Switch]	
+        $AutoRemediation,
+
+        [String]	
+        $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -186,8 +199,11 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         {
             Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)	
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
@@ -216,28 +232,94 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-   
-    
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-    Write-Host "Account Name: [$($context.Account.Id)]"
-    Write-Host "Account Type: [$($context.Account.Type)]"
-    Write-Host $([Constants]::SingleDashLine)
-	    
-    Write-Host "***  To change cluster protection level on Service Fabric in a Subscription, Contributor or higher privileged role assignment on the Service fabric(s) is required.***" -ForegroundColor $([Constants]::MessageType.Info)
-   
-    Write-Host $([Constants]::DoubleDashLine)
+    if(-not($AutoRemediation))	
+    {
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }
+    Write-Host "***  To change cluster protection level on Service Fabric in a Subscription, Contributor or higher privileged role assignment on the Service fabric(s) is required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)  
+
     Write-Host "[Step 2 of 4] Preparing to fetch all Service Fabric(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
     # list to store Container details.
     $ServiceFabricDetails = @()
 
+     # To keep track of remediated and skipped resources	
+    $logRemediatedResources = @()	
+    $logSkippedResources=@()	
+
+    # Control Id	
+    $controlIds = "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel"
+
+
     # No file path provided as input to the script. Fetch all Service Fabric(s) in the Subscription.
+
+    if($AutoRemediation)	
+    {
+         if(-not (Test-Path -Path $Path))	
+        {	
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)	
+            Write-Host $([Constants]::SingleDashLine)	
+            break	
+        }
+
+         Write-Host "Fetching all Service Fabric(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+         Write-Host $([Constants]::SingleDashLine)
+         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+         $controls = $controlForRemediation.ControlRemediationList
+         $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+
+          $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}	
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            	
+            Write-Host "No Service Fabric(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)	
+            Write-Host $([Constants]::SingleDashLine)	
+            break	
+        
+        }
+         $validResources | ForEach-Object { 	
+            try	
+            {
+            $ServiceFabricResource =  Get-AzServiceFabricCluster -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+            $ServiceFabricDetails += $ServiceFabricResource  | Select-Object @{N='ResourceId';E={$_.Id}},
+                                                                          @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
+                                                                          @{N='ResourceName';E={$_.Name}}, 
+                                                      @{N='IsClusterProtectionLevelExist';E={$_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel'}},
+                                                                          @{N='ClusterProtectionLevelValue';E={if(($_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel') -eq $true)
+                                                                          { 
+                                                                                $param = $_.FabricSettings | Where-Object {$_.Parameters.Name -eq 'ClusterProtectionLevel'}
+                                                                                $param.Parameters.Value
+                                                                          }                                                                          
+                                                                          }},
+                                                                          @{N='NodeVMCount';E={$_.NodeTypes.VmInstanceCount}}
+             }
+            catch
+            {
+                Write-Host "Valid resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)	
+                Write-Host "WARNING: Skipping the Resource [$($_.ResourceName)]..."
+                $logResource = @{}
+                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                $logResource.Add("ResourceName",($_.ResourceName))	
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    	
+                $logSkippedResources += $logResource	
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Error fetching Service Fabric(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+             }	
+        }	
+    }
+    else{	
+        # No file path provided as input to the script. Fetch all Service Fabric(s) in the Subscription.                                                                  
+    }
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
         Write-Host "Fetching all Service Fabric(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
 
         # Get all Service Fabric(s) in a Subscription
         $ServiceFabricDetails =  Get-AzServiceFabricCluster -ErrorAction Stop
@@ -264,10 +346,12 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             break
         }
 
-        Write-Host "Fetching all Service Fabric(s) from [$($FilePath)]..." 
-
+        Write-Host "Fetching all Service Fabric(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         $ServiceFabricResources = Import-Csv -LiteralPath $FilePath
+
         $validServiceFabricResources = $ServiceFabricResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+
         $validServiceFabricResources| ForEach-Object {
             $resourceId = $_.ResourceId
 
@@ -278,7 +362,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $ServiceFabricDetails += $ServiceFabricResource  | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                           @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
                                                                           @{N='ResourceName';E={$_.Name}}, 
-                                                                          @{N='IsClusterProtectionLevelExist';E={$_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel'}},
+                                                      @{N='IsClusterProtectionLevelExist';E={$_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel'}},
                                                                           @{N='ClusterProtectionLevelValue';E={if(($_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel') -eq $true)
                                                                           { 
                                                                                 $param = $_.FabricSettings | Where-Object {$_.Parameters.Name -eq 'ClusterProtectionLevel'}
@@ -427,6 +511,14 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             catch
             {
                 $ServiceFabricSkipped += $ServiceFabric
+                if($AutoRemediation){	
+                $logResource = @{}	
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                $logResource.Add("ResourceName",($_.ResourceName))	
+                $logResource.Add("Reason","Encountered error while fetching app service configuration")    	
+                $logSkippedResources += $logResource	
+                Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)	
+            }
             }
         }
 
@@ -436,7 +528,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         if ($($ServiceFabricRemediated | Measure-Object).Count -gt 0)
         {
             Write-Host "Successfully set the ClusterProtectionLevel to 'EncryptAndSign' on the following ServiceFabric(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-           
+            Write-Host $([Constants]::SingleDashLine)
             $ServiceFabricRemediated | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
@@ -451,7 +543,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         if ($($ServiceFabricSkippedWithSingleNode | Measure-Object).Count -gt 0)
         {
             Write-Host "nError occured while setting up the cluster protection level in Service Fabric(s) in the subscription: - Service Fabric with Single Cluster Node are not applicable for Modification." -ForegroundColor $([Constants]::MessageType.Update)
-           
+            Write-Host $([Constants]::SingleDashLine)
             $ServiceFabricSkippedWithSingleNode | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
@@ -464,7 +556,9 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         
         if ($($ServiceFabricSkipped | Measure-Object).Count -gt 0)
         {
+
             Write-Host "`nError while setting up the cluster protection level in Service Fabric(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
             $ServiceFabricSkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
@@ -546,8 +640,11 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
         {
             Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites"	
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
@@ -586,20 +683,23 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
- Write-Host "***  To change cluster protection level on Service Fabric in a Subscription, Contributor or higher privileged role assignment on the Service fabric(s) is required.***" -ForegroundColor $([Constants]::MessageType.Info)
+     # Note about the required access required for remediation
 
-    Write-Host $([Constants]::DoubleDashLine)
+ Write-Host "***  To change cluster protection level on Service Fabric in a Subscription, Contributor or higher privileged role assignment on the Service fabric(s) is required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Service Fabric(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
     Write-Host "Fetching all Service Fabric(s) from" -NoNewline
-    Write-Host " [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host " [$($FilePath)\...]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
     $ServiceFabricDetails = Import-Csv -LiteralPath $FilePath
 
     $validServiceFabricDetails = $ServiceFabricDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
@@ -633,7 +733,7 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
  
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Set ClusterProtectionLevel to previous value on all Service Fabric(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Set ClusterProtectionLevel to previous value on all Service Fabric(s) in the Subscription..."  -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
     if( -not $Force)
@@ -645,10 +745,11 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
             if($userInput -ne "Y")
             {
                 Write-Host "Cluster Protection level will not be rolled back on Service Fabric(s) mentioned in the file. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                 -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
             Write-Host "Cluster Protection level will be rolled back on Service Fabric(s) mentioned in the file." -ForegroundColor $([Constants]::MessageType.Update)
-
+             
     }
     else
     {

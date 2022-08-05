@@ -1,18 +1,28 @@
 {
     "Description": "Specifies metadata about Remediation scripts",
     "RemediationScriptsBaseUrl": "https://aka.ms/azts/remediation/",
-    "RemediationSpecification": [
-        {
-            "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
-            "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
-            "LoadCommand": "Remediate-AnonymousAccessOnContainers.ps1",     
-            "InitCommand": "Remove-AnonymousAccessOnContainers",
-            "RollbackMetadata":
-                {
-                    "RollbackCommand": "Set-AnonymousAccessOnContainers",
-                    "Arguments":["SubscriptionId","RollBackType"]
-                }
-        }
-    ]
+  "RemediationSpecification": [
+    {
+      "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
+      "EnableRemediation": "true",
+      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
+      "LoadCommand": "Remediate-AnonymousAccessOnContainers.ps1",
+      "InitCommand": "Remove-AnonymousAccessOnContainers",
+      "RollbackMetadata": {
+        "RollbackCommand": "Set-AnonymousAccessOnContainers",
+        "Arguments": [ "SubscriptionId", "RollBackType" ]
+      }
+    },
+    {
+      "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
+      "EnableRemediation": "true",
+      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+      "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+      "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
+      "RollbackMetadata": {
+        "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
+        "Arguments": [ "SubscriptionId", "RollBackType" ]
+      }
+    }
+  ]
 } 
