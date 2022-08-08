@@ -23,43 +23,31 @@
             "RollbackMetadata":
                 {
                     "RollbackCommand": "Enable-RemoteDebuggingForAppServices",
-                    "Arguments":["SubscriptionId","RollBackType"]
+                    "Arguments":["SubscriptionId"]
                 }
         },
         {
             "ControlId": "Azure_AppService_DP_Dont_Allow_HTTP_Access",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAppServices.ps1",
             "LoadCommand": "Remediate-EnableHTTPSForAppServices.ps1",     
             "InitCommand": "Enable-HttpsForAppServices",
             "RollbackMetadata":
                 {
                     "RollbackCommand": "Disable-HttpsForAppServices",
-                    "Arguments":["SubscriptionId","RollBackType"]
+                    "Arguments":["SubscriptionId"]
                 }
         },
         {
             "ControlId": "Azure_AppService_DP_Use_Secure_TLS_Version",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetAppServiceMinReqTLSVersion.ps1",
             "LoadCommand": "Remediate-SetAppServiceMinReqTLSVersion.ps1",     
             "InitCommand": "Set-AppServiceRequiredTLSVersion",
             "RollbackMetadata":
                 {
                     "RollbackCommand": "Reset-AppServiceRequiredTLSVersion",
-                    "Arguments":["SubscriptionId","RollBackType"]
-                }
-        },
-        {
-            "ControlId": "Azure_KubernetesService_AuthN_Enabled_AAD",
-            "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
-            "LoadCommand": "Remediate-EnableAADForKubernetesService.ps1",     
-            "InitCommand": "Enable-AADForKubernetes",
-            "RollbackMetadata":
-                {
-                    "RollbackCommand": "",
-                    "Arguments":[]
+                    "Arguments":["SubscriptionId"]
                 }
         }
     ]
