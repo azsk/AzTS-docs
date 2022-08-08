@@ -294,7 +294,7 @@ function Disable-RemoteDebuggingForAppServices
         {
             if (-not (Test-Path -Path $FilePath))
             {
-                Write-Host "Input file [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                 return
             }
 
