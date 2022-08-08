@@ -1,34 +1,44 @@
 ﻿<###
 # Overview:
     This script is used to enable AAD for Kubernetes Services in a Subscription.
+
 # Control ID:
     Azure_KubernetesService_AuthN_Enabled_AAD
+
 # Display Name:
     AAD should be enabled in Kubernetes Service.
+
 # Prerequisites:
     1. Contributor or higher privileges on the Kubernetes Services in a Subscription.
     2. Must be connected to Azure with an authenticated account.
     3. RBAC must be enabled on Kubernetes cluster.
+
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
         2. Get the list of Kubernetes Services in a Subscription that do not have AAD enabled.
         3. Back up details of Kubernetes Services that are to be remediated.
         4. Enable AAD in all Kubernetes Services in the Subscription.
+
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to enable AAD in all Kubernetes Services in the Subscription. Refer `Examples`, below.
+
 # Examples:
     To remediate:
         1. To review the Kubernetes Services in a Subscription that will be remediated:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+
         2. To enable AAD in all Kubernetes Services in a Subscription:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+
         3. To enable AAD in all Kubernetes Services in a Subscription, from a previously taken snapshot:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\EnableAADForKubernetesServices\KubernetesClusterWithAADDisabled.csv
+
         **Note: If you want to add AAD group to AKS cluster, please provide ADD group object id for each of the cluster.
+
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-AADForKubernetes -Detailed        
 ###>
@@ -38,15 +48,20 @@ function Setup-Prerequisites
     <#
         .SYNOPSIS
         Checks if the prerequisites are met, else, sets them up.
+
         .DESCRIPTION
         Checks if the prerequisites are met, else, sets them up.
         Includes installing any required Azure modules.
+
         .INPUTS
         None. You cannot pipe objects to Setup-Prerequisites.
+
         .OUTPUTS
         None. Setup-Prerequisites does not return anything that can be piped and used as an input to another command.
+
         .EXAMPLE
         PS> Setup-Prerequisites
+
         .LINK
         None
     #>
@@ -78,6 +93,7 @@ function Enable-AADForKubernetes
     <#
         .SYNOPSIS
         Remediates 'Azure_KubernetesService_AuthN_Enabled_AAD' Control.
+
         .DESCRIPTION
         Remediates 'Azure_KubernetesService_AuthN_Enabled_AAD' Control.
         AAD should be enabled in Kubernetes Service.
@@ -93,16 +109,22 @@ function Enable-AADForKubernetes
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
+
         .INPUTS
         None. You cannot pipe objects to Enable-AADForKubernetes.
+
         .OUTPUTS
         None. Enable-AADForKubernetes does not return anything that can be piped and used as an input to another command.
+
         .EXAMPLE
         PS> Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+
         .EXAMPLE
         PS> Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+
         .EXAMPLE
         PS> Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\EnableAADForKubernetesServices\KubernetesClusterWithAADDisabled.csv
+        
         .LINK
         None
     #>
