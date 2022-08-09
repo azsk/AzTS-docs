@@ -345,6 +345,7 @@ function Enable-AADForKubernetes
             }
             else 
             {    
+                $kubernetesServicesSkipped += $kubernetesServiceResource
                 Write-Host "Skipping this Kubernetes Service with resource name: [$($_.Name)] and resource group name: [$($_.ResourceGroupName)] as AAD is already enabled..." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
@@ -386,7 +387,19 @@ function Enable-AADForKubernetes
     if ($totalKubernetesServicesWithoutAADEnabled -eq 0)
     {
         Write-Host "No Kubernetes Service found with AAD disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
+        if($AutoRemediation -and $totalSkippedKubernetesServices -gt 0) 
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
         return
     }
 
