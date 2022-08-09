@@ -142,6 +142,15 @@ function Enable-HttpsForAppServices
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
         .INPUTS
         None. You cannot pipe objects to Enable-HttpsForAppServices.
 
@@ -189,17 +198,20 @@ function Enable-HttpsForAppServices
         $FilePath,
 
         [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
         $Path,
 
         [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
         $AutoRemediation,
 
         [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
         $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to enable HTTPS for App Services in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 3] Prepare to enable HTTPS for App Services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -209,12 +221,12 @@ function Enable-HttpsForAppServices
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             return
         }
     }
@@ -243,7 +255,7 @@ function Enable-HttpsForAppServices
     Write-Host "To enable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 2 of 3] Preparing to fetch all App Services"
+    Write-Host "[Step 2 of 3] Fetch all App Services"
     Write-Host $([Constants]::SingleDashLine)
     $appServicesResourceType = "Microsoft.Web/sites"
     $appServiceResources = @()
@@ -281,8 +293,8 @@ function Enable-HttpsForAppServices
             }
             catch
             {
-                Write-Host "Valid resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "WARNING: Skipping the Resource [$($_.ResourceName)]..."
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
@@ -327,7 +339,7 @@ function Enable-HttpsForAppServices
                 }
                 catch
                 {
-                    Write-Host "Fetching App Service resource: Resource ID - [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Fetching App Service resource: Resource ID: [$($resourceId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
@@ -365,14 +377,14 @@ function Enable-HttpsForAppServices
             Write-Host "Fetching App Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $isHttpsEnabledOnProductionSlot = $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).HttpsOnly
-            Write-Host "App Service Configurations successfully fetched" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "App Service Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all non-production slots for this App Service.
             $nonProductionSlotConfigurations = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName
-            Write-Host "App Service non-production slot configuration successfully fetched" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "App Service non-production slot configuration successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             $isHttpsEnabledOnAllNonProductionSlots = -not $($nonProductionSlotConfigurations.HttpsOnly -contains $false)
@@ -446,7 +458,7 @@ function Enable-HttpsForAppServices
                     $logControl.SkippedResources=$logSkippedResources
                 }
             }
-            $log | ConvertTo-json -depth 100  | Out-File $logFile
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
         return
     }
@@ -468,12 +480,14 @@ function Enable-HttpsForAppServices
             Write-Host "Backing up App Services details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
             $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "App Services details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "App Services details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
 
         Write-Host "HTTPS will be enabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
+
+        # Here AutoRemediation switch is used as there is no need to take user input at BRS level if user has given consent to proceed with the remediation in AutoRemediation Script.
         if(-not $AutoRemediation)
         {
             if (-not $Force)
@@ -488,7 +502,7 @@ function Enable-HttpsForAppServices
                     Write-Host $([Constants]::SingleDashLine)
                     return
                 }
-                Write-Host "User has provided consent to enable HTTPS on the production slot and all non-production slots for all App Services" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "User has provided consent to enable HTTPS on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
             else
@@ -498,7 +512,7 @@ function Enable-HttpsForAppServices
             }
         }
 
-        Write-Host "[Step 3 of 3] Enabling HTTPS for App Services"
+        Write-Host "[Step 3 of 3] Enable HTTPS for App Services"
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
         $appServicesRemediated = @()
@@ -536,10 +550,6 @@ function Enable-HttpsForAppServices
                     if ($isHttpsEnabledOnProductionSlot)
                     {
                         $appService.IsHTTPSEnabledOnProductionSlot = $true
-                        # $logResource = @{}
-                        # $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                        # $logResource.Add("ResourceName",($_.ResourceName))
-                        # $logRemediatedResources += $logResource
                         Write-Host "Successfully enabled HTTPS on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
@@ -565,7 +575,7 @@ function Enable-HttpsForAppServices
                     $logResource.Add("ResourceName",($_.ResourceName))
                     $logResource.Add("Reason", "Error enabling HTTPS on the production slot. Skipping this App Service. HTTPS will not be enabled for any of the non-production slots.")
                     $logSkippedResources += $logResource
-                    Write-Host "Error enabling HTTPS on the production slot. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error enabling HTTPS on the production slot. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this App Service. HTTPS will not be enabled for any of the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     return
@@ -636,9 +646,9 @@ function Enable-HttpsForAppServices
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason", "Error enabling HTTPS on the non-production slots: $($nonProductionSlotsSkippedStr).")
+                $logResource.Add("Reason", "Error enabling HTTPS on the non-production slots: [$($nonProductionSlotsSkippedStr)]")
                 $logSkippedResources += $logResource
-                Write-Host "Error enabling HTTPS for these non-production slots: $($nonProductionSlotsSkippedStr)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error enabling HTTPS for these non-production slots: [$($nonProductionSlotsSkippedStr)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 
             }
@@ -693,7 +703,7 @@ function Enable-HttpsForAppServices
                 # Write this to a file.
                 $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForEnableHTTPS.csv"
                 $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($appServicesRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "This information has been saved to [$($appServicesRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -706,7 +716,7 @@ function Enable-HttpsForAppServices
                 # Write this to a file.
                 $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForEnableHTTPS.csv"
                 $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($appServicesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "This information has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -720,18 +730,19 @@ function Enable-HttpsForAppServices
                     $logControl.RollbackFile = $appServicesRemediatedFile
                 }
             }
-            $log | ConvertTo-json -depth 100  | Out-File $logFile
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
     }
     else
     {
-        Write-Host "[Step 3 of 3] Backing up App Services details"
+        Write-Host "[Step 3 of 3] Back up App Services details"
         Write-Host $([Constants]::SingleDashLine)
         # Backing up App Services details.
         $backupFile = "$($backupFolderPath)\AppServicesWithoutHTTPSEnabled.csv"
         $appServicesWithoutHttpsEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-        Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "App Services details have been backed up to [$($backupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable HTTPS for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
@@ -801,7 +812,7 @@ function Disable-HttpsForAppServices
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable HTTPS for App Services in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 3] Prepare to disable HTTPS for App Services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -811,12 +822,12 @@ function Disable-HttpsForAppServices
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             return
         }
     }
@@ -842,7 +853,7 @@ function Disable-HttpsForAppServices
     Write-Host "To disable HTTPS for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 2 of 3] Preparing to fetch all App Services"
+    Write-Host "[Step 2 of 3] Fetch all App Services"
     Write-Host $([Constants]::SingleDashLine)
     if (-not (Test-Path -Path $FilePath))
     {
@@ -902,7 +913,7 @@ function Disable-HttpsForAppServices
             Write-Host $([Constants]::SingleDashLine)
             return
         }
-        Write-Host "User has provided consent to disable HTTPS on the $($slotsBeingRolledBackMessage) for all App Services" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "User has provided consent to disable HTTPS on the $($slotsBeingRolledBackMessage) for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
@@ -911,7 +922,7 @@ function Disable-HttpsForAppServices
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "[Step 3 of 3] Disabling HTTPS for App Services" 
+    Write-Host "[Step 3 of 3] Disable HTTPS for App Services" 
     Write-Host $([Constants]::SingleDashLine)
     # Includes App Services, to which, previously made changes were successfully rolled back.
     $appServicesRolledBack = @()
@@ -1092,7 +1103,7 @@ function Disable-HttpsForAppServices
             # Write this to a file.
             $appServicesRolledBackFile = "$($backupFolderPath)\RolledBackAppServices.csv"
             $appServicesRolledBack | Export-CSV -Path $appServicesRolledBackFile -NoTypeInformation
-            Write-Host "This information has been saved to [$($appServicesRolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This information has been saved to [$($appServicesRolledBackFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -1104,7 +1115,7 @@ function Disable-HttpsForAppServices
             # Write this to a file.
             $appServicesSkippedFile = "$($backupFolderPath)\RollbackSkippedAppServices.csv"
             $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to [$($appServicesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This information has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
     }

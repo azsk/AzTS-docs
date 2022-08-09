@@ -3,7 +3,7 @@ function PrintGeneralInformation
     $scriptInformation = "**General Information**
 [1]. All the failing controls, which have been downloaded using AzTS UI, are present at [$(Get-location)\FailedControls] and same will be referred for remediation.
 [2]. Remediation scripts will be used to fix the failing controls in bulk.
-[3]. Minimum of contributor role at a subscription level is required for running BRS(Bulk Remediation Scripts) in most of the case, some may even require a higher priviledge access over a subscription";
+[3]. Minimum of contributor role at a subscription level is required for running BRS(Bulk Remediation Scripts) in most of the case, some may even require a higher priviledge access over a subscription.";
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host $scriptInformation -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
@@ -33,7 +33,7 @@ function StartRemediation($timestamp)
         $logFile = "LogFiles\" + $($timestamp) + "\log_" + $($SubscriptionId) + ".json"
         #Write-Host $logFile #delete
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Getting failing controls details of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Getting failing controls details of Subscription Id: [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
         # Display unique controls and no of resources.
@@ -56,7 +56,7 @@ function StartRemediation($timestamp)
                         @{Expression={$_.NumberOfFailingResources};Label="Number Of Failing Resources";Width=30;Alignment="center"},
                         @{Expression={$_.FailingResources};Label="Failing Resources";Width=30;Alignment="left"}
 
-        Write-Host "Failing Controls Summary" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Failing Controls Summary:" -ForegroundColor $([Constants]::MessageType.Update)
         $controlsTable | Format-Table -Property $colsProperty -Wrap
 
         #User input for whether to continue with current remediation or noty
@@ -65,17 +65,17 @@ function StartRemediation($timestamp)
 
         if(($startRemediation -eq 'Y') -or ($startRemediation -eq 'y'))
         {
-            Write-Host "User has provided consent to continue the remediation" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "User has provided consent to continue the remediation." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 #             $remediationLevel = Read-Host -Prompt "At which level you want to perform remediation?
 # [1] Subscription: All controls will be remediated in a single flow.
 # [2] Control: Confirmation will be asked before remediating each control.
 # Press any other key to skip the remediation of current subscription
 # Enter the choice (1|2)";
-            $remediationLevel = Read-Host -Prompt "There are two ways in all the failing resources for this subscription could be remediated.
-[1] All the failing resources will be remediated in a one go.
-[2] All the failing resources will be remediated control wise and confirmation will be asked before remediating failing resources against each control.
-Press any other key to skip the remediation of current subscription
+            $remediationLevel = Read-Host -Prompt "You can choose one of the following mode to remediate non-compliant resources:
+[1] Remediate all the failing resources in a single go for all controls.
+[2] Remediate failing resources control wise, confirmation will be needed before remediating failing resources against each control.
+Press any other key to skip the remediation of resources in current subscription.
 Enter the choice (1|2)";
             Write-Host $([Constants]::SingleDashLine)
 
@@ -103,7 +103,7 @@ Enter the choice (1|2)";
                     $controlList += $jsonObject
                 }
                 $logFileSchema.Add("ControlList", $controlList)
-                $logFileSchema | ConvertTo-json -depth 100  | Out-File $logFile
+                $logFileSchema | ConvertTo-json -depth 10  | Out-File $logFile
             }
             catch
             {
@@ -137,7 +137,7 @@ Enter the choice (1|2)";
                                 $logControl.SkippedResources=$skippedResources
                             }
                         }
-                        $log | ConvertTo-json -depth 100  | Out-File $logFile
+                        $log | ConvertTo-json -depth 10  | Out-File $logFile
 
                         Write-Host $([Constants]::SingleDashLine)
                         Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)]" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -199,7 +199,7 @@ Enter the choice (1|2)";
                             $logControl.SkippedResources=$skippedResources
                         }
                     }
-                    $log | ConvertTo-json -depth 100  | Out-File $logFile
+                    $log | ConvertTo-json -depth 10  | Out-File $logFile
                 }
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Skipped remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -220,7 +220,7 @@ function PrintRemediationSummary($timestamp)
     }
     else
     {
-        Write-Host "Remediation Summary" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Update)
         $remediationSummary = @()
         foreach($logFile in $logFiles)
         {
@@ -237,7 +237,7 @@ function PrintRemediationSummary($timestamp)
             }
         }
         $remediationSummary | Format-Table -Wrap
-        Write-Host "More details can be found at folder [$(Get-location)/LogFiles]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "More details can be found at folder [$(Get-location)/LogFiles]." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "NOTE: You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
