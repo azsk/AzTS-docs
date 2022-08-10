@@ -137,6 +137,15 @@ function Enable-TransparentDataEncryptionForSqlServers
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
         .EXAMPLE
         PS> Enable-TransparentDataEncryptionForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
@@ -174,17 +183,20 @@ function Enable-TransparentDataEncryptionForSqlServers
         $FilePath,
 
         [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
         $Path,
 
         [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
         $AutoRemediation,
 
         [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
         $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to enable Transparent data encryption (TDE) for SQL Server database(s) in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Prepare to enable Transparent data encryption (TDE) for SQL Server database(s) in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
@@ -193,13 +205,13 @@ function Enable-TransparentDataEncryptionForSqlServers
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return
         }
     }
 
@@ -234,23 +246,26 @@ function Enable-TransparentDataEncryptionForSqlServers
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is [$($context.Account.Type)]." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
     else
     {
-        Write-Host "[$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "[$($context.Account.Id)] is allowed to run this script." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "Note: To enable Transparent data encryption (TDE) for SQL Server database(s) in a Subscription, Contributor and higher privileges on the SQL Servers are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable Transparent data encryption (TDE) for SQL Server database(s) in a Subscription, Contributor and higher privileges on the SQL Servers are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all SQL Servers"
+    Write-Host "[Step 2 of 4] Fetch all SQL Servers"
     Write-Host $([Constants]::SingleDashLine)
 
     $sqlServerResources = @()
     # Includes SQL Servers where Transparent Data Encryption (TDE) is disabled.
     $sqlServersWithTdeDisabled = @()
+    # Includes SQL Servers where Transparent Data Encryption (TDE) is enabled.
+    $sqlServersWithTdeEnabled = @()
 
     # To keep track of remediated and skipped resources
     $logRemediatedResources = @()
@@ -265,7 +280,7 @@ function Enable-TransparentDataEncryptionForSqlServers
         {
             Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
-            break
+            return
         }
         Write-Host "Fetching all SQL Servers failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
@@ -277,7 +292,7 @@ function Enable-TransparentDataEncryptionForSqlServers
         {
             Write-Host "No SQL Server(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
-            break
+            return
         }
         $validResources | ForEach-Object { 
             try
@@ -292,11 +307,11 @@ function Enable-TransparentDataEncryptionForSqlServers
             }
             catch
             {
-                Write-Host "Valid resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "WARNING: Skipping the Resource [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.Name))
+                $logResource.Add("ResourceName",($_.ResourceName))
                 $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
@@ -307,10 +322,10 @@ function Enable-TransparentDataEncryptionForSqlServers
         if ($totalSqlServers -eq 0)
         {
             Write-Host "No SQL Server found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            break
+            return
         }
     
-        Write-Host "Found $($totalSqlServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "NOTE: Each SQL Server may have multiple databases." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
@@ -347,7 +362,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                             else
                             {
                                 $sqlDatabasesSkipped += $_.DatabaseName
-                                Write-Host "Error occurred while getting database details for SQL Server: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)], Database Name - [$($_.DatabaseName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                                Write-Host "Error occurred while getting database details for SQL Server: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)], Database Name: [$($_.DatabaseName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                                 Write-Host "Skipping this SQL Server database..." -ForegroundColor $([Constants]::MessageType.Warning)
                                 Write-Host $([Constants]::SingleDashLine)
                             }
@@ -371,7 +386,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                             }
                         }else{
                             $sqlDatabasesSkipped += $_.DatabaseName
-                            Write-Host "Error occurred while getting SQL pool details for SQL Server: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)], SQL Pool Name - [$($_.SqlPoolName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                            Write-Host "Error occurred while getting SQL pool details for SQL Server: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)], SQL Pool Name: [$($_.SqlPoolName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                             Write-Host "Skipping this SQL pool..." -ForegroundColor $([Constants]::MessageType.Warning)
                             Write-Host $([Constants]::SingleDashLine)
                         }
@@ -390,6 +405,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                 }
                 else
                 {
+                    $sqlServersWithTdeEnabled += $_
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ServerName))
@@ -399,7 +415,7 @@ function Enable-TransparentDataEncryptionForSqlServers
 
                 if(($sqlDatabasesSkipped|Measure-Object).Count -eq 0)
                 {
-                    Write-Host "Successfully fetched SQL databases for the SQL Server..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully fetched SQL databases for the SQL Server." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }
                 else 
@@ -407,7 +423,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                     $totalDatabases = ($databaseList|Measure-Object).Count
                     $totalDatabasesSkipped = ($sqlDatabasesSkipped|Measure-Object).Count
                     $totalDatabasesProcessed = $totalDatabases - $totalDatabasesSkipped
-                    Write-Host "Successfully fetched [$($totalDatabasesProcessed)] databases details out of [$($totalDatabases)] for the SQL Server..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully fetched [$($totalDatabasesProcessed)] databases details out of [$($totalDatabases)] for the SQL Server." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
@@ -416,14 +432,14 @@ function Enable-TransparentDataEncryptionForSqlServers
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ServerName))
-                $logResource.Add("Reason","Error occurred while getting SQL Server details: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)]. Error: [$($_)]")    
+                $logResource.Add("Reason","Error occurred while getting SQL Server details: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)]. Error: [$($_)]")    
                 $logSkippedResources += $logResource
-                Write-Host "Error occurred while getting SQL Server details: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error occurred while getting SQL Server details: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping this SQL Server..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
-        Write-Host "Processed SQL databases for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Processed SQL databases for SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else 
@@ -435,14 +451,14 @@ function Enable-TransparentDataEncryptionForSqlServers
             Write-Host "Fetching all SQL Servers in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $sqlServers = Get-AzResource -ResourceType "Microsoft.Sql/servers" -ErrorAction Stop
-            Write-Host "Successfully fetched all the SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully fetched all the SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             # Get all Synapse Workspaces in a Subscription
-            Write-Host "Fetching all the Synapse Workspace(s) present in the Subscription : [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all the Synapse Workspace(s) present in the Subscription: [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $synapseWorkspaces = Get-AzResource -ResourceType "Microsoft.Synapse/workspaces" -ErrorAction Stop
-            Write-Host "Successfully fetched all the Synapse Workspace(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully fetched all the Synapse Workspace(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             # Filter SQL Servers not associated with a Synapse Workspace.
@@ -451,7 +467,7 @@ function Enable-TransparentDataEncryptionForSqlServers
             Write-Host "Filtering out SQL Server(s) associated with Synapse Workspace(s) to avoid redundancy..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $standaloneSqlServers = Compare-Object -ReferenceObject @($sqlServers | Select-Object) -DifferenceObject @($synapseWorkspaces | Select-Object) -Property { $_.ResourceName } -PassThru
-            Write-Host "Succesfully filtered out SQL Server(s) associated with Synapse Workspace(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Succesfully filtered out SQL Server(s) associated with Synapse Workspace(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             $sqlServerResources += $standaloneSqlServers | Select-Object @{N='ResourceId';E={$_.ResourceId}},
@@ -472,10 +488,10 @@ function Enable-TransparentDataEncryptionForSqlServers
             if ($totalSqlServers -eq 0)
             {
                 Write-Host "No SQL Server found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
+                return
             }
         
-            Write-Host "Found $($totalSqlServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "NOTE: Each SQL Server may have multiple databases." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
@@ -509,7 +525,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                                 else
                                 {
                                     $sqlDatabasesSkipped += $_.DatabaseName
-                                    Write-Host "Error occurred while getting database details for SQL Server: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)], Database Name - [$($_.DatabaseName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                                    Write-Host "Error occurred while getting database details for SQL Server: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)], Database Name: [$($_.DatabaseName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                                     Write-Host "Skipping this SQL Server database..." -ForegroundColor $([Constants]::MessageType.Warning)
                                     Write-Host $([Constants]::SingleDashLine)
                                 }
@@ -533,7 +549,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                                 }
                             }else{
                                 $sqlDatabasesSkipped += $_.DatabaseName
-                                Write-Host "Error occurred while getting SQL pool details for SQL Server: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)], SQL Pool Name - [$($_.SqlPoolName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                                Write-Host "Error occurred while getting SQL pool details for SQL Server: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)], SQL Pool Name: [$($_.SqlPoolName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                                 Write-Host "Skipping this SQL pool..." -ForegroundColor $([Constants]::MessageType.Warning)
                                 Write-Host $([Constants]::SingleDashLine)
                             }
@@ -552,7 +568,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                     }
                     if(($sqlDatabasesSkipped|Measure-Object).Count -eq 0)
                     {
-                        Write-Host "Successfully fetched SQL databases for the SQL Server..." -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host "Successfully fetched SQL databases for the SQL Server." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                     else 
@@ -560,13 +576,13 @@ function Enable-TransparentDataEncryptionForSqlServers
                         $totalDatabases = ($databaseList|Measure-Object).Count
                         $totalDatabasesSkipped = ($sqlDatabasesSkipped|Measure-Object).Count
                         $totalDatabasesProcessed = $totalDatabases - $totalDatabasesSkipped
-                        Write-Host "Successfully fetched [$($totalDatabasesProcessed)] databases details out of [$($totalDatabases)] for the SQL Server..." -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host "Successfully fetched [$($totalDatabasesProcessed)] databases details out of [$($totalDatabases)] for the SQL Server." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                 }
                 catch
                 {
-                    Write-Host "Error occurred while getting SQL Server details: Resource Group Name - [$($_.ResourceGroupName)], Server Name - [$($_.ServerName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error occurred while getting SQL Server details: Resource Group Name: [$($_.ResourceGroupName)], Server Name: [$($_.ServerName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this SQL Server..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
@@ -576,14 +592,15 @@ function Enable-TransparentDataEncryptionForSqlServers
         {
             if (-not (Test-Path -Path $FilePath))
             {
-                Write-Host "Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                break
+                Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::SingleDashLine)
+                return
             }
 
             Write-Host "Fetching all SQL databases from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
-
+            Write-Host $([Constants]::SingleDashLine)
             $sqlServersWithTdeDisabled = Import-Csv -LiteralPath $FilePath
-            Write-Host "Successfully fetched all the databases" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully fetched all the databases." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
 
@@ -591,13 +608,26 @@ function Enable-TransparentDataEncryptionForSqlServers
     if ($totalSqlServersWithTdeDisabled -eq 0)
     {
         Write-Host "No SQL Server found with Transparent Data Encryption (TDE) disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::SingleDashLine)
+        if($AutoRemediation -and ($sqlServersWithTdeEnabled|Measure-Object).Count -gt 0)
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
+        return
     }
 
     Write-Host "Found [$($totalSqlServersWithTdeDisabled)] SQL Server(s) with Transparent Data Encryption (TDE) disabled." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 3 of 4] Backing up SQL Server details to [$($backupFolderPath)]"
+    Write-Host "[Step 3 of 4] Back up SQL Server details"
     Write-Host $([Constants]::SingleDashLine)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
 
@@ -609,7 +639,7 @@ function Enable-TransparentDataEncryptionForSqlServers
     # Backing up SQL Server database details.
     $backupFile = "$($backupFolderPath)\SQLServersWithTDEDisabled.csv"
     $sqlServersWithTdeDisabled | Export-CSV -Path $backupFile -NoTypeInformation -ErrorAction Stop
-    Write-Host "SQL Server(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "SQL Server(s) details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun)
@@ -623,7 +653,7 @@ function Enable-TransparentDataEncryptionForSqlServers
             if($userInput -ne "Y")
             {
                 Write-Host "Transparent Data Encryption (TDE) will not be enabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
+                return
             }
         }
         else
@@ -632,7 +662,7 @@ function Enable-TransparentDataEncryptionForSqlServers
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        Write-Host "[Step 4 of 4] Enabling Transparent Data Encryption (TDE) for SQL Servers"
+        Write-Host "[Step 4 of 4] Enable Transparent Data Encryption (TDE) for SQL Servers"
         Write-Host $([Constants]::SingleDashLine)
 
 
@@ -695,7 +725,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ServerName))
                     $logRemediatedResources += $logResource
-                    Write-Host "Successfully enabled Transparent Data Encryption (TDE) for the SQL Server" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully enabled Transparent Data Encryption (TDE) for the SQL Server." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }   
                 else
@@ -723,7 +753,7 @@ function Enable-TransparentDataEncryptionForSqlServers
                 $logResource.Add("ResourceName",($_.ServerName))
                 $logResource.Add("Reason","Error occurred while enabling Transparent Data Encryption (TDE) for SQL Server: Server Name - [$($serverName)], Resource Group Name - [$($resourceGroupName)]. Error: [$($_)]")    
                 $logSkippedResources += $logResource
-                Write-Host "Error occurred while enabling Transparent Data Encryption (TDE) for SQL Server: Server Name - [$($serverName)], Resource Group Name - [$($resourceGroupName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error occurred while enabling Transparent Data Encryption (TDE) for SQL Server: Server Name: [$($serverName)], Resource Group Name: [$($resourceGroupName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping this SQL Server... (Transparent Data Encryption (TDE) will not be enabled for this Server)" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
 
@@ -763,12 +793,12 @@ function Enable-TransparentDataEncryptionForSqlServers
     }
     else
     {
-        Write-Host "[Step 4 of 4] Enabling Transparent Data Encryption (TDE) for SQL Servers"
+        Write-Host "[Step 4 of 4] Enable Transparent Data Encryption (TDE) for SQL Servers"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps:"  -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to enable Transparent Data Encryption (TDE) for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun to enable Transparent Data Encryption (TDE) for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -822,7 +852,7 @@ function Disable-TransparentDataEncryptionForSqlServers
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable Transparent Data Encryption (TDE) for SQL Servers in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 3] Prepare to disable Transparent Data Encryption (TDE) for SQL Servers in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
@@ -831,13 +861,13 @@ function Disable-TransparentDataEncryptionForSqlServers
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return
         }
     }
 
@@ -868,8 +898,8 @@ function Disable-TransparentDataEncryptionForSqlServers
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is [$($context.Account.Type)]." -ForegroundColor $([Constants]::MessageType.Warning)
+        return
     }
     else
     {
@@ -877,15 +907,16 @@ function Disable-TransparentDataEncryptionForSqlServers
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "Note: To disable Transparent Data Encryption (TDE) for SQL Servers in a Subscription, Contributor and higher privileges on the SQL Servers are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To disable Transparent Data Encryption (TDE) for SQL Servers in a Subscription, Contributor and higher privileges on the SQL Servers are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 3] Preparing to fetch all SQL Server database details"
+    Write-Host "[Step 2 of 3] Fetch all SQL Server database details"
     Write-Host $([Confirmation]::SingleDashLine)
     
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
 
     $sqlServerDetails = @()
@@ -893,7 +924,7 @@ function Disable-TransparentDataEncryptionForSqlServers
     Write-Host "Fetching all SQL Server(s) details from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
     $sqlServerDetails = Import-Csv -LiteralPath $FilePath
-    Write-Host "Successfully fetched all the SQL Server(s) details" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Successfully fetched all the SQL Server(s) details." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     $validSqlServerDetails = $sqlServerDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ServerName) -and ![String]::IsNullOrWhiteSpace($_.RemediatedSqlDatabases)}
     $totalSqlServers = $($validSqlServerDetails | Measure-Object).Count
@@ -901,10 +932,10 @@ function Disable-TransparentDataEncryptionForSqlServers
     if ($totalSqlServers -eq 0)
     {
         Write-Host "No SQL Server found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        return
     }
 
-    Write-Host "Found [$($totalSqlServers)] SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
     write-Host $([Constants]::SingleDashLine)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableTDEForSQLServers"
 
@@ -922,8 +953,11 @@ function Disable-TransparentDataEncryptionForSqlServers
         if($userInput -ne "Y")
         {
             Write-Host "Transparent Data Encryption (TDE) will not be disabled for SQL Servers. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            break
+            Write-Host $([Constants]::SingleDashLine)
+            return
         }
+        Write-Host "User has provided consent to disable Transparent Data Encryption (TDE) for all SQL Servers." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
@@ -931,7 +965,7 @@ function Disable-TransparentDataEncryptionForSqlServers
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "[Step 3 of 3] Disabling Transparent Data Encryption (TDE) for SQL Servers"
+    Write-Host "[Step 3 of 3] Disable Transparent Data Encryption (TDE) for SQL Servers"
     Write-Host $([Constants]::SingleDashLine)
    
     $rollbackSummary = @()
@@ -994,12 +1028,12 @@ function Disable-TransparentDataEncryptionForSqlServers
             if ([String]::IsNullOrWhiteSpace($skippedSqlDatabases))
             {
                 $totalRolledbackSqlServers += 1
-                Write-Host "Successfully disabled Transparent Data Encryption (TDE) for the SQL Servers" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully disabled Transparent Data Encryption (TDE) for the SQL Servers." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
             else 
             {
-                Write-Host "Encountered error while disabling Transparent Data Encryption for the SQL Server in the database(s): [$($skippedSqlDatabases)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Encountered error while disabling Transparent Data Encryption for the SQL Server in the databases: [$($skippedSqlDatabases)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -1012,8 +1046,8 @@ function Disable-TransparentDataEncryptionForSqlServers
         }
         catch
         {
-            Write-Host "Error occurred while disabling Transparent Data Encryption (TDE) for SQL Server: Server Name - [$($serverName)], Resource Group Name - [$($resourceGroupName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping this SQL Server... (Transparent Data Encryption (TDE) will not be disabled for this Server)" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Error occurred while disabling Transparent Data Encryption (TDE) for SQL Server: Server Name: [$($serverName)], Resource Group Name: [$($resourceGroupName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Skipping this SQL Server (Transparent Data Encryption (TDE) will not be disabled for this Server)..." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
@@ -1021,14 +1055,14 @@ function Disable-TransparentDataEncryptionForSqlServers
     if ($($rollbackSummary | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Rollback Summary:"
+        Write-Host "Rollback Summary:`n"
         
         $rollbackSummary | Format-Table -Property ServerName, ResourceGroupName, RolledbackSqlDatabases, SkippedSqlDatabases
         Write-Host $([Constants]::SingleDashLine)
         # Write this to a file.
         $rollbackSummaryFile = "$($backupFolderPath)\RollbackSummary.csv"
         $rollbackSummary | Export-CSV -Path $rollbackSummaryFile -NoTypeInformation
-        Write-Host "Rollback Summary information has been saved to [$($rollbackSummaryFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Rollback Summary information has been saved to [$($rollbackSummaryFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 }

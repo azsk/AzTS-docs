@@ -136,6 +136,15 @@ function Enable-ADAdminForSqlServers
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
         .EXAMPLE
         PS> Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
@@ -169,17 +178,20 @@ function Enable-ADAdminForSqlServers
         $FilePath,
 
         [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
         $Path,
 
         [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
         $AutoRemediation,
 
         [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
         $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to enable AAD for SQL Servers in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Prepare to enable AAD for SQL Servers in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
@@ -188,13 +200,13 @@ function Enable-ADAdminForSqlServers
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return
         }
     }
     # Connect to Azure account
@@ -227,19 +239,19 @@ function Enable-ADAdminForSqlServers
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is [$($context.Account.Type)]." -ForegroundColor $([Constants]::MessageType.Warning)
+        return
     }
     else
     {
-        Write-Host "[$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "[$($context.Account.Id)] is allowed to run this script." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "Note: To enable Azure AD admin for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable Azure AD admin for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
    
-    Write-Host "[Step 2 of 4] Preparing to fetch all SQL Server(s)"
+    Write-Host "[Step 2 of 4] Fetch all SQL Servers"
     Write-Host $([Constants]::SingleDashLine)
     $sqlServerResources = @()
 
@@ -256,7 +268,7 @@ function Enable-ADAdminForSqlServers
         {
             Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
-            break
+            return
         }
         Write-Host "Fetching all SQL Servers failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
@@ -268,7 +280,7 @@ function Enable-ADAdminForSqlServers
         {
             Write-Host "No SQL Server(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
-            break
+            return
         }
         $validResources | ForEach-Object { 
             try
@@ -283,8 +295,8 @@ function Enable-ADAdminForSqlServers
             }
             catch
             {
-                Write-Host "Valid resource id(s) not found in input json file. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "WARNING: Skipping the Resource [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
@@ -302,17 +314,17 @@ function Enable-ADAdminForSqlServers
         {
             # Get all SQL Servers in a Subscription.
             # This will include SQL Servers associated with Synapse Workspaces as well.
-            Write-Host "Fetching all the SQL Server(s) present in the Subscription : [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all the SQL Server(s) present in the Subscription: [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $sqlServers = Get-AzResource -ResourceType "Microsoft.Sql/servers" -ErrorAction Stop
-            Write-Host "Successfully fetched all the SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully fetched all the SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
             
             # Get all Synapse Workspaces in a Subscription
-            Write-Host "Fetching all the Synapse Workspace(s) present in the Subscription : [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all the Synapse Workspace(s) present in the Subscription: [$($context.Subscription.Name)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $synapseWorkspaces = Get-AzResource -ResourceType "Microsoft.Synapse/workspaces" -ErrorAction Stop
-            Write-Host "Successfully fetched all the Synapse Workspace(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully fetched all the Synapse Workspace(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             $standaloneSqlServers = $sqlServers
@@ -334,7 +346,7 @@ function Enable-ADAdminForSqlServers
                                                                         @{N='IsSynapseWorkspace';E={$false}},
                                                                         @{N='EmailId';E={""}}
 
-            Write-Host "Succesfully filtered out SQL Server(s) associated with Synapse Workspace(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Succesfully filtered out SQL Server(s) associated with Synapse Workspace(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
                                                                         
             # Add Synapse Workspaces to this list.
@@ -350,8 +362,8 @@ function Enable-ADAdminForSqlServers
         {
             if (-not (Test-Path -Path $FilePath))
             {
-                Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                break
+                Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                return
             }
 
             Write-Host "Fetching all SQL Server(s) from file [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -361,7 +373,7 @@ function Enable-ADAdminForSqlServers
             $sqlServersDetails = Import-Csv -LiteralPath $FilePath
 
             $sqlServerResources = $sqlServersDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
-            Write-Host "Succesfully fetched list of SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Succesfully fetched list of SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
@@ -371,7 +383,8 @@ function Enable-ADAdminForSqlServers
     if ($totalSqlServers -eq 0)
     {
         Write-Host "No SQL Servers found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
 
     Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -420,19 +433,12 @@ function Enable-ADAdminForSqlServers
     if ($totalSQLServersWithADAdminDisabled -eq 0)
     {
         Write-Host "No SQL Server found with Azure AD admin disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        return
     }
 
     $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
-
-    Write-Host "Found [$($totalSQLServersWithADAdminDisabled)] SQL Server(s) with Azure AD admin disabled." -ForegroundColor $([Constants]::MessageType.Update)
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "SQL Server(s) having Azure AD Admin disabled are as follows:"
-    Write-Host $([Constants]::SingleDashLine)
-    $SQLServersWithADAdminDisabled | Format-Table -Property $colsProperty3 -Wrap
-    Write-Host $([Constants]::SingleDashLine)
 
     $sqlServersWithADAdminEnabled | ForEach-Object {
         $logResource = @{}
@@ -441,9 +447,37 @@ function Enable-ADAdminForSqlServers
         $logResource.Add("Reason","AAD is already enabled.")    
         $logSkippedResources += $logResource
     }
+    if($totalSQLServersWithADAdminDisabled -eq 0)
+    {
+        Write-Host "No SQL Server found with Azure AD Admin disabled." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
+        if($AutoRemediation -and ($sqlServersWithADAdminEnabled|Measure-Object).Count -gt 0)
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
+        return
+    }
+    Write-Host "Found [$($totalSQLServersWithADAdminDisabled)] SQL Server(s) with Azure AD admin disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
+    if(-not $AutoRemediation)
+    {
+        Write-Host "SQL Server(s) having Azure AD Admin disabled are as follows:"
+        $SQLServersWithADAdminDisabled | Format-Table -Property $colsProperty3 -Wrap
+        Write-Host $([Constants]::SingleDashLine)
+    }
+
 
     # Backing up SQL Server details.
-    Write-Host "[Step 3 of 4] Backing up SQL Server details"
+    Write-Host "[Step 3 of 4] Back up SQL Server(s) details"
+    Write-Host $([Constants]::SingleDashLine)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableADAdminForSQLServers"
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -452,21 +486,26 @@ function Enable-ADAdminForSqlServers
     $backupFile = "$($backupFolderPath)\SQLServersWithADAdminDisabled.csv"
    
     $SQLServersWithADAdminDisabled | Export-CSV -Path $backupFile -NoTypeInformation -ErrorAction Stop
-    Write-Host "SQL Server(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "SQL Server(s) details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun)
     {
-        Write-Host "[Step 4 of 4] Enabling Azure AD admin for SQL Server(s)" 
+        Write-Host "[Step 4 of 4] Enable Azure AD admin for SQL Server(s)" 
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Do you want to enable AD Admin for SQL Server(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-
-        $userInput = Read-Host -Prompt "(Y|N)"
-        Write-Host $([Constants]::SingleDashLine)
-        if ($userInput -ne "Y")
+        if(-not $AutoRemediation)
         {
-            Write-Host "Azure AD admin will not be enabled for any SQL Server. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-            break
+            Write-Host "Do you want to enable AD Admin for SQL Server(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            $userInput = Read-Host -Prompt "(Y|N)"
+            Write-Host $([Constants]::SingleDashLine)
+            if ($userInput -ne "Y")
+            {
+                Write-Host "Azure AD admin will not be enabled for any SQL Server. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+                return
+            }
+            Write-Host "User has provided consent to enable Azure AD Admin for SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
 
         # To hold results from the remediation.
@@ -481,7 +520,7 @@ function Enable-ADAdminForSqlServers
             $sqlServerInstance = $_
             try
             {
-                Write-Host "Enabling Azure AD admin for SQL Server : [$($sqlServerInstance.ServerName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Enabling Azure AD admin for SQL Server: [$($sqlServerInstance.ServerName)]..." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
                 if(![String]::IsNullOrWhiteSpace($_.EmailId))
                 {
@@ -519,12 +558,12 @@ function Enable-ADAdminForSqlServers
                 else
                 {
                     $skippedSqlServers += $sqlServerInstance   
-                    Write-Host "Unsuccessful in enabling Azure AD admin for SQL Server: [$($sqlServerInstance.ServerName)] since Email Id: [$($_.EmailId)], is empty." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Unsuccessful in enabling Azure AD admin for SQL Server [$($sqlServerInstance.ServerName)], since email id [$($_.EmailId)] is empty." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ServerName))
-                    $logResource.Add("Reason","Unsuccessful in enabling Azure AD admin for SQL Server: [$($sqlServerInstance.ServerName)] since Email Id: [$($_.EmailId)], is empty.")    
+                    $logResource.Add("Reason","Unsuccessful in enabling Azure AD admin for SQL Server [$($sqlServerInstance.ServerName)], since email id [$($_.EmailId)] is empty.")    
                     $logSkippedResources += $logResource    
                 } 
             } 
@@ -575,7 +614,7 @@ function Enable-ADAdminForSqlServers
         }
         else
         {
-            Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             if ($($remediatedSqlServers | Measure-Object).Count -gt 0)
@@ -599,7 +638,7 @@ function Enable-ADAdminForSqlServers
                 # Write this to a file.
                 $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
                 $skippedSqlServers | Export-CSV -Path $skippedSqlServersFile -NoTypeInformation
-                Write-Host "This information has been saved to $($skippedSqlServersFile)" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "This information has been saved to [$($skippedSqlServersFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
             # Write-Host $([Constants]::DoubleDashLine)
@@ -614,20 +653,20 @@ function Enable-ADAdminForSqlServers
                     $logControl.SkippedResources=$logSkippedResources
                 }
             }
-            $log | ConvertTo-json -depth 100  | Out-File $logFile
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
     }
     else
     {
-        Write-Host "[Step 4 of 4] Enabling Azure AD admin for SQL Servers"
+        Write-Host "[Step 4 of 4] Enable Azure AD admin for SQL Servers"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Please provide corresponding AD Administrator Email Id for SQL Servers in the 'EmailId' column of the below file: [$($backupFile)]"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Please provide corresponding AD Administrator Email Id for SQL Servers in the 'EmailId' column of the file: [$($backupFile)]"  -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps:"  -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun switch, to enable Azure AD admin for all SQL Servers listed in the file."
-        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun switch, to enable Azure AD admin for all SQL Servers listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 
@@ -679,7 +718,7 @@ function Disable-ADAdminForSqlServers
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable AAD for SQL Servers in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 3] Prepare to disable AAD for SQL Servers in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
@@ -688,13 +727,13 @@ function Disable-ADAdminForSqlServers
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return
         }
     }
     # Connect to Azure account
@@ -724,8 +763,8 @@ function Disable-ADAdminForSqlServers
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is: [$($context.Account.Type)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        return
     }
     else
     {
@@ -733,16 +772,16 @@ function Disable-ADAdminForSqlServers
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "Note: To disable Azure AD admin for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To disable Azure AD admin for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
    
-    Write-Host "[Step 2 of 3] Preparing to fetch all SQL Server details"
+    Write-Host "[Step 2 of 3] Fetch all SQL Server details"
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not (Test-Path -Path $FilePath))
     {
         Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        return
     }
 
     Write-Host "Fetching all SQL Server(s) details from: [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -751,12 +790,12 @@ function Disable-ADAdminForSqlServers
     $sqlServerDetails = Import-Csv -LiteralPath $FilePath
     $validSqlServerDetails = $sqlServerDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ServerName)}
     $totalSqlServers = $(($validSqlServerDetails|measure-object).Count)
-    Write-Host "Successfully fetched SQL Server(s) details" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Successfully fetched SQL Server(s) details." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     if ($totalSqlServers -eq 0)
     {
         Write-Host "No SQL Server found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        return
     }
 
     Write-Host "Found [$($totalSqlServers)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -775,7 +814,7 @@ function Disable-ADAdminForSqlServers
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host "[Step 3 of 3] Disabling Azure AD admin for SQL Server(s)" 
+    Write-Host "[Step 3 of 3] Disable Azure AD admin for SQL Server(s)" 
     Write-Host $([Constants]::SingleDashLine)
     if (-not $Force)
     {
@@ -786,8 +825,11 @@ function Disable-ADAdminForSqlServers
         if($userInput -ne "Y")
         {
             Write-Host "Azure AD admin will not be disabled for SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-            break
+            Write-Host $([Constants]::SingleDashLine)
+            return
         }
+        Write-Host "User has provided consent to disable Azure AD admin for SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
@@ -853,7 +895,7 @@ function Disable-ADAdminForSqlServers
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "RollBack Summary:"
+    Write-Host "RollBack Summary:`n"
 
     if ($($rolledBackSqlServers | Measure-Object).Count -gt 0)
     {
@@ -864,7 +906,7 @@ function Disable-ADAdminForSqlServers
         # Write this to a file.
         $rolledBackSqlServersFile = "$($backupFolderPath)\RolledBackSQLServers.csv"
         $rolledBackSqlServers | Export-CSV -Path $rolledBackSqlServersFile -NoTypeInformation
-        Write-Host "This information has been saved to [$($rolledBackSqlServersFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "This information has been saved to [$($rolledBackSqlServersFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -876,7 +918,7 @@ function Disable-ADAdminForSqlServers
         # Write this to a file.
         $skippedSqlServersFile = "$($backupFolderPath)\SkippedSQLServers.csv"
         $skippedSqlServers | Export-CSV -Path $skippedSqlServersFile -NoTypeInformation
-        Write-Host "This information has been saved to [$($skippedSqlServersFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "This information has been saved to [$($skippedSqlServersFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 }
@@ -896,4 +938,3 @@ class Constants
     static [String] $DoubleDashLine = "========================================================================================================================"
     static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
 }
-
