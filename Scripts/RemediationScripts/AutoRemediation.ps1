@@ -67,11 +67,7 @@ function StartRemediation($timestamp)
         {
             Write-Host "User has provided consent to continue the remediation." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
-#             $remediationLevel = Read-Host -Prompt "At which level you want to perform remediation?
-# [1] Subscription: All controls will be remediated in a single flow.
-# [2] Control: Confirmation will be asked before remediating each control.
-# Press any other key to skip the remediation of current subscription
-# Enter the choice (1|2)";
+
             $remediationLevel = Read-Host -Prompt "You can choose one of the following mode to remediate non-compliant resources:
 [1] Remediate all the failing resources in a single go for all controls.
 [2] Remediate failing resources control wise, confirmation will be needed before remediating failing resources against each control.
@@ -256,7 +252,7 @@ function SetExecutionPolicy
     $executionPolicy = Get-ExecutionPolicy -Scope CurrentUser
     if(($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Restricted) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Undefined) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::AllSigned))
     {
-        Write-Host "Currently PowerShell execution policy is set to '$executionPolicy' mode. `n The policy to be set to 'RemoteSigned'. `nSelect Y to change policy for current user [Y/N]: " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Currently PowerShell execution policy is set to '$executionPolicy' mode. `n The policy to be set to 'RemoteSigned'. `nSelect Y to change policy for current user (Y|N): " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $executionPolicyAns = Read-Host 
 
         if($executionPolicyAns.Trim().ToLower() -eq "y" )
