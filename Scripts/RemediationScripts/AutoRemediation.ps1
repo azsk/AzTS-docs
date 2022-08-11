@@ -3,8 +3,7 @@ function PrintGeneralInformation
     $scriptInformation = "**General Information**
 [1]. All the failing controls, which have been downloaded using AzTS UI, are present at [$(Get-location)\FailedControls] and same will be referred for remediation.
 [2]. Remediation scripts will be used to fix the failing controls in bulk.
-[3]. Different controls require different level of permissions to fix them.
-[4]. Minimum of contributor role at a subscription level is recommended for most of the cases.";
+[3]. Minimum of contributor role at a subscription level is required for running BRS (Bulk Remediation Scripts) in most of the case, some may even require a higher priviledge access over a subscription.";
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host $scriptInformation -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
@@ -19,7 +18,7 @@ function PrintSubscriptions
     {
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
-        Write-Host $filesCount . $SubscriptionId
+        Write-Host ("$($filesCount). $($SubscriptionId)")
         $filesCount = $filesCount + 1
     }
 }
@@ -34,7 +33,7 @@ function StartRemediation($timestamp)
         $logFile = "LogFiles\" + $($timestamp) + "\log_" + $($SubscriptionId) + ".json"
         #Write-Host $logFile #delete
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Getting failing controls details of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Getting failing controls details of Subscription Id: [$($SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
         # Display unique controls and no of resources.
@@ -46,28 +45,39 @@ function StartRemediation($timestamp)
             foreach($resource in $control.FailedResourceList)
             {
                 $controlsTable+= [PSCustomObject]@{
-                    'Control Id' = if($count -eq 0) {$control.ControlId} Else {""};
-                    'Number Of Failing Resources' = if($count -eq 0) {$control.FailedResourceList.Length} Else {""};
-                    'Failing Resources' = $resource.ResourceName;
+                    'ControlId' = if($count -eq 0) {$control.ControlId} Else {""};
+                    'NumberOfFailingResources' = if($count -eq 0) {$control.FailedResourceList.Length} Else {""};
+                    'FailingResources' = $resource.ResourceName;
                 }
                 $count+=1
             }
         }
-        Write-Host "Failing Controls Summary" -ForegroundColor $([Constants]::MessageType.Update)
-        $controlsTable | Format-Table 
+        $colsProperty = @{Expression={$_.ControlId};Label="Control Id";Width=60;Alignment="left"},
+                        @{Expression={$_.NumberOfFailingResources};Label="Number Of Failing Resources";Width=30;Alignment="center"},
+                        @{Expression={$_.FailingResources};Label="Failing Resources";Width=30;Alignment="left"}
+
+        Write-Host "Failing Controls Summary:" -ForegroundColor $([Constants]::MessageType.Update)
+        $controlsTable | Format-Table -Property $colsProperty -Wrap
 
         #User input for whether to continue with current remediation or noty
         Write-Host $([Constants]::SingleDashLine)
-        $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y/N)";
+        $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y|N)";
 
         if(($startRemediation -eq 'Y') -or ($startRemediation -eq 'y'))
         {
-            Write-Host "User has provided consent to continue the remediation" -ForegroundColor $([Constants]::MessageType.Info)
-            $remediationLevel = Read-Host -Prompt "At which level you want to perform remediation?
-[1] Subscription: All controls will be remediated in a single flow.
-[2] Control: Confirmation will be asked before remediating each control.
-Press any other key to skip the remediation of current subscription
-Enter the choice (1/2)";
+            Write-Host "User has provided consent to continue the remediation." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+#             $remediationLevel = Read-Host -Prompt "At which level you want to perform remediation?
+# [1] Subscription: All controls will be remediated in a single flow.
+# [2] Control: Confirmation will be asked before remediating each control.
+# Press any other key to skip the remediation of current subscription
+# Enter the choice (1|2)";
+            $remediationLevel = Read-Host -Prompt "You can choose one of the following mode to remediate non-compliant resources:
+[1] Remediate all the failing resources in a single go for all controls.
+[2] Remediate failing resources control wise, confirmation will be needed before remediating failing resources against each control.
+Press any other key to skip the remediation of resources in current subscription.
+Enter the choice (1|2)";
+            Write-Host $([Constants]::SingleDashLine)
 
             #Create new log file for the current subscription
             try
@@ -89,10 +99,11 @@ Enter the choice (1/2)";
                     $jsonObject.Add("RemediatedResources", $remediatedResources)
                     $skippedResources = New-Object System.Collections.ArrayList
                     $jsonObject.Add("SkippedResources", $skippedResources)
-                    $controlList+=$jsonObject
+                    $jsonObject.Add("RollbackFile", [String]::Empty)
+                    $controlList += $jsonObject
                 }
                 $logFileSchema.Add("ControlList", $controlList)
-                $logFileSchema | ConvertTo-json -depth 100  | Out-File $logFile
+                $logFileSchema | ConvertTo-json -depth 10  | Out-File $logFile
             }
             catch
             {
@@ -108,7 +119,8 @@ Enter the choice (1/2)";
                     break;
                 }
                 if($remediationLevel -eq '2'){
-                    $controlLevelRemediation =  Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y/N)"
+                    $controlLevelRemediation =  Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y|N)"
+                    Write-Host $([Constants]::SingleDashLine)
                     if(($controlLevelRemediation -ne 'Y') -and ($controlLevelRemediation -ne 'y'))
                     {
                         #enter into log 
@@ -126,17 +138,13 @@ Enter the choice (1/2)";
                                 $logControl.SkippedResources=$skippedResources
                             }
                         }
-                        $log | ConvertTo-json -depth 100  | Out-File $logFile
+                        $log | ConvertTo-json -depth 10  | Out-File $logFile
 
+                        Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
-                        Write-Host "Skipped remediation of failing resources of control id : [$($control.ControlId)]" -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host $([Constants]::SingleDashLine)
-
                         continue;
                     }
                 }
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Remediating control having control id [$($control.ControlId)] using [$($control.LoadCommand)] bulk remediation script." -ForegroundColor $([Constants]::MessageType.Info)
                 
                 [string]$timeStampString = $timestamp
                 . ("./" + "RemediationScripts\" + $control.LoadCommand)
@@ -147,35 +155,39 @@ Enter the choice (1/2)";
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous") {
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_SQLDatabase_AuthZ_Use_AAD_Admin") {
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }else{
+                    continue;
                 }
+
+                Write-Host "Remediating Control Id [$($control.ControlId)] using [$($control.LoadCommand)] Bulk Remediation Script..." -ForegroundColor $([Constants]::MessageType.Info)
+                
                 function runCommand($command) {
                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                     else { Invoke-Expression $command }
                 }
                 runCommand($commandString)
+                Write-Host "Completed remediation of Control Id [$($control.ControlId)] using [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
            if(($remediationLevel -eq 1) -or ($remediationLevel -eq 2))
            {
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Completed remediation of subscription id : [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Completed remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine) 
            }
            else
            {
                 #tracking unexecuted resources
-                $skippedResources = @();
                 foreach($control in $controlRemediationList)
                 {
+                    $skippedResources = @();
                     foreach($failedResource in $control.FailedResourceList)
                     {
                         $resource = @{}
@@ -193,10 +205,10 @@ Enter the choice (1/2)";
                             $logControl.SkippedResources=$skippedResources
                         }
                     }
-                    $log | ConvertTo-json -depth 100  | Out-File $logFile
+                    $log | ConvertTo-json -depth 10  | Out-File $logFile
                 }
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Skipped remediation of subscription id : [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+
+                Write-Host "Skipped remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
            }
         }
@@ -214,7 +226,8 @@ function PrintRemediationSummary($timestamp)
     }
     else
     {
-        Write-Host "Remediation Summary" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         $remediationSummary = @()
         foreach($logFile in $logFiles)
         {
@@ -222,19 +235,22 @@ function PrintRemediationSummary($timestamp)
             foreach($logControl in $log.ControlList)
             {
                 $remediationSummary+=[PSCustomObject]@{
-                    "SubscriptionId" = $log.SubscriptionId;
-                    "ControlId" = $logControl.ControlId;
-                    "NumberOfFailingResources"= $logControl.NumberOfFailingResources;
-                    "NumberOfRemediatedResources" = $logControl.RemediatedResources.Length;
-                    "NumberOfSkippedResources" = $logControl.SkippedResources.Length;
+                    "Subscription Id" = $log.SubscriptionId;
+                    "Control Id" = $logControl.ControlId;
+                    "Number Of Failing Resources"= $logControl.NumberOfFailingResources;
+                    "Number Of Remediated Resources" = $logControl.RemediatedResources.Length;
+                    "Number Of Skipped Resources" = $logControl.SkippedResources.Length;
                 }
             }
         }
-        $remediationSummary | Format-Table
-        Write-Host "More details can be found at folder [$(Get-location)/LogFiles]" -ForegroundColor $([Constants]::MessageType.Warning)
+        $remediationSummary | Format-Table -Wrap
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Note: 
+1. You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI.
+2. To rollback the changes, individual BRS needs to be run and rollback command needs to be executed. The file required for rollback could be found in the detailed logs folder." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "NOTE: You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Detailed logs have been exported to the path [$(Get-location)/LogFiles/$($timestamp)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
     }
 }
 
@@ -282,8 +298,8 @@ class Constants
         Default = [System.ConsoleColor]::White
     }
 
-    static [string] $DoubleDashLine    = "================================================================================"
-    static [string] $SingleDashLine    = "--------------------------------------------------------------------------------"
+    static [String] $DoubleDashLine = "========================================================================================================================"
+    static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
 } 
 
 StartExecution
