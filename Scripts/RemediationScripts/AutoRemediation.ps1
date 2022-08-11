@@ -3,7 +3,7 @@ function PrintGeneralInformation
     $scriptInformation = "**General Information**
 [1]. All the failing controls, which have been downloaded using AzTS UI, are present at [$(Get-location)\FailedControls] and same will be referred for remediation.
 [2]. Remediation scripts will be used to fix the failing controls in bulk.
-[3]. Minimum of contributor role at a subscription level is required for running BRS(Bulk Remediation Scripts) in most of the case, some may even require a higher priviledge access over a subscription.";
+[3]. Minimum of contributor role at a subscription level is required for running BRS (Bulk Remediation Scripts) in most of the case, some may even require a higher priviledge access over a subscription.";
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host $scriptInformation -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
@@ -18,7 +18,7 @@ function PrintSubscriptions
     {
         $JsonContent =  Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
-        Write-Host $filesCount . $SubscriptionId
+        Write-Host ("$($filesCount). $($SubscriptionId)")
         $filesCount = $filesCount + 1
     }
 }
@@ -120,6 +120,7 @@ Enter the choice (1|2)";
                 }
                 if($remediationLevel -eq '2'){
                     $controlLevelRemediation =  Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y|N)"
+                    Write-Host $([Constants]::SingleDashLine)
                     if(($controlLevelRemediation -ne 'Y') -and ($controlLevelRemediation -ne 'y'))
                     {
                         #enter into log 
@@ -146,8 +147,6 @@ Enter the choice (1|2)";
                         continue;
                     }
                 }
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Remediating Control Id [$($control.ControlId)] using [$($control.LoadCommand)] Bulk Remediation Script..." -ForegroundColor $([Constants]::MessageType.Info)
                 
                 [string]$timeStampString = $timestamp
                 . ("./" + "RemediationScripts\" + $control.LoadCommand)
@@ -160,7 +159,12 @@ Enter the choice (1|2)";
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }else{
+                    continue;
                 }
+
+                Write-Host "Remediating Control Id [$($control.ControlId)] using [$($control.LoadCommand)] Bulk Remediation Script..." -ForegroundColor $([Constants]::MessageType.Info)
+                
                 function runCommand($command) {
                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
                     else { Invoke-Expression $command }
@@ -237,9 +241,10 @@ function PrintRemediationSummary($timestamp)
             }
         }
         $remediationSummary | Format-Table -Wrap
-        Write-Host "More details can be found at folder [$(Get-location)/LogFiles]." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Logs can be found at folder [$(Get-location)/LogFiles/$($timestamp)]." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "NOTE: You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI." -ForegroundColor $([Constants]::MessageType.Warning)
+        
         Write-Host $([Constants]::SingleDashLine)
     }
 }
