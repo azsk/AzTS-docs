@@ -140,10 +140,8 @@ Enter the choice (1|2)";
                         }
                         $log | ConvertTo-json -depth 10  | Out-File $logFile
 
-                        Write-Host $([Constants]::SingleDashLine)
                         Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
-
                         continue;
                     }
                 }
@@ -205,7 +203,7 @@ Enter the choice (1|2)";
                     }
                     $log | ConvertTo-json -depth 10  | Out-File $logFile
                 }
-                Write-Host $([Constants]::SingleDashLine)
+
                 Write-Host "Skipped remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
            }
@@ -224,7 +222,8 @@ function PrintRemediationSummary($timestamp)
     }
     else
     {
-        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         $remediationSummary = @()
         foreach($logFile in $logFiles)
         {
@@ -232,20 +231,22 @@ function PrintRemediationSummary($timestamp)
             foreach($logControl in $log.ControlList)
             {
                 $remediationSummary+=[PSCustomObject]@{
-                    "SubscriptionId" = $log.SubscriptionId;
-                    "ControlId" = $logControl.ControlId;
-                    "NumberOfFailingResources"= $logControl.NumberOfFailingResources;
-                    "NumberOfRemediatedResources" = $logControl.RemediatedResources.Length;
-                    "NumberOfSkippedResources" = $logControl.SkippedResources.Length;
+                    "Subscription Id" = $log.SubscriptionId;
+                    "Control Id" = $logControl.ControlId;
+                    "Number Of Failing Resources"= $logControl.NumberOfFailingResources;
+                    "Number Of Remediated Resources" = $logControl.RemediatedResources.Length;
+                    "Number Of Skipped Resources" = $logControl.SkippedResources.Length;
                 }
             }
         }
         $remediationSummary | Format-Table -Wrap
-        Write-Host "Logs can be found at folder [$(Get-location)/LogFiles/$($timestamp)]." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "Note: 
+1. You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI.
+2. To rollback the changes, individual BRS needs to be run and rollback command needs to be executed. The file required for rollback could be found in the detailed logs folder." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "NOTE: You need to scan the remediated subscriptions again using AzTS UI to get the updated results in AzTS UI." -ForegroundColor $([Constants]::MessageType.Warning)
-        
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Detailed logs have been exported to the path [$(Get-location)/LogFiles/$($timestamp)]" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
     }
 }
 
@@ -293,8 +294,8 @@ class Constants
         Default = [System.ConsoleColor]::White
     }
 
-    static [string] $DoubleDashLine    = "================================================================================"
-    static [string] $SingleDashLine    = "--------------------------------------------------------------------------------"
+    static [String] $DoubleDashLine = "========================================================================================================================"
+    static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
 } 
 
 StartExecution
