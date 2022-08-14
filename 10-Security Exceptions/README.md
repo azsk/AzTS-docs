@@ -16,4 +16,4 @@ Some examples of when an exception may be appropriate as a last resort are as fo
 ## Types of Exceptions
 
 AzTS supports below exception as of now:
-- Self-Attestation Exceptions
+- [Self-Attestation Exceptions](/10-Security%20Exceptions/SelfAttestation.md)
