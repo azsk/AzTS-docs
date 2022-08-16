@@ -10,6 +10,16 @@ Once the self-attesttation feature is enabled, Kindly follow the [instructions](
 
 ## 1. How to enable Self-Attestation feature
 
+Enabling self-attestation involves following steps:
+1. Create cosmos db account and table for exception management.
+2. Create Key Vault specific to AzTS(If not already present).
+3. Store the cosmos db connection string in the Key Vault as secret.
+4. Update AzTS API's Key Vault reference identity to user assigned identity.
+5. Update AzTS API's app settings to enable self-attestation feature.
+6. Create password credential for AzTS UI AAD App.
+7. Store AzTS UI AAD App password credential in Key Vault as secret.
+8. Update AzTS Scanner's app settings to enable self-attestation feature.
+
 ## 2. How to Submit a Self-Attestation Exception
 
 Below are the steps to submit a self-attestation exception
@@ -20,3 +30,5 @@ Below are the steps to submit a self-attestation exception
 5. In the pop-up window, select the type of exception as 'Self Attestation' and provide a valid business justification.
 6. Verify the entered details and select 'Confirm'.
 7. Close the pop-up window and re-scan the subscription.
+
+> **Warning** : When attesting controls, the highest level of discretion is required. Justification is required for each attested control in order to document the rationale for bypassing the security control. By attesting to this decision, you are confirming that you are prepared to take accountability for consequences that may occur due to security configurations not being correctly or fully constituted
