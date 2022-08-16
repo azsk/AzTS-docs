@@ -11,14 +11,157 @@ Once the self-attesttation feature is enabled, Kindly follow the [instructions](
 ## 1. How to enable Self-Attestation feature
 
 Enabling self-attestation involves following steps:
-1. Create cosmos db account and table for exception management.
-2. Create Key Vault specific to AzTS(If not already present).
-3. Store the cosmos db connection string in the Key Vault as secret.
-4. Update AzTS API's Key Vault reference identity to user assigned identity.
-5. Update AzTS API's app settings to enable self-attestation feature.
-6. Create password credential for AzTS UI AAD App.
-7. Store AzTS UI AAD App password credential in Key Vault as secret.
-8. Update AzTS Scanner's app settings to enable self-attestation feature.
+1. [Validate prerequisites on machine.](SelfAttestation.md#step-1-of-4-validate-prerequisites-on-machine)
+2. [Installing required Az modules.](SelfAttestation.md#step-2-of-4-installing-required-az-modules)
+3. [Download and extract deployment packaget.](SelfAttestation.md#step-3-of-4-download-and-extract-deployment-package)
+4. [Setup self-attestation feature.](SelfAttestation.md#step-4-of-4-setup-self-attestation-feature)
+
+### Step 1 of 4. Validate prerequisites on machine 
+
+  1. a.  Installation steps are supported using following OS options: 	
+
+      - Windows 10
+      - Windows Server 2019
+  
+  </br>
+
+  1. b. PowerShell 5.0 or higher: </br>
+  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
+  Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
+  If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
+
+      ![PowerShell Version](../Images/00_PS_Version.png)
+
+</br>
+
+[Back to top…](SelfAttestation.md#1-how-to-enable-self-attestation-feature)
+
+### Step 2 of 4. Installing required Az modules
+
+Az modules contain cmdlet to deploy Azure resources. These cmdlets are used to create AzTS scan solution resources with the help of ARM template.
+Install Az PowerShell Modules using the below command. 
+For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps).
+
+``` PowerShell
+# Install required Az modules
+# Required versions: 
+#   Az.Accounts >= 2.9.0
+#   Az.Resources >= 1.10.0
+#   Az.Storage >= 2.0.0
+#   Az.ManagedServiceIdentity >= 0.7.3
+#   Az.Monitor >= 1.5.0
+#   Az.OperationalInsights >= 1.3.4
+#   Az.ApplicationInsights >= 1.0.3
+#   Az.Websites >= 2.8.1
+#   Az.Network  >= 2.5.0
+#   Az.FrontDoor >= 1.8.0
+#   Az.CosmosDB >= 1.8.2
+Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.ManagedServiceIdentity -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.OperationalInsights -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.ApplicationInsights -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Websites -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.Network -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.FrontDoor -AllowClobber -Scope CurrentUser -repository PSGallery
+Install-Module -Name Az.CosmosDB -AllowClobber -Scope CurrentUser -repository PSGallery
+
+# Install AzureAd 
+# Required version:
+#   AzureAD >= 2.0.2.130
+Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
+```
+
+[Back to top…](SelfAttestation.md#1-how-to-enable-self-attestation-feature)
+
+### Step 3 of 4. Download and extract deployment package
+ 
+ Deployment package mainly contains:
+ 1. **ARM templates** which contains resource configuration details that need to be created as part of the setup.
+ 2. **Deployment setup scripts** which provides the cmdlet to run installation. <br/>
+
+If you have already downloaded the deployment package zip, directly go to step (3.d).
+
+3.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) to your local machine. </br>
+
+3.b. Extract zip to local folder location. <br/>
+
+3.c. Unblock the content. The below command will help to unblock files. <br/>
+
+  ``` PowerShell
+  Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
+  ```
+
+3.d. Point current path to deployment folder and load AzTS setup script <br/>
+
+
+  ``` PowerShell
+  # Point current path to extracted folder location and load setup script from the deployment folder 
+
+  CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+  # Load AzTS Setup script in session
+  . ".\AzTSSetup.ps1"
+
+  # Note: Make sure you copy  '.' present at the start of the line.
+
+  ```
+
+[Back to top…](SelfAttestation.md#1-how-to-enable-self-attestation-feature)
+
+### Step 4 of 4. Setup self-attestation feature  
+
+Self-Attestation feature could be enabled using following `Enable-ByDesignExceptionFeature` PowerShell command. This PowerShell command creates the datastore for exception management and updates the AzTS API's and Scanner's configurations to support the self-attestation(By-Design) exception feature. 
+
+</br>
+
+Before running the setup command, please log in to Azure Portal and Azure Active Directory (AD) where you have the AzTS solution installed using the following PowerShell command.
+
+``` PowerShell
+# Clear existing login, if any
+
+Disconnect-AzAccount
+Disconnect-AzureAD
+
+# Connect to AzureAD and AzAccount
+# Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+
+$TenantId = "<TenantId>"
+Connect-AzAccount -Tenant $TenantId
+Connect-AzureAD -TenantId $TenantId
+```
+
+**Execute the powershell command to setup self-attestation feature**
+
+``` PowerShell
+
+Enable-ByDesignExceptionFeature `
+      -HostSubscriptionId <AzTSHostSubId> `
+      -HostResourceGroupName <AzTSHostRGName> `
+      -CosmosDBLocationArray @("<Location1>","<Location2>") `
+      -KVSubscriptionId <KVSubId> `
+      -KVResourceGroupName <KVRGName> `
+      -KVLocation <KVLocation> `
+      -KeyVaultName <KVName> 
+
+```
+
+**Parameter details:**
+|Param Name|Description|Required?
+|----|----|----|
+|HostSubscriptionId| Subscription id in which AzTS setup is hosted.| Yes|
+|HostResourceGroupName| Resource group name in which AzTS setup is hosted.|Yes|
+|CosmosDBLocationArray| Primary and secondary location for cosmos db to be created. This cosmos db would be used as exception datastore.| Yes|
+|KVSubscriptionId| Subscription id in which AzTS KV is hosted or is to be created if not already present.| Yes|
+|KVResourceGroupName| Resource group name in which AzTS KV is hosted or is to be created if not already present.|Yes|
+|KVLocation| Location for the AzTS Key Vault. Key Vault would be created if not already present.|Yes|
+|KeyVaultName| Name of the AzTS Key Vault. Key Vault would be created if not already present.|Yes|
+
+</br>
+
+[Back to top…](SelfAttestation.md#1-how-to-enable-self-attestation-feature)
 
 ## 2. How to Submit a Self-Attestation Exception
 
