@@ -2,18 +2,18 @@
 
 ## Overview
 
-Self-Attestation is acknowledgement that the security failure poses no security risk. For example, the team mitigated the risk through code implementation, or the control is expected to fail due to the design of application.
+Self-Attestation is acknowledgement that the security failure poses no security risk. For example, the team mitigated the risk through code implementation, or the control is expected to fail due to the design of the application.
 
 By default the self-attestation feature is not enabled for the AzTs setup. Self-Attestation feature could be enabled by following these [steps](SelfAttestation.md#1-how-to-enable-self-attestation-feature).
 
-Once the self-attesttation feature is enabled, Kindly follow the [instructions](SelfAttestation.md#2-how-to-submit-a-self-attestation-exception) to submitt the self-attestation exception.
+Once the self-attestation feature is enabled, Kindly follow the [instructions](SelfAttestation.md#2-how-to-submit-a-self-attestation-exception) to submit the self-attestation exception.
 
 ## 1. How to enable Self-Attestation feature
 
 Enabling self-attestation involves following steps:
 1. [Validate prerequisites on machine.](SelfAttestation.md#step-1-of-4-validate-prerequisites-on-machine)
 2. [Installing required Az modules.](SelfAttestation.md#step-2-of-4-installing-required-az-modules)
-3. [Download and extract deployment packaget.](SelfAttestation.md#step-3-of-4-download-and-extract-deployment-package)
+3. [Download and extract deployment package.](SelfAttestation.md#step-3-of-4-download-and-extract-deployment-package)
 4. [Setup self-attestation feature.](SelfAttestation.md#step-4-of-4-setup-self-attestation-feature)
 
 ### Step 1 of 4. Validate prerequisites on machine 
@@ -113,7 +113,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 
 ### Step 4 of 4. Setup self-attestation feature  
 
-Self-Attestation feature could be enabled using following `Enable-ByDesignExceptionFeature` PowerShell command. This PowerShell command creates the datastore for exception management and updates the AzTS API's and Scanner's configurations to support the self-attestation(By-Design) exception feature. 
+Self-Attestation feature could be enabled using following `Enable-ByDesignExceptionFeature` PowerShell command. This PowerShell command creates cosmos db as the datastore for exception management and updates the AzTS API's and Scanner's configurations to support the self-attestation(By-Design) exception feature. 
 
 </br>
 
@@ -153,7 +153,7 @@ Enable-ByDesignExceptionFeature `
 |----|----|----|
 |HostSubscriptionId| Subscription id in which AzTS setup is hosted.| Yes|
 |HostResourceGroupName| Resource group name in which AzTS setup is hosted.|Yes|
-|CosmosDBLocationArray| Primary and secondary location for cosmos db to be created. This cosmos db would be used as exception datastore.| Yes|
+|CosmosDBLocationArray| Primary and secondary location for cosmos db to be created. This cosmos db would be used as datastore for exception management.| Yes|
 |KVSubscriptionId| Subscription id in which AzTS KV is hosted or is to be created if not already present.| Yes|
 |KVResourceGroupName| Resource group name in which AzTS KV is hosted or is to be created if not already present.|Yes|
 |KVLocation| Location for the AzTS Key Vault. Key Vault would be created if not already present.|Yes|
