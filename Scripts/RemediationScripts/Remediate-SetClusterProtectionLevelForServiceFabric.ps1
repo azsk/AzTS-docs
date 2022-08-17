@@ -551,7 +551,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $ServiceFabricRemediatedFile = "$($backupFolderPath)\RemediatedServiceFabric.csv"
                 $ServiceFabricRemediated | Export-CSV -Path $ServiceFabricRemediatedFile -NoTypeInformation
 
-                Write-Host "The information related to Service Fabric(s) where cluster protection level changed has been saved to [$($ServiceFabricRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Service Fabric(s) where cluster protection level changed has been saved to [$($ServiceFabricRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -562,7 +562,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $ServiceFabricSkippedWithSingleNodeFile = "$($backupFolderPath)\SkippedServiceFabricWithSingleNode.csv"
                 $ServiceFabricSkippedWithSingleNode | Export-CSV -Path $ServiceFabricSkippedWithSingleNodeFile -NoTypeInformation
 
-                Write-Host "The information related to Service Fabric(s) where cluster protection level not changed due to having single node has been saved to [$($ServiceFabricSkippedWithSingleNodeFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Service Fabric(s) where cluster protection level not changed due to having single node has been saved to [$($ServiceFabricSkippedWithSingleNodeFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host " [$($ServiceFabricSkippedWithSingleNodeFile)]" -ForegroundColor $([Constants]::MessageType.Update)
             }
         
