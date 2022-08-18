@@ -92,25 +92,29 @@ function Setup-Prerequisites
         None
     #>  
     
-    Write-Host "Required modules are: Az.Accounts, Az.Storage" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if required modules are present..."
-   
-    $availableModules = $(Get-Module -ListAvailable Az.Accounts,Az.Storage)
-    $requiredModules = @("Az.Accounts" , "Az.Storage")
+    $requiredModules = @("Az.Accounts", "Az.Storage")
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
-    # Check if the required modules are installed 
-    $requiredModules | ForEach-Object { 
-        if ($availableModules.Name -notcontains $_) 
-        { 
-            Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info) 
-            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop 
-            Write-Host "$($_) module is installed." -ForegroundColor $([Constants]::MessageType.Update)
-        } 
-        else 
-        { 
-            Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update) 
-        } 
-    } 
+    $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
+
+    # Check if the required modules are installed.
+    $requiredModules | ForEach-Object {
+        if ($availableModules.Name -notcontains $_)
+        {
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
+            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "$($_) module installed." -ForegroundColor $([Constants]::MessageType.Update)
+        }
+        else
+        {
+            Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
+        }
+    }
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 #function to perform remediation.
@@ -147,7 +151,16 @@ function Enable-StorageEncryptionInTransit
   
         .PARAMETER ExcludeResourceNames
         Specifies the name of resource  to be excluded from the remediation.To include this parameter please load the script form the file Helper.ps1 available in the Remediation script directory.
- 
+
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
         .INPUTS
         None. You cannot pipe objects to Enable-StorageEncryptionInTransit.
 
@@ -202,24 +215,45 @@ function Enable-StorageEncryptionInTransit
         [string]
         [Parameter(ParameterSetName = "DryRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
         [Parameter(ParameterSetName = "WetRun",  HelpMessage="Comma separated resource name(s) to be excluded from remediation")]
-        $ExcludeResourceNames
+        $ExcludeResourceNames,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
+        $Path,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
+        $TimeStamp
     )
 
-    Write-Host " $([Constants]::DoubleDashLine)"
-    Write-Host "[Step 1 of 4] : Checking for prerequisites..." 
-    
+    Write-Host $([Constants]::DoubleDashLine)
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
         }
+    }
+    else
+    {
+        Write-Host "[Step 1 of 4] Validate the User" 
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     $isContextSet = Get-AzContext
