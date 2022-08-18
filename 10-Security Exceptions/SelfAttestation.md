@@ -178,6 +178,8 @@ Enable-ByDesignExceptionFeature `
 > Azure_CDN_DP_Enable_Https<br/>
 > Azure_HDInsight_Deploy_Supported_Cluster_Version<br/>
 
+> **Note** : Self-Attestation Exceptions are applied for a period of 90 days. Once the exception expires, the user need to resubmitt the expectation again.
+
 Below are the steps to submit a self-attestation exception
 1. Navigate to the AzTS UI.
 2. Select the "Exception Mode" toggle button.
@@ -186,4 +188,10 @@ Below are the steps to submit a self-attestation exception
 5. In the pop-up window, select the type of exception as 'Self Attestation' and provide a valid business justification.
 6. Verify the entered details and select 'Confirm'.
 7. Close the pop-up window and re-scan the subscription.
+
+![Self Attestation1](../Images/Self-Attestation1.png)
+<br/>
+![Self Attestation2](../Images/Self-Attestation2.png)
+<br/>
+![Self Attestation3](../Images/Self-Attestation3.png)
 
