@@ -477,7 +477,7 @@ function Enable-AADForKubernetes
         }
         Write-Host "User has provided consent to enable AAD for all Kubernetes Services" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
-        
+
         Write-Host "Do you want to add Azure AD groups as administrators on each cluster? " -NoNewline
         
         $addAADGroup = $false
@@ -611,7 +611,7 @@ function Enable-AADForKubernetes
                 # Write this to a file.
                 $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
                 $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
-                Write-Host "Error enabling AAD on some Kubernetes cluster(s) and that information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "`nError enabling AAD on some Kubernetes cluster(s) and that information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -635,7 +635,7 @@ function Enable-AADForKubernetes
 
             if ($($kubernetesClusterSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "Error enabling AAD on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`nError enabling AAD on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
                 $kubernetesClusterSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
