@@ -4,14 +4,14 @@
 
 Self-Attestation is acknowledgement that the security failure poses no security risk. For example, the team mitigated the risk through code implementation, or the control is expected to fail due to the design of the application.
 
-By default the self-attestation feature is not enabled for the AzTs setup. Self-Attestation feature could be enabled by following these [steps](SelfAttestation.md#1-how-to-enable-self-attestation-feature).
+By default the self-attestation feature is not enabled for the AzTS setup. Once the AzTS setup is done, self-attestation feature could be enabled by following these [steps](SelfAttestation.md#1-how-to-enable-self-attestation-feature).
 
 Once the self-attestation feature is enabled, Kindly follow the [instructions](SelfAttestation.md#2-how-to-submit-a-self-attestation-exception) to submit the self-attestation exception.
 
 ## 1. How to enable Self-Attestation Exception feature
-> **Note**: Self-Attestation Exception feature could only be enabled for setup which have UI component enabled.
+> **Note**: Self-Attestation Exception feature could only be enabled once the AzTS setup is completed and only if the UI component has been enabled.
 
-> **Warning**: Enabling Self-Attestation feature would incur an minimum additional cost of USD 17.52 (For the cosmos db being used as exception datasource). This may increase depending upon the usage of feature.
+> **Warning**: Enabling Self-Attestation feature would incur a minimum additional cost of USD 17.52 per month (For the cosmos db being used as exception datasource). This may increase depending upon the usage of feature.
 
 Enabling self-attestation exception feature involves following steps:
 1. [Validate prerequisites on machine.](SelfAttestation.md#step-1-of-4-validate-prerequisites-on-machine)
@@ -168,6 +168,16 @@ Enable-ByDesignExceptionFeature `
 
 ## 2. How to Submit a Self-Attestation Exception
 
+> **Warning** : When attesting controls, the highest level of discretion is required. Justification is required for each attested control in order to document the rationale for bypassing the security control. By attesting to this decision, you are confirming that you are prepared to take accountability for consequences that may occur due to security configurations not being correctly or fully constituted.
+
+> **Note** : Only following controls are allowed for self-attestation exception.<br/>
+> Azure_Storage_AuthN_Dont_Allow_Anonymous<br/>
+> Azure_SQLDatabase_AuthZ_Use_AAD_Admin<br/>
+> Azure_AppService_Config_Disable_Web_Sockets<br/>
+> Azure_AppService_DP_Use_CNAME_With_SSL<br/>
+> Azure_CDN_DP_Enable_Https<br/>
+> Azure_HDInsight_Deploy_Supported_Cluster_Version<br/>
+
 Below are the steps to submit a self-attestation exception
 1. Navigate to the AzTS UI.
 2. Select the "Exception Mode" toggle button.
@@ -177,4 +187,3 @@ Below are the steps to submit a self-attestation exception
 6. Verify the entered details and select 'Confirm'.
 7. Close the pop-up window and re-scan the subscription.
 
-> **Warning** : When attesting controls, the highest level of discretion is required. Justification is required for each attested control in order to document the rationale for bypassing the security control. By attesting to this decision, you are confirming that you are prepared to take accountability for consequences that may occur due to security configurations not being correctly or fully constituted
