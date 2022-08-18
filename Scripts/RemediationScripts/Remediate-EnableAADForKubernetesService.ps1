@@ -179,7 +179,7 @@ function Enable-AADForKubernetes
     {
         try
         {
-            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user"
+            Write-Host "[Step 1 of 5] Validate and install the modules required to run the script and validate the user"
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
@@ -196,7 +196,7 @@ function Enable-AADForKubernetes
     }
     else
     {
-        Write-Host "[Step 1 of 3] Validate the User" 
+        Write-Host "[Step 1 of 5] Validate the User" 
         Write-Host $([Constants]::SingleDashLine)
     }  
     # Connect to Azure account
