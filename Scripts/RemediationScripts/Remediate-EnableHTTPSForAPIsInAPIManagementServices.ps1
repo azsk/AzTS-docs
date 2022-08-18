@@ -87,8 +87,10 @@ function Setup-Prerequisites
     # List of required modules
     $requiredModules = @("Az.Accounts", "Az.APIManagement")
 
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..."
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -96,14 +98,17 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "$($_) module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
             Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 function Enable-HttpsForApisInApiManagementServices
@@ -130,6 +135,15 @@ function Enable-HttpsForApisInApiManagementServices
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
+
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
         None. You cannot pipe objects to Enable-HttpsForApisInApiManagementServices.
@@ -171,95 +185,173 @@ function Enable-HttpsForApisInApiManagementServices
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
+        $Path,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
+        $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Preparing to enable HTTPS URL Scheme for API(s) in API Management Services in Subscription: $($SubscriptionId)"
+    Write-Host "[Step 1 of 4] Prepare to enable HTTPS URL Scheme for API(s) in API Management Services in Subscription: [$($SubscriptionId)]"
+    Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return
         }
     }
 
-    # Connect to Azure account
+    # Connect to Azure account.
     $context = Get-AzContext
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
-    Write-Host $([Constants]::SingleDashLine)
+    if(-not $AutoRemediation)
+    {
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }
 
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
+    Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
-    }
-
-    Write-Host "*** To enable HTTPS URL Scheme for API(s) in API Management Services in a Subscription, Contributor and higher privileges on the API Management Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all API Management Services..."
-
-    $apiManagementResources = @()
-
-    # No file path provided as input to the script. Fetch all API Management Services in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "Fetching all API Management Services in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        # Get all API Management Services in a Subscription
-        $apiManagementResources = Get-AzAPIManagement -ErrorAction Stop
+        Write-Host "This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is [$($context.Account.Type)]." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
     else
     {
-        if (-not (Test-Path -Path $FilePath))
+        Write-Host "[$($context.Account.Id)] is allowed to run this script." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
+    }
+
+    Write-Host "To enable HTTPS URL Scheme for API(s) in API Management Services in a Subscription, Contributor and higher privileges on the API Management Services are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+
+    Write-Host "[Step 2 of 4] Fetch all API Management Services"
+    Write-Host $([Constants]::SingleDashLine)
+
+    $apiManagementResources = @()
+
+    # To keep track of remediated and skipped resources
+    $logRemediatedResources = @()
+    $logSkippedResources=@()
+
+    $controlIds = "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme"
+
+    if($AutoRemediation)
+    {
+        if(-not (Test-Path -Path $Path))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error: File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
         }
-
-        Write-Host "Fetching all API Management Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        $apiManagementServicesDetails = Import-Csv -LiteralPath $FilePath
-        $validApiManagementServicesDetails =  $validApiManagementServicesDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
-        
-        $validApiManagementServicesDetails | ForEach-Object {
-            $resourceId = $_.ResourceId
-           
+        Write-Host "Fetching all API Management services failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No API Management service(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
+        }
+        $validResources | ForEach-Object { 
             try
             {
-                Write-Host "Fetching API Management Service resource: Resource ID - $($resourceId)"
-                $apiManagementResource = Get-AzAPIManagement -ResourceId $resourceId -ErrorAction SilentlyContinue
+                $apiManagementResource = Get-AzAPIManagement -ResourceId $_.ResourceId -ErrorAction SilentlyContinue
                 $apiManagementResources += $apiManagementResource
             }
             catch
             {
-                Write-Host "Error fetching API Management Service resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this API Management Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                return
+            }
+        }
+    }
+    else 
+    {
+        # No file path provided as input to the script. Fetch all API Management Services in the Subscription.
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
+            Write-Host "Fetching all API Management Services in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            # Get all API Management Services in a Subscription
+            $apiManagementResources = Get-AzAPIManagement -ErrorAction Stop
+        }
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                break
+            }
+
+            Write-Host "Fetching all API Management Services from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+
+            $apiManagementServicesDetails = Import-Csv -LiteralPath $FilePath
+            $validApiManagementServicesDetails =  $apiManagementServicesDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+            
+            $validApiManagementServicesDetails | ForEach-Object {
+                $resourceId = $_.ResourceId
+            
+                try
+                {
+                    $apiManagementResource = Get-AzAPIManagement -ResourceId $resourceId -ErrorAction SilentlyContinue
+                    $apiManagementResources += $apiManagementResource
+                }
+                catch
+                {
+                    Write-Host "Error fetching API Management Service resource: Resource ID: [$($resourceId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this API Management Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                }
             }
         }
     }
@@ -269,10 +361,12 @@ function Enable-HttpsForApisInApiManagementServices
     if ($totalApiManagementServices -eq 0)
     {
         Write-Host "No API Management service found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
   
-    Write-Host "Found $($totalApiManagementServices) API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalApiManagementServices)] API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Includes API Management Services where HTTPS URL Scheme of API(s) is enabled.
     $apiManagementServicesWithHttpsEnabled = @()
@@ -292,8 +386,10 @@ function Enable-HttpsForApisInApiManagementServices
 
         try
         {
-            Write-Host "Fetching API Management Service configuration: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName)"
-            #Creating new context for API Management.
+            Write-Host "Fetching API Management Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+
+            # Creating new context for API Management.
             $apiMgmtContext = New-AzAPIManagementContext -ResourceGroupName $ResourceGroupName -ServiceName $resourceName
             $apiMgmt = Get-AzAPIManagementAPI -Context $apiMgmtContext
             $apiMgmt | ForEach-Object{ 
@@ -306,6 +402,11 @@ function Enable-HttpsForApisInApiManagementServices
             if($listOfApisWithoutHttpsEnabled.Count -eq 0)
             {
                 $apiManagementServicesWithHttpsEnabled += $_
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","HTTPS URL Scheme of API(s) is already enabled in the API Management Service.")    
+                $logSkippedResources += $logResource
             }
             else
             {   $listOfApisWithoutHttpsEnabled = $listOfApisWithoutHttpsEnabled -join ","
@@ -314,6 +415,9 @@ function Enable-HttpsForApisInApiManagementServices
                                                                     @{N='ResourceName';E={$resourceName}},
                                                                     @{N='ListOfAPIsWithoutHTTPSEnabled';E={$listOfApisWithoutHttpsEnabled}}
             }
+
+            Write-Host "Successfully fetched the API Management Service configuration." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {   $listOfApisWithoutHttpsEnabled = $listOfApisWithoutHttpsEnabled -join ","
@@ -321,7 +425,13 @@ function Enable-HttpsForApisInApiManagementServices
                                                                 @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                 @{N='ResourceName';E={$resourceName}},
                                                                 @{N='ListOfAPIsWithoutHTTPSEnabled';E={$listOfApisWithoutHttpsEnabled}}
-            Write-Host "Error fetching API Management Service configuration: Resource ID - $($resourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($resourceName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching API Management Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+
+            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+            $logResource.Add("ResourceName",($_.ResourceName))
+            $logResource.Add("Reason","Error fetching API Management Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]")    
+            $logSkippedResources += $logResource
         }
     }
 
@@ -330,10 +440,24 @@ function Enable-HttpsForApisInApiManagementServices
     if ($totalApiManagementServicesWithoutHttpsEnabled -eq 0)
     {
         Write-Host "No API Management service found with HTTPS URL Scheme not enabled for API(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::DoubleDashLine)
+        if($AutoRemediation -and $totalApiManagementServices -gt 0)
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
+        return
     }
 
-    Write-Host "Found $($totalApiManagementServicesWithoutHttpsEnabled) API Management Service(s) to remediate." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalApiManagementServicesWithoutHttpsEnabled)] API Management Service(s) to remediate." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableHttpsForApisInApiManagementServices"
@@ -343,37 +467,44 @@ function Enable-HttpsForApisInApiManagementServices
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Backing up API Management Services details:"
-    
+    Write-Host "[Step 3 of 4] Back up API Management Services details"
+    Write-Host $([Constants]::SingleDashLine)
     # Backing up API Management Services details.
     $backupFile = "$($backupFolderPath)\ApiManagementServicesWithoutHttpsEnabled.csv"
 
     $apiManagementServicesWithoutHttpsEnabled| Export-CSV -Path $backupFile -NoTypeInformation
+    Write-Host "API Management Services details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun)
     {
-        Write-Host "API Management Services details have been backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host "HTTPS URL Scheme will be enabled on the API(s) of all API Management Services." -ForegroundColor $([Constants]::MessageType.Warning)
-
-        if (-not $Force)
+        Write-Host "HTTPS URL Scheme will be enabled on the API(s) of API Management Services." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        if(-not $AutoRemediation)
         {
-            Write-Host "Do you want to enable HTTPS URL Scheme on the API(s) of all API Management Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-            $userInput = Read-Host -Prompt "(Y|N)"
-
-            if($userInput -ne "Y")
+            if (-not $Force)
             {
-                Write-Host "HTTPS URL Scheme will not be enabled for any API(s) of API Management Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
+                Write-Host "Do you want to enable HTTPS URL Scheme on the API(s) of all API Management Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                $userInput = Read-Host -Prompt "(Y|N)"
+                Write-Host $([Constants]::SingleDashLine)
+                if($userInput -ne "Y")
+                {
+                    Write-Host "HTTPS URL Scheme will not be enabled for any API(s) of API Management Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    return
+                }
+                Write-Host "User has provided consent to enable HTTPS URL Schema on the API(s) of all API Management Services." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+            else
+            {
+                Write-Host "'Force' flag is provided. HTTPS URL Scheme will be enabled on the API(s) of all API Management Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
-        else
-        {
-            Write-Host "'Force' flag is provided. HTTPS URL Scheme will be enabled on the API(s) of all API Management Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-        }
 
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enabling HTTPS URL Scheme for API(s) in API Management Services..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "[Step 4 of 4] Enable HTTPS URL Scheme for API(s) in API Management Services"
+        Write-Host $([Constants]::SingleDashLine)
 
         # To hold results from the remediation.
         $apiManagementServicesRemediated = @()
@@ -383,7 +514,8 @@ function Enable-HttpsForApisInApiManagementServices
             $apiManagementService = $_
             $resourceGroupName = $_.ResourceGroupName
            
-            Write-Host "Enabling HTTPS URL Scheme for API(s) in API Management Service: Resource ID - $($_.ResourceId), Resource Group Name - $($resourceGroupName), Resource Name - $($_.ResourceName)" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Enabling HTTPS URL Scheme for API(s) in API Management Service: Resource ID: [$($_.ResourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             
             try
             {   #To hold name of API(s) which are remediated and skipped.        
@@ -410,22 +542,26 @@ function Enable-HttpsForApisInApiManagementServices
                     }
                 }  
 
-                if($listOfApisRemediated.count -ne 0)
+                if($listOfApisRemediated.Count -ne 0)
                 {
                    $listOfApisRemediated =$listOfApisRemediated -join ","
                    $apiManagementServicesRemediated += $apiManagementService |Select-Object @{N='ResourceID';E={$_.ResourceId}},
                                                                                             @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                                             @{N='ResourceName';E={$_.ResourceName}},
                                                                                             @{N='ListOfAPIsRemediated';E={$listOfApisRemediated}}
+                    Write-Host "Successfully enabled HTTPS URL Schema for the APIs of the API Management Service: [$(listOfApisRemediated)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host ([Constants]::SingleDashLine)
                 }
 
-                if($listOfApisSkipped.count -ne 0)
+                if($listOfApisSkipped.Count -ne 0)
                 {
-                    $listOfApisSkipped = $listOfApisSkipped -join ","
                     $apiManagementServicesSkipped += $apiManagementService | Select-Object @{N='ResourceID';E={$_.ResourceId}},
                                                                                             @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                                             @{N='ResourceName';E={$_.ResourceName}},
                                                                                             @{N='ListOfAPIsSkipped';E={$listOfApisSkipped}}
+                    $listOfApisSkipped = $listOfApisSkipped -join ","
+                    Write-Host "Unsuccessful in enabling HTTPS URL Schema for the APIs of the API Management Service: [$(listOfApisSkipped)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host ([Constants]::SingleDashLine)
                 }        
             }
             catch
@@ -435,56 +571,100 @@ function Enable-HttpsForApisInApiManagementServices
                                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                                         @{N='ListOfAPIsSkipped';E={$listOfApisSkipped}}
-                Write-Host "Error enabling HTTPS URL Scheme on the API. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this API Management Service. HTTPS URL Scheme will not be enabled." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error enabling HTTPS URL Scheme on the APIs of the API Management Service. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this API Management Service. HTTPS URL Scheme will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
                 return
             }    
                 
         }
-        
-        Write-Host $([Constants]::SingleDashLine)
 
         if (($apiManagementServicesRemediated | Measure-Object).Count -eq $totalApiManagementServicesWithoutHttpsEnabled)
         {
-            Write-Host "HTTPS URL Scheme successfully enabled for API(s) in all $($totalApiManagementServicesWithoutHttpsEnabled) API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "HTTPS URL Scheme successfully enabled for API(s) in all [$($totalApiManagementServicesWithoutHttpsEnabled)] API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "HTTPS URL Scheme successfully enabled for API(s) in $($($apiManagementServicesRemediated | Measure-Object).Count) out of $($totalApiManagementServicesWithoutHttpsEnabled) API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "HTTPS URL Scheme successfully enabled for API(s) in [$($($apiManagementServicesRemediated | Measure-Object).Count)] out of [$($totalApiManagementServicesWithoutHttpsEnabled)] API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($apiManagementServicesRemediated | Measure-Object).Count -gt 0)
+        if($AutoRemediation)
         {
-            Write-Host "HTTPS URL Scheme successfully enabled for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $apiManagementServicesRemediated | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsRemediated
-           
-            # Write this to a file.
-            $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedApiManagementServices.csv"
-            $apiManagementServicesRemediated | Export-CSV -Path $apiManagementServicesRemediatedFile -NoTypeInformation
-            Write-Host "This information has been saved to $($apiManagementServicesRemediatedFile)"
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+            if ($($apiManagementServicesRemediated | Measure-Object).Count -gt 0)
+            {
+                $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedApiManagementServices.csv"
+                $apiManagementServicesRemediated | Export-CSV -Path $apiManagementServicesRemediatedFile -NoTypeInformation
+                Write-Host "This information related to API Management Services, where HTTPS URL Scheme successfully enabled, has been saved to [$($apiManagementServicesRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            if ($($apiManagementServicesSkipped | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedApiManagementServices.csv"
+                $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
+                Write-Host "This information related to API Management Services, where HTTPS URL Scheme not enabled, has been saved to [$($apiManagementServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+        else
+        {
+            Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+        
+            if ($($apiManagementServicesRemediated | Measure-Object).Count -gt 0)
+            {
+                Write-Host "HTTPS URL Scheme successfully enabled for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
+                $apiManagementServicesRemediated | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsRemediated
+                Write-Host $([Constants]::SingleDashLine)
+                # Write this to a file.
+                $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedApiManagementServices.csv"
+                $apiManagementServicesRemediated | Export-CSV -Path $apiManagementServicesRemediatedFile -NoTypeInformation
+                Write-Host "This information has been saved to [$($apiManagementServicesRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            if ($($apiManagementServicesSkipped | Measure-Object).Count -gt 0)
+            {
+                Write-Host "Error enabling HTTPS URL Scheme for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
+                $apiManagementServicesSkipped | Format-Table -Property ResourceGroupName , ResourceName ,ListOfAPIsSkipped
+                Write-Host $([Constants]::SingleDashLine)
+
+                # Write this to a file.
+                $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedApiManagementServices.csv"
+                $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
+                Write-Host "This information has been saved to [$($apiManagementServicesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
         }
 
-        if ($($apiManagementServicesSkipped | Measure-Object).Count -gt 0)
+        if($AutoRemediation)
         {
-            Write-Host "`nError enabling HTTPS URL Scheme for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $apiManagementServicesSkipped | Format-Table -Property ResourceGroupName , ResourceName ,ListOfAPIsSkipped
-        
-            # Write this to a file.
-            $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedApiManagementServices.csv"
-            $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to $($apiManagementServicesSkippedFile)"
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                    $logControl.RollbackFile = $appServicesRemediatedFile
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
     }
     else 
     {
+        Write-Host "[Step 4 of 4] Enable HTTPS URL Scheme for API(s) in API Management Services"
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Since DryRun switch specified. HTTPS URL scheme will not be enabled for API Management Services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] API Management Services details have been backed up to $($backupFile). Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable HTTPS URL Scheme for API(s) in all API Management Services listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Next Steps:`n" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable HTTPS URL Scheme for API(s) in all API Management Services listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 
@@ -542,62 +722,79 @@ function Disable-HttpsForApisInApiManagementServices
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Preparing to disable HTTPS URL Scheme for API(s) in API Management Services in Subscription: $($SubscriptionId)"
-
+    Write-Host "[Step 1 of 3] Prepare to disable HTTPS URL Scheme for API(s) in API Management Services in Subscription: [$($SubscriptionId)]"
+    Write-Host $([Constants]::SingleDashLine)
+    
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return
         }
     }
 
-    # Connect to Azure account
+    # Connect to Azure account.
     $context = Get-AzContext
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "Connecting to Azure account..."
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "Checking if $($context.Account.Id) is allowed to run this script..."
+    Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     # Checking if the current account type is "User"
     if ($context.Account.Type -ne "User")
     {
-        Write-Host "WARNING: This script can only be run by `User` Account Type. Account Type of $($context.Account.Id) is: $($context.Account.Type)" -ForegroundColor $([Constants]::MessageType.Warning)
-        break
+        Write-Host "This script can only be run by `User` Account Type. Account Type of [$($context.Account.Id)] is [$($context.Account.Type)]." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        return
+    }
+    else
+    {
+        Write-Host "[$($context.Account.Id)] is allowed to run this script." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "*** To disable HTTPS URL Scheme for API(s) in API Management Services in a Subscription, Contributor and higher privileges on the API Management Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 3] Preparing to fetch all API Management Services..."
-    
+    Write-Host "To disable HTTPS URL Scheme for API(s) in API Management Services in a Subscription, Contributor and higher privileges on the API Management Services are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+
+    Write-Host "[Step 2 of 3] Fetch all API Management Services"
+    Write-Host $([Constants]::SingleDashLine)
+
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
 
-    Write-Host "Fetching all API Management Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all API Management Services from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+
     #$validApiManagementServicesDetails = @()
     $apiManagementServicesDetails = Import-Csv -LiteralPath $FilePath
     $validApiManagementServicesDetails = $apiManagementServicesDetails | Where-Object{ ![String]::IsNullOrWhiteSpace($_.ResourceId) }
@@ -607,11 +804,13 @@ function Disable-HttpsForApisInApiManagementServices
     if ($totalApiManagementServices -eq 0)
     {
         Write-Host "No API Management Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::SingleDashLine)
+        return
     }
 
-    Write-Host "Found $($totalApiManagementServices) API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
-    
+    Write-Host "Found [$($totalApiManagementServices)] API Management Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
+
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableHttpsForApisInApiManagementServices"
 
@@ -621,26 +820,32 @@ function Disable-HttpsForApisInApiManagementServices
     }
  
     Write-Host "HTTPS URL Scheme will be disabled on the API(s) in all API Management service." -ForegroundColor $([Constants]::MessageType.Warning)
-    
+    Write-Host $([Constants]::SingleDashLine)
+
     if (-not $Force)
     {
         Write-Host "Do you want to disable HTTPS URL Scheme for API(s) in all API Management Services?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
+        Write-Host $([Constants]::SingleDashLine)
 
         if($userInput -ne "Y")
         {
             Write-Host "HTTPS URL Scheme will not be disabled for API(s) in any API Management Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            break
+            Write-Host $([Constants]::SingleDashLine)
+            return
         }
+        Write-Host "User has provided consent to disable HTTPS URL Scheme for API(s) in all API Management Services." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
         Write-Host "'Force' flag is provided. HTTPS URL Scheme will be disabled on the API(s) in API Management Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Disabling HTTPS URL Scheme for API(s) in all API Management Services..." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "[Step 3 of 3] Disable HTTPS URL Scheme for API(s) in all API Management Services"
+    Write-Host $([Constants]::SingleDashLine)
 
     # Includes API Management Services, to which, previously made changes were successfully rolled back.
     $apiManagementServicesRolledBack = @()
@@ -652,7 +857,8 @@ function Disable-HttpsForApisInApiManagementServices
     $validApiManagementServicesDetails | ForEach-Object {
         $apiManagementService = $_
            
-        Write-Host "Disabling HTTPS URL Scheme for API(s) in API Management Service: Resource ID - $($_.ResourceId), Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ResourceName)" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Disabling HTTPS URL Scheme for API(s) in API Management Service: Resource ID: [$($_.ResourceId)], Resource Group Name: [$($_.ResourceGroupName)], Resource Name: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
             
         try
         {           
@@ -660,7 +866,7 @@ function Disable-HttpsForApisInApiManagementServices
             $listOfApisSkipped = @()
             $apiMgmtContext = New-AzAPIManagementContext -ResourceGroupName $_.ResourceGroupName -ServiceName $_.ResourceName
             $apiMgmt = Get-AzAPIManagementAPI -Context $apiMgmtContext
-            $apiManagementService.ListOfAPIsRemediated  = $apiManagementService.ListOfAPIsRemediated -split ","
+            $apiManagementService.ListOfAPIsRemediated = $apiManagementService.ListOfAPIsRemediated -split ","
             $apiMgmt | ForEach-Object {      
                 if($apiManagementService.ListOfAPIsRemediated -contains  $_.Name)
                 {
@@ -681,20 +887,24 @@ function Disable-HttpsForApisInApiManagementServices
 
             if($listOfApisRolledBack.count -ne 0)
             {
-                $listOfApisRolledBack = $listOfApisRolledBack -join ","
+                $listOfApisRolledBackStr = $listOfApisRolledBack -join ","
                 $apiManagementServicesRolledBack += $apiManagementService |Select-Object @{N='ResourceID';E={$_.ResourceId}},
                                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                                         @{N='ListOfAPIsRolledBack';E={$listOfApisRolledBack}}
+                Write-Host "Successfully rolled back following API(s) in the API Management Service: [$($listOfApisRolledBackStr)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if($listOfApisSkipped.count -ne 0)
             {
-                $listOfApisSkipped = $listOfApisSkipped -join ","
+                $listOfApisSkippedStr = $listOfApisSkipped -join ","
                 $apiManagementServicesSkipped += $apiManagementService | Select-Object @{N='ResourceID';E={$_.ResourceId}},
                                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                                         @{N='ListOfAPIsSkipped';E={$listOfApisSkipped}}
+                Write-Host "Unsuccessful in rolling back following API(s) in the API Management Service: [$($listOfApisSkippedStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
             }        
         }
         catch
@@ -704,8 +914,9 @@ function Disable-HttpsForApisInApiManagementServices
                                                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                                     @{N='ResourceName';E={$_ResourceName}},
                                                                                     @{N='ListOfAPIsSkipped';E={$listOfApisSkipped}}
-            Write-Host "Error disabling HTTPS URL Scheme on the API Management service. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping this API Management Service. HTTPS URL Scheme will not be enabled for any of the API(s) of this service." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error disabling HTTPS URL Scheme on the API Management service. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Skipping this API Management Service. HTTPS URL Scheme will not be enabled for any of the API(s) of this service." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host $([Constants]::SingleDashLine)
             return
         }  
     }  
@@ -719,22 +930,24 @@ function Disable-HttpsForApisInApiManagementServices
         {
             Write-Host "HTTPS URL Scheme successfully disabled for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
             $apiManagementServicesRolledBack | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsRolledBack
-
+            Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
             $apiManagementServiceRolledBackFile = "$($backupFolderPath)\RolledBackApiManagementServices.csv"
             $apiManagementServicesRolledBack | Export-CSV -Path $apiManagementServiceRolledBackFile -NoTypeInformation
-            Write-Host "This information has been saved to $($apiManagementServiceRolledBackFile)"
+            Write-Host "This information has been saved to [$($apiManagementServiceRolledBackFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
 
         if ($($apiManagementServicesSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "`nError disabling HTTPS URL Scheme for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error disabling HTTPS URL Scheme for the API(s) in following API Management Service(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $apiManagementServicesSkipped | Format-Table -Property ResourceGroupName , ResourceName , ListOfAPIsSkipped
-
+            Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
             $apiManagementServicesSkippedFile = "$($backupFolderPath)\RollBackSkippedApiManagementServices.csv"
             $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to $($apiManagementServicesSkippedFile)"
+            Write-Host "This information has been saved to [$($apiManagementServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
 }

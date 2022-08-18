@@ -259,7 +259,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     Write-Host "1. To delete all non-AAD identity providers (and basic authentication) from the API Management services in a Subscription, Contributor and higher privileges on the API Management services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "2. Following identity providers are ALLOWED to be configured for the API Management services: [$($allowedIdentityProviders -join ', ')]. These will NOT be deleted." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "3. API Management services of the following tiers / SKUs will NOT be considered for the remediation: [$($nonApplicableSkus -join ', ')]" -ForegroundColor $([Constants]::MessageType.Warning)
-
+    Write-Host $([Constants]::SingleDashLine)
     $apiManagementServices = @()
 
     # To keep track of remediated and skipped resources
@@ -291,19 +291,19 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
         $validResources | ForEach-Object { 
             try
             {
-                $apiManagementService = Get-AzApiManagement -ResourceId $resourceId -ErrorAction SilentlyContinue
+                $apiManagementService = Get-AzApiManagement -ResourceId $_.ResourceID -ErrorAction SilentlyContinue
                 $apiManagementServices += $apiManagementService
             }
             catch
             {
                 Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
                 $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
                 $logSkippedResources += $logResource
-                Write-Host $([Constants]::SingleDashLine)
                 return
             }
         }
@@ -313,7 +313,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
         # No file path provided as input to the script. Fetch all API Management services in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
-            Write-Host "Fetching all API Management services in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::SingleDashLine)
+            Write-Host "Fetching all API Management services in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             # Get all API Management services in a Subscription.
@@ -451,7 +451,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","API Management service doesn't have any non-AAD Identity Provider enabled.")    
+                $logResource.Add("Reason","API Management service doesnot have any non-AAD Identity Provider enabled.")    
                 $logSkippedResources += $logResource
                 return
             }
@@ -541,14 +541,14 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
 
     if (-not $DryRun)
     {
-        Write-Host "-DryRun not specified. Non-AAD identity providers will be 'deleted' from all API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Since, DryRun switch is not specified, Non-AAD identity providers will be 'deleted' from all API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "CAUTION!!!" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "1. Deleting the identity providers can impact users accessing the API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "2. ALL non-Azure Active Directory (AAD) identity providers (and basic authentication) will be deleted from all eligible API Management services in the Subscription." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "3. This script does not support rolling back and reconfiguring the non-AAD identity providers and other authentication options once deleted. It is advised to use this file to reconfigure them manually." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
 
-        if($AutoRemediation)
+        if(-not $AutoRemediation)
         {
             Write-Host "Do you want to delete the non-AAD identity providers (and basic authentication) from all API Management services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             $userInput = Read-Host -Prompt "(Y|N)"
@@ -743,7 +743,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
             {
                 Write-Host "Non-AAD identity providers (including basic authentication) successfully deleted from the following API Management service(s):" -ForegroundColor $([Constants]::MessageType.Update)
                 $apiManagementServicesRemediated | Format-Table -Property $colsProperty -Wrap
-
+                Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedAPIManagementServices.csv"
                 $apiManagementServicesRemediated | Export-CSV -Path $apiManagementServicesRemediatedFile -NoTypeInformation
@@ -755,7 +755,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
             {
                 Write-Host "Error deleting non-AAD identity providers (including basic authentication) from the following API Management service(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $apiManagementServicesSkipped | Format-Table -Property $colsProperty -Wrap
-
+                Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedAPIManagementServices.csv"
                 $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
@@ -780,12 +780,12 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     }
     else
     {
-        Write-Host "-DryRun specified. Non-AAD identity providers will not be deleted from any API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Since, DryRun switch specified. Non-AAD identity providers will not be deleted from any API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "1.Run the same command with: -FilePath $($backupFile) and without -DryRun, to delete all non-AAD identity providers (and basic authentication) for all API Management services listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "`nNotes:" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "1. Rollback is NOT supported. It is recommended to refer this file to manually reconfigure the identity providers, if required post the remediation." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "1. Rollback is not supported. It is recommended to refer this file to manually reconfigure the identity providers, if required post the remediation." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 }
