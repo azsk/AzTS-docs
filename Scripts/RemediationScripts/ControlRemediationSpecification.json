@@ -49,6 +49,18 @@
                     "RollbackCommand": "Reset-AppServiceRequiredTLSVersion",
                     "Arguments":["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_ContainerRegistry_Config_Enable_Security_Scanning",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSecurityScanningForContainerRegistry.ps1",
+            "LoadCommand": "Remediate-EnableSecurityScanningForContainerRegistry.ps1",     
+            "InitCommand": "Enable-SecurityScanningIdentityForContainerRegistry",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-SecurityScanningIdentityForContainerRegistry",
+                    "Arguments":["SubscriptionId"]
+                }
         }
     ]
 } 
