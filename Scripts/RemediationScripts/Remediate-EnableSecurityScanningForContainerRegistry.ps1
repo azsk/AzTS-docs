@@ -532,8 +532,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
 
         $containerRegistryWithoutSecurityScanningEnabled | Export-CSV -Path $backupFile -NoTypeInformation
 
-        Write-Host "Container Registry(s) details have been backed up to" -NoNewline
-        Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Container Registry(s) details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
