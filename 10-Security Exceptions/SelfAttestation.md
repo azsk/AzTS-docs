@@ -8,9 +8,12 @@ By default the self-attestation feature is not enabled for the AzTs setup. Self-
 
 Once the self-attestation feature is enabled, Kindly follow the [instructions](SelfAttestation.md#2-how-to-submit-a-self-attestation-exception) to submit the self-attestation exception.
 
-## 1. How to enable Self-Attestation feature
+## 1. How to enable Self-Attestation Exception feature
+> **Note**: Self-Attestation Exception feature could only be enabled for setup which have UI component enabled.
 
-Enabling self-attestation involves following steps:
+> **Warning**: Enabling Self-Attestation feature would incur an minimum additional cost of USD 17.52 (For the cosmos db being used as exception datasource). This may increase depending upon the usage of feature.
+
+Enabling self-attestation exception feature involves following steps:
 1. [Validate prerequisites on machine.](SelfAttestation.md#step-1-of-4-validate-prerequisites-on-machine)
 2. [Installing required Az modules.](SelfAttestation.md#step-2-of-4-installing-required-az-modules)
 3. [Download and extract deployment package.](SelfAttestation.md#step-3-of-4-download-and-extract-deployment-package)
@@ -168,7 +171,7 @@ Enable-ByDesignExceptionFeature `
 Below are the steps to submit a self-attestation exception
 1. Navigate to the AzTS UI.
 2. Select the "Exception Mode" toggle button.
-3. Expand the subscription to view scan result and select the non-complaint control which has to be attested.
+3. Expand the subscription to view scan result and select the non-compliant control which has to be attested.
 4. After selecting the control, select the 'Action' button in the right corner of the screen and then select 'Add/Renew Exceptions' from the drop down. This will open a pop-up window.
 5. In the pop-up window, select the type of exception as 'Self Attestation' and provide a valid business justification.
 6. Verify the entered details and select 'Confirm'.
