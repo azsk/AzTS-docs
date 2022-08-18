@@ -213,7 +213,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     {
         try
         {
-            Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user"
+            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user"
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
@@ -230,7 +230,8 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     }
     else
     {
-        Write-Host "[Step 1 of 3] Validating the user" 
+        Write-Host "[Step 1 of 4] Validating the user" 
+        Write-Host $([Constants]::SingleDashLine)
     }  
     # Connect to Azure account
     $context = Get-AzContext
