@@ -581,12 +581,17 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         Write-Host $([Constants]::SingleDashLine)
         # Loop through the list of Container Registry(s) which needs to be remediated.
         $containerRegistryWithoutSecurityScanningEnabled | ForEach-Object {
+            Write-Host "Creating role assignment with reader role for security scanner identity for image scanning on Container Registry with Resource ID: [$($_.ResourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+
             $containerRegistry = $_
             try
             {
                 $roleAssignment = New-AzRoleAssignment -Scope $_.ResourceId -ObjectId $ObjectId -RoleDefinitionName "Reader" 
                 if($null -ne $roleAssignment)
                 {
+                    Write-Host "Successfully created role assignment with reader role for security scanner identity on container registry." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
                     $containerRegistryRemediated += $containerRegistry
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -595,6 +600,9 @@ function Enable-SecurityScanningIdentityForContainerRegistry
                 }
                 else
                 {
+                    Write-Host "Unsuccessful in creating role assignment with reader role for security scanner identity on container registry." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Container Registry." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
                     $containerRegistrySkipped += $containerRegistry
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -605,6 +613,9 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             }
             catch
             {
+                Write-Host "Error encountered while assigning 'Reader' role to Security Scanner Identity over the container registry." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this Container Registry." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
                 $containerRegistrySkipped += $containerRegistry
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -666,6 +677,19 @@ function Enable-SecurityScanningIdentityForContainerRegistry
                 Write-Host "This information has been saved to [$($ContainerRegistrySkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
+        }
+        if($AutoRemediation)
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                    $logControl.RollbackFile = $ContainerRegistryRemediatedFile
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
     }
     else
