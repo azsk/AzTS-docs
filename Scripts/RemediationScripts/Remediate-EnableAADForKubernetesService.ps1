@@ -472,7 +472,7 @@ function Enable-AADForKubernetes
         if($userInput -ne "Y")
         {
             Write-Host "AAD will not be enabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
         Write-Host "User has provided consent to enable AAD for all Kubernetes Services" -ForegroundColor $([Constants]::MessageType.Update)
@@ -665,7 +665,7 @@ function Enable-AADForKubernetes
         Write-Host "[Step 5 of 5] Enable AAD for Kubernetes Services"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:`n" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable AAD for all Kubernetes Service resources listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
