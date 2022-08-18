@@ -154,7 +154,7 @@ Enter the choice (1|2)";
                 }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
-                    Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user interaction to execute.`n" -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $proceedWithRemediation = Read-Host -Prompt "Do you want to proceed with remediation for the control [$($control.ControlId)]? (Y|N)"
                     Write-Host $([Constants]::SingleDashLine)
                     if(($proceedWithRemediation -ne 'Y') -and ($proceedWithRemediation -ne 'y'))

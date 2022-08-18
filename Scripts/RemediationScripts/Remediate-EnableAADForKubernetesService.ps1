@@ -602,7 +602,8 @@ function Enable-AADForKubernetes
                 # Write this to a file.
                 $kubernetesClusterRemediatedFile = "$($backupFolderPath)\RemediatedKubernetesClusters.csv"
                 $kubernetesClusterRemediated | Export-CSV -Path $kubernetesClusterRemediatedFile -NoTypeInformation
-                Write-Host "AAD is enabled on the Kubernetes cluster(s) and that information has been saved to [$($kubernetesClusterRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "AAD is enabled on the Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "`nThis information has been saved to [$($kubernetesClusterRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -611,7 +612,8 @@ function Enable-AADForKubernetes
                 # Write this to a file.
                 $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
                 $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
-                Write-Host "`nError enabling AAD on some Kubernetes cluster(s) and that information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Error enabling AAD on some Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`nThis information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
