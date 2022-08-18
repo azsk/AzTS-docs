@@ -553,6 +553,10 @@ function Enable-HttpsForApisInApiManagementServices
                                                                                             @{N='ResourceName';E={$_.ResourceName}},
                                                                                             @{N='ListOfAPIsRemediated';E={$listOfApisRemediatedStr}}
                     Write-Host "Successfully enabled HTTPS URL Schema for the APIs of the API Management Service: [$($listOfApisRemediatedStr)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.ResourceName))
+                    $logRemediatedResources += $logResource
                     Write-Host ([Constants]::SingleDashLine)
                 }
 
@@ -565,8 +569,13 @@ function Enable-HttpsForApisInApiManagementServices
                                                                                             @{N='ListOfAPIsSkipped';E={$listOfApisSkippedStr}}
                                                                                                                                             
                     Write-Host "Unsuccessful in enabling HTTPS URL Schema for the APIs of the API Management Service: [$($listOfApisSkippedStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.ResourceName))
+                    $logResource.Add("Reason","Unsuccessful in enabling HTTPS URL Schema for the APIs of the API Management Service: [$($listOfApisSkippedStr)]")
+                    $logSkippedResources += $logResource
                     Write-Host ([Constants]::SingleDashLine)
-                }        
+                }    
             }
             catch
             {
@@ -576,6 +585,11 @@ function Enable-HttpsForApisInApiManagementServices
                                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                                         @{N='ListOfAPIsSkipped';E={$listOfApisSkippedStr}}
                                                                                        
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Error enabling HTTPS URL Scheme on the APIs of the API Management Service. Error: [$($_)].")
+                $logSkippedResources += $logResource
                 Write-Host "Error enabling HTTPS URL Scheme on the APIs of the API Management Service. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping this API Management Service. HTTPS URL Scheme will not be enabled." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
@@ -653,7 +667,7 @@ function Enable-HttpsForApisInApiManagementServices
                 if($logControl.ControlId -eq $controlIds){
                     $logControl.RemediatedResources=$logRemediatedResources
                     $logControl.SkippedResources=$logSkippedResources
-                    $logControl.RollbackFile = $appServicesRemediatedFile
+                    $logControl.RollbackFile = $apiManagementServicesRemediatedFile
                 }
             }
             $log | ConvertTo-json -depth 10  | Out-File $logFile
