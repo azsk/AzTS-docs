@@ -578,14 +578,14 @@ FTPS is used to enhance security for your Azure Web Application as it adds an ex
 
 ### Control Spec 
 
- **Passed :**
-
-> - FTP State found to be configured to FTPS (secure FTP) or marked as disabled for all slots in the App Service.
-
- **Failed :**
+ >**Passed :**
+ > - FTP State found to be configured to FTPS (secure FTP) or marked as disabled for all slots in the App Service.
+ >
+> **Failed :**
 > - FTP State should either be configured to FTPS (secure FTP) or marked as disabled for all slots in the App Service.
-
+>
 > **Note :** If no Microsoft Defender for Cloud (MDC) assessment is found for the App Service, response from the ARM API is considered for the evaluation.
+>
 
 ### Recommendation 
 - **Azure Portal** 
