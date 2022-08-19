@@ -426,7 +426,7 @@ function Enable-StorageEncryptionInTransit
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "Total Storage Account(s) excluded  from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Total Storage Account(s) excluded from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "Total Storage Account(s) for remediation: [$(($storageAccounts | Measure-Object).Count)]" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
@@ -460,7 +460,7 @@ function Enable-StorageEncryptionInTransit
                                                         @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                         @{N='EnableHttpsTrafficOnly';E={$_.EnableHttpsTrafficOnly}}                                                                  
             }
-            Write-Host "Successfully fetched secure tranfer configuration of Storage Account: [$($_.StorageAccountName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Successfully fetched secure tranfer configuration of Storage Account: [$($_.StorageAccountName)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch {
@@ -642,7 +642,7 @@ function Enable-StorageEncryptionInTransit
             
             if($($remediationFailure|Measure-Object).Count -gt 0)
             {
-                Write-Host "Secure transfer not enabled for the following Storage Accounts(s):" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Secure transfer not enabled for the following Storage Accounts(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $remediationFailure | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -844,8 +844,7 @@ function Disable-StorageEncryptionInTransit
         Write-Host $([Constants]::SingleDashLine)
     }
     
-    $validStorageAccountDetails | ForEach-Object
-    {
+    $validStorageAccountDetails | ForEach-Object {
         $rollbackSuccess = @()
         $rollbackFailure = @()
         Write-Host "Enabling Secure Transfer on the Storage Account: [$($_.StorageAccountName)] in Resource Group [$($_.ResourceGroupName)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -928,6 +927,6 @@ class Constants
         Default = [System.ConsoleColor]::White
     }
 
-    static [string] $DoubleDashLine    = "================================================================================"
-    static [string] $SingleDashLine    = "--------------------------------------------------------------------------------"
+    static [String] $DoubleDashLine = "========================================================================================================================"
+    static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
 }
