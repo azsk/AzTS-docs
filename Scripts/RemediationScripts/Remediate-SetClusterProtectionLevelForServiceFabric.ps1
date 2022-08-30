@@ -293,7 +293,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             $ServiceFabricDetails += $ServiceFabricResource  | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                           @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
                                                                           @{N='ResourceName';E={$_.Name}}, 
-                                                      @{N='IsClusterProtectionLevelExist';E={$_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel'}},
+                                                                          @{N='IsClusterProtectionLevelExist';E={$_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel'}},
                                                                           @{N='ClusterProtectionLevelValue';E={if(($_.FabricSettings.Parameters.Name -Contains 'ClusterProtectionLevel') -eq $true)
                                                                           { 
                                                                                 $param = $_.FabricSettings | Where-Object {$_.Parameters.Name -eq 'ClusterProtectionLevel'}
@@ -533,7 +533,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $logResource = @{}	
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                 $logResource.Add("ResourceName",($_.ResourceName))	
-                $logResource.Add("Reason","Encountered error while fetching Service Fabric configuration")    	
+                $logResource.Add("Reason","Encountered error while setting cluster protection level to Encrypt and Sign Service Fabric")    	
                 $logSkippedResources += $logResource	
                 Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 }

@@ -14,6 +14,39 @@
       }
     },
     {
+      "ControlId": "Azure_AppService_Config_Disable_Remote_Debugging",
+      "EnableRemediation": "true",
+      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
+      "LoadCommand": "Remediate-DisableRemoteDebuggingForAppServices.ps1",
+      "InitCommand": "Disable-RemoteDebuggingForAppServices",
+      "RollbackMetadata": {
+        "RollbackCommand": "Enable-RemoteDebuggingForAppServices",
+        "Arguments": [ "SubscriptionId" ]
+      }
+    },
+    {
+      "ControlId": "Azure_AppService_DP_Dont_Allow_HTTP_Access",
+      "EnableRemediation": "true",
+      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAppServices.ps1",
+      "LoadCommand": "Remediate-EnableHTTPSForAppServices.ps1",
+      "InitCommand": "Enable-HttpsForAppServices",
+      "RollbackMetadata": {
+        "RollbackCommand": "Disable-HttpsForAppServices",
+        "Arguments": [ "SubscriptionId" ]
+      }
+    },
+    {
+      "ControlId": "Azure_AppService_DP_Use_Secure_TLS_Version",
+      "EnableRemediation": "true",
+      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetAppServiceMinReqTLSVersion.ps1",
+      "LoadCommand": "Remediate-SetAppServiceMinReqTLSVersion.ps1",
+      "InitCommand": "Set-AppServiceRequiredTLSVersion",
+      "RollbackMetadata": {
+        "RollbackCommand": "Reset-AppServiceRequiredTLSVersion",
+        "Arguments": [ "SubscriptionId" ]
+      }
+    },
+    {
       "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
       "EnableRemediation": "true",
       "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
@@ -24,5 +57,6 @@
         "Arguments": [ "SubscriptionId", "RollBackType" ]
       }
     }
+
   ]
 } 

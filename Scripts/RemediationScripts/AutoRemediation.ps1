@@ -142,11 +142,21 @@ Enter the choice (1/2)";
                 . ("./" + "RemediationScripts\" + $control.LoadCommand)
                 $commandString = ""
 
-                if($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous"){
+               if($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous"){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                elseif ($control.ControlId -eq "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel") {
+                }elseif ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                } elseif ($control.ControlId -eq "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }else{
+                    Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                    continue;
+               
 
                 function runCommand($command) {
                     if ($command[0] -eq '"') { Invoke-Expression "& $command" }
