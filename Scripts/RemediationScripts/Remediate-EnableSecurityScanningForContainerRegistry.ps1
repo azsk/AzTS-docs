@@ -213,7 +213,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     {
         try
         {
-            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user"
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user"
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
@@ -224,13 +224,13 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
     }
     else
     {
-        Write-Host "[Step 1 of 4] Validating the user" 
+        Write-Host "[Step 1 of 4] Validate the user" 
         Write-Host $([Constants]::SingleDashLine)
     }  
     # Connect to Azure account
@@ -266,7 +266,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     if(($currentLoginRoleAssignments | Where-Object { $_.Scope -like "/providers/Microsoft.Management/managementGroups*" -or $_.Scope -eq "/subscriptions/$($SubscriptionId)"}| Measure-Object).Count -eq 0 )
     {
         Write-Host "Current $($context.Account.Type) [$($context.Account.Id)] does not have required permissions. At least Reader or higher priviliged role on the subscription is required to fetch role assignment details." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
         return;
     }
     else
@@ -294,7 +294,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         if(-not (Test-Path -Path $Path))
         {
             Write-Host "Error: File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
         Write-Host "Fetching all Container Registry(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -306,7 +306,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
         if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
         {
             Write-Host "No Container Registry(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
         $validResources | ForEach-Object { 
@@ -352,7 +352,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
             if (-not (Test-Path -Path $FilePath))
             {
                 Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host $([Constants]::DoubleDashLine)
                 return
             }
 
@@ -388,7 +388,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     if ($totalContainerRegistry -eq 0)
     {
         Write-Host "No Container Registry(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
   
@@ -414,7 +414,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     catch
     {
         Write-Host "Error occured while fetching security scanning role assignment(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
         $containerRegistryDetails | ForEach-Object
         {
             $logResource = @{}
@@ -486,7 +486,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
     if ($totalContainerRegistryWithoutSecurityScanningEnabled  -eq 0)
     {
         Write-Host "No Container Registry(s) found for granting access to security scanner identity for image scans. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
         if($AutoRemediation -and $totalContainerRegistry -gt 0)
         {
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
@@ -558,7 +558,7 @@ function Enable-SecurityScanningIdentityForContainerRegistry
                 if($userInput -ne "Y")
                 {
                     Write-Host "Access is not granted to security scanner identity for image scans on Container Registry(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-                    Write-Host $([Constants]::SingleDashLine)
+                    Write-Host $([Constants]::DoubleDashLine)
                     return
                 }
                 Write-Host "User has provided consent to grant access to security scanner for image scans on Container Registry(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -762,7 +762,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
     {
         try
         {
-            Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user"
+            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validating the user"
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
@@ -773,13 +773,14 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
     }
     else
     {
-        Write-Host "[Step 1 of 3] Validating the user" 
+        Write-Host "[Step 1 of 3] Validate the user" 
+        Write-Host $([Constants]::SingleDashLine)
     }  
 
     # Connect to Azure account
@@ -812,7 +813,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
     if(($currentLoginRoleAssignments | Where-Object { $_.Scope -like "/providers/Microsoft.Management/managementGroups*" -or $_.Scope -eq "/subscriptions/$($SubscriptionId)"}| Measure-Object).Count -eq 0 )
     {
         Write-Host "Current $($context.Account.Type) [$($context.Account.Id)] does not have required permissions. At least Reader or higher priviliged role on the subscription is required to fetch role assignment details." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
         return;
     }
     else
@@ -827,7 +828,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
     if (-not (Test-Path -Path $FilePath))
     {
         Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
@@ -842,6 +843,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
     if ($totalContainerRegistry -eq 0)
     {
         Write-Host "No Container Registry(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
@@ -875,7 +877,7 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         if($userInput -ne "Y")
         {
             Write-Host "User has not provided consent to remove security scanner identity access for image scans on Container Registry(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
 
@@ -916,9 +918,10 @@ function Disable-SecurityScanningIdentityForContainerRegistry
         }
     }
 
+    Write-Host $([Constants]::DoubleDashLine)
+    
     if ($($ContainerRegistryRolledBack | Measure-Object).Count -gt 0 -or $($ContainerRegistrySkipped | Measure-Object).Count -gt 0)
     {
-        Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($ContainerRegistryRolledBack | Measure-Object).Count -gt 0)
