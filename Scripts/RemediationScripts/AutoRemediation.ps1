@@ -156,6 +156,7 @@ Enter the choice (1/2)";
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     continue;
+                }
                
 
                 function runCommand($command) {
