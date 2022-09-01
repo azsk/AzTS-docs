@@ -9,6 +9,8 @@
 
 4. [Azure_AppService_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#4-Azure_AppService_DP_Use_Secure_TLS_Version)
 
+5. [Azure_ContainerRegistry_Config_Enable_Security_Scanning](ControlsEligibleForRemediationThroughUI.md#5-Azure_ContainerRegistry_Config_Enable_Security_Scanning)
+
 <br />
 
 ___
@@ -62,5 +64,18 @@ Use Approved TLS Version in App Service
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+___
+
+## 5. Azure_ContainerRegistry_Config_Enable_Security_Scanning
+
+### Display Name
+Security scanner identity must be granted access to Container Registry for image scans
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSecurityScanningForContainerRegistry](Remediate-EnableSecurityScanningForContainerRegistry.ps1)
+
+### Minimum permissions required to run the script
+Reader role at subscription level and Contributor role at resource level
 
 ___
