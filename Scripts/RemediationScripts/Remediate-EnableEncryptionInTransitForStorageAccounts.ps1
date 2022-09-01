@@ -426,7 +426,10 @@ function Enable-StorageEncryptionInTransit
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "Total Storage Account(s) excluded from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
+    if(-not $AutoRemediation)
+    {
+        Write-Host "Total Storage Account(s) excluded from remediation:" [$($totalStorageAccount - ($storageAccounts | Measure-Object).Count)] -ForegroundColor $([Constants]::MessageType.Update)
+    }
     Write-Host "Total Storage Account(s) for remediation: [$(($storageAccounts | Measure-Object).Count)]" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
@@ -437,6 +440,8 @@ function Enable-StorageEncryptionInTransit
     $stgWithEnableHTTPS = @()
     #Storage Account with disabled Https only
     $stgWithDisableHTTPS = @()
+    #Storage Account where error is encountered.
+    $stgEncounteredError = @()
 
     $storageAccounts | ForEach-Object {
         try 
@@ -464,6 +469,7 @@ function Enable-StorageEncryptionInTransit
             Write-Host $([Constants]::SingleDashLine)
         }
         catch {
+            $stgEncounteredError += $_
             Write-Host "Error encountered while fetching secure transfer configuration of the Storage Account: [$($_.StorageAccountName)]." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host "Skipping this Storage Account..." -ForegroundColor $([Constants]::MessageType.Warning)
             $logResource = @{}
@@ -476,6 +482,7 @@ function Enable-StorageEncryptionInTransit
     }  
     $totalStgWithEnableHTTPS = ($stgWithEnableHTTPS | Measure-Object).Count
     $totalStgWithDisableHTTPS = ($stgWithDisableHTTPS | Measure-Object).Count
+    $totalStgEncounteredError = ($stgEncounteredError | Measure-Object).Count
 
     if ($totalStgWithDisableHTTPS -eq 0)
     {
@@ -496,7 +503,10 @@ function Enable-StorageEncryptionInTransit
         return
     }
 
-    Write-Host "Found [$($totalStgWithDisableHTTPS)] out of [$(($storageAccounts | Measure-Object).Count)] Storage Accounts(s) with Secure Transfer disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Storage Accounts(s) with Secure Transfer enabled: [$($totalStgWithEnableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Storage Accounts(s) with Secure Transfer disabled: [$($totalStgWithDisableHTTPS)]" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Storage Accounts(s) where error was encountered while fetching configuration details: [$($totalStgEncounteredError)]" -ForegroundColor $([Constants]::MessageType.Update)
+
     Write-Host $([Constants]::SingleDashLine)
    
     Write-Host "[Step 4 of 5] Back up the Storage Account(s) details"
@@ -774,14 +784,11 @@ function Disable-StorageEncryptionInTransit
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
-    if(-not($AutoRemediation))
-    {
-        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-        Write-Host "Account Name: [$($context.Account.Id)]"
-        Write-Host "Account Type: [$($context.Account.Type)]"
-        Write-Host $([Constants]::SingleDashLine)
-    }
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
+    Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "To disable secure transfer for Storage Accounts in a Subscription, Contributor or higher privileges on the Storge Accounts are required."
     Write-Host $([Constants]::SingleDashLine) 
