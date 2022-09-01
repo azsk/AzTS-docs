@@ -155,7 +155,7 @@ Enter the choice (1|2)";
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_ContainerRegistry_Config_Enable_Security_Scanning") {
                     Write-Host "Object Id for the Security Scanner Identity is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
-                    Write-Host "Object Id of the Security Scanner Identity can be found in the status reason column against the failing control result in AzTS UI." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Object Id of the Security Scanner Identity can be found in the status reason column against the failing control result in AzTS UI.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
                     Write-Host $([Constants]::SingleDashLine)
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
