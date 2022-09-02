@@ -11,6 +11,8 @@
 
 5. [Azure_ContainerRegistry_Config_Enable_Security_Scanning](ControlsEligibleForRemediationThroughUI.md#5-Azure_ContainerRegistry_Config_Enable_Security_Scanning)
 
+6. [Azure_KubernetesService_AuthN_Enabled_AAD](ControlsEligibleForRemediationThroughUI.md#6-Azure_KubernetesService_AuthN_Enabled_AAD)
+
 <br />
 
 ___
@@ -77,5 +79,18 @@ Security scanner identity must be granted access to Container Registry for image
 
 ### Minimum permissions required to run the script
 Reader role at subscription level and Contributor role at resource level
+
+___
+
+## 6. Azure_KubernetesService_AuthN_Enabled_AAD
+
+### Display Name
+AAD should be enabled in Kubernetes Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
 
 ___
