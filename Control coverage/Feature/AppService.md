@@ -568,10 +568,10 @@ Managed Service Identity (MSI) allows your app to easily access other AAD-protec
 
 ___ 
 
-## Azure_AppService_DP_Dont_Use_FTP_Deployment
+## Azure_AppService_DP_Use_Secure_FTP_Deployment
 
 ### Display Name 
-App Service should not be configured to accept FTP plain text connections
+App Services should use secure FTP deployments.
 
 ### Rationale 
 FTPS is used to enhance security for your Azure Web Application as it adds an extra layer of security to the FTP protocol,Enforcing FTPS-only Access for your Azure App Services apps can guarantee that the encrypted traffic between the web apps and servers and the FTP clients cannot be decrypted by malicious actors.
