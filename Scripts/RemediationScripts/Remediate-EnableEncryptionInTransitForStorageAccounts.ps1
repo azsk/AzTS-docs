@@ -619,7 +619,7 @@ function Enable-StorageEncryptionInTransit
                 # Write this to a file.
                 $storageAccountRemediatedFile = "$($backupFolderPath)\RemediateStorageAccountsEnableSecureTransfer.csv"
                 $remediationSuccess | Export-CSV -Path $storageAccountRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($storageAccountRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Secure transfer successfully enabled for the Storage Account(s) and this information has been saved to [$($storageAccountRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "`nUse this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -629,7 +629,7 @@ function Enable-StorageEncryptionInTransit
                 # Write this to a file.
                 $storageAccountSkippedFile = "$($backupFolderPath)\SkippedStorageAccountsEnableSecureTransfer.csv"
                 $remediationFailure | Export-CSV -Path $storageAccountSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($storageAccountSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Secure transfer not enabled for the Storage Accounts(s) and this information has been saved to [$($storageAccountSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
