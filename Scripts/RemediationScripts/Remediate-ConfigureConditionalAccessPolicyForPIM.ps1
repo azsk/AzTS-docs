@@ -303,7 +303,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $roleId = $policyId.PolicyId.Split('/')
         
             $policyDetails = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)" -Name $roleId[-1]
-            $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $true}
+            $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {($_.claimValue -eq "c1" -and $_.IsEnabled -eq $true) -or ($_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true)}
 
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
