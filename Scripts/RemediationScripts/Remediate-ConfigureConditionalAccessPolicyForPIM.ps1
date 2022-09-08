@@ -56,14 +56,6 @@
         1. To disable Conditional Access (CA) policy in Subscription, from a previously remediated snapshot:
                 Disable-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'
         
-        2. To disable Conditional Access (CA) policy only for 'Owner' role in Subscription:
-                Disable-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'Owner'
-
-        3. To disable Conditional Access (CA) policy only for 'Contributor' role in Subscription:
-                Disable-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'Contributor'
-
-        4. To disable Conditional Access (CA) policy only for 'User Access Administrator' role in Subscription:
-                Disable-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'User Access Administrator'
 ###>
 
 
@@ -311,7 +303,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $roleId = $policyId.PolicyId.Split('/')
         
             $policyDetails = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)" -Name $roleId[-1]
-            $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {$_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true}
+            $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {($_.claimValue -eq "c1" -and $_.IsEnabled -eq $true) -or ($_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true)}
 
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
@@ -397,7 +389,7 @@ function Configure-ConditionalAccessPolicyForPIM
                 $body = @'
 	            {
 	                "isEnabled": true,
-	                "claimValue": "urn:microsoft:req1",
+	                "claimValue": "c1",
 	                "id": "AuthenticationContext_EndUser_Assignment",
 	                "ruleType": "RoleManagementPolicyAuthenticationContextRule",
 	                "target": {
@@ -412,7 +404,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
                 $updatedPolicyDetail = Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $body
 
-                $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true}
+                $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $true}
 
                 if (![String]::IsNullOrWhiteSpace($configuredPolicyDetail))
                 {
@@ -498,15 +490,6 @@ function Disable-ConditionalAccessPolicyForPIM
         .EXAMPLE
         PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'.
 
-        .EXAMPLE
-        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Owner'.
-
-        .EXAMPLE
-        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Contributor'.
-
-        .EXAMPLE
-        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'User Access Administrator'.
-
         .LINK
         None
     #>
@@ -521,11 +504,6 @@ function Disable-ConditionalAccessPolicyForPIM
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies validation of prerequisites for the command")]
         [Parameter(ParameterSetName = "CustomConfig", HelpMessage="Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
-
-        [String]
-        [Parameter(ParameterSetName = "CustomConfig", Mandatory = $false, HelpMessage="Specifies the role name on which CA policy needs to be disabled")]
-        [ValidateSet("Owner", "Contributor", "User Access Administrator")]
-        $RoleName,
 
         [String]
         [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the rollback")]
@@ -630,7 +608,7 @@ function Disable-ConditionalAccessPolicyForPIM
             if($userInput -ne "Y")
             {
                 Write-Host "Conditional Access policy will not be disabled for [$($role)] role. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
+                continue
             }
 
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
@@ -640,7 +618,7 @@ function Disable-ConditionalAccessPolicyForPIM
             $body = @'
 	        {
 	            "isEnabled": false,
-	            "claimValue": "urn:microsoft:req1",
+	            "claimValue": "c1",
 	            "id": "AuthenticationContext_EndUser_Assignment",
 	            "ruleType": "RoleManagementPolicyAuthenticationContextRule",
 	            "target": {
@@ -655,7 +633,7 @@ function Disable-ConditionalAccessPolicyForPIM
 
             $updatedPolicyDetail = Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $body
 
-            $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $false}
+            $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $false}
 
             if (![String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
