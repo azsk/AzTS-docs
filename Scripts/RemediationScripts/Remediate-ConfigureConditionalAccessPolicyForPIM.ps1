@@ -311,7 +311,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $roleId = $policyId.PolicyId.Split('/')
         
             $policyDetails = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)" -Name $roleId[-1]
-            $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {$_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true}
+            $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $true}
 
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
@@ -397,7 +397,7 @@ function Configure-ConditionalAccessPolicyForPIM
                 $body = @'
 	            {
 	                "isEnabled": true,
-	                "claimValue": "urn:microsoft:req1",
+	                "claimValue": "c1",
 	                "id": "AuthenticationContext_EndUser_Assignment",
 	                "ruleType": "RoleManagementPolicyAuthenticationContextRule",
 	                "target": {
@@ -412,7 +412,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
                 $updatedPolicyDetail = Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $body
 
-                $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true}
+                $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $true}
 
                 if (![String]::IsNullOrWhiteSpace($configuredPolicyDetail))
                 {
@@ -640,7 +640,7 @@ function Disable-ConditionalAccessPolicyForPIM
             $body = @'
 	        {
 	            "isEnabled": false,
-	            "claimValue": "urn:microsoft:req1",
+	            "claimValue": "c1",
 	            "id": "AuthenticationContext_EndUser_Assignment",
 	            "ruleType": "RoleManagementPolicyAuthenticationContextRule",
 	            "target": {
@@ -655,7 +655,7 @@ function Disable-ConditionalAccessPolicyForPIM
 
             $updatedPolicyDetail = Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $body
 
-            $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $false}
+            $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $false}
 
             if (![String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
