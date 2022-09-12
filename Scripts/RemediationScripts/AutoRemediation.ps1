@@ -63,7 +63,7 @@ function StartRemediation($timestamp)
         Write-Host $([Constants]::SingleDashLine)
         $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y|N)";
 
-        if(($startRemediation -eq 'Y') -or ($startRemediation -eq 'y'))
+        if($startRemediation -eq 'Y')
         {
             Write-Host "User has provided consent to continue the remediation." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
@@ -117,7 +117,7 @@ Enter the choice (1|2)";
                 if($remediationLevel -eq '2'){
                     $controlLevelRemediation =  Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y|N)"
                     Write-Host $([Constants]::SingleDashLine)
-                    if(($controlLevelRemediation -ne 'Y') -and ($controlLevelRemediation -ne 'y'))
+                    if($controlLevelRemediation -ne 'Y')
                     {
                         #enter into log 
                         foreach($failedResource in $control.FailedResourceList)
@@ -147,6 +147,8 @@ Enter the choice (1|2)";
                 $commandString =""
                 if($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous"){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_Storage_DP_Encrypt_In_Transit") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") {
@@ -157,6 +159,23 @@ Enter the choice (1|2)";
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
+                    Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
+                    $proceedWithRemediation = Read-Host -Prompt "Do you want to proceed with remediation for the control [$($control.ControlId)]? (Y|N)"
+                    Write-Host $([Constants]::SingleDashLine)
+                    if($proceedWithRemediation -ne 'Y')
+                    {
+                        Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+                        continue;
+                    }
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_ContainerRegistry_Config_Enable_Security_Scanning") {
+                    Write-Host "Object Id for the Security Scanner Identity is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Object Id of the Security Scanner Identity can be found in the status reason column against the failing control result in AzTS UI.`n" -ForegroundColor $([Constants]::MessageType.Warning)
+                    $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
+                    Write-Host $([Constants]::SingleDashLine)
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }else{
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)

@@ -15,6 +15,18 @@
                 }
         },
         {
+            "ControlId": "Azure_Storage_DP_Encrypt_In_Transit",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncryptionInTransitForStorageAccounts.ps1",
+            "LoadCommand": "Remediate-EnableEncryptionInTransitForStorageAccounts.ps1",     
+            "InitCommand": "Enable-StorageEncryptionInTransit",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-StorageEncryptionInTransit",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
             "ControlId": "Azure_AppService_Config_Disable_Remote_Debugging",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
@@ -47,6 +59,30 @@
             "RollbackMetadata":
                 {
                     "RollbackCommand": "Reset-AppServiceRequiredTLSVersion",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_ContainerRegistry_Config_Enable_Security_Scanning",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSecurityScanningForContainerRegistry.ps1",
+            "LoadCommand": "Remediate-EnableSecurityScanningForContainerRegistry.ps1",     
+            "InitCommand": "Enable-SecurityScanningIdentityForContainerRegistry",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-SecurityScanningIdentityForContainerRegistry",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_KubernetesService_AuthN_Enabled_AAD",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableAADForKubernetesService.ps1",
+            "LoadCommand": "Remediate-EnableAADForKubernetesService.ps1",     
+            "InitCommand": "Enable-AADForKubernetes",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "",
                     "Arguments":["SubscriptionId"]
                 }
         }
