@@ -451,7 +451,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","API Management service doesnot have any non-AAD Identity Provider enabled.")    
+                $logResource.Add("Reason","API Management service does not have any non-AAD Identity Provider enabled.")    
                 $logSkippedResources += $logResource
                 return
             }
