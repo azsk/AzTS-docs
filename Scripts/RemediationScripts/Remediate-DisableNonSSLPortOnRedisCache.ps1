@@ -542,7 +542,7 @@ function Disable-NonSSLPortOnRedisCache
 
             if ($($RedisCacheSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "`nError disabling Non-SSL port on the following Redis Cache(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`nError disabling Non-SSL port on the following Redis Cache(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
                 $RedisCacheSkipped | Format-Table -Property $colsProperty -Wrap
             
                 # Write this to a file.
