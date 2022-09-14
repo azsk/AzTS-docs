@@ -15,6 +15,10 @@
 
 7. [Azure_KubernetesService_AuthN_Enabled_AAD](ControlsEligibleForRemediationThroughUI.md#7-Azure_KubernetesService_AuthN_Enabled_AAD)
 
+8. [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN)
+
+9. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
+
 <br />
 
 ___
@@ -104,6 +108,32 @@ AAD should be enabled in Kubernetes Service
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 8. Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
+
+### Display Name
+Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 9. Azure_APIManagement_DP_Use_HTTPS_URL_Scheme
+
+### Display Name
+Ensure API Management service is accessible only over HTTPS
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableHTTPSForAPIsInAPIManagementServices](Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level

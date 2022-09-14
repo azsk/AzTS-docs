@@ -85,6 +85,30 @@
                     "RollbackCommand": "",
                     "Arguments":["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1",
+            "LoadCommand": "Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1",     
+            "InitCommand": "Delete-NonAadIdentityProvidersInApiManagementServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1",
+            "LoadCommand": "Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1",     
+            "InitCommand": "Enable-HttpsForApisInApiManagementServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-HttpsForApisInApiManagementServices",
+                    "Arguments":["SubscriptionId"]
+                }
         }
     ]
 } 
