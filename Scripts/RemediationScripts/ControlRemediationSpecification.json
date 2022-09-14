@@ -109,6 +109,18 @@
                     "RollbackCommand": "Disable-HttpsForApisInApiManagementServices",
                     "Arguments":["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_SQLDatabase_DP_Enable_TDE",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-TransparentDataEncryptionForSQLServers.ps1",
+            "LoadCommand": "Remediate-TransparentDataEncryptionForSQLServers.ps1",     
+            "InitCommand": "Enable-TransparentDataEncryptionForSqlServers",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-TransparentDataEncryptionForSqlServers",
+                    "Arguments":["SubscriptionId"]
+                }
         }
     ]
 } 
