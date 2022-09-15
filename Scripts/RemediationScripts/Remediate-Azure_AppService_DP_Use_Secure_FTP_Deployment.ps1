@@ -251,7 +251,7 @@ function Enable-SecureFTPDeploymentForAppServices
 
     #AllAllowed
     $AllAllowed = "AllAllowed"
-    
+
     # No file path provided as input to the script. Fetch all App Services in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
@@ -482,7 +482,7 @@ function Enable-SecureFTPDeploymentForAppServices
                 }
                 else
                 {
-                    Write-Host "FTP Deployments will not be Enabled for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "FTP State settings will not be Enabled for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                     return
                 }
@@ -689,11 +689,11 @@ function Enable-SecureFTPDeploymentForAppServices
         $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
                         @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
-                        @{Expression={$_.isFTPConfiguredOnProductionSlot};Label="Is FTP State Configured on the production slot - Prior to remediation?";Width=20;Alignment="left"},
-                        @{Expression={$_.isFTPConfiguredOnProductionSlotPostRemediation};Label="Is FTP State Configured on the production slot - Post remediation?";Width=20;Alignment="left"},
-                        @{Expression={$_.isSecureFTPEnabledOnAllNonProdSlots};Label="Is FTP State Configured on all the non-production slots?";Width=20;Alignment="left"},
-                        @{Expression={$_.nonProdSlotsWithFTPStateAllAllowed};Label="Non-production slots with FTP State not Configured - Prior to remediation";Width=40;Alignment="left"},
-                        @{Expression={$_.NonProductionSlotsSkipped};Label="Non-production slots with FTP State not Configured - Post remediation";Width=40;Alignment="left"}
+                        @{Expression={$_.isFTPConfiguredOnProductionSlot};Label="Is Secure FTP deployment enabled on the production slot - Prior to remediation?";Width=20;Alignment="left"},
+                        @{Expression={$_.isFTPConfiguredOnProductionSlotPostRemediation};Label="Is Secure FTP deployment enabled on the production slot - Post remediation?";Width=20;Alignment="left"},
+                        @{Expression={$_.isSecureFTPEnabledOnAllNonProdSlots};Label="Is Secure FTP enabled on all the non-production slots?";Width=20;Alignment="left"},
+                        @{Expression={$_.nonProdSlotsWithFTPStateAllAllowed};Label="Non-production slots with Secure FTP State not enabled - Prior to remediation";Width=40;Alignment="left"},
+                        @{Expression={$_.NonProductionSlotsSkipped};Label="Non-production slots with Secure FTP State not enabled - Post remediation";Width=40;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
 
