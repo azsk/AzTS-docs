@@ -55,130 +55,190 @@ function Pre_requisites
 
     # List of required modules
     $requiredModule = @("Az.Resources", "Az.Accounts", "Azure")
-    Write-Host "Required modules are: $($requiredModule -join ', ')" -ForegroundColor Cyan
-    Write-Host "Checking for required modules..."
-    $availableModules = $(Get-Module -ListAvailable $requiredModule)
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
-    # Checking if required module is available in user machine
-    $requiredModule | ForEach-Object {
-        if($availableModules.Name -notcontains $_)
+    $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
+
+    # Check if the required modules are installed.
+    $requiredModules | ForEach-Object {
+        if ($availableModules.Name -notcontains $_)
         {
-            Write-Host "Installing module $($_)..." -ForegroundColor Yellow
-            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery'
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
+            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "$($_) module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
-        else {
-            Write-Host "$($_) module is available." -ForegroundColor Green
+        else
+        {
+            Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 function Disable-RemoteDesktopAccess
 {
     <#
         .SYNOPSIS
-        This command would help in remediating 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
+        Remediates 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
+
         .DESCRIPTION
-        This command would help in remediating 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
+        Remediates 'Azure_CloudService_SI_Disable_RemoteDesktop_Access' control.
+
         .PARAMETER SubscriptionId
-            Enter subscription id on which remediation need to perform.
-        .PARAMETER Path
-            Json file path which contain failed controls detail to remediate.
+        Enter subscription id on which remediation need to perform.
+
+        .PARAMETER FilePath
+        Json file path which contain failed controls detail to remediate.
+
         .PARAMETER Force
-            To disable RDP access forcefully.
+        To disable RDP access forcefully.
+
         .PARAMETER DryRun
-            Run pre-script before actual remediating Cloud service in the subscription.
+        Run pre-script before actual remediating Cloud service in the subscription.
+
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
     #>
 
     param (
-        [string]
-        [Parameter(Mandatory = $true, HelpMessage="Enter subscription id for remediation")]
+        [String]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
         $SubscriptionId,
 
-        [string]
-        [Parameter(Mandatory = $false, HelpMessage="Json file path which contain cloud service(s) details to remediate")]
-        $Path,
-
-        [switch]
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies a forceful remediation without any prompts")]
         $Force,
 
-        [switch]
-        [Parameter(Mandatory = $false)]
-        $DryRun
+        [Switch]
+        [Parameter(ParameterSetName = "DryRun", HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies validation of prerequisites for the command")]
+        $PerformPreReqCheck,
+
+        [Switch]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
+        $DryRun,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
+        $FilePath,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
+        $Path,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
+        $TimeStamp
+
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "Starting to disable remote desktop access on cloud service(s) from subscription [$($SubscriptionId)]..."
-    Write-Host $([Constants]::SingleDashLine)
-    
-    try 
+    if ($PerformPreReqCheck)
     {
-        Write-Host "Checking for pre-requisites..."
-        Pre_requisites
-        Write-Host $([Constants]::SingleDashLine)     
+        try
+        {
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+        }
+        catch
+        {
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
     }
-    catch 
+    else
     {
-        Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)    
-        break
-    }
-    
-    # Connect to AzAccount
-    $isContextSet = Get-AzContext
-    if ([string]::IsNullOrEmpty($isContextSet))
-    {       
-        Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount -ErrorAction Stop
-        Write-Host "Connected to AzAccount" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "[Step 1 of 4] Validate the user" 
+        Write-Host $([Constants]::SingleDashLine)
+    }  
+    # Connect to Azure account
+    $context = Get-AzContext
+    if ([String]::IsNullOrWhiteSpace($context))
+    {
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
-    # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -Force -ErrorAction Stop
-    Select-AzureSubscription -SubscriptionId $($SubscriptionId) -ErrorAction Stop
+    # Setting up context for the current Subscription.
+    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    Write-Host "------------------------------------------------------"
-    Write-Host "Metadata Details: `n SubscriptionName: $($currentSub.Subscription.Name) `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
-    Write-Host $([Constants]::SingleDashLine)  
-    Write-Host "Starting with subscription [$($SubscriptionId)]..."
-    Write-Host "`n"   
-    Write-Host "Validating whether the current user [$($currentSub.Account.Id)] has valid account type [User] to run the script for subscription [$($SubscriptionId)]..."
+    if(-not($AutoRemediation))
+    {
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }
+
+    Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
     
     # Safe Check: Checking whether the current account is of type User
     if($currentSub.Account.Type -ne "User")
     {
-        Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
-        break;
+        Write-Host "This script can only be run by 'User' account type." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
+        return;
     }
     else
     {
-        Write-Host "Validation succeeded." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "[$($context.Account.Id)] is allowed to run the script." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     
-    Write-Host "`n"
-    Write-Host "*** To disable RDP access user must have classic role assignment on Subscription: [$($SubscriptionId)] ***" -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host "`n" 
-    
-    Write-Host "Fetching cloud service(s)..."
+    Write-Host "To disable RDP access user must have classic role assignment on Subscription: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
+
     $controlIds = "Azure_CloudService_SI_Disable_RemoteDesktop_Access"
     
     # Array to store resources
     $resources = @()
     $resourceType = "Microsoft.ClassicCompute/domainNames"
+    
 
+    Write-Host "[Step 2 of 4] Fetch all Cloud Service(s)"
+    Write-Host $([Constants]::SingleDashLine)
     # If json path not given fetch all cloud service.
-    if([string]::IsNullOrWhiteSpace($Path))
+    if([string]::IsNullOrWhiteSpace($FilePath))
     {
         $resources = Get-AzResource -ResourceType $resourceType
     }
     else
     {
-        if (-not (Test-Path -Path $Path))
+        if (-not (Test-Path -Path $FilePath))
         {
             Write-Host "Error: Json file containing cloud service(s) detail not found for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             break;        
         }
 
         # Fetching cloud service details for remediation.
-        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controlForRemediation = Get-content -path $FilePath | ConvertFrom-Json
         $controls = $controlForRemediation.FailedControlSet
         $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId};
 
