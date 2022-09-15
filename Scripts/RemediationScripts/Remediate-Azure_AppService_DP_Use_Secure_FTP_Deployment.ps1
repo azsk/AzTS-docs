@@ -1070,11 +1070,11 @@ function Disable-SecureFTPDeploymentForAppServices
 
     if (($appServicesSkipped | Measure-Object).Count -eq 0)
     {
-        Write-Host "NonCompliant FTP State successfully configured on the production slot and all non-production slots for all [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "FTP State successfully configured as $($AllAllowed) on the production slot and all non-production slots for all [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
-        Write-Host "NonCompliant FTP State successfully configured on the production slot and all non-production slots for [$($($appServicesRolledBack | Measure-Object).Count)] out of [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "FTP State successfully configured as $($AllAllowed) on the production slot and all non-production slots for [$($($appServicesRolledBack | Measure-Object).Count)] out of [$($totalAppServices)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
