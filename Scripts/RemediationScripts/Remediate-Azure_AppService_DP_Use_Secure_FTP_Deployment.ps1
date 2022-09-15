@@ -1,6 +1,6 @@
 <###
 # Overview:
-    This script is used to secure FTP configuration in a Subscription.
+    This script is used to secure FTP deploymets for App Services in a Subscription.
 
 # Control ID:
     Azure_AppService_DP_Use_Secure_FTP_Deployment
@@ -22,13 +22,13 @@
     To roll back:
         1. Validate and install the modules required to run the script.
         2. Get the list of App Services in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Enable AllAllowed on the production slot and all non-production slots in all App Services in the Subscription.
+        3. Restore FTPS settings for the production slot and all non-production slots as per input file.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to Configure FTP state on the production slot and all non-production slots in all App Services in the Subscription. Refer `Examples`, below.
+        3. Execute the script to configure FTP state on the production slot and all non-production slots in all App Services in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
@@ -47,7 +47,7 @@
            Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecureFTPDeploymentForAppServices\AppServicesWithNonCompliantFTPDeployment.csv
 
         4. To enable secure FTP configuration on the production slot and non-production slots of all App Services in a Subscription with FTP State as parameter:
-           Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FtpsOnly
+           Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FTPSOnly
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-SecureFTPDeploymentForAppServices -Detailed
@@ -135,10 +135,10 @@ function Enable-SecureFTPDeploymentForAppServices
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
-        .PARAMETER FtpsOnly
+        .PARAMETER FTPSOnly
         Specifies the FTP State to be used as input for the remediation.
 
-        .PARAMETER Disabled
+        .PARAMETER DisableFTP
         Specifies the FTP State to be used as input for the remediation.
 
         .INPUTS
@@ -151,7 +151,7 @@ function Enable-SecureFTPDeploymentForAppServices
         PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun 
 
         .EXAMPLE
-        PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FtpsOnly
+        PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FTPSOnly
 
         .EXAMPLE
         PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\EnableFTPSOnlyForAppServices\AppServicesWithFTPSOnlyEnabled.csv
@@ -185,11 +185,11 @@ function Enable-SecureFTPDeploymentForAppServices
 
         [Switch]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the FTP State to be configured")]
-        $FtpsOnly,
+        $FTPSOnly,
 
         [Switch]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the FTP State to be configured")]
-        $Disabled
+        $DisableFTP
 
     )
 
@@ -234,7 +234,7 @@ function Enable-SecureFTPDeploymentForAppServices
     Write-Host $([Constants]::SingleDashLine)
     
 
-    Write-Host "To Enable FTP deployment for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable secured FTP deployment for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Fetch all App Services"
     Write-Host $([Constants]::SingleDashLine)
@@ -251,8 +251,6 @@ function Enable-SecureFTPDeploymentForAppServices
 
     #AllAllowed
     $AllAllowed = "AllAllowed"
-
-    
     
     # No file path provided as input to the script. Fetch all App Services in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
@@ -277,7 +275,6 @@ function Enable-SecureFTPDeploymentForAppServices
             
             $validAppServiceDetails | ForEach-Object {
                 $resourceId = $_.ResourceId
-
                 try
                 {
                     $appServiceResource = Get-AzResource -ResourceId $resourceId -ErrorAction SilentlyContinue
@@ -304,10 +301,10 @@ function Enable-SecureFTPDeploymentForAppServices
     Write-Host $([Constants]::SingleDashLine)
 
     # Includes App Services where AllAllowed is Enabled on all slots - production slot and all non-production slots.
-    $appServicesWithAllAllowedEnabled = @()
+    $appServicesWithFTPStateAllAllowed = @()
 
     # Includes App Services where FTP State is not AllAlowed on all slots - production slot or one or more non-production slots.
-    $appServicesWithAllAllowedDisabled = @()
+    $appServicesWithSecureFTPDeployments= @()
 
     # Includes App Services that were skipped during remediation. There were errors remediating them.
     $appServicesSkipped = @()
@@ -326,32 +323,33 @@ function Enable-SecureFTPDeploymentForAppServices
             Write-Host "Fetching App Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Using GetAzWebApp to fetch site config for each of the App Service resource.
-            $isFTPConfiguredOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).SiteConfig.FtpsState.Contains("AllAllowed")
+            $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).SiteConfig.FtpsState.Contains("AllAllowed")
             Write-Host "App Service Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all non-production slots for this App Service.
-            $FTPConfigForNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName)
+            $nonProdSlots = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName)
             Write-Host "App Service non-production slot configuration successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
-            $nonProductionSlotsWithAllAllowedEnabled = @()
-            $nonProductionSlotsWithAllAllowedEnabledStr = [String]::Empty
-            $isFTPConfiguredOnAllNonProductionSlots = $true;
-            foreach($slot in $FTPConfigForNonProductionSlot){
+            $nonProdSlotsWithFTPStateAllAllowed = @()
+            $nonProdSlotsWithFTPStateAllAllowedStr = [String]::Empty
+            $isSecureFTPEnabledOnAllNonProdSlots = $true;
+            foreach($slot in $nonProdSlots){
                 $slotName = $slot.name.Split('/')[1]
                 $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
                 if($resource.SiteConfig.FtpsState -eq $AllAllowed)
                 {
-                    $nonProductionSlotsWithAllAllowedEnabled += $slot
-                    $isFTPConfiguredOnAllNonProductionSlots = $false
+                    $nonProdSlotsWithFTPStateAllAllowed += $slot
+                    $isSecureFTPEnabledOnAllNonProdSlots = $false
                 }
             }
-            if ($isFTPConfiguredOnProductionSlot -and $isFTPConfiguredOnAllNonProductionSlots)
+            # No remediation required as both Prod and Non-Prod slots 
+            if ($isFTPStateAllAllowedForProdSlot -and $isSecureFTPEnabledOnAllNonProdSlots)
             {
-                $appServicesWithAllAllowedDisabled += $appServiceResource
-                Write-Host "FTP State is Configured on the production slot and all non-production slots in the App Service: Resource ID: [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                $appServicesWithSecureFTPDeployments += $appServiceResource
+                Write-Host "FTP State is either Disabled or FTPS Only for the production slot and all non-production slots in the App Service: Resource ID: [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "Skipping this App Service..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
@@ -362,25 +360,25 @@ function Enable-SecureFTPDeploymentForAppServices
             }
             else 
             {
-                if (-not $isFTPConfiguredOnProductionSlot)
+                if (-not $isFTPStateAllAllowedForProdSlot)
                 {
-                    Write-Host "FTP state is not configured on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "FTP State $($AllAllowed) is configured for the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
-                if(-not $isFTPConfiguredOnAllNonProductionSlots){
-                    $nonProductionSlotsWithAllAllowedEnabled = $nonProductionSlotsWithAllAllowedEnabled.Name
-                    $nonProductionSlotsWithAllAllowedEnabledStr = $($nonProductionSlotsWithAllAllowedEnabled -join ', ')
-                    Write-Host "FTP state is not configured  on these non-production slots: [$($nonProductionSlotsWithAllAllowedEnabledStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                if(-not $isSecureFTPEnabledOnAllNonProdSlots){
+                    $nonProdSlotsWithFTPStateAllAllowed = $nonProdSlotsWithFTPStateAllAllowed.Name
+                    $nonProdSlotsWithFTPStateAllAllowedStr = $($nonProdSlotsWithFTPStateAllAllowed -join ', ')
+                    Write-Host "FTP state is either Disabled or FTPS Only for these non-production slots: [$($nonProdSlotsWithFTPStateAllAllowedStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
-                $appServicesWithAllAllowedEnabled += $appServiceResource | Select-Object @{N='ResourceID';E={$resourceId}},
+                $appServicesWithFTPStateAllAllowed += $appServiceResource | Select-Object @{N='ResourceID';E={$resourceId}},
                                                                                     @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                                     @{N='ResourceName';E={$resourceName}},
-                                                                                    @{N='IsFTPConfiguredOnProductionSlot';E={$isFTPConfiguredOnProductionSlot}},
-                                                                                    @{N='IsFTPConfiguredOnAllNonProductionSlots';E={$isFTPConfiguredOnAllNonProductionSlots}},
-                                                                                    @{N='NonProductionSlotsWithAllAllowedEnabled';E={$nonProductionSlotsWithAllAllowedEnabledStr}}
+                                                                                    @{N='IsFTPConfiguredOnProductionSlot';E={$isFTPStateAllAllowedForProdSlot}},
+                                                                                    @{N='isSecureFTPEnabledOnAllNonProdSlots';E={$isSecureFTPEnabledOnAllNonProdSlots}},
+                                                                                    @{N='nonProdSlotsWithFTPStateAllAllowed';E={$nonProdSlotsWithFTPStateAllAllowedStr}}
             }
         }
         catch
@@ -396,13 +394,13 @@ function Enable-SecureFTPDeploymentForAppServices
         }
     }
 
-    $totalAppServicesWithFTPStateConfigured = ($appServicesWithAllAllowedEnabled | Measure-Object).Count
+    $totalAppServicesWithFTPStateAllAllowed = ($appServicesWithFTPStateAllAllowed | Measure-Object).Count
 
-    if ($totalAppServicesWithFTPStateConfigured -eq 0)
+    if ($totalAppServicesWithFTPStateAllAllowed -eq 0)
     {
-        Write-Host "No App Service(s) found with FTP State AllAllowed. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No App Service(s) found with FTP State $($AllAllowed). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
-        if(($appServicesWithAllAllowedEnabled|Measure-Object).Count -gt 0) 
+        if(($appServicesWithFTPStateAllAllowed|Measure-Object).Count -gt 0) 
         {
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
             $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
@@ -417,7 +415,7 @@ function Enable-SecureFTPDeploymentForAppServices
         return
     }
 
-    Write-Host "Found [$($totalAppServicesWithFTPStateConfigured)] out of [$($totalAppServices)] App Service(s) with FTP state not Configured." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalAppServicesWithFTPStateAllAllowed)] out of [$($totalAppServices)] App Service(s) with FTP state not Configured." -ForegroundColor $([Constants]::MessageType.Update)
     
     Write-Host $([Constants]::SingleDashLine)
     # Back up snapshots to `%LocalApplicationData%'.
@@ -430,42 +428,40 @@ function Enable-SecureFTPDeploymentForAppServices
 
     if (-not $DryRun)
     {
-        if(-not $SkipBackup)
-        {
-            Write-Host "Backing up App Services details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
-            $backupFile = "$($backupFolderPath)\AppServicesWithNonCompliantFTPDeployment.csv"
-            $appServicesWithAllAllowedEnabled | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "App Services details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)
-        }
-        Write-Host "FTP state will be Configured on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
+       
+        Write-Host "Backing up App Services details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        $backupFile = "$($backupFolderPath)\AppServicesWithNonCompliantFTPDeployment.csv"
+        $appServicesWithFTPStateAllAllowed | Export-CSV -Path $backupFile -NoTypeInformation
+        Write-Host "App Services details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
+        
+        Write-Host "FTP state will be updated on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
 
         $userInputforFTPState = @()
-
-            if (-not $Force)
+        if (-not $Force)
             {
-                if($FtpsOnly.IsPresent -eq $true -or $Disabled.IsPresent -eq $true)
+                if($FTPSOnly.IsPresent -eq $true -or $DisableFTP.IsPresent -eq $true)
                 {
-                    Write-Host "FTP State is already given as Parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                    Write-Host "FTP State is already provided as input parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 }
                 else
                 {
-                Write-Host "Do you want to secure FTP Deployments? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                Write-Host "Do you want to upadate FTP State? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 $userInput = Read-Host -Prompt "(Y|N)"
                 Write-Host $([Constants]::SingleDashLine)
                 if($userInput -eq "Y")
                 {
-                    Write-Host "User has provided consent to secure FTP Deployments on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
+                    #Write-Host "User has provided consent to secure FTP Deployments on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
-                    Write-Host "Please Select 1 for FTPSOnly or Select 2 for Disabled on the production slot and all non-production slots for all App Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                    Write-Host "Please select 1 to set FTP State as FTPSOnly or select 2 to set FTP State Disabled on the production slot and all non-production slots for all App Services" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                     $userInput = Read-Host -Prompt "(1|2)"
                     Write-Host $([Constants]::SingleDashLine)
 
                     if($userInput -eq "1")
                     {
                         $userInputforFTPState="1"
-                        Write-Host "FTPState will be FTPSOnly on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host "FTP State will be set to FTPSOnly on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                     else
@@ -473,7 +469,7 @@ function Enable-SecureFTPDeploymentForAppServices
                          if($userInput -eq "2")
                          {
                             $userInputforFTPState="2"
-                            Write-Host "FTPState will be Disabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host "FTP State will be set to Disabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
                             Write-Host $([Constants]::SingleDashLine)
                          }
                          else
@@ -494,7 +490,7 @@ function Enable-SecureFTPDeploymentForAppServices
             }
             else
             {
-              if($FtpsOnly.IsPresent -eq $true -or $Disabled.IsPresent -eq $true)
+              if($FTPSOnly.IsPresent -eq $true -or $DisableFTP.IsPresent -eq $true)
               {
                 Write-Host "FTP State is already given as Parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 Write-Host $([Constants]::SingleDashLine)
@@ -515,38 +511,38 @@ function Enable-SecureFTPDeploymentForAppServices
         $appServicesRemediated = @()
         $appServicesSkipped = @()
         
-        if($FtpsOnly.IsPresent -eq $true)
+        if($FTPSOnly.IsPresent -eq $true)
         {
             $userInputforFTPState="1"
         }
         else
         {
-            if($Disabled.IsPresent -eq $true)
+            if($DisableFTP.IsPresent -eq $true)
             {
                 $userInputforFTPState="2"
             }
         }
         
-        $appServicesWithAllAllowedEnabled | ForEach-Object {
+        $appServicesWithFTPStateAllAllowed | ForEach-Object {
             $appService = $_
             $resourceId = $_.ResourceID
             $resourceGroupName = $_.ResourceGroupName
             $resourceName = $_.ResourceName
-            $isFTPConfiguredOnProductionSlot = $_.isFTPConfiguredOnProductionSlot
-            $isFTPConfiguredOnAllNonProductionSlots = $_.isFTPConfiguredOnAllNonProductionSlots
-            $NonProductionSlotsWithAllAllowedEnabled = $_.NonProductionSlotsWithAllAllowedEnabled
+            $isFTPStateAllAllowedForProdSlot = $_.isFTPConfiguredOnProductionSlot
+            $isSecureFTPEnabledOnAllNonProdSlots = $_.isSecureFTPEnabledOnAllNonProdSlots
+            $nonProdSlotsWithFTPStateAllAllowed = $_.nonProdSlotsWithFTPStateAllAllowed
 
-            Write-Host "Securing FTP Deployment for App Service: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Updating FTP State for App Service: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-            $nonProductionSlotsWithAllAllowedEnabledStr = $nonProductionSlotsWithAllAllowedEnabled -join ','
-            $isFTPConfiguredOnProductionSlotPostRemediation = $isFTPConfiguredOnProductionSlot
+            $nonProdSlotsWithFTPStateAllAllowedStr = $nonProdSlotsWithFTPStateAllAllowed -join ','
+            $isFTPStateAllAllowedForProdSlotPostRemediation = $isFTPStateAllAllowedForProdSlot
             
             # Reset the status further down, as appropriate.
-            $appService | Add-Member -NotePropertyName NonProductionSlotsSkipped -NotePropertyValue $nonProductionSlotsWithAllAllowedEnabledStr
-            $appService | Add-Member -NotePropertyName isFTPConfiguredOnProductionSlotPostRemediation -NotePropertyValue $isFTPConfiguredOnProductionSlotPostRemediation
+            $appService | Add-Member -NotePropertyName NonProductionSlotsSkipped -NotePropertyValue $nonProdSlotsWithFTPStateAllAllowedStr
+            $appService | Add-Member -NotePropertyName isFTPConfiguredOnProductionSlotPostRemediation -NotePropertyValue $isFTPStateAllAllowedForProdSlotPostRemediation
 
-            # If FTP State is not configured on the production slot
-            if (-not [System.Convert]::ToBoolean($isFTPConfiguredOnProductionSlot))
+            # If FTP State is neither Disabled not  FTPS Only for the production slot
+            if (-not [System.Convert]::ToBoolean($isFTPStateAllAllowedForProdSlot))
             {
                 try
                 {
@@ -564,9 +560,9 @@ function Enable-SecureFTPDeploymentForAppServices
                     
                     # Holding output of set command to avoid unnecessary logs.
                     $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
-                    $isFTPConfiguredOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
+                    $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
 
-                    if ($isFTPConfiguredOnProductionSlot)
+                    if ($isFTPStateAllAllowedForProdSlot)
                     {
                         $appService.isFTPConfiguredOnProductionSlotPostRemediation = $true
                         Write-Host "Successfully configured the FTP State on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
@@ -605,9 +601,9 @@ function Enable-SecureFTPDeploymentForAppServices
             $nonProductionSlotsSkipped = @()
             $nonProductionSlotsSkippedStr = [String]::Empty
 
-            if (-not [System.Convert]::ToBoolean($isFTPConfiguredOnAllNonProductionSlots))
+            if (-not [System.Convert]::ToBoolean($isSecureFTPEnabledOnAllNonProdSlots))
             {
-                foreach ($slot in $nonProductionSlotsWithAllAllowedEnabled.Split(','))
+                foreach ($slot in $nonProdSlotsWithFTPStateAllAllowed.Split(','))
                 {
                     # Slot names are of the form: app-service-name/slot-name
                     $slotName = $slot.Split('/')[1]
@@ -630,8 +626,8 @@ function Enable-SecureFTPDeploymentForAppServices
                         
                         # Holding output of set command to avoid unnecessary logs.
                         $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
-                        $isFTPConfiguredOnAllNonProductionSlots = -not $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).SiteConfig.FtpsState.Contains("AllAllowed")
-                        if($isFTPConfiguredOnAllNonProductionSlots){
+                        $isSecureFTPEnabledOnAllNonProdSlots = -not $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).SiteConfig.FtpsState.Contains("AllAllowed")
+                        if($isSecureFTPEnabledOnAllNonProdSlots){
                             Write-Host "Successfully Configured FTP State on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
                             Write-Host $([Constants]::SingleDashLine)
                         }else{
@@ -655,7 +651,7 @@ function Enable-SecureFTPDeploymentForAppServices
 
             if ($($nonProductionSlotsSkipped | Measure-Object).Count -eq 0)
             {
-                $appService.isFTPConfiguredOnAllNonProductionSlots = $true
+                $appService.isSecureFTPEnabledOnAllNonProdSlots = $true
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
@@ -680,14 +676,14 @@ function Enable-SecureFTPDeploymentForAppServices
 
         # Write-Host $([Constants]::SingleDashLine)
 
-        if (($appServicesRemediated | Measure-Object).Count -eq $totalAppServicesWithFTPStateConfigured)
+        if (($appServicesRemediated | Measure-Object).Count -eq $totalAppServicesWithFTPStateAllAllowed)
         {
-            Write-Host "FTP State successfully Configured on the production slot and all non-production slots for all [$($totalAppServicesWithFTPStateConfigured)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "FTP State successfully configured on the production slot and all non-production slots for all [$($totalAppServicesWithFTPStateAllAllowed)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
             
         }
         else
         {
-            Write-Host "FTP State successfully Configured on the production slot and all non-production slots for [$($($appServicesRemediated | Measure-Object).Count)] out of [$($totalAppServicesWithFTPStateConfigured)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "FTP State successfully configured on the production slot and all non-production slots for [$($($appServicesRemediated | Measure-Object).Count)] out of [$($totalAppServicesWithFTPStateAllAllowed)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
@@ -695,8 +691,8 @@ function Enable-SecureFTPDeploymentForAppServices
                         @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.isFTPConfiguredOnProductionSlot};Label="Is FTP State Configured on the production slot - Prior to remediation?";Width=20;Alignment="left"},
                         @{Expression={$_.isFTPConfiguredOnProductionSlotPostRemediation};Label="Is FTP State Configured on the production slot - Post remediation?";Width=20;Alignment="left"},
-                        @{Expression={$_.isFTPConfiguredOnAllNonProductionSlots};Label="Is FTP State Configured on all the non-production slots?";Width=20;Alignment="left"},
-                        @{Expression={$_.nonProductionSlotsWithAllAllowedEnabled};Label="Non-production slots with FTP State not Configured - Prior to remediation";Width=40;Alignment="left"},
+                        @{Expression={$_.isSecureFTPEnabledOnAllNonProdSlots};Label="Is FTP State Configured on all the non-production slots?";Width=20;Alignment="left"},
+                        @{Expression={$_.nonProdSlotsWithFTPStateAllAllowed};Label="Non-production slots with FTP State not Configured - Prior to remediation";Width=40;Alignment="left"},
                         @{Expression={$_.NonProductionSlotsSkipped};Label="Non-production slots with FTP State not Configured - Post remediation";Width=40;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
@@ -735,7 +731,7 @@ function Enable-SecureFTPDeploymentForAppServices
         Write-Host $([Constants]::SingleDashLine)
         # Backing up App Services details.
         $backupFile = "$($backupFolderPath)\AppServicesWithNonCompliantFTPDeployment.csv"
-        $appServicesWithAllAllowedEnabled | Export-CSV -Path $backupFile -NoTypeInformation
+        $appServicesWithFTPStateAllAllowed | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "App Services details have been backed up to [$($backupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps: " -ForegroundColor $([Constants]::MessageType.Warning)
@@ -785,7 +781,7 @@ function Disable-SecureFTPDeploymentForAppServices
         $SubscriptionId,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies a forceful roll back without any prompts")]
+        [Parameter(HelpMessage="Specifies a forceful rollback without any prompts")]
         $Force,
 
         [Switch]
@@ -798,7 +794,7 @@ function Disable-SecureFTPDeploymentForAppServices
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Prepare to configure secure FTP Deployments for App Services in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 3] Prepare to update FTP State for App Services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -875,26 +871,26 @@ function Disable-SecureFTPDeploymentForAppServices
     
     if (-not $Force)
     {
-        Write-Host "Do you want to configure NonCompliant FTP State on the production slot and all non-production slots for all App Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to update FTP State as $($AllAllowed) on the production slot and all non-production slots for all App Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
-            Write-Host "NonCompliant FTP State will not be configured for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "FTP State will not be updated for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
             return
         }
-        Write-Host "User has provided consent to configure NonCompliant FTP State on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
+        #Write-Host "User has provided consent to configure NonCompliant FTP State on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
-        Write-Host "'Force' flag is provided. NonCompliant FTP State will be configured on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. FTP State will be configured as $($AllAllowed) on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "[Step 3 of 3] configure NonCompliant FTPState for App Services"
+    Write-Host "[Step 3 of 3] configure FTP State as $($AllAllowed) for App Services"
     Write-Host $([Constants]::SingleDashLine)
     # Includes App Services, to which, previously made changes were successfully rolled back.
     $appServicesRolledBack = @()
@@ -907,7 +903,7 @@ function Disable-SecureFTPDeploymentForAppServices
         $resourceId = $appService.ResourceId
         $resourceGroupName = $appService.ResourceGroupName
         $resourceName = $appService.ResourceName
-        $nonProdSlots = $appService.nonProductionSlotsWithAllAllowedEnabled
+        $nonProdSlots = $appService.nonProdSlotsWithFTPStateAllAllowed
         $isSecureFtpDisabled = $appService.isFTPConfiguredOnProductionSlotPostRemediation
 
         try
@@ -917,8 +913,8 @@ function Disable-SecureFTPDeploymentForAppServices
 
             if ($isSecureFtpDisabled -eq $false)
             {
-                Write-Host "FTP State is already NonCompliant on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host "Skipping this App Service. If required, manually configure FTP State as AllAllowed on the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "FTP State is already $($AllAllowed) on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Skipping this App Service. If required, manually configure FTP State as $($AllAllowed) on the non-production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
                 return
             }
@@ -926,13 +922,13 @@ function Disable-SecureFTPDeploymentForAppServices
             if ($isSecureFtpDisabled)
             {
                 $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
-                $resource.SiteConfig.FtpsState = "AllAllowed"
+                $resource.SiteConfig.FtpsState = $($AllAllowed)
             
                 # Holding output of set command to avoid unnecessary logs.
                 $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
-                $isFTPConfiguredOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
+                $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
                 
-                if ($isFTPConfiguredOnProductionSlot)
+                if ($isFTPStateAllAllowedForProdSlot)
                 {
                     $appServicesSkipped += $appService
                     Write-Host "Error configuring FTP State on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
@@ -941,19 +937,19 @@ function Disable-SecureFTPDeploymentForAppServices
                 }
             }
 
-            Write-Host "Successfully configured FTP State on the production slot." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully updated FTP State to $($AllAllowed) for the production slot." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
             # Reset the states further below, as appropriate.
             $appService | Add-Member -NotePropertyName IsAllAllowedEnableOnAnyNonProductionSlot -NotePropertyValue $false
-            $appService | Add-Member -NotePropertyName NonProductionSlotsWithSecureFTPconfigured -NotePropertyValue ([String]::Empty)
+            $appService | Add-Member -NotePropertyName nonProductionSlotsWithSecureFTPconfigured -NotePropertyValue ([String]::Empty)
 
             Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             $nonProductionSlotConfigurations = @()
-            $NonProductionSlotsWithSecureFTPconfigured =@()
-            $nonProductionSlotsWithAllAllowedEnabled =@()
+            $nonProductionSlotsWithSecureFTPconfigured =@()
+            $nonProdSlotsWithFTPStateAllAllowed =@()
             $isAllAllowedEnabledOnAllNonProductionSlots = $true
             if ([String]::IsNullOrWhiteSpace($nonProdSlots))
             {
@@ -966,11 +962,11 @@ function Disable-SecureFTPDeploymentForAppServices
                 {
                     $nonProductionSlotConfiguration = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slot.Split('/')[1]
                     $nonProductionSlotConfigurations += $nonProductionSlotConfiguration
-                    if(-not($nonProductionSlotConfiguration.SiteConfig.FtpsState.Contains("AllAllowed") -eq $true)){
+                    if(-not($nonProductionSlotConfiguration.SiteConfig.FtpsState.Contains($($AllAllowed)) -eq $true)){
                         $isAllAllowedEnabledOnAllNonProductionSlots = $false
-                        $NonProductionSlotsWithSecureFTPconfigured += $nonProductionSlotConfiguration.Name
+                        $nonProductionSlotsWithSecureFTPconfigured += $nonProductionSlotConfiguration.Name
                     }else{
-                        $nonProductionSlotsWithAllAllowedEnabled += nonProductionSlotConfiguration.Name
+                        $nonProdSlotsWithFTPStateAllAllowed += nonProductionSlotConfiguration.Name
                     }
                 }
             }
@@ -979,46 +975,46 @@ function Disable-SecureFTPDeploymentForAppServices
             if ($isAllAllowedEnabledOnAllNonProductionSlots -or -not $isNonProdSlotAvailable)
             {
                 $appServicesRolledBack += $appService
-                Write-Host "NonCompliant FTP State is configured on all non-production slots in the App Service." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "FTP State $($AllAllowed) is configured on all non-production slots in the App Service." -ForegroundColor $([Constants]::MessageType.Update)
                 return
             }
 
             $appService.IsAllAllowedEnableOnAnyNonProductionSlot = $true
 
             # Holds the list of non-production slots with Secure FTP configuration.
-            $NonProductionSlotsWithSecureFTPconfiguredStr = $($NonProductionSlotsWithSecureFTPconfigured -join ', ')
-            $appService.NonProductionSlotsWithSecureFTPconfigured = $NonProductionSlotsWithSecureFTPconfiguredStr
+            $nonProductionSlotsWithSecureFTPconfiguredStr = $($nonProductionSlotsWithSecureFTPconfigured -join ', ')
+            $appService.nonProductionSlotsWithSecureFTPconfigured = $nonProductionSlotsWithSecureFTPconfiguredStr
 
             # Holds the running list of non-production slots with Secure FTP configuration. Remove slots from this list as Secure FTP configuration is being configured on them.
-            $nonProductionSlotsSkipped = $NonProductionSlotsWithSecureFTPconfigured
-            $nonProductionSlotsSkippedStr = $($NonProductionSlotsWithSecureFTPconfigured -join ', ')
+            $nonProductionSlotsSkipped = $nonProductionSlotsWithSecureFTPconfigured
+            $nonProductionSlotsSkippedStr = $($nonProductionSlotsWithSecureFTPconfigured -join ', ')
             $appService.NonProductionSlotsSkipped = $nonProductionSlotsSkippedStr
-            $appService.NonProductionSlotsWithSecureFTPconfigured = $nonProductionSlotsSkippedStr
+            $appService.nonProductionSlotsWithSecureFTPconfigured = $nonProductionSlotsSkippedStr
 
-            Write-Host "Secure FTP is configured on these non-production slots: [$($NonProductionSlotsWithSecureFTPconfiguredStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Secure FTP is configured on these non-production slots: [$($nonProductionSlotsWithSecureFTPconfiguredStr)]" -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
             $nonProductionSlotsSkipped = @()
-            foreach($slot in $NonProductionSlotsWithSecureFTPconfigured)
+            foreach($slot in $nonProductionSlotsWithSecureFTPconfigured)
             {
                 # Slot names are of the form: app-service-name/slot-name
                 $slotName = $slot.Split('/')[1]
 
                 try
                 {
-                    Write-Host "Configuring NonCompliant FTP State  on the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Configuring FTP State  $($AllAllowed) for the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                     $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
-                    $resource.SiteConfig.FtpsState = "AllAllowed"
+                    $resource.SiteConfig.FtpsState = $($AllAllowed)
                     
                     # Holding output of set command to avoid unnecessary logs.
                     $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
                     $isAllAllowedEnabledOnNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).SiteConfig.FtpsState.Contains("AllAllowed")
                     if($isAllAllowedEnabledOnNonProductionSlot){
-                        Write-Host "Successfully configured NonCompliant FTP State on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host "Successfully configured FTP State $($AllAllowed) on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }else{
                         $nonProductionSlotsSkipped += $slot
-                        Write-Host "Error configuring NonCompliant FTP State on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Error configuring FTP State $($AllAllowed) on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                     
@@ -1026,15 +1022,15 @@ function Disable-SecureFTPDeploymentForAppServices
                 catch
                 {
                     $nonProductionSlotsSkipped += $slot
-                    Write-Host "Error configuring NonCompliant FTP State on the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error configuring FTP State $($AllAllowed) for the non-production slot." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
 
             $nonProductionSlotsSkippedStr = $nonProductionSlotsSkipped -join ','
 
-            $isFTPConfiguredOnProductionSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
-            $appService.isFTPConfiguredOnProductionSlot = $isFTPConfiguredOnProductionSlot
+            $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
+            $appService.isFTPConfiguredOnProductionSlot = $isFTPStateAllAllowedForProdSlot
             $appService.NonProductionSlotsSkipped = $nonProductionSlotsSkippedStr
 
             # Rollback of the changes previously made to an App Service is successful only if AllAllowed is enabled on the production slot and all non-production slots.
@@ -1046,7 +1042,7 @@ function Disable-SecureFTPDeploymentForAppServices
                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                         @{N='isFTPConfiguredOnProductionSlot';E={$_.isFTPConfiguredOnProductionSlot}},
                                                                         @{N='IsAllAllowedEnableOnAnyNonProductionSlot';E={$_.IsAllAllowedEnableOnAnyNonProductionSlot}},
-                                                                        @{N='NonProductionSlotsWithSecureFTPconfigured';E={$_.NonProductionSlotsWithSecureFTPconfigured}},
+                                                                        @{N='nonProductionSlotsWithSecureFTPconfigured';E={$_.nonProductionSlotsWithSecureFTPconfigured}},
                                                                         @{N='NonProductionSlotsSkipped';E={$_.NonProductionSlotsSkipped}}
             }
             else
@@ -1056,7 +1052,7 @@ function Disable-SecureFTPDeploymentForAppServices
                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                         @{N='isFTPConfiguredOnProductionSlot';E={$_.isFTPConfiguredOnProductionSlot}},
                                                                         @{N='IsAllAllowedEnableOnAnyNonProductionSlot';E={$_.IsAllAllowedEnableOnAnyNonProductionSlot}},
-                                                                        @{N='NonProductionSlotsWithSecureFTPconfigured';E={$_.NonProductionSlotsWithSecureFTPconfigured}},
+                                                                        @{N='nonProductionSlotsWithSecureFTPconfigured';E={$_.nonProductionSlotsWithSecureFTPconfigured}},
                                                                         @{N='NonProductionSlotsSkipped';E={$_.NonProductionSlotsSkipped}}
             }
         }
@@ -1065,9 +1061,9 @@ function Disable-SecureFTPDeploymentForAppServices
             $appServicesSkipped += $appService | Select-Object @{N='ResourceID';E={$resourceId}},
                                                                 @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                 @{N='ResourceName';E={$resourceName}},
-                                                                @{N='isFTPConfiguredOnProductionSlot';E={$isFTPConfiguredOnProductionSlot}},
+                                                                @{N='isFTPConfiguredOnProductionSlot';E={$isFTPStateAllAllowedForProdSlot}},
                                                                 @{N='IsAllAllowedEnableOnAnyNonProductionSlot';E={$IsAllAllowedEnableOnAnyNonProductionSlot}},
-                                                                @{N='NonProductionSlotsWithSecureFTPconfigured';E={$NonProductionSlotsWithSecureFTPconfigured}},
+                                                                @{N='nonProductionSlotsWithSecureFTPconfigured';E={$nonProductionSlotsWithSecureFTPconfigured}},
                                                                 @{N='NonProductionSlotsSkipped';E={$nonProductionSlotsSkipped}}
         }
     }
@@ -1086,7 +1082,7 @@ function Disable-SecureFTPDeploymentForAppServices
                     @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
                     @{Expression={$_.isFTPConfiguredOnProductionSlot};Label="Is FTP State Secured on the production slot?";Width=20;Alignment="left"},
                     @{Expression={$_.IsAllAllowedEnableOnAnyNonProductionSlot};Label="Is FTP State Secured on any non-production slot?";Width=20;Alignment="left"},
-                    @{Expression={$_.NonProductionSlotsWithSecureFTPconfigured};Label="Non-production slots with Secured FTP State  - Prior to rollback";Width=40;Alignment="left"},
+                    @{Expression={$_.nonProductionSlotsWithSecureFTPconfigured};Label="Non-production slots with Secured FTP State  - Prior to rollback";Width=40;Alignment="left"},
                     @{Expression={$_.NonProductionSlotsSkipped};Label="Non-production slots with Secured FTP State  - Post rollback";Width=40;Alignment="left"}
 
     
@@ -1096,7 +1092,7 @@ function Disable-SecureFTPDeploymentForAppServices
     }
     if ($($appServicesRolledBack | Measure-Object).Count -gt 0)
     {
-        Write-Host "NonCompliant FTP State configured for the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "FTP State $($AllAllowed) is configured for the following App Service(s):" -ForegroundColor $([Constants]::MessageType.Update)
         $appServicesRolledBack | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
         # Write this to a file.
