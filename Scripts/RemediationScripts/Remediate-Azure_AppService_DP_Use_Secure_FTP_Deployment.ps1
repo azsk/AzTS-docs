@@ -47,7 +47,7 @@
            Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecureFTPDeploymentForAppServices\AppServicesWithNonCompliantFTPDeployment.csv
 
         4. To enable secure FTP configuration on the production slot and non-production slots of all App Services in a Subscription with FTP State as parameter:
-           Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FTPSOnly
+           Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FTPState -FTPSOnly
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-SecureFTPDeploymentForAppServices -Detailed
@@ -135,12 +135,6 @@ function Enable-SecureFTPDeploymentForAppServices
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
-        .PARAMETER FTPSOnly
-        Specifies the FTP State to be used as input for the remediation.
-
-        .PARAMETER DisableFTP
-        Specifies the FTP State to be used as input for the remediation.
-
         .INPUTS
         None. You cannot pipe objects to Enable-SecureFTPDeploymentForAppServices.
 
@@ -151,7 +145,7 @@ function Enable-SecureFTPDeploymentForAppServices
         PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun 
 
         .EXAMPLE
-        PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FTPSOnly
+        PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FTPState -FTPSOnly
 
         .EXAMPLE
         PS> Enable-SecureFTPDeploymentForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\EnableFTPSOnlyForAppServices\AppServicesWithFTPSOnlyEnabled.csv
@@ -183,13 +177,10 @@ function Enable-SecureFTPDeploymentForAppServices
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
         $FilePath,
 
-        [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the FTP State to be configured")]
-        $FTPSOnly,
-
-        [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the FTP State to be configured")]
-        $DisableFTP
+        [String]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $false, HelpMessage="Specifies the FTP State to be configured")]
+        [ValidateSet("FTPSOnly", "Disabled")]
+        $FTPState
 
     )
 
@@ -441,7 +432,7 @@ function Enable-SecureFTPDeploymentForAppServices
         $userInputforFTPState = @()
         if (-not $Force)
             {
-                if($FTPSOnly.IsPresent -eq $true -or $DisableFTP.IsPresent -eq $true)
+                if($FTPState)
                 {
                     Write-Host "FTP State is already provided as input parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 }
@@ -490,7 +481,7 @@ function Enable-SecureFTPDeploymentForAppServices
             }
             else
             {
-              if($FTPSOnly.IsPresent -eq $true -or $DisableFTP.IsPresent -eq $true)
+              if($FTPState)
               {
                 Write-Host "FTP State is already given as Parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 Write-Host $([Constants]::SingleDashLine)
@@ -499,7 +490,7 @@ function Enable-SecureFTPDeploymentForAppServices
               }
               else
               {
-                Write-Host "Please provide FTP State with -force. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Please provide FTP State with -force. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 return
               }
@@ -511,15 +502,18 @@ function Enable-SecureFTPDeploymentForAppServices
         $appServicesRemediated = @()
         $appServicesSkipped = @()
         
-        if($FTPSOnly.IsPresent -eq $true)
+        if($FTPState)
         {
+            if($FTPState.Contains("FTPSOnly")){
             $userInputforFTPState="1"
-        }
-        else
-        {
-            if($DisableFTP.IsPresent -eq $true)
-            {
-                $userInputforFTPState="2"
+            }
+            else{
+                if($FTPState.Contains("Disabled")){
+                    $userInputforFTPState="2"
+                }
+                else{
+                    Write-Host "Please provide valid input for enabling secure FTP state"
+                }
             }
         }
         
