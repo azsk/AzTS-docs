@@ -542,18 +542,15 @@ function Enable-SecureFTPDeploymentForAppServices
                 {
                     Write-Host "Configuring Secure FTP Deployment on the production slot..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
-                    $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
-                    if($userInputforFTPState -eq "1"){
-                        $resource.SiteConfig.FtpsState = "FtpsOnly"
+                   if($userInputforFTPState -eq "1"){
+                        Set-AzWebApp -Name $resourceName -ResourceGroupName $resourceGroupName -FtpsState FtpsOnly
                     }
                     else{
                         if($userInputforFTPState -eq "2"){
-                        $resource.SiteConfig.FtpsState = "Disabled"
+                         Set-AzWebApp -Name $resourceName -ResourceGroupName $resourceGroupName -FtpsState Disabled
                         }
                     }
-                    
-                    # Holding output of set command to avoid unnecessary logs.
-                    $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
+                   
                     $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
 
                     if ($isFTPStateAllAllowedForProdSlot)
@@ -605,21 +602,18 @@ function Enable-SecureFTPDeploymentForAppServices
                     {
                         Write-Host "Configuring FTP State on the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
                         Write-Host $([Constants]::SingleDashLine)
-                        $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
                         if($userInputforFTPState -eq "1")
                         {
-                            $resource.SiteConfig.FtpsState = "FtpsOnly"
+                            Set-AzWebAppSlot -Name $resourceName -ResourceGroupName $resourceGroupName -FtpsState FtpsOnly -Slot $slotName
                         }
                         else
                         {
                         if($userInputforFTPState -eq "2")
                             {
-                            $resource.SiteConfig.FtpsState = "Disabled"
+                            Set-AzWebAppSlot -Name $resourceName -ResourceGroupName $resourceGroupName -FtpsState Disabled -Slot $slotName
                             }
                         }
                         
-                        # Holding output of set command to avoid unnecessary logs.
-                        $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
                         $isSecureFTPEnabledOnAllNonProdSlots = -not $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).SiteConfig.FtpsState.Contains("AllAllowed")
                         if($isSecureFTPEnabledOnAllNonProdSlots){
                             Write-Host "Successfully Configured FTP State on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
@@ -915,11 +909,8 @@ function Disable-SecureFTPDeploymentForAppServices
 
             if ($isSecureFtpDisabled)
             {
-                $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
-                $resource.SiteConfig.FtpsState = $($AllAllowed)
+                Set-AzWebApp -Name $resourceName -ResourceGroupName $resourceGroupName -FtpsState AllAllowed
             
-                # Holding output of set command to avoid unnecessary logs.
-                $temp = $resource | Set-AzWebApp -ErrorAction SilentlyContinue
                 $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName).SiteConfig.FtpsState.Contains("AllAllowed")
                 
                 if ($isFTPStateAllAllowedForProdSlot)
@@ -997,11 +988,8 @@ function Disable-SecureFTPDeploymentForAppServices
                 {
                     Write-Host "Configuring FTP State  $($AllAllowed) for the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
-                    $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
-                    $resource.SiteConfig.FtpsState = $($AllAllowed)
+                    Set-AzWebAppSlot -Name $resourceName -ResourceGroupName $resourceGroupName -FtpsState AllAllowed -Slot $slotName
                     
-                    # Holding output of set command to avoid unnecessary logs.
-                    $temp = $resource | Set-AzWebAppSlot -ErrorAction SilentlyContinue
                     $isAllAllowedEnabledOnNonProductionSlot = $(Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName).SiteConfig.FtpsState.Contains("AllAllowed")
                     if($isAllAllowedEnabledOnNonProductionSlot){
                         Write-Host "Successfully configured FTP State $($AllAllowed) on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
