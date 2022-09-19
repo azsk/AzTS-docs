@@ -366,8 +366,8 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 **Properties:** 
 [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
  **Assessments:** 
- cb0acdc6-0846-fd48-debe-9905af151b6d - Function App should only be accessible over HTTPS.
- 1b351b29-41ca-6df5-946c-c190a56be5fe - Web Application should only be accessible over HTTPS.
+ <br/>cb0acdc6-0846-fd48-debe-9905af151b6d - Function App should only be accessible over HTTPS.
+ <br/>1b351b29-41ca-6df5-946c-c190a56be5fe - Web Application should only be accessible over HTTPS.
  <br />
 
 <br />
