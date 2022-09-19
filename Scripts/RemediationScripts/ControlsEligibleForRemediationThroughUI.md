@@ -19,6 +19,8 @@
 
 9. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
 
+11. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](ControlsEligibleForRemediationThroughUI.md-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+
 <br />
 
 ___
@@ -134,6 +136,19 @@ Ensure API Management service is accessible only over HTTPS
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableHTTPSForAPIsInAPIManagementServices](Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 11. Azure_CloudService_SI_Disable_RemoteDesktop_Access
+
+### Display Name
+Remote Desktop (RDP) access must be disabled on cloud service roles
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
