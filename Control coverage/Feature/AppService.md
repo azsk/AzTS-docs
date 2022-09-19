@@ -500,8 +500,8 @@ TLS provides privacy and data integrity between client and server. Using approve
 **Properties:** 
 [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
  **Assessments:** 
- 15be5f3c-e0a4-c0fa-fbff-8e50339b4b22 - TLS should be updated to the latest version for function apps.
- 2a54c352-7ca4-4bae-ad46-47ecd9595bd2 - TLS should be updated to the latest version for web apps.
+ <br/>15be5f3c-e0a4-c0fa-fbff-8e50339b4b22 - TLS should be updated to the latest version for function apps.
+ <br/>2a54c352-7ca4-4bae-ad46-47ecd9595bd2 - TLS should be updated to the latest version for web apps.
 <br />
 
 <br />
