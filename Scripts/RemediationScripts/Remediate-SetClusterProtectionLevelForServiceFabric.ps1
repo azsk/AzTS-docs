@@ -451,7 +451,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
         # Backing up Service Fabric(s) details.
-        $backupFile = "[$($backupFolderPath)]\ServiceFabricDetailsBackUp.csv"
+        $backupFile = "$($backupFolderPath)\ServiceFabricDetailsBackUp.csv"
         $ServiceFabricWithoutEncryptandSign | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "Service Fabric(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
@@ -531,7 +531,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                         $logResource = @{}	
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                         $logResource.Add("ResourceName",($_.ResourceName))
-                        $logResource.Add("Reason", "Error setting cluster protection level to Encrypt and Sign: [$($ServiceFabric)]")               
+                        $logResource.Add("Reason", "Error setting cluster protection level to Encrypt and Sign: [$($ServiceFabric)]")            
                         $logSkippedResources += $logResource	
 
                     }
