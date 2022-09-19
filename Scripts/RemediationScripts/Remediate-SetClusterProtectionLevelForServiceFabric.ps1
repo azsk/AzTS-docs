@@ -496,6 +496,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         $ServiceFabricSkippedWithSingleNode = @()
 
         Write-Host "Setting ClusterProtectionLevel to EncryptAndSign on Service Fabric(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Service Fabric(s) which needs to be remediated.
         $ServiceFabricWithoutEncryptandSign | ForEach-Object {
@@ -562,7 +563,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $ServiceFabricRemediated | Export-CSV -Path $ServiceFabricRemediatedFile -NoTypeInformation
 
                 Write-Host "The information related to Service Fabric(s) where cluster protection level changed has been saved to [$($ServiceFabricRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
-                
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if ($($ServiceFabricSkippedWithSingleNode | Measure-Object).Count -gt 0)
@@ -573,7 +574,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $ServiceFabricSkippedWithSingleNode | Export-CSV -Path $ServiceFabricSkippedWithSingleNodeFile -NoTypeInformation
 
                 Write-Host "The information related to Service Fabric(s) where cluster protection level not changed due to having single node has been saved to [$($ServiceFabricSkippedWithSingleNodeFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
-                
+                Write-Host $([Constants]::SingleDashLine)
             }
         
             if ($($ServiceFabricSkipped | Measure-Object).Count -gt 0)
@@ -583,7 +584,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
                 $ServiceFabricSkippedFile = "$($backupFolderPath)\SkippedServiceFabric.csv"
                 $ServiceFabricSkipped | Export-CSV -Path $ServiceFabricSkippedFile -NoTypeInformation
                 Write-Host "The information related to Service Fabric(s) where cluster protection level not changed has been saved to [$($ServiceFabricSkippedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
-                
+                Write-Host $([Constants]::SingleDashLine)
             }
 
         }
