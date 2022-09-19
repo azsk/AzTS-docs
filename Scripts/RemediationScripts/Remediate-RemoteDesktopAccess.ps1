@@ -44,7 +44,7 @@ To know more about parameter execute:
 ########################################
 #>
 
-function Pre_requisites
+function Setup-Prerequisites
 {
     <#
         .SYNOPSIS
@@ -54,7 +54,7 @@ function Pre_requisites
 	#>
 
     # List of required modules
-    $requiredModule = @("Az.Resources", "Az.Accounts", "Azure")
+    $requiredModules = @("Az.Resources", "Az.Accounts", "Azure")
     Write-Host "Required modules: $($requiredModules -join ', ')"
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -203,7 +203,7 @@ function Disable-RemoteDesktopAccess
     Write-Host $([Constants]::SingleDashLine)
     
     # Safe Check: Checking whether the current account is of type User
-    if($currentSub.Account.Type -ne "User")
+    if($context.Account.Type -ne "User")
     {
         Write-Host "This script can only be run by 'User' account type." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
@@ -276,6 +276,7 @@ function Disable-RemoteDesktopAccess
         if([string]::IsNullOrWhiteSpace($FilePath))
         {
             Write-Host "Fetching all Cloud Service(s) in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             #Get all cloud service(s) in a subscription
             $cloudServices = Get-AzResource -ResourceType $resourceType -ErrorAction Stop
 
@@ -376,6 +377,7 @@ function Disable-RemoteDesktopAccess
                     ResourceGroupName = $_.ResourceGroupName
                     IsEnabledViaExtension = $true
                     RemoteAccessDetails = $rdpEnabledViaExtension
+                    ResourceId = $_.ResourceId
                 }
 
                 $cloudServiceWithEnabledRDPAccess += $item
@@ -388,6 +390,7 @@ function Disable-RemoteDesktopAccess
                     ResourceGroupName = $_.ResourceGroupName
                     IsEnabledViaExtension = $false
                     RemoteAccessDetails = $rdpEnabledViaConfig
+                    ResourceId = $_.ResourceId
                 }
                     
                 $cloudServiceWithEnabledRDPAccess += $item        
@@ -404,6 +407,7 @@ function Disable-RemoteDesktopAccess
         catch 
         {
             cloudServiceEncounteredError += $_ | Select-Object @{Expression={($resource.ResourceGroupName)};Label="ResourceGroupName"},@{Expression={$resource.Name};Label="CloudServiceName"}
+            $logResource = @{}
             $logResource.Add("ResourceGroupName",($resource.ResourceGroupName))
             $logResource.Add("ResourceName",($resource.Name))
             $logResource.Add("Reason","Error encountered while processing configuration for the Cloud Service. Error: [$($_)]")    
@@ -414,7 +418,7 @@ function Disable-RemoteDesktopAccess
     
     $totalCloudServiceWithEnableRDPAccess = ($cloudServiceWithEnabledRDPAccess | Measure-Object).Count
     $totalCloudServiceWithDisabledRDPAccess = ($cloudServiceWithDisabledRDPAccess | Measure-Object).Count
-    $totalCloudServicesEncounteredError = $(cloudServiceEncounteredError | Measure-Object).Count
+    $totalCloudServicesEncounteredError = ($cloudServiceEncounteredError | Measure-Object).Count
     
     if ($totalCloudServiceWithEnableRDPAccess -eq 0)
     {
@@ -467,7 +471,7 @@ function Disable-RemoteDesktopAccess
             # Asking user to verify logs and select 'Y' to proceed
             if(-not $Force)
             {
-                Write-Host "Rollback command is not available.`nDo you want to disable Remote Desktop(RDP) Access from cloud services listed in above path?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                Write-Host "Rollback command is not available.`nDo you want to disable Remote Desktop(RDP) Access from cloud services listed in above path?" -NoNewline -ForegroundColor $([Constants]::MessageType.Warning)
 
                 $userInput = Read-Host -Prompt "(Y|N)"
                 Write-Host $([Constants]::SingleDashLine)
@@ -478,7 +482,7 @@ function Disable-RemoteDesktopAccess
                     Write-Host $([Constants]::DoubleDashLine)
                     return;
                 }
-                Write-Host "User has provided consent to disable RDP Access from the Cloud Services." -ForegroundColor $([Constants]::SingleDashLine)
+                Write-Host "User has provided consent to disable RDP Access from the Cloud Services." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
             else
@@ -494,7 +498,7 @@ function Disable-RemoteDesktopAccess
         # List for storing remediated Cloud Service(s)
         $cloudServicesSkippedRemediation = @()
 
-        cloudServiceWithEnabledRDPAccess | ForEach-Object {
+        $cloudServiceWithEnabledRDPAccess | ForEach-Object {
             $serviceName = $_.CloudServiceName
             $rgName = $_.ResourceGroupName
             $isServiceRemediated = $true

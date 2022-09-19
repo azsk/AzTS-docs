@@ -151,6 +151,6 @@ Remote Desktop (RDP) access must be disabled on cloud service roles
 [Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)
 
 ### Minimum permissions required to run the script
-Contributor role at resource level
+Classic Role Assignment at subscription level
 
 ___
