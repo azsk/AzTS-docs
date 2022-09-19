@@ -218,6 +218,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
     else
     {
         Write-Host "[Step 1 of 4] Validate the user... "
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Connect to Azure account
@@ -305,7 +306,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             catch
             {
                 Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Warning)	
-                Write-Host "Skipping the Resource:  [$($_.ResourceName)]..."
+                Write-Host "Skipping the Resource:  [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                 $logResource.Add("ResourceName",($_.ResourceName))	
@@ -419,6 +420,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
     }
 
     Write-Host "Found [$($totalServiceFabricWithoutEncryptandSign)] Service Fabric(s) for which Cluster Protection level is other than Encrypt and Sign or Cluster Protection level is not enabled ." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)	
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
@@ -443,7 +445,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "[Step 3 of 4] Backing up Service Fabric(s) details..."
+    Write-Host "[Step 3 of 4] Back up Service Fabric(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath))
@@ -483,6 +485,7 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
         else
         {
             Write-Host "'Force' flag is provided. Cluster Protection level will be changed as EncryptAndSign on Service Fabric(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host $([Constants]::SingleDashLine)
         }
 
         # List for storing remediated Service Fabric(s)
@@ -606,8 +609,8 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
             if ($($ServiceFabricSkippedWithSingleNode | Measure-Object).Count -gt 0)
             {
                 Write-Host "Error occured while setting up the cluster protection level in Service Fabric(s) in the subscription: Service Fabric with Single Cluster Node are not applicable for Modification." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
                 $ServiceFabricSkippedWithSingleNode | Format-Table -Property $colsProperty -Wrap
+                Write-Host $([Constants]::SingleDashLine)
 
                 # Write this to a file.
                 $ServiceFabricSkippedWithSingleNodeFile = "$($backupFolderPath)\SkippedServiceFabricWithSingleNode.csv"
@@ -646,14 +649,13 @@ function Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric
     }
     else
     {
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "[Step 4 of 4] Set the Cluster Protection Level on Service Fabric(s) in the Subscription..." 
+        Write-Host "[Step 4 of 4] Set the Cluster Protection Level on Service Fabric(s) in the Subscription." 
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "*    Run the same command with -FilePath [$($backupFile)] and without -DryRun, to Change Cluster Protection level to Encrypt and Sign on Service Fabric(s) listed in the file."
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to Change Cluster Protection level to Encrypt and Sign on Service Fabric(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
     }
 }
 
@@ -732,6 +734,7 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
     else
     {
         Write-Host "[Step 1 of 3] Validate the user..." 
+        Write-Host $([Constants]::SingleDashLine)
     }  
 
     # Connect to Azure account
@@ -765,7 +768,7 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
  Write-Host "To change cluster protection level on Service Fabric in a Subscription, Contributor or higher privileged role assignment on the Service fabric(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 3] Preparing to fetch all Service Fabric(s)"
+    Write-Host "[Step 2 of 3] Prepare to fetch all Service Fabric(s)"
     Write-Host $([Constants]::SingleDashLine)
     
     if (-not (Test-Path -Path $FilePath))
@@ -812,7 +815,7 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
  
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Set ClusterProtectionLevel to previous value on all Service Fabric(s) in the Subscription..."  -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "[Step 3 of 3] Set ClusterProtectionLevel to previous value on all Service Fabric(s) in the Subscription"
     Write-Host $([Constants]::SingleDashLine)
 
     if( -not $Force)
@@ -824,15 +827,16 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
             if($userInput -ne "Y")
             {
                 Write-Host "Cluster Protection level will not be rolled back on Service Fabric(s) mentioned in the file. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-                 -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::DoubleDashLine)
                 return
             }
             Write-Host "Cluster Protection level will be rolled back on Service Fabric(s) mentioned in the file." -ForegroundColor $([Constants]::MessageType.Update)
-             
+            Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
         Write-Host "'Force' flag is provided. Cluster Protection level will be rolled back on Service Fabric(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # List for storing rolled back Service Fabric resource.
@@ -880,6 +884,7 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
     {
         Write-Host "Cluster Protection Level has been rolled back on the following Service Fabric(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
         $ServiceFabricRolledBack | Format-Table -Property $colsProperty -Wrap
+        Write-Host $([Constants]::SingleDashLine)
 
         # Write this to a file.
         $ServiceFabricRolledBackFile = "$($backupFolderPath)\RolledBackServiceFabric.csv"
@@ -892,6 +897,8 @@ function Set-ClusterProtectionLeveltoPreviousValueforServiceFabric
     {
         Write-Host "Error while rolling back ClusterProtectionLevel on Service Fabric(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
         $ServiceFabricSkipped | Format-Table -Property $colsProperty -Wrap
+        Write-Host $([Constants]::SingleDashLine)
+
             
         # Write this to a file.
         $ServiceFabricSkippedFile = "$($backupFolderPath)\RollbackSkippedServiceFabric.csv"
