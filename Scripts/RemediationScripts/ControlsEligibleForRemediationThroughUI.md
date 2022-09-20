@@ -21,6 +21,8 @@
 
 10. [Azure_SQLDatabase_DP_Enable_TDE](ControlsEligibleForRemediationThroughUI.md-Azure_SQLDatabase_DP_Enable_TDE)
 
+11. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](ControlsEligibleForRemediationThroughUI.md-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+
 <br />
 
 ___
@@ -152,5 +154,18 @@ Transparent data encryption (TDE) must be enabled
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+___
+
+## 11. Azure_CloudService_SI_Disable_RemoteDesktop_Access
+
+### Display Name
+Remote Desktop (RDP) access must be disabled on cloud service roles
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)
+
+### Minimum permissions required to run the script
+Classic Role Assignment at subscription level
 
 ___
