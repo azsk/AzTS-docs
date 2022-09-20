@@ -176,6 +176,8 @@ Enter the choice (1|2)";
                     $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
                     Write-Host $([Constants]::SingleDashLine)
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }elseif ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }else{
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
