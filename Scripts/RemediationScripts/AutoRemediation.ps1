@@ -157,8 +157,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_CloudService_SI_Disable_RemoteDesktop_Access") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }
-                elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
+                }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $proceedWithRemediation = Read-Host -Prompt "Do you want to proceed with remediation for the control [$($control.ControlId)]? (Y|N)"
                     Write-Host $([Constants]::SingleDashLine)
