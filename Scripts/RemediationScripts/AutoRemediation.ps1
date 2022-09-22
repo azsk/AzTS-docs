@@ -176,7 +176,21 @@ Enter the choice (1|2)";
                     $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
                     Write-Host $([Constants]::SingleDashLine)
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }else{
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_FTP_Deployment") {
+                    Write-Host "Secured FTP State for the App Service(s) is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
+                    $userInputforFTPState = Read-Host "Please select 1 to set FTP State as FTPSOnly or select 2 to set FTP State Disabled on the production slot and all non-production slots for all App Services"
+                    $FTPState=""
+
+                    if($userInputforFTPState -eq "1"){
+                        $FTPState="FTPSOnly"
+                    }
+                    elseif ($userInputforFTPState -eq "2"){
+                        $FTPState="Disabled"
+                    }
+                    Write-Host $([Constants]::SingleDashLine)
+                   $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -FTPState " + "`'" + $FTPState +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";              
+                }
+                else{
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     continue;

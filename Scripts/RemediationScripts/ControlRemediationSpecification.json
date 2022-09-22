@@ -109,6 +109,18 @@
                     "RollbackCommand": "Disable-HttpsForApisInApiManagementServices",
                     "Arguments":["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_AppService_DP_Use_Secure_FTP_Deployment",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SecureFTPDeploymentForAppServices.ps1",
+            "LoadCommand": "Remediate-SecureFTPDeploymentForAppServices.ps1",     
+            "InitCommand": "Enable-SecureFTPDeploymentForAppServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
+                    "Arguments":["SubscriptionId"]
+                }
         }
     ]
 } 
