@@ -218,6 +218,7 @@ function Enable-SecureFTPDeploymentForAppServices
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
     }
@@ -277,6 +278,7 @@ function Enable-SecureFTPDeploymentForAppServices
         if (-not (Test-Path -Path $FilePath))
             {
                 Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::DoubleDashLine)
                 return
             }
 
@@ -305,6 +307,7 @@ function Enable-SecureFTPDeploymentForAppServices
     if ($totalAppServices -eq 0)
     {
         Write-Host "No App Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
   
@@ -514,7 +517,7 @@ function Enable-SecureFTPDeploymentForAppServices
               else
               {
                 Write-Host "Please provide FTP State with -force. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host $([Constants]::DoubleDashLine)
                 return
               }
             }
@@ -849,6 +852,7 @@ function Disable-SecureFTPDeploymentForAppServices
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
     }
@@ -894,6 +898,7 @@ function Disable-SecureFTPDeploymentForAppServices
     if ($totalAppServices -eq 0)
     {
         Write-Host "No App Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
@@ -916,7 +921,7 @@ function Disable-SecureFTPDeploymentForAppServices
         if($userInput -ne "Y")
         {
             Write-Host "FTP State will not be updated for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
         #Write-Host "User has provided consent to configure NonCompliant FTP State on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
