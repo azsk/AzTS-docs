@@ -448,7 +448,6 @@ function Enable-SecureFTPDeploymentForAppServices
         
         Write-Host "FTP state will be updated on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-
         $userInputforFTPState = @()
         
         # Here AutoRemediation switch is used as there is no need to take user input at BRS level if user has given consent to proceed with the remediation in AutoRemediation Script.
