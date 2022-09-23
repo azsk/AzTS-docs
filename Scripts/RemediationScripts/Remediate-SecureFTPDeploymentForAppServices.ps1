@@ -205,7 +205,7 @@ function Enable-SecureFTPDeploymentForAppServices
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Prepare to use Secure FTP deployment for App Services in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -230,8 +230,11 @@ function Enable-SecureFTPDeploymentForAppServices
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        return
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Setting up context for the current Subscription.
