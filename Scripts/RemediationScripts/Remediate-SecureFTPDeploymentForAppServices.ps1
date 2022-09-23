@@ -59,8 +59,6 @@
         To know more about the options supported by the roll back command, execute:
         Get-Help Disable-HttpsForAppServices -Detailed        
 ###>
-
-
 function Setup-Prerequisites
 {
     <#
@@ -109,7 +107,6 @@ function Setup-Prerequisites
     }
     Write-Host $([Constants]::SingleDashLine)
 }
-
 function Enable-SecureFTPDeploymentForAppServices
 {
     <#
@@ -303,7 +300,6 @@ function Enable-SecureFTPDeploymentForAppServices
             }
     }
     
-
     $totalAppServices = ($appServiceResources | Measure-Object).Count
 
     if ($totalAppServices -eq 0)
@@ -692,8 +688,6 @@ function Enable-SecureFTPDeploymentForAppServices
             }
         }
 
-        # Write-Host $([Constants]::SingleDashLine)
-
         if (($appServicesRemediated | Measure-Object).Count -eq $totalAppServicesWithFTPStateAllAllowed)
         {
             Write-Host "FTP State successfully configured on the production slot and all non-production slots for all [$($totalAppServicesWithFTPStateAllAllowed)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -788,7 +782,6 @@ function Enable-SecureFTPDeploymentForAppServices
         Write-Host $([Constants]::SingleDashLine)
     }   
 }
-
 function Disable-SecureFTPDeploymentForAppServices
 {
     <#
@@ -865,7 +858,6 @@ function Disable-SecureFTPDeploymentForAppServices
 
     # Connect to Azure account
     $context = Get-AzContext
-
     $AllAllowed = "AllAllowed"
 
     if ([String]::IsNullOrWhiteSpace($context))
