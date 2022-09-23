@@ -264,18 +264,61 @@ function Enable-SecureFTPDeploymentForAppServices
 
     #AllAllowed
     $AllAllowed = "AllAllowed"
-
-    # No file path provided as input to the script. Fetch all App Services in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
+    
+    if($AutoRemediation)
     {
+        if(-not (Test-Path -Path $Path))
+        {
+            Write-Host "Error: File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        Write-Host "Fetching all App Service(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No App Service(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        $validResources | ForEach-Object {
+        $resourceId = $_.ResourceId 
+            try
+            {
+                $appServiceResource = Get-AzResource -ResourceId $resourceId -ErrorAction SilentlyContinue
+                $appServiceResources += $appServiceResource              
+            }
+            catch
+            {
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+                return
+            }
+        }
+    }
+    else
+    {
+        # No file path provided as input to the script. Fetch all App Services in the Subscription.
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
         Write-Host "Fetching all App Services in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         # Get all App Services in a Subscription
         $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
-    }
-    else
-    {
-        if (-not (Test-Path -Path $FilePath))
+        }
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
             {
                 Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::DoubleDashLine)
@@ -300,8 +343,8 @@ function Enable-SecureFTPDeploymentForAppServices
                     Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
+        }
     }
-    
     $totalAppServices = ($appServiceResources | Measure-Object).Count
 
     if ($totalAppServices -eq 0)
