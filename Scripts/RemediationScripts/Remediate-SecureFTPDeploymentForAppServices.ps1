@@ -508,8 +508,6 @@ function Enable-SecureFTPDeploymentForAppServices
             {
               if($FTPState)
               {
-                Write-Host "FTP State is already given as Parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                Write-Host $([Constants]::SingleDashLine)
                 Write-Host "'Force' flag is provided. Securing FTP Deployments on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
               }
