@@ -19,6 +19,10 @@
 
 9. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
 
+10. [Azure_SQLDatabase_DP_Enable_TDE](ControlsEligibleForRemediationThroughUI.md-Azure_SQLDatabase_DP_Enable_TDE)
+
+11. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](ControlsEligibleForRemediationThroughUI.md-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+
 <br />
 
 ___
@@ -137,5 +141,31 @@ Ensure API Management service is accessible only over HTTPS
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+___
+
+## 10. Azure_SQLDatabase_DP_Enable_TDE
+
+### Display Name
+Transparent data encryption (TDE) must be enabled
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-TransparentDataEncryptionForSQLServers](Remediate-TransparentDataEncryptionForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 11. Azure_CloudService_SI_Disable_RemoteDesktop_Access
+
+### Display Name
+Remote Desktop (RDP) access must be disabled on cloud service roles
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)
+
+### Minimum permissions required to run the script
+Classic Role Assignment at subscription level
 
 ___
