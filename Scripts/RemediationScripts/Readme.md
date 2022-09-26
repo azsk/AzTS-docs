@@ -35,6 +35,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 23. [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG](Readme.md#23-Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG)
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
+26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
 
 <br />
 
@@ -535,6 +536,28 @@ Yes
 Yes
 
 ___ 
+
+
+## 26. Azure_AppService_DP_Use_Secure_FTP_Deployment
+
+### Display Name
+App Services should use secure FTP deployments
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SecureFTPDeploymentForAppServices](Remediate-SecureFTPDeploymentForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
 
 
 ## Supports managed identity based remediations

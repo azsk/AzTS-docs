@@ -68,9 +68,10 @@ function Setup-Prerequisites
 
     # List of required modules
     $requiredModules = @("Az.Accounts", "Az.Aks", "Az.Resources")
-
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..."
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -78,14 +79,17 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "$($_) module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
             Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 function Enable-AADForKubernetes
@@ -109,6 +113,15 @@ function Enable-AADForKubernetes
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
+
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
         None. You cannot pipe objects to Enable-AADForKubernetes.
@@ -146,77 +159,107 @@ function Enable-AADForKubernetes
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
+        $Path,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
+        $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 1 of 5] Preparing to enable AAD for Kubernetes Services in Subscription: $($SubscriptionId)"
-
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "[Step 1 of 5] Validate and install the modules required to run the script and validate the user"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
         }
     }
-
-    # Get current Azure account context.
+    else
+    {
+        Write-Host "[Step 1 of 5] Validate the User" 
+        Write-Host $([Constants]::SingleDashLine)
+    }  
+    # Connect to Azure account
     $context = Get-AzContext
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
 
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+     # Setting up context for the current Subscription.
+     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+     if(-not($AutoRemediation))
+     {
+         Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+         Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+         Write-Host "Account Name: [$($context.Account.Id)]"
+         Write-Host "Account Type: [$($context.Account.Type)]"
+         Write-Host $([Constants]::SingleDashLine)
+     }
+
+    Write-Host "To enable AAD for Kubernetes Services in a Subscription, Contributor or higher privileges on the Kubernetes Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To enable AAD for Kubernetes Services in a Subscription, Contributor or higher privileges on the Kubernetes Services are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 2 of 5] Preparing to fetch all Kubernetes Services..."
+    Write-Host "[Step 2 of 5] Fetch all Kubernetes Services"
+    Write-Host $([Constants]::SingleDashLine)
 
     $kubernetesServiceResourceType = "Microsoft.ContainerService/managedClusters"
     $kubernetesServiceResources = @()
 
-    # No file path provided as input to the script. Fetch all Kubernetes Services in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        Write-Host "Fetching all Kubernetes Services in Subscription: [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+    # To keep track of remediated and skipped resources
+    $logRemediatedResources = @()
+    $logSkippedResources=@()
 
-        # Get all Kubernetes Services in a Subscription
-        $kubernetesServiceResources = Get-AzAksCluster -SubscriptionId $SubscriptionId -WarningAction SilentlyContinue
-    }
-    else
+    $controlIds = "Azure_KubernetesService_AuthN_Enabled_AAD"
+    if($AutoRemediation)
     {
-        if (-not (Test-Path -Path $FilePath))
+        if(-not (Test-Path -Path $Path))
         {
-            Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
         }
-
-        Write-Host "Fetching all Kubernetes Services from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
-        $kubernetesServiceDetails = Import-Csv -LiteralPath $FilePath
-        $validKubernetesServiceDetails = $kubernetesServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.Id) }
-        
+        Write-Host "Fetching all Kubernetes service(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
         $aksResources = Get-AzAksCluster -SubscriptionId $SubscriptionId -WarningAction SilentlyContinue
-
-        $validKubernetesServiceDetails | ForEach-Object {
-            $resourceId = $_.Id
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No Kubernetes service(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        $validResources | ForEach-Object {
+            $resourceId = $_.ResourceId
             try
             {
                 $kubernetesServiceResource = $aksResources | Where-Object {$_.Id -eq $resourceId}
@@ -224,8 +267,56 @@ function Enable-AADForKubernetes
             }
             catch
             {
-                Write-Host "Error fetching Kubernetes Services resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error fetching Kubernetes Services resource: Resource ID: [$($resourceId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping this Kubernetes Services resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+    }
+    else
+    {
+        # No file path provided as input to the script. Fetch all Kubernetes Services in the Subscription.
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
+            Write-Host "Fetching all Kubernetes Services in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            # Get all Kubernetes Services in a Subscription
+            $kubernetesServiceResources = Get-AzAksCluster -SubscriptionId $SubscriptionId -WarningAction SilentlyContinue
+        }
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
+            {
+                Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::DoubleDashLine)
+                return
+            }
+
+            Write-Host "Fetching all Kubernetes Services from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+
+            $kubernetesServiceDetails = Import-Csv -LiteralPath $FilePath
+            $validKubernetesServiceDetails = $kubernetesServiceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.Id) }
+            
+            $aksResources = Get-AzAksCluster -SubscriptionId $SubscriptionId -WarningAction SilentlyContinue
+
+            $validKubernetesServiceDetails | ForEach-Object {
+                $resourceId = $_.Id
+                try
+                {
+                    $kubernetesServiceResource = $aksResources | Where-Object {$_.Id -eq $resourceId}
+                    $kubernetesServiceResources += $kubernetesServiceResource
+                }
+                catch
+                {
+                    Write-Host "Error fetching Kubernetes Services resource: Resource ID: [$($resourceId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Kubernetes Services resource..." -ForegroundColor $([Constants]::MessageType.Warning)
+                }
             }
         }
     }
@@ -235,14 +326,15 @@ function Enable-AADForKubernetes
     if ($totalKubernetesServices -eq 0)
     {
         Write-Host "No Kubernetes Service resource found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::DoubleDashLine)
+        return
     }
   
-    Write-Host "Found $($totalKubernetesServices) Kubernetes Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalKubernetesServices)] Kubernetes Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 3 of 5] Fetching all Kubernetes Service configurations..."
-
+    Write-Host "[Step 3 of 5] Fetch all Kubernetes Service configurations"
+    Write-Host $([Constants]::SingleDashLine)
     # Includes Kubernetes Services where AAD is disabled.
     $kubernetesServicesWithoutAADEnabled = @()
 
@@ -274,34 +366,67 @@ function Enable-AADForKubernetes
                                                                                                    @{N='EnableRBAC';E={$isRBACEnabled}},
                                                                                                    @{N='IsAADEnabled';E={$isAADEnabled}}
             }
+            else 
+            {    
+                $kubernetesServicesSkipped += $kubernetesServiceResource
+                Write-Host "Skipping this Kubernetes Service with resource name: [$($_.Name)] and resource group name: [$($_.ResourceGroupName)] as AAD is already enabled..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.Name))
+                $logResource.Add("Reason","AAD is already enabled.")    
+                $logSkippedResources += $logResource
+            }
         }
         catch
         {
+            Write-Host "Skipping this Kubernetes Service with resource name: [$($_.Name)] and resource group name: [$($_.ResourceGroupName)] as encountered error while processing configurations..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
             $kubernetesServicesSkipped += $kubernetesServiceResource
+            $logResource = @{}
+            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+            $logResource.Add("ResourceName",($_.ResourceName))
+            $logResource.Add("Reason","Error occurred during processing fetching configuration")    
+            $logSkippedResources += $logResource
         }
     }
 
     $totalKubernetesServicesWithoutAADEnabled = ($kubernetesServicesWithoutAADEnabled | Measure-Object).Count
     $totalSkippedKubernetesServices = ($kubernetesServicesSkipped | Measure-Object).Count
     
-    if ($totalSkippedKubernetesServices -gt 0)
+    if ((-not $AutoRemediation) -and $totalSkippedKubernetesServices -gt 0)
     {
+        Write-Host "Following Kubernetes Service(s) have been skipped for remediation:"
         $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
                         @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"}
 
         $kubernetesServicesSkipped | Format-Table -Property $colsProperty -Wrap
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     if ($totalKubernetesServicesWithoutAADEnabled -eq 0)
     {
         Write-Host "No Kubernetes Service found with AAD disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
+        Write-Host $([Constants]::DoubleDashLine)
+        if($AutoRemediation -and $totalSkippedKubernetesServices -gt 0) 
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
+        }
+        return
     }
 
-    Write-Host "Found $($totalKubernetesServicesWithoutAADEnabled) out of $($totalKubernetesServices) Kubernetes Service(s) with AAD disabled." -ForegroundColor $([Constants]::MessageType.Update)
-
+    Write-Host "Found [$($totalKubernetesServicesWithoutAADEnabled)] out of [$($totalKubernetesServices)] Kubernetes Service(s) with AAD disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableAADForKubernetesServices"
 
@@ -310,19 +435,19 @@ function Enable-AADForKubernetes
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 4 of 5] Backing up Kubernetes Service details..."
-
+    Write-Host "[Step 4 of 5] Back up Kubernetes Service details"
+    Write-Host $([Constants]::SingleDashLine)
     # Backing up Kubernetes Service details.
     $backupFile = "$($backupFolderPath)\KubernetesClusterWithAADDisabled.csv"
     $kubernetesServicesWithoutAADEnabled | Export-CSV -Path $backupFile -NoTypeInformation
 
-    Write-Host "Successfully backed up Kubernetes Service details to $($backupFolderPath)" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Successfully backed up Kubernetes Service details to [$($backupFolderPath)]." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun)
     {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 5 of 5] Enabling AAD for Kubernetes Services..."
+        Write-Host "[Step 5 of 5] Enable AAD for Kubernetes Services"
+        Write-Host $([Constants]::SingleDashLine)
 
         $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
                         @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
@@ -331,34 +456,44 @@ function Enable-AADForKubernetes
                         @{Expression={$_.EnableRBAC};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
                         @{Expression={$_.IsAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
-        Write-Host "`nFollowing Kubernetes cluster(s) are having AAD disabled:" -ForegroundColor $([Constants]::MessageType.Info)
-        
+        Write-Host "Following Kubernetes cluster(s) are having AAD disabled:" #-ForegroundColor $([Constants]::MessageType.Warning)
         $kubernetesServicesWithoutAADEnabled | Format-Table -Property $colsProperty -Wrap
-
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "`n**Note**" -ForegroundColor $([Constants]::MessageType.Warning) 
+
+        Write-Host "Note: " -ForegroundColor $([Constants]::MessageType.Warning) 
         Write-Host "1. RBAC must be enabled on Kubernetes cluster to enable AAD." -ForegroundColor $([Constants]::MessageType.Warning) 
         Write-Host "2. Once AAD is enabled, you won't be able to disable it again." -ForegroundColor $([Constants]::MessageType.Warning) 
         Write-Host "`nFor more information on using AAD authentication in AKS, please refer: https://docs.microsoft.com/en-us/azure/aks/azure-ad-rbac" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "`nDo you want to enable AAD for all Kubernetes Services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Do you want to enable AAD for all Kubernetes Services? " -NoNewline
 
         $userInput = Read-Host -Prompt "(Y|N)"
-
+        Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
             Write-Host "AAD will not be enabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            break
+            Write-Host $([Constants]::DoubleDashLine)
+            return
         }
+        Write-Host "User has provided consent to enable AAD for all Kubernetes Services" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
 
-        Write-Host "`nDo you want to add Azure AD groups as administrators on each cluster?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to add Azure AD groups as administrators on each cluster? " -NoNewline
         
         $addAADGroup = $false
-        $input = Read-Host -Prompt "(Y|N)"
-
-        if($input -eq "Y")
+        $userInput = Read-Host -Prompt "(Y|N)"
+        Write-Host $([Constants]::SingleDashLine)
+        if($userInput -eq "Y")
         {
             $addAADGroup = $true
-        } 
+            Write-Host "Azure AD groups will be added as administrators on each cluster" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+        }
+        else 
+        {
+            Write-Host "Azure AD groups will not be added as administrators on each cluster" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+        }
 
         # To hold results from the remediation.
         $kubernetesClusterRemediated = @()
@@ -375,9 +510,8 @@ function Enable-AADForKubernetes
             $isRBACEnabled = $_.EnableRBAC
             $aadClientIds = @()
 
+            Write-Host "Enabling AAD for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "`nEnabling AAD for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
-
             # Check whether RBAC is enabled on cluster or not. Without RBAC, AAD cannot be enabled.
             if ($isRBACEnabled -eq $true)
             {
@@ -386,21 +520,23 @@ function Enable-AADForKubernetes
                     $userSkippedAdminGroups = $false
                     do
                     {
-                        Write-Host "Please provide Azure AD group object id (group will be registered as an admin group on the cluster):"
+                        Write-Host "Please provide Azure AD group object id (group will be registered as an admin group on the cluster): "
                         $aadClientIds = Read-Host
+                        Write-Host $([Constants]::SingleDashLine)
 
                         if ([String]::IsNullOrWhiteSpace($aadClientIds))
                         {
                             Write-Host "Given object id is empty."
-                            Write-Host "`nDo you want to re-enter Azure AD group object id?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                            Write-Host "Do you want to re-enter Azure AD group object id? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
-                            $input = Read-Host -Prompt "(Y|N)"
-
-                            if($input -ne "Y")
+                            $userInput = Read-Host -Prompt "(Y|N)"
+                            Write-Host $([Constants]::SingleDashLine)
+                            if($userInput -ne "Y")
                             {
                                 $addAADGroup = $false
                                 $userSkippedAdminGroups = $true
-                                Write-Host "Azure AD group will not be added for Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                                Write-Host "Azure AD group will not be added for Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host $([Constants]::SingleDashLine)
                             }
                         }
 
@@ -408,7 +544,8 @@ function Enable-AADForKubernetes
                 }
                 else
                 {
-                    Write-Host "AAD group will not be added to Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "AAD group will not be added to Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
 
                 # Setting AAD profile config to Kubernetes cluster.
@@ -418,18 +555,35 @@ function Enable-AADForKubernetes
                 {
                     $kubernetesServiceResource.IsAADEnabled = $true
                     $kubernetesClusterRemediated += $kubernetesServiceResource
-                    Write-Host "Successfully enabled AAD for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Update)
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.Name))
+                    $logRemediatedResources += $logResource
+                    Write-Host "Successfully enabled AAD for Kubernetes cluster [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
                 else
                 {
                     $kubernetesClusterSkipped += $kubernetesServiceResource
-                    Write-Host "Error occurred enabling AAD for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Error)
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.Name))
+                    $logResource.Add("Reason","Error occurred enabling AAD for Kubernetes cluster [$($resourceName)].")    
+                    $logSkippedResources += $logResource
+                    Write-Host "Error occurred enabling AAD for Kubernetes cluster [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
             }
             else
             {
                 $kubernetesClusterSkipped += $kubernetesServiceResource
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.Name))
+                $logResource.Add("Reason","AAD can't be enabled for this resource since RBAC is disabled.")    
+                $logSkippedResources += $logResource
                 Write-Host "AAD can't be enabled for this resource since RBAC is disabled." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::SingleDashLine)
                 return
             }
         }
@@ -441,44 +595,81 @@ function Enable-AADForKubernetes
                         @{Expression={$_.EnableRBAC};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
                         @{Expression={$_.isAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`nRemediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
-        
-        if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
+        if($AutoRemediation)
         {
-            Write-Host "AAD is successfully enabled on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-           
-            $kubernetesClusterRemediated | Format-Table -Property $colsProperty -Wrap
+            if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $kubernetesClusterRemediatedFile = "$($backupFolderPath)\RemediatedKubernetesClusters.csv"
+                $kubernetesClusterRemediated | Export-CSV -Path $kubernetesClusterRemediatedFile -NoTypeInformation
+                Write-Host "AAD is enabled on the Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "`nThis information has been saved to [$($kubernetesClusterRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
 
-            # Write this to a file.
-            $kubernetesClusterRemediatedFile = "$($backupFolderPath)\RemediatedKubernetesClusters.csv"
-            $kubernetesClusterRemediated | Export-CSV -Path $kubernetesClusterRemediatedFile -NoTypeInformation
+            if ($($kubernetesClusterSkipped | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
+                $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
+                Write-Host "Error enabling AAD on some Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`nThis information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
 
-            Write-Host "This information has been saved to $($kubernetesClusterRemediatedFile)" -ForegroundColor $([Constants]::MessageType.Update)
         }
-
-        if ($($kubernetesClusterSkipped | Measure-Object).Count -gt 0)
-        {
+        else 
+        { 
             Write-Host $([Constants]::DoubleDashLine)
-            Write-Host "`nError enabling AAD on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
-            $kubernetesClusterSkipped | Format-Table -Property $colsProperty -Wrap
-            
-            # Write this to a file.
-            $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
-            $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
-            Write-Host "This information has been saved to $($kubernetesClusterSkippedFile)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+            if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
+            {
+                Write-Host "AAD is successfully enabled on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                $kubernetesClusterRemediated | Format-Table -Property $colsProperty -Wrap
+                Write-Host $([Constants]::SingleDashLine)
+                # Write this to a file.
+                $kubernetesClusterRemediatedFile = "$($backupFolderPath)\RemediatedKubernetesClusters.csv"
+                $kubernetesClusterRemediated | Export-CSV -Path $kubernetesClusterRemediatedFile -NoTypeInformation
+
+                Write-Host "This information has been saved to [$($kubernetesClusterRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            if ($($kubernetesClusterSkipped | Measure-Object).Count -gt 0)
+            {
+                Write-Host "`nError enabling AAD on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+                $kubernetesClusterSkipped | Format-Table -Property $colsProperty -Wrap
+                Write-Host $([Constants]::SingleDashLine)
+                # Write this to a file.
+                $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
+                $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
+                Write-Host "This information has been saved to [$($kubernetesClusterSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+        if($AutoRemediation){
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources = $logRemediatedResources
+                    $logControl.SkippedResources = $logSkippedResources
+                    $logControl.RollbackFile = $appServicesRemediatedFile
+                }
+            }
+            $log | ConvertTo-json -depth 100  | Out-File $logFile
         }
     }
     else
     {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "`n[Step 5 of 5] Enabling AAD for Kubernetes Services..."
+        Write-Host "[Step 5 of 5] Enable AAD for Kubernetes Services"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
-        Write-Host "`n**Next steps:**" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable AAD for all Kubernetes Service resources listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Next steps:`n" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable AAD for all Kubernetes Service resources listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 
@@ -505,7 +696,7 @@ class SetAADProfile
         }
         catch 
         {
-            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)   
         }
 
         return($headers)
@@ -558,7 +749,7 @@ class SetAADProfile
         }
         catch
         {
-            Write-Host "Error occurred while setting AAD profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor Red
+            Write-Host "Error occurred while setting AAD profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         }
         
         return($content)
