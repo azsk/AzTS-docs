@@ -169,6 +169,7 @@ Remote Desktop (RDP) access must be disabled on cloud service roles
 ### Minimum permissions required to run the script
 Classic Role Assignment at subscription level
 
+___
 
 ## 12. Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel
 
@@ -180,4 +181,5 @@ Cluster Protection Level must be EncryptandSign
 
 ### Minimum permissions required to run the script
 Owner or higher priviliged role on the Service Fabric(s)
+
 ___
