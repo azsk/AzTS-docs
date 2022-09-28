@@ -122,17 +122,27 @@
                     "Arguments":["SubscriptionId"]
                 }
         },
-        {
-            "ControlId": "Azure_CloudService_SI_Disable_RemoteDesktop_Access",
-            "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-RemoteDesktopAccess.ps1",
-            "LoadCommand": "Remediate-RemoteDesktopAccess.ps1",     
-            "InitCommand": "Disable-RemoteDesktopAccess",
-            "RollbackMetadata":
-                {
-                    "RollbackCommand": "",
-                    "Arguments":["SubscriptionId"]
-                }
+      {
+        "ControlId": "Azure_CloudService_SI_Disable_RemoteDesktop_Access",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-RemoteDesktopAccess.ps1",
+        "LoadCommand": "Remediate-RemoteDesktopAccess.ps1",
+        "InitCommand": "Disable-RemoteDesktopAccess",
+        "RollbackMetadata": {
+          "RollbackCommand": "",
+          "Arguments": [ "SubscriptionId" ]
         }
+      },
+      {
+        "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+        "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+        "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
+        "RollbackMetadata": {
+          "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
+          "Arguments": [ "SubscriptionId", "RollBackType" ]
+        }
+      }
     ]
 } 
