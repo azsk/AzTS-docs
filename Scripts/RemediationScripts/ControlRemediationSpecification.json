@@ -134,24 +134,15 @@
         }
       },
       {
-      "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
-      "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
-      "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
+        "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+        "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+        "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
         "RollbackMetadata": {
           "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
           "Arguments": [ "SubscriptionId", "RollBackType" ]
-        },
-        {
-          "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
-          "EnableRemediation": "true",
-          "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
-          "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
-          "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
-          "RollbackMetadata": {
-            "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
-            "Arguments": [ "SubscriptionId", "RollBackType" ]
-         }
+        }
+      }
     ]
 } 
