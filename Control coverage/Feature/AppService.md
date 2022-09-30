@@ -17,7 +17,7 @@
 - [Azure_AppService_AuthZ_Configure_IP_Restrictions](#azure_appservice_authz_configure_ip_restrictions)
 - [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
 
-- [Azure_AppService_DP_Dont_Use_FTP_Deployment](#Azure_AppService_DP_Dont_Use_FTP_Deployment)
+- [Azure_AppService_DP_Dont_Use_FTP_Deployment](#azure_appService_dp_dont_use_ftp_deployment)
 
 <!-- /TOC -->
 <br/>
