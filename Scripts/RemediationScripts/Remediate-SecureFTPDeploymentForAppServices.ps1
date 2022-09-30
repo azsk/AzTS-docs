@@ -200,15 +200,13 @@ function Enable-SecureFTPDeploymentForAppServices
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
         $TimeStamp
     )
-
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user"
-    Write-Host $([Constants]::SingleDashLine)
-
     if ($PerformPreReqCheck)
     {
         try
         {
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user"
+            Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
@@ -221,6 +219,11 @@ function Enable-SecureFTPDeploymentForAppServices
             Write-Host $([Constants]::DoubleDashLine)
             return
         }
+    }
+    else
+    {
+        Write-Host "[Step 1 of 4] Validate the user"
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Connect to Azure account
