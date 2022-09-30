@@ -16,7 +16,7 @@
 - [Azure_AppService_DP_Use_Secure_TLS_Version](#azure_appservice_dp_use_secure_tls_version)
 - [Azure_AppService_AuthZ_Configure_IP_Restrictions](#azure_appservice_authz_configure_ip_restrictions)
 - [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
-- [Azure_AppService_DP_Use_Secure_FTP_Deployment](#azure_appservice_dp_use_ftp_deployment)
+- [Azure_AppService_DP_Use_Secure_FTP_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
 
 <!-- /TOC -->
 <br/>
