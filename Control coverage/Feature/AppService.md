@@ -570,30 +570,30 @@ ___
 ## Azure_AppService_DP_Use_Secure_FTP_Deployment
 
 ### Display Name 
-App Services should use secure FTP deployments.
+App Services should use secure FTP deployments
 
 ### Rationale 
-FTPS is used to enhance security for your Azure Web Application as it adds an extra layer of security to the FTP protocol,Enforcing FTPS-only Access for your Azure App Services apps can guarantee that the encrypted traffic between the web apps and servers and the FTP clients cannot be decrypted by malicious actors.
+FTPS is used to enhance security for your Azure Web Application as it adds an extra layer of security to the FTP protocol. Enforcing FTPS-only access for your Azure App Services apps can guarantee that the encrypted traffic between the web apps and servers and the FTP clients cannot be decrypted by malicious actors.
 
 ### Control Spec 
 
  >**Passed :**
- > - FTP State found to be configured to FTPS (secure FTP) or marked as disabled for all slots in the App Service.
+ > - FTP State is found to be configured to "FTPS" (secure FTP) or marked as "disabled" for all slots in the App Service.
  >
 > **Failed :**
-> - FTP State should not be configured as AllAllowed for all production and non-production slots in the App Service.
->
-> **Note :** If no Microsoft Defender for Cloud (MDC) assessment is found for the App Service, response from the ARM API is considered for the evaluation.
+ > - FTP State is found to be configured as "All Allowed" for any of the production / non-production slots in the App Service.
+ >
+> **Note :** If Microsoft Defender for Cloud (MDC) assessment is not found for the App Service, then response from the ARM API is considered for the control evaluation.
 >
 
 ### Recommendation 
 - **Azure Portal** 
 
 	 To make production slot compliant:
-	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> FTP state -->(Choose FTPS Only/Disabled based on requirement)--> Save.
+	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> FTP state -->(Choose FTPS Only/Disabled based on the requirement) --> Save.
 
 	 To make non-production slot compliant
-	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> FTP state -->(Choose FTPS Only/Disabled based on requirement)--> Save.
+	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> FTP state --> (Choose FTPS Only/Disabled based on the requirement) --> Save.
 
 
 ### Azure Policy or ARM API used for evaluation 
