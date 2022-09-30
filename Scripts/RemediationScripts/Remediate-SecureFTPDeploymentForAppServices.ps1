@@ -202,7 +202,7 @@ function Enable-SecureFTPDeploymentForAppServices
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -234,10 +234,8 @@ function Enable-SecureFTPDeploymentForAppServices
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
-
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    
     if(-not($AutoRemediation))
     {
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
@@ -246,7 +244,6 @@ function Enable-SecureFTPDeploymentForAppServices
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
     }
-
     Write-Host "To enable secured FTP deployment for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Fetch all App Services"
@@ -535,7 +532,7 @@ function Enable-SecureFTPDeploymentForAppServices
                             }
                             else
                             {
-                                Write-Host "User input $($userInput) is not correct. Please enter again." -ForegroundColor $([Constants]::MessageType.Warning)
+                                Write-Host "User input [$($userInput)] is not correct. Please enter again." -ForegroundColor $([Constants]::MessageType.Warning)
                                 Write-Host $([Constants]::SingleDashLine)
                             }
                         }
@@ -822,7 +819,7 @@ function Enable-SecureFTPDeploymentForAppServices
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps: " -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to configure FTP State for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
     }   
 }
 function Disable-SecureFTPDeploymentForAppServices
