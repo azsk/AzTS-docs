@@ -16,8 +16,8 @@
 - [Azure_AppService_DP_Use_Secure_TLS_Version](#azure_appservice_dp_use_secure_tls_version)
 - [Azure_AppService_AuthZ_Configure_IP_Restrictions](#azure_appservice_authz_configure_ip_restrictions)
 - [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
-
-- [Azure_AppService_DP_Dont_Use_FTP_Deployment](#azure_appService_dp_dont_use_ftp_deployment)
+- [Azure_AppService_DP_Dont_Use_FTP_Deployment]
+(#azure_appService_dp_dont_use_ftp_deployment)
 
 <!-- /TOC -->
 <br/>
@@ -582,7 +582,7 @@ FTPS is used to enhance security for your Azure Web Application as it adds an ex
  > - FTP State found to be configured to FTPS (secure FTP) or marked as disabled for all slots in the App Service.
  >
 > **Failed :**
-> - FTP State should either be configured to FTPS (secure FTP) or marked as disabled for all slots in the App Service.
+> - FTP State should not be configured as AllAllowed for all production and non-production slots in the App Service.
 >
 > **Note :** If no Microsoft Defender for Cloud (MDC) assessment is found for the App Service, response from the ARM API is considered for the evaluation.
 >
