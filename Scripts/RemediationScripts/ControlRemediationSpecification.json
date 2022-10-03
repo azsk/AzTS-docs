@@ -126,13 +126,25 @@
             "ControlId": "Azure_CloudService_SI_Disable_RemoteDesktop_Access",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-RemoteDesktopAccess.ps1",
-            "LoadCommand": "Remediate-RemoteDesktopAccess.ps1",     
+            "LoadCommand": "Remediate-RemoteDesktopAccess.ps1",
             "InitCommand": "Disable-RemoteDesktopAccess",
-            "RollbackMetadata":
-                {
+            "RollbackMetadata": 
+               {
                     "RollbackCommand": "",
-                    "Arguments":["SubscriptionId"]
-                }
+                    "Arguments": [ "SubscriptionId" ]
+               }
+        },
+        {
+            "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+            "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+            "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
+            "RollbackMetadata":
+               {
+                    "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
+                    "Arguments": [ "SubscriptionId", "RollBackType" ]
+               }
         },
         {
             "ControlId": "Azure_AppService_DP_Use_Secure_FTP_Deployment",
@@ -141,10 +153,10 @@
             "LoadCommand": "Remediate-SecureFTPDeploymentForAppServices.ps1",     
             "InitCommand": "Enable-SecureFTPDeploymentForAppServices",
             "RollbackMetadata":
-                {
-                    "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
-                    "Arguments":["SubscriptionId"]
-                }
+             {
+                  "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
+                  "Arguments":["SubscriptionId"]
+             }
         }
     ]
-} 
+}

@@ -23,8 +23,9 @@
 
 11. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](ControlsEligibleForRemediationThroughUI.md-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
 
-<br />
+12. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](ControlsEligibleForRemediationThroughUI.md#1-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
 
+<br />
 ___
 
 ## 1. Azure_Storage_AuthN_Dont_Allow_Anonymous
@@ -167,5 +168,18 @@ Remote Desktop (RDP) access must be disabled on cloud service roles
 
 ### Minimum permissions required to run the script
 Classic Role Assignment at subscription level
+
+___
+
+## 12. Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel
+
+### Display Name
+Cluster Protection Level must be EncryptandSign
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetClusterProtectionLevelForServiceFabric](Remediate-SetClusterProtectionLevelForServiceFabric.ps1)
+
+### Minimum permissions required to run the script
+Owner or higher priviliged role on the Service Fabric(s)
 
 ___
