@@ -59,8 +59,6 @@
         To know more about the options supported by the roll back command, execute:
         Get-Help Disable-HttpsForAppServices -Detailed        
 ###>
-
-
 function Setup-Prerequisites
 {
     <#
@@ -109,7 +107,6 @@ function Setup-Prerequisites
     }
     Write-Host $([Constants]::SingleDashLine)
 }
-
 function Enable-SecureFTPDeploymentForAppServices
 {
     <#
@@ -131,7 +128,16 @@ function Enable-SecureFTPDeploymentForAppServices
         
         .PARAMETER DryRun
         Specifies a dry run of the actual remediation.
-        
+         
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
@@ -180,18 +186,27 @@ function Enable-SecureFTPDeploymentForAppServices
         [String]
         [Parameter(ParameterSetName = "WetRun", Mandatory = $false, HelpMessage="Specifies the FTP State to be configured")]
         [ValidateSet("FTPSOnly", "Disabled")]
-        $FTPState
+        $FTPState,
 
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
+        $Path,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
+        $TimeStamp
     )
-
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Prepare to use Secure FTP deployment for App Services in Subscription: [$($SubscriptionId)]"
-    Write-Host $([Constants]::SingleDashLine)
-
     if ($PerformPreReqCheck)
     {
         try
         {
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validating the user"
+            Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
@@ -201,8 +216,14 @@ function Enable-SecureFTPDeploymentForAppServices
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
+    }
+    else
+    {
+        Write-Host "[Step 1 of 4] Validate the user"
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Connect to Azure account
@@ -210,21 +231,22 @@ function Enable-SecureFTPDeploymentForAppServices
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        return
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
-
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    
-    
+    if(-not($AutoRemediation))
+    {
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
     Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
     Write-Host "Account Name: [$($context.Account.Id)]"
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
-    
-
+    }
     Write-Host "To enable secured FTP deployment for App Services in a Subscription, Contributor or higher privileges on the App Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Fetch all App Services"
@@ -242,20 +264,64 @@ function Enable-SecureFTPDeploymentForAppServices
 
     #AllAllowed
     $AllAllowed = "AllAllowed"
-
-    # No file path provided as input to the script. Fetch all App Services in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
+    
+    if($AutoRemediation)
     {
+        if(-not (Test-Path -Path $Path))
+        {
+            Write-Host "Error: File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        Write-Host "Fetching all App Service(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No App Service(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        $validResources | ForEach-Object {
+        $resourceId = $_.ResourceId 
+            try
+            {
+                $appServiceResource = Get-AzResource -ResourceId $resourceId -ErrorAction SilentlyContinue
+                $appServiceResources += $appServiceResource              
+            }
+            catch
+            {
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+                return
+            }
+        }
+    }
+    else
+    {
+        # No file path provided as input to the script. Fetch all App Services in the Subscription.
+        if ([String]::IsNullOrWhiteSpace($FilePath))
+        {
         Write-Host "Fetching all App Services in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         # Get all App Services in a Subscription
         $appServiceResources = Get-AzResource -ResourceType $appServicesResourceType -ErrorAction Stop
-    }
-    else
-    {
-        if (-not (Test-Path -Path $FilePath))
+        }
+        else
+        {
+            if (-not (Test-Path -Path $FilePath))
             {
                 Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::DoubleDashLine)
                 return
             }
 
@@ -277,14 +343,14 @@ function Enable-SecureFTPDeploymentForAppServices
                     Write-Host "Skipping this App Service resource..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
+        }
     }
-    
-
     $totalAppServices = ($appServiceResources | Measure-Object).Count
 
     if ($totalAppServices -eq 0)
     {
         Write-Host "No App Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
   
@@ -391,7 +457,7 @@ function Enable-SecureFTPDeploymentForAppServices
     {
         Write-Host "No App Service(s) found with FTP State $($AllAllowed). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
-        if(($appServicesWithFTPStateAllAllowed|Measure-Object).Count -gt 0) 
+        if($AutoRemediation -and ($appServicesWithFTPStateAllAllowed|Measure-Object).Count -gt 0) 
         {
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
             $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
@@ -428,8 +494,11 @@ function Enable-SecureFTPDeploymentForAppServices
         
         Write-Host "FTP state will be updated on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-
         $userInputforFTPState = @()
+        
+        # Here AutoRemediation switch is used as there is no need to take user input at BRS level if user has given consent to proceed with the remediation in AutoRemediation Script.
+        if(-not $AutoRemediation)
+        {
         if (-not $Force)
             {
                 if($FTPState)
@@ -438,38 +507,40 @@ function Enable-SecureFTPDeploymentForAppServices
                 }
                 else
                 {
-                Write-Host "Do you want to upadate FTP State? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                Write-Host "Do you want to update FTP State? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                 $userInput = Read-Host -Prompt "(Y|N)"
                 Write-Host $([Constants]::SingleDashLine)
                 if($userInput -eq "Y")
                 {
                     #Write-Host "User has provided consent to secure FTP Deployments on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
-                    Write-Host $([Constants]::SingleDashLine)
+                    DO
+                    {
                     Write-Host "Please select 1 to set FTP State as FTPSOnly or select 2 to set FTP State Disabled on the production slot and all non-production slots for all App Services" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
                     $userInput = Read-Host -Prompt "(1|2)"
                     Write-Host $([Constants]::SingleDashLine)
-
-                    if($userInput -eq "1")
-                    {
-                        $userInputforFTPState="1"
-                        Write-Host "FTP State will be set to FTPSOnly on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                    }
-                    else
-                    {
-                         if($userInput -eq "2")
-                         {
-                            $userInputforFTPState="2"
-                            Write-Host "FTP State will be set to Disabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
+                    
+                        if($userInput -eq "1")
+                        {
+                            $userInputforFTPState="1"
+                            Write-Host "FTP State will be set to FTPSOnly on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
                             Write-Host $([Constants]::SingleDashLine)
-                         }
-                         else
-                         {
-                            Write-Host "User input is not correct. Exiting." -ForegroundColor $([Constants]::MessageType.Update)
-                            Write-Host $([Constants]::SingleDashLine)
-                            return
-                         }
-                    }
+                        }
+                        else
+                        {
+                            if($userInput -eq "2")
+                            {
+                                $userInputforFTPState="2"
+                                Write-Host "FTP State will be set to Disabled on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)
+                                Write-Host $([Constants]::SingleDashLine)
+                            }
+                            else
+                            {
+                                Write-Host "User input [$($userInput)] is not correct. Please enter again." -ForegroundColor $([Constants]::MessageType.Warning)
+                                Write-Host $([Constants]::SingleDashLine)
+                            }
+                        }
+                    } 
+                    Until(($userInput -eq "1") -or ($userInput -eq "2"))
                 }
                 else
                 {
@@ -483,19 +554,17 @@ function Enable-SecureFTPDeploymentForAppServices
             {
               if($FTPState)
               {
-                Write-Host "FTP State is already given as Parameter. " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                Write-Host $([Constants]::SingleDashLine)
                 Write-Host "'Force' flag is provided. Securing FTP Deployments on the production slot and all non-production slots for all App Services without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
               }
               else
               {
                 Write-Host "Please provide FTP State with -force. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host $([Constants]::DoubleDashLine)
                 return
               }
             }
-
+        }
         Write-Host "[Step 4 of 4] Enable Secure FTP Deployments for App Services"
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
@@ -662,8 +731,6 @@ function Enable-SecureFTPDeploymentForAppServices
             }
         }
 
-        # Write-Host $([Constants]::SingleDashLine)
-
         if (($appServicesRemediated | Measure-Object).Count -eq $totalAppServicesWithFTPStateAllAllowed)
         {
             Write-Host "FTP State successfully configured on the production slot and all non-production slots for all [$($totalAppServicesWithFTPStateAllAllowed)] App Service(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -684,7 +751,25 @@ function Enable-SecureFTPDeploymentForAppServices
                         @{Expression={$_.NonProductionSlotsSkipped};Label="Non-production slots with Secure FTP State not enabled - Post remediation";Width=40;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
+        if($AutoRemediation){
+            if ($($appServicesRemediated | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $appServicesRemediatedFile = "$($backupFolderPath)\RemediatedAppServicesForSecuredFTPDeployment.csv"
+                $appServicesRemediated | Export-CSV -Path $appServicesRemediatedFile -NoTypeInformation
+                Write-Host "The information related to App Service(s) where FTP State is successfully configured has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
 
+            if ($($appServicesSkipped | Measure-Object).Count -gt 0)
+            {   
+                # Write this to a file.
+                $appServicesSkippedFile = "$($backupFolderPath)\SkippedAppServicesForSecuredFTPDeployment.csv"
+                $appServicesSkipped | Export-CSV -Path $appServicesSkippedFile -NoTypeInformation
+                Write-Host "The information related to App Service(s) where FTP State is not configured has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }else{
             Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
             if ($($appServicesRemediated | Measure-Object).Count -gt 0)
@@ -712,7 +797,20 @@ function Enable-SecureFTPDeploymentForAppServices
                 Write-Host "This information has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
-    }
+        }
+        if($AutoRemediation){
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                    $logControl.RollbackFile = $appServicesRemediatedFile
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
+    }   
     else
     {
         Write-Host "[Step 4 of 4] Back up App Services details"
@@ -724,10 +822,9 @@ function Enable-SecureFTPDeploymentForAppServices
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps: " -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to configure FTP State for all App Services (across the production slot and all non-production slots) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::DoubleDashLine)
     }   
 }
-
 function Disable-SecureFTPDeploymentForAppServices
 {
     <#
@@ -798,13 +895,13 @@ function Disable-SecureFTPDeploymentForAppServices
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
     }
 
     # Connect to Azure account
     $context = Get-AzContext
-
     $AllAllowed = "AllAllowed"
 
     if ([String]::IsNullOrWhiteSpace($context))
@@ -844,6 +941,7 @@ function Disable-SecureFTPDeploymentForAppServices
     if ($totalAppServices -eq 0)
     {
         Write-Host "No App Services found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
@@ -866,7 +964,7 @@ function Disable-SecureFTPDeploymentForAppServices
         if($userInput -ne "Y")
         {
             Write-Host "FTP State will not be updated for any App Service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
             return
         }
         #Write-Host "User has provided consent to configure NonCompliant FTP State on the production slot and all non-production slots for all App Services." -ForegroundColor $([Constants]::MessageType.Update)

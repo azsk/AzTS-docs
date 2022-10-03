@@ -175,7 +175,23 @@ Enter the choice (1|2)";
                     $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
                     Write-Host $([Constants]::SingleDashLine)
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }else{
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_FTP_Deployment") {
+                    Write-Host "Secured FTP State for the App Service(s) is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
+                    $userInputforFTPState = Read-Host "You can choose one of the following mode to remediate non-compliant resources:
+                    [1] Remediate failing resorces by configuring FTP State as FtpsOnly on the production slot and all non-production slots for all App Services.
+                    [2] Remediate failing resorces by configuring FTP State as Disabled on the production slot and all non-production slots for all App Services.
+                    Enter the choice (1|2)";
+                    $FTPState=""
+                    if($userInputforFTPState -eq "1"){
+                        $FTPState="FTPSOnly"
+                    }
+                    elseif ($userInputforFTPState -eq "2"){
+                        $FTPState="Disabled"
+                    }
+                    Write-Host $([Constants]::SingleDashLine)
+                   $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -FTPState " + "`'" + $FTPState +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";              
+                }
+                else{
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     continue;
@@ -191,7 +207,6 @@ Enter the choice (1|2)";
                 Write-Host "Completed remediation of Control Id [$($control.ControlId)] using [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
-
             # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
            if(($remediationLevel -eq 1) -or ($remediationLevel -eq 2))
            {
@@ -223,7 +238,6 @@ Enter the choice (1|2)";
                     }
                     $log | ConvertTo-json -depth 10  | Out-File $logFile
                 }
-
                 Write-Host "Skipped remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
            }
