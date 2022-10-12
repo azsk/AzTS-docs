@@ -45,21 +45,21 @@ WAF enforcement on the Load Balancer further strengthens the security posture of
 
 	Run command :
 		
-		Run Retrieve -ApplicationGatewayVirtualNetworkDDoSNotConfigured
-		to retrieve the list of Application Gateway virtual network where DDoS is not enabled.
+		Run Retrieve -LoadBalancerVirtualNetworkDDoSNotConfigured
+		to retrieve the list of Load Balancer virtual network where DDoS is not enabled.
 		
 		Run Enable-DDoSProtectionPlanOnVirtualNetwork to remediate the Virtual Network(s) retrieved from above command. 
 	Run command : 
 		
-		Retrieve-ApplicationGatewaySubnetNSGNotConfigure to retrieve the list of Application Gateway subnet 	where NSG is not configured.
+		Retrieve-LoadBalancerSubnetNSGNotConfigure to retrieve the list of LoadBalancer subnet where NSG is not configured.
 		
 		Run Add-NSGConfigurationOnSubnet to remediate the Subnet(s) retrieved from above command. 			   			
 		
 
 	# For more help run:
-	 	Get-Help Retrieve-ApplicationGatewayVirtualNetworkDDoSNotConfigured -Detailed
+	 	Get-Help Retrieve-LoadBalancerVirtualNetworkDDoSNotConfigured -Detailed
 	 	Get-Help Enable-DDoSProtectionPlanOnVirtualNetwork -Detailed
-	 	Get-Help Retrieve-ApplicationGatewaySubnetNSGNotConfigured -Detailed
+	 	Get-Help Retrieve-LoadBalancerSubnetNSGNotConfigured -Detailed
 	 	Get-Help Add-NSGConfigurationOnSubnet -Detailed
 
 ### Azure Policy or ARM API used for evaluation 
