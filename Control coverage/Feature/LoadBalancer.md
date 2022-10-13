@@ -32,7 +32,7 @@ WAF enforcement on the Load Balancer further strengthens the security posture of
 >3. Network Security Group is not configured on the subnets assoicated with the Load Balancer.
 > 
 > **Error:** 
->There was an error fetching WAF Configuration details of >Load Balancer.
+>There was an error fetching WAF Configuration details of Load Balancer.
  
  
 
@@ -51,7 +51,7 @@ WAF enforcement on the Load Balancer further strengthens the security posture of
 		Run Enable-DDoSProtectionPlanOnVirtualNetwork to remediate the Virtual Network(s) retrieved from above command. 
 	Run command : 
 		
-		Retrieve-LoadBalancerSubnetNSGNotConfigure to retrieve the list of LoadBalancer subnet where NSG is not configured.
+		Retrieve-LoadBalancerSubnetNSGNotConfigured to retrieve the list of LoadBalancer subnet where NSG is not configured.
 		
 		Run Add-NSGConfigurationOnSubnet to remediate the Subnet(s) retrieved from above command. 			   			
 		
