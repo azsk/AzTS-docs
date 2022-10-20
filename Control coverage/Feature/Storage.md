@@ -25,10 +25,10 @@ Data in containers that have anonymous access can be downloaded by anyone on the
 ### Control Spec
 
 > **Passed:**
-> Storage account does not have any containers with public access.
+> Storage account has **'Allow Blob public access'** setting as disabled.
 >
 > **Failed:**
-> Storage account has one or more containers with public access.
+> Storage account has **'Allow Blob public access'** setting as enabled.
 >
 > **Verify:**
 > Not Applicable.
