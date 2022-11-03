@@ -3,7 +3,7 @@
     This script is used to get Management Certificates in a Subscription.
 
 # Prerequisites:
-    1. Co-Admin or higher privileges in a Subscription.
+    1. Co-Administrator role is required.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
@@ -174,14 +174,6 @@ function Get-ManagementCertificates
                 {
                     # Includes all the management certificates from the subscription
                     $ManagementCertificates = [ManagementCertificate]::ListManagementCertificates($mgmtCerts.SubscriptionCertificates.SubscriptionCertificate)
-                
-                    $context = Get-AzContext
-
-                    if ([String]::IsNullOrWhiteSpace($context))
-                    {
-                    Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                    return
-                    }
                     
                     $FolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\GetManagementCertificates"
 
@@ -199,8 +191,27 @@ function Get-ManagementCertificates
 
                 }
             }
+            else
+            {
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "No Management certificates found." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+        else
+        {
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Error occured while fetching Management certificates." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
+    else
+    {
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "There was some issue with the access token. Please retry or check access." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::SingleDashLine)
+    }
+    
 }
 
 function GetServiceManagementUrl
