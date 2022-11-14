@@ -53,6 +53,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
   properties: {
     administratorLogin: sqlServerAdministratorLogin
     administratorLoginPassword: sqlServerAdministratorLoginPassword
+    minimalTlsVersion: '1.2'
   }
 
   // To enable Azure Active Directory (AAD) authentication on the SQL server.
