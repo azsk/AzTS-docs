@@ -3,7 +3,7 @@
     This script is used to set minimium required TLS version for Azure Database for MySQL flexible server in a Subscription.
 
 # Control ID:
-    Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
+    Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial
 
 # Display Name:
     Azure Database for MySQL - Flexible Servers Announcing SSL enforcement and minimum TLS version choice.
@@ -117,10 +117,10 @@ function Setup-Prerequisites {
 function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
-        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
+        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
+        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
         Set secure TLS version as minimum required TLS version in Azure Database for MySQL flexible server(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -249,7 +249,7 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
     $logRemediatedResources = @()	
     $logSkippedResources = @()	
 
-    $controlIds = "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version"
+    $controlIds = "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial"
 
     # No file path provided as input to the script. Fetch all Azure Database for MySQL flexible server(s) in the Subscription.
 
@@ -563,10 +563,10 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
 function Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
+        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
+        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
         Change TLS version to Previous Value on Azure Database for MySQL flexible server(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
