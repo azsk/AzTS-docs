@@ -240,7 +240,8 @@ function Set-SQLServerRequiredTLSVersion
             try
             {
             $name = $_.ResourceId.Split('/')[8]
-            $resSqlServer = Get-AzSqlServer  -Name $name -ErrorAction SilentlyContinue
+            $resourceGroupName = $_.ResourceId.Split('/')[4]
+            $resSqlServer = Get-AzSqlServer  -Name $name -ResourceGroupName $resourceGroupName  -ErrorAction SilentlyContinue
             $sqlServerResources = $sqlServerResources + $resSqlServer
             }
             catch
