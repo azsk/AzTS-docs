@@ -21,7 +21,7 @@
 - [Azure_VirtualMachine_Just_In_Time_Network_Access_Control](#azure_virtualmachine_just_in_time_network_access_control)
 - [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
-- [azure_virtualmachine_dp_use_secure_tls_version_trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
+- [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
 
 <!-- /TOC -->
 <br/>
