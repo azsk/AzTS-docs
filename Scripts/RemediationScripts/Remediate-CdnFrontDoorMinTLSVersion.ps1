@@ -1,6 +1,6 @@
 <###
 # Overview:
-    This script is used to set required TLS version for Front Door in a Subscription.
+    This script is used to set required TLS version for CDN Front Door in a Subscription.
 
 # Control ID:
     Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
@@ -44,7 +44,7 @@
            Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To set minimum required TLS version on all custom domains of Front Doors in a Subscription, from a previously taken snapshot:
-           Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorRequiredTLSVersion\FrontDoorWithoutMinReqTLSVersion.csv
+           Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\FrontDoorWithoutMinReqTLSVersion.csv
 
         4. To set minimum required TLS version on all custom domains of Front Doors in a Subscription without taking back up before actual remediation:
            Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
@@ -54,7 +54,7 @@
 
     To roll back:
         1. To reset minimum required TLS version on all custom domains of Front Door in a Subscription, from a previously taken snapshot:
-           Reset-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorRequiredTLSVersion\RemediatedFrontDoors.csv
+           Reset-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedFrontDoors.csv
         
         To know more about the options supported by the roll back command, execute:
         Get-Help Reset-FrontDoorRequiredTLSVersion -Detailed        
@@ -294,12 +294,12 @@ function Set-FrontDoorRequiredTLSVersion
             }
             catch
             {
-            Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Valid resource(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.ResourceName))
-            $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+            $logResource.Add("Reason","Valid resource(s) not found in input json file.")    
             $logSkippedResources += $logResource
             Write-Host $([Constants]::SingleDashLine)
             }
@@ -329,16 +329,17 @@ function Set-FrontDoorRequiredTLSVersion
             $validFrontDoorDetails = $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
             
             $validFrontDoorDetails | ForEach-Object {
-                $resourceId = $_.ResourceId
+                $resourceName = $_.ResourceName
+                $resourceGroup = $_.ResourceGroupName
 
                 try
                 {
-                    $frontDoorResource = Get-AzFrontDoorCdnProfile -ErrorAction SilentlyContinue
+                    $frontDoorResource = Get-AzFrontDoorCdnProfile -Name $resourceName -ResourceGroupName $resourceGroup  -ErrorAction SilentlyContinue
                     $FrontDoorResources += $frontDoorResource
                 }
                 catch
                 {
-                    Write-Host "Fetching Front Door resource: Resource ID: [$($resourceId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Fetching Front Door resource: Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this Front Door resource..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
@@ -474,7 +475,7 @@ function Set-FrontDoorRequiredTLSVersion
             catch
             {
                 $frontDoorsSkipped += $frontDoorResource
-                Write-Host "Error fetching Front Door configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error fetching Front Door configuration: Resource Name: [$($resourceName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
@@ -488,7 +489,7 @@ function Set-FrontDoorRequiredTLSVersion
    foreach($item in $frontDoorsEndpointWithoutReqMinTLSVersion){
         if (-not $frontDoorsEndpointWithoutReqMinTLSVersion)
             {
-                Write-Host "Minimum TLS Version is set on the custom domains of front doors. Resource ID: [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Minimum TLS Version is set on the custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "Skipping this Front Door..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
