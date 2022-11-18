@@ -2,7 +2,7 @@
 # Overview:
     This script is used to set minimium required TLS version for Azure Service Bus Namespace(s) in a Subscription.
 # Control ID:
-    Azure_ServiceBus_DP_Use_Secure_TLS_Version_Trial
+    Azure_ServiceBus_DP_Use_Secure_TLS_Version
 # Display Name:
     Azure Service Bus Namespaces Announcing SSL enforcement and minimum TLS version choice.
 # Prerequisites:    
@@ -550,10 +550,10 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
 function Reset-SecureTLSVersionForServiceBusNamespaces {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_ServiceBus_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_ServiceBus_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_ServiceBus_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_ServiceBus_DP_Use_Secure_TLS_Version' Control.
         Change TLS version to Previous Value on Azure Service Bus Namespace(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
