@@ -109,7 +109,7 @@ TLS provides privacy and data integrity between client and server. Using approve
   Refer https://learn.microsoft.com/en-us/azure/service-bus-messaging/transport-layer-security-configure-minimum-version#use-azure-powershell
 
 - **Enforcement Policy**
-	[Azure_ServiceBus_DP_Use_Secure_MinimumTLSVersion Policy Definition](../../Policies/ServiceBus/Azure_ServiceBus_DP_Use_Secure_MinimumTLSVersion)
+	[Azure_ServiceBus_DP_Use_Secure_TLS_Version Policy Definition](../../Policies/ServiceBus/Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 	
 
 ### ARM API used for evaluation

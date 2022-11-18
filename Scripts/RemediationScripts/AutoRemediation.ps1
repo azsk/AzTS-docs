@@ -157,7 +157,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_CloudService_SI_Disable_RemoteDesktop_Access") -or
                 ($control.ControlId -eq "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") -or
-                ($control.ControlId -eq "Azure_ServiceBus_DP_Use_Secure_MinimumTLSVersion_Trial")) {
+                ($control.ControlId -eq "Azure_ServiceBus_DP_Use_Secure_TLS_Version")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)

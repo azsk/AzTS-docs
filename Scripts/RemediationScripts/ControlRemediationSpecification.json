@@ -157,6 +157,18 @@
                   "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
                   "Arguments":["SubscriptionId"]
              }
+        },
+        {
+            "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion",     
+            "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
+                  "Arguments":["SubscriptionId"]
+             }
         }
     ]
 }

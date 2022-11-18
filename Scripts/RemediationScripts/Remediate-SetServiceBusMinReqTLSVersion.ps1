@@ -111,10 +111,10 @@ function Setup-Prerequisites {
 function Set-SecureTLSVersionForServiceBusNamespaces {
     <#
         .SYNOPSIS
-        Remediates 'Azure_ServiceBus_DP_Use_Secure_MinimumTLSVersion_Trial' Control.
+        Remediates 'Azure_ServiceBus_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_ServiceBus_DP_Use_Secure_MinimumTLSVersion_Trial' Control.
+        Remediates 'Azure_ServiceBus_DP_Use_Secure_TLS_Version' Control.
         Set secure TLS version as minimum required TLS version for Azure Service Bus Namespace(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -240,7 +240,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
     $logRemediatedResources = @()	
     $logSkippedResources = @()	
 
-    $controlId = "Azure_ServiceBus_DP_Use_Secure_MinimumTLSVersion_Trial"
+    $controlId = "Azure_ServiceBus_DP_Use_Secure_TLS_Version"
 
     if ($AutoRemediation) {
         if (-not (Test-Path -Path $Path)) {	
