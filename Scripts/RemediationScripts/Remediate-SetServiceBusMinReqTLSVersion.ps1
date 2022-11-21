@@ -1,22 +1,28 @@
 <###
 # Overview:
     This script is used to set minimium required TLS version for Azure Service Bus Namespace(s) in a Subscription.
+
 # Control ID:
     Azure_ServiceBus_DP_Use_Secure_TLS_Version
+
 # Display Name:
     Azure Service Bus Namespaces Announcing SSL enforcement and minimum TLS version choice.
+
 # Prerequisites:    
     Contributor on Subscription/RG or Azure Data Owner role on the Service Bus Namespace(s) is required.
+
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
         2. Get the list of Azure Service Bus Namespace(s) in a Subscription that have server parameter MinimumTLSVersion set as versions less than minimum required TLS version.
         3. Back up details of Azure Service Bus Namespace(s) that are to be remediated.
         4. Set supported minimum required TLS version by updating server parameter MinimumTLSVersion to the secure version for Azure Service Bus Namespace(s).
+
     To roll back:
         1. Validate and install the modules required to run the script and validating the user.
         2. Get the list of Azure Service Bus Namespace(s) in a Subscription, the changes made to which previously, are to be rolled back.
         3. Set the server parameter MinimumTLSVersion to original value as per input file.
+
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
@@ -31,32 +37,27 @@
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to set supported TLS version for Azure Service Bus Namespace(s) in the Subscription. Refer `Examples`, below.
+
 # Examples:
     To remediate:
         1. To review the Azure Service Bus Namespace(s) in a Subscription that will be remediated:
-    
            Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. Set TLS version for Azure Service Bus Namespace(s) in the Subscription:
-       
            Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. Set TLS version for Azure Service Bus Namespace(s) in the Subscription, from a previously taken snapshot:
-       
-           Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -InputFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202209131040\SetSecureTLSVersionForServiceBusNamespaces\ServiceBusNamespacesBackUp.csv
+           Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -InputFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202209131040\SetSecureTLSVersionForServiceBusNamespaces\ServiceBusNamespacesBackUpFilePath.csv
         
         To know more about the options supported by the remediation command, execute:
-        
         Get-Help Set-SecureTLSVersionForServiceBusNamespaces -Detailed
 
     To roll back:
 
         1. Set TLS version for Azure Service Bus Namespace(s) in the Subscription, from a previously taken snapshot:
-        
-            Reset-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RollbackFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForServiceBusNamespaces\ServiceBusNamespacesBackUp.csv
+            Reset-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RollbackFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForServiceBusNamespaces\ServiceBusNamespacesRollBackFilePath.csv
        
         To know more about the options supported by the roll back command, execute:
-        
         Get-Help Reset-SecureTLSVersionForServiceBusNamespaces -Detailed        
 ###>
 
@@ -128,9 +129,18 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
         
         .PARAMETER DryRun
         Specifies a dry run of the actual remediation.
-        
-        .PARAMETER Path
+
+        .PARAMETER InputFilePath
         Specifies the path to the file to be used as input for the remediation.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
         None. You cannot pipe objects to Set-SecureTLSVersionForServiceBusNamespaces.
@@ -145,7 +155,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
         PS> Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -InputFilePath 
+        PS> Set-SecureTLSVersionForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -InputFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202209131040\SetSecureTLSVersionForServiceBusNamespaces\ServiceBusNamespacesInputFilePath.csv
 
         .LINK
         None
@@ -230,8 +240,11 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
         Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
     }
-    Write-Host "To set secure TLS version for Azure Service Bus(s) in the Subscription, Contributor on Subscription/RG or Azure Data Owner role on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To set secure TLS version for Azure Service Bus(s) in the Subscription, Contributor on Subscription or Resource Group or Azure Data Owner role on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)  
+
+    Write-Host "[Step 2 of 3] Prepare to fetch all Azure Service Bus Namespace(s)"
+    Write-Host $([Constants]::SingleDashLine)
 
     # list to store Service Bus Namespace details.
     $serviceBusNamespacesDetails = @()
@@ -271,12 +284,12 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
                 $currentServiceBusNamespaceDetails = Get-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -NamespaceName $_.ResourceName -ErrorAction SilentlyContinue
                 $currentTLSVersion = ($currentServiceBusNamespaceDetails).MinimumTlsVersion
                 $serviceBusNamespacesDetails += $currentServiceBusNamespaceDetails  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
-                @{N = 'ResourceName'; E = { $_.Name } }, 
-                @{N = 'MinimumTLSVersion'; E = { $currentTLSVersion } }
+                                                                                                    @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
+                                                                                                    @{N = 'ResourceName'; E = { $_.Name } }, 
+                                                                                                    @{N = 'MinimumTLSVersion'; E = { $currentTLSVersion } }
             }
             catch {
-                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Warning)	
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)	
                 Write-Host "Skipping the Resource:  [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
@@ -290,7 +303,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
     }
     else {	
         if ([String]::IsNullOrWhiteSpace($InputFilePath)) {
-            Write-Host "Fetching all Azure Service Bus Namespace(s) in Subscription: [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Azure Service Bus Namespace(s) in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             # Get all Azure Serivce Bus Namespace(s) in a Subscription
@@ -299,9 +312,9 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
             $serviceBusNamespaces | ForEach-Object { 	
                 $currentTLSVersion = $_.MinimumTlsVersion 
                 $serviceBusNamespacesDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
-                @{N = 'ResourceName'; E = { $_.Name } }, 
-                @{N = 'MinimumTLSVersion'; E = { $currentTLSVersion } }
+                                                                    @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
+                                                                    @{N = 'ResourceName'; E = { $_.Name } }, 
+                                                                    @{N = 'MinimumTLSVersion'; E = { $currentTLSVersion } }
             }        
         }
         else {
@@ -324,13 +337,14 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
                     $currentServiceBusNamespaceDetails = Get-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -NamespaceName $_.ResourceName -ErrorAction SilentlyContinue
                     $currentTLSVersion = ($currentServiceBusNamespaceDetails).MinimumTlsVersion
                     $serviceBusNamespacesDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $currentServiceBusNamespaceDetails.Id } },
-                    @{N = 'ResourceGroupName'; E = { $currentServiceBusNamespaceDetails.Id.Split("/")[4] } },
-                    @{N = 'ResourceName'; E = { $currentServiceBusNamespaceDetails.Name } }, 
-                    @{N = 'MinimumTLSVersion'; E = { $currentTLSVersion } }
+                                                                        @{N = 'ResourceGroupName'; E = { $currentServiceBusNamespaceDetails.Id.Split("/")[4] } },
+                                                                        @{N = 'ResourceName'; E = { $currentServiceBusNamespaceDetails.Name } }, 
+                                                                        @{N = 'MinimumTLSVersion'; E = { $currentTLSVersion } }
 
                 }
                 catch {
                     Write-Host "Error fetching Azure Service Bus Namespace details for resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Service Bus Namespace..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
         }
@@ -357,13 +371,31 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
         if (-not (CheckIfCurrentTLSVersionIsSecure($_.MinimumTLSVersion))) {
             $actionableServiceBusNamespacesDetails += $_
         }
+        else {
+            $logResource = @{}
+            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+            $logResource.Add("ResourceName",($_.ResourceName))
+            $logResource.Add("Reason","Minimum TLS version set on the resource is already secure.")    
+            $logSkippedResources += $logResource
+        }
     }
 
     $actionableServiceBusNamespacesDetailsCount = ($actionableServiceBusNamespacesDetails | Measure-Object).Count
 
     if ($actionableServiceBusNamespacesDetailsCount -eq 0) {
         Write-Host "No Azure Service Bus Namespaces(s) found with non-secure TLS version enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::DoubleDashLine)	
+        if ($AutoRemediation) 
+        {
+            $logFile = "LogFiles\" + $($TimeStamp) + "\log_" + $($SubscriptionId) + ".json"
+            $log = Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach ($logControl in $log.ControlList) {
+                if ($logControl.ControlId -eq $controlId) {
+                    $logControl.SkippedResources = $logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
+        Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
@@ -388,7 +420,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host "[Step 3 of 4] Back up Azure Service Bus Namespace(s) details..."
+    Write-Host "[Step 3 of 4] Back up Azure Service Bus Namespace(s) details"
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($InputFilePath)) {
@@ -405,7 +437,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
 
     if (-not $DryRun) {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enable secure TLS version on Azure Service Bus Namespace(s) in the Subscription..." 
+        Write-Host "[Step 4 of 4] Enable secure TLS version on Azure Service Bus Namespace(s) in the Subscription" 
         Write-Host $([Constants]::SingleDashLine)
 
 
@@ -421,8 +453,10 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
             }
         }
         else {
-            Write-Host "'Force' flag is provided. Secure TLS version will be enabled on Azure Service Bus Namespace(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host $([Constants]::SingleDashLine)
+            if(-not $AutoRemediation){
+                Write-Host "'Force' flag is provided. Secure TLS version will be enabled on Azure Service Bus Namespace(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
         }
 
         # List for storing remediated Azure Service Bus Namespace(s)
@@ -643,7 +677,7 @@ function Reset-SecureTLSVersionForServiceBusNamespaces {
 
     # Note about the required access required for remediation
 
-    Write-Host "To set secure TLS version for Azure Service Bus Namespace(s) in the Subscription, Contributor on Subscription/RG or Azure Data Owner role on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To set secure TLS version for Azure Service Bus Namespace(s) in the Subscription, Contributor on Subscription or Resource Group or Azure Data Owner role on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 3] Prepare to fetch all Azure Service Bus Namespace(s)"
@@ -656,7 +690,7 @@ function Reset-SecureTLSVersionForServiceBusNamespaces {
     }
 
     Write-Host "Fetching all Azure Service Bus Namespace(s) from" -NoNewline
-    Write-Host " [$($RollbackFilePath)\...]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host " [$($RollbackFilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $serviceBusNamespacesDetails = Import-Csv -LiteralPath $RollbackFilePath
 
