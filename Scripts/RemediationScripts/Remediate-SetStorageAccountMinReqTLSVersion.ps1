@@ -260,7 +260,7 @@ function Set-StorageAccountRequiredTLSVersion
 
     # To keep track of remediated and skipped resources
     $logRemediatedResources = @()
-    $logSkippedResources=@()
+    $logSkippedResources = @()
 
     # Control Id
     $controlIds = "Azure_Storage_DP_Use_Secure_TLS_Version_Trial"
@@ -523,7 +523,7 @@ function Set-StorageAccountRequiredTLSVersion
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.StorageAccountName))
                     $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
-                       
+                    $logSkippedResources += $logResource   
                 }
                 else
                 {
@@ -547,6 +547,7 @@ function Set-StorageAccountRequiredTLSVersion
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.StorageAccountName))
                 $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
+                $logSkippedResources += $logResource  
             }
         }
 
