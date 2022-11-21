@@ -515,7 +515,7 @@ function Set-SQLServerRequiredTLSVersion
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ServerName))
                     $logResource.Add("Reason", "Error while setting the minimum required TLS version for SQL Server")
-                       
+                    $logSkippedResources += $logResource    
                 }
                 else
                 {
@@ -540,6 +540,7 @@ function Set-SQLServerRequiredTLSVersion
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ServerName))
                 $logResource.Add("Reason", "Error while setting the minimum required TLS version for SQL Server")
+                $logSkippedResources += $logResource 
             }
         }
 
@@ -626,7 +627,7 @@ function Set-SQLServerRequiredTLSVersion
                     $logControl.RollbackFile = $sqlServersRemediatedFile
                 }
             }
-
+            
             $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
     }
