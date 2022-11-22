@@ -41,7 +41,7 @@
       },
       "kind": "StorageV2", //[Azure_Storage_AuthN_Dont_Allow_Anonymous]
       "properties": {
-        "minimumTlsVersion": "TLS1_2",
+        "minimumTlsVersion": "TLS1_2", //[Azure_Storage_DP_Use_Secure_TLS_Version_Trial]
         "supportsHttpsTrafficOnly": true, //[Azure_Storage_DP_Encrypt_In_Transit]
         "allowBlobPublicAccess": false //[Azure_Storage_AuthN_Dont_Allow_Anonymous]
       }
