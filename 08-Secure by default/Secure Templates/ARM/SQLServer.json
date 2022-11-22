@@ -139,7 +139,7 @@
       "properties": {
         "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
         "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
-        "minimalTlsVersion": "1.2" // Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+        "minimalTlsVersion": "1.2" //[Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial]
       }
     },
     {
