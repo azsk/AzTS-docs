@@ -56,7 +56,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 	Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -Type 'ConfigurationforWindows' -Name 'AzurePolicyforWindows' -TypeHandlerVersion 1.0 -ResourceGroupName 'myResourceGroup' -Location 'myLocation' -VMName 'myVM' -EnableAutomaticUpgrade $true 
 	 ```
 
-- Assign Policy (Configure secure communication protocols (TLS 1.1 or TLS 1.2) on windows servers. Refer: https://learn.microsoft.com/en-us/azure/governance/policy/assign-policy-portal
+- Assign Policy (Configure secure communication protocols (TLS 1.1 or TLS 1.2) on ARC windows servers. Refer: https://learn.microsoft.com/en-us/azure/governance/policy/assign-policy-portal
 <!--
 - **Enforcement Policy**
 
@@ -68,7 +68,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 -->
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list Hybrid Networks at
+- ARM API to list hybrid machines at
 subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines?api-version=2022-08-11-preview<br />
 **Properties:** properties.osType
