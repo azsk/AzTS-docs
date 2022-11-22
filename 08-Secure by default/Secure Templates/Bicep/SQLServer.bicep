@@ -53,7 +53,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
   properties: {
     administratorLogin: sqlServerAdministratorLogin
     administratorLoginPassword: sqlServerAdministratorLoginPassword
-    minimalTlsVersion: '1.2'
+    minimalTlsVersion: '1.2' // Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
   }
 
   // To enable Azure Active Directory (AAD) authentication on the SQL server.
