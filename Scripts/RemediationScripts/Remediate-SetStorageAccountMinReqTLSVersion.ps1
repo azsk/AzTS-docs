@@ -352,6 +352,7 @@ function Set-StorageAccountRequiredTLSVersion
                 try
                 {
                     $storageAccount = Get-AzStorageAccount  -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction SilentlyContinue
+                    $tls = $storageAccount.MinimumTlsVersion
                     $storageAccountResources += $storageAccount | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                 @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                 @{N='PrimaryLocation';E={$_.PrimaryLocation}}, 
@@ -521,7 +522,7 @@ function Set-StorageAccountRequiredTLSVersion
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.StorageAccountName))
                     $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
-                    $logSkippedResources += $logResource    
+                       
                 }
                 else
                 {
@@ -545,7 +546,6 @@ function Set-StorageAccountRequiredTLSVersion
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.StorageAccountName))
                 $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
-                $logSkippedResources += $logResource 
             }
         }
 
