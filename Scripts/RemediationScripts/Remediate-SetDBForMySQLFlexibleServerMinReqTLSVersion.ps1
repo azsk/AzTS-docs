@@ -333,7 +333,7 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
                 try {                
                     $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
             
-                    $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name  -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
+                    $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName) -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
                     $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                     @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                     @{N = 'ResourceName'; E = { $_.Name } }, 
@@ -788,7 +788,7 @@ function Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer {
             }
         }
         Catch {
-            retun $false
+            return $false
         }
         if ($nonCompliantTLSVersions.Count -gt 0) {
             return $false
