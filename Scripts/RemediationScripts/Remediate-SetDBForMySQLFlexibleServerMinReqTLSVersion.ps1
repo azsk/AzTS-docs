@@ -58,7 +58,7 @@
 
     To roll back:
         1. Set TLS version for Azure Database for MySQL flexible server(s) in the Subscription, from a previously taken snapshot:
-           Set-SecureTLSVersionForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForDBForMySQLFlexibleServer/DBForMySQLFlexibleServerDetailsBackUp.csv
+           Reset-SecureTLSVersionForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForDBForMySQLFlexibleServer/DBForMySQLFlexibleServerDetailsBackUp.csv
        
         To know more about the options supported by the roll back command, execute:
         
@@ -560,7 +560,7 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
     }
 }
 
-function Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer {
+function Reset-SecureTLSVersionForDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
         Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
@@ -582,13 +582,13 @@ function Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer {
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer.
+        None. You cannot pipe objects to Reset-SecureTLSVersionForDBForMySQLFlexibleServer.
 
         .OUTPUTS
-        None. Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer does not return anything that can be piped and used as an input to another command.
+        None. Reset-SecureTLSVersionForDBForMySQLFlexibleServer does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Set-TLSVersiontoPreviousValueforDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForDBForMySQLFlexibleServer\RemediatedDBForMySQLFS.csv
+        PS> Reset-SecureTLSVersionForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForDBForMySQLFlexibleServer\RemediatedDBForMySQLFS.csv
 
         .LINK
         None
