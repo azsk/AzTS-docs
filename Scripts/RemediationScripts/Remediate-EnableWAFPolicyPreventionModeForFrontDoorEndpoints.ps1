@@ -176,7 +176,7 @@ function Enable-WAFPolicyPreventionModeForFrontDoorEndPoints
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
@@ -623,9 +623,9 @@ function Enable-WAFPolicyPreventionModeForFrontDoorEndPoints
     {        
     
         # Backing up Front Door Endpoints details.
-        $backupFileForWAFNotConfigured = "$($backupFolderPath)\frontdoorEndpointsWithoutPolicyInPreventionMode.csv"
-        $frontDoorEndpointsWithWAFPolicyNotInPrevention | Export-CSV -Path $backupFileForWAFNotConfigured -NoTypeInformation
-        Write-Host "Front Door Frontendpoint(s) details have been successful backed up to $($backupFolderPath)" -ForegroundColor $([Constants]::MessageType.Update)
+        $backupFile= "$($backupFolderPath)\frontdoorEndpointsWithoutPolicyInPreventionMode.csv"
+        $frontDoorEndpointsWithWAFPolicyNotInPrevention | Export-CSV -Path $backupFile -NoTypeInformation
+        Write-Host "Front Door Frontendpoint(s) details have been successful backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
@@ -723,8 +723,11 @@ function Enable-WAFPolicyPreventionModeForFrontDoorEndPoints
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                         @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
-                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"}
-                                        
+                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsPreventionMode};Label="Is WAF Policy in Prevention Mode?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFEnabled};Label="Is WAF Policy in Enabled State?";Width=7;Alignment="left"}
+                        
         Write-Host "`nRemediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
         if($AutoRemediation)
@@ -1101,7 +1104,10 @@ function Disable-WAFPolicyPreventionModeForFrontDoorEndPoints
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                         @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
-                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"}
+                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsPreventionMode};Label="Is WAF Policy in Prevention Mode?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFEnabled};Label="Is WAF Policy in Enabled State?";Width=7;Alignment="left"}
             
 
         if ($($frontDoorEndpointsRolledBack | Measure-Object).Count -gt 0)

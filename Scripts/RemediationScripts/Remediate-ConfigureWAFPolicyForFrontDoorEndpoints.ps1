@@ -623,7 +623,7 @@ function Configure-WAFPolicyForFrontDoorEndPoints
         # Backing up Front Door Endpoints details.
         $backupFile = "$($backupFolderPath)\frontdoorEndpointsWithoutWAFPolicyConfigured.csv"
         $frontDoorEndpointsWithWAFPolicyNotConfigured | Export-CSV -Path $backupFile -NoTypeInformation
-        Write-Host "Front Door Frontendpoint(s) details have been successful backed up to $($backupFolderPath)" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Front Door Frontendpoint(s) details have been successful backed up to $($backupFile)" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
@@ -756,7 +756,10 @@ function Configure-WAFPolicyForFrontDoorEndPoints
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                         @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
-                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"}
+                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
                        
                        
         Write-Host "`nRemediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -1131,12 +1134,15 @@ function Remove-WAFPolicyForFrontDoorEndPoints
      
         Write-Host "`nRollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        $colsProperty = @{Expression={$_.EndpointId};Label="Frontendpoint Id";Width=10;Alignment="left"},
-                        @{Expression={$_.EndPointName};Label="Frontendpoint";Width=10;Alignment="left"},
+        $colsProperty = @{Expression={$_.EndpointId};Label="Endpoint Id";Width=10;Alignment="left"},
+                        @{Expression={$_.EndPointName};Label="Endpoint";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                         @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
-                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"}
+                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
             
 
         if ($($frontDoorEndpointsRolledBack | Measure-Object).Count -gt 0)
