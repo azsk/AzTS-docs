@@ -260,7 +260,7 @@ function Set-StorageAccountRequiredTLSVersion
 
     # To keep track of remediated and skipped resources
     $logRemediatedResources = @()
-    $logSkippedResources = @()
+    $logSkippedResources=@()
 
     # Control Id
     $controlIds = "Azure_Storage_DP_Use_Secure_TLS_Version_Trial"
@@ -296,7 +296,7 @@ function Set-StorageAccountRequiredTLSVersion
                 $storageAccountResources = $resStorageAccount | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                             @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                             @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                            @{Name ='MinimalTlsVersion';Expression={ (Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName).MinimumTlsVersion }}
+                                                                            @{N ='MinimumTlsVersion';Expression={$_.MinimumTlsVersion}}
        
             }
             catch
@@ -317,14 +317,17 @@ function Set-StorageAccountRequiredTLSVersion
         # No file path provided as input to the script. Fetch all Storage Accounts in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
+            
             Write-Host "`nFetching all Storage Accounts in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all Storage Accounts in the Subscription
-            $storageAccounts = Get-AzStorageAccount  -ErrorAction Stop
+            $storageAccounts = Get-AzStorageAccount  -ErrorAction SilentlyContinue
             $storageAccountResources = $storageAccounts | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                         @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                        @{Name ='MinimalTlsVersion';Expression={ (Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName).MinimumTlsVersion }}
+                                                                        @{N='MinimumTlsVersion';E={$_.MinimumTlsVersion}}
+           
+                                                                        
        
             $totalstorageAccountResources = ($storageAccountResources | Measure-Object).Count
         
@@ -351,9 +354,8 @@ function Set-StorageAccountRequiredTLSVersion
                     $storageAccount = Get-AzStorageAccount  -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction SilentlyContinue
                     $storageAccountResources += $storageAccount | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                 @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                @{Name ='MinimalTlsVersion';Expression={ (Get-AzStorageAccount -Name $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName).MinimumTlsVersion }}
-
+                                                                @{N='PrimaryLocation';E={$_.PrimaryLocation}}, 
+                                                                @{N='MinimumTlsVersion';E={$_.MinimumTlsVersion}}
                 }
                 catch
                 {
@@ -377,9 +379,6 @@ function Set-StorageAccountRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
  
      
-    # Includes Storage Accounts where minimal required TLS version is set  
-    $StorageAccountsWithReqMinTLSVersion = @()
-
     # Includes Storage Accounts where minimal required TLS version is not set   
     $StorageAccountsWithoutReqMinTLSVersion = @()
 
@@ -394,7 +393,7 @@ function Set-StorageAccountRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
     $storageAccountResources | ForEach-Object {
         $storageAccount = $_        
-        if($_.MinimalTlsVersion -ne $requiredMinTLSVersion) 
+        if($_.MinimumTlsVersion -ne $requiredMinTLSVersion) 
         {
             $StorageAccountsWithoutReqMinTLSVersion +=  $storageAccount 
         }
@@ -432,7 +431,7 @@ function Set-StorageAccountRequiredTLSVersion
        $colsProperty =  @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                         @{Expression={$_.PrimaryLocation};Label="Primary Location";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimalTlsVersion};Label="Minimal TLS Version";Width=7;Alignment="left"}
+                        @{Expression={$_.MinimumTlsVersion};Label="Minimal TLS Version";Width=7;Alignment="left"}
 
         $StorageAccountsWithoutReqMinTLSVersion | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
@@ -507,31 +506,30 @@ function Set-StorageAccountRequiredTLSVersion
             $StorageAccount = $_
             $storageAccountName = $_.StorageAccountName;
             $resourceGroupName = $_.ResourceGroupName; 
-            $tls = $_.MinimalTlsVersion;
+            $tls = $_.MinimumTlsVersion;
 
             # Holds the list of Storage Accounts where TLS version change is skipped
             $StorageAccountsSkipped = @()
              
             try
             {   
-                $storageAccounts = Set-AzStorageAccount -Name $storageAccountName  -ResourceGroupName $resourceGroupName -MinimumTlsVersion $requiredMinTLSVersion
-                $StorageAccountTls = (Get-AzStorageAccount -Name $storageAccountName -ResourceGroupName $resourceGroupName).MinimumTlsVersion
-                if ($StorageAccountTls -ne $requiredMinTLSVersion)
+                $storageAccount = Set-AzStorageAccount -Name $storageAccountName  -ResourceGroupName $resourceGroupName -MinimumTlsVersion $requiredMinTLSVersion
+                if ($storageAccount.MinimumTlsVersion -ne $requiredMinTLSVersion)
                 {
                     $StorageAccountsSkipped += $StorageAccount
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.StorageAccountName))
                     $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
-                    $logSkippedResources += $logResource   
+                    $logSkippedResources += $logResource    
                 }
                 else
                 {
                     $StorageAccountsRemediated += $StorageAccount | Select-Object @{N='StorageAccountName';E={$StorageAccountName}},
                                                                         @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                         @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                        @{N='MinimalTlsVersionBefore';E={$tls}},
-                                                                        @{N='MinimalTlsVersionAfter';E={$StorageAccountTls}}
+                                                                        @{N='MinimumTlsVersionBefore';E={$tls}},
+                                                                        @{N='MinimumTlsVersionAfter';E={$($storageAccount.MinimumTlsVersion)}}
 
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -547,7 +545,7 @@ function Set-StorageAccountRequiredTLSVersion
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.StorageAccountName))
                 $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
-                $logSkippedResources += $logResource  
+                $logSkippedResources += $logResource 
             }
         }
 
@@ -569,8 +567,8 @@ function Set-StorageAccountRequiredTLSVersion
         $colsProperty = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                         @{Expression={$_.PrimaryLocation};Label="Primary Location";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal TLS Ver. Before";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal TLS Ver. After";Width=7;Alignment="left"}
+                        @{Expression={$_.MinimumTlsVersionBefore};Label="Minimal TLS Ver. Before";Width=7;Alignment="left"},
+                        @{Expression={$_.MinimumTlsVersionAfter};Label="Minimal TLS Ver. After";Width=7;Alignment="left"}
  
                        
                       
@@ -773,18 +771,17 @@ function Reset-StorageAccountRequiredTLSVersion
         $storageAccount = $_
         $storageAccountName = $_.StorageAccountName
         $resourceGroupName = $_.ResourceGroupName
-        $minimalTlsVersionBefore = $_.MinimalTlsVersionBefore
-        $minimalTlsVersionAfter = $_.MinimalTlsVersionAfter
+        $MinimumTlsVersionBefore = $_.MinimumTlsVersionBefore
+        $MinimumTlsVersionAfter = $_.MinimumTlsVersionAfter
 
         try
         {
             $StorageAccount = ( Get-AzStorageAccount -StorageAccountName $storageAccountName  -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue) 
-            $StorageAccountTls = (Get-AzStorageAccount -Name $storageAccountName -ResourceGroupName $resourceGroupName).MinimumTlsVersion
             $StorageAccounts += $StorageAccount | Select-Object @{N='StorageAccountName';E={$StorageAccountName}},
                                                                     @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                     @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                    @{N='MinimalTlsVersionAfter';E={$StorageAccountTls}},
-                                                                    @{N='MinimalTlsVersionBefore';E={$minimalTlsVersionBefore}}
+                                                                    @{N='MinimumTlsVersionAfter';E={$_.MinimumTlsVersion}},
+                                                                    @{N='MinimumTlsVersionBefore';E={$MinimumTlsVersionBefore}}
                                                                   
 
 
@@ -809,7 +806,7 @@ function Reset-StorageAccountRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
     $StorageAccounts | ForEach-Object {
         $StorageAccount = $_        
-            if($_.MinimalTlsVersionAfter -ne $_.MinimalTlsVersionBefore)
+            if($_.MinimumTlsVersionAfter -ne $_.MinimumTlsVersionBefore)
             {
                 $StorageAccountsWithChangedTLS += $StorageAccount
             }
@@ -867,14 +864,13 @@ function Reset-StorageAccountRequiredTLSVersion
             $StorageAccount = $_
             $StorageAccountName = $_.StorageAccountName
             $resourceGroupName = $_.ResourceGroupName
-            $minimalTlsVersionBefore = $_.MinimalTlsVersionBefore
-            $minimalTlsVersionAfter = $_.MinimalTlsVersionAfter
+            $MinimumTlsVersionBefore = $_.MinimumTlsVersionBefore
+            $MinimumTlsVersionAfter = $_.MinimumTlsVersionAfter
 
             try
             {  
-                $StorageAccountResource =  Set-AzStorageAccount -StorageAccountName $StorageAccountName  -ResourceGroupName $resourceGroupName -MinimumTlsVersion $minimalTlsVersionBefore
-                $StorageAccountTls = (Get-AzStorageAccount -Name $storageAccountName -ResourceGroupName $resourceGroupName).MinimumTlsVersion
-                if ($StorageAccountTls -ne $minimalTlsVersionBefore)
+                $StorageAccountResource =  Set-AzStorageAccount -StorageAccountName $StorageAccountName  -ResourceGroupName $resourceGroupName -MinimumTlsVersion $MinimumTlsVersionBefore
+                if ($StorageAccountResource.MinimumTlsVersion -ne $MinimumTlsVersionBefore)
                 {
                     $StorageAccountsSkipped += $StorageAccount   
                 }
@@ -884,8 +880,8 @@ function Reset-StorageAccountRequiredTLSVersion
                     $StorageAccountsRolledBack += $StorageAccount | Select-Object @{N='StorageAccountName';E={$StorageAccountName}},
                                                                         @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                         @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                        @{N='MinimalTlsVersionBefore';E={$MinimalTlsVersionAfter}},
-                                                                        @{N='MinimalTlsVersionAfter';E={$StorageAccountTls}}
+                                                                        @{N='MinimumTlsVersionBefore';E={$MinimumTlsVersionAfter}},
+                                                                        @{N='MinimumTlsVersionAfter';E={$StorageAccountResource.MinimumTlsVersion}}
                 }
             }
             catch
@@ -913,8 +909,8 @@ function Reset-StorageAccountRequiredTLSVersion
         $colsProperty = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=10;Alignment="left"},
                         @{Expression={$_.PrimaryLocation};Label="Primary Location";Width=10;Alignment="left"},
-                        @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal Tls Version After";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal Tls Version Before";Width=7;Alignment="left"}
+                        @{Expression={$_.MinimumTlsVersionAfter};Label="Minimal Tls Version After";Width=7;Alignment="left"},
+                        @{Expression={$_.MinimumTlsVersionBefore};Label="Minimal Tls Version Before";Width=7;Alignment="left"}
             
         if ($($StorageAccountsRolledBack | Measure-Object).Count -gt 0)
         {
