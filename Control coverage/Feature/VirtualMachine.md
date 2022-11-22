@@ -1406,10 +1406,10 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Control Spec 
 
 > **Passed:** 
-> Azure Policy Configure secure communication protocols (TLS 1.1 or TLS 1.2) is set compliant state to “Compliant”.
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Compliant”.
 >
 > **Failed:** 
-> Azure Policy Configure secure communication protocols (TLS 1.1 or TLS 1.2) is set compliant state to “Non-Compliant”.
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Non-Compliant”.
 > 
 > **Verify:** 
 > Policy state not available for evaluation.
@@ -1447,10 +1447,11 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 - ARM API to list Virtual Machine at
 subscription level:
-/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01"<br />
+[/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list-all?tabs=HTTP)<br />
 **Properties:** properties.storageProfile.osDisk.osType
 
-- Azure Policy used for evaluation: /providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d
+
+- Azure Policy used for evaluation: [/providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d](https://portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F828ba269-bf7f-4082-83dd-633417bc391d)
 <br />
 <br />
 

@@ -30,10 +30,10 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Control Spec 
 
 > **Passed:** 
-> Azure Policy Configure secure communication protocols (TLS 1.1 or TLS 1.2) is set compliant state to “Compliant”.
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Compliant”.
 >
 > **Failed:** 
->  Azure Policy Configure secure communication protocols (TLS 1.1 or TLS 1.2) is set compliant state to “Non-Compliant”.
+>  Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Non-Compliant”.
 > 
 > **Verify:** 
 > Policy state not available for evaluation.
@@ -70,10 +70,10 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 - ARM API to list hybrid machines at
 subscription level:
-/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines?api-version=2022-08-11-preview<br />
+[/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines?api-version=2022-08-11-preview](https://learn.microsoft.com/en-us/rest/api/hybridcompute/machines/list-by-subscription?tabs=HTTP)<br />
 **Properties:** properties.osType
 
-- Azure Policy used for evaluation: /providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d
+- Azure Policy used for evaluation: [/providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d](https://portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F828ba269-bf7f-4082-83dd-633417bc391d)
 <br />
 <br />
 
