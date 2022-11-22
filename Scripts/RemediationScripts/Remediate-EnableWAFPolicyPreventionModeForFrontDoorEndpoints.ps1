@@ -38,23 +38,23 @@
 # Examples:
     To remediate:
         1. To review the Front Doors in a Subscription that will be remediated:
-           Enable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+           Enable-WAFPolicyPreventionModeForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) of all Front Doors in a Subscription:
-           Enable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+           Enable-WAFPolicyPreventionModeForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To Switch WAF Policy Mode to  Prvention for FrontEndpoint(s) of all Front Doors in a Subscription, from a previously taken snapshot:
-           Enable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableWAFPolicyForFrontDoors\FrontDoorsWithoutWAFPolicyEnabled.csv
+           Enable-WAFPolicyPreventionModeForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyModeToPrevention\frontdoorEndpointsWithoutPolicyInPreventionMode.csv
 
         To know more about the options supported by the remediation command, execute:
-        Get-Help Enable-WAFPolicyForFrontDoors -Detailed
+        Get-Help Enable-WAFPolicyPreventionModeForFrontDoorEndPoints -Detailed
 
     To roll back:
         1. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) all Front Doors in a Subscription, from a previously taken snapshot:
-           Disable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableRemoteDebuggingForfrontDoors\RemediatedfrontDoors.csv
+           Disable-WAFPolicyPreventionModeForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyModeToPrevention\RemediatedfrontDoorFrontEndpointsForPreventionMode.csv
         
         To know more about the options supported by the roll back command, execute:
-        Get-Help Disable-WAFPolicyForFrontDoors -Detailed        
+        Get-Help Disable-WAFPolicyPreventionModeForFrontDoorEndPoints -Detailed        
 ###>
 
 function Setup-Prerequisites
@@ -149,7 +149,7 @@ function Enable-WAFPolicyPreventionModeForFrontDoorEndPoints
         PS> Enable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\DisableRemoteDebuggingForfrontDoors\frontDoorsWithoutRemoteDebuggingDisabled.csv
+        PS> Enable-WAFPolicyForFrontDoors -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\SetFrontDoorPolicyModeToPrevention\frontdoorEndpointsWithoutPolicyInPreventionMode.csv
 
         .LINK
         None
@@ -832,7 +832,7 @@ function Disable-WAFPolicyPreventionModeForFrontDoorEndPoints
         None. Disable-WAFPolicyPreventionModeForFrontDoorEndPoints does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-WAFPolicyPreventionModeForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableRemoteDebuggingForfrontDoors\RemediatedfrontDoors.csv
+        PS> Disable-WAFPolicyPreventionModeForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyModeToPrevention\RemediatedfrontDoorFrontEndpointsForPreventionMode.csv
 
         .LINK
         None

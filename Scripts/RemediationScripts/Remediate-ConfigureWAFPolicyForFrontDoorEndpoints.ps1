@@ -38,23 +38,23 @@
 # Examples:
     To remediate:
         1. To review the Front Doors in a Subscription that will be remediated:
-           Enable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+           Configure-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. To Configure WAF Policy for FrontEndpoint(s) of all Front Doors in a Subscription:
-           Enable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+           Configure-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3.  To Configure WAF Policy for all Front Door FrontEndpoint(s) in a Subscription, from a previously taken snapshot:
-           Enable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableWAFPolicyForFrontDoors\FrontDoorsWithoutWAFPolicyEnabled.csv
+           Configure-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\ConfigureFrontDoorWAFPolicy\frontdoorEndpointsWithoutWAFPolicyConfigured.csv
 
         To know more about the options supported by the remediation command, execute:
-        Get-Help Enable-WAFPolicyForFrontDoorEndPoints -Detailed
+        Get-Help Configure-WAFPolicyForFrontDoorEndPoints -Detailed
 
     To roll back:
         1. To remove configured WAF Policy for all Front Door  FrontEndpoint(s) in a Subscription, from a previously taken snapshot:
-           Disable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableRemoteDebuggingForfrontDoors\RemediatedfrontDoors.csv
+           Remove-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\ConfigureFrontDoorWAFPolicy\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv
         
         To know more about the options supported by the roll back command, execute:
-        Get-Help Disable-WAFPolicyForFrontDoorEndPoints -Detailed        
+        Get-Help Remove-WAFPolicyForFrontDoorEndPoints -Detailed        
 ###>
 
 function Setup-Prerequisites
@@ -102,7 +102,7 @@ function Setup-Prerequisites
     }
 }
 
-function Enable-WAFPolicyForFrontDoorEndPoints
+function Configure-WAFPolicyForFrontDoorEndPoints
 {
     <#
         .SYNOPSIS
@@ -140,16 +140,16 @@ function Enable-WAFPolicyForFrontDoorEndPoints
         None. You cannot pipe objects to Enable-WAFPolicyForFrontDoors.
 
         .OUTPUTS
-        None. Enable-WAFPolicyForFrontDoorEndPoints does not return anything that can be piped and used as an input to another command.
+        None. Configure-WAFPolicyForFrontDoorEndPoints does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Enable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Configure-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Enable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Configure-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\DisableRemoteDebuggingForfrontDoors\frontDoorsWithoutRemoteDebuggingDisabled.csv
+        PS> Configure-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\ConfigureFrontDoorWAFPolicy\frontdoorEndpointsWithoutWAFPolicyConfigured.csv
 
         .LINK
         None
@@ -789,7 +789,7 @@ function Enable-WAFPolicyForFrontDoorEndPoints
                 $frontDoorFrontendpointsRemediated | Format-Table -Property $colsProperty -Wrap
 
                 # Write this to a file.
-                $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv"
+                $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\v.csv"
                 $frontDoorFrontendpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
                 Write-Host "This information has been saved to $($frontDoorEndpointsRemediatedFile)"
                 Write-Host $([Constants]::SingleDashLine)
@@ -839,7 +839,7 @@ function Enable-WAFPolicyForFrontDoorEndPoints
     }   
 }
 
-function Disable-WAFPolicyForFrontDoorEndPoints
+function Remove-WAFPolicyForFrontDoorEndPoints
 {
     <#
         .SYNOPSIS
@@ -865,10 +865,10 @@ function Disable-WAFPolicyForFrontDoorEndPoints
         None. You cannot pipe objects to Disable-WAFPolicyForFrontDoors.
 
         .OUTPUTS
-        None. Disable-WAFPolicyForFrontDoorEndPoints does not return anything that can be piped and used as an input to another command.
+        None. Remove-WAFPolicyForFrontDoorEndPoints does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableRemoteDebuggingForfrontDoors\RemediatedfrontDoors.csv
+        PS> Remove-WAFPolicyForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\ConfigureFrontDoorWAFPolicy\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv
 
         .LINK
         None
@@ -1060,7 +1060,7 @@ function Disable-WAFPolicyForFrontDoorEndPoints
     
     if (-not $Force)
     {
-        Write-Host "Do you want to remove Configured for all Front Door Endpoint(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to remove configured WAF Policy for all Front Door Endpoint(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")

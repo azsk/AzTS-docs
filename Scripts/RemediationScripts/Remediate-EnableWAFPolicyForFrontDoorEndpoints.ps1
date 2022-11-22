@@ -44,14 +44,14 @@
            Enable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To Switch WAF Policy Mode to  Prvention for FrontEndpoint(s) of all Front Doors in a Subscription, from a previously taken snapshot:
-           Enable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableWAFPolicyForFrontDoors\FrontDoorsWithoutWAFPolicyEnabled.csv
+           Enable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyEnabled\frontdoorEndpointsWithoutPolicyInEnabledState.csv
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-WAFPolicyStateForFrontDoorEndPoints -Detailed
 
     To roll back:
         1. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) all Front Doors in a Subscription, from a previously taken snapshot:
-           Disable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableRemoteDebuggingForfrontDoors\RemediatedfrontDoors.csv
+           Disable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyEnabled\RemediatedfrontDoors.csv
         
         To know more about the options supported by the roll back command, execute:
         Get-Help Disable-WAFPolicyStateForFrontDoorEndPoints -Detailed        
@@ -149,7 +149,7 @@ function Enable-WAFPolicyStateForFrontDoorEndPoints
         PS> Enable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\DisableRemoteDebuggingForfrontDoors\frontDoorsWithoutRemoteDebuggingDisabled.csv
+        PS> Enable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\SetFrontDoorPolicyEnabled\frontdoorEndpointsWithoutPolicyInEnabledState.csv
 
         .LINK
         None
@@ -915,7 +915,7 @@ function Disable-WAFPolicyStateForFrontDoorEndPoints
         None. Disable-WAFPolicyStateForFrontDoorEndPoints does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableRemoteDebuggingForfrontDoors\RemediatedfrontDoors.csv
+        PS> Disable-WAFPolicyStateForFrontDoorEndPoints -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyEnabled\RemediatedfrontDoorFrontEndpointsForEnabledState.csv
 
         .LINK
         None
