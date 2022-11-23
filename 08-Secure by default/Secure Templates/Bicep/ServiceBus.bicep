@@ -12,7 +12,7 @@ resource serviceBusNamespaceName_resource 'Microsoft.ServiceBus/namespaces@2022-
   name: serviceBusNamespaceName
   location: resourceGroup().location
   properties: {
-    minimumTlsVersion: '1.2'
+    minimumTlsVersion: '1.2' //[Azure_ServiceBus_DP_Use_Secure_TLS_Version] enable secure tls version
   }
 }
 

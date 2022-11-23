@@ -8,10 +8,18 @@
           "equals": "Microsoft.ServiceBus/namespaces"
         },
         {
-          "not": {
-            "field": "Microsoft.ServiceBus/namespaces/minimumTlsVersion",
-            "equals": "[parameters('minimumTlsVersion')]"
-          }
+          "anyOf": [
+            {
+              "field": "Microsoft.ServiceBus/namespaces/minimumTlsVersion",
+              "exists": false
+            },
+            {
+              "not": {
+                "field": "Microsoft.ServiceBus/namespaces/minimumTlsVersion",
+                "equals": "[parameters('minimumTlsVersion')]"
+              }
+            }
+          ]
         }
       ]
     },
@@ -45,7 +53,7 @@
         "Disabled",
         "Modify"
       ],
-      "defaultValue": "Modify"
+      "defaultValue": "Audit"
     },
     "minimumTlsVersion": {
       "type": "String",
@@ -54,8 +62,6 @@
         "description": "Minimum version of TLS required to connect to Service Bus"
       },
       "allowedValues": [
-        "1.0",
-        "1.1",
         "1.2"
       ],
       "defaultValue": "1.2"
