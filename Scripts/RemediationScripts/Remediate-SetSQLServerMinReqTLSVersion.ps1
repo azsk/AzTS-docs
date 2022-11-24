@@ -399,7 +399,6 @@ function Set-SQLServerRequiredTLSVersion
                 $logResource.Add("ResourceName",($_.ServerName))
                 $logResource.Add("Reason","Minimal TLS Version already set to required Minimal TLS Version")    
                 $logSkippedResources += $logResource
-                Write-Host $([Constants]::SingleDashLine)
         }
     }
 
