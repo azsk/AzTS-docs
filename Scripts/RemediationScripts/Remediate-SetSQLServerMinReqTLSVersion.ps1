@@ -564,7 +564,7 @@ function Set-SQLServerRequiredTLSVersion
         }
 
         $totalRemediatedSQLServers = ($sqlServersRemediated | Measure-Object).Count
-        Write-Host $([Constants]::SingleDashLine)
+         
 
         if ($totalRemediatedSQLServers -eq $sqlServersWithoutReqMinTLSVersion)
         {
@@ -756,10 +756,12 @@ function Reset-SQLServerRequiredTLSVersion
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host $([Constants]::SingleDashLine)
+        
         Write-Host "Connecting to Azure account..."
+        Write-Host $([Constants]::SingleDashLine)
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
         Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
@@ -767,7 +769,7 @@ function Reset-SQLServerRequiredTLSVersion
         $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-    Write-Host $([Constants]::SingleDashLine)
+    
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
     Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
     Write-Host "Account Name: [$($context.Account.Id)]"
