@@ -485,8 +485,7 @@ function Set-SQLServerRequiredTLSVersion
             if (-not $Force)
             {
                 Write-Host "Do you want to set TLS version to required TLS version for all SQL Server(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                Write-Host $([Constants]::SingleDashLine)
-
+                
                 $userInput = Read-Host -Prompt "(Y|N)" #TODO: 
                 Write-Host $([Constants]::SingleDashLine)
                 if($userInput -ne "Y")
@@ -497,7 +496,8 @@ function Set-SQLServerRequiredTLSVersion
                 }
                 else
                 {
-                    Write-Host "Minimal TLS version will be changed for all SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Minimal TLS version will be changed for all SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
             }
             else
@@ -830,8 +830,9 @@ function Reset-SQLServerRequiredTLSVersion
     $sqlServersWithChangedTLS = @()
  
     Write-Host "[Step 3 of 4] Fetching SQL Servers with changed TLS Versions(s)"
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "Separating SQL Servers where TLS version is changed..." -ForegroundColor $([Constants]::MessageType.Info)
-
+    Write-Host $([Constants]::SingleDashLine)
     $sqlServers | ForEach-Object {
         $sqlServer = $_        
             if($_.MinimalTlsVersionAfter -ne $_.MinimalTlsVersionBefore)
@@ -928,8 +929,6 @@ function Reset-SQLServerRequiredTLSVersion
     
 
     $totalSqlServersRolledBack = ($sqlServersRolledBack | Measure-Object).Count
-
-    Write-Host $([Constants]::SingleDashLine)
 
     if ($totalsqlServersRolledBack -eq $totalsqlServersWithChangedTLS)
     {
