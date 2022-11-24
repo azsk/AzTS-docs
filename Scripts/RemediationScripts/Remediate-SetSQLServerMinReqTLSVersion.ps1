@@ -95,7 +95,7 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
-            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "[$($_)] module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
             Write-Host "[$($_)] module installed." -ForegroundColor $([Constants]::MessageType.Update)
