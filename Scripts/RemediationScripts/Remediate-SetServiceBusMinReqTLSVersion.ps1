@@ -270,7 +270,6 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
 
         $validServiceBusNampespaces = $resourceDetails.FailedResourceList | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }	
         if (($resourceDetails | Measure-Object).Count -eq 0 -or ($validServiceBusNampespaces | Measure-Object).Count -eq 0) {
-
             Write-Host "No Azure Service Bus Namespace(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)	
             Write-Host $([Constants]::DoubleDashLine)	
             return	
@@ -398,9 +397,9 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
     Write-Host $([Constants]::SingleDashLine)	
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.MinimumTLSVersion }; Label = "MinimumTLSVersion"; Width = 100; Alignment = "left" }
+                    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+                    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
+                    @{Expression = { $_.MinimumTLSVersion }; Label = "MinimumTLSVersion"; Width = 100; Alignment = "left" }
 
     if (-not $AutoRemediation) {
         Write-Host "Azure Service Bus Namespace(s) with non-secure TLS version enabled are:"
@@ -500,7 +499,6 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
 
         if ($AutoRemediation) {
             if ($($serviceBusNamespacesRemediated | Measure-Object).Count -gt 0) {
-
                 # Write this to a file.
                 $serviceBusNamespacesRemediatedFile = "$($backupFolderPath)\RemediatedServiceBusNamespaces.csv"
                 $serviceBusNamespacesRemediated | Export-CSV -Path $serviceBusNamespacesRemediatedFile -NoTypeInformation
@@ -510,10 +508,10 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
             }
 
             if ($($serviceBusNamespacesSkipped | Measure-Object).Count -gt 0) {
-                $serviceBusNamespacesSkipped | Format-Table -Property $colsProperty -Wrap            
                 # Write this to a file.
                 $serviceBusNamespacesSkippedFile = "$($backupFolderPath)\SkippedServiceBusNamespaces.csv"
                 $serviceBusNamespacesSkipped | Export-CSV -Path $serviceBusNamespacesSkippedFile -NoTypeInformation
+      
                 Write-Host "The information related to Azure Service Bus Namespace(s) where MinimumTLSVersion was not set, has been saved to [$($serviceBusNamespacesSkippedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -545,6 +543,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
                 # Write this to a file.
                 $serviceBusNamespacesSkippedFile = "$($backupFolderPath)\SkippedServiceBusNamespaces.csv"
                 $serviceBusNamespacesSkipped | Export-CSV -Path $serviceBusNamespacesSkippedFile -NoTypeInformation
+
                 Write-Host "This information has been saved to"  -NoNewline
                 Write-Host " [$($serviceBusNamespacesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
             }
@@ -700,9 +699,9 @@ function Reset-SecureTLSVersionForServiceBusNamespaces {
     Write-Host $([Constants]::SingleDashLine)
     
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.MinimumTLSVersion }; Label = "MinimumTLSVersion"; Width = 100; Alignment = "left" }
+                    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+                    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
+                    @{Expression = { $_.MinimumTLSVersion }; Label = "MinimumTLSVersion"; Width = 100; Alignment = "left" }
 
     $validServiceBusNamespacesDetails | Format-Table -Property $colsProperty -Wrap
 
@@ -762,6 +761,7 @@ function Reset-SecureTLSVersionForServiceBusNamespaces {
         # Write this to a file.
         $serviceBusNamespacesRolledBackFile = "$($backupFolderPath)\RolledBackServiceBusNamespaces.csv"
         $serviceBusNamespacesRolledBack | Export-CSV -Path $serviceBusNamespacesRolledBackFile -NoTypeInformation
+
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($serviceBusNamespacesRolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
     }
@@ -775,6 +775,7 @@ function Reset-SecureTLSVersionForServiceBusNamespaces {
         # Write this to a file.
         $serviceBusNamespacesSkippedFile = "$($backupFolderPath)\RolledBackServiceBusNamespaces.csv"
         $serviceBusNamespacesSkipped | Export-CSV -Path $serviceBusNamespacesSkippedFile -NoTypeInformation
+        
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($serviceBusNamespacesSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
     }
