@@ -105,7 +105,6 @@ function Setup-Prerequisites
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-    Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
 }
 
 function Set-SQLServerRequiredTLSVersion
