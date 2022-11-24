@@ -63,35 +63,31 @@
         Get-Help Reset-SQLServerRequiredTLSVersion -Detailed        
 ###>
 
-
 function Setup-Prerequisites
 {
-     <#
+    <#
         .SYNOPSIS
         Checks if the prerequisites are met, else, sets them up.
-
         .DESCRIPTION
         Checks if the prerequisites are met, else, sets them up.
         Includes installing any required Azure modules.
-
         .INPUTS
         None. You cannot pipe objects to Setup-Prerequisites.
-
         .OUTPUTS
         None. Setup-Prerequisites does not return anything that can be piped and used as an input to another command.
-
         .EXAMPLE
         PS> Setup-Prerequisites
-
         .LINK
         None
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql")
+    $requiredModules = @("Az.Accounts", "Az.Sql")
 
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host "Checking if the required modules are present..."
+    Write-Host "Required modules: $($requiredModules -join ', ')"
+    Write-Host $([Constants]::SingleDashLine)    
+    Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
@@ -99,14 +95,17 @@ function Setup-Prerequisites
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
         {
-            Write-Host "Installing $($_) module..." -ForegroundColor $([Constants]::MessageType.Info)
-            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery'  –Allowclobber  -allow -ErrorAction Stop
+            Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
+            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Write-Host "[$($_)] module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
 }
 
 function Set-SQLServerRequiredTLSVersion
@@ -130,6 +129,7 @@ function Set-SQLServerRequiredTLSVersion
         
         .PARAMETER DryRun
         Specifies a dry run of the actual remediation.
+
         .PARAMETER SkipBackup
         Specifies that no back up will be taken by the script before remediation.
         
@@ -187,7 +187,6 @@ function Set-SQLServerRequiredTLSVersion
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies no back up will be taken by the script before remediation")]
         $SkipBackup,
 
-
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
         $FilePath,
@@ -206,23 +205,29 @@ function Set-SQLServerRequiredTLSVersion
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Prepare to set required TLS version for SQL Servers in Subscription: [$($SubscriptionId)]"
-    Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
-            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)	
             Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
-            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)            
+            Write-Host $([Constants]::DoubleDashLine)
+            return
         }
+    }
+    else
+    {
+        Write-Host "[Step 1 of 4] Validate the user"
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     # Connect to Azure account
@@ -230,21 +235,22 @@ function Set-SQLServerRequiredTLSVersion
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::DoubleDashLine)
-        break
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)        
+        Write-Host $([Constants]::SingleDashLine)
     }
-
-   
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+      # Setting up context for the current Subscription.
+      $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-    if(-not($AutoRemediation))
+
+    if(-not($AutoRemediation))	
     {
-        Write-Host "Subscription Name: $($context.Subscription.Name)"
-        Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-        Write-Host "Account Name: $($context.Account.Id)"
-        Write-Host "Account Type: $($context.Account.Type)"
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -311,7 +317,7 @@ function Set-SQLServerRequiredTLSVersion
         # No file path provided as input to the script. Fetch all SQL Servers in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
-            Write-Host "`nFetching all SQL Servers in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all SQL Servers in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all SQL Servers in the Subscription
             $sqlServerResources = Get-AzSqlServer  -ErrorAction Stop
@@ -324,12 +330,12 @@ function Set-SQLServerRequiredTLSVersion
         {
             if (-not (Test-Path -Path $FilePath))
             {
-                Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::DoubleDashLine)
-                break
+                return
             }
 
-            Write-Host "Fetching all SQL Servers(s) from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all SQL Servers(s) from [$($FilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $sqlServerResourcesFromFile = Import-Csv -LiteralPath $FilePath
             $validsqlServerResources = $sqlServerResourcesFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.ServerName) }
@@ -345,8 +351,8 @@ function Set-SQLServerRequiredTLSVersion
                 }
                 catch
                 {
-                    Write-Host "Error fetching Server:   - $($serverName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this Server..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Error fetching SQL Server: [$($serverName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this SQL Server..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
@@ -357,9 +363,9 @@ function Set-SQLServerRequiredTLSVersion
 
     if ($totalsqlServerResources -eq 0)
     {
-        Write-Host "No SQL Servers found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No SQL Servers found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         Write-Host $([Constants]::DoubleDashLine)
-        break
+        return
     }
 
     Write-Host "Found $($totalsqlServerResources) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
@@ -376,9 +382,9 @@ function Set-SQLServerRequiredTLSVersion
     $sqlServersSkipped = @()
 
      
-    Write-Host "`n[Step 3 of 5] Fetching SQL Servers with (s)..."
+    Write-Host "[Step 3 of 5] Fetching SQL Servers with Minimal TLS less than required Minimal TLS version"
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Separating SQL Server(s) for which TLS is less than required TLS version ..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Separating SQL Server(s) for which Minimal TLS is less than required TLS version ..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $sqlServerResources | ForEach-Object {
         $sqlServer = $_        
@@ -389,6 +395,16 @@ function Set-SQLServerRequiredTLSVersion
                                                                         @{N='Location';E={$_.Location}},
                                                                         @{N='ServerVersion';E={$_.ServerVersion}},
                                                                         @{N='MinimalTlsVersion';E={$_.MinimalTlsVersion}}
+        }
+        else{
+            if($AutoRemediation){
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ServerName))
+                $logResource.Add("Reason","Minimal TLS Version already set to required Minimal TLS Version")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+            }
         }
     }
 
@@ -420,7 +436,7 @@ function Set-SQLServerRequiredTLSVersion
      
     if(-not($AutoRemediation))
     {
-        Write-Host "`nFollowing SQL Servers are having TLS version either not set or less than required minimal TLS version less than required TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Following SQL Servers are having TLS version either not set or less than required minimal TLS version less than required TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
         $colsProperty =     @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
                             @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
                             @{Expression={$_.Location};Label="Location";Width=7;Alignment="left"},
@@ -439,7 +455,7 @@ function Set-SQLServerRequiredTLSVersion
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "`n[Step 4 of 5] Backing up SQL Server(s) details..."
+    Write-Host "[Step 4 of 5] Backing up SQL Server(s) details"
     Write-Host $([Constants]::SingleDashLine)
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {        
@@ -448,7 +464,7 @@ function Set-SQLServerRequiredTLSVersion
             # Backing up SQL Server details.
             $backupFile = "$($backupFolderPath)\sqlServersWithoutReqMinTLSVersion.csv"
             $sqlServersWithoutReqMinTLSVersion | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "SQL Server(s) details have been successful backed up to $($backupFolderPath)" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "SQL Server(s) details have been successful backed up to [$($backupFolderPath)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
@@ -478,7 +494,11 @@ function Set-SQLServerRequiredTLSVersion
                 {
                     Write-Host "TLS version will not be changed for any SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::DoubleDashLine)
-                    break
+                    return
+                }
+                else
+                {
+                    Write-Host "Minimal TLS version will be changed for all SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                 }
             }
             else
@@ -488,7 +508,7 @@ function Set-SQLServerRequiredTLSVersion
             }
         }
 
-        Write-Host "`n[Step 5 of 5] Configuring Minimal TLS version for SQL Server(s)..."
+        Write-Host "[Step 5 of 5] Configuring Minimal TLS version for SQL Server(s)"
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
         $sqlServersRemediated = @()
@@ -549,12 +569,12 @@ function Set-SQLServerRequiredTLSVersion
 
         if ($totalRemediatedSQLServers -eq $sqlServersWithoutReqMinTLSVersion)
         {
-            Write-Host "TLS Version changed to required TLS version for all $($totalsqlServersWithoutReqMinTLSVersion) SQL Server(s) ." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "TLS Version changed to required TLS version for all [$($totalsqlServersWithoutReqMinTLSVersion)] SQL Server(s) ." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         else
         {
-            Write-Host "TLS Version changed to required TLS version for $totalRemediatedSQLServers out of $($totalsqlServersWithoutReqMinTLSVersion) SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "TLS Version changed to required TLS version for [$($totalRemediatedSQLServers)] out of [$($totalsqlServersWithoutReqMinTLSVersion)] SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -586,17 +606,19 @@ function Set-SQLServerRequiredTLSVersion
         }
         else
         {
-            Write-Host "`nRemediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
         
             if ($($sqlServersRemediated | Measure-Object).Count -gt 0)
             {
+                Write-Host "Successfully set the Minimal TLS version to required Minimal TLS version on the following SQL Server(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
                 $sqlServersRemediated | Format-Table -Property $colsProperty -Wrap
 
                 # Write this to a file.
                 $sqlServersRemediatedFile = "$($backupFolderPath)\RemediatedsqlServersFileforMinTLS.csv"
                 $sqlServersRemediated| Export-CSV -Path $sqlServersRemediatedFile -NoTypeInformation
                 Write-Host $([Constants]::SingleDashLine)
-                Write-Host "This information has been saved to $($sqlServersRemediatedFile)"
+                Write-Host "This information has been saved to [$($sqlServersRemediatedFile)]"
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
@@ -604,14 +626,14 @@ function Set-SQLServerRequiredTLSVersion
 
             if ($($sqlServersSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "`nError changing minimal TLS version for following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error changing minimal TLS version for following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $sqlServersSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $sqlServerSkippedFile = "$($backupFolderPath)\SkippedsqlServersFileforMinTLS.csv"
                 $sqlServersSkipped | Export-CSV -Path $sqlServerSkippedFile -NoTypeInformation
                 Write-Host $([Constants]::SingleDashLine)
-                Write-Host "This information has been saved to $($sqlServerResourcesSkippedFile)"
+                Write-Host "This information has been saved to [$($sqlServerResourcesSkippedFile)]"
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -633,14 +655,14 @@ function Set-SQLServerRequiredTLSVersion
     }
     else
     {
-        Write-Host "`n[Step 5 of 5] Changing minimal TLS version for SQL Servers(s)..."
+        Write-Host "[Step 5 of 5] Changing minimal TLS version for SQL Servers(s)"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
 
-        Write-Host "`n**Next steps:**" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "**Next steps:**" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to change the minimal TLS version to required TLS version for all SQL Server(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to change the minimal TLS version to required TLS version for all SQL Server(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
     }   
 }
@@ -705,54 +727,68 @@ function Reset-SQLServerRequiredTLSVersion
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 1 of 4] Preparing to reset SQL Server TLS Version in Subscription: $($SubscriptionId)"
-    Write-Host $([Constants]::SingleDashLine)
     if ($PerformPreReqCheck)
     {
         try
         {
-            Write-Host "Setting up prerequisites..."
+            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
+            Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites"	
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            Write-Host $([Constants]::DoubleDashLine)	
+            return
         }
     }
+    else
+    {
+        Write-Host "[Step 1 of 3] Validate the user" 
+        Write-Host $([Constants]::SingleDashLine)
+    }  
 
     # Connect to Azure account
     $context = Get-AzContext
 
     if ([String]::IsNullOrWhiteSpace($context))
     {
-        Write-Host "No active Azure login session found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::DoubleDashLine)
-        break
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Connecting to Azure account..."
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    else
+    {
+        # Setting up context for the current Subscription.
+        $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-    # Setting up context for the current Subscription.
-    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
-    
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: $($context.Subscription.Name)"
-    Write-Host "Subscription ID: $($context.Subscription.SubscriptionId)"
-    Write-Host "Account Name: $($context.Account.Id)"
-    Write-Host "Account Type: $($context.Account.Type)"
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To reset TLS Versions for SQL Server(s) in a Subscription, Contributor or higher privileges on the SQL Server(s) are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    # Note about the required access required for remediation
+
+    Write-Host "To reset TLS Versions for SQL Server(s) in a Subscription, Contributor or higher privileges on the SQL Server(s) are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "`n[Step 2 of 4] Preparing to fetch all SQL Server(s)..."
+    Write-Host "[Step 2 of 4] Preparing to fetch all SQL Server(s)"
     Write-Host $([Constants]::SingleDashLine)
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         Write-Host $([Constants]::DoubleDashLine)
-        break
+        return
     }
 
-    Write-Host "Fetching all SQL Server(s) from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all SQL Server(s) from [$($FilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
        
     $sqlServersFromFile = Import-Csv -LiteralPath $FilePath
@@ -783,7 +819,7 @@ function Reset-SQLServerRequiredTLSVersion
         }
         catch
         {
-            Write-Host "Error fetching SQL Server :  $($serverName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching SQL Server : [$($serverName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host "Skipping this SQL Server..." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
@@ -794,8 +830,8 @@ function Reset-SQLServerRequiredTLSVersion
     # Includes SQL Servers
     $sqlServersWithChangedTLS = @()
  
-    Write-Host "`n[Step 3 of 4] Fetching SQL(s)..."
-    Write-Host "Separating SQL Servers..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "[Step 3 of 4] Fetching SQL Servers with changed TLS Versions(s)"
+    Write-Host "Separating SQL Servers where TLS version is changed..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $sqlServers | ForEach-Object {
         $sqlServer = $_        
@@ -834,9 +870,9 @@ function Reset-SQLServerRequiredTLSVersion
         Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
-            Write-Host "minimal TLS Version will not be reseted for any of the SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Minimal TLS Version will not be reseted for any of the SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::DoubleDashLine)
-            break
+            return
         }
     }
     else
@@ -847,7 +883,7 @@ function Reset-SQLServerRequiredTLSVersion
 
   
  
-    Write-Host "`n[Step 4 of 4] Resetting the minimal TLS Version for SQL Server(s) ..."
+    Write-Host "[Step 4 of 4] Resetting the minimal TLS Version for SQL Server(s)"
     Write-Host $([Constants]::SingleDashLine)
     # Includes SQL Server(s), to which, previously made changes were successfully rolled back.
     $sqlServersRolledBack = @()
@@ -898,16 +934,16 @@ function Reset-SQLServerRequiredTLSVersion
 
     if ($totalsqlServersRolledBack -eq $totalsqlServersWithChangedTLS)
     {
-        Write-Host "TLS Version resetted for all $($totalsqlServersWithChangedTLS) SQL Server(s) ." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "TLS Version resetted for all [$($totalsqlServersWithChangedTLS)] SQL Server(s) ." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
-        Write-Host "TLS Version resetted  for  $totalSqlServersRolledBack out of $($totalsqlServersWithChangedTLS) SQL Servers(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "TLS Version resetted for [$($totalSqlServersRolledBack)] out of [$($totalsqlServersWithChangedTLS)] SQL Servers(s)" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
     
-    Write-Host "`nRollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
     
     $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=10;Alignment="left"},
@@ -919,26 +955,27 @@ function Reset-SQLServerRequiredTLSVersion
 
     if ($($sqlServersRolledBack | Measure-Object).Count -gt 0)
     {
+        Write-Host "Resetting TLS for following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
         $sqlServersRolledBack | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
 
         # Write this to a file.
         $sqlServersRolledBackFile = "$($backupFolderPath)\RolledBackSQLServerForMinimalTls.csv"
         $sqlServersRolledBack| Export-CSV -Path $sqlServersRolledBackFile -NoTypeInformation
-        Write-Host "This information has been saved to $($sqlServersRolledBackFile)"
+        Write-Host "This information has been saved to [$($sqlServersRolledBackFile)]"
         Write-Host $([Constants]::SingleDashLine)
     }
 
     if ($($sqlServersSkipped | Measure-Object).Count -gt 0)
     {
-        Write-Host "`nError resetting TLS for following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Error resetting TLS for following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
         $sqlServersSkipped | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
         
         # Write this to a file.
         $sqlServersSkippedFile = "$($backupFolderPath)\RollbackSkippedSQLServerForMinimalTls.csv"
         $sqlServersSkipped | Export-CSV -Path $sqlServersSkippedFile -NoTypeInformation
-        Write-Host "This information has been saved to $($sqlServersSkippedFile)"
+        Write-Host "This information has been saved to [$($sqlServersSkippedFile)]"
         Write-Host $([Constants]::SingleDashLine)
     }   
    
