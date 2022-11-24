@@ -367,7 +367,7 @@ function Set-SQLServerRequiredTLSVersion
         return
     }
 
-    Write-Host "Found $($totalsqlServerResources) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalsqlServerResources)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
  
      
