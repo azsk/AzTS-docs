@@ -7,15 +7,16 @@ param serviceBusTopicName string
 @description('Name of the Storage account for storing logs')
 param storageAccountNameForDiagnostics string
 
-var sbVersion = '2015-08-01'
 
-resource serviceBusNamespaceName_resource 'Microsoft.ServiceBus/namespaces@2015-08-01' = {
+resource serviceBusNamespaceName_resource 'Microsoft.ServiceBus/namespaces@2022-01-01-preview' = {
   name: serviceBusNamespaceName
   location: resourceGroup().location
-  properties: {}
+  properties: {
+    minimumTlsVersion: '1.2' //[Azure_ServiceBus_DP_Use_Secure_TLS_Version] enable secure tls version
+  }
 }
 
-resource serviceBusNamespaceName_serviceBusTopicName 'Microsoft.ServiceBus/namespaces/Topics@[variables(\'sbVersion\')]' = {
+resource serviceBusNamespaceName_serviceBusTopicName 'Microsoft.ServiceBus/namespaces/Topics@2015-08-01' = {
   name: '${serviceBusNamespaceName}/${serviceBusTopicName}'
   properties: {
     path: serviceBusTopicName
@@ -23,6 +24,7 @@ resource serviceBusNamespaceName_serviceBusTopicName 'Microsoft.ServiceBus/names
   dependsOn: [
     serviceBusNamespaceName_resource
   ]
+  location: resourceGroup().location
 }
 
 resource serviceBusNamespaceName_serviceBusTopicName_AccessKey 'Microsoft.ServiceBus/namespaces/Topics/authorizationRules@2017-04-01' = {

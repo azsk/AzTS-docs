@@ -21,6 +21,7 @@
 - [Azure_VirtualMachine_Just_In_Time_Network_Access_Control](#azure_virtualmachine_just_in_time_network_access_control)
 - [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
+- [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
 
 <!-- /TOC -->
 <br/>
@@ -1384,4 +1385,75 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 <br />
 
 ___ 
+
+## Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial 
+
+### Display Name 
+[Trial] Use approved version of TLS for Windows Servers
+
+### Rationale 
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+```json 
+{
+     "ApplicableOsTypes": [
+          "Windows"
+      ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Compliant”.
+>
+> **Failed:** 
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Non-Compliant”.
+> 
+> **Verify:** 
+> Policy state not available for evaluation.
+>
+> **NotApplicable:** 
+> VM OS type is other then 'Windows'.
+>
+
+### Recommendation
+<!-- 
+- **Azure Portal** 
+
+	 Refer: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/endpoints-in-resource-manager, https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-create-nsg-arm-ps 
+-->
+
+-
+	Install the guest configuration extention.
+	 
+	```powershell 
+	Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -Type 'ConfigurationforWindows' -Name 'AzurePolicyforWindows' -TypeHandlerVersion 1.0 -ResourceGroupName 'myResourceGroup' -Location 'myLocation' -VMName 'myVM' -EnableAutomaticUpgrade $true 
+	 ```
+
+- Assign Policy (Configure secure communication protocols (TLS 1.1 or TLS 1.2) on windows servers. Refer: https://learn.microsoft.com/en-us/azure/governance/policy/assign-policy-portal
+<!--
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri//providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d) 
+	 "/providers/Microsoft.Authorization/policyDefinitions/af6cd1bd-1635-48cb-bde7-5b15693900b9"
+
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+-->
+### Azure Policy or ARM API used for evaluation 
+
+
+- ARM API to list Virtual Machine at
+subscription level:
+[/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list-all?tabs=HTTP)<br />
+**Properties:** properties.storageProfile.osDisk.osType
+
+
+- Azure Policy used for evaluation: [/providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d](https://portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F828ba269-bf7f-4082-83dd-633417bc391d)
+<br />
+<br />
+
+___
 
