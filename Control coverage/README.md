@@ -20,9 +20,11 @@ Below resource types can be checked for validating the security controls:
 |[DataLakeAnalytics](Feature/DataLakeAnalytics.md)|Microsoft.DataLakeAnalytics/accounts|
 |[DataLakeStore](Feature/DataLakeStore.md)|Microsoft.DataLakeStore/accounts|
 |[DBForMySql](Feature/DBForMySql.md)|Microsoft.DBforMySQL/servers|
+|[DBForMySqlFlexibleServer](Feature/DBForMySqlFlexibleServer.md)|Microsoft.DBforMySQL/flexibleServers|
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
+|[HybridCompute](Feature/HybridCompute.md)|Microsoft.HybridCompute/machines|
 |[KeyVault](Feature/KeyVault.md)|Microsoft.KeyVault/vaults|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
 |[LogicApps](Feature/LogicApps.md)|Microsoft.Logic/workflows|
