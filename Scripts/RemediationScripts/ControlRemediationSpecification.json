@@ -157,6 +157,42 @@
                   "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
                   "Arguments":["SubscriptionId"]
              }
+        },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        {
+            "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version_Trial",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetStorageAccountMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetStorageAccountMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-StorageAccountRequiredTLSVersion",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-StorageAccountRequiredTLSVersion",
+                  "Arguments":["SubscriptionId"]
+             }
         }
     ]
 }
