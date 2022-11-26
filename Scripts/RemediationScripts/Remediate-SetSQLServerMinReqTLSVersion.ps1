@@ -81,7 +81,7 @@ function Setup-Prerequisites
 
         .EXAMPLE
         PS> Setup-Prerequisites
-        
+
         .LINK
         None
     #>
@@ -321,7 +321,7 @@ function Set-SQLServerRequiredTLSVersion
         # No file path provided as input to the script. Fetch all SQL Servers in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
-            Write-Host "Fetching all SQL Server(s) in Subscription: [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all SQL Server(s) in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
             # Get all SQL Server(s) in the Subscription
@@ -789,7 +789,7 @@ function Reset-SQLServerRequiredTLSVersion
         return
     }
 
-    Write-Host "Fetching all SQL Server(s) from [$($FilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all SQL Server(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
        
     $sqlServersFromFile = Import-Csv -LiteralPath $FilePath
