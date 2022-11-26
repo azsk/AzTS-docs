@@ -25,6 +25,10 @@
 
 12. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](ControlsEligibleForRemediationThroughUI.md#1-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
 
+
+
+14. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+
 <br />
 ___
 
@@ -178,6 +182,32 @@ Cluster Protection Level must be EncryptandSign
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetClusterProtectionLevelForServiceFabric](Remediate-SetClusterProtectionLevelForServiceFabric.ps1)
+
+### Minimum permissions required to run the script
+Owner or higher priviliged role on the Service Fabric(s)
+
+___
+
+ 
+
+
+
+
+
+
+
+
+ 
+
+
+
+## 14. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Owner or higher priviliged role on the Service Fabric(s)
