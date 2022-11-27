@@ -157,6 +157,8 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") -or
                 ($control.ControlId -eq "Azure_CloudService_SI_Disable_RemoteDesktop_Access") -or
                 ($control.ControlId -eq "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel") -or
+                ($control.ControlId -eq "Azure_ServiceBus_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
