@@ -213,7 +213,7 @@ function Set-SQLServerRequiredTLSVersion
     {
         try
         {
-            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user"
+            Write-Host "[Step 1 of 5] Validate and install the modules required to run the script and validate the user"
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
@@ -230,7 +230,7 @@ function Set-SQLServerRequiredTLSVersion
     }
     else
     {
-        Write-Host "[Step 1 of 4] Validate the user"
+        Write-Host "[Step 1 of 5] Validate the user"
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -260,7 +260,7 @@ function Set-SQLServerRequiredTLSVersion
 
     Write-Host "To Set minimal TLS version for SQL Servers in a Subscription, Contributor or higher privileges on the SQL Servers are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 4] Fetch all SQL Servers"
+    Write-Host "[Step 2 of 5] Fetch all SQL Servers"
     Write-Host $([Constants]::SingleDashLine)
     $sqlServerResources = @()
     $requiredMinTLSVersion = 1.2
@@ -730,7 +730,7 @@ function Reset-SQLServerRequiredTLSVersion
     {
         try
         {
-            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user"
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user"
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
@@ -747,7 +747,7 @@ function Reset-SQLServerRequiredTLSVersion
     }
     else
     {
-        Write-Host "[Step 1 of 3] Validate the user" 
+        Write-Host "[Step 1 of 4] Validate the user" 
         Write-Host $([Constants]::SingleDashLine)
     }  
 
