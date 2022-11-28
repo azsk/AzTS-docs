@@ -135,6 +135,17 @@ Logic App connectors must use AAD-based authentication wherever possible
 ### Rationale
 Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions.
 
+### Control Settings 
+```json 
+{
+    "AllowedAuthTypes": [ "ActiveDirectoryOAuth", "ManagedServiceIdentity" ],
+    "ConnectorTypesToEvaluate": [ "HTTP" ],
+    "NonCompliantConnectorTypes": [ "FTP" ],
+    "CompliantConnectorTypes": [ "Office365" ],
+    "NotApplicableConnectorTypes": [ "Request", "Recurrence", "Response", "If", "Switch", "Until", "ForEach" ]
+}
+ ```  
+
 ### Control Spec
 
 > **Passed:**
@@ -195,6 +206,16 @@ Data transit across Logic App connectors must use encrypted channel
 ### Rationale
 Use of HTTPS ensures server/service authentication and protects data in transit from network layer man-in-the-middle, eavesdropping, session-hijacking attacks.
 
+### Control Settings 
+```json 
+{
+    "ConnectorTypesToEvaluate": [ "HTTP", "HttpWebhook" ],
+    "NonCompliantConnectorTypes": [ "FTP" ],
+    "CompliantConnectorTypes": [ "Office365", "Request", "AzureBlob", "Sql", "Response" ],
+    "NotApplicableConnectorTypes": [ "Recurrence", "If", "Switch", "Until", "ForEach" ]
+}
+ ```  
+
 ### Control Spec
 
 > **Passed:**
@@ -203,7 +224,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 >   <br />b. No such connector found in resource which is currently being evaluated by AzTS.
 > 
 > **Failed:**
-> One or more connector(s) in resource not HTTPS URI.
+> One or more connector(s) in resource not using HTTPS URI.
 > 
 > **Verify:**
 > Not able to validate/parse URI(s) used in one or more connector(s).
