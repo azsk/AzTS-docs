@@ -644,7 +644,7 @@ function Set-SQLServerRequiredTLSVersion
             foreach($logControl in $log.ControlList){
                 if($logControl.ControlId -eq $controlIds){
                     $logControl.RemediatedResources=$logRemediatedResources
-                    $logControl.SkippedResources=$logSkippedResources
+                    $logControl.SkippedResources=$logSkippedResources 
                     $logControl.RollbackFile = $sqlServersRemediatedFile
                 }
             }
