@@ -27,6 +27,8 @@
 
 13. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#13-azure_servicebus_dp_use_secure_tls_version)
 
+14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+
 <br />
 ___
 
@@ -196,5 +198,18 @@ Use approved version of TLS for Azure Service Bus
 
 ### Minimum permissions required to run the script
 Azure Data Owner role on Service Bus Namespace
+
+___
+
+## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in SQL Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLServerMinReqTLSVersion](Remediate-SetSQLServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
 
 ___
