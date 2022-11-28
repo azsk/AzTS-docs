@@ -748,7 +748,7 @@ function Reset-SQLServerRequiredTLSVersion
     else
     {
         Write-Host "[Step 1 of 4] Validate the user" 
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host $([Constants]::SingleDashLine) 
     }  
 
     # Connect to Azure account
