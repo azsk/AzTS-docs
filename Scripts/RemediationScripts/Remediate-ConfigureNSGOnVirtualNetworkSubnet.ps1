@@ -411,6 +411,7 @@ function Add-NSGConfigurationOnSubnet
 
                             if($remediatedSubnet.NetworkSecurityGroup -ne $null)
                             {
+                                $subnet.IsNSGConfigured = $true
                                 $SubnetRemediated += $subnet
                                 $logResource = @{}	
                                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
@@ -696,6 +697,7 @@ function Remove-NSGConfigurationOnSubnet
             
             if($remediatedSubnet.NetworkSecurityGroup -eq $null)
             {
+                $Subnet.IsNSGConfigured = $false
                 $SubnetRolledBack += $Subnet
             }
             else

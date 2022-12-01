@@ -422,6 +422,7 @@ function Enable-DDoSProtectionPlanOnVirtualNetwork
                    
                     if($vnet.EnableDdosProtection -eq $true)
                     {
+                        $VirtualNetwork.IsDDOSEnabled = $true
                         $VirtualNetworkRemediated += $VirtualNetwork
                         $logResource = @{}	
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
@@ -690,6 +691,7 @@ function Disable-DDoSProtectionPlanOnVirtualNetwork
             
             if($vnet.EnableDdosProtection -eq $false)
             {
+                $VirtualNetwork.IsDDOSEnabled = $false
                 $VirtualNetworkRolledBack += $VirtualNetwork
             }
             else
