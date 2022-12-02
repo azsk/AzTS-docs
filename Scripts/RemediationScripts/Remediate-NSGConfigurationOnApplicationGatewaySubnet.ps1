@@ -216,14 +216,12 @@ function Add-NSGConfigurationOnSubnet
       $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
 
-    if(-not($AutoRemediation))	
-    {
-        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-        Write-Host "Account Name: [$($context.Account.Id)]"
-        Write-Host "Account Type: [$($context.Account.Type)]"
-        Write-Host $([Constants]::SingleDashLine)
-    }
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
+    Write-Host $([Constants]::SingleDashLine)
+    
     Write-Host " To configure the NSG on the Subnet of Application Gateway in a Subscription, Contributor or higher privileged role assignment on the Virtual Network(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)  
 
@@ -420,12 +418,11 @@ function Add-NSGConfigurationOnSubnet
                     @{Expression={$_.ResourceVirtualNetworkRGName};Label="ResourceVirtualNetworkRGName";Width=100;Alignment="left"}
                     @{Expression={$_.IsNSGConfigured};Label="IsNSGConfigured";Width=100;Alignment="left"}
 
-      if(-not $AutoRemediation)
-      {
-        Write-Host "Subnet(s) without NSG configuration are as follows:"
-        $SubnetWithoutNSGConfigured | Format-Table -Property $colsProperty -Wrap
-        Write-Host $([Constants]::SingleDashLine)
-      }    
+     
+    Write-Host "Subnet(s) without NSG configuration are as follows:"
+    $SubnetWithoutNSGConfigured | Format-Table -Property $colsProperty -Wrap
+    Write-Host $([Constants]::SingleDashLine)
+          
     
 
     # Back up snapshots to `%LocalApplicationData%'.
