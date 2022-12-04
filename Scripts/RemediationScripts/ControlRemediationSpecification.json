@@ -157,6 +157,18 @@
                   "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
                   "Arguments":["SubscriptionId"]
              }
+        },
+        {
+            "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",
+            "LoadCommand": "Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",     
+            "InitCommand": "Set-SSLForDBForMySQLFlexibleServer",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer",
+                    "Arguments":["SubscriptionId"]
+                }
         }
     ]
 }
