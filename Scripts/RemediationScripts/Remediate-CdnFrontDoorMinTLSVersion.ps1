@@ -6,7 +6,7 @@
     Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
 
 # Display Name:
-    [Trial] Front Door should have Approved Minimum TLS version.
+    [Trial] Front Door should have approved minimum TLS version.
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Doors in a Subscription.
@@ -268,9 +268,9 @@ function Set-FrontDoorRequiredTLSVersion
     {
         if(-not (Test-Path -Path $Path))
         {
-        Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::SingleDashLine)
-        return
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
         }
         Write-Host "Fetching all Front Doors failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
@@ -288,20 +288,20 @@ function Set-FrontDoorRequiredTLSVersion
         $validResources | ForEach-Object { 
             try
             {
-            $name = $_.ResourceName
-            $resFrontDoor = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
-            $FrontDoorResources = $FrontDoorResources + $resFrontDoor
+                $name = $_.ResourceName
+                $resFrontDoor = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
+                $FrontDoorResources = $FrontDoorResources + $resFrontDoor
             }
             catch
             {
-            Write-Host "Valid resource(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
-            $logResource = @{}
-            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-            $logResource.Add("ResourceName",($_.ResourceName))
-            $logResource.Add("Reason","Valid resource(s) not found in input json file.")    
-            $logSkippedResources += $logResource
-            Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Valid resource(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
     }
@@ -405,8 +405,8 @@ function Set-FrontDoorRequiredTLSVersion
                 
                 if($FrontDoorEndpoint)
                 {
-                Write-Host "Front Door Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
+                    Write-Host "Front Door Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
 
                 if($null -ne $FrontDoorEndpoint)
@@ -512,8 +512,6 @@ function Set-FrontDoorRequiredTLSVersion
                                                                                                 @{N='CertificateType';E={$frontDoorsEndpointWithoutReqMinTLSVersion.CertificateType}},
                                                                                                 @{N='MinimumTlsVersion';E={$frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion}},
                                                                                                 @{N='isMinTLSVersionSetOnCustomDomain';E={$frontDoorsEndpointWithoutReqMinTLSVersion.isMinTLSVersionSetOnCustomDomain}}
-     
-                                                                                
             }
         }
     
@@ -528,7 +526,8 @@ function Set-FrontDoorRequiredTLSVersion
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
             $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
             foreach($logControl in $log.ControlList){
-                if($logControl.ControlId -eq $controlIds){
+                if($logControl.ControlId -eq $controlIds)
+                {
                     $logControl.RemediatedResources=$logRemediatedResources
                     $logControl.SkippedResources=$logSkippedResources
                 }
@@ -974,9 +973,10 @@ function Reset-FrontDoorRequiredTLSVersion
                     $updateTlsSetting = New-AzFrontDoorCdnCustomDomainTlsSettingParametersObject -CertificateType $CertificateType -MinimumTlsVersion $requiredMinTLSVersion -Secret $secretResoure
                     $resource = Update-AzFrontDoorCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $resourceName -CustomDomainName $DomainName -TlsSetting $updateTlsSetting
                     
-                    if($null -ne $resource -and $updateTlsSetting.MinimumTlsVersion -eq 'TLS10' ){
-                       $frontdoor.isMinTLSVersionRolledBackCustomDomainPostRemediation = $true
-                       $frontdoor.isMinTlsVersionSetOnCustomDomain = $false
+                    if($null -ne $resource -and $updateTlsSetting.MinimumTlsVersion -eq 'TLS10' )
+                    {
+                        $frontdoor.isMinTLSVersionRolledBackCustomDomainPostRemediation = $true
+                        $frontdoor.isMinTlsVersionSetOnCustomDomain = $false
                         $frontdoor.minimumTlsVersion = $requiredMinTLSVersion
                         $frontDoorsRolledBack += $frontdoor
                         Write-Host "Minimum required TLS version for Front Door has been Rolled back successfully for FrontDoor" ($resourceName) "with Domain" ($DomainName) -ForegroundColor $([Constants]::MessageType.Update)
@@ -1008,9 +1008,7 @@ function Reset-FrontDoorRequiredTLSVersion
                     Write-Host "Error while resetting the minimum required TLS version on the custom domain of Front Door." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
                     return
-                }
-                
-            
+                }   
         }
 
             Write-Host "Successfully rolled back changes on the Front Door." -ForegroundColor $([Constants]::MessageType.Update)
@@ -1032,8 +1030,6 @@ function Reset-FrontDoorRequiredTLSVersion
                         @{Expression={$_.isMinTlsVersionSetOnCustomDomain};Label="Is minimum required TLS version set on custom domain?";Width=20;Alignment="left"},
                         @{Expression={$_.isMinTLSVersionRolledBackCustomDomainPostRemediation};Label="Is minimum required TLS version reset on the custom domain - Post Roll back?";Width=20;Alignment="left"}
                         
-
-
     if ($($frontDoorsRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsSkipped | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)

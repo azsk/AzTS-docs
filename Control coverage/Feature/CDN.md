@@ -79,7 +79,8 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 > **Passed:** 
 >- For all custom domain, the Minimun TLS Version is set to TLS 1.2 or greater than that.
-> 
+>- If there is no custom domain attached to the front door.
+>
 > **Failed:** 
 >- Custom domain Minimum TLS Version is less than TLS 1.2 for any domain. 
 >
@@ -104,10 +105,13 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API used to list existing CDN Domain endpoints at subscription level: <br />
-/subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Cdn/profiles/{FrontDoorName}/customDomains?api-version=2021-06-01<br />
->
->
-**Properties:** 
-properties.tlsSettings.minimumTlsVersion, properties.tlsSettings.certificateType
+ /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Cdn/profiles/{FrontDoorName}/customDomains?api-version=2021-06-01<br />
+ **Properties:**  properties.tlsSettings.minimumTlsVersion, 
+ properties.tlsSettings.profileName
+
+- ARM API to get configuration of a particular custom domain: <br />
+/subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Cdn/profiles/{FrontDoorName}/customDomains/{CustomDomainName}?api-version=2021-06-01"<br />
+**Properties:**  properties.certificateType
  <br />
 
+<br />
