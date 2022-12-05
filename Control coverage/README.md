@@ -100,4 +100,5 @@ Following controls in AzTS are currently externally scanned:
 6. Check the list of unhealthy resources to see if your resource is present in that list or not.
 7. If your resource(s) is not present in unhealthy resources list, run the scan from AzTS UI and check the status of your resource(s).
 7. If your resource(s) is present in unhealthy resources list and 'Fix' button is available in the bottom, select the resource(s) that you need to remediate and click on 'Fix' button.
-8. If your resource(s) is present in unhealthy resources list and 'Fix' button is not available in the bottom, you have to wait till it the MDC evaluation is refreshed. You can find the refresh interval at the top. Once your resource(s) appear under healthy resources list, run the scan from AzTS UI to check the status of your resource(s).
+8. If your resource(s) is present in unhealthy resources list and 'Fix' button is not available in the bottom, you have to wait till it the MDC evaluation is refreshed. You can find the refresh interval at the top. 
+10. Once your resource(s) appear under healthy resources list, run the scan from AzTS UI to check the status of your resource(s).
