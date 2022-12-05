@@ -92,13 +92,13 @@ Following controls in AzTS are currently externally scanned:
 
 **NOTE:** *Kindly make sure that the resource(s) is(are) already fixed. The controls which depends on MDC assessment could be found [here](#list-of-controls-that-depends-on-microsoft-defender-for-cloud-mdc-in-azure-tenant-security-azts).* 
 
-1. Go to Azure Portal.
-2. Search for Microsoft Defender for Cloud and open that.
-3. Click on Recommendation under the General tab, in the left side panel.
-4. Click on the Secure Score Recommendations
-5. Search for the related MDC control and open it.
-6. Check the list of unhealthy resources to see if your resource is present in that list or not.
+1. Go to **Azure Portal**.
+2. Search for **Microsoft Defender for Cloud** and **open** that.
+3. Click on **Recommendation under the General tab**, in the left side panel.
+4. Click on the **Secure Score Recommendations**.
+5. Search for the related recommendations and open it.
+6. Check the list of **unhealthy resources** to see if your resource is present in that list or not.
 7. If your resource(s) is not present in unhealthy resources list, run the scan from AzTS UI and check the status of your resource(s).
 7. If your resource(s) is present in unhealthy resources list and 'Fix' button is available in the bottom, select the resource(s) that you need to remediate and click on 'Fix' button.
-8. If your resource(s) is present in unhealthy resources list and 'Fix' button is not available in the bottom, you have to wait till it the MDC evaluation is refreshed. You can find the refresh interval at the top. 
+8. If your resource(s) is present in unhealthy resources list and 'Fix' button is not available in the bottom, you have to wait till the MDC evaluation is refreshed. You can find the **refresh interval** at the top. 
 10. Once your resource(s) appear under healthy resources list, run the scan from AzTS UI to check the status of your resource(s).
