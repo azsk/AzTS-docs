@@ -90,7 +90,7 @@ Following controls in AzTS are currently externally scanned:
 
 **Even after remediating my resource, it is still showing as failing against controls in AzTS UI. The controls depends on MDC Assessment. What should I do?**
 
-**NOTE:** *Kindly make sure that the resource is already fixed. The controls which depends on MDC assessment could be found [here](#list-of-controls-that-depends-on-microsoft-defender-for-cloud-mdc-in-azure-tenant-security-azts).* 
+**NOTE:** *Kindly make sure that the resource(s) is(are) already fixed. The controls which depends on MDC assessment could be found [here](#list-of-controls-that-depends-on-microsoft-defender-for-cloud-mdc-in-azure-tenant-security-azts).* 
 
 1. Go to Azure Portal.
 2. Search for Microsoft Defender for Cloud and open that.
