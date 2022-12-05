@@ -382,7 +382,7 @@ function Set-FrontDoorRequiredTLSVersion
     $frontDoorWithoutReqMinTLSVersion = @()
     $ResourceAppIdURI = "https://management.azure.com/"
     $customDomainResponse =@()
-    $ClassicAccessToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
+    $AccessMgtToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
 
 
     
@@ -418,9 +418,9 @@ function Set-FrontDoorRequiredTLSVersion
                     $TypeOfCertificate= @()
                     $MinTLSVersion = @()
                     
-                    if($null -ne $ClassicAccessToken)
+                    if($null -ne $AccessMgtToken)
                     {
-                        $header = "Bearer " + $ClassicAccessToken
+                        $header = "Bearer " + $AccessMgtToken
                         $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
                         $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/customDomains/{4}?api-version=2021-06-01",$ResourceAppIdURI,$SubscriptionId,$domainResourceGroupName,$resourceName,$domainName)
                         $customDomainResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
