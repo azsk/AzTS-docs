@@ -304,7 +304,7 @@ function Configure-WAFPolicyForFrontDoorCDN
                         if($null -ne $apiResponse.Content)
                         {
                             $content = $apiResponse.Content | ConvertFrom-Json 
-                            $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
+                            
                             $value = $content.value
                             $totalValues = ($value | Measure-Object).Count
                             for($i=0; $i -lt $totalValues; $i++)
@@ -439,7 +439,7 @@ function Configure-WAFPolicyForFrontDoorCDN
                         if($null -ne $apiResponse.Content)
                         {
                             $content = $apiResponse.Content | ConvertFrom-Json 
-                            $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
+                            
                             $value = $content.value
                             $totalValues = ($value | Measure-Object).Count
                             for($i=0; $i -lt $totalValues; $i++)
@@ -566,7 +566,7 @@ function Configure-WAFPolicyForFrontDoorCDN
                         if($null -ne $apiResponse.Content)
                         {
                             $content = $apiResponse.Content | ConvertFrom-Json 
-                            $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
+                            
                             $value = $content.value
                             $totalValues = ($value | Measure-Object).Count
                             for($i=0; $i -lt $totalValues; $i++)
@@ -713,7 +713,7 @@ function Configure-WAFPolicyForFrontDoorCDN
      
     
   
-    Write-Host "[Step 3 of 5] Fetching Endpoint(s)"
+    Write-Host "[Step 3 of 5] Fetching Endpoint(s) for which WAF Policy is not configured"
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Separating Front Door CDN Endpoint(s) for which WAF Policy is not configured..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
@@ -723,13 +723,23 @@ function Configure-WAFPolicyForFrontDoorCDN
             {
                 $frontDoorEndpointsWithWAFPolicyNotConfigured += $endPoint
             }
+            else
+            {
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.FrontDoorName))
+                $logResource.Add("EndPointName",($_.EndPointName))
+                $logResource.Add("Reason","WAF Policy already Configured on endpoint")    
+                $logSkippedResources += $logResource
+
+            }
     }
 
     $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = ($frontDoorEndpointsWithWAFPolicyNotConfigured | Measure-Object).Count
      
     if ($totalfrontDoorEndpointsWithWAFPolicyNotConfigured  -eq 0)
     {
-        Write-Host "No Front Door CDN endpoints(s) found where WAF Policy is not configured.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No Front Door CDN endpoints(s) found where WAF Policy is not configured. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         if($AutoRemediation -and ($frontDoorFrontendPoints |Measure-Object).Count -gt 0) 
@@ -1160,7 +1170,7 @@ function Remove-WAFPolicyForFrontDoorCDN
                     if($null -ne $apiResponse.Content)
                     {
                         $content = $apiResponse.Content | ConvertFrom-Json 
-                        $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
+                        
                         $value = $content.value
                         $totalValues = ($value | Measure-Object).Count
                         for($i=0; $i -lt $totalValues; $i++)

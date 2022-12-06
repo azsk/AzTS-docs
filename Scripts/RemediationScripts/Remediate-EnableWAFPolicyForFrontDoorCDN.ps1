@@ -246,9 +246,9 @@ function Enable-WAFPolicyForFrontDoorCDN
     }
 
     Write-Host "To enable WAF Policy for Front Door CDN Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Door CDNs are required." -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 5] Preparing to fetch all Front Door CDNs..."
-     
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "[Step 2 of 5] Preparing to fetch all Front Door CDNs"
+    Write-Host $([Constants]::SingleDashLine)
     $frontDoorCDNs = @()
     $frontDoorEndPoints = @()
     $resourceAppIdURI = "https://management.azure.com/"
@@ -263,8 +263,8 @@ function Enable-WAFPolicyForFrontDoorCDN
      # Control Id
      $controlIds = "Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial"
  
-     if($AutoRemediation)
-     {
+    if($AutoRemediation)
+    {
          if(-not (Test-Path -Path $Path))
          {
              Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
@@ -303,7 +303,6 @@ function Enable-WAFPolicyForFrontDoorCDN
                          if($null -ne $apiResponse.Content)
                          {
                              $content = $apiResponse.Content | ConvertFrom-Json 
-                             $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
                              $value = $content.value
                              $totalValues = ($value | Measure-Object).Count
                              for($i=0; $i -lt $totalValues; $i++)
@@ -412,7 +411,7 @@ function Enable-WAFPolicyForFrontDoorCDN
         # No file path provided as input to the script. Fetch all Front Door CDNs in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
-            Write-Host "Fetching all Front Door CDNs in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Front Door CDNs in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
         
             # Get all Front Door CDNs in the Subscription
             $frontDoorCDNs = Get-AzFrontDoorCdnProfile -ErrorAction Stop
@@ -438,7 +437,6 @@ function Enable-WAFPolicyForFrontDoorCDN
                         if($null -ne $apiResponse.Content)
                         {
                             $content = $apiResponse.Content | ConvertFrom-Json 
-                            $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
                             $value = $content.value
                             $totalValues = ($value | Measure-Object).Count
                             for($i=0; $i -lt $totalValues; $i++)
@@ -537,11 +535,11 @@ function Enable-WAFPolicyForFrontDoorCDN
         {
             if (-not (Test-Path -Path $FilePath))
             {
-                Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
                 break
             }
 
-            Write-Host "Fetching all Front Door CDN Endpoint(s) from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Front Door CDN Endpoint(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
 
             $frontDoorEndpointsDetails = Import-Csv -LiteralPath $FilePath
             $validfrontDoorEndpointsDetails = $frontDoorEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
@@ -564,7 +562,6 @@ function Enable-WAFPolicyForFrontDoorCDN
                         if($null -ne $apiResponse.Content)
                         {
                             $content = $apiResponse.Content | ConvertFrom-Json 
-                            $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
                             $value = $content.value
                             $totalValues = ($value | Measure-Object).Count
                             for($i=0; $i -lt $totalValues; $i++)
@@ -667,7 +664,7 @@ function Enable-WAFPolicyForFrontDoorCDN
                 }
                 catch
                 {
-                    Write-Host "Error fetching Front Door CDN Endpoint:  ID - $($frontdoorEndpointId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error fetching Front Door CDN Endpoint:  ID - [$($frontdoorEndpointId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this Front Door CDN Endpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
@@ -699,7 +696,7 @@ function Enable-WAFPolicyForFrontDoorCDN
         break
     }
     
-    Write-Host "Found $($totalfrontDoorEndPoints) Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalfrontDoorEndPoints)] Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
 
 
     # Includes Front Door CDN Endpoint(s) where WAF Policy is in not Enabled
@@ -708,15 +705,26 @@ function Enable-WAFPolicyForFrontDoorCDN
     # Includes Front Door CDN Endpoint(s) that were skipped during remediation. There were errors remediating them.
     $frontDoorEndpointsSkipped = @()
      
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 5] Fetching Endpoint(s)..."
-    Write-Host "Separating Front Door CDN Endpoint(s) for which WAF Policy is not Enabled..." -ForegroundColor $([Constants]::MessageType.Info)
-
+ 
+    Write-Host "[Step 3 of 5] Fetching Endpoint(s) for which WAF Policy is not enabled"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Separating Front Door CDN Endpoint(s) for which WAF Policy is not enabled..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
     $frontDoorEndPoints | ForEach-Object {
         $endPoint = $_        
             if(($_.IsWAFEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
             {
                 $frontDoorEndpointsWithWAFPolicyNotEnabled += $endPoint
+            }
+            else
+            {
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.FrontDoorName))
+                $logResource.Add("EndPointName",($_.EndPointName))
+                $logResource.Add("Reason","WAF Policy already enabled on endpoint")    
+                $logSkippedResources += $logResource
+
             }
     }
 
@@ -768,8 +776,9 @@ function Enable-WAFPolicyForFrontDoorCDN
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 4 of 5] Backing up Front Door CDN Endpoint(s) details..."
+    
+    Write-Host "[Step 4 of 5] Backing up Front Door CDN Endpoint(s) details"
+    Write-Host $([Constants]::SingleDashLine)
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {        
     
@@ -797,8 +806,13 @@ function Enable-WAFPolicyForFrontDoorCDN
 
                 if($userInput -ne "Y")
                 {
-                    Write-Host " WAF Policy will not be Enabled for any Front Door CDN Endpoint(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host " WAF Policy will not be enabled for any Front Door CDN Endpoint(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                     break
+                }
+                else
+                {
+                    Write-Host "WAF Policy will be enabled for all Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
             }
             else
@@ -807,8 +821,9 @@ function Enable-WAFPolicyForFrontDoorCDN
             }
         }
 
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 5 of 5] Enabling WAF Policy for Front Door CDN Endpoint(s)..."
+        
+        Write-Host "[Step 5 of 5] Enabling WAF Policy for Front Door CDN Endpoint(s)"
+        Write-Host $([Constants]::SingleDashLine)
 
         # To hold results from the remediation.
         $frontDoorEndpointsRemediated = @()
@@ -849,11 +864,11 @@ function Enable-WAFPolicyForFrontDoorCDN
 
         if ($totalRemediated -eq $totalfrontDoorEndpointsWithWAFPolicyNotEnabled)
         {
-            Write-Host "WAF Policy Enabled for all $($totalfrontDoorEndpointsWithWAFPolicyNotEnabled) Front Door CDN Endpoint(s) ." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "WAF Policy Enabled for all [$($totalfrontDoorEndpointsWithWAFPolicyNotEnabled)] Front Door CDN Endpoint(s) ." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "WAF Policy Enabled for $totalRemediated out of $($totalfrontDoorEndpointsWithWAFPolicyNotEnabled) Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "WAF Policy Enabled for [$totalRemediated] out of [$($totalfrontDoorEndpointsWithWAFPolicyNotEnabled)] Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         $colsProperty = @{Expression={$_.EndpointId};Label="Endpoint Id";Width=10;Alignment="left"},
@@ -867,8 +882,9 @@ function Enable-WAFPolicyForFrontDoorCDN
                         @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
                        
                       
-        Write-Host $([Constants]::DoubleDashLine)
+       
         Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         
         if($AutoRemediation)
         {
@@ -894,12 +910,13 @@ function Enable-WAFPolicyForFrontDoorCDN
         { 
             if ($($frontDoorEndpointsRemediated | Measure-Object).Count -gt 0)
             {
+                Write-Host "Successfully enabled WAF Policy on the following Frontdoor CDN Endpoint(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 $frontDoorEndpointsRemediated | Format-Table -Property $colsProperty -Wrap
 
                 # Write this to a file.
                 $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorCDNEndpointsForEnabledState.csv"
                 $frontDoorEndpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to $($frontDoorEndpointsRemediatedFile)"
+                Write-Host "This information has been saved to [$($frontDoorEndpointsRemediatedFile)]"
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
             }
 
@@ -911,19 +928,33 @@ function Enable-WAFPolicyForFrontDoorCDN
                 # Write this to a file.
                 $endpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorCDNEndpointsForEnabledState.csv"
                 $endpointsSkipped | Export-CSV -Path $endpointsSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to $($endpointsSkippedFile)"
+                Write-Host "This information has been saved to [$($endpointsSkippedFile)]"
             }
+        }
+
+        if($AutoRemediation)
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                    $logControl.RollbackFile = $frontDoorEndpointsRemediatedFile
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
     }
     else
     {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 5 of 5] Enabling WAF Policy for Endpoint(s)..."
+        
+        Write-Host "[Step 5 of 5] Enabling WAF Policy for Endpoint(s)"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
-        Write-Host "**Next steps:**" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to Enable WAF Policy for all Front Door CDN Endpoint(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
     }   
 }
@@ -1033,20 +1064,19 @@ function Disable-WAFPolicyForFrontDoorCDN
 
     # Note about the required access required for remediation
 
-    Write-Host "*** To Disable WAF Policy for all Front Door CDN Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Door CDNs are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all Front Door CDN  Endpoints..."
+    Write-Host "To Disable WAF Policy for all Front Door CDN Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Door CDNs are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "[Step 2 of 4] Preparing to fetch all Front Door CDN Endpoints"
+    Write-Host $([Constants]::SingleDashLine)
     
     if (-not (Test-Path -Path $FilePath))
     {
-        Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
-    Write-Host "Fetching all Front Door CDN  Endpoints from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
-            Write-Host "Fetching all Front Door CDN  Endpoint(s) from $($FilePath)" -ForegroundColor $([Constants]::MessageType.Info)
-
+    Write-Host "Fetching all Front Door CDN Endpoints from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+ 
         $frontDoorEndpointsDetails = Import-Csv -LiteralPath $FilePath
         $validfrontDoorEndpointsDetails = $frontDoorEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
         
@@ -1069,7 +1099,6 @@ function Disable-WAFPolicyForFrontDoorCDN
                     if($null -ne $apiResponse.Content)
                     {
                         $content = $apiResponse.Content | ConvertFrom-Json 
-                        $apiResponse.Content | out-file -filepath C:\temp\scripts\pshell\dump.txt -append -width 200
                         $value = $content.value
                         $totalValues = ($value | Measure-Object).Count
                         for($i=0; $i -lt $totalValues; $i++)
@@ -1176,20 +1205,22 @@ function Disable-WAFPolicyForFrontDoorCDN
             }
             catch
             {
-                Write-Host "Error fetching Front Door CDN  Endpoint:  ID - $($frontdoorEndpointId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this Front Door CDN  Endpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Error fetching Front Door CDN Endpoint: ID - [$($frontdoorEndpointId)]... Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this Front Door CDN Endpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
 
 
         
-    # Includes Front Door CDN  Endpoint(s) where WAF Policy is in Enabled
+    # Includes Front Door CDN Endpoint(s) where WAF Policy is in Enabled
     $frontDoorEndpointsWithWAFPolicyEnabled = @()
 
     
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Fetching Endpoint(s)..."
-    Write-Host "Separating Front Door CDN Endpoint(s) for which WAF Policy is Enabled..." -ForegroundColor $([Constants]::MessageType.Info)
+    
+    Write-Host "[Step 3 of 4] Fetching Endpoint(s) for which WAF Policy is enabled"
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Separating Front Door CDN Endpoint(s) for which WAF Policy is enabled..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     $frontDoorEndPoints | ForEach-Object {
         $endPoint = $_        
@@ -1238,8 +1269,9 @@ function Disable-WAFPolicyForFrontDoorCDN
     }
 
     
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4] Disabling WAF Policy for Front Door CDNs Endpoint(s) ..."
+    
+    Write-Host "[Step 4 of 4] Disabling WAF Policy for Front Door CDNs Endpoint(s)"
+    Write-Host $([Constants]::SingleDashLine)
 
     # Includes Front Door CDN s, to which, previously made changes were successfully rolled back.
     $frontDoorEndpointsRolledBack = @()
@@ -1282,14 +1314,15 @@ function Disable-WAFPolicyForFrontDoorCDN
 
         if ($totalfrontDoorEndpointsRolledBack -eq $totalfrontDoorEndpointsWithWAFPolicyEnabled)
         {
-            Write-Host "WAF Policy Disabled for all $($totalfrontDoorEndpointsWithWAFPolicyEnabled) Front Door CDN Endpoint(s) ." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "WAF Policy Disabled for all [$($totalfrontDoorEndpointsWithWAFPolicyEnabled)] Front Door CDN Endpoint(s) ." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "WAF Policy disabled for $totalfrontDoorEndpointsRolledBack out of $($totalfrontDoorEndpointsWithWAFPolicyEnabled) Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "WAF Policy disabled for [$totalfrontDoorEndpointsRolledBack] out of [$($totalfrontDoorEndpointsWithWAFPolicyEnabled)] Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
         }
-        Write-Host $([Constants]::DoubleDashLine)
+       
         Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+         Write-Host $([Constants]::SingleDashLine)
         
         $colsProperty = @{Expression={$_.EndpointId};Label="Endpoint Id";Width=10;Alignment="left"},
                         @{Expression={$_.EndPointName};Label="Endpoint";Width=10;Alignment="left"},
@@ -1304,6 +1337,7 @@ function Disable-WAFPolicyForFrontDoorCDN
 
         if ($($frontDoorEndpointsRolledBack | Measure-Object).Count -gt 0)
         {
+            Write-Host "Successfully disabled WAF Policy on the following Frontdoor CDN Endpoint(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
             $frontDoorEndpointsRolledBack | Format-Table -Property $colsProperty -Wrap
 
             # Write this to a file.
