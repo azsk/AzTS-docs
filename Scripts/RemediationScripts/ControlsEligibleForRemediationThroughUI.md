@@ -29,6 +29,8 @@
 
 14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
 
+15. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+
 <br />
 ___
 
@@ -211,5 +213,18 @@ Use Approved TLS Version in SQL Server
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+___
+
+## 15. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Owner or higher priviliged role on the Storage Account(s)
 
 ___

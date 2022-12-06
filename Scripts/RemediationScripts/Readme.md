@@ -38,6 +38,9 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
 27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
 
+
+28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+
 <br />
 
 ___ 
@@ -567,6 +570,44 @@ Use Approved TLS Version in SQL Server
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetSQLServerMinReqTLSVersion](Remediate-SetSQLServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetStorageAccountMinReqTLSVersion](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
