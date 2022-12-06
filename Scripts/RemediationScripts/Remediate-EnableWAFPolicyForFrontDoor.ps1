@@ -1026,7 +1026,7 @@ function Disable-WAFPolicyStateForFrontDoor
 
     # Note about the required access required for remediation
 
-    Write-Host "To set WAF Policy State to disabled for all Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required. ***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To set WAF Policy State to disabled for all Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Front Door Endpoints"
     Write-Host $([Constants]::SingleDashLine)
