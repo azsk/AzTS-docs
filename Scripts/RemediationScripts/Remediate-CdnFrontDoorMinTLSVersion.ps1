@@ -383,94 +383,90 @@ function Set-FrontDoorRequiredTLSVersion
     $ResourceAppIdURI = "https://management.azure.com/"
     $customDomainResponse =@()
     $AccessMgtToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
-
-
     
-
     Write-Host "[Step 3 of 4] Fetch all Front Door configurations"
     Write-Host $([Constants]::SingleDashLine)
 
-    $FrontDoorResources | ForEach-Object {
-            $frontDoorResource = $_
-            $resourceGroupName = $_.ResourceGroupName
-            $resourceName = $_.Name
-            $frontDoorEp = [FrontendEndPointsClass]:: new()
-            
-            try
-            {
-                Write-Host "Fetching Front Door Endpoint configuration: Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::SingleDashLine)
-                
-                $FrontDoorEndpoint = Get-AzFrontDoorCdnCustomDomain -ProfileName $resourceName -ResourceGroupName $resourceGroupName
-                
-                if($FrontDoorEndpoint)
+        $FrontDoorResources | ForEach-Object {
+                $frontDoorResource = $_
+                $resourceGroupName = $_.ResourceGroupName
+                $resourceName = $_.Name
+                $frontDoorEp = [FrontendEndPointsClass]:: new()
+                try
                 {
-                    Write-Host "Front Door Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Fetching Front Door Endpoint configuration: Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
-                }
-
-                if($null -ne $FrontDoorEndpoint)
-                {
-                foreach ($item in $FrontDoorEndpoint) 
-                {
-                    $domainName = $item.Name
-                    $domainResourceGroupName = $item.ResourceGroupName
-                    $TypeOfCertificate= @()
-                    $MinTLSVersion = @()
-                    
-                    if($null -ne $AccessMgtToken)
+                
+                    $FrontDoorEndpoint = Get-AzFrontDoorCdnCustomDomain -ProfileName $resourceName -ResourceGroupName $resourceGroupName
+                
+                    if($FrontDoorEndpoint)
                     {
-                        $header = "Bearer " + $AccessMgtToken
-                        $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
-                        $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/customDomains/{4}?api-version=2021-06-01",$ResourceAppIdURI,$SubscriptionId,$domainResourceGroupName,$resourceName,$domainName)
-                        $customDomainResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
-                    
-                        if($customDomainResponse.StatusCode -ge 200 -and $customDomainResponse.StatusCode -le 399)
-                        {
-                            if($null -ne $customDomainResponse.Content)
-                            {
-                                $custom = $customDomainResponse.Content | ConvertFrom-Json  
-                                if($null -ne $custom)
-                                {
-                                    $TypeOfCertificate = $custom.properties.tlsSettings.certificateType
-                                    $MinTLSVersion = $custom.properties.tlsSettings.minimumTlsVersion
-                                }
-                            }
-                        }        
-                    }
-                    if($null -ne $MinTLSVersion)
-                    {
-                        if($MinTLSVersion -ne $requiredMinTLSVersion)
-                        {
-                            $frontDoorEp.DomainName = $domainName
-                            $frontDoorEp.FrontDoorName = $resourceName
-                            $frontDoorEp.MinTLSVersion = $MinTLSVersion
-                            $frontDoorEp.ResourceGroup = $resourceGroupName
-                            $frontDoorEp.TypeOfCertificate = $TypeOfCertificate
-                            $frontDoorEp.isMinTLSVersionSetOnCustomDomain = $false
-                        }
-                        else
-                        {
-                            $frontDoorsEndpointWithtReqMinTLSVersion = $item
-                        }
-                    }
-                    if($null -ne $frontDoorEp)
-                    {
-                       $frontDoorsEndpointWithoutReqMinTLSVersion =  $frontDoorEp | Select-Object @{N='ResourceGroupName';E={$frontDoorEp.ResourceGroup}},
-                                                                                    @{N='ResourceName';E={$frontDoorEp.FrontDoorName}},
-                                                                                    @{N='DomainName';E={$frontDoorEp.DomainName}},
-                                                                                    @{N='CertificateType';E={$frontDoorEp.TypeOfCertificate}},
-                                                                                    @{N='MinimumTlsVersion';E={$frontDoorEp.MinTLSVersion}},
-                                                                                    @{N='isMinTLSVersionSetOnCustomDomain';E={$frontDoorEp.isMinTLSVersionSetOnCustomDomain}}
-                    }
-                    
-                    else
-                    {
-                        Write-Host "Skipping this Front End Point..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Front Door Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
+
+                    if($null -ne $FrontDoorEndpoint)
+                    {
+                        foreach ($item in $FrontDoorEndpoint) 
+                        {
+                            $domainName = $item.Name
+                            $domainResourceGroupName = $item.ResourceGroupName
+                            $TypeOfCertificate= @()
+                            $MinTLSVersion = @()
+                    
+                            if($null -ne $AccessMgtToken)
+                            {
+                                $header = "Bearer " + $AccessMgtToken
+                                $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
+                                $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/customDomains/{4}?api-version=2021-06-01",$ResourceAppIdURI,$SubscriptionId,$domainResourceGroupName,$resourceName,$domainName)
+                                $customDomainResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
+                    
+                                if($customDomainResponse.StatusCode -ge 200 -and $customDomainResponse.StatusCode -le 399)
+                                {
+                                    if($null -ne $customDomainResponse.Content)
+                                    {
+                                        $custom = $customDomainResponse.Content | ConvertFrom-Json  
+                                        if($null -ne $custom)
+                                        {
+                                            $TypeOfCertificate = $custom.properties.tlsSettings.certificateType
+                                            $MinTLSVersion = $custom.properties.tlsSettings.minimumTlsVersion
+                                        }
+                                    }
+                                }        
+                            }
+                            if($null -ne $MinTLSVersion)
+                            {
+                                if($MinTLSVersion -ne $requiredMinTLSVersion)
+                                {
+                                    $frontDoorEp.DomainName = $domainName
+                                    $frontDoorEp.FrontDoorName = $resourceName
+                                    $frontDoorEp.MinTLSVersion = $MinTLSVersion
+                                    $frontDoorEp.ResourceGroup = $resourceGroupName
+                                    $frontDoorEp.TypeOfCertificate = $TypeOfCertificate
+                                    $frontDoorEp.isMinTLSVersionSetOnCustomDomain = $false
+                                    
+                                    if($null -ne $frontDoorEp)
+                                    {
+                                        $frontDoorsEndpointWithoutReqMinTLSVersion +=  $frontDoorEp | Select-Object @{N='ResourceGroupName';E={$frontDoorEp.ResourceGroup}},
+                                                                                        @{N='ResourceName';E={$frontDoorEp.FrontDoorName}},
+                                                                                        @{N='DomainName';E={$frontDoorEp.DomainName}},
+                                                                                        @{N='CertificateType';E={$frontDoorEp.TypeOfCertificate}},
+                                                                                        @{N='MinimumTlsVersion';E={$frontDoorEp.MinTLSVersion}},
+                                                                                        @{N='isMinTLSVersionSetOnCustomDomain';E={$frontDoorEp.isMinTLSVersionSetOnCustomDomain}}
+                                    }
+                                }
+                                else
+                                {
+                                    $frontDoorsEndpointWithtReqMinTLSVersion = $item
+                                }
+                            }
+                            else
+                            {
+                                Write-Host "Skipping this Front End Point..." -ForegroundColor $([Constants]::MessageType.Warning)
+                                Write-Host $([Constants]::SingleDashLine)
+                            }
+                        }
                 }
-              }
             }
             catch
             {
@@ -486,34 +482,34 @@ function Set-FrontDoorRequiredTLSVersion
         }
     
 
-   foreach($item in $frontDoorsEndpointWithoutReqMinTLSVersion){
-        if (-not $frontDoorsEndpointWithoutReqMinTLSVersion)
-            {
-                Write-Host "Minimum TLS Version is set on the custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host "Skipping this Front Door..." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","Minimum TLS Version is set on all the custom domains of front door.")    
-                $logSkippedResources += $logResource
-            }
-            else 
-            {
-                if (-not $frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion -ne $requiredMinTLSVersion)
-                {
-                    Write-Host "Minimum TLS Version is not set on the custom domain"  -ForegroundColor $([Constants]::MessageType.Warning)
-                    Write-Host $([Constants]::SingleDashLine)
-                }
-
-                $frontDoorWithoutReqMinTLSVersion = $frontDoorsEndpointWithoutReqMinTLSVersion | Select-Object @{N='ResourceGroupName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.ResourceGroupName}},
-                                                                                                @{N='ResourceName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.ResourceName}},
-                                                                                                @{N='DomainName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.DomainName}},
-                                                                                                @{N='CertificateType';E={$frontDoorsEndpointWithoutReqMinTLSVersion.CertificateType}},
-                                                                                                @{N='MinimumTlsVersion';E={$frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion}},
-                                                                                                @{N='isMinTLSVersionSetOnCustomDomain';E={$frontDoorsEndpointWithoutReqMinTLSVersion.isMinTLSVersionSetOnCustomDomain}}
-            }
+   foreach($item in $frontDoorsEndpointWithoutReqMinTLSVersion)
+   {
+        if ($frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion -eq $requiredMinTLSVersion)
+        {
+           Write-Host "Minimum TLS Version is set on the custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Update)
+           Write-Host "Skipping this Front Door..." -ForegroundColor $([Constants]::MessageType.Warning)
+           Write-Host $([Constants]::SingleDashLine)
+           $logResource = @{}
+           $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+           $logResource.Add("ResourceName",($_.ResourceName))
+           $logResource.Add("Reason","Minimum TLS Version is set on all the custom domains of front door.")    
+           $logSkippedResources += $logResource
         }
+        else 
+        {
+            if (-not $frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion -ne $requiredMinTLSVersion)
+            {
+                Write-Host "Minimum TLS Version is not set on the custom domain"  -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+            $frontDoorWithoutReqMinTLSVersion += $frontDoorsEndpointWithoutReqMinTLSVersion | Select-Object @{N='ResourceGroupName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.ResourceGroupName}},
+                                                                                            @{N='ResourceName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.ResourceName}},
+                                                                                            @{N='DomainName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.DomainName}},
+                                                                                            @{N='CertificateType';E={$frontDoorsEndpointWithoutReqMinTLSVersion.CertificateType}},
+                                                                                            @{N='MinimumTlsVersion';E={$frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion}},
+                                                                                            @{N='isMinTLSVersionSetOnCustomDomain';E={$frontDoorsEndpointWithoutReqMinTLSVersion.isMinTLSVersionSetOnCustomDomain}}
+        }
+    }
     
     $totalFrontDoorWithoutReqMinTLSVersion = ($frontDoorWithoutReqMinTLSVersion | Measure-Object).Count
 
@@ -558,7 +554,7 @@ function Set-FrontDoorRequiredTLSVersion
             Write-Host "Front Doors details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
-        Write-Host "Minimum required TLS Version will be set on all custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Minimum required TLS Version [" $($requiredMinTLSVersion) "] will be set on all custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
 
         # Here AutoRemediation switch is used as there is no need to take user input at BRS level if user has given consent to proceed with the remediation in AutoRemediation Script.
@@ -670,7 +666,6 @@ function Set-FrontDoorRequiredTLSVersion
             }
             else
             {
-                $frontDoorsSkipped += $frontdoor
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
