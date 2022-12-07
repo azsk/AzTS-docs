@@ -7,6 +7,7 @@
 - [Azure_KeyVault_AuthZ_Configure_Advanced_Access_Policies](#azure_keyvault_authz_configure_advanced_access_policies)
 - [Azure_KeyVault_SI_Enable_SoftDelete](#azure_keyvault_si_enable_softdelete)
 - [Azure_KeyVault_Audit_Enable_Diagnostics_Log](#azure_keyvault_audit_enable_diagnostics_log)
+- [Azure_KeyVault_NetSec_Disable_Public_Network_Access](#azure_keyvault_netsec_disable_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -53,7 +54,7 @@ Advanced access policy allows Azure services (Azure Resource Manager, Virtual Ma
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2019-09-01<br/>
+- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br/>
 **Properties:** 
 properties/enabledForDeployment<br/>
 properties/enabledForDiskEncryption<br/>
@@ -102,7 +103,7 @@ Enabling soft delete feature on Key Vault acts as a safety measure to recover in
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2019-09-01<br />
+- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
 **Properties:** properties.enableSoftDelete
  <br />
 
@@ -193,3 +194,44 @@ properties.eventHubName<br />
 
 ___ 
 
+## Azure_KeyVault_NetSec_Disable_Public_Network_Access
+
+### Display Name
+Key Vault must have public access disabled.
+
+### Rationale
+Key Vault firewall should be enabled so that the key vault is not accessible by default to any public IPs.
+
+### Control Spec
+
+> **Passed:**
+> Network ACLs default action set as deny.
+>
+> **Failed:**
+> Network ACLs default action not set or set as allow.
+>
+### Recommendation
+
+- **Azure Portal**
+	1. Go to [Azure Portal](https://portal.azure.com/) and locate your Key Vault resource.
+	2. Under **Settings**, find the **Networking** tab.
+	3. Under **Firewalls and virtual networks**, set '**Allow access from**' to either of the following:
+      	a. Allow public access from specific virtual networks and IP addresses. (Do not use "0.0.0.0/0" as the IP range as that allows traffic from any address.)
+		b. Disable public access.
+
+- **PowerShell**
+
+	```powershell
+	# Prerequisites: Appropriate context is set up using Connect-AzAccount and Set-AzContext.
+	Update-AzKeyVaultNetworkRuleSet -VaultName "<keyvault-name>" -IpAddressRange @('<ip-range-cidr-1>','<ip-range-cidr-2>') -DefaultAction Deny
+	```
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
+**Properties:** properties.publicNetworkAccess, properties.networkAcls
+ <br />
+
+<br />
+
+___
