@@ -216,7 +216,8 @@ Key Vault firewall should be enabled so that the key vault is not accessible by 
 	1. Go to [Azure Portal](https://portal.azure.com/) and locate your Key Vault resource.
 	2. Under **Settings**, find the **Networking** tab.
 	3. Under **Firewalls and virtual networks**, set '**Allow access from**' to either of the following:
-      	a. Allow public access from specific virtual networks and IP addresses. (Do not use "0.0.0.0/0" as the IP range as that allows traffic from any address.)
+
+		a. Allow public access from specific virtual networks and IP addresses. (Do not use "0.0.0.0/0" as the IP range as that allows traffic from any address.)
 		b. Disable public access.
 
 - **PowerShell**
