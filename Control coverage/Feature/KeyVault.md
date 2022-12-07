@@ -229,7 +229,9 @@ Key Vault firewall should be enabled so that the key vault is not accessible by 
 ### Azure Policy or ARM API used for evaluation
 
 - ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
-**Properties:** properties.publicNetworkAccess, properties.networkAcls
+**Properties:**
+properties.publicNetworkAccess<br />
+properties.networkAcls<br />
  <br />
 
 <br />
