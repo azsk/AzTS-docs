@@ -457,7 +457,7 @@ function Set-FrontDoorRequiredTLSVersion
                                 }
                                 else
                                 {
-                                    $frontDoorsEndpointWithtReqMinTLSVersion = $item
+                                    $frontDoorsEndpointWithtReqMinTLSVersion += $item
                                 }
                             }
                             else
@@ -484,7 +484,7 @@ function Set-FrontDoorRequiredTLSVersion
 
    foreach($item in $frontDoorsEndpointWithoutReqMinTLSVersion)
    {
-        if ($frontDoorsEndpointWithoutReqMinTLSVersion.MinimumTlsVersion -eq $requiredMinTLSVersion)
+        if ($item.MinimumTlsVersion -eq $requiredMinTLSVersion)
         {
            Write-Host "Minimum TLS Version is set on the custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Update)
            Write-Host "Skipping this Front Door..." -ForegroundColor $([Constants]::MessageType.Warning)
