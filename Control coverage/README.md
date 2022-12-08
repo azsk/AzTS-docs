@@ -64,7 +64,7 @@ Following controls in AzTS are currently externally scanned:
 
 | ControlId | DisplayName | Description | MDC Recommendation(s) |
 |-----------|-------------|-------------|-----------------------|
-| Azure_AppService_DP_Dont_Allow_HTTP_Access | Use HTTPS for app services | App Service must only be accessible over HTTPS | Web Application should only be accessible over HTTPS, Function App should only be accessible over HTTPS, <br><br> API App should only be accessible over HTTPS(Not Present in MDC Recommendations) |
+| Azure_AppService_DP_Dont_Allow_HTTP_Access | Use HTTPS for app services | App Service must only be accessible over HTTPS | Web Application should only be accessible over HTTPS, <br><br>Function App should only be accessible over HTTPS, <br><br> API App should only be accessible over HTTPS |
 | Azure_AppService_DP_Use_Secure_TLS_Version | Use Approved TLS Version in App Service | Use approved version of TLS for the App Service | TLS should be updated to the latest version for web apps, <br><br>TLS should be updated to the latest version for function apps, <br><br>TLS should be updated to the latest version for API apps |
 | Azure_AppService_DP_Use_Secure_FTP_Deployment | App Services should use secure FTP deployments | App Services should use secure FTP deployments | FTPS should be required in web apps, <br><br>FTPS should be required in function apps |
 | Azure_Storage_AuthN_Dont_Allow_Anonymous | Ensure secure access to storage account containers | The Access Type for containers must not be set to 'Anonymous' | Storage account public access should be disallowed |
