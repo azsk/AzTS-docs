@@ -60,6 +60,7 @@ Following controls in AzTS are currently externally scanned:
 | Azure_VirtualMachine_SI_Enable_Antimalware | Ensure all devices have anti-malware protection installed and enabled | Antimalware must be enabled with real time protection on Virtual Machine |
 | Azure_VirtualMachine_SI_Enable_Sense_Agent | Ensure Sense Agent is installed and healthy | Sense Agent provides Threat and Vulnerability Management (TVM) data and other enhanced telemetry to the backend Microsoft Defender Advanced Threat Protection (MDATP) instance |
 
+
 ## List of controls that depends on Microsoft Defender for Cloud (MDC) in Azure Tenant Security (AzTS)
 
 | ControlId | DisplayName | Description | MDC Recommendation(s) |
@@ -76,13 +77,10 @@ Following controls in AzTS are currently externally scanned:
 | Azure_VirtualMachine_NetSec_Dont_Open_Restricted_Ports | Management ports must not be open on machines | Do not leave restricted ports open on Virtual Machines | Management ports of virtual machines should be protected with just-in-time network access control |
 | Azure_VNet_NetSec_Configure_NSG | Associate Subnets with a Network Security Group | NSG should be used for subnets in a virtual network to permit traffic only on required inbound/outbound ports. NSGs should not have a rule to allow any-to-any traffic | Subnets should be associated with a network security group |
 | Azure_Subscription_AuthZ_Remove_Deprecated_Accounts | Remove Orphaned accounts from your subscription(s) | Deprecated/stale accounts must not be present on the subscription | Deprecated accounts should be removed from subscriptions | 
-| Azure_KubernetesService_Deploy_Use_Latest_Version | [Preview]: Kubernetes Services should be upgraded to a non-vulnerable |Kubernetes version | The latest version of Kubernetes should be used | Kubernetes Services should be upgraded to a non-vulnerable Kubernetes version |
 | Azure_RedisCache_DP_Use_SSL_Port | Non-SSL port must not be enabled for Redis Cache | Non-SSL port must not be enabled for Redis Cache | Redis Cache should allow access only via SSL |
 | Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel | The ClusterProtectionLevel property must be set to EncryptAndSign for Service Fabric clusters |The ClusterProtectionLevel property must be set to EncryptAndSign for Service Fabric clusters | Service Fabric clusters should have the ClusterProtectionLevel property set to EncryptAndSign |
 | Azure_SQLDatabase_AuthZ_Use_AAD_Admin | Use AAD Authentication for SQL Database | Enable Azure AD admin for the SQL Database | SQL servers should have an Azure Active Directory administrator provisioned |
 | Azure_SQLDatabase_DP_Enable_TDE | Enable Transparent Data Encryption on SQL databases | Enable Transparent Data Encryption on SQL databases | Transparent Data Encryption on SQL databases should be enabled |
-| Azure_Storage_NetSec_Restrict_Network_Access | Ensure that Firewall and Virtual Network access is granted to a minimal set of trusted origins | Ensure that Firewall and Virtual Network access is granted to a minimal set of trusted origins |
-| Azure_VirtualMachine_SI_Deploy_Data_Collection_Extension | [Preview]: Install Network data collection agents | Network traffic data collection agent should be installed on Windows/Linux virtual machines |
 
 ## Frequently Asked Questions (FAQ)
 
