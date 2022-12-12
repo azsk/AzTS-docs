@@ -4,17 +4,17 @@
 
 <!-- TOC -->
 
-- [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration_Trial](#azure_applicationgateway_netsec_enable_waf_configuration_trial)
+- [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](#azure_applicationgateway_netsec_enable_waf_configuration)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
 
-## Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration_Trial 
+## Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration 
 
 ### Display Name 
-[Trial] Application Gateway should have Web Application Firewall configured
+Application Gateway should have Web Application Firewall configured
 
 ### Rationale 
 Web application firewall configuration protects Application Gateway from internet based vulnerabilities and attacks without modification to back-end code.
@@ -22,13 +22,13 @@ Web application firewall configuration protects Application Gateway from interne
 ### Control Spec 
 
 > **Passed:** 
-> Web Application Firewall has been configured on Application Gateway. 
-> Configured WAF Policy mode must be Prevention only.
-> Network Security Group is configured on the subnet assoicated with the Application Gateway.
+> Web Application Firewall has been configured on Application Gateway. <b>AND</b>
+> Configured WAF Policy mode must be in Prevention only. <b>AND</b>
+> Network Security Group is configured on the subnet assoicated with the Application Gateway. 
 > 
 > **Failed:** 
-> WAF is not configured on Application Gateway.
-> Configured WAF Policy mode is not Prevention.
+> WAF is not configured on Application Gateway. <b>OR</b>
+> Configured WAF Policy mode is not Prevention. <b>OR</b>
 > Network Security Group is not configured on the subnet assoicated with the Application Gateway.
 > 
 > **Error:** 
