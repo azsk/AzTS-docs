@@ -288,8 +288,8 @@ function Add-NSGConfigurationOnSubnet
           $resourceId = $_.ResourceId
             try
             {   
-                $LoadBalancerSubnetDetails =  Get-AzLoadBalancer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-                $LoadBalancerSubnetDetails = $LoadBalancerSubnetDetails | Select-Object @{N='ResourceId';E={$_.Id}},
+                $LoadBalancerDetails =  Get-AzLoadBalancer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+                $LoadBalancerSubnetDetails += $LoadBalancerDetails | Select-Object @{N='ResourceId';E={$_.Id}},
                                                     @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
                                                     @{N='ResourceName';E={$_.Name}},
                                                     @{N='ResourceSubNetId';E={$_.FrontendIPConfigurations.SubnetText}},
@@ -755,23 +755,23 @@ function Remove-NSGConfigurationOnSubnet
                     $vnet = Get-AzVirtualNetwork -Name $ResourceVNName -ResourceGroupName $ResourceVNRGName
                     $VnetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $Vnet -Name $SubNetName
 
-                        if($VnetSubnet.NetworkSecurityGroup -ne $null)
+                    if($VnetSubnet.NetworkSecurityGroup -ne $null)
+                    {
+                        $VnetSubnet.NetworkSecurityGroup = $null
+                        $remediatedVnet = $vnet | Set-AzVirtualNetwork
+                        $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
+                        if($remediatedSubnet.NetworkSecurityGroup -eq $null)
                         {
-                            $VnetSubnet.NetworkSecurityGroup = $null
-                            $remediatedVnet = $vnet | Set-AzVirtualNetwork
-                            $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
-                            if($remediatedSubnet.NetworkSecurityGroup -eq $null)
-                            {
-                                $Subnet.IsNSGConfigured = $false
-                                $SubnetRolledBack += $Subnet
-                            }
-                            else
-                            {
-                                $SubnetSkipped += $Subnet
-                            }   
-                        
+                            $Subnet.IsNSGConfigured = $false
+                            $SubnetRolledBack += $Subnet
                         }
+                        else
+                        {
+                            $SubnetSkipped += $Subnet
+                        }
+                        
                     }
+                }
                 }
             }
     }
