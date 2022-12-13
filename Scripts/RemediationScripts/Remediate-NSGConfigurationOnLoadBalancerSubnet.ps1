@@ -432,8 +432,7 @@ function Add-NSGConfigurationOnSubnet
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Subnet(s) which needs to be remediated.
-        $SubnetWithoutNSGConfigured | ForEach-Object 
-        {
+        $SubnetWithoutNSGConfigured | ForEach-Object {
             $subnet = $_
             try
             {
