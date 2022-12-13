@@ -271,9 +271,8 @@ function Add-NSGConfigurationOnSubnet
         $validLoadBalancerSubnetResources = $LoadBalancerSubnetResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
 
 
-        $validLoadBalancerSubnetResources| ForEach-Object 
-        {
-            $resourceId = $_.ResourceId
+        $validLoadBalancerSubnetResources| ForEach-Object{
+          $resourceId = $_.ResourceId
             try
             {   
                 $LoadBalancerSubnetDetails =  Get-AzLoadBalancer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
@@ -315,8 +314,6 @@ function Add-NSGConfigurationOnSubnet
             {
                 Write-Host "Error fetching subnet of Virtual Network(s) resource: Resource ID:  [$($ResourceVNetName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             }
-
-
         }
     }                                                    
     
