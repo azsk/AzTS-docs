@@ -131,15 +131,6 @@ function Configure-WAFPolicyForFrontDoor
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
-        .PARAMETER Path
-        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
-
-        .PARAMETER AutoRemediation
-        Specifies script is run as a subroutine of AutoRemediation Script.
-
-        .PARAMETER TimeStamp
-        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
-
         .INPUTS
         None. You cannot pipe objects to Enable-WAFPolicyForFrontDoors.
 
@@ -180,19 +171,7 @@ function Configure-WAFPolicyForFrontDoor
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath,
-
-        [String]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
-        $Path,
-
-        [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
-        $AutoRemediation,
-
-        [String]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
-        $TimeStamp
+        $FilePath
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -236,14 +215,13 @@ function Configure-WAFPolicyForFrontDoor
       $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
 
-    if(-not($AutoRemediation))	
-    {
+    
         Write-Host "Subscription Name: [$($context.Subscription.Name)]"
         Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
         Write-Host "Account Name: [$($context.Account.Id)]"
         Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
-    }
+    
 
     Write-Host "To configure WAF Policy for Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
@@ -261,35 +239,26 @@ function Configure-WAFPolicyForFrontDoor
     # Control Id
     $controlIds = "Azure_FrontDoor_NetSec_Enable_WAF_Configuration_Trial"
 
-    if($AutoRemediation)
+   
+    # No file path provided as input to the script. Fetch all Front Doors in the Subscription.
+    if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        if(-not (Test-Path -Path $Path))
-        {
-        Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
-        Write-Host $([Constants]::DoubleDashLine)
-        return
-        }
-        Write-Host "Fetching all Front Doors failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all Front Doors in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
-        $controls = $controlForRemediation.ControlRemediationList
-        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
-        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
-
-        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
-        {
-            Write-Host "No Front Door(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host $([Constants]::DoubleDashLine)
-            return
-        }  
+        # Get all Front Doors in the Subscription
+        $frontDoors = Get-AzFrontDoor  -ErrorAction Stop
+        $totalfrontDoors = ($frontDoors | Measure-Object).Count
         
-        $validResources | ForEach-Object { 
-            try
-            {
-                $name = $_.ResourceName
-                $resourceGroupName = $_.ResourceGroupName
+        if($totalfrontDoors -gt 0)
+        {
+            $frontDoors | ForEach-Object {
+                $frontDoor = $_
+                $frontDoorId = $_.Id
+                $resourceGroupName = $_.Id.Split('/')[4]
+                $frontDoorName = $_.Name
+
                 # Get all Frontendpoint(s) for this Front Door.
-                $frontendpoints = ( Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroupName -FrontDoorName $name -ErrorAction SilentlyContinue) 
+                $frontendpoints = ( Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroupName -FrontDoorName $frontDoorName -ErrorAction SilentlyContinue) 
                 $frontDoorFrontendPoints += $frontendpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
                                                                         @{N='FrontDoorName';E={$frontDoorName}},
                                                                         @{N='ResourceGroupName';E={$resourceGroupName}},
@@ -344,205 +313,115 @@ function Configure-WAFPolicyForFrontDoor
                                                                                 }
                                                                             }
                                                                         }}
+        
+            }
+        } 
+    }
+    else
+    {
+        if (-not (Test-Path -Path $FilePath))
+        {
+            Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            break
+        }
+
+        Write-Host "Fetching all Front Door Frontendpoint(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $frontDoorFrontEndpointsDetails = Import-Csv -LiteralPath $FilePath
+        $validfrontDoorEndpointsDetails = $frontDoorFrontEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
+        
+        $validfrontDoorEndpointsDetails | ForEach-Object {
+            $frontdoorFrontEndpointId = $_.EndpointId
+            $resourceGroupName = $_.ResourceGroupName
+            $frontDoorName = $_.FrontDoorName
+
+            try
+            {
+                $frontendpoints = ( Get-AzFrontDoorFrontendEndpoint -ResourceId $frontdoorFrontEndpointId -ErrorAction SilentlyContinue) 
+                $frontDoorFrontendPoints += $frontendpoints  | Select-Object @{N='EndpointId';E={$frontdoorFrontEndpointId}},
+                                                                        @{N='FrontDoorName';E={$frontDoorName}},
+                                                                        @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                        @{N='EndPointName';E={$_.Name}},
+                                                                        @{N='WAFPolicyName';E={$_.WebApplicationFirewallPolicyLink.Split('/')[8]}},
+                                                                        @{N='WAFPolicyResourceGroup';E={$_.WebApplicationFirewallPolicyLink.Split('/')[4]}},
+
+                                                                        @{N='IsWAFConfigured';E={
+                                                                        if($_.WebApplicationFirewallPolicyLink -eq $null)
+                                                                        { 
+                                                                            $false
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $true
+                                                                        }
+                                                                        }},
+                                                                        @{N='IsPreventionMode';E={
+                                                                        if($_.WebApplicationFirewallPolicyLink -eq $null)
+                                                                        { 
+                                                                            $false
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
+                                                                            if($WAFPolicy.PolicyMode -eq 'Prevention')
+                                                                            { 
+                                                                                $true
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $false
+                                                                                
+                                                                            }
+                                                                        }
+                                                                        }},
+                                                                        @{N='IsWAFEnabled';E={
+                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
+                                                                            { 
+                                                                                $false
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
+                                                                                
+                                                                                if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
+                                                                                { 
+                                                                                    $true
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $false
+                                                                                }
+                                                                            }
+                                                                        }}
             }
             catch
             {
-                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
-                $logSkippedResources += $logResource
+                Write-Host "Error fetching Front Door FrontEndpoint:  ID - $($frontdoorFrontEndpointId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Skipping this Front Door FrontEndpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
     }
-    else
-    { 
-        # No file path provided as input to the script. Fetch all Front Doors in the Subscription.
-        if ([String]::IsNullOrWhiteSpace($FilePath))
-        {
-            Write-Host "Fetching all Front Doors in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
-            Write-Host $([Constants]::SingleDashLine)
-            # Get all Front Doors in the Subscription
-            $frontDoors = Get-AzFrontDoor  -ErrorAction Stop
-            $totalfrontDoors = ($frontDoors | Measure-Object).Count
-            
-            if($totalfrontDoors -gt 0)
-            {
-                $frontDoors | ForEach-Object {
-                    $frontDoor = $_
-                    $frontDoorId = $_.Id
-                    $resourceGroupName = $_.Id.Split('/')[4]
-                    $frontDoorName = $_.Name
+    
 
-                    # Get all Frontendpoint(s) for this Front Door.
-                    $frontendpoints = ( Get-AzFrontDoorFrontendEndpoint -ResourceGroupName $resourceGroupName -FrontDoorName $frontDoorName -ErrorAction SilentlyContinue) 
-                    $frontDoorFrontendPoints += $frontendpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
-                                                                            @{N='FrontDoorName';E={$frontDoorName}},
-                                                                            @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                            @{N='EndPointName';E={$_.Name}},
-                                                                            @{N='WAFPolicyName';E={$_.WebApplicationFirewallPolicyLink.Split('/')[8]}},
-                                                                            @{N='WAFPolicyResourceGroup';E={$_.WebApplicationFirewallPolicyLink.Split('/')[4]}},
-                                                                            @{N='IsWAFConfigured';E={
-                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $true
-                                                                            }
-                                                                            }},
-                                                                            @{N='IsPreventionMode';E={
-                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                                if($WAFPolicy.PolicyMode -eq 'Prevention')
-                                                                                { 
-                                                                                    $true
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $false
-                                                                                    
-                                                                                }
-                                                                            }
-                                                                            }},
-                                                                            @{N='IsWAFEnabled';E={
-                                                                                if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                                { 
-                                                                                    $false
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                                    
-                                                                                    if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                    { 
-                                                                                        $true
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        $false
-                                                                                    }
-                                                                                }
-                                                                            }}
-            
-                }
-            } 
-        }
-        else
-        {
-            if (-not (Test-Path -Path $FilePath))
-            {
-                Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::DoubleDashLine)
-                break
-            }
-
-            Write-Host "Fetching all Front Door Frontendpoint(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
-            Write-Host $([Constants]::SingleDashLine)
-            $frontDoorFrontEndpointsDetails = Import-Csv -LiteralPath $FilePath
-            $validfrontDoorEndpointsDetails = $frontDoorFrontEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
-            
-            $validfrontDoorEndpointsDetails | ForEach-Object {
-                $frontdoorFrontEndpointId = $_.EndpointId
-                $resourceGroupName = $_.ResourceGroupName
-                $frontDoorName = $_.FrontDoorName
-
-                try
-                {
-                    $frontendpoints = ( Get-AzFrontDoorFrontendEndpoint -ResourceId $frontdoorFrontEndpointId -ErrorAction SilentlyContinue) 
-                    $frontDoorFrontendPoints += $frontendpoints  | Select-Object @{N='EndpointId';E={$frontdoorFrontEndpointId}},
-                                                                            @{N='FrontDoorName';E={$frontDoorName}},
-                                                                            @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                            @{N='EndPointName';E={$_.Name}},
-                                                                            @{N='WAFPolicyName';E={$_.WebApplicationFirewallPolicyLink.Split('/')[8]}},
-                                                                            @{N='WAFPolicyResourceGroup';E={$_.WebApplicationFirewallPolicyLink.Split('/')[4]}},
-
-                                                                            @{N='IsWAFConfigured';E={
-                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $true
-                                                                            }
-                                                                            }},
-                                                                            @{N='IsPreventionMode';E={
-                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                                if($WAFPolicy.PolicyMode -eq 'Prevention')
-                                                                                { 
-                                                                                    $true
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $false
-                                                                                    
-                                                                                }
-                                                                            }
-                                                                            }},
-                                                                            @{N='IsWAFEnabled';E={
-                                                                                if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                                { 
-                                                                                    $false
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                                    
-                                                                                    if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                    { 
-                                                                                        $true
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        $false
-                                                                                    }
-                                                                                }
-                                                                            }}
-                }
-                catch
-                {
-                    Write-Host "Error fetching Front Door FrontEndpoint:  ID - $($frontdoorFrontEndpointId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host $([Constants]::SingleDashLine)
-                    Write-Host "Skipping this Front Door FrontEndpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
-                    Write-Host $([Constants]::SingleDashLine)
-                }
-            }
-        }
-    }
-
-    if(-not($AutoRemediation))
+   
+    if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        if ([String]::IsNullOrWhiteSpace($FilePath))
+        $totalfrontDoors = ($frontDoors | Measure-Object).Count
+
+        if ($totalfrontDoors -eq 0)
         {
-            $totalfrontDoors = ($frontDoors | Measure-Object).Count
-
-            if ($totalfrontDoors -eq 0)
-            {
-                Write-Host "No Front Doors found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::DoubleDashLine)
-                break
-            }
-
-            Write-Host "Found [$($totalfrontDoors)] Front Door(s)." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "No Front Doors found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::DoubleDashLine)
+            break
         }
+
+        Write-Host "Found [$($totalfrontDoors)] Front Door(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
     }
+    
   
    
     $totalfrontDoorFrontendPoints = ($frontDoorFrontendPoints | Measure-Object).Count
@@ -565,7 +444,7 @@ function Configure-WAFPolicyForFrontDoor
       
     Write-Host "[Step 3 of 5] Fetching Frontendpoint(s) with WAF not Configured"
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Separating Front Door Endpoint(s) for which WAF Policy is not  Configured..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Separating Front Door Endpoint(s) for which WAF Policy is not Configured..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
 
     $frontDoorFrontendPoints | ForEach-Object {
@@ -590,41 +469,26 @@ function Configure-WAFPolicyForFrontDoor
     {
         Write-Host "No Front Door Frontendpoints(s) found where WAF Policy is not configured.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)	
-
-        if($AutoRemediation -and ($frontDoorFrontendPoints |Measure-Object).Count -gt 0) 
-        {
-            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
-            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
-            foreach($logControl in $log.ControlList){
-                if($logControl.ControlId -eq $controlIds){
-                    $logControl.RemediatedResources=$logRemediatedResources
-                    $logControl.SkippedResources=$logSkippedResources
-                }
-            }
-            $log | ConvertTo-json -depth 10  | Out-File $logFile
-        }	
-
         return
     }
 
     Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotConfigured)] Front Door Frontendpoints(s) found where WAF Policy is not configured ." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
 
-    if(-not($AutoRemediation))
-    { 
-        Write-Host "Following Front Door Frontendpoints(s) are having wihtout WAF Policies configured:" -ForegroundColor $([Constants]::MessageType.Info)
-        $colsProperty = @{Expression={$_.EndpointId};Label="Frontendpoint Id";Width=10;Alignment="left"},
-                        @{Expression={$_.EndPointName};Label="Frontendpoint";Width=10;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                        @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
-                        @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
-                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
-                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
-                        @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
-                        @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
-        $frontDoorEndpointsWithWAFPolicyNotConfigured | Format-Table -Property $colsProperty -Wrap
-        Write-Host $([Constants]::SingleDashLine)
-    }
+
+    Write-Host "Following Front Door Frontendpoints(s) are having wihtout WAF Policies configured:" -ForegroundColor $([Constants]::MessageType.Info)
+    $colsProperty = @{Expression={$_.EndpointId};Label="Frontendpoint Id";Width=10;Alignment="left"},
+                    @{Expression={$_.EndPointName};Label="Frontendpoint";Width=10;Alignment="left"},
+                    @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
+                    @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
+                    @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
+                    @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
+                    @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
+                    @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
+                    @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
+    $frontDoorEndpointsWithWAFPolicyNotConfigured | Format-Table -Property $colsProperty -Wrap
+    Write-Host $([Constants]::SingleDashLine)
+
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\ConfigureFrontDoorWAFPolicy"
 
@@ -651,35 +515,32 @@ function Configure-WAFPolicyForFrontDoor
     }
 
     if (-not $DryRun)
-    {
-         # Here AutoRemediation switch is used as there is no need to take user input at BRS level if user has given consent to proceed with the remediation in AutoRemediation Script.
-        if(-not $AutoRemediation)
+    {     
+        Write-Host "WAF Policy will be configured for all Front Door Frontendpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+        if (-not $Force)
         {
-            Write-Host "WAF Policy will be configured for all Front Door Frontendpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Do you want to configure WAF Policy on Front Door Frontendpoint(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            $userInput = Read-Host -Prompt "(Y|N)"
             Write-Host $([Constants]::SingleDashLine)
-            if (-not $Force)
+            if($userInput -ne "Y")
             {
-                Write-Host "Do you want to configure WAF Policy on Front Door Frontendpoint(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                $userInput = Read-Host -Prompt "(Y|N)"
-                Write-Host $([Constants]::SingleDashLine)
-                if($userInput -ne "Y")
-                {
-                    Write-Host "WAF Policy Mode will not Configured for any Front Door FrontEndpoint(s). Exiting." -ForegroundColor $([Constants]::MessageType.Update)
-                    Write-Host $([Constants]::DoubleDashLine)
-                    break
-                }
-                else
-                {
-                    Write-Host "WAF Policy Mode will be Configured for all Front Door FrontEndpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
-                    Write-Host $([Constants]::SingleDashLine)
-                }
+                Write-Host "WAF Policy Mode will not Configured for any Front Door FrontEndpoint(s). Exiting." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::DoubleDashLine)
+                break
             }
             else
             {
-                Write-Host "'Force' flag is provided. WAF Policy will be configured for all Front Door Frontendoint(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "WAF Policy Mode will be Configured for all Front Door FrontEndpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
+        else
+        {
+            Write-Host "'Force' flag is provided. WAF Policy will be configured for all Front Door Frontendoint(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host $([Constants]::SingleDashLine)
+        }
+    
  
         Write-Host "[Step 5 of 5] Configuring WAF Policy for Front Door Endpoint(s)"
         Write-Host $([Constants]::SingleDashLine)
@@ -687,33 +548,6 @@ function Configure-WAFPolicyForFrontDoor
         # To hold results from the remediation.
         $frontDoorFrontendpointsRemediated = @()
 
-        Do
-        {
-             $wafPolicyName = Read-Host -Prompt "Enter WAF Policy Name"
-             Write-Host $([Constants]::SingleDashLine)
-             $policyResourceGroup = Read-Host -Prompt "Enter WAF Policy Resource Group"
-
-             $wafPolicyName = $wafPolicyName.Trim()
-             $policyResourceGroup = $policyResourceGroup.Trim()
-
-             Write-Host $([Constants]::SingleDashLine)
-             $policy = Get-AzFrontDoorWafPolicy -Name  $wafPolicyName  -ResourceGroupName $policyResourceGroup -ErrorAction SilentlyContinue
-
-             if($policy -eq $null)
-             {
-                Write-Host "WAF Policy name or WAF Policy Resource Group Name is not correct. Please enter correct details."
-                Write-Host $([Constants]::SingleDashLine)
-             }
-
-             if($policy -ne $null -and $policy.Sku -ne 'Classic_AzureFrontDoor')
-             {
-                Write-Host "WAF Policy is not of type Front door tier Classic . Please enter correct details."
-                Write-Host $([Constants]::SingleDashLine)
-             }
-         }
-         while($policy.Sku -ne 'Classic_AzureFrontDoor' -or $policy -eq $null)
-
-   
         Write-Host "Configuring WAF Policy on FrontDoor Frontend Endpoint(s)"
         Write-Host $([Constants]::SingleDashLine)
 
@@ -729,6 +563,32 @@ function Configure-WAFPolicyForFrontDoor
              
             try
             {   
+                Do
+                {
+                    $wafPolicyName = Read-Host -Prompt "Enter WAF Policy Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] " 
+                    Write-Host $([Constants]::SingleDashLine)
+                    $policyResourceGroup = Read-Host -Prompt "Enter WAF Policy Resource Group Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] "
+
+                    $wafPolicyName = $wafPolicyName.Trim()
+                    $policyResourceGroup = $policyResourceGroup.Trim()
+
+                    Write-Host $([Constants]::SingleDashLine)
+                    $policy = Get-AzFrontDoorWafPolicy -Name  $wafPolicyName  -ResourceGroupName $policyResourceGroup -ErrorAction SilentlyContinue
+
+                    if($policy -eq $null)
+                    {
+                        Write-Host "WAF Policy name or WAF Policy Resource Group Name is not correct. Please enter correct details."
+                        Write-Host $([Constants]::SingleDashLine)
+                    }
+
+                    if($policy -ne $null -and $policy.Sku -ne 'Classic_AzureFrontDoor')
+                    {
+                        Write-Host "WAF Policy is not of type Front door tier Classic . Please enter correct details."
+                        Write-Host $([Constants]::SingleDashLine)
+                    }
+                }
+                while($policy.Sku -ne 'Classic_AzureFrontDoor' -or $policy -eq $null)
+
                 $wafpolicy = Update-AzFrontDoorWafPolicy -Name  $wafPolicyName  -ResourceGroupName $policyResourceGroup -Mode Prevention
                 $frontDoor = Get-AzFrontDoor -ResourceGroupName $resourceGroupName ` -Name $frontdoorName
                  
@@ -744,17 +604,24 @@ function Configure-WAFPolicyForFrontDoor
                 }
                 else
                 {
-                    $frontDoor[0].FrontendEndpoints[0].WebApplicationFirewallPolicyLink = $wafpolicy.Id
-                    $setPolicy = Set-AzFrontDoor -InputObject $frontDoor[0]
-                    $frontDoorFrontendpointsRemediated += $frontDoorEndPoint
+                    $totalEndpoints = ($frontDoor[0].FrontendEndpoints | Measure-Object).Count 
+                    for($k=0; $k -lt $totalEndpoints; $k++)
+                    {
+                        if($_.EndpointName -eq $frontDoor[0].FrontendEndpoints[$k].Name)
+                        {
+                            $frontDoor[0].FrontendEndpoints[$k].WebApplicationFirewallPolicyLink = $wafpolicy.Id
+                            $setPolicy = Set-AzFrontDoor -InputObject $frontDoor[0]
+                            $frontDoorFrontendpointsRemediated += $frontDoorEndPoint
 
-                    $logResource = @{}
-                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.FrontDoorName))
-                    $logRemediatedResources += $logResource
-                    $frontDoorEndPoint.IsWAFConfigured = $true;
-                    $frontDoorEndPoint.WAFPolicyName = $wafPolicyName;
-                    $frontDoorEndPoint.WAFPolicyResourceGroup = $policyResourceGroup;
+                            $logResource = @{}
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                            $logResource.Add("ResourceName",($_.FrontDoorName))
+                            $logRemediatedResources += $logResource
+                            $frontDoorEndPoint.IsWAFConfigured = $true;
+                            $frontDoorEndPoint.WAFPolicyName = $wafPolicyName;
+                            $frontDoorEndPoint.WAFPolicyResourceGroup = $policyResourceGroup;
+                        }
+                    }                                    
                 }
             }
             catch
@@ -798,68 +665,31 @@ function Configure-WAFPolicyForFrontDoor
         Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         
-        if($AutoRemediation)
+        if ($($frontDoorFrontendpointsRemediated | Measure-Object).Count -gt 0)
         {
-            if ($($frontDoorFrontendpointsRemediated | Measure-Object).Count -gt 0)
-            {
-                # Write this to a file.
-                $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv"
-                $frontDoorFrontendpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Front door Endpoints(s) where WAF Policy is successfully configured has been saved to [$($frontDoorEndpointsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-            }
+                Write-Host "Successfully configured WAF Policy on the following Frontdoor Frontend Endpoint(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            $frontDoorFrontendpointsRemediated | Format-Table -Property $colsProperty -Wrap
 
-            if ($($frontendpointsSkipped | Measure-Object).Count -gt 0)
-            {   
-                # Write this to a file.
-                $frontendpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorFrontendpointsForConfigureWAFPolicy.csv"
-                $frontendpointsSkipped | Export-CSV -Path $frontendpointsSkippedFile -NoTypeInformation
-                Write-Host "The information related to Front door Endpoints(s) where WAF Policy is not configured has been saved to [$($frontendpointsSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-            }
-        }
-        else
-        {
-            if ($($frontDoorFrontendpointsRemediated | Measure-Object).Count -gt 0)
-            {
-                 Write-Host "Successfully configured WAF Policy on the following Frontdoor Frontend Endpoint(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                $frontDoorFrontendpointsRemediated | Format-Table -Property $colsProperty -Wrap
-
-                # Write this to a file.
-                $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv"
-                $frontDoorFrontendpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to $($frontDoorEndpointsRemediatedFile)"
-                Write-Host $([Constants]::SingleDashLine)
-                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::SingleDashLine)
-            }
-
-            if ($($frontendpointsSkipped | Measure-Object).Count -gt 0)
-            {
-                Write-Host "Error performing remediation steps for the following Front Door Frontendpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-                $frontendpointsSkipped | Format-Table -Property $colsProperty -Wrap
-                Write-Host $([Constants]::SingleDashLine)
-                
-                # Write this to a file.
-                $frontendpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorFrontendpointsForConfigureWAFPolicy.csv"
-                $frontendpointsSkipped | Export-CSV -Path $frontendpointsSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to $($frontDoorsSkippedFile)"
-                Write-Host $([Constants]::SingleDashLine)
-            }
+            # Write this to a file.
+            $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv"
+            $frontDoorFrontendpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
+            Write-Host "This information has been saved to $($frontDoorEndpointsRemediatedFile)"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
         }
 
-        if($AutoRemediation)
+        if ($($frontendpointsSkipped | Measure-Object).Count -gt 0)
         {
-            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
-            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
-            foreach($logControl in $log.ControlList){
-                if($logControl.ControlId -eq $controlIds){
-                    $logControl.RemediatedResources=$logRemediatedResources
-                    $logControl.SkippedResources=$logSkippedResources
-                    $logControl.RollbackFile = $frontDoorEndpointsRemediatedFile
-                }
-            }
-            $log | ConvertTo-json -depth 10  | Out-File $logFile
+            Write-Host "Error performing remediation steps for the following Front Door Frontendpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            $frontendpointsSkipped | Format-Table -Property $colsProperty -Wrap
+            Write-Host $([Constants]::SingleDashLine)
+            
+            # Write this to a file.
+            $frontendpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorFrontendpointsForConfigureWAFPolicy.csv"
+            $frontendpointsSkipped | Export-CSV -Path $frontendpointsSkippedFile -NoTypeInformation
+            Write-Host "This information has been saved to $($frontDoorsSkippedFile)"
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
     else
@@ -875,6 +705,8 @@ function Configure-WAFPolicyForFrontDoor
         Write-Host $([Constants]::SingleDashLine)
     }   
 }
+
+
 
 
 # Defines commonly used constants.
