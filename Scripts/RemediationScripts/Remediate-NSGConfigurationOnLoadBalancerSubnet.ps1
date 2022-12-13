@@ -2,7 +2,7 @@
 # Overview:
     This script is used to configure the NSG on Subnet being used in the Load Balancer in a Subscription.
 # Control ID:
-    Azure_LoadBalancer_NetSec_Enable_WAF_Trial
+    Azure_LoadBalancer_NetSec_Enable_WAF
 # Display Name:
     Load Balancer should have Web Application Firewall (WAF).
 # Prerequisites:    
@@ -30,7 +30,6 @@
     To remediate:
         1. To review the Subnet(s) in a Subscription that will be remediated:
     
-           File has already been generated using the previous script.
         2. Configure the NSG on the Subnet(s)(s) in the Subscription:
        
            Add-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
@@ -99,11 +98,11 @@ function Add-NSGConfigurationOnSubnet
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_LoadBalancer_NetSec_Enable_WAF_Trial' Control.
+        Remediates 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_LoadBalancer_NetSec_Enable_WAF_Trial' Control.
-        Add the NSG configuration on the Subnet(s) in the Subscription. 
+        Remediates 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
+        Add the NSG configuration on the Subnet(s) of Load Balancer in the Subscription. 
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -119,14 +118,19 @@ function Add-NSGConfigurationOnSubnet
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
+
         .INPUTS
         None. You cannot pipe objects to Add-NSGConfigurationOnSubnet.
+
         .OUTPUTS
         None. Add-NSGConfigurationOnSubnet does not return anything that can be piped and used as an input to another command.
+        
         .EXAMPLE
         PS> Add-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        
         .EXAMPLE
         PS> Add-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\ConfigureNSG\SubnetDetailsBackUp.csv
+        
         .LINK
         None
     #>
@@ -213,7 +217,7 @@ function Add-NSGConfigurationOnSubnet
     $logSkippedResources=@()	
 
     # Control Id	
-    $controlIds = "Azure_LoadBalancer_NetSec_Enable_WAF_Trial"
+    $controlIds = "Azure_LoadBalancer_NetSec_Enable_WAF"
     
     if ([String]::IsNullOrWhiteSpace($FilePath))	
     {	
@@ -307,7 +311,7 @@ function Add-NSGConfigurationOnSubnet
                                                     }
 
           
-                                                                         
+                             
 
             }
             catch
@@ -341,13 +345,13 @@ function Add-NSGConfigurationOnSubnet
         $Subnet | Add-Member -NotePropertyName RemediatedSubnets -NotePropertyValue $null
         foreach ($item in $Subnet.IsNSGConfigured) {
             if($item -eq $false)
-            {
+            {                
                 $SubnetWithoutNSGConfigured += $Subnet
             }
+            }
+        
         }
 
-    }
-   
     $totalSubnetWithoutNSGConfigured  = ($SubnetWithoutNSGConfigured | Measure-Object).Count
 
     if ($totalSubnetWithoutNSGConfigured  -eq 0)
@@ -414,6 +418,7 @@ function Add-NSGConfigurationOnSubnet
                 Write-Host $([Constants]::DoubleDashLine)	
                 return
             }
+            Write-Host $([Constants]::SingleDashLine)
         }
         # List for storing remediated Subnet(s)
         $SubnetRemediated = @()
@@ -424,11 +429,7 @@ function Add-NSGConfigurationOnSubnet
         Write-Host "Enabling the NSG on Subnet(s)..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
-        Write-Host "To Start configuring the NSG on the Subnet(s), Please enter the Network Security Group Name..." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::SingleDashLine)
-        $NSGName = Read-Host -Prompt "Please enter name of Network Security Group"
-        Write-Host $([Constants]::SingleDashLine)
-        $NSGRGName = Read-Host -Prompt "Please enter Resource Group of Network Security Group"
+        Write-Host "To Start configuring the NSG on the Subnet(s), Please enter the Network Security Group Name and Resource Group Name" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Subnet(s) which needs to be remediated.
@@ -436,70 +437,77 @@ function Add-NSGConfigurationOnSubnet
             $subnet = $_
             try
             {
-                if($NSGName -ne $null -and $NSGRGName -ne $null)
+                if($null -ne $SubnetWithoutNSGConfigured.ResourceSubNetId)
                 {
-                    $nsg = Get-AzNetworkSecurityGroup -ResourceGroupName $NSGRGName -Name $NSGName
-                    if($nsg -ne $null)
+                    foreach ($item in $subnet.ResourceSubNetId) 
                     {
-                        if($null -ne $SubnetWithoutNSGConfigured.ResourceSubNetId)
-                        {
-                            foreach ($item in $subnet.ResourceSubNetId) 
-                            {
-                                $NonCompliantsubnet = $item | ConvertFrom-Json
-                                $NonCompliantsubnet = $NonCompliantsubnet.Id
-                                $ResourceVNName = $NonCompliantsubnet.Split('/')[8]
-                                $ResourceVNRGName =$NonCompliantsubnet.Split('/')[4]
-                                $SubNetName = $NonCompliantsubnet.Split('/')[10]
+                        $NonCompliantsubnet = $item | ConvertFrom-Json
+                        $NonCompliantsubnet = $NonCompliantsubnet.Id
+                        $ResourceVNName = $NonCompliantsubnet.Split('/')[8]
+                        $ResourceVNRGName =$NonCompliantsubnet.Split('/')[4]
+                        $SubNetName = $NonCompliantsubnet.Split('/')[10]
 
-                                $vnet = Get-AzVirtualNetwork -Name $ResourceVNName -ResourceGroupName $ResourceVNRGName
-                                $vNetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $vnet -Name $SubNetName
+                        $vnet = Get-AzVirtualNetwork -Name $ResourceVNName -ResourceGroupName $ResourceVNRGName
+                        $vNetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $vnet -Name $SubNetName
                                 
-                                if($null -eq $vNetSubnet.NetworkSecurityGroup)
-                                {
-                                    $vNetSubnet.NetworkSecurityGroup = $nsg
-                                    $remediatedVnet = $vnet | Set-AzVirtualNetwork
-                                    $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
+                        if($null -eq $vNetSubnet.NetworkSecurityGroup)
+                        {
+                            $NSGName = Read-Host -Prompt "Please enter name of Network Security Group for [$SubNetName]" 
+                            Write-Host $([Constants]::SingleDashLine)
+                            $NSGRGName = Read-Host -Prompt "Please enter Resource Group of Network Security Group for [$SubNetName]"
+                            Write-Host $([Constants]::SingleDashLine)
+                        if($NSGName -ne $null -and $NSGRGName -ne $null)
+                        {
+                                $nsg = Get-AzNetworkSecurityGroup -ResourceGroupName $NSGRGName -Name $NSGName
                                     
-                                    if($remediatedSubnet.NetworkSecurityGroup -ne $null)
-                                    {
-                                        Write-Host "Successfully configured the NSG on Subnet [$SubNetName] :" -ForegroundColor $([Constants]::MessageType.Update)
-                                        $subnet.IsNSGConfigured = $true
-                                        $subnet.RemediatedSubnets += $item
-                                        $SubnetRemediated += $subnet
-                                        $logResource = @{}	
-                                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                                        $logResource.Add("ResourceName",($_.ResourceName))	
-                                        $logRemediatedResources += $logResource	
-                                    }
-                                    else
-                                    {
-                                        $SubnetSkipped += $subnet
-                                        $logResource = @{}	
-                                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                                        $logResource.Add("ResourceName",($_.ResourceName))
-                                        $logResource.Add("Reason", "Error Configuring NSG on : [$($subnet)]")      
-                                        $logSkippedResources += $logResource	
-                                    }
+                                if($nsg -ne $null)
+                                {
+                                Write-Host "Configuring Network Security group for [$SubNetName]" -ForegroundColor $([Constants]::MessageType.Info)
+                                Write-Host $([Constants]::SingleDashLine)
+                                $vNetSubnet.NetworkSecurityGroup = $nsg
+                                $remediatedVnet = $vnet | Set-AzVirtualNetwork
+                                $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
+
+                                if($remediatedSubnet.NetworkSecurityGroup -ne $null)
+                                {
+                                    Write-Host "Successfully configured the NSG on Subnet [$SubNetName] :" -ForegroundColor $([Constants]::MessageType.Update)
+                                    $subnet.IsNSGConfigured = $true
+                                    $subnet.RemediatedSubnets += $item
+                                    $SubnetRemediated += $subnet
+                                    $logResource = @{}	
+                                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                                    $logResource.Add("ResourceName",($_.ResourceName))	
+                                    $logRemediatedResources += $logResource	
+                                }
+                                else
+                                {
+                                    $SubnetSkipped += $subnet
+                                    $logResource = @{}	
+                                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                                    $logResource.Add("ResourceName",($_.ResourceName))
+                                    $logResource.Add("Reason", "Error Configuring NSG on : [$($subnet)]")      
+                                    $logSkippedResources += $logResource	
                                 }
                             }
-                        }   
-                    }
-                    else
-                    {
-                        $SubnetSkipped += $subnet
-                        $logResource = @{}	
-                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                        $logResource.Add("ResourceName",($_.ResourceName))
-                        $logResource.Add("Reason", "Error Configuring NSG on : [$($subnet)]")      
-                        $logSkippedResources += $logResource	
+                            else
+                            {
+                                $SubnetSkipped += $subnet
+                                    $logResource = @{}	
+                                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                                    $logResource.Add("ResourceName",($_.ResourceName))
+                                    $logResource.Add("Reason", "Error Configuring NSG on : [$($subnet)]")      
+                                    $logSkippedResources += $logResource	
+                            }
+                        }
+                        else
+                        {
+                            Write-Host "Network Security Group Name or Resource Group can not be empty..." -ForegroundColor $([Constants]::MessageType.Info)
+                            $SubnetSkipped += $subnet                                    
+                            return;
+                        }                                               
+                        }
                     }
                 }
-                else
-                {
-                    Write-Host "Network Security Group Name or Resource Group can not be empty..." -ForegroundColor $([Constants]::MessageType.Info)
-                    $SubnetSkipped += $subnet                                    
-                    return;
-                } 
             }
             catch
             {
@@ -531,9 +539,6 @@ function Add-NSGConfigurationOnSubnet
             Write-Host " [$($SubnetRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
             Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
         }
-
-           
-        
         if ($($SubnetSkipped | Measure-Object).Count -gt 0)
         {
 
@@ -547,20 +552,17 @@ function Add-NSGConfigurationOnSubnet
             Write-Host "This information has been saved to"  -NoNewline
             Write-Host " [$($SubnetSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
-        
-       
     }
-    
 }
 
 function Remove-NSGConfigurationOnSubnet
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Enable_WAF_Trial' Control.
+        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Enable_WAF_Trial' Control.
-        Remove NSG configuration from the subnet(s) in the Subscription. 
+        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
+        Remove NSG configuration from the subnet(s) of Load Balancer in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -762,7 +764,7 @@ function Remove-NSGConfigurationOnSubnet
                             }
                         }
                     }
-                }
+                    }
             }
         }
         catch
