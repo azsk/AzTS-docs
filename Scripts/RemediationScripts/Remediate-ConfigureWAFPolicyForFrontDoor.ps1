@@ -19,21 +19,11 @@
         3. Back up details of Front Door Endpoint(s) that are to be remediated.
         4. Configure the WAF Policy for all endpoints in the Frontdoors.
 
-    To roll back:
-        1. Validate and install the modules required to run the script.
-        2. Get the list of Frontdoors' Endpoint(s) in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Remove Configured WAF Policy from all endpoints in all the Frontdoors.
-
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to configure WAF Policy on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
-
-    To roll back:
-        1. Download the script.
-        2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remove configured WAF Policy on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -48,13 +38,7 @@
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Configure-WAFPolicyForFrontDoor -Detailed
-
-    To roll back:
-        1. To remove configured WAF Policy for all Front Door  FrontEndpoint(s) in a Subscription, from a previously taken snapshot:
-           Remove-WAFPolicyForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\ConfigureFrontDoorWAFPolicy\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv
         
-        To know more about the options supported by the roll back command, execute:
-        Get-Help Remove-WAFPolicyForFrontDoor -Detailed        
 ###>
 
 function Setup-Prerequisites
