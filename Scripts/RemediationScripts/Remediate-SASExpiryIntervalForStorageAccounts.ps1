@@ -318,11 +318,6 @@ function Set-SASExpiryInterval
             {
                 $storageAccount = Get-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
                 $storageAccounts += $storageAccount
-                # $sasExpiryInterval = $storageAccount.SasPolicy.SasExpirationPeriod
-                # $storageAccounts += $storageAccount | Select-Object @{N = "ResourceName", E = {$_.ResourceName}},
-                #                                                      {N = "ResourceGroupName", E = {$_.ResourceGroupName}},
-                #                                                      {N = "ResourceId", E = {$_.ResourceId}},
-                #                                                      {N = "SASExpiryInterval", E = {$sasExpiryInterval},
             }
             catch
             {
@@ -369,7 +364,7 @@ function Set-SASExpiryInterval
                 try
                 {
                     #storing the list of Storage Account .
-                    $storageAccount = Get-AzStorageAccount -StorageAccountName $_.StorageAccountName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
+                    $storageAccount = Get-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
                     $storageAccounts += $storageAccount
                 }
                 catch
@@ -402,31 +397,30 @@ function Set-SASExpiryInterval
     $storageAccounts | ForEach-Object {
         if($null -eq $_.SasPolicy.SasExpirationPeriod)
         {
-            $storageAccountsWithoutSasExpiryIntervalProperlySet += $_ | Select-Object @{ N = "ResourceName", E = {$_.ResourceName}},
-                                                                                   @{ N = "ResourceGroupName", E = {$_.ResourceGroupName}},
-                                                                                   @{ N = "ResourceId", E = {$_.ResourceId}},
-                                                                                   @{ N = "SASExpiryInterval", E = {$([Constants]::TimeSpanWhenSASExpiryIntervalDisabled)}}
+            $storageAccountsWithoutSasExpiryIntervalProperlySet += $_ | Select-Object @{ N = "ResourceName"; E = {$_.StorageAccountName}},
+                                                                                   @{ N = "ResourceGroupName"; E = {$_.ResourceGroupName}},
+                                                                                   @{ N = "ResourceId"; E = {$_.Id}},
+                                                                                   @{ N = "SASExpiryInterval"; E = {$([Constants]::TimeSpanWhenSASExpiryIntervalDisabled)}}
         }
-        else if(-not(CheckifSASExpiryIntervalIsValid($_.SasPolicy.SasExpirationPeriod)))
+        elseif(-not(CheckifSASExpiryIntervalIsValid($_.SasPolicy.SasExpirationPeriod)))
         {
-            $storageAccountsWithoutSasExpiryIntervalProperlySet += $_ | Select-Object @{ N = "ResourceName", E = {$_.ResourceName}},
-                                                                                   @{ N = "ResourceGroupName", E = {$_.ResourceGroupName}},
-                                                                                   @{ N = "ResourceId", E = {$_.ResourceId}},
-                                                                                   @{ N = "SASExpiryInterval", E = {$_.SasPolicy.SasExpirationPeriod}}
+            $storageAccountsWithoutSasExpiryIntervalProperlySet += $_ | Select-Object @{ N = "ResourceName"; E = {$_.StorageAccountName}},
+                                                                                   @{ N = "ResourceGroupName"; E = {$_.ResourceGroupName}},
+                                                                                   @{ N = "ResourceId"; E = {$_.Id}},
+                                                                                   @{ N = "SASExpiryInterval"; E = {$_.SasPolicy.SasExpirationPeriod}}
         }
         else
         {
-            $storageAccountsWithSasExpiryIntervalProperlySet += $_ | Select-Object @{ N = "ResourceName", E = {$_.ResourceName}},
-                                                                                   @{ N = "ResourceGroupName", E = {$_.ResourceGroupName}},
-                                                                                   @{ N = "ResourceId", E = {$_.ResourceId}},
-                                                                                   @{ N = "SASExpiryInterval", E = {$_.SasPolicy.SasExpirationPeriod}}
+            $storageAccountsWithSasExpiryIntervalProperlySet += $_ | Select-Object @{ N = "ResourceName"; E = {$_.StorageAccountName}},
+                                                                                   @{ N = "ResourceGroupName"; E = {$_.ResourceGroupName}},
+                                                                                   @{ N = "ResourceId"; E = {$_.Id}},
+                                                                                   @{ N = "SASExpiryInterval"; E = {$_.SasPolicy.SasExpirationPeriod}}
 
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.ResourceName))
             $logResource.Add("Reason","SAS Expiry Interval is properly set.")    
             $logSkippedResources += $logResource
-            Write-Host $([Constants]::SingleDashLine)
         }
     }
 
@@ -457,7 +451,6 @@ function Set-SASExpiryInterval
 
     if (-not $AutoRemediation) 
     {
-        Write-Host "Storage Account(s) where SAS Expiry Interval is not properly set are:"
         $storageAccountsWithoutSasExpiryIntervalProperlySet | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
     }
@@ -491,10 +484,10 @@ function Set-SASExpiryInterval
         if(-not $AutoRemediation)
         {
             if (-not $Force) {
-                Write-Host "Do you want to set SAS Expiry Interval on all the Storage Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Do you want to set SAS Expiry Interval on all the Storage Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
                 $userInput = Read-Host -Prompt "(Y|N)"
-
+                Write-Host $([Constants]::SingleDashLine)
                 if ($userInput -ne "Y") {
                     Write-Host "SAS Expiry Interval will not be set on Storage Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::DoubleDashLine)	
@@ -792,9 +785,9 @@ function Reset-SASExpiryInterval
 
     if (-not $Force) {
 
-        Write-Host "Do you want to reset SAS Expiry Interval to values mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to reset SAS Expiry Interval to values mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
-
+        Write-Host $([Constants]::SingleDashLine)
         if ($userInput -ne "Y") {
             Write-Host "SAS Expiry Interval will not be rolled back (reset) on storage account(s) mentioned in the file. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::DoubleDashLine)
@@ -863,7 +856,7 @@ function CheckifSASExpiryIntervalIsValid
 {
     param ([String] $SasExpiryInterval)
 
-    if($SasExpiryInterval -le $[Constants]::MaximumApprovedTimeSpanForSASExpiryInterval )
+    if($SasExpiryInterval -le $([Constants]::MaximumApprovedTimeSpanForSASExpiryInterval))
     {
         return $true
     }
