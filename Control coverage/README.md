@@ -90,6 +90,8 @@ Following controls in AzTS are currently externally scanned:
 
 **NOTE:** *Kindly make sure that the resource(s) is(are) already fixed. The controls which depends on MDC assessment could be found [here](#list-of-controls-that-depends-on-microsoft-defender-for-cloud-mdc-in-azure-tenant-security-azts).* 
 
+If a control depends on MDC assessment(s), validate if resource is in healthy state as per MDC recommendation(s), to validate please follow below mentioned steps:
+
 1. Go to **Azure Portal**.
 2. Search for **Microsoft Defender for Cloud** and **open** that.
 
@@ -106,9 +108,12 @@ Following controls in AzTS are currently externally scanned:
 
 6. Check the list of **unhealthy resources** to see if your resource is present in that list or not.
 7. If your resource(s) is not present in unhealthy resources list, run the scan from AzTS UI and check the status of your resource(s).
-7. If your resource(s) is present in **unhealthy resources list** and **'Fix' button is available** in the bottom, select the resource(s) that you need to remediate and click on 'Fix' button and wait till your resource(s) show up in **healthy resources list**.
+8. If your resource(s) is present in **unhealthy resources list** and **'Fix' button is available** in the bottom, select the resource(s) that you need to remediate and click on 'Fix' button and wait till your resource(s) show up in **healthy resources list**.
 
     ![Image](../Images/MDCEvaluationImage4.png)
  
-8. If your resource(s) is present in **unhealthy resources list** and **'Fix' button is not available** in the bottom, you have to wait till the MDC evaluation is refreshed and wait till your resource(s) show up in **healthy resources list**. You can find the **refresh interval** at the top. 
+9. If your resource(s) is present in **unhealthy resources list** and **'Fix' button is not available** in the bottom, you have to wait till the MDC evaluation is refreshed and wait till your resource(s) show up in **healthy resources list**. You can find the **refresh interval** at the top. 
+
+    ![Image](../Images/MDCEvaluationImage5.png)
+
 10. Once your resource(s) appear under healthy resources list, run the scan from AzTS UI to check the status of your resource(s).
