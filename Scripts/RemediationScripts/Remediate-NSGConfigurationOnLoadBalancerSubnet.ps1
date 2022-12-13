@@ -481,7 +481,7 @@ function Add-NSGConfigurationOnSubnet
                                 {
                                     Write-Host "Successfully configured the NSG on Subnet [$SubNetName] :" -ForegroundColor $([Constants]::MessageType.Update)
                                     $subnet.IsNSGConfigured = $true
-                                    $subnet.RemediatedSubnets += $item
+                                    $subnet.RemediatedSubnets += $NonCompliantsubnet+','
                                     $SubnetRemediated += $subnet
                                     $logResource = @{}	
                                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
@@ -738,31 +738,29 @@ function Remove-NSGConfigurationOnSubnet
     # List for storing skipped rolled back Subnet resource.
     $SubnetSkipped = @()
 
-    $validSubnetDetails | ForEach-Object {
-        $Subnet = $_
-        try
-        {   
-            if($null -ne $Subnet.RemediatedSubnets)
+    foreach($Subnet in $validSubnetDetails)
+    {
+         if($null -ne $Subnet.RemediatedSubnets)
             {
-                foreach ($item in $Subnet.RemediatedSubnets) 
-                {
-                    $Compliantsubnet = $item | ConvertFrom-Json
-                    $Compliantsubnet = $Compliantsubnet.Id
+               $RemediatedIds = $Subnet.RemediatedSubnets.Split(',')
+               Foreach($item in $RemediatedIds)
+               {
+                    if('' -ne $item)
+                    {
+                    $Compliantsubnet = $item
                     $ResourceVNName = $Compliantsubnet.Split('/')[8]
                     $ResourceVNRGName =$Compliantsubnet.Split('/')[4]
                     $SubNetName = $Compliantsubnet.Split('/')[10]
 
                     $vnet = Get-AzVirtualNetwork -Name $ResourceVNName -ResourceGroupName $ResourceVNRGName
                     $VnetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $Vnet -Name $SubNetName
-                    $VnetSubnet.NetworkSecurityGroup = $null
-                    $remediatedVnet = $vnet | Set-AzVirtualNetwork
-                    $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $_.ResourceSubNetName
-            
-                    foreach ($nonCompliantSubnets in $remediatedSubnet) 
-                    {
-                        if($nonCompliantSubnets.Id -eq $Compliantsubnet)
+
+                        if($VnetSubnet.NetworkSecurityGroup -ne $null)
                         {
-                            if($null -eq $nonCompliantSubnets.NetworkSecurityGroup)
+                            $VnetSubnet.NetworkSecurityGroup = $null
+                            $remediatedVnet = $vnet | Set-AzVirtualNetwork
+                            $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
+                            if($remediatedSubnet.NetworkSecurityGroup -eq $null)
                             {
                                 $Subnet.IsNSGConfigured = $false
                                 $SubnetRolledBack += $Subnet
@@ -770,18 +768,13 @@ function Remove-NSGConfigurationOnSubnet
                             else
                             {
                                 $SubnetSkipped += $Subnet
-                            }
+                            }   
+                        
                         }
                     }
-                    }
+                }
             }
-        }
-        catch
-        {
-            $SubnetSkipped += $Subnet
-        }
     }
-
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
