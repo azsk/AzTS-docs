@@ -38,7 +38,7 @@
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Configure-WAFPolicyForFrontDoor -Detailed
-        
+
 ###>
 
 function Setup-Prerequisites
@@ -658,8 +658,6 @@ function Configure-WAFPolicyForFrontDoor
             $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorFrontEndpointsForConfigureWAFPolicy.csv"
             $frontDoorFrontendpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
             Write-Host "This information has been saved to $($frontDoorEndpointsRemediatedFile)"
-            Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
         }
 
