@@ -7,23 +7,23 @@
     Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
 
 # DisplayName:
-    Shared Access Signature (SAS) expiry interval must be less than approved upper limit for Azure Storage
+    Shared Access Signature (SAS) expiry interval must be less than approved limit for Azure Storage
 
 # Pre-requisites:
-    1. You will need atleast contributor role on Storage Account(s) of subscription.
+    1. You will need at least contributor role on storage account(s) of subscription.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script :
    To Remediate:
         1. Validate and/or install the modules required to run the script.
-        2. Get list of Storage Account in a subscription which have SAS Expiry Interval not set and if set, then more than the apporved limit.
-        3. Back up details of Storage Accounts that are to be remediated.
-        4. Set the SAS Expiry Interval for the Storage Account(s) of subscription.
+        2. Get list of storage account in a subscription which have SAS Expiry Interval not set and if set, then more than the apporved limit.
+        3. Back up details of storage accounts that are to be remediated.
+        4. Set the SAS Expiry Interval for the storage account(s) of subscription.
 
    To rollback:
         1. Validate and/or install the modules required to run the script.
-        3. Get the list of Storage Accounts in a Subscription, the changes made to which previously, are to be rolled back.
-        4. Reset the SAS Expiry Interval for the Storage Account(s) in the Subscription.
+        3. Get the list of storage accounts in a Subscription, the changes made to which previously, are to be rolled back.
+        4. Reset the SAS Expiry Interval for the storage account(s) in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
@@ -41,22 +41,21 @@
         1. To review the Storage Account in a Subscription that will be remediated:
            Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
-        2. To enable encryption in transit on the Storage Account in a Subscription:
+        2. To set SAS Expiry Interval on the Storage Account in a Subscription:
            Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 
        
-       //TODO - change file name
-        3. To enable encryption in transit on the Storage Account in a Subscription, from a previously taken snapshot:
-           Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
+        3. To set SAS Expiry Interval on the Storage Account in a Subscription, from a previously taken snapshot:
+           Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\SASExpiryInterval\SASExpiryIntervalNotSetInStorageAccounts.csv
         
-        4. To enable encryption in transit on the Storage Account in a Subscription without taking back up before actual remediation:
+        4. To set SAS Expiry Interval on the Storage Account in a Subscription without taking back up before actual remediation:
            Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Set-SASExpiryInterval -Detailed
    
     To rollback: 
-        1. To disable  encryption in transit on the Storage Account in a Subscription, from a previously taken snapshot:
-           Reset-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
+        1. To reset SAS Expiry Interval on the Storage Account in a Subscription, from a previously taken snapshot of remediated resources:
+           Reset-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath  C:\Users\Documents\AzTS\Remediation\Subscriptions\00000000_xxxx_0000_xxxx_000000000000\20211013_0608\SASExpiryInterval\RemediatedSASExpiryIntervalStorageAccounts.csv
 
         To know more about the options supported by the roll back command, execute:
         
@@ -170,7 +169,7 @@ function Set-SASExpiryInterval
       
       TODO: Change FilePath 
         .EXAMPLE
-        PS> Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePathC:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\EnableSecureTransit\StorageWithDisableHTTPS.csv
+        PS> Set-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePathC:\Users\AppData\Local\AzTS\Remediation\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\20211013_0608\SASExpiryInterval\SASExpiryIntervalNotSetInStorageAccounts.csv
          
         .LINK
         None
@@ -474,7 +473,7 @@ function Set-SASExpiryInterval
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
-        $backupFile = "$($backupFolderPath)\SetSASExpiryIntervalInStorageAccounts.csv"
+        $backupFile = "$($backupFolderPath)\SASExpiryIntervalNotSetInStorageAccounts.csv"
         $storageAccountsWithoutSasExpiryIntervalProperlySet | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "Storage Account(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
@@ -524,9 +523,9 @@ function Set-SASExpiryInterval
             #Write-Host "Setting SAS Expiry Interval on the storage account: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             try
             {
-                Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $_.SASExpiryInterval
+                Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $userInputTimeSpan
                 $output = Get-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
-                if($output.SasPolicy.SasExpirationPeriod -eq $_.SASExpiryInterval)
+                if($output.SasPolicy.SasExpirationPeriod -eq $userInputTimeSpan)
                 {
                     $storageAccountRemediated += $_
                     $logResource = @{}
@@ -661,7 +660,7 @@ function Reset-SASExpiryInterval
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
       
-        .PARAMETER RollbackFilePath
+        .PARAMETER FilePath
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
@@ -670,12 +669,194 @@ function Reset-SASExpiryInterval
         .OUTPUTS
         None. function Reset-SASExpiryInterval does not return anything that can be piped and used as an input to another command.
         
+        TODO
         .EXAMPLE
-        PS> Reset-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RollbackFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForServiceBusNamespaces\RemediatedServiceBusNamespaces.csv
+        PS> Reset-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RollbackFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SASExpiryInterval\RemediatedSASExpiryIntervalStorageAccounts.csv
         
         .LINK
         None
     #>
+
+    param (
+        [String]
+        [Parameter(Mandatory = $true, HelpMessage="Specifies the ID of the Subscription that was previously remediated.")]
+        $SubscriptionId,
+
+        [Switch]
+        [Parameter(HelpMessage="Specifies a forceful roll back without any prompts")]
+        $Force,
+
+        [Switch]
+        [Parameter(HelpMessage="Specifies validation of prerequisites for the command")]
+        $PerformPreReqCheck,
+
+        [String]
+        [Parameter(Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the roll back")]
+        $FilePath
+    )
+
+    Write-Host $([Constants]::DoubleDashLine)
+    if ($PerformPreReqCheck)
+    {
+        try
+        {
+            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user"
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+            Setup-Prerequisites
+            Write-Host "Completed setting up prerequisites." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
+        }
+        catch
+        {
+            Write-Host "Error occurred while setting up prerequisites. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+    }
+    else
+    {
+        Write-Host "[Step 1 of 3] Validate the User" 
+        Write-Host $([Constants]::SingleDashLine)
+    }
+
+    # Connect to Azure account
+    $context = Get-AzContext
+
+    if ([String]::IsNullOrWhiteSpace($context))
+    {
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
+    }
+
+    # Setting up context for the current Subscription.
+    $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+
+    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+    Write-Host "Account Name: [$($context.Account.Id)]"
+    Write-Host "Account Type: [$($context.Account.Type)]"
+    Write-Host $([Constants]::SingleDashLine)
+
+    Write-Host "To reset SAS Expiry Interval for Storage Account(s) in a Subscription, Contributor or higher privileges on the Storage Account are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
+
+    Write-Host "[Step 2 of 3] Fetch Storage Account(s)"
+    Write-Host $([Constants]::SingleDashLine)
+
+    if (-not (Test-Path -Path $FilePath)) {
+        Write-Host "Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::DoubleDashLine)	
+        return
+    }
+
+    Write-Host "Fetching all storage accounts from" -NoNewline
+    Write-Host " [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+    $storageAccounts = Import-Csv -LiteralPath $RollbackFilePath
+
+    $validStorageAccounts = $storageAccounts | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) -and ![String]::IsNullOrWhiteSpace($_.SASExpiryInterval) }
+
+    $validStorageAccountsCount = $(($validStorageAccounts | Measure-Object).Count)
+
+    if ($validStorageAccountsCount -eq 0) {
+        Write-Host "No Storage Account(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)	
+        return
+    }
+
+    Write-Host "Found [$($validStorageAccounts)] Storage Accounts(s).`n" -ForegroundColor $([Constants]::MessageType.Update)
+    
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+                    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+                    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
+                    @{Expression = { $_.SASExpiryInterval }; Label = "SASExpiryInterval"; Width = 100; Alignment = "left" }
+
+    $validStorageAccounts | Format-Table -Property $colsProperty -Wrap
+    Write-Host "`nNote: 0.00:00:00 implies that SAS Expiry Interval was not set before remediation" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host $([Constants]::SingleDashLine)
+
+    # Back up snapshots to `%LocalApplicationData%'.
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\SASExpiryInterval"
+
+    if (-not (Test-Path -Path $backupFolderPath)) {
+        New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
+    }
+
+    Write-Host "[Step 3 of 3] Reset SAS Expiry Interval to previous values on Storage Account(s)"
+    Write-Host $([Constants]::SingleDashLine)
+
+    if (-not $Force) {
+
+        Write-Host "Do you want to reset SAS Expiry Interval to values mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        $userInput = Read-Host -Prompt "(Y|N)"
+
+        if ($userInput -ne "Y") {
+            Write-Host "SAS Expiry Interval will not be rolled back (reset) on storage account(s) mentioned in the file. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        Write-Host "SAS Expiry Interval will be rolled back (reset) on storage account(s) mentioned in the file." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)
+    }
+    else {
+        Write-Host "'Force' flag is provided. SAS Expiry Interval will be rolled back (reset) on storage account(s) mentioned in the file. without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+    }
+
+    $storageAccountRolledback = @()
+    $storageAccountRollbackSkipped = @()
+    $validStorageAccounts | ForEach-Object {
+        try
+        {
+            Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $_.SASExpiryInterval
+            $output = Get-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
+            if(($_.SASExpiryInterval -eq $([Constants]::TimeSpanWhenSASExpiryIntervalDisabled) -and $null -eq $output.SasPolicy.SasExpirationPeriod) -or ($output.SasPolicy.SasExpirationPeriod -eq $_.SASExpiryInterval))
+            {
+                $storageAccountRolledback += $_
+            } else
+            {
+                $storageAccountRollbackSkipped += $_
+            }
+        }
+        catch
+        {
+            $storageAccountRollbackSkipped += $_
+        }
+    }
+
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+
+    if ($($storageAccountRolledback | Measure-Object).Count -gt 0) {
+        Write-Host "SAS Expiry Interval has been rolled back on the Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Update)
+        $storageAccountRolledback | Format-Table -Property $colsProperty -Wrap
+        Write-Host $([Constants]::SingleDashLine)
+
+        # Write this to a file.
+        $storageAccountRolledbackFile = "$($backupFolderPath)\RolledbackSASExpiryIntervalStorageAccounts.csv"
+        $storageAccountRolledback | Export-CSV -Path $storageAccountRolledbackFile -NoTypeInformation
+
+        Write-Host "This information has been saved to" -NoNewline
+        Write-Host " [$($storageAccountRolledbackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+    }
+
+    if ($($storageAccountRollbackSkipped | Measure-Object).Count -gt 0) {
+        Write-Host "Error while rolling back SAS Expiry Interval on the Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Error)
+        $storageAccountRollbackSkipped | Format-Table -Property $colsProperty -Wrap
+        Write-Host $([Constants]::SingleDashLine)
+
+        # Write this to a file.
+        $storageAccountRollbackSkippedFile = "$($backupFolderPath)\SkippedRollbackSASExpiryIntervalStorageAccounts.csv"
+        $storageAccountRollbackSkipped | Export-CSV -Path $storageAccountRollbackSkippedFile -NoTypeInformation
+        
+        Write-Host "This information has been saved to" -NoNewline
+        Write-Host " [$($storageAccountRollbackSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+    }
 }
 
 function CheckifSASExpiryIntervalIsValid
