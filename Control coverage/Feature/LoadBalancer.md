@@ -23,11 +23,11 @@ WAF enforcement on the Load Balancer further strengthens the security posture of
 
 > **Passed:** 
 > 1. Web Application Firewall has been configured on Load Balancer. <b>OR</b>
-> 2. Network Security Group is configured on the subnets assoicated with the Load Balancer.
+> 2. Network Security Group is configured on the subnets associated with the Load Balancer.
 > 
 > **Failed:** 
 > 1. Web Application Firewall is not configured on Load Balancer. <b>OR</b>
-> 2. Network Security Group is not configured on the subnets assoicated with the Load Balancer.
+> 2. Network Security Group is not configured on the subnets associated with the Load Balancer.
 > 
 > **Error:** 
 >There was an error fetching WAF Configuration details of Load Balancer.
