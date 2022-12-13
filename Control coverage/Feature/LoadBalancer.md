@@ -38,7 +38,7 @@ WAF enforcement on the Load Balancer further strengthens the security posture of
 	 To Remediate WAF on Load balancer attach every subnet of virtual network with NSG/Azure Firewall.
 
 - **PowerShell** 
-	# Below commands will be useful to Configure WAF on Application Gateway
+	# Below commands will be useful to Configure WAF on Load Balancer
     Connect-AzAccount
 	Set-AzContext -SubscriptionId "<sub id>"
 	# Get Load Balancer
