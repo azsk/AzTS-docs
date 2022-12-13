@@ -27,6 +27,7 @@ Below resource types can be checked for validating the security controls:
 |[HybridCompute](Feature/HybridCompute.md)|Microsoft.HybridCompute/machines|
 |[KeyVault](Feature/KeyVault.md)|Microsoft.KeyVault/vaults|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
+|[LoadBalancer](Feature/LoadBalancer.md)|Microsoft.Network/loadBalancers |
 |[LogicApps](Feature/LogicApps.md)|Microsoft.Logic/workflows|
 |[NotificationHub](Feature/NotificationHub.md)|Microsoft.NotificationHubs/namespaces/notificationHubs|
 |[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
