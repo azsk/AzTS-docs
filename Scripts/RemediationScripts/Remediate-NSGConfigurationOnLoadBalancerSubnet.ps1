@@ -1,37 +1,45 @@
 <###
 # Overview:
     This script is used to configure the NSG on Subnet being used in the Load Balancer in a Subscription.
+
 # Control ID:
     Azure_LoadBalancer_NetSec_Enable_WAF
+
 # Display Name:
     Load Balancer should have Web Application Firewall (WAF).
+
 # Prerequisites:    
     Owner or higher priviliged role on the Virtual Network(s) is required for remediation.
+
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
         2. Get the list of Subnet(s) in a Subscription that have NSG is not configured.
         3. Back up details of Subnet(s) that are to be remediated.
         4. Configure the NSG on the Subnet(s) of Virtual Network in the Subscription.
+
     To roll back:
         1. Validate and install the modules required to run the script and validating the user.
         2. Get the list of Subnet(s) in a Subscription, the changes made to which previously, are to be rolled back.
         3. Remove the NSG configuration from the Subnet(s) in the Subscription.
+
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to configure NSG on the Subnet(s) in the Subscription. Refer `Examples`, below.
+
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to Remove the NSG configuration on the Subnet(s) in the Subscription. Refer `Examples`, below.
+
 # Examples:
     To remediate:
         1. To review the Subnet(s) in a Subscription that will be remediated:
-    
+
         2. Configure the NSG on the Subnet(s)(s) in the Subscription:
-       
+
            Add-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
         3. Configure the NSG on the Subnet(s) in the Subscription, from a previously taken snapshot:
        
@@ -39,13 +47,14 @@
         To know more about the options supported by the remediation command, execute:
         
         Get-Help Add-NSGConfigurationOnSubnet -Detailed
+
     To roll back:
         1. Remove the NSG configuration on the Subnet(s) in the Subscription, from a previously taken snapshot:
            Remove-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableDDoSProtectionPlan\RemediatedSubnetDetails.csv
        
         To know more about the options supported by the roll back command, execute:
-        
-        Get-Help Remove-NSGConfigurationOnSubnet -Detailed        
+        Get-Help Remove-NSGConfigurationOnSubnet -Detailed 
+               
 ###>
 
 
