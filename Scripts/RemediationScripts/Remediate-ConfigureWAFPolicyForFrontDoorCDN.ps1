@@ -247,7 +247,7 @@ function Configure-WAFPolicyForFrontDoorCDN
         Write-Host "Fetching all Front Door CDNs in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
     
         # Get all Front Door CDNs in the Subscription
-        $frontDoorCDNs = Get-AzFrontDoorCdnProfile -ErrorAction Stop
+        $frontDoorCDNs = Get-AzFrontDoorCdnProfile -ErrorAction SilentlyContinue
         $totalfrontDoors = ($frontDoorCDNs | Measure-Object).Count
         
         if($totalfrontDoors -gt 0)
