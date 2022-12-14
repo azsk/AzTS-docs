@@ -1,9 +1,9 @@
 ﻿<###
 # Overview:
-    This script is used to enable WAF Policy on All endpoints of Front Door CDNs in a Subscription.
+    This script is used to enable state of the WAF Policy configured on endpoints of Front Door CDNs in a Subscription.
 
 # Control ID:
-    Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial
+    Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration
 
 # Display Name:
    Front Door should have Web Application Firewall configured
@@ -110,10 +110,10 @@ function Enable-WAFPolicyForFrontDoorCDN
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial' Control.
+        Remediates 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial' Control.
+        Remediates 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration' Control.
         WAF Policy must be Enabled for Front Door CDN Endpoint(s).
         
         .PARAMETER SubscriptionId
@@ -130,15 +130,6 @@ function Enable-WAFPolicyForFrontDoorCDN
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
-                
-        .PARAMETER Path
-        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
-
-        .PARAMETER AutoRemediation
-        Specifies script is run as a subroutine of AutoRemediation Script.
-
-        .PARAMETER TimeStamp
-        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
         None. You cannot pipe objects to Enable-WAFPolicyForFrontDoors.
@@ -180,19 +171,7 @@ function Enable-WAFPolicyForFrontDoorCDN
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath,
-        
-        [String]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
-        $Path,
-
-        [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
-        $AutoRemediation,
-
-        [String]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
-        $TimeStamp
+        $FilePath
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -235,15 +214,12 @@ function Enable-WAFPolicyForFrontDoorCDN
       # Setting up context for the current Subscription.
       $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-
-    if(-not($AutoRemediation))	
-    {
         Write-Host "Subscription Name: [$($context.Subscription.Name)]"
         Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
         Write-Host "Account Name: [$($context.Account.Id)]"
         Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
-    }
+
 
     Write-Host "To enable WAF Policy for Front Door CDN Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Door CDNs are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
@@ -261,235 +237,244 @@ function Enable-WAFPolicyForFrontDoorCDN
      $logSkippedResources=@()
  
      # Control Id
-     $controlIds = "Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial"
+     $controlIds = "Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration"
  
-    if($AutoRemediation)
+     
+    # No file path provided as input to the script. Fetch all Front Door CDNs in the Subscription.
+    if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-         if(-not (Test-Path -Path $Path))
-         {
-             Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
-             Write-Host $([Constants]::DoubleDashLine)
-             return
-         }
-         Write-Host "Fetching all Front Doors CDN failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
-         Write-Host $([Constants]::SingleDashLine)
-         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
-         $controls = $controlForRemediation.ControlRemediationList
-         $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
-         $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
- 
-         if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
-         {
-             Write-Host "No Front Door CDN(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
-             Write-Host $([Constants]::SingleDashLine)
-             return
-         }  
-         
-         $validResources | ForEach-Object { 
-             try
-             {
-                 $name = $_.ResourceName
-                 $resourceGroupName = $_.ResourceGroupName
- 
-                 if($null -ne $classicAccessToken)
-                 {
-                     $header = "Bearer " + $classicAccessToken
-                     $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
-                     $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/securityPolicies?api-version=2021-06-01",$resourceAppIdURI,$SubscriptionId,$resourceGroupName,$name)
-                     $apiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
- 
-                     if($apiResponse.StatusCode -ge 200 -and $apiResponse.StatusCode -le 399)
-                     {
-                         if($null -ne $apiResponse.Content)
-                         {
-                             $content = $apiResponse.Content | ConvertFrom-Json 
-                             $value = $content.value
-                             $totalValues = ($value | Measure-Object).Count
-                             for($i=0; $i -lt $totalValues; $i++)
-                             {
-                                 $wafPolicyId = $value[$i].properties.parameters.wafPolicy.id
-                                 $wafPolicyName = $wafPolicyId.Split('/')[8]
-                                 $wafPolicyResourceGroup = $wafPolicyId.Split('/')[4]
-                                 $associations = $value[$i].properties.parameters.associations
-                                 $totalAssociations = ($associations | Measure-Object).Count
-                                     for($j=0; $j -lt $totalAssociations; $j++)
-                                     {
-                                         $association = $associations[$j]
-                                         $domains = $association.domains
-                                         $totalDomains = ($domains | Measure-Object).Count
-                                         for($k=0; $k -lt $totalDomains; $k++)
-                                         {
-                                             $domain = $domains[$k]
-                                             $id = $domain.id
-                                             $endpointName = $id.Split('/')[10]
-                                             $EndpointPolicy = New-Object System.Object
-                                             $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "endpointName" -Value $endpointName
-                                             $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyName" -Value $wafPolicyName
-                                             $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyResourceGroup" -Value $wafPolicyResourceGroup
-                                             $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyId" -Value $wafPolicyId 
-                                             $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "frontdoorName" -Value $frontDoorName
-                                             $endPointPolicies.Add($EndpointPolicy) | Out-Null
-                                         }
-                                     }   
-                             }
-                         }        
-                     }
-                 }
-                 
-                 # Get all Frontendpoint(s) for this Front Door.
-                 $endpoints = ( Get-AzFrontDoorCdnEndpoint -ResourceGroupName $resourceGroupName -ProfileName $name -ErrorAction SilentlyContinue) 
-                 $frontDoorEndPoints += $endpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
-                                                                             @{N='FrontDoorName';E={$frontDoorName}},
-                                                                             @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                             @{N='EndPointName';E={$_.Name}},
-                                                                             @{N='WAFPolicyName';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName }},
-                                                                             @{N='WAFPolicyResourceGroup';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup}},
-                                                                             @{N='IsWAFConfigured';E={
-                                                                             if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
-                                                                             { 
-                                                                                 $false
-                                                                             }
-                                                                             else
-                                                                             {
-                                                                                 $true
-                                                                             }
-                                                                             }},
-                                                                             @{N='IsPreventionMode';E={
-                                                                             if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
-                                                                             { 
-                                                                                 $false
-                                                                             }
-                                                                             else
-                                                                             {
-                                                                                 $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
-                                                                                 if($WAFPolicy.PolicyMode -eq 'Prevention')
-                                                                                 { 
-                                                                                     $true
-                                                                                 }
-                                                                                 else
-                                                                                 {
-                                                                                     $false
-                                                                                     
-                                                                                 }
-                                                                             }
-                                                                             }},
-                                                                             @{N='IsWAFEnabled';E={
-                                                                                 if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
-                                                                                 { 
-                                                                                     $false
-                                                                                 }
-                                                                                 else
-                                                                                 {
-                                                                                     $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
-                                                                                     
-                                                                                     if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                     { 
-                                                                                         $true
-                                                                                     }
-                                                                                     else
-                                                                                     {
-                                                                                         $false
-                                                                                     }
-                                                                                 }
-                                                                             }}
-             }
-             catch
-             {
-                 Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                 Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
-                 $logResource = @{}
-                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                 $logResource.Add("ResourceName",($_.ResourceName))
-                 $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
-                 $logSkippedResources += $logResource
-                 Write-Host $([Constants]::SingleDashLine)
-             }
-         }
-    } 
+        Write-Host "Fetching all Front Door CDNs in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    
+        # Get all Front Door CDNs in the Subscription
+        $frontDoorCDNs = Get-AzFrontDoorCdnProfile -ErrorAction SilentlyContinue
+        $totalfrontDoors = ($frontDoorCDNs | Measure-Object).Count
+        
+        if($totalfrontDoors -gt 0)
+        {
+            $frontDoorCDNs | ForEach-Object {
+                $frontDoor = $_
+                $frontDoorId = $_.Id
+                $resourceGroupName = $_.Id.Split('/')[4]
+                $frontDoorName = $_.Name
+
+            if($null -ne $classicAccessToken)
+            {
+                $header = "Bearer " + $classicAccessToken
+                $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
+                $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/securityPolicies?api-version=2021-06-01",$resourceAppIdURI,$SubscriptionId,$resourceGroupName,$frontDoorName)
+                $apiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
+
+                if($apiResponse.StatusCode -ge 200 -and $apiResponse.StatusCode -le 399)
+                {
+                    if($null -ne $apiResponse.Content)
+                    {
+                        $content = $apiResponse.Content | ConvertFrom-Json 
+                        $value = $content.value
+                        $totalValues = ($value | Measure-Object).Count
+                        for($i=0; $i -lt $totalValues; $i++)
+                        {
+                            $wafPolicyId = $value[$i].properties.parameters.wafPolicy.id
+                            $wafPolicyName = $wafPolicyId.Split('/')[8]
+                            $wafPolicyResourceGroup = $wafPolicyId.Split('/')[4]
+                            $associations = $value[$i].properties.parameters.associations
+                            $totalAssociations = ($associations | Measure-Object).Count
+                                for($j=0; $j -lt $totalAssociations; $j++)
+                                {
+                                    $association = $associations[$j]
+                                    $domains = $association.domains
+                                    $totalDomains = ($domains | Measure-Object).Count
+                                    for($k=0; $k -lt $totalDomains; $k++)
+                                    {
+                                        $domain = $domains[$k]
+                                        $id = $domain.id
+                                        $endpointName = $id.Split('/')[10]
+                                        $EndpointPolicy = New-Object System.Object
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "endpointName" -Value $endpointName
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyName" -Value $wafPolicyName
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyResourceGroup" -Value $wafPolicyResourceGroup
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyId" -Value $wafPolicyId 
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "frontdoorName" -Value $frontDoorName
+                                        $endPointPolicies.Add($EndpointPolicy) | Out-Null
+                                    }
+                                }   
+                        }
+                    }        
+                }
+            }
+
+
+            # Get all Endpoint(s) for this Front Door CDN.
+            $endpoints = ( Get-AzFrontDoorCdnEndpoint -ResourceGroupName $resourceGroupName -ProfileName $frontDoorName -ErrorAction SilentlyContinue) 
+            $frontDoorEndPoints += $endpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
+                                                                        @{N='FrontDoorName';E={$frontDoorName}},
+                                                                        @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                        @{N='EndPointName';E={$_.Name}},
+                                                                        @{N='WAFPolicyName';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName }},
+                                                                        @{N='WAFPolicyResourceGroup';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup}},
+                                                                        @{N='IsWAFConfigured';E={
+                                                                        if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
+                                                                        { 
+                                                                            $false
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $true
+                                                                        }
+                                                                        }},
+                                                                        @{N='IsPreventionMode';E={
+                                                                        if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
+                                                                        { 
+                                                                            $false
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
+                                                                            if($WAFPolicy.PolicyMode -eq 'Prevention')
+                                                                            { 
+                                                                                $true
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $false
+                                                                                
+                                                                            }
+                                                                        }
+                                                                        }},
+                                                                        @{N='IsWAFPolicyStateEnabled';E={
+                                                                            if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
+                                                                            { 
+                                                                                $false
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
+                                                                                
+                                                                                if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
+                                                                                { 
+                                                                                    $true
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $false
+                                                                                }
+                                                                            }
+                                                                        }}
+        
+            }
+        }
+    }
     else
     {
-        # No file path provided as input to the script. Fetch all Front Door CDNs in the Subscription.
-        if ([String]::IsNullOrWhiteSpace($FilePath))
+        if (-not (Test-Path -Path $FilePath))
         {
-            Write-Host "Fetching all Front Door CDNs in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+            break
+        }
+
+        Write-Host "Fetching all Front Door CDN Endpoint(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+
+        $frontDoorEndpointsDetails = Import-Csv -LiteralPath $FilePath
+        $validfrontDoorEndpointsDetails = $frontDoorEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
         
-            # Get all Front Door CDNs in the Subscription
-            $frontDoorCDNs = Get-AzFrontDoorCdnProfile -ErrorAction SilentlyContinue
-            $totalfrontDoors = ($frontDoorCDNs | Measure-Object).Count
-            
-            if($totalfrontDoors -gt 0)
+        $uniquefrontDoors = $validfrontDoorEndpointsDetails | Select-Object -Unique -Property FrontDoorName, ResourceGroupName
+
+        foreach($frontdoor in $uniquefrontDoors)
+        {
+            $resourceGroupName = $frontdoor.ResourceGroupName
+            $frontDoorName = $frontdoor.FrontDoorName
+            if($null -ne $classicAccessToken)
             {
-                $frontDoorCDNs | ForEach-Object {
-                    $frontDoor = $_
-                    $frontDoorId = $_.Id
-                    $resourceGroupName = $_.Id.Split('/')[4]
-                    $frontDoorName = $_.Name
+                $header = "Bearer " + $classicAccessToken
+                $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
+                $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/securityPolicies?api-version=2021-06-01",$resourceAppIdURI,$SubscriptionId,$resourceGroupName,$frontDoorName)
+                $apiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
 
-                if($null -ne $classicAccessToken)
+                if($apiResponse.StatusCode -ge 200 -and $apiResponse.StatusCode -le 399)
                 {
-                    $header = "Bearer " + $classicAccessToken
-                    $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
-                    $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/securityPolicies?api-version=2021-06-01",$resourceAppIdURI,$SubscriptionId,$resourceGroupName,$frontDoorName)
-                    $apiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
-
-                    if($apiResponse.StatusCode -ge 200 -and $apiResponse.StatusCode -le 399)
+                    if($null -ne $apiResponse.Content)
                     {
-                        if($null -ne $apiResponse.Content)
+                        $content = $apiResponse.Content | ConvertFrom-Json 
+                        $value = $content.value
+                        $totalValues = ($value | Measure-Object).Count
+                        for($i=0; $i -lt $totalValues; $i++)
                         {
-                            $content = $apiResponse.Content | ConvertFrom-Json 
-                            $value = $content.value
-                            $totalValues = ($value | Measure-Object).Count
-                            for($i=0; $i -lt $totalValues; $i++)
-                            {
-                                $wafPolicyId = $value[$i].properties.parameters.wafPolicy.id
-                                $wafPolicyName = $wafPolicyId.Split('/')[8]
-                                $wafPolicyResourceGroup = $wafPolicyId.Split('/')[4]
-                                $associations = $value[$i].properties.parameters.associations
-                                $totalAssociations = ($associations | Measure-Object).Count
-                                    for($j=0; $j -lt $totalAssociations; $j++)
+                            $wafPolicyId = $value[$i].properties.parameters.wafPolicy.id
+                            $wafPolicyName = $wafPolicyId.Split('/')[8]
+                            $wafPolicyResourceGroup = $wafPolicyId.Split('/')[4]
+                            $associations = $value[$i].properties.parameters.associations
+                            $totalAssociations = ($associations | Measure-Object).Count
+                                for($j=0; $j -lt $totalAssociations; $j++)
+                                {
+                                    $association = $associations[$j]
+                                    $domains = $association.domains
+                                    $totalDomains = ($domains | Measure-Object).Count
+                                    for($k=0; $k -lt $totalDomains; $k++)
                                     {
-                                        $association = $associations[$j]
-                                        $domains = $association.domains
-                                        $totalDomains = ($domains | Measure-Object).Count
-                                        for($k=0; $k -lt $totalDomains; $k++)
-                                        {
-                                            $domain = $domains[$k]
-                                            $id = $domain.id
-                                            $endpointName = $id.Split('/')[10]
-                                            $EndpointPolicy = New-Object System.Object
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "endpointName" -Value $endpointName
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyName" -Value $wafPolicyName
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyResourceGroup" -Value $wafPolicyResourceGroup
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyId" -Value $wafPolicyId 
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "frontdoorName" -Value $frontDoorName
-                                            $endPointPolicies.Add($EndpointPolicy) | Out-Null
-                                        }
-                                    }   
-                            }
-                        }        
-                    }
+                                        $domain = $domains[$k]
+                                        $id = $domain.id
+                                        $endpointName = $id.Split('/')[10]
+                                        $EndpointPolicy = New-Object System.Object
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "endpointName" -Value $endpointName
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyName" -Value $wafPolicyName
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyResourceGroup" -Value $wafPolicyResourceGroup
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyId" -Value $wafPolicyId 
+                                        $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "frontdoorName" -Value $frontDoorName
+                                        $endPointPolicies.Add($EndpointPolicy) | Out-Null
+                                    }
+                                }   
+                        }
+                    }        
                 }
+            }
 
+        }
 
-                # Get all Endpoint(s) for this Front Door CDN.
-                $endpoints = ( Get-AzFrontDoorCdnEndpoint -ResourceGroupName $resourceGroupName -ProfileName $frontDoorName -ErrorAction SilentlyContinue) 
+        $validfrontDoorEndpointsDetails | ForEach-Object {
+            $frontdoorEndpointName = $_.EndPointName
+            $resourceGroupName = $_.ResourceGroupName
+            $frontDoorName = $_.FrontDoorName
+
+            try
+            {
+                
+
+                $endpoints = ( Get-AzFrontDoorCdnEndpoint -EndpointName $frontdoorEndpointName -ProfileName $frontDoorName -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue) 
                 $frontDoorEndPoints += $endpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
-                                                                            @{N='FrontDoorName';E={$frontDoorName}},
-                                                                            @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                            @{N='EndPointName';E={$_.Name}},
-                                                                            @{N='WAFPolicyName';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName }},
-                                                                            @{N='WAFPolicyResourceGroup';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup}},
-                                                                            @{N='IsWAFConfigured';E={
-                                                                            if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
+                                                                        @{N='FrontDoorName';E={$frontDoorName}},
+                                                                        @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                        @{N='EndPointName';E={$_.Name}},
+                                                                        @{N='WAFPolicyName';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName }},
+                                                                        @{N='WAFPolicyResourceGroup';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup}},
+                                                                        @{N='IsWAFConfigured';E={
+                                                                        if(($endPointPolicies | where endpointName -eq $_.Name | select -ExpandProperty wafPolicyName) -eq $null)
+                                                                        { 
+                                                                            $false
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $true
+                                                                        }
+                                                                        }},
+                                                                        @{N='IsPreventionMode';E={
+                                                                        if(($endPointPolicies | where endpointName -eq $_.Name | select -ExpandProperty wafPolicyName) -eq $null)
+                                                                        { 
+                                                                            $false
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
+                                                                            if($WAFPolicy.PolicyMode -eq 'Prevention')
                                                                             { 
-                                                                                $false
+                                                                                $true
                                                                             }
                                                                             else
                                                                             {
-                                                                                $true
+                                                                                $false
+                                                                                
                                                                             }
-                                                                            }},
-                                                                            @{N='IsPreventionMode';E={
+                                                                        }
+                                                                        }},
+                                                                        @{N='IsWAFPolicyStateEnabled';E={
                                                                             if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
                                                                             { 
                                                                                 $false
@@ -497,195 +482,41 @@ function Enable-WAFPolicyForFrontDoorCDN
                                                                             else
                                                                             {
                                                                                 $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
-                                                                                if($WAFPolicy.PolicyMode -eq 'Prevention')
+                                                                                
+                                                                                if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
                                                                                 { 
                                                                                     $true
                                                                                 }
                                                                                 else
                                                                                 {
                                                                                     $false
-                                                                                    
                                                                                 }
                                                                             }
-                                                                            }},
-                                                                            @{N='IsWAFEnabled';E={
-                                                                                if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
-                                                                                { 
-                                                                                    $false
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
-                                                                                    
-                                                                                    if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                    { 
-                                                                                        $true
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        $false
-                                                                                    }
-                                                                                }
-                                                                            }}
-            
-                }
+                                                                        }}
             }
-        }
-        else
-        {
-            if (-not (Test-Path -Path $FilePath))
+            catch
             {
-                Write-Host "Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                break
-            }
-
-            Write-Host "Fetching all Front Door CDN Endpoint(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
-
-            $frontDoorEndpointsDetails = Import-Csv -LiteralPath $FilePath
-            $validfrontDoorEndpointsDetails = $frontDoorEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
-            
-            $uniquefrontDoors = $validfrontDoorEndpointsDetails | Select-Object -Unique -Property FrontDoorName, ResourceGroupName
-
-            foreach($frontdoor in $uniquefrontDoors)
-            {
-                $resourceGroupName = $frontdoor.ResourceGroupName
-                $frontDoorName = $frontdoor.FrontDoorName
-                if($null -ne $classicAccessToken)
-                {
-                    $header = "Bearer " + $classicAccessToken
-                    $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
-                    $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/securityPolicies?api-version=2021-06-01",$resourceAppIdURI,$SubscriptionId,$resourceGroupName,$frontDoorName)
-                    $apiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
-
-                    if($apiResponse.StatusCode -ge 200 -and $apiResponse.StatusCode -le 399)
-                    {
-                        if($null -ne $apiResponse.Content)
-                        {
-                            $content = $apiResponse.Content | ConvertFrom-Json 
-                            $value = $content.value
-                            $totalValues = ($value | Measure-Object).Count
-                            for($i=0; $i -lt $totalValues; $i++)
-                            {
-                                $wafPolicyId = $value[$i].properties.parameters.wafPolicy.id
-                                $wafPolicyName = $wafPolicyId.Split('/')[8]
-                                $wafPolicyResourceGroup = $wafPolicyId.Split('/')[4]
-                                $associations = $value[$i].properties.parameters.associations
-                                $totalAssociations = ($associations | Measure-Object).Count
-                                    for($j=0; $j -lt $totalAssociations; $j++)
-                                    {
-                                        $association = $associations[$j]
-                                        $domains = $association.domains
-                                        $totalDomains = ($domains | Measure-Object).Count
-                                        for($k=0; $k -lt $totalDomains; $k++)
-                                        {
-                                            $domain = $domains[$k]
-                                            $id = $domain.id
-                                            $endpointName = $id.Split('/')[10]
-                                            $EndpointPolicy = New-Object System.Object
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "endpointName" -Value $endpointName
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyName" -Value $wafPolicyName
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyResourceGroup" -Value $wafPolicyResourceGroup
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "wafPolicyId" -Value $wafPolicyId 
-                                            $EndpointPolicy | Add-Member -MemberType NoteProperty -Name "frontdoorName" -Value $frontDoorName
-                                            $endPointPolicies.Add($EndpointPolicy) | Out-Null
-                                        }
-                                    }   
-                            }
-                        }        
-                    }
-                }
-
-            }
-
-            $validfrontDoorEndpointsDetails | ForEach-Object {
-                $frontdoorEndpointName = $_.EndPointName
-                $resourceGroupName = $_.ResourceGroupName
-                $frontDoorName = $_.FrontDoorName
-
-                try
-                {
-                    
-
-                    $endpoints = ( Get-AzFrontDoorCdnEndpoint -EndpointName $frontdoorEndpointName -ProfileName $frontDoorName -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue) 
-                    $frontDoorEndPoints += $endpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
-                                                                            @{N='FrontDoorName';E={$frontDoorName}},
-                                                                            @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                            @{N='EndPointName';E={$_.Name}},
-                                                                            @{N='WAFPolicyName';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName }},
-                                                                            @{N='WAFPolicyResourceGroup';E={ $endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup}},
-                                                                            @{N='IsWAFConfigured';E={
-                                                                            if(($endPointPolicies | where endpointName -eq $_.Name | select -ExpandProperty wafPolicyName) -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $true
-                                                                            }
-                                                                            }},
-                                                                            @{N='IsPreventionMode';E={
-                                                                            if(($endPointPolicies | where endpointName -eq $_.Name | select -ExpandProperty wafPolicyName) -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
-                                                                                if($WAFPolicy.PolicyMode -eq 'Prevention')
-                                                                                { 
-                                                                                    $true
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $false
-                                                                                    
-                                                                                }
-                                                                            }
-                                                                            }},
-                                                                            @{N='IsWAFEnabled';E={
-                                                                                if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
-                                                                                { 
-                                                                                    $false
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $WAFPolicy = Get-AzFrontDoorWafPolicy -Name  ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -ResourceGroupName   ($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyResourceGroup)
-                                                                                    
-                                                                                    if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                    { 
-                                                                                        $true
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        $false
-                                                                                    }
-                                                                                }
-                                                                            }}
-                }
-                catch
-                {
-                    Write-Host "Error fetching Front Door CDN Endpoint:  ID - [$($frontdoorEndpointId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this Front Door CDN Endpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
-                }
+                Write-Host "Error fetching Front Door CDN Endpoint:  ID - [$($frontdoorEndpointId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this Front Door CDN Endpoint..." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
     }
+    
 
-    if(-not($AutoRemediation))
+     
+    if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        if ([String]::IsNullOrWhiteSpace($FilePath))
+        $totalfrontDoors = ($frontDoorCDNs | Measure-Object).Count
+
+        if ($totalfrontDoors -eq 0)
         {
-            $totalfrontDoors = ($frontDoorCDNs | Measure-Object).Count
-
-            if ($totalfrontDoors -eq 0)
-            {
-                Write-Host "No Front Door CDNs found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                break
-            }
-
-            Write-Host "Found $($totalfrontDoors) Front Door CDN(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "No Front Door CDNs found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            break
         }
+
+        Write-Host "Found $($totalfrontDoors) Front Door CDN(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
+     
   
    
     $totalfrontDoorEndPoints = ($frontDoorEndPoints | Measure-Object).Count
@@ -712,7 +543,7 @@ function Enable-WAFPolicyForFrontDoorCDN
     Write-Host $([Constants]::SingleDashLine)
     $frontDoorEndPoints | ForEach-Object {
         $endPoint = $_        
-            if(($_.IsWAFEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
+            if(($_.IsWAFPolicyStateEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
             {
                 $frontDoorEndpointsWithWAFPolicyNotEnabled += $endPoint
             }
@@ -734,39 +565,24 @@ function Enable-WAFPolicyForFrontDoorCDN
     {
         Write-Host "No Front Door CDN endpoints(s) found where WAF Policy is not Enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)	
-
-        if($AutoRemediation -and ($frontDoorFrontendPoints |Measure-Object).Count -gt 0) 
-        {
-            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
-            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
-            foreach($logControl in $log.ControlList){
-                if($logControl.ControlId -eq $controlIds){
-                    $logControl.RemediatedResources=$logRemediatedResources
-                    $logControl.SkippedResources=$logSkippedResources
-                }
-            }
-            $log | ConvertTo-json -depth 10  | Out-File $logFile
-        }	
         return
     }
 
     Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotEnabled)] Front Door CDN Endpoints(s) found where WAF Policy is not Enabled ." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
      
-    if(-not($AutoRemediation))
-    {  
-        Write-Host "Following Front Door CDN Endpoints(s) are having WAF Policies not Enabled:" -ForegroundColor $([Constants]::MessageType.Info)
-        $colsProperty = @{Expression={$_.EndpointId};Label="Endpoint Id";Width=10;Alignment="left"},
-                            @{Expression={$_.EndPointName};Label="Endpoint";Width=10;Alignment="left"},
-                            @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                            @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
-                            @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
-                            @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
-                            @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
-                            @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
-                            @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
-        $frontDoorEndpointsWithWAFPolicyNotEnabled | Format-Table -Property $colsProperty -Wrap
-    }
+  
+    Write-Host "Following Front Door CDN Endpoints(s) are having WAF Policies not Enabled:" -ForegroundColor $([Constants]::MessageType.Info)
+    $colsProperty = @{Expression={$_.EndpointId};Label="Endpoint Id";Width=10;Alignment="left"},
+                        @{Expression={$_.EndPointName};Label="Endpoint";Width=10;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
+                        @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
+                        @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
+                        @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
+                        @{Expression={$_.IsWAFPolicyStateEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
+    $frontDoorEndpointsWithWAFPolicyNotEnabled | Format-Table -Property $colsProperty -Wrap
+
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableFrontDoorCDNWAFPolicy"
@@ -794,32 +610,31 @@ function Enable-WAFPolicyForFrontDoorCDN
 
     if (-not $DryRun)
     {
-        if(-not $AutoRemediation)
+         
+        Write-Host "WAF Policy will be Enabled for all Front Door CDN Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+
+        if (-not $Force)
         {
-            Write-Host "WAF Policy will be Enabled for all Front Door CDN Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Do you want to Enable WAF Policies associated with Front Door CDN Endpoint(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            
+            $userInput = Read-Host -Prompt "(Y|N)"
 
-            if (-not $Force)
+            if($userInput -ne "Y")
             {
-                Write-Host "Do you want to Enable WAF Policies associated with Front Door CDN Endpoint(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-                
-                $userInput = Read-Host -Prompt "(Y|N)"
-
-                if($userInput -ne "Y")
-                {
-                    Write-Host " WAF Policy will not be enabled for any Front Door CDN Endpoint(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                    break
-                }
-                else
-                {
-                    Write-Host "WAF Policy will be enabled for all Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
-                    Write-Host $([Constants]::SingleDashLine)
-                }
+                Write-Host " WAF Policy will not be enabled for any Front Door CDN Endpoint(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                break
             }
             else
             {
-                Write-Host "'Force' flag is provided. WAF Policy will be enabled on all Front Door CDN Endoint(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "WAF Policy will be enabled for all Front Door CDN Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
+        else
+        {
+            Write-Host "'Force' flag is provided. WAF Policy will be enabled on all Front Door CDN Endoint(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        }
+         
 
         
         Write-Host "[Step 5 of 5] Enabling WAF Policy for Front Door CDN Endpoint(s)"
@@ -848,7 +663,7 @@ function Enable-WAFPolicyForFrontDoorCDN
                 }
                 else
                 {
-                    $frontDoorEndPoint.IsWAFEnabled = $true
+                    $frontDoorEndPoint.IsWAFPolicyStateEnabled = $true
                     $frontDoorEndpointsRemediated += $frontDoorEndPoint
                 }
             }
@@ -878,73 +693,38 @@ function Enable-WAFPolicyForFrontDoorCDN
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
                         @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
-                        @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
-                        @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
+                        @{Expression={$_.IsWAFPolicyStateEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
                        
                       
        
         Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         
-        if($AutoRemediation)
+        
+        
+        if ($($frontDoorEndpointsRemediated | Measure-Object).Count -gt 0)
         {
-            if($($frontDoorEndpointsRemediated | Measure-Object).Count -gt 0)
-            {
-                # Write this to a file.
-                $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorCDNEndpointsForEnabledState.csv"
-                $frontDoorEndpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Front door CDN Endpoints(s) where WAF Policy is enabled has been saved to [$($frontDoorEndpointsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-            }
+            Write-Host "Successfully enabled WAF Policy on the following Frontdoor CDN Endpoint(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            $frontDoorEndpointsRemediated | Format-Table -Property $colsProperty -Wrap
 
-            if ($($endpointsSkipped | Measure-Object).Count -gt 0)
-            {   
-                # Write this to a file.
-                $endpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorCDNEndpointsForEnabledState.csv"
-                $endpointsSkipped | Export-CSV -Path $endpointsSkippedFile -NoTypeInformation
-                Write-Host "The information related to Front door CDN Endpoints(s) where WAF Policy is not enabled has been saved to [$($endpointsSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-            }
-        }
-        else
-        { 
-            if ($($frontDoorEndpointsRemediated | Measure-Object).Count -gt 0)
-            {
-                Write-Host "Successfully enabled WAF Policy on the following Frontdoor CDN Endpoint(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                $frontDoorEndpointsRemediated | Format-Table -Property $colsProperty -Wrap
-
-                # Write this to a file.
-                $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorCDNEndpointsForEnabledState.csv"
-                $frontDoorEndpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($frontDoorEndpointsRemediatedFile)]"
-                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
-            }
-
-            if ($($endpointsSkipped | Measure-Object).Count -gt 0)
-            {
-                Write-Host "Error performing remediation steps for the following Front Door CDN Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-                $endpointsSkipped | Format-Table -Property $colsProperty -Wrap
-                
-                # Write this to a file.
-                $endpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorCDNEndpointsForEnabledState.csv"
-                $endpointsSkipped | Export-CSV -Path $endpointsSkippedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($endpointsSkippedFile)]"
-            }
+            # Write this to a file.
+            $frontDoorEndpointsRemediatedFile = "$($backupFolderPath)\RemediatedfrontDoorCDNEndpointsForEnabledState.csv"
+            $frontDoorEndpointsRemediated | Export-CSV -Path $frontDoorEndpointsRemediatedFile -NoTypeInformation
+            Write-Host "This information has been saved to [$($frontDoorEndpointsRemediatedFile)]"
+            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
-        if($AutoRemediation)
+        if ($($endpointsSkipped | Measure-Object).Count -gt 0)
         {
-            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
-            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
-            foreach($logControl in $log.ControlList){
-                if($logControl.ControlId -eq $controlIds){
-                    $logControl.RemediatedResources=$logRemediatedResources
-                    $logControl.SkippedResources=$logSkippedResources
-                    $logControl.RollbackFile = $frontDoorEndpointsRemediatedFile
-                }
-            }
-            $log | ConvertTo-json -depth 10  | Out-File $logFile
+            Write-Host "Error performing remediation steps for the following Front Door CDN Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            $endpointsSkipped | Format-Table -Property $colsProperty -Wrap
+            
+            # Write this to a file.
+            $endpointsSkippedFile = "$($backupFolderPath)\SkippedfrontDoorCDNEndpointsForEnabledState.csv"
+            $endpointsSkipped | Export-CSV -Path $endpointsSkippedFile -NoTypeInformation
+            Write-Host "This information has been saved to [$($endpointsSkippedFile)]"
         }
+        
     }
     else
     {
@@ -963,10 +743,10 @@ function Disable-WAFPolicyForFrontDoorCDN
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial' Control.
+        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration_Trial' Control.
+        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration' Control.
         Disables back all WAF Policies in all Front Door CDNs in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -1183,7 +963,7 @@ function Disable-WAFPolicyForFrontDoorCDN
                                                                             }
                                                                         }
                                                                         }},
-                                                                        @{N='IsWAFEnabled';E={
+                                                                        @{N='IsWAFPolicyStateEnabled';E={
                                                                             if(($endPointPolicies | where endpointName -eq $_.Name |  select -ExpandProperty wafPolicyName) -eq $null)
                                                                             { 
                                                                                 $false
@@ -1224,7 +1004,7 @@ function Disable-WAFPolicyForFrontDoorCDN
 
     $frontDoorEndPoints | ForEach-Object {
         $endPoint = $_        
-            if(($_.IsWAFEnabled -eq $true) -and ($_.IsWAFConfigured -eq $true))
+            if(($_.IsWAFPolicyStateEnabled -eq $true) -and ($_.IsWAFConfigured -eq $true))
             {
                 $frontDoorEndpointsWithWAFPolicyEnabled += $endPoint
             }
@@ -1297,7 +1077,7 @@ function Disable-WAFPolicyForFrontDoorCDN
                 }
                 else
                 {
-                    $frontDoorEndPoint.IsWAFEnabled = $false
+                    $frontDoorEndPoint.IsWAFPolicyStateEnabled = $false
                     $frontDoorEndpointsRolledBack += $frontDoorEndPoint
                 }
             }
@@ -1331,8 +1111,7 @@ function Disable-WAFPolicyForFrontDoorCDN
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
                         @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
-                        @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
-                        @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
+                        @{Expression={$_.IsWAFPolicyStateEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
             
 
         if ($($frontDoorEndpointsRolledBack | Measure-Object).Count -gt 0)
