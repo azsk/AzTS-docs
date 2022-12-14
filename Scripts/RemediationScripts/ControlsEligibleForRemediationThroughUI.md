@@ -31,6 +31,8 @@
 
 15. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
 
+16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
+
 <br />
 ___
 
@@ -226,5 +228,18 @@ Use Approved TLS Version in Storage Account
 
 ### Minimum permissions required to run the script
 Owner or higher priviliged role on the Storage Account(s)
+
+___
+
+## 15. Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
+
+### Display Name
+Shared Access Signature (SAS) expiry interval must be less than approved upper limit for Azure Storage
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SASExpiryIntervalForStorageAccounts](Remediate-SASExpiryIntervalForStorageAccounts.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
 
 ___
