@@ -40,7 +40,7 @@ WAF enforcement on the Load Balancer further strengthens the security posture of
  **For more help run:**
 
 	Get-Help Remove-NSGConfigurationOnSubnet -Detailed
-	#cGet-Help Add-NSGConfigurationOnSubnet -Detailed 
+	Get-Help Add-NSGConfigurationOnSubnet -Detailed 
 
 ### Azure Policy or ARM API used for evaluation 
 
