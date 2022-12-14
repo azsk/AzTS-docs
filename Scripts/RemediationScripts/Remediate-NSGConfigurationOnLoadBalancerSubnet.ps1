@@ -351,7 +351,6 @@ function Add-NSGConfigurationOnSubnet
 
     $LoadBalancerSubnetDetails | ForEach-Object {
         $Subnet = $_
-        $Subnet | Add-Member -NotePropertyName RemediatedSubnets -NotePropertyValue $null
         foreach ($item in $Subnet.IsNSGConfigured) {
             if($item -eq $false)
             {                
@@ -401,6 +400,7 @@ function Add-NSGConfigurationOnSubnet
         # Backing up Subnet(s) details.
         $backupFile = "$($backupFolderPath)\SubnetDetailsBackUp.csv"
         $SubnetWithoutNSGConfigured | Export-CSV -Path $backupFile -NoTypeInformation
+        $SubnetWithoutNSGConfigured | Add-Member -NotePropertyName RemediatedSubnets -NotePropertyValue $null -Force
         Write-Host "Subnet(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
@@ -479,7 +479,7 @@ function Add-NSGConfigurationOnSubnet
 
                                 if($remediatedSubnet.NetworkSecurityGroup -ne $null)
                                 {
-                                    Write-Host "Successfully configured the NSG on Subnet [$SubNetName] :" -ForegroundColor $([Constants]::MessageType.Update)
+                                    Write-Host "Successfully configured the NSG on Subnet [$SubNetName] " -ForegroundColor $([Constants]::MessageType.Update)
                                     $subnet.IsNSGConfigured = $true
                                     $subnet.RemediatedSubnets += $NonCompliantsubnet+','
                                     $SubnetRemediated += $subnet
