@@ -155,6 +155,9 @@ function Set-SASExpiryInterval
         .PARAMETER TimeStamp
         Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
+        .PARAMETER Timespan
+        Specifies the timespan of SAS Expiry Interval when AutoRemediation switch is used.
+
         .INPUTS
         None. You cannot pipe objects to Set-SASExpiryInterval.
 
@@ -222,7 +225,11 @@ function Set-SASExpiryInterval
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
-        $TimeStamp
+        $TimeStamp,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the timespan of SAS Expiry Interval when AutoRemediation switch is used")]
+        $Timespan
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -418,7 +425,7 @@ function Set-SASExpiryInterval
 
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-            $logResource.Add("ResourceName",($_.ResourceName))
+            $logResource.Add("ResourceName",($_.StorageAccountName))
             $logResource.Add("Reason","SAS Expiry Interval is properly set.")    
             $logSkippedResources += $logResource
         }
@@ -448,6 +455,7 @@ function Set-SASExpiryInterval
                     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
                     @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
                     @{Expression = { $_.SASExpiryInterval }; Label = "SASExpiryInterval"; Width = 100; Alignment = "left" }
+
 
     if (-not $AutoRemediation) 
     {
@@ -480,9 +488,10 @@ function Set-SASExpiryInterval
     Write-Host $([Constants]::SingleDashLine)
     if(-not $DryRun)
     {
-        $userInputTimeSpan = $([Constants]::MaximumApprovedTimeSpanForSASExpiryInterval)
+        $userInputTimeSpan = $Timespan
         if(-not $AutoRemediation)
         {
+            $userInputTimeSpan = $([Constants]::MaximumApprovedTimeSpanForSASExpiryInterval)
             if (-not $Force) {
                 Write-Host "Do you want to set SAS Expiry Interval on all the Storage Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
@@ -497,6 +506,7 @@ function Set-SASExpiryInterval
                 Write-Host "User has provide consent to set SAS Expiry Interval on all the Storage Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $userInputTimeSpan = UserInputTimeSpan
+                Write-Host $([Constants]::SingleDashLine)
             }
             else {
                 Write-Host "'Force' flag is provided. SAS Expiry Interval with maximum approved timespan of 7 days will be set on all the Storage Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -510,13 +520,19 @@ function Set-SASExpiryInterval
         # List for storing skipped storage account(s)
         $storageAccountSkipped = @()
 
+        $colsProperty2 = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+                         @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+                         @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
+                         @{Expression = { $userInputTimeSpan }; Label = "SASExpiryInterval"; Width = 100; Alignment = "left" }
+
         Write-Host "Setting SAS Expiry Interval on the storage accounts..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         #perform remediation
         $storageAccountsWithoutSasExpiryIntervalProperlySet | ForEach-Object {
             #Write-Host "Setting SAS Expiry Interval on the storage account: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             try
             {
-                Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $userInputTimeSpan
+                $output = Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $userInputTimeSpan
                 $output = Get-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
                 if($output.SasPolicy.SasExpirationPeriod -eq $userInputTimeSpan)
                 {
@@ -525,7 +541,6 @@ function Set-SASExpiryInterval
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
                     $logRemediatedResources += $logResource
-                    #Write-Host "Successfully set SAS Expiry Interval on the storage account." -ForegroundColor $([Constants]::MessageType.Update)
                 }
                 else
                 {
@@ -535,7 +550,6 @@ function Set-SASExpiryInterval
                     $logResource.Add("ResourceName",($_.ResourceName))
                     $logResource.Add("Reason", "Unable to set SAS Expiry Interval on the storage account.")
                     $logSkippedResources += $logResource
-                    #Write-Host "Unable to set SAS Expiry Interval on the storage account." -ForegroundColor $([Constants]::MessageType.Error)
                 }
             }
             catch
@@ -546,47 +560,39 @@ function Set-SASExpiryInterval
                 $logResource.Add("ResourceName",($_.ResourceName))
                 $logResource.Add("Reason", "Error encountered while setting SAS Expiry Interval.")
                 $logSkippedResources += $logResource
-                #Write-Host "Error encountered while setting SAS Expiry Interval on the storage account." -ForegroundColor $([Constants]::MessageType.Error)
             }
         }
+        Write-Host "Completed setting the SAS Expiry Interval on the storage accounts." -ForegroundColor $([Constants]::MessageType.Update)
         
+        Write-Host $([Constants]::DoubleDashLine)
+
         if($AutoRemediation)
         {
-            Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
             if ($($storageAccountRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully set SAS Expiry Interval on the storage account(s): " -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
-
                 # Write this to a file.
                 $storageAccountRemediatedFile = "$($backupFolderPath)\RemediatedSASExpiryIntervalStorageAccounts.csv"
                 $storageAccountRemediated | Export-CSV -Path $storageAccountRemediatedFile -NoTypeInformation
 
-                Write-Host "This information has been saved to" -NoNewline
+                Write-Host "Successfully set SAS Expiry Interval on [$(($storageAccountRemediated | Measure-Object).Count)] storage account(s) and the information has been saved to" -NoNewline
                 Write-Host " [$($storageAccountRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
-                Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Use this file for any roll back that may be required.`n" -ForegroundColor $([Constants]::MessageType.Info)
             }
 
             if ($($storageAccountSkipped | Measure-Object).Count -gt 0) {
-
-                Write-Host "Error encountered while setting SAS Expiry Interval on the storage account(s): " -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
-
                 # Write this to a file.
                 $storageAccountSkippedFile = "$($backupFolderPath)\SkippedSASExpiryIntervalStorageAcounts.csv"
                 $storageAccountSkipped | Export-CSV -Path $storageAccountSkippedFile -NoTypeInformation
 
-                Write-Host "This information has been saved to"  -NoNewline
-                Write-Host " [$($storageAccountSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Error encountered while setting SAS Expiry Interval on [$(($storageAccountSkipped | Measure-Object).Count)] storage account(s) and the information has been saved to"  -NoNewline
+                Write-Host " [$($storageAccountSkippedFile)]`n" -ForegroundColor $([Constants]::MessageType.Update)
             }
         }
         else
         {
-            Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "`nRemediation Summary: `n" -ForegroundColor $([Constants]::MessageType.Info)
             if ($($storageAccountRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully set SAS Expiry Interval on the storage account(s): " -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
-                $storageAccountRemediated | Format-Table -Property $colsProperty -Wrap
-
+                Write-Host "Successfully set SAS Expiry Interval on [$(($storageAccountRemediated | Measure-Object).Count)] storage account(s): " -ForegroundColor $([Constants]::MessageType.Update)
+                $storageAccountRemediated | Format-Table -Property $colsProperty2 -Wrap
                 # Write this to a file.
                 $storageAccountRemediatedFile = "$($backupFolderPath)\RemediatedSASExpiryIntervalStorageAccounts.csv"
                 $storageAccountRemediated | Export-CSV -Path $storageAccountRemediatedFile -NoTypeInformation
@@ -594,12 +600,12 @@ function Set-SASExpiryInterval
                 Write-Host "This information has been saved to" -NoNewline
                 Write-Host " [$($storageAccountRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if ($($storageAccountSkipped | Measure-Object).Count -gt 0) {
 
-                Write-Host "Error encountered while setting SAS Expiry Interval on the storage account(s): " -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "`nError encountered while setting SAS Expiry Interval on [$(($storageAccountSkipped | Measure-Object).Count)] storage account(s): " -ForegroundColor $([Constants]::MessageType.Error)
                 $storageAccountSkipped | Format-Table -Property $colsProperty -Wrap
 
                 # Write this to a file.
@@ -608,6 +614,7 @@ function Set-SASExpiryInterval
 
                 Write-Host "This information has been saved to"  -NoNewline
                 Write-Host " [$($storageAccountSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host %([Constants]::SingleDashLine)
             }
         }
 
@@ -615,7 +622,7 @@ function Set-SASExpiryInterval
             $logFile = "LogFiles\" + $($TimeStamp) + "\log_" + $($SubscriptionId) + ".json"
             $log = Get-content -Raw -path $logFile | ConvertFrom-Json
             foreach ($logControl in $log.ControlList) {
-                if ($logControl.ControlId -eq $controlId) {
+                if ($logControl.ControlId -eq $controlIds) {
                     $logControl.RemediatedResources = $logRemediatedResources
                     $logControl.SkippedResources = $logSkippedResources
                     $logControl.RollbackFile = $storageAccountRemediatedFile
@@ -664,7 +671,7 @@ function Reset-SASExpiryInterval
         
         TODO
         .EXAMPLE
-        PS> Reset-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -RollbackFilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SASExpiryInterval\RemediatedSASExpiryIntervalStorageAccounts.csv
+        PS> Reset-SASExpiryInterval -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SASExpiryInterval\RemediatedSASExpiryIntervalStorageAccounts.csv
         
         .LINK
         None
@@ -750,7 +757,7 @@ function Reset-SASExpiryInterval
     Write-Host "Fetching all storage accounts from" -NoNewline
     Write-Host " [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-    $storageAccounts = Import-Csv -LiteralPath $RollbackFilePath
+    $storageAccounts = Import-Csv -LiteralPath $FilePath
 
     $validStorageAccounts = $storageAccounts | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) -and ![String]::IsNullOrWhiteSpace($_.SASExpiryInterval) }
 
@@ -762,12 +769,16 @@ function Reset-SASExpiryInterval
         return
     }
 
-    Write-Host "Found [$($validStorageAccounts)] Storage Accounts(s).`n" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($validStorageAccountsCount)] Storage Accounts(s).`n" -ForegroundColor $([Constants]::MessageType.Update)
     
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
                     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
                     @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-                    @{Expression = { $_.SASExpiryInterval }; Label = "SASExpiryInterval"; Width = 100; Alignment = "left" }
+                    @{Expression = { $_.SASExpiryInterval }; Label = "SASExpiryIntervalBeforeRemediation"; Width = 100; Alignment = "left" }
+
+    $colsProperty2 = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+                    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+                    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" }
 
     $validStorageAccounts | Format-Table -Property $colsProperty -Wrap
     Write-Host "`nNote: 0.00:00:00 implies that SAS Expiry Interval was not set before remediation" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -785,7 +796,7 @@ function Reset-SASExpiryInterval
 
     if (-not $Force) {
 
-        Write-Host "Do you want to reset SAS Expiry Interval to values mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to reset SAS Expiry Interval to values mentioned in the file? "  -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
         if ($userInput -ne "Y") {
@@ -803,10 +814,14 @@ function Reset-SASExpiryInterval
 
     $storageAccountRolledback = @()
     $storageAccountRollbackSkipped = @()
+
+    Write-Host "Resetting SAS Expiry Interval on the storage accounts..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+
     $validStorageAccounts | ForEach-Object {
         try
         {
-            Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $_.SASExpiryInterval
+            $output = Set-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue -SasExpirationPeriod $_.SASExpiryInterval
             $output = Get-AzStorageAccount -StorageAccountName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -ErrorAction SilentlyContinue
             if(($_.SASExpiryInterval -eq $([Constants]::TimeSpanWhenSASExpiryIntervalDisabled) -and $null -eq $output.SasPolicy.SasExpirationPeriod) -or ($output.SasPolicy.SasExpirationPeriod -eq $_.SASExpiryInterval))
             {
@@ -822,12 +837,14 @@ function Reset-SASExpiryInterval
         }
     }
 
+    Write-Host "Completed resetting the SAS Expiry Interval on the storage accounts." -ForegroundColor $([Constants]::MessageType.Update)
+
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "`nRollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
 
     if ($($storageAccountRolledback | Measure-Object).Count -gt 0) {
-        Write-Host "SAS Expiry Interval has been rolled back on the Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Update)
-        $storageAccountRolledback | Format-Table -Property $colsProperty -Wrap
+        Write-Host "SAS Expiry Interval has been rolled back on [$(($storageAccountRolledback | Measure-Object).Count)] Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
+        $storageAccountRolledback | Format-Table -Property $colsProperty2 -Wrap
         Write-Host $([Constants]::SingleDashLine)
 
         # Write this to a file.
@@ -836,11 +853,12 @@ function Reset-SASExpiryInterval
 
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($storageAccountRolledbackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     if ($($storageAccountRollbackSkipped | Measure-Object).Count -gt 0) {
-        Write-Host "Error while rolling back SAS Expiry Interval on the Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Error)
-        $storageAccountRollbackSkipped | Format-Table -Property $colsProperty -Wrap
+        Write-Host "Error while rolling back SAS Expiry Interval on [$(($storageAccountRollbackSkipped | Measure-Object).Count)] Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
+        $storageAccountRollbackSkipped | Format-Table -Property $colsProperty2 -Wrap
         Write-Host $([Constants]::SingleDashLine)
 
         # Write this to a file.
@@ -849,6 +867,7 @@ function Reset-SASExpiryInterval
         
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($storageAccountRollbackSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+        Write-Host ($[Constants]::SingleDashLine)
     }
 }
 
@@ -856,11 +875,21 @@ function CheckifSASExpiryIntervalIsValid
 {
     param ([String] $SasExpiryInterval)
 
-    if($SasExpiryInterval -le $([Constants]::MaximumApprovedTimeSpanForSASExpiryInterval))
+    $Separator = ".",":"
+    $SasExpiryIntervalSplit = $SasExpiryInterval.Split($Separator)
+    $MaximumApprovedTimeSpanForSASExpiryIntevalSplit = $([Constants]::MaximumApprovedTimeSpanForSASExpiryInterval).Split($Separator)
+    for($i = 0; $i -lt 4; $i = $i + 1)
     {
-        return $true
-    }
-    return $false
+        if([int]::Parse($SasExpiryIntervalSplit[$i]) -lt [int]::Parse($MaximumApprovedTimeSpanForSASExpiryIntevalSplit[$i]))
+        {
+            return $true
+        }
+        elseif([int]::Parse($SasExpiryIntervalSplit[$i]) -gt [int]::Parse($MaximumApprovedTimeSpanForSASExpiryIntevalSplit[$i]))
+        {
+            return $false
+        }
+    } 
+    return $true
 }
 
 function ValidUserInput
@@ -905,11 +934,18 @@ function UserInputTimeSpan
     do
     {
         #take user input
-        Write-Host "Enter the time span for SAS Expiry Interval. " -ForegroundColor $([Constants]::MessageType.Warning)
+        $days = 0
+        $hours = 0
+        $minutes = 0
+        $seconds = 0
+        Write-Host "Enter the time span for SAS Expiry Interval " -ForegroundColor $([Constants]::MessageType.Warning)
         $days = ValidUserInput "Days ( 0 - 7 )" 0 7
-        $hours = ValidUserInput "Hours ( 0 - 24 )" 0 24
-        $minutes = ValidUserInput "Minutes ( 0 - 60 )" 0 60
-        $seconds = ValidUserInput "Seconds ( 0 - 60 )" 0 60
+        if($days -lt 7)
+        {
+            $hours = ValidUserInput "Hours ( 0 - 23 )" 0 23
+            $minutes = ValidUserInput "Minutes ( 0 - 59 )" 0 59
+            $seconds = ValidUserInput "Seconds ( 0 - 59 )" 0 59
+        }
         if(($days -eq 0) -and ($hours -eq 0) -and ($minutes -eq 0) -and ($seconds -eq 0))
         {
             Write-Host "The time span can't be 0 days, 0 hours, 0 minutes, 0 seconds. Kindly re-enter the time span."
