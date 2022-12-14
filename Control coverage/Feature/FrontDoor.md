@@ -5,7 +5,7 @@
 <!-- TOC -->
 Azure_FrontDoor_NetSec_Enable_WAF_Configuration
 - [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](#azure_frontdoor_netsec_enable_waf_configuration)
-- [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial](#azure_dbformysqlflexibleServer_dp_use_secure_tls_version_trial)
+
 
 <!-- /TOC -->
 <br/>
@@ -23,14 +23,14 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
  ### Control Spec 
 
 > **Passed:** 
-> Web Application Firewall has been configured on Front Door. 
-> Configured WAF Policy mode must be Prevention only. 
-> Configured WAF Policy mode must be in Enabled State only. 
+> Web Application Firewall has been configured on Front Door </br>
+> and Configured WAF Policy mode must be Prevention only. </br> 
+> and Configured WAF Policy mode must be in Enabled State only. </br> 
 > 
 > **Failed:** 
-> WAF is not configured on Front Door.
-> Configured WAF Policy mode is not Prevention.
-> Configured WAF Policy mode is not in Enabled State.
+> WAF is not configured on Front Door. </br> 
+> or Configured WAF Policy mode is not Prevention. </br> 
+> or Configured WAF Policy mode is not in Enabled State. </br> 
 > 
 > **Error:** 
 > There was an error fetching WAF Configuration details of Front Door.
@@ -40,10 +40,18 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 
 	 Use the Azure portal to configure WAF on the Front Door.
 
- 
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get Front Door resources in a subscription: /subscriptions/{0}/providers/Microsoft.Network/frontDoors?api-version=2019-05-01<br />
+**Properties:** [*]
+ <br />
+
+- ARM API to get WAF Policy resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
+**Properties:** [*]
  <br />
 
 <br />
 
 ___ 
+
 

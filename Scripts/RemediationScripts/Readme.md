@@ -604,9 +604,12 @@ ___
 WAF Policy should be configured on Endpoints in Front Door
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-ConfigureWAFPolicyForFrontDoor](Remediate-ConfigureWAFPolicyForFrontDoor.ps1)
-[Remediate-EnableWAFPolicyForFrontDoor](Remediate-EnableWAFPolicyForFrontDoor.ps1)
-[Remediate-EnableWAFPolicyPreventionModeForFrontDoor](Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1)
+You can Configure WAF Policy on Front Door using below BRS:  <br/>
+[Remediate-ConfigureWAFPolicyForFrontDoor](Remediate-ConfigureWAFPolicyForFrontDoor.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyForFrontDoor](Remediate-EnableWAFPolicyForFrontDoor.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyPreventionModeForFrontDoor](Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1) <br/>
 
 
 
