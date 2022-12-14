@@ -37,6 +37,11 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
 
+
+
+
+29. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
+
 <br />
 
 ___ 
@@ -545,6 +550,65 @@ App Services should use secure FTP deployments
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SecureFTPDeploymentForAppServices](Remediate-SecureFTPDeploymentForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 26. Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
+
+### Display Name
+WAF Policy should be configured on Endpoints in Front Door
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureWAFPolicyForFrontDoor](Remediate-ConfigureWAFPolicyForFrontDoor.ps1)
+[Remediate-EnableWAFPolicyForFrontDoor](Remediate-EnableWAFPolicyForFrontDoor.ps1)
+[Remediate-EnableWAFPolicyPreventionModeForFrontDoor](Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1)
+
+
 
 ### Minimum permissions required to run the script
 Contributor role at resource level

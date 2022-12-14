@@ -1,9 +1,9 @@
 ﻿<###
 # Overview:
-    This script is used to congigure WAF Policy on All endpoints of Front Doors in a Subscription.
+    This script is used to congigure WAF Policy on all endpoints of Front Doors in a Subscription.
 
 # Control ID:
-    Azure_FrontDoor_NetSec_Enable_WAF_Configuration_Trial
+    Azure_FrontDoor_NetSec_Enable_WAF_Configuration
 
 # Display Name:
     WAF Policy should be configured on for Endpoints in Front Door.
@@ -23,7 +23,7 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to configure WAF Policy on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
+        3. Execute the script to configure WAF Policy on all endpoints of Front Doors in a Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -94,10 +94,10 @@ function Configure-WAFPolicyForFrontDoor
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_FrontDoor_NetSec_Enable_WAF_Configuration_Trial' Control.
+        Remediates 'Azure_FrontDoor_NetSec_Enable_WAF_Configuration' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_FrontDoor_NetSec_Enable_WAF_Configuration_Trial' Control.
+        Remediates 'Azure_FrontDoor_NetSec_Enable_WAF_Configuration' Control.
         WAF Policy Mode must be configured for Front Door Endpoint(s).
         
         .PARAMETER SubscriptionId
@@ -213,15 +213,10 @@ function Configure-WAFPolicyForFrontDoor
     Write-Host $([Constants]::SingleDashLine)
 
     $frontDoors = @()
-    $frontDoorsCDN = @()
     $frontDoorFrontendPoints = @()
-
-    # To keep track of remediated and skipped resources
-    $logRemediatedResources = @()
-    $logSkippedResources=@()
-
+ 
     # Control Id
-    $controlIds = "Azure_FrontDoor_NetSec_Enable_WAF_Configuration_Trial"
+    $controlIds = "Azure_FrontDoor_NetSec_Enable_WAF_Configuration"
 
    
     # No file path provided as input to the script. Fetch all Front Doors in the Subscription.
@@ -258,45 +253,7 @@ function Configure-WAFPolicyForFrontDoor
                                                                         {
                                                                             $true
                                                                         }
-                                                                        }},
-                                                                        @{N='IsPreventionMode';E={
-                                                                        if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                        { 
-                                                                            $false
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                            if($WAFPolicy.PolicyMode -eq 'Prevention')
-                                                                            { 
-                                                                                $true
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $false
-                                                                                
-                                                                            }
-                                                                        }
-                                                                        }},
-                                                                        @{N='IsWAFEnabled';E={
-                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                                
-                                                                                if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                { 
-                                                                                    $true
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $false
-                                                                                }
-                                                                            }
-                                                                        }}
+                                                                        }} 
         
             }
         } 
@@ -339,45 +296,8 @@ function Configure-WAFPolicyForFrontDoor
                                                                         {
                                                                             $true
                                                                         }
-                                                                        }},
-                                                                        @{N='IsPreventionMode';E={
-                                                                        if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                        { 
-                                                                            $false
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                            if($WAFPolicy.PolicyMode -eq 'Prevention')
-                                                                            { 
-                                                                                $true
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $false
-                                                                                
-                                                                            }
-                                                                        }
-                                                                        }},
-                                                                        @{N='IsWAFEnabled';E={
-                                                                            if($_.WebApplicationFirewallPolicyLink -eq $null)
-                                                                            { 
-                                                                                $false
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                $WAFPolicy = Get-AzFrontDoorWafPolicy -Name $_.WebApplicationFirewallPolicyLink.Split('/')[8]  -ResourceGroupName  $_.WebApplicationFirewallPolicyLink.Split('/')[4]  
-                                                                                
-                                                                                if($WAFPolicy.PolicyEnabledState -eq 'Enabled')
-                                                                                { 
-                                                                                    $true
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $false
-                                                                                }
-                                                                            }
-                                                                        }}
+                                                                        }} 
+                                                                        
             }
             catch
             {
@@ -437,14 +357,6 @@ function Configure-WAFPolicyForFrontDoor
             {
                 $frontDoorEndpointsWithWAFPolicyNotConfigured += $frontEndPoint
             }
-            else
-            {
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.EndPointName))
-                $logResource.Add("Reason","WAF Policy is already Configured on Frontdoor Frontend endpoint")    
-                $logSkippedResources += $logResource
-            }
     }
 
     $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = ($frontDoorEndpointsWithWAFPolicyNotConfigured | Measure-Object).Count
@@ -467,9 +379,7 @@ function Configure-WAFPolicyForFrontDoor
                     @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
                     @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
                     @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
-                    @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
-                    @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
-                    @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
+                    @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"}
     $frontDoorEndpointsWithWAFPolicyNotConfigured | Format-Table -Property $colsProperty -Wrap
     Write-Host $([Constants]::SingleDashLine)
 
@@ -500,7 +410,7 @@ function Configure-WAFPolicyForFrontDoor
 
     if (-not $DryRun)
     {     
-        Write-Host "WAF Policy will be configured for all Front Door Frontendpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "WAF Policy will be enabled for all Front Door Frontendpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         if (-not $Force)
         {
@@ -551,7 +461,7 @@ function Configure-WAFPolicyForFrontDoor
                 {
                     $wafPolicyName = Read-Host -Prompt "Enter WAF Policy Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] " 
                     Write-Host $([Constants]::SingleDashLine)
-                    $policyResourceGroup = Read-Host -Prompt "Enter WAF Policy Resource Group Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] "
+                    $policyResourceGroup = Read-Host -Prompt "Enter WAF Policy Resource Group Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] "
 
                     $wafPolicyName = $wafPolicyName.Trim()
                     $policyResourceGroup = $policyResourceGroup.Trim()
@@ -579,12 +489,6 @@ function Configure-WAFPolicyForFrontDoor
                 if ($frontDoor -eq $null)
                 {
                     $frontendpointsSkipped += $frontDoorEndPoint
-
-                    $logResource = @{}
-                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.FrontDoorName))
-                    $logResource.Add("Reason", "Error while configuring WAF Policy for Frontdoor EndPoint")
-                    $logSkippedResources += $logResource     
                 }
                 else
                 {
@@ -596,11 +500,6 @@ function Configure-WAFPolicyForFrontDoor
                             $frontDoor[0].FrontendEndpoints[$k].WebApplicationFirewallPolicyLink = $wafpolicy.Id
                             $setPolicy = Set-AzFrontDoor -InputObject $frontDoor[0]
                             $frontDoorFrontendpointsRemediated += $frontDoorEndPoint
-
-                            $logResource = @{}
-                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                            $logResource.Add("ResourceName",($_.FrontDoorName))
-                            $logRemediatedResources += $logResource
                             $frontDoorEndPoint.IsWAFConfigured = $true;
                             $frontDoorEndPoint.WAFPolicyName = $wafPolicyName;
                             $frontDoorEndPoint.WAFPolicyResourceGroup = $policyResourceGroup;
@@ -611,11 +510,6 @@ function Configure-WAFPolicyForFrontDoor
             catch
             {
                 $frontendpointsSkipped += $frontDoorEndPoint
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.FrontDoorName))
-                $logResource.Add("Reason", "Error while configuring WAF Policy for Frontdoor EndPoint")
-                $logSkippedResources += $logResource     
             }
                  
             $frontendpointsSkippedStr = $frontendpointsSkipped -join ','
@@ -641,9 +535,7 @@ function Configure-WAFPolicyForFrontDoor
                         @{Expression={$_.FrontDoorName};Label="Front Door";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyName};Label="WAF Policy Name";Width=7;Alignment="left"},
                         @{Expression={$_.WAFPolicyResourceGroup};Label="WAF Policy RG";Width=7;Alignment="left"},
-                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"},
-                        @{Expression={$_.IsPreventionMode};Label="Is Prevention Mode on ";Width=7;Alignment="left"},
-                        @{Expression={$_.IsWAFEnabled};Label="Is associated WAF Policy in Enabled State";Width=7;Alignment="left"}
+                        @{Expression={$_.IsWAFConfigured};Label="Is WAF Policy Configured?";Width=7;Alignment="left"}
                        
                        
         Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
