@@ -57,6 +57,11 @@ Let's start!
   If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
 
       ![PowerShell Version](../Images/00_PS_Version.png)
+    
+ 1. c.  PowerShell language mode FullLanguage: </br>
+  To run AzTS setup script, PowerShell language mode for the session must be FullLanguage.
+  Ensure that you are using FullLanguage mode by typing **$ExecutionContext.SessionState.LanguageMode** in the PowerShell ISE console window.More details about PowerShell language mode can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?source=recommendations&view=powershell-7.3).
+
 
 </br>
 
