@@ -63,15 +63,20 @@ function Setup-Prerequisites
     <#
         .SYNOPSIS
         Checks if the prerequisites are met, else, sets them up.
+
         .DESCRIPTION
         Checks if the prerequisites are met, else, sets them up.
         Includes installing any required Azure modules.
+        
         .INPUTS
         None. You cannot pipe objects to Setup-Prerequisites.
+        
         .OUTPUTS
         None. Setup-Prerequisites does not return anything that can be piped and used as an input to another command.
+        
         .EXAMPLE
         PS> Setup-Prerequisites
+        
         .LINK
         None
     #>
