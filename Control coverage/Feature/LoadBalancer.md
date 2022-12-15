@@ -4,20 +4,20 @@
 
 <!-- TOC depthfrom:2 depthto:2 -->
 
-- [Azure_LoadBalancer_NetSec_Enable_WAF](#Azure_LoadBalancer_NetSec_Enable_WAF)
+- [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](#Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
 
-## Azure_LoadBalancer_NetSec_Enable_WAF 
+## Azure_LoadBalancer_NetSec_Restrict_Network_Traffic 
 
 ### Display Name 
-Load Balancer should have Web Application Firewall (WAF)
+Protect Internet First Applications by restricting traffic on Azure Load Balancer
 
 ### Rationale 
-WAF enforcement on the Load Balancer further strengthens the security posture of your applications by protecting them from the common web vulnerabilities. This allows you to secure both your internet-facing as well as your internal application workloads.
+Restricting traffic on the Load Balancer further strengthens the security posture of your applications by protecting them from the common web vulnerabilities. This allows you to secure both your internet-facing as well as your internal application workloads.
 
 ### Control Spec 
 

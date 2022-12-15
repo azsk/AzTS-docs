@@ -3,10 +3,10 @@
     This script is used to configure the NSG on Subnet being used in the Load Balancer in a Subscription.
 
 # Control ID:
-    Azure_LoadBalancer_NetSec_Enable_WAF
+    Azure_LoadBalancer_NetSec_Restrict_Network_Traffic
 
 # Display Name:
-    Load Balancer should have Web Application Firewall (WAF).
+    Protect Internet First Applications by restricting traffic on Azure Load Balancer.
 
 # Prerequisites:    
     Owner or higher priviliged role on the Virtual Network(s) is required for remediation.
@@ -50,7 +50,7 @@
 
     To roll back:
         1. Remove the NSG configuration on the Subnet(s) in the Subscription, from a previously taken snapshot:
-           Remove-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableDDoSProtectionPlan\RemediatedSubnetDetails.csv
+           Remove-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\ConfiguredNSGOnSubnet\RemediatedSubnetDetails.csv
        
         To know more about the options supported by the roll back command, execute:
         Get-Help Remove-NSGConfigurationOnSubnet -Detailed 
@@ -112,11 +112,11 @@ function Add-NSGConfigurationOnSubnet
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
+        Remediates 'Azure_LoadBalancer_NetSec_Restrict_Network_Traffic' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
-        Add the NSG configuration on the Subnet(s) of Load Balancer in the Subscription. 
+        Remediates 'Azure_LoadBalancer_NetSec_Restrict_Network_Traffic' Control.
+        Protect Internet First Applications by restricting traffic on Azure Load Balancer
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -234,7 +234,7 @@ function Add-NSGConfigurationOnSubnet
     $NonCompliantSubnets =@()
 
     # Control Id	
-    $controlIds = "Azure_LoadBalancer_NetSec_Enable_WAF"
+    $controlIds = "Azure_LoadBalancer_NetSec_Restrict_Network_Traffic"
     
     if ([String]::IsNullOrWhiteSpace($FilePath))	
     {	
@@ -527,10 +527,11 @@ function Remove-NSGConfigurationOnSubnet
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
+        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Restrict_Network_Traffic' Control.
+
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Enable_WAF' Control.
-        Remove NSG configuration from the subnet(s) of Load Balancer in the Subscription. 
+        Rolls back remediation done for 'Azure_LoadBalancer_NetSec_Restrict_Network_Traffic' Control.
+        Protect Internet First Applications by restricting traffic on Azure Load Balancer.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -540,12 +541,16 @@ function Remove-NSGConfigurationOnSubnet
       
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the roll back.
+
         .INPUTS
         None. You cannot pipe objects to Remove-NSGConfigurationOnSubnet.
+        
         .OUTPUTS
         None. Remove-NSGConfigurationOnSubnet does not return anything that can be piped and used as an input to another command.
+        
         .EXAMPLE
         PS> Remove-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveNSGConfiguration\RemediatedSubnets.csv
+        
         .LINK
         None
     #>
