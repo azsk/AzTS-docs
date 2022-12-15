@@ -12,6 +12,7 @@ Below resource types can be checked for validating the security controls:
 |Feature Name|Resource Type|
 |---|---|
 |[APIManagement](Feature/APIManagement.md)|Microsoft.ApiManagement/service|
+|[ApplicationGateway](Feature/ApplicationGateway.md)|Microsoft.Network/applicationGateways|
 |[AppService](Feature/AppService.md)|Microsoft.Web/sites|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
