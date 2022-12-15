@@ -409,6 +409,7 @@ function Set-FrontDoorRequiredTLSVersion
                     {
                         foreach ($item in $FrontDoorEndpoints) 
                         {
+                            $apiError = $false
                             $domainName = $item.Name
                             $domainResourceGroupName = $item.ResourceGroupName
                             $TypeOfCertificate
@@ -432,9 +433,15 @@ function Set-FrontDoorRequiredTLSVersion
                                             $MinTLSVersion = $custom.properties.tlsSettings.minimumTlsVersion
                                         }
                                     }
+                                }
+                                else
+                                {
+                                    $apiError = $true;
+                                    Write-Host "Error fetching Front Door configuration..." -ForegroundColor $([Constants]::MessageType.Warning)
+                                    Write-Host $([Constants]::SingleDashLine)
                                 }        
                             }
-                            if($null -ne $MinTLSVersion)
+                            if(($null -ne $MinTLSVersion) -and ($apiError -eq $false))
                             {
                                 if($MinTLSVersion -ne $requiredMinTLSVersion)
                                 {
