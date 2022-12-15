@@ -856,7 +856,13 @@ function Disable-WAFPolicyForFrontDoorCDN
     }
 
     Write-Host "Fetching all Front Door CDN Endpoints from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
- 
+
+        $frontDoorEndPoints = @()
+        $resourceAppIdURI = "https://management.azure.com/"
+        $apiResponse =@()
+        $classicAccessToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
+        $endPointPolicies = New-Object System.Collections.ArrayList
+
         $frontDoorEndpointsDetails = Import-Csv -LiteralPath $FilePath
         $validfrontDoorEndpointsDetails = $frontDoorEndpointsDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.EndPointName) }
         
@@ -913,11 +919,7 @@ function Disable-WAFPolicyForFrontDoorCDN
             }
         }
 
-        $frontDoorEndPoints = @()
-        $resourceAppIdURI = "https://management.azure.com/"
-        $apiResponse =@()
-        $classicAccessToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
-        $endPointPolicies = New-Object System.Collections.ArrayList
+        
 
         $validfrontDoorEndpointsDetails | ForEach-Object {
             $frontdoorEndpointName = $_.EndPointName
