@@ -54,7 +54,7 @@
 
     To roll back:
         1. Remove the NSG configuration on the Subnet(s) in the Subscription, from a previously taken snapshot:
-           Remove-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableDDoSProtectionPlan\RemediatedSubnetDetails.csv
+           Remove-NSGConfigurationOnSubnet -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveNSGConfiguration\RemediatedSubnets.csv
        
         To know more about the options supported by the roll back command, execute:
         
@@ -444,7 +444,7 @@ function Add-NSGConfigurationOnSubnet
     if (-not $DryRun)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enable the DDoS Protection Plan on Subnet(s) in the Subscription..." 
+        Write-Host "[Step 4 of 4] Configure the Network Security Group on Subnet(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         
 
@@ -533,7 +533,7 @@ function Add-NSGConfigurationOnSubnet
                 $logResource = @{}	
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                 $logResource.Add("ResourceName",($_.ResourceName))	
-                $logResource.Add("Reason","Encountered error Enabling DDoS Plan")    	
+                $logResource.Add("Reason","Encountered error while configuring NSG")    	
                 $logSkippedResources += $logResource	
                 Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 Write-Host $([Constants]::SingleDashLine)
