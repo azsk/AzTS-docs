@@ -633,7 +633,7 @@ ___
 ### Display Name
 Protect Internet First Applications by restricting traffic on Azure Load Balancer
 
-### Link to Bulk Remediation Script (BRS) for Partially Remediating the control.
+### Link to Bulk Remediation Script (BRS)
 [Remediate-NSGConfigurationOnLoadBalancerSubnet](Remediate-NSGConfigurationOnLoadBalancerSubnet.ps1)
 
 ### Minimum permissions required to run the script
