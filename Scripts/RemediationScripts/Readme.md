@@ -37,10 +37,11 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
 27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
-28. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#28-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
-
-
 28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#28-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
+30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#29-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
+
+
 
 <br />
 
@@ -584,8 +585,29 @@ Yes
 
 ___
 
+## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
 
-## 28. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetStorageAccountMinReqTLSVersion](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+
+
+## 29. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
 
 ### Display Name
 Application Gateway should have Web Application Firewall configured
@@ -606,33 +628,16 @@ Yes
 ___
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+## 30. Azure_LoadBalancer_NetSec_Restrict_Network_Traffic
 
 ### Display Name
-Use Approved TLS Version in Storage Account
+Protect Internet First Applications by restricting traffic on Azure Load Balancer
 
-### Link to Bulk Remediation Script (BRS)
-[Remediate-SetStorageAccountMinReqTLSVersion](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+### Link to Bulk Remediation Script (BRS) for Partially Remediating the control.
+[Remediate-NSGConfigurationOnLoadBalancerSubnet](Remediate-NSGConfigurationOnLoadBalancerSubnet.ps1)
 
 ### Minimum permissions required to run the script
-Contributor role at resource level
+Contributor or Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
