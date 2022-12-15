@@ -10,7 +10,7 @@
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Door CDNs in a Subscription.
-    2. Must be connected to Azure with an authenticated account.
+    2. Must be connected to Azure with same authenticated account with which have required access over Front door CDNs.
 
 # Steps performed by the script:
     To remediate:
@@ -33,7 +33,7 @@
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remove the configured WAF Policy on all endpoints of Front Door CDNs in a Subscription. Refer `Examples`, below.
+        3. Execute the script to roll back the WAF Policy Configuration on all endpoints of Front Door CDNs in a Subscription- we previously remediated. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -251,8 +251,12 @@ function Configure-WAFConfigurationOnFrontDoorEndpoint
 
                 # Get all Frontendpoint(s) for this Front Door.
                 $frontendpoints = ( Get-AzFrontDoorCdnEndpoint -ResourceGroupName $resourceGroupName -ProfileName $frontDoorName -ErrorAction SilentlyContinue) 
-                $SecurityPolicies = ( Get-AzFrontDoorCdnSecurityPolicy -ResourceGroupName $resourceGroupName -ProfileName $frontDoorName -ErrorAction SilentlyContinue) 
-                $frontDoorEndPoints += $frontendpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
+                if($frontendpoints -ne $null)
+                {
+                    $SecurityPolicies = ( Get-AzFrontDoorCdnSecurityPolicy -ResourceGroupName $resourceGroupName -ProfileName $frontDoorName -ErrorAction SilentlyContinue) 
+                    if($SecurityPolicies -ne $null)
+                    {
+                        $frontDoorEndPoints += $frontendpoints  | Select-Object @{N='EndpointId';E={$_.Id}},
                                                                         @{N='FrontDoorName';E={$frontDoorName}},
                                                                         @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                         @{N='EndPointName';E={$_.Name}},
@@ -276,7 +280,18 @@ function Configure-WAFConfigurationOnFrontDoorEndpoint
                                                                         }
                                                                         }
                                                                         }
-                                                                        }                                                                     
+                                                                        }
+                    }
+                    else
+                    {
+                        Write-Host "Error fetching Security Policies of Front Door(s) resource. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    }
+                    
+                }
+                else{
+                    Write-Host "Error fetching End points of Front Door(s) resource. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                }
+                                                                                    
         
             }
         }
