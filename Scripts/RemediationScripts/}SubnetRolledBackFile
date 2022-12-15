@@ -1,0 +1,21 @@
+"ResourceId","ResourceGroupName","ResourceName","ResourceSubNetId","ResourceVirtualNetworkName","ResourceVirtualNetworkRGName","IsNSGConfigured","RemediatedSubnets"
+"/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/loadBalancers/testlb","v-hararoraTestRG","testlb","{
+  ""Id"": ""/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/virtualNetworks/v-hararoraTestRG-vnet/subnets/default"",
+  ""IpAllocations"": []
+} {
+  ""Id"": ""/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/virtualNetworks/v-hararoraTestRG-vnet/subnets/testsubnet"",
+  ""IpAllocations"": []
+} {
+  ""Id"": ""/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/virtualNetworks/v-hararoraTestRG-vnet/subnets/testsubnet2"",
+  ""IpAllocations"": []
+}","v-hararoraTestRG-vnet","v-hararoraTestRG","True","{
+  ""Id"": ""/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/virtualNetworks/v-hararoraTestRG-vnet/subnets/testsubnet"",
+  ""IpAllocations"": []
+}"
+"/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/loadBalancers/Testlb2","v-hararoraTestRG","Testlb2","{
+  ""Id"": ""/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/virtualNetworks/TestVN/subnets/TestVNSubnet"",
+  ""IpAllocations"": []
+}","TestVN","v-hararoraTestRG","True","{
+  ""Id"": ""/subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/resourceGroups/v-hararoraTestRG/providers/Microsoft.Network/virtualNetworks/TestVN/subnets/TestVNSubnet"",
+  ""IpAllocations"": []
+}"

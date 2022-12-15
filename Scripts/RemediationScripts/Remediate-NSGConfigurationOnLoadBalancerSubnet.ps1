@@ -222,7 +222,8 @@ function Add-NSGConfigurationOnSubnet
 
     Write-Host "[Step 2 of 4] Fetch all Subnets(s)"
     Write-Host $([Constants]::SingleDashLine)
-     # To keep track of remediated and skipped resources	
+
+    # To keep track of remediated and skipped resources	
     $logRemediatedResources = @()	
     $logSkippedResources=@()	
 
@@ -231,7 +232,7 @@ function Add-NSGConfigurationOnSubnet
 
     # To keep List of Non-Compliant Subnets
     $NonCompliantSubnets =@()
-    
+
     # Control Id	
     $controlIds = "Azure_LoadBalancer_NetSec_Enable_WAF"
     
@@ -446,6 +447,7 @@ function Add-NSGConfigurationOnSubnet
                         if($remediatedSubnet.NetworkSecurityGroup -ne $null)
                         {
                             Write-Host "Successfully configured the NSG on Subnet : [$SubNetName]" -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
                             $item.IsNSGConfigured = $true
                             $SubnetRemediated += $item
                             $logResource = @{}	
@@ -674,6 +676,7 @@ function Remove-NSGConfigurationOnSubnet
         Write-Host "Do you want to remove NSG Configuration from Subnet(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         $userInput = Read-Host -Prompt "(Y|N)"
+        Write-Host $([Constants]::SingleDashLine)
 
             if($userInput -ne "Y")
             {
@@ -751,6 +754,13 @@ function Remove-NSGConfigurationOnSubnet
         $SubnetSkipped | Export-CSV -Path $SubnetSkippedFile -NoTypeInformation
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($SubnetSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+    }
+
+    if ($($SubnetRolledBack | Measure-Object).Count -eq 0)
+    {
+        $([Constants]::SingleDashLine)
+        Write-Host "No Subnets found to Roll Back." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 
