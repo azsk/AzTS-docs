@@ -411,8 +411,8 @@ function Set-FrontDoorRequiredTLSVersion
                         {
                             $domainName = $item.Name
                             $domainResourceGroupName = $item.ResourceGroupName
-                            $TypeOfCertificate= @()
-                            $MinTLSVersion = @()
+                            $TypeOfCertificate
+                            $MinTLSVersion
                     
                             if($null -ne $AccessMgtToken)
                             {
