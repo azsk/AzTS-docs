@@ -222,14 +222,16 @@ function Add-NSGConfigurationOnSubnet
 
     Write-Host "[Step 2 of 4] Fetch all Subnets(s)"
     Write-Host $([Constants]::SingleDashLine)
-    
-    # list to store Container details.
-    $LoadBalancerSubnetDetails = @()
-
      # To keep track of remediated and skipped resources	
     $logRemediatedResources = @()	
     $logSkippedResources=@()	
 
+    # To keep List of Load Balancers
+    $LoadBalancers = @()
+
+    # To keep List of Non-Compliant Subnets
+    $NonCompliantSubnets =@()
+    
     # Control Id	
     $controlIds = "Azure_LoadBalancer_NetSec_Enable_WAF"
     
@@ -239,38 +241,65 @@ function Add-NSGConfigurationOnSubnet
         Write-Host $([Constants]::SingleDashLine)
 
         # Get all Load Balancer(s) in a Subscription
-        $LoadBalancerSubnetDetails =  Get-AzLoadBalancer -ErrorAction Stop
+        $LoadBalancers =  Get-AzLoadBalancer -ErrorAction Stop
 
-        # Seperating required properties
-        $LoadBalancerSubnetDetails = $LoadBalancerSubnetDetails | Select-Object @{N='ResourceId';E={$_.Id}},
+        $LoadBalancers = $LoadBalancers | Select-Object @{N='ResourceId';E={$_.Id}},
                                                     @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
                                                     @{N='ResourceName';E={$_.Name}},
                                                     @{N='ResourceSubNetId';E={$_.FrontendIPConfigurations.SubnetText}},
                                                     @{N='ResourceVirtualNetworkName';E={$_.FrontendIPConfigurations.SubnetText.Split('/')[8]}},
-                                                    @{N='ResourceVirtualNetworkRGName';E={$_.FrontendIPConfigurations.SubnetText.Split('/')[4]}},
-                                                    @{N='IsNSGConfigured';E=
-                                                        {
-                                                            $VnetDetails =  Get-AzVirtualNetwork -Name $_.FrontendIPConfigurations.SubnetText.Split('/')[8] -ErrorAction Stop
-                                                            Foreach($subnet in $VnetDetails.Subnets)
-                                                            {
-                                                                $subnetDetails = $_.FrontendIPConfigurations.SubnetText | ConvertFrom-Json
-                                                                Foreach($Vnetsubnet in $subnetDetails)
-                                                                {
-                                                                    if($subnet.Id -eq $Vnetsubnet.Id)
-                                                                    {
-                                                                        if($subnet.NetworkSecurityGroup.Id -eq $null)
-                                                                        {  
-                                                                            $false;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $true;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }                   
-                                                        }
-                                                    }
+                                                    @{N='ResourceVirtualNetworkRGName';E={$_.FrontendIPConfigurations.SubnetText.Split('/')[4]}}
+
+
+    $totalLoadBalancer = ($LoadBalancers| Measure-Object).Count
+
+    if ($totalLoadBalancer -eq 0)
+    {
+        Write-Host "Load Balancer(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::DoubleDashLine)	
+        return
+    }
+
+    Write-Host "Found [$($totalLoadBalancer)] Load Balancer(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                                                                          
+    Write-Host $([Constants]::SingleDashLine)
+        
+    foreach($item in $LoadBalancers)
+    {
+        if($item.ResourceVirtualNetworkName -ne $null)
+        {
+            $VnetDetails = Get-AzVirtualNetwork -Name $item.ResourceVirtualNetworkName
+            
+            Foreach($subnet in $VnetDetails.Subnets)
+            {
+                $subnetDetails = $item.ResourceSubNetId | ConvertFrom-Json
+
+                Foreach($Vnetsubnet in $subnetDetails)
+                {
+                    if($subnet.Id -eq $Vnetsubnet.Id)
+                    {
+                        if($subnet.NetworkSecurityGroup.Id -eq $null)
+                        {  
+                            $LoadbalancerObj = [NonCompliantLoadBalancerSubnet]:: new()
+                            
+                            $LoadbalancerObj.IsNSGConfigured = $false
+                            $LoadbalancerObj.NonCompliantSubnetId = $Vnetsubnet.Id
+                            $LoadbalancerObj.NonCompliantSubnetName = $Vnetsubnet.Id.Split('/')[10]
+                            $LoadbalancerObj.ResourceId = $item.ResourceId
+                            $LoadbalancerObj.ResourceVirtualNetworkName = $item.ResourceVirtualNetworkName
+                            $LoadbalancerObj.ResourceVirtualNetworkRGName = $item.ResourceVirtualNetworkRGName
+                            $LoadbalancerObj.ResourceGroupName = $item.ResourceGroupName
+                            $LoadbalancerObj.ResourceName = $item.ResourceName
+
+                           $NonCompliantSubnets += $LoadbalancerObj
+                                
+                        }
+                    }
+                }
+             }
+          }
+          }
+       
     }	
     else	
     {   
@@ -288,105 +317,51 @@ function Add-NSGConfigurationOnSubnet
 
         $validLoadBalancerSubnetResources = $LoadBalancerSubnetResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
 
-
-        $validLoadBalancerSubnetResources| ForEach-Object{
-          $resourceId = $_.ResourceId
-            try
-            {   
-                $LoadBalancerDetails =  Get-AzLoadBalancer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-                $LoadBalancerSubnetDetails += $LoadBalancerDetails | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                    @{N='ResourceGroupName';E={$_.Id.Split("/")[4]}},
-                                                    @{N='ResourceName';E={$_.Name}},
-                                                    @{N='ResourceSubNetId';E={$_.FrontendIPConfigurations.SubnetText}},
-                                                    @{N='ResourceVirtualNetworkName';E={$_.FrontendIPConfigurations.SubnetText.Split('/')[8]}},
-                                                    @{N='ResourceVirtualNetworkRGName';E={$_.FrontendIPConfigurations.SubnetText.Split('/')[4]}},
-                                                    @{N='IsNSGConfigured';E=
-                                                        {
-                                                            $VnetDetails =  Get-AzVirtualNetwork -Name $_.FrontendIPConfigurations.SubnetText.Split('/')[8] -ErrorAction Stop
-                                                            Foreach($subnet in $VnetDetails.Subnets)
-                                                            {
-                                                                $subnetDetails = $_.FrontendIPConfigurations.SubnetText | ConvertFrom-Json
-                                                                Foreach($Vnetsubnet in $subnetDetails)
-                                                                {
-                                                                    if($subnet.Id -eq $Vnetsubnet.Id)
-                                                                    {
-                                                                        if($null -eq $subnet.NetworkSecurityGroup.Id)
-                                                                        {  
-                                                                            $false;
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $true;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }                   
-                                                        }
-                                                    }
-
-          
-                             
-
-            }
-            catch
+        foreach($item in $validLoadBalancerSubnetResources)
+        {
+            if($item.ResourceVirtualNetworkName -ne $null)
             {
-                Write-Host "Error fetching subnet of Virtual Network(s) resource: Resource ID:  [$($ResourceVNetName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                $VnetDetails = Get-AzVirtualNetwork -Name $item.ResourceVirtualNetworkName
+                Foreach($subnet in $VnetDetails.Subnets)
+                {
+                    $subnetDetails = $item.NonCompliantSubnetId
+                    
+                        if($subnet.Id -eq $subnetDetails)
+                        {
+                            if($subnet.NetworkSecurityGroup.Id -eq $null)
+                            {
+                                $NonCompliantSubnets += $item
+                            }
+                        }
+                    
+                }
             }
         }
-    }                                                    
+ }                                                     
     
-    
-    $totalLoadBalancerSubnet = ($LoadBalancerSubnetDetails| Measure-Object).Count
+    $totalLoadBalancerSubnet = ($NonCompliantSubnets| Measure-Object).Count
 
     if ($totalLoadBalancerSubnet -eq 0)
     {
-        Write-Host "No Load Balancer(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No non Compliant Subnet(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)	
         return
     }
   
-    Write-Host "Found [$($totalLoadBalancerSubnet)] Load Balancer(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalLoadBalancerSubnet)] non Compliant Subnets(s)." -ForegroundColor $([Constants]::MessageType.Update)
                                                                           
     Write-Host $([Constants]::SingleDashLine)
-    
-    # list for storing Subnet(s) for which NSG is not configured.
-    $SubnetWithoutNSGConfigured = @()
-
-    Write-Host "Separating Subnet(s) for which NSG is not configured..." -ForegroundColor $([Constants]::MessageType.Info)
-
-    $LoadBalancerSubnetDetails | ForEach-Object {
-        $Subnet = $_
-        foreach ($item in $Subnet.IsNSGConfigured) {
-            if($item -eq $false)
-            {                
-                $SubnetWithoutNSGConfigured += $Subnet
-            }
-            }
-        
-        }
-
-    $totalSubnetWithoutNSGConfigured  = ($SubnetWithoutNSGConfigured | Measure-Object).Count
-
-    if ($totalSubnetWithoutNSGConfigured  -eq 0)
-    {
-        Write-Host "No Subnet(s) found with where NSG is not configured.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::DoubleDashLine)	
-        return
-    }
-
-    Write-Host "Found [$($totalSubnetWithoutNSGConfigured)] Subnet(s) for which NSG is not configured ." -ForegroundColor $([Constants]::MessageType.Update)
-    Write-Host $([Constants]::SingleDashLine)	
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceSubNetId};Label="ResourceSubNetId";Width=100;Alignment="left"},
                     @{Expression={$_.ResourceVirtualNetworkName};Label="ResourceVirtualNetworkName";Width=100;Alignment="left"},
                     @{Expression={$_.ResourceVirtualNetworkRGName};Label="ResourceVirtualNetworkRGName";Width=100;Alignment="left"},
+                    @{Expression={$_.NonCompliantSubnetId};Label="NonCompliantSubnetId";Width=100;Alignment="left"},
+                    @{Expression={$_.NonCompliantSubnetName};Label="NonCompliantSubnetName";Width=100;Alignment="left"},
                     @{Expression={$_.IsNSGConfigured};Label="IsNSGConfigured";Width=100;Alignment="left"}
-
      
     Write-Host "Subnet(s) without NSG configuration are as follows:"
-    $SubnetWithoutNSGConfigured | Format-Table -Property $colsProperty -Wrap
+    $NonCompliantSubnets | Format-Table -Property $colsProperty -Wrap
     Write-Host $([Constants]::SingleDashLine)
 
     # Back up snapshots to `%LocalApplicationData%'.
@@ -404,8 +379,7 @@ function Add-NSGConfigurationOnSubnet
     {
         # Backing up Subnet(s) details.
         $backupFile = "$($backupFolderPath)\SubnetDetailsBackUp.csv"
-        $SubnetWithoutNSGConfigured | Export-CSV -Path $backupFile -NoTypeInformation
-        $SubnetWithoutNSGConfigured | Add-Member -NotePropertyName RemediatedSubnets -NotePropertyValue $null -Force
+        $NonCompliantSubnets | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "Subnet(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
@@ -446,96 +420,74 @@ function Add-NSGConfigurationOnSubnet
         Write-Host "To Start configuring the NSG on the Subnet(s), Please enter the Network Security Group Name and Resource Group Name" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
-        # Loop through the list of Subnet(s) which needs to be remediated.
-        $SubnetWithoutNSGConfigured | ForEach-Object {
-            $subnet = $_
-            try
+        foreach ($item in $NonCompliantSubnets) 
+        {
+            $SubNetName = $item.NonCompliantSubnetName
+            $vnet = Get-AzVirtualNetwork -Name $item.ResourceVirtualNetworkName -ResourceGroupName $item.ResourceVirtualNetworkRGName
+            $vNetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $vnet -Name $item.NonCompliantSubnetName
+
+            if($null -eq $vNetSubnet.NetworkSecurityGroup)
             {
-                if($null -ne $SubnetWithoutNSGConfigured.ResourceSubNetId)
+                $NSGName = Read-Host -Prompt "Please enter name of Network Security Group for [$SubNetName]"
+                Write-Host $([Constants]::SingleDashLine)
+                $NSGRGName = Read-Host -Prompt "Please enter Resource Group of Network Security Group for [$SubNetName]"
+                Write-Host $([Constants]::SingleDashLine)
+                if($NSGName -ne $null -and $NSGRGName -ne $null)
                 {
-                    foreach ($item in $subnet.ResourceSubNetId) 
+                   $nsg = Get-AzNetworkSecurityGroup -ResourceGroupName $NSGRGName -Name $NSGName
+                    if($nsg -ne $null)
                     {
-                        $NonCompliantsubnet = $item | ConvertFrom-Json
-                        $NonCompliantsubnet = $NonCompliantsubnet.Id
-                        $ResourceVNName = $NonCompliantsubnet.Split('/')[8]
-                        $ResourceVNRGName =$NonCompliantsubnet.Split('/')[4]
-                        $SubNetName = $NonCompliantsubnet.Split('/')[10]
+                        Write-Host "Configuring Network Security group for [$SubNetName]" -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host $([Constants]::SingleDashLine)
+                        $vNetSubnet.NetworkSecurityGroup = $nsg
+                        $remediatedVnet = $vnet | Set-AzVirtualNetwork
+                        $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
 
-                        $vnet = Get-AzVirtualNetwork -Name $ResourceVNName -ResourceGroupName $ResourceVNRGName
-                        $vNetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $vnet -Name $SubNetName
-                                
-                        if($null -eq $vNetSubnet.NetworkSecurityGroup)
+                        if($remediatedSubnet.NetworkSecurityGroup -ne $null)
                         {
-                            $NSGName = Read-Host -Prompt "Please enter name of Network Security Group for [$SubNetName]" 
-                            Write-Host $([Constants]::SingleDashLine)
-                            $NSGRGName = Read-Host -Prompt "Please enter Resource Group of Network Security Group for [$SubNetName]"
-                            Write-Host $([Constants]::SingleDashLine)
-                        if($NSGName -ne $null -and $NSGRGName -ne $null)
-                        {
-                                $nsg = Get-AzNetworkSecurityGroup -ResourceGroupName $NSGRGName -Name $NSGName
-                                    
-                                if($nsg -ne $null)
-                                {
-                                Write-Host "Configuring Network Security group for [$SubNetName]" -ForegroundColor $([Constants]::MessageType.Info)
-                                Write-Host $([Constants]::SingleDashLine)
-                                $vNetSubnet.NetworkSecurityGroup = $nsg
-                                $remediatedVnet = $vnet | Set-AzVirtualNetwork
-                                $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
-
-                                if($remediatedSubnet.NetworkSecurityGroup -ne $null)
-                                {
-                                    Write-Host "Successfully configured the NSG on Subnet [$SubNetName] " -ForegroundColor $([Constants]::MessageType.Update)
-                                    $subnet.IsNSGConfigured = $true
-                                    $subnet.RemediatedSubnets += $NonCompliantsubnet+','
-                                    $SubnetRemediated += $subnet
-                                    $logResource = @{}	
-                                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                                    $logResource.Add("ResourceName",($_.ResourceName))	
-                                    $logRemediatedResources += $logResource	
-                                }
-                                else
-                                {
-                                    $SubnetSkipped += $subnet
-                                    $logResource = @{}	
-                                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                                    $logResource.Add("ResourceName",($_.ResourceName))
-                                    $logResource.Add("Reason", "Error Configuring NSG on : [$($subnet)]")      
-                                    $logSkippedResources += $logResource	
-                                }
-                            }
-                            else
-                            {
-                                $SubnetSkipped += $subnet
-                                    $logResource = @{}	
-                                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                                    $logResource.Add("ResourceName",($_.ResourceName))
-                                    $logResource.Add("Reason", "Error Configuring NSG on : [$($subnet)]")      
-                                    $logSkippedResources += $logResource	
-                            }
+                            Write-Host "Successfully configured the NSG on Subnet : [$SubNetName]" -ForegroundColor $([Constants]::MessageType.Update)
+                            $item.IsNSGConfigured = $true
+                            $SubnetRemediated += $item
+                            $logResource = @{}	
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                            $logResource.Add("ResourceName",($_.ResourceName))	
+                            $logRemediatedResources += $logResource	
                         }
                         else
                         {
-                            Write-Host "Network Security Group Name or Resource Group can not be empty..." -ForegroundColor $([Constants]::MessageType.Info)
-                            $SubnetSkipped += $subnet                                    
-                            return;
-                        }                                               
+                            $SubnetSkipped += $item
+                            $logResource = @{}	
+                            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                            $logResource.Add("ResourceName",($_.ResourceName))
+                            $logResource.Add("Reason", "Error Configuring NSG on : [$($item)]")      
+                            $logSkippedResources += $logResource	
                         }
                     }
+                    else
+                    {
+                        $SubnetSkipped += $item
+                        $logResource = @{}	
+                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
+                        $logResource.Add("ResourceName",($_.ResourceName))
+                        $logResource.Add("Reason", "Error Configuring NSG on : [$($item)]")      
+                        $logSkippedResources += $logResource	
+                    }
                 }
+                else
+                {
+                    Write-Host "Network Security Group Name or Resource Group can not be empty..." -ForegroundColor $([Constants]::MessageType.Info)
+                    $SubnetSkipped += $item                                    
+                    return;
+                }                                               
             }
-            catch
+            else
             {
-                $SubnetSkipped += $subnet
-                $logResource = @{}	
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
-                $logResource.Add("ResourceName",($_.ResourceName))	
-                $logResource.Add("Reason","Encountered error Enabling DDoS Plan")    	
-                $logSkippedResources += $logResource	
-                Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)	
+                Write-Host "Network Security Group is already configured on [$SubNetName]" -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
             }
-        }
 
+        }
+         
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
@@ -696,8 +648,9 @@ function Remove-NSGConfigurationOnSubnet
                     @{Expression={$_.ResourceId};Label="ResourceId";Width=100;Alignment="left"},                    
                     @{Expression={$_.ResourceVirtualNetworkName};Label="VirtualNetworkName";Width=100;Alignment="left"},
                     @{Expression={$_.ResourceVirtualNetworkRGName};Label="VirtualNetworkRGName";Width=100;Alignment="left"},
-                    @{Expression={$_.IsNSGConfigured};Label="IsNSGConfigured";Width=100;Alignment="left"},
-                    @{Expression={$_.RemediatedSubnets};Label="RemediatedSubnets";Width=100;Alignment="left"}
+                    @{Expression={$_.NonCompliantSubnetId};Label="CompliantSubnetId";Width=100;Alignment="left"},
+                    @{Expression={$_.NonCompliantSubnetName};Label="CompliantSubnetName";Width=100;Alignment="left"},
+                    @{Expression={$_.IsNSGConfigured};Label="IsNSGConfigured";Width=100;Alignment="left"}
                     
         
     $validSubnetDetails | Format-Table -Property $colsProperty -Wrap
@@ -743,42 +696,31 @@ function Remove-NSGConfigurationOnSubnet
     # List for storing skipped rolled back Subnet resource.
     $SubnetSkipped = @()
 
-    foreach($Subnet in $validSubnetDetails)
+    foreach($item in $validSubnetDetails)
     {
-         if($null -ne $Subnet.RemediatedSubnets)
-            {
-               $RemediatedIds = $Subnet.RemediatedSubnets.Split(',')
-               Foreach($item in $RemediatedIds)
-               {
-                    if('' -ne $item)
-                    {
-                    $Compliantsubnet = $item
-                    $ResourceVNName = $Compliantsubnet.Split('/')[8]
-                    $ResourceVNRGName =$Compliantsubnet.Split('/')[4]
-                    $SubNetName = $Compliantsubnet.Split('/')[10]
-
-                    $vnet = Get-AzVirtualNetwork -Name $ResourceVNName -ResourceGroupName $ResourceVNRGName
-                    $VnetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $Vnet -Name $SubNetName
-
-                    if($VnetSubnet.NetworkSecurityGroup -ne $null)
-                    {
-                        $VnetSubnet.NetworkSecurityGroup = $null
-                        $remediatedVnet = $vnet | Set-AzVirtualNetwork
-                        $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $SubNetName
-                        if($remediatedSubnet.NetworkSecurityGroup -eq $null)
-                        {
-                            $Subnet.IsNSGConfigured = $false
-                            $SubnetRolledBack += $Subnet
-                        }
-                        else
-                        {
-                            $SubnetSkipped += $Subnet
-                        }
-                        
-                    }
+        if($item.IsNSGConfigured -eq $true)
+        {
+             $subnetName = $item.NonCompliantSubnetName
+             $vnet = Get-AzVirtualNetwork -Name $item.ResourceVirtualNetworkName -ResourceGroupName $item.ResourceVirtualNetworkRGName
+             $VnetSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $Vnet -Name $item.NonCompliantSubnetName
+             if($VnetSubnet.NetworkSecurityGroup -ne $null)
+             {
+                Write-Host "Removing network security group from subnet : [$subnetName]"  -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+                $VnetSubnet.NetworkSecurityGroup = $null
+                $remediatedVnet = $vnet | Set-AzVirtualNetwork
+                $remediatedSubnet = Get-AzVirtualNetworkSubnetConfig -VirtualNetwork $remediatedVnet -Name $item.NonCompliantSubnetName
+                if($remediatedSubnet.NetworkSecurityGroup -eq $null)
+                {
+                    $item.IsNSGConfigured = $false
+                    $SubnetRolledBack += $item
                 }
-                }
-            }
+                else
+                {
+                    $SubnetSkipped += $item
+                }       
+             }
+        }
     }
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -827,4 +769,16 @@ class Constants
 
     static [String] $DoubleDashLine = "========================================================================================================================"
     static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
+}
+
+class NonCompliantLoadBalancerSubnet
+{
+    [string] $ResourceName
+    [string] $ResourceId
+    [string] $ResourceGroupName
+    [string] $ResourceVirtualNetworkName
+    [string] $ResourceVirtualNetworkRGName
+    [string] $NonCompliantSubnetId
+    [string] $NonCompliantSubnetName
+    [bool] $IsNSGConfigured
 }
