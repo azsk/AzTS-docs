@@ -620,7 +620,6 @@ function Set-FrontDoorRequiredTLSVersion
                     Write-Host "Setting minimum required TLS version on custom domain..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                     
-                    #$resource = Enable-AzFrontDoorCustomDomainHttps -ResourceGroupName $resourceGroupName -FrontDoorName $resourceName -FrontendEndpointName $hostName -MinimumTlsVersion $requiredMinTLSVersion
                     $secret =  Get-AzFrontDoorCdnSecret -ResourceGroupName $resourceGroupName -ProfileName $resourceName
                     $secretResoure = New-AzFrontDoorCdnResourceReferenceObject -Id $secret.Id
                     $updateTlsSetting = New-AzFrontDoorCdnCustomDomainTlsSettingParametersObject -CertificateType $CertificateType -MinimumTlsVersion $requiredMinTLSVersion -Secret $secretResoure
@@ -640,10 +639,10 @@ function Set-FrontDoorRequiredTLSVersion
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
-                        $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door.")
+                        $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Endpoint.")
                         $logSkippedResources += $logResource
-                        Write-Host "Error while setting the minimum required TLS version for this Front Door." -ForegroundColor $([Constants]::MessageType.Error)
-                        Write-Host "Skipping this Front Door." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Error while setting the minimum required TLS version for this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                         return
                     }
@@ -654,9 +653,9 @@ function Set-FrontDoorRequiredTLSVersion
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason", "Error while setting the minimum required TLS version on the custom domain. Skipping this Front Door.")
+                    $logResource.Add("Reason", "Error while setting the minimum required TLS version on the custom domain. Skipping this Front Door Endpoint.")
                     $logSkippedResources += $logResource
-                    Write-Host "Error while setting the minimum required TLS version on the custom domain of Front Door." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error while setting the minimum required TLS version on the custom domain of Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
                     return
                 }
