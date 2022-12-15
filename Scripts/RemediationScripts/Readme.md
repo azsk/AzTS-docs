@@ -37,6 +37,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
 27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+28. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#28-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
 
 <br />
 
@@ -570,6 +571,27 @@ Use Approved TLS Version in SQL Server
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+
+## 28. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
+
+### Display Name
+Application Gateway should have Web Application Firewall configured
+
+### Link to Bulk Remediation Script (BRS) for Partially Remediating the control.
+[Remediate-NSGConfigurationOnApplicationGatewaySubnet](Remediate-NSGConfigurationOnApplicationGatewaySubnet.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes
