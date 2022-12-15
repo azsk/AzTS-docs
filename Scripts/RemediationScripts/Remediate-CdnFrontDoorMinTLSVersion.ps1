@@ -540,7 +540,7 @@ function Set-FrontDoorRequiredTLSVersion
         return
     }
 
-    Write-Host "Found [$($totalNonCompliantFrontDoorEndpoints)] out of [$($totalFrontDoors)] Front Door(s) having minimum TLS version less than required minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantFrontDoorEndpoints)] Endpoints of [$($totalFrontDoors)] Front Door(s) having minimum TLS version less than required minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     
     # Back up snapshots to `%LocalApplicationData%'.
