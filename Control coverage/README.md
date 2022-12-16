@@ -24,6 +24,7 @@ Below resource types can be checked for validating the security controls:
 |[DBForMySqlFlexibleServer](Feature/DBForMySqlFlexibleServer.md)|Microsoft.DBforMySQL/flexibleServers|
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
+|[FrontDoorCDN](Feature/FrontDoorCDN.md)|Microsoft.Cdn/profiles|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[HybridCompute](Feature/HybridCompute.md)|Microsoft.HybridCompute/machines|
 |[KeyVault](Feature/KeyVault.md)|Microsoft.KeyVault/vaults|
@@ -43,8 +44,8 @@ Below resource types can be checked for validating the security controls:
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
 |[VirtualMachineScaleSet](Feature/VirtualMachineScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|
 |[VirtualNetwork](Feature/VirtualNetwork.md)|Microsoft.Network/virtualNetworks|
-|[FrontDoor](Feature/FrontDoor.md)|Microsoft.Network/frontDoor|
-|[FrontDoorCDN](Feature/FrontDoorCDN.md)|Microsoft.Cdn/profiles|
+
+
 
 ## Externally Scanned controls in Azure Tenant Security (AzTS)
 

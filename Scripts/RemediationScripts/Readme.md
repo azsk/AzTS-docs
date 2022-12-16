@@ -607,32 +607,6 @@ Yes
 ___
 
 
-## 32. Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration
-
-### Display Name
-WAF Policy should be configured on Endpoints in Front Door
-
-### Link to Bulk Remediation Script (BRS)
-You can Configure WAF Policy on Front Door CDN using below BRS:  <br/>
-[Remediate-ConfigureWAFPolicyForFrontDoorCDN](Remediate-ConfigureWAFPolicyForFrontDoorCDN.ps1) <br/>
-You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
-[Remediate-EnableWAFPolicyForFrontDoorCDN](Remediate-EnableWAFPolicyForFrontDoorCDN.ps1) <br/>
-You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
-[Remediate-EnableWAFPolicyPreventionModeForFrontDoorCDN](Remediate-EnableWAFPolicyPreventionModeForFrontDoorCDN.ps1) <br/>
-
-### Minimum permissions required to run the script
-Contributor role at resource level
-
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
-Yes
-
-### Supports rollback?
-Yes
-
-
-___
-
-
 ## 29. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
 
 ### Display Name
@@ -676,6 +650,31 @@ Yes
 
 ___
 
+
+## 32. Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration
+
+### Display Name
+WAF Policy should be configured on Endpoints in Front Door
+
+### Link to Bulk Remediation Script (BRS)
+You can Configure WAF Policy on Front Door CDN using below BRS:  <br/>
+[Remediate-ConfigureWAFPolicyForFrontDoorCDN](Remediate-ConfigureWAFPolicyForFrontDoorCDN.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyForFrontDoorCDN](Remediate-EnableWAFPolicyForFrontDoorCDN.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyPreventionModeForFrontDoorCDN](Remediate-EnableWAFPolicyPreventionModeForFrontDoorCDN.ps1) <br/>
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
 
 
 ## Supports managed identity based remediations
