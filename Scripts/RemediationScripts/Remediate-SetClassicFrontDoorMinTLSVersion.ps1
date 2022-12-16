@@ -399,9 +399,6 @@ function Set-FrontDoorRequiredTLSVersion
             Write-Host $([Constants]::SingleDashLine)
             }
         
-        
-    
-
         foreach ($item in $FrontDoorEndpoint) 
         {
             $frontDoorResourceEP = $_
