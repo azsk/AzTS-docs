@@ -3,23 +3,30 @@
 
 >**Pre-requisites**:
 > - PowerShell 7.0 or higher. 
+> - Azure CLI
 > - Windows OS
+
 	
 1. First verify that prerequisites are already installed:  
     Ensure that you are using Windows OS and have PowerShell version 7.0 or higher by typing **$PSVersionTable** in the PS/ISE console window and looking at the PSVersion in the output as shown below.) 
     <br><br>
  ![PowerShell Version](../Images/09_PS_VERSION.png) 
  <br><br>
- If the PSVersion is older than 7.0, update PowerShell using command     
-```Powershell
+-   If the PSVersion is older than 7.0, update PowerShell using command     
+  ```Powershell
     iex "& { $(irm aka.ms/install-powershell.ps1) } -UseMSI"
-```
+  ```
+-   If the Azure CLI is not installed, install Azure CLI using below command     
+  ```Powershell
+    $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi;   
+    Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+  ```
 
 2. Install the Tenant Security Solution for Azure (AzTS) PS module:  
 	  
-```PowerShell
-  Install-Module AzTS -Scope CurrentUser
-```
+  ```PowerShell
+    Install-Module AzTS -Scope CurrentUser
+  ```
 
 
 ## AzTS command
@@ -49,13 +56,17 @@
 
 >  **Prerequisites:**
 > For all commands in this feature it is assumed that you have:
-> 1. Logged in to your Azure account using Connect-AzAccount from a PS/ISE console.
+> 1. Logged in to your Azure account using "az login" from a PS/ISE console.
 >```PowerShell
->   Connect-AzAccount 
+>   az login
 >```
-> 2. Selected a subscription using Set-AzContext.
+> 2. Selected a subscription using "az account set".
 >```PowerShell
->	Set-AzContext -SubscriptionId <SubscriptionId> 
+>	az account set --subscription <SubscriptionId> 
+>```
+> 3. Confirm the current Azure context using "az account show".
+>```PowerShell
+>	az account show 
 >```
 
 ### Overview
