@@ -24,7 +24,6 @@ Below resource types can be checked for validating the security controls:
 |[DBForMySqlFlexibleServer](Feature/DBForMySqlFlexibleServer.md)|Microsoft.DBforMySQL/flexibleServers|
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
-|[FrontDoorCDN](Feature/FrontDoorCDN.md)|Microsoft.Cdn/profiles|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[HybridCompute](Feature/HybridCompute.md)|Microsoft.HybridCompute/machines|
 |[KeyVault](Feature/KeyVault.md)|Microsoft.KeyVault/vaults|
