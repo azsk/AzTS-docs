@@ -120,6 +120,9 @@
         "sku": {
           "name": "[parameters('vaultSku')]",
           "family": "A"
+        },
+        "networkAcls": {
+          "defaultAction": "Deny" //[Azure_KeyVault_NetSec_Disable_Public_Network_Access]
         }
       }
     }
