@@ -40,6 +40,7 @@ Below resource types can be checked for validating the security controls:
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
 |[VirtualMachineScaleSet](Feature/VirtualMachineScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|
 |[VirtualNetwork](Feature/VirtualNetwork.md)|Microsoft.Network/virtualNetworks|
+|[FrontDoor](Feature/FrontDoor.md)|Microsoft.Network/frontDoor|
 
 ## Externally Scanned controls in Azure Tenant Security (AzTS)
 

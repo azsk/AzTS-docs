@@ -36,11 +36,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
-
-
-
-
-29. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
+31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
 
 <br />
 
@@ -563,42 +559,7 @@ Yes
 
 ___
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## 26. Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
+## 31. Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
 
 ### Display Name
 WAF Policy should be configured on Endpoints in Front Door

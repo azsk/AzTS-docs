@@ -15,7 +15,7 @@ ___
 ## Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
 
 ### Display Name 
-[Trial] WAF Policy should be configured on for Endpoints in Front Door
+WAF Policy should be configured on for Endpoints in Front Door
 
 ### Rationale 
 Azure Web Application Firewall (WAF) on Azure Front Door provides centralized protection for your web applications. WAF defends your web services against common exploits & vulnerablities. It keeps your service highly available for your users and helps you meet compliance requirements.
@@ -38,7 +38,13 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 ### Recommendation 
 - **Azure Portal** 
 
-	 Use the Azure portal to configure WAF on the Front Door.
+	 Use the Azure portal to configure WAF Policy on the Front Door.<br/>
+	 or Use following Powershell Bulk Remediation scripts to Configure WAF Policy on the Front Door: <br/>
+	 [Remediate-ConfigureWAFPolicyForFrontDoor](../../Scripts/RemediationScripts/Remediate-ConfigureWAFPolicyForFrontDoor.ps1) <br/>
+	 You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+	 [Remediate-EnableWAFPolicyForFrontDoor](../../Scripts/RemediationScripts/Remediate-EnableWAFPolicyForFrontDoor.ps1) <br/>
+	 You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+	 [Remediate-EnableWAFPolicyPreventionModeForFrontDoor](../../Scripts/RemediationScripts/Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1) <br/>
 
 ### Azure Policy or ARM API used for evaluation 
 
