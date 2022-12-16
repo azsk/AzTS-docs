@@ -3,7 +3,7 @@
 **Resource Type:** Microsoft.Network/frontDoor 
 
 <!-- TOC -->
-Azure_FrontDoor_NetSec_Enable_WAF_Configuration
+
 - [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](#azure_frontdoor_netsec_enable_waf_configuration)
 
 
