@@ -6,7 +6,7 @@
     Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration
 
 # Display Name:
-   Front Door should have Web Application Firewall configured
+    Front Door should have Web Application Firewall configured
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Door CDNs in a Subscription.

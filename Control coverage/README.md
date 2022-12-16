@@ -12,6 +12,7 @@ Below resource types can be checked for validating the security controls:
 |Feature Name|Resource Type|
 |---|---|
 |[APIManagement](Feature/APIManagement.md)|Microsoft.ApiManagement/service|
+|[ApplicationGateway](Feature/ApplicationGateway.md)|Microsoft.Network/applicationGateways|
 |[AppService](Feature/AppService.md)|Microsoft.Web/sites|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
@@ -41,6 +42,8 @@ Below resource types can be checked for validating the security controls:
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
 |[VirtualMachineScaleSet](Feature/VirtualMachineScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|
 |[VirtualNetwork](Feature/VirtualNetwork.md)|Microsoft.Network/virtualNetworks|
+|[FrontDoor](Feature/FrontDoor.md)|Microsoft.Network/frontDoor|
+|[FrontDoorCDN](Feature/FrontDoorCDN.md)|Microsoft.Cdn/profiles|
 
 ## Externally Scanned controls in Azure Tenant Security (AzTS)
 
@@ -59,3 +62,61 @@ Following controls in AzTS are currently externally scanned:
 | Azure_VirtualMachine_SI_Missing_OS_Patches | Patch assets to protect against vulnerabilities | Virtual Machine must have all the required OS patches installed |
 | Azure_VirtualMachine_SI_Enable_Antimalware | Ensure all devices have anti-malware protection installed and enabled | Antimalware must be enabled with real time protection on Virtual Machine |
 | Azure_VirtualMachine_SI_Enable_Sense_Agent | Ensure Sense Agent is installed and healthy | Sense Agent provides Threat and Vulnerability Management (TVM) data and other enhanced telemetry to the backend Microsoft Defender Advanced Threat Protection (MDATP) instance |
+
+
+## List of controls that depends on Microsoft Defender for Cloud (MDC) in Azure Tenant Security (AzTS)
+
+| ControlId | DisplayName | Description | MDC Recommendation(s) |
+|-----------|-------------|-------------|-----------------------|
+| Azure_AppService_DP_Dont_Allow_HTTP_Access | Use HTTPS for app services | App Service must only be accessible over HTTPS | Web Application should only be accessible over HTTPS, <br><br>Function App should only be accessible over HTTPS |
+| Azure_AppService_DP_Use_Secure_TLS_Version | Use Approved TLS Version in App Service | Use approved version of TLS for the App Service | TLS should be updated to the latest version for web apps, <br><br>TLS should be updated to the latest version for function apps |
+| Azure_AppService_DP_Use_Secure_FTP_Deployment | App Services should use secure FTP deployments | App Services should use secure FTP deployments | FTPS should be required in web apps, <br><br>FTPS should be required in function apps |
+| Azure_Storage_AuthN_Dont_Allow_Anonymous | Ensure secure access to storage account containers | The Access Type for containers must not be set to 'Anonymous' | Storage account public access should be disallowed |
+| Azure_Storage_DP_Encrypt_In_Transit | Enable Secure transfer to storage accounts | HTTPS protocol must be used for accessing Storage Account resources | Secure transfer to storage accounts should be enabled |
+| Azure_VirtualMachine_DP_Enable_Disk_Encryption | Disk encryption should be applied on virtual machines | Disk encryption must be enabled on both OS and data disks for Windows Virtual Machine | Virtual machines should encrypt temp disks, caches, and data flows between Compute and Storage resources |
+| Azure_VirtualMachine_SI_MDC_OS_Vulnerabilities | Virtual Machine must be in a healthy state in Microsoft Defender for Cloud |Virtual Machine must be in a healthy state in Microsoft Defender for Cloud | Machines should be configured securely |
+| Azure_VirtualMachine_SI_MDC_Recommendations | Virtual Machine must implement all the flagged MDC recommendations | Virtual Machine must implement all the flagged MDC recommendations | Virtual machines should encrypt temp disks, caches, and data flows between Compute and Storage resources, <br><br>Adaptive application controls for defining safe applications should be enabled on your machines, <br><br>Machines should have a vulnerability assessment solution |
+| Azure_VirtualMachine_SI_Enable_Vuln_Solution | Install DSRE Qualys Cloud Agent on assets | Vulnerability assessment solution should be installed on VM | Machines should have a vulnerability assessment solution |
+| Azure_VirtualMachine_NetSec_Dont_Open_Restricted_Ports | Management ports must not be open on machines | Do not leave restricted ports open on Virtual Machines | Management ports of virtual machines should be protected with just-in-time network access control |
+| Azure_VNet_NetSec_Configure_NSG | Associate Subnets with a Network Security Group | NSG should be used for subnets in a virtual network to permit traffic only on required inbound/outbound ports. NSGs should not have a rule to allow any-to-any traffic | Subnets should be associated with a network security group |
+| Azure_Subscription_AuthZ_Remove_Deprecated_Accounts | Remove Orphaned accounts from your subscription(s) | Deprecated/stale accounts must not be present on the subscription | Deprecated accounts should be removed from subscriptions | 
+| Azure_RedisCache_DP_Use_SSL_Port | Non-SSL port must not be enabled for Redis Cache | Non-SSL port must not be enabled for Redis Cache | Redis Cache should allow access only via SSL |
+| Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel | The ClusterProtectionLevel property must be set to EncryptAndSign for Service Fabric clusters |The ClusterProtectionLevel property must be set to EncryptAndSign for Service Fabric clusters | Service Fabric clusters should have the ClusterProtectionLevel property set to EncryptAndSign |
+| Azure_SQLDatabase_AuthZ_Use_AAD_Admin | Use AAD Authentication for SQL Database | Enable Azure AD admin for the SQL Database | SQL servers should have an Azure Active Directory administrator provisioned |
+| Azure_SQLDatabase_DP_Enable_TDE | Enable Transparent Data Encryption on SQL databases | Enable Transparent Data Encryption on SQL databases | Transparent Data Encryption on SQL databases should be enabled |
+
+## Frequently Asked Questions (FAQ)
+
+<br>
+
+**Even after remediating my resource, it is still showing as failed against controls in AzTS UI. The controls depends on MDC Assessment. What should I do?**
+
+**NOTE:** *Kindly make sure that the resource(s) is(are) already fixed. The controls which depends on MDC assessment could be found [here](#list-of-controls-that-depends-on-microsoft-defender-for-cloud-mdc-in-azure-tenant-security-azts).* 
+
+If a control depends on MDC assessment(s), validate if resource is in healthy state as per MDC recommendation(s), to validate please follow below mentioned steps:
+
+1. Go to **Azure Portal**.
+2. Search for **Microsoft Defender for Cloud** and **open** that.
+
+    ![Image](../Images/MDCEvaluationImage1.png)
+
+3. Click on **Recommendation under the General tab**, in the left side panel.
+
+    ![Image](../Images/MDCEvaluationImage2.png)
+
+4. Click on the **All Recommendations**.
+5. Search for the related [recommendations](#list-of-controls-that-depends-on-microsoft-defender-for-cloud-mdc-in-azure-tenant-security-azts) and open it.
+
+    ![Image](../Images/MDCEvaluationImage3.png)
+
+6. Check the list of **unhealthy resources** to see if your resource is present in that list or not.
+7. If your resource(s) is not present in unhealthy resources list, run the scan from AzTS UI and check the status of your resource(s).
+8. If your resource(s) is present in **unhealthy resources list** and **'Fix' button is available** in the bottom, select the resource(s) that you need to remediate and click on 'Fix' button and wait till your resource(s) show up in **healthy resources list**.
+
+    ![Image](../Images/MDCEvaluationImage4.png)
+ 
+9. If your resource(s) is present in **unhealthy resources list** and **'Fix' button is not available** in the bottom, you have to wait till the MDC evaluation is refreshed and wait till your resource(s) show up in **healthy resources list**. You can find the **refresh interval** at the top. 
+
+    ![Image](../Images/MDCEvaluationImage5.png)
+
+10. Once your resource(s) appear under healthy resources list, run the scan from AzTS UI to check the status of your resource(s).
