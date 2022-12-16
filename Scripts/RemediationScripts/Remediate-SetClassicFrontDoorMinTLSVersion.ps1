@@ -411,13 +411,13 @@ function Set-FrontDoorRequiredTLSVersion
            {
               if($minTLSVersionofEndpoint -lt $requiredMinTLSVersion)
               {
-               $frontDoorsEndpointWithoutReqMinTLSVersion = $item 
+               $frontDoorsEndpointWithoutReqMinTLSVersion += $item 
                $isMinTLSVersionSetOnCustomDomain = $false;
               }
            }
            else
            {
-               $frontDoorsEndpointWithtReqMinTLSVersion = $item
+               $frontDoorsEndpointWithtReqMinTLSVersion += $item
            }   
         }
         }
@@ -454,7 +454,7 @@ function Set-FrontDoorRequiredTLSVersion
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
-                $frontDoorWithoutReqMinTLSVersion = $frontDoorsEndpointWithoutReqMinTLSVersion | Select-Object @{N='ResourceID';E={$frontDoorsEndpointWithoutReqMinTLSVersion.Id}},
+                $frontDoorWithoutReqMinTLSVersion += $frontDoorsEndpointWithoutReqMinTLSVersion | Select-Object @{N='ResourceID';E={$frontDoorsEndpointWithoutReqMinTLSVersion.Id}},
                                                                                 @{N='ResourceGroupName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.Id.Split('/')[4]}},
                                                                                 @{N='ResourceName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.Id.Split('/')[8]}},
                                                                                 @{N='HostName';E={$frontDoorsEndpointWithoutReqMinTLSVersion.Name}},
@@ -831,7 +831,7 @@ function Reset-FrontDoorRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
 
     $frontdoorDetails = Import-Csv -LiteralPath $FilePath
-    $validFrontDoorDetails = $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) 
+    $validFrontDoorDetails += $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) 
                                                                 ![String]::IsNullOrWhiteSpace($_.ResourceGroupName)
                                                                 ![String]::IsNullOrWhiteSpace($_.ResourceName)
                                                                 ![String]::IsNullOrWhiteSpace($_.HostName)
