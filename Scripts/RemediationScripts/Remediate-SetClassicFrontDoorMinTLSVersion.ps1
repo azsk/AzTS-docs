@@ -374,7 +374,7 @@ function Set-FrontDoorRequiredTLSVersion
 
     $isMinTLSVersionSetOnCustomDomain = @()
 
-    $FrontDoorEndpoint = @()
+    $FrontDoorEndpoints = @()
 
     $frontDoorWithoutReqMinTLSVersion = @()
 
@@ -392,14 +392,14 @@ function Set-FrontDoorRequiredTLSVersion
             Write-Host "Fetching Front Door Endpoint configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             
-            $FrontDoorEndpoint = Get-AzFrontDoorFrontendEndpoint -FrontDoorName $resourceName -ResourceGroupName $resourceGroupName
+            $FrontDoorEndpoints = Get-AzFrontDoorFrontendEndpoint -FrontDoorName $resourceName -ResourceGroupName $resourceGroupName
         
-            if($FrontDoorEndpoint){
+            if($FrontDoorEndpoints){
             Write-Host "Front Door Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
             }
         
-        foreach ($item in $FrontDoorEndpoint) 
+        foreach ($item in $FrontDoorEndpoints) 
         {
             $frontDoorResourceEP = $_
             $minTLSVersionofEndpoint = $item.MinimumTlsVersion
