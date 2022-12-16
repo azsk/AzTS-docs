@@ -6,7 +6,7 @@
     Azure_FrontDoor_NetSec_Enable_WAF_Configuration
 
 # Display Name:
-    WAF Policy should be configured on for Endpoints in Front Door.
+     Front Door (Classic) should have Web Application Firewall configured
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Doors in a Subscription.

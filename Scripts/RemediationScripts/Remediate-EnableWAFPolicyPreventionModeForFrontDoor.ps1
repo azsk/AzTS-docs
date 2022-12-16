@@ -6,7 +6,7 @@
     Azure_FrontDoor_NetSec_Enable_WAF_Configuration
 
 # Display Name:
-    WAF Policy should be turned on for Endpoints in Front Door.
+     Front Door (Classic) should have Web Application Firewall configured
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Doors in a Subscription.
@@ -43,7 +43,7 @@
         2. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) of all Front Doors in a Subscription:
            Enable-WAFPolicyPreventionModeForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To Switch WAF Policy Mode to  Prvention for FrontEndpoint(s) of all Front Doors in a Subscription, from a previously taken snapshot:
+        3. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) of all Front Doors in a Subscription, from a previously taken snapshot:
            Enable-WAFPolicyPreventionModeForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyModeToPrevention\frontdoorEndpointsWithoutPolicyInPreventionMode.csv
 
         To know more about the options supported by the remediation command, execute:

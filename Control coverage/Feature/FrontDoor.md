@@ -39,7 +39,10 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 - **Azure Portal** 
 
 	 Use the Azure portal to configure WAF Policy on the Front Door.<br/>
-	 or Use following Powershell Bulk Remediation scripts to Configure WAF Policy on the Front Door: <br/>
+	 
+- **Powershell** 	
+
+	You can configure WAF Policy on Front Door using below BRS:<br/>
 	 [Remediate-ConfigureWAFPolicyForFrontDoor](../../Scripts/RemediationScripts/Remediate-ConfigureWAFPolicyForFrontDoor.ps1) <br/>
 	 You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
 	 [Remediate-EnableWAFPolicyForFrontDoor](../../Scripts/RemediationScripts/Remediate-EnableWAFPolicyForFrontDoor.ps1) <br/>

@@ -6,7 +6,7 @@
     Azure_FrontDoor_NetSec_Enable_WAF_Configuration
 
 # Display Name:
-    WAF Policy should be turned on for Endpoints in Front Door.
+     Front Door (Classic) should have Web Application Firewall configured
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Doors in a Subscription.
@@ -28,29 +28,29 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to enable WAF Policy on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
+        3. Execute the script to enable WAF Policy state on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to enable WAF Policy on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
+        3. Execute the script to enable WAF Policy state on All endpoints of Front Doors in a Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
         1. To review the Front Doors in a Subscription that will be remediated:
            Enable-WAFPolicyStateForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) of all Front Doors in a Subscription:
+        2. To set WAF Policy state to enabled for FrontEndpoint(s) of all Front Doors in a Subscription:
            Enable-WAFPolicyStateForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To Switch WAF Policy Mode to  Prvention for FrontEndpoint(s) of all Front Doors in a Subscription, from a previously taken snapshot:
+        3. To Switch WAF Policy state to enabled for FrontEndpoint(s) of all Front Doors in a Subscription, from a previously taken snapshot:
            Enable-WAFPolicyStateForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyEnabled\frontdoorEndpointsWithoutPolicyInEnabledState.csv
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-WAFPolicyStateForFrontDoor -Detailed
 
     To roll back:
-        1. To Switch WAF Policy Mode to Prvention for FrontEndpoint(s) all Front Doors in a Subscription, from a previously taken snapshot:
+        1. To Switch WAF Policy state to disabled for FrontEndpoint(s) all Front Doors in a Subscription, from a previously taken snapshot:
            Disable-WAFPolicyStateForFrontDoor -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetFrontDoorPolicyEnabled\RemediatedfrontDoors.csv
         
         To know more about the options supported by the roll back command, execute:
