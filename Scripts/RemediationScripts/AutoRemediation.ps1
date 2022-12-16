@@ -156,7 +156,8 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") -or
                 ($control.ControlId -eq "Azure_CloudService_SI_Disable_RemoteDesktop_Access") -or
                 ($control.ControlId -eq "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel") -or
-                ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE")) {
+                ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") -or
+                ($control.ControlId -eq "Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -190,9 +191,6 @@ Enter the choice (1|2)";
                     }
                     Write-Host $([Constants]::SingleDashLine)
                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -FTPState " + "`'" + $FTPState +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";              
-                }
-                elseif($control.ControlId -eq "Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial"){
-                        $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'"  + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }
                 else{
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
