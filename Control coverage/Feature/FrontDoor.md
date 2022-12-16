@@ -15,7 +15,7 @@ ___
 ## Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
 
 ### Display Name 
-WAF Policy should be configured on for Endpoints in Front Door
+Front Door (Classic) should have Web Application Firewall configured
 
 ### Rationale 
 Azure Web Application Firewall (WAF) on Azure Front Door provides centralized protection for your web applications. WAF defends your web services against common exploits & vulnerablities. It keeps your service highly available for your users and helps you meet compliance requirements.
