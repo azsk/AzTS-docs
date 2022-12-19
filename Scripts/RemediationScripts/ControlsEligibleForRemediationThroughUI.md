@@ -231,7 +231,7 @@ Owner or higher priviliged role on the Storage Account(s)
 
 ___
 
-## 15. Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
+## 16. Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
 
 ### Display Name
 Shared Access Signature (SAS) expiry interval must be less than approved upper limit for Azure Storage
