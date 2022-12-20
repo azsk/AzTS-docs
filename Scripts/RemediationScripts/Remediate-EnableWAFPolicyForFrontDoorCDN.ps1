@@ -220,7 +220,6 @@ function Enable-WAFPolicyForFrontDoorCDN
         Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
 
-
     Write-Host "To enable WAF Policy for Front Door CDN Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Door CDNs are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 5] Preparing to fetch all Front Door CDNs"
