@@ -17,12 +17,12 @@
         1. Validate and install the modules required to run the script.
         2. Get the list of all Front Doors Endpoints in a Subscription that do not have WAF Policy Enabled
         3. Back up details of Front Door Endpoint(s) that are to be remediated.
-        4. Set Policy State to enabled for all endpoints in the Front Doors.
+        4. Set Policy State to enabled for all endpoints in the Frontdoors.
 
     To roll back:
         1. Validate and install the modules required to run the script.
-        2. Get the list of Front Doors' Endpoint(s) in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Revert Policy state to disabled for all endpoints in all the Front Doors.
+        2. Get the list of Frontdoors' Endpoint(s) in a Subscription, the changes made to which previously, are to be rolled back.
+        3. Revert Policy state to disabled for all endpoints in all the Frontdoors.
 
 # Instructions to execute the script:
     To remediate:
@@ -226,8 +226,10 @@ function Enable-WAFPolicyStateForFrontDoor
     Write-Host "[Step 2 of 5] Preparing to fetch all Front Doors"
     Write-Host $([Constants]::SingleDashLine)
 
+
     $frontDoors = @()
     $frontDoorFrontendPoints = @()
+ 
  
     # Control Id
     $controlIds = "Azure_FrontDoor_NetSec_Enable_WAF_Configuration"
