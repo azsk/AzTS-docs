@@ -230,6 +230,7 @@ function Enable-WAFPolicyStateForFrontDoor
     $frontDoors = @()
     $frontDoorFrontendPoints = @()
  
+ 
     # Control Id
     $controlIds = "Azure_FrontDoor_NetSec_Enable_WAF_Configuration"
 
