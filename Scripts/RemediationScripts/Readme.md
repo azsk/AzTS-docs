@@ -668,7 +668,7 @@ You can enable Prevention Mode on WAF Policy configured on Front Door using belo
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation?
 Yes
 
 ### Supports rollback?

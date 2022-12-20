@@ -1,6 +1,6 @@
 ﻿<###
 # Overview:
-    This script is used to congigure WAF Policy on all endpoints of Front Doors in a Subscription.
+    This script is used to configure WAF Policy on all endpoints of Front Doors in a Subscription.
 
 # Control ID:
     Azure_FrontDoor_NetSec_Enable_WAF_Configuration
@@ -17,7 +17,7 @@
         1. Validate and install the modules required to run the script.
         2. Get the list of all Front Doors Endpoints in a Subscription that do not have WAF Configured
         3. Back up details of Front Door Endpoint(s) that are to be remediated.
-        4. Configure the WAF Policy for all endpoints in the Frontdoors.
+        4. Configure the WAF Policy for all endpoints in the Front Doors.
 
 # Instructions to execute the script:
     To remediate:
@@ -441,10 +441,7 @@ function Configure-WAFPolicyForFrontDoor
 
         # To hold results from the remediation.
         $frontDoorFrontendpointsRemediated = @()
-
-        Write-Host "Configuring WAF Policy on FrontDoor Frontend Endpoint(s)"
-        Write-Host $([Constants]::SingleDashLine)
-
+ 
         # Remidiate Controls by Configuring WAF Policy
         $frontDoorEndpointsWithWAFPolicyNotConfigured | ForEach-Object {
             $frontDoorEndPoint = $_
@@ -459,9 +456,15 @@ function Configure-WAFPolicyForFrontDoor
             {   
                 Do
                 {
+                    Write-Host "* Press S to skip this Front Door & move to next Front Door" 
+                    Write-Host $([Constants]::SingleDashLine)
                     $wafPolicyName = Read-Host -Prompt "Enter WAF Policy Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] " 
+                    if ( $wafPolicyName -eq "S" ) { return }
+                    Write-Host $([Constants]::SingleDashLine)
+                    Write-Host "* Press S to skip this Front Door & move to next Front Door" 
                     Write-Host $([Constants]::SingleDashLine)
                     $policyResourceGroup = Read-Host -Prompt "Enter WAF Policy Resource Group Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] "
+                    if ( $policyResourceGroup -eq "S" ) { return }
 
                     $wafPolicyName = $wafPolicyName.Trim()
                     $policyResourceGroup = $policyResourceGroup.Trim()
@@ -483,6 +486,7 @@ function Configure-WAFPolicyForFrontDoor
                 }
                 while($policy.Sku -ne 'Classic_AzureFrontDoor' -or $policy -eq $null)
 
+                Write-Host "Enabling Prevention Mode on provided WAF Policy" -ForegroundColor $([Constants]::MessageType.Update)
                 $wafpolicy = Update-AzFrontDoorWafPolicy -Name  $wafPolicyName  -ResourceGroupName $policyResourceGroup -Mode Prevention
                 $frontDoor = Get-AzFrontDoor -ResourceGroupName $resourceGroupName ` -Name $frontdoorName
                  
