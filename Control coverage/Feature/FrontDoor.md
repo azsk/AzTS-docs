@@ -38,7 +38,9 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 ### Recommendation 
 - **Azure Portal** 
 
-	 Use the Azure portal to configure WAF Policy on the Front Door.<br/>
+	 Use the Azure portal to configure WAF Policy on the Front Door.
+	 To know more, please visit : https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-create-portal
+	 <br/>
 	 
 - **Powershell** 	
 
@@ -52,11 +54,11 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to get Front Door resources in a subscription: /subscriptions/{0}/providers/Microsoft.Network/frontDoors?api-version=2019-05-01<br />
-**Properties:** [*]
+**Properties:** [\*].properties.frontendEndpoints
  <br />
 
 - ARM API to get WAF Policy resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
-**Properties:** [*]
+**Properties:** [\*].properties.frontendEndpointLinks, [\*].properties.policySettings
  <br />
 
 <br />
