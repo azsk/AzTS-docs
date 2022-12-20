@@ -412,7 +412,6 @@ function Enable-WAFPolicyPreventionModeForFrontDoor
     }
 
     $totalfrontDoorEndpointsWithWAFPolicyNotInPrevention = ($frontDoorEndpointsWithWAFPolicyNotInPrevention | Measure-Object).Count
-     
     if ($totalfrontDoorEndpointsWithWAFPolicyNotInPrevention  -eq 0)
     {
         Write-Host "No Front Door Frontendpoints(s) found where WAF Policy is not in Prevention Mode.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)

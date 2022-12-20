@@ -241,8 +241,6 @@ function Enable-WAFPolicyStateForFrontDoor
         Write-Host $([Constants]::SingleDashLine)
         # Get all Front Doors in the Subscription
         $frontDoors = Get-AzFrontDoor  -ErrorAction Stop
-
-    
         $totalfrontDoors = ($frontDoors | Measure-Object).Count
         
         if($totalfrontDoors -gt 0)
@@ -397,7 +395,6 @@ function Enable-WAFPolicyStateForFrontDoor
 
     # Includes Front Door Endpoint(s) that were skipped during remediation. There were errors remediating them.
     $frontDoorEndpointsSkipped = @()
-    
      
     Write-Host "[Step 3 of 5] Fetching Frontendpoint(s) where WAF Policy is not in Enabled State"
     Write-Host $([Constants]::SingleDashLine)
