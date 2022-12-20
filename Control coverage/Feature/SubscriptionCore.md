@@ -7,7 +7,7 @@
 - [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles)
 - [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
 - [Azure_Subscription_AuthZ_Remove_Management_Certs - <b>DEPRECATED!!!</b>](#Azure_Subscription_AuthZ_Remove_Management_Certs)
-- [Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts](#Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts)
+- [Azure_Subscription_Audit_Resolve_MDC_Alerts](#azure_subscription_audit_resolve_mdc_alerts)
 - [Azure_Subscription_AuthZ_Custom_RBAC_Roles](#Azure_Subscription_AuthZ_Custom_RBAC_Roles)
 - [Azure_Subscription_SI_Classic_Resources](#Azure_Subscription_SI_Classic_Resources)
 - [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](#Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
@@ -281,7 +281,7 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 ___ 
 
-## Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts 
+## Azure_Subscription_Audit_Resolve_MDC_Alerts 
 
 ### Display Name 
 Resolve active Microsoft Defender for Cloud (MDC) alerts of medium severity or higher
