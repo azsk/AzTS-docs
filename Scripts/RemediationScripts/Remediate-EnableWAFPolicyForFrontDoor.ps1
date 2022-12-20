@@ -226,6 +226,7 @@ function Enable-WAFPolicyStateForFrontDoor
     Write-Host "[Step 2 of 5] Preparing to fetch all Front Doors"
     Write-Host $([Constants]::SingleDashLine)
 
+
     $frontDoors = @()
     $frontDoorFrontendPoints = @()
  
