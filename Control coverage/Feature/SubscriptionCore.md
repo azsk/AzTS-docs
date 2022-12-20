@@ -1022,7 +1022,7 @@ Note : Approved central team accounts don't count against your limit
 
 
 - **PowerShell** 
-    <br> To remove admin/owner role assignment.
+    <br> To remove owner role assignment.
 	 ```powershell 
 	 Remove-AzRoleAssignment -SignInName '{signInName}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
      # Run 'Get-Help Remove-AzRoleAssignment -full' for more help.
