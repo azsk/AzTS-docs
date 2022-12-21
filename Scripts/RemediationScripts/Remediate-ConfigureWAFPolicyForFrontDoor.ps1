@@ -456,15 +456,15 @@ function Configure-WAFPolicyForFrontDoor
             {   
                 Do
                 {
-                    Write-Host "* Press S to skip this Front Door & move to next Front Door" 
+                    Write-Host "* Press S to skip this Front Door Endpoint & move to next Front Door Endpoint" 
                     Write-Host $([Constants]::SingleDashLine)
                     $wafPolicyName = Read-Host -Prompt "Enter WAF Policy Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] " 
-                    if ( $wafPolicyName -eq "S" ) { return }
+                    if ($wafPolicyName -eq "S" ) { return }
                     Write-Host $([Constants]::SingleDashLine)
                     Write-Host "* Press S to skip this Front Door & move to next Front Door" 
                     Write-Host $([Constants]::SingleDashLine)
                     $policyResourceGroup = Read-Host -Prompt "Enter WAF Policy Resource Group Name for Endpoint: [$($_.EndPointName)] of Frontdoor [$($frontdoorName)] "
-                    if ( $policyResourceGroup -eq "S" ) { return }
+                    if ($policyResourceGroup -eq "S" ) { return }
 
                     $wafPolicyName = $wafPolicyName.Trim()
                     $policyResourceGroup = $policyResourceGroup.Trim()
@@ -485,10 +485,8 @@ function Configure-WAFPolicyForFrontDoor
                     }
                 }
                 while($policy.Sku -ne 'Classic_AzureFrontDoor' -or $policy -eq $null)
-
-                Write-Host "Enabling Prevention Mode on provided WAF Policy" -ForegroundColor $([Constants]::MessageType.Update)
-                $wafpolicy = Update-AzFrontDoorWafPolicy -Name  $wafPolicyName  -ResourceGroupName $policyResourceGroup -Mode Prevention
-                $frontDoor = Get-AzFrontDoor -ResourceGroupName $resourceGroupName ` -Name $frontdoorName
+                
+                $frontDoor = Get-AzFrontDoor -ResourceGroupName $resourceGroupName -Name $frontdoorName
                  
                 if ($frontDoor -eq $null)
                 {
