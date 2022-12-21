@@ -391,6 +391,7 @@ function Enable-WAFPolicyPreventionModeForFrontDoor
 
     # Includes Front Door Endpoint(s) where WAF Policy is not in Prevention Mode
     $frontDoorEndpointsWithWAFPolicyNotInPrevention = @()
+    $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = 0
 
     # Includes Front Door Endpoint(s) that were skipped during remediation. There were errors remediating them.
     $frontDoorEndpointsSkipped = @()
@@ -405,10 +406,20 @@ function Enable-WAFPolicyPreventionModeForFrontDoor
 
     $frontDoorFrontendPoints | ForEach-Object {
         $frontEndPoint = $_        
-            if(($_.IsPreventionMode -eq $false) -and ($_.IsWAFConfigured -eq $true))
-            {
-                $frontDoorEndpointsWithWAFPolicyNotInPrevention += $frontEndPoint
-            }
+        if($_.IsWAFConfigured -eq $false)
+        {
+            $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = $totalfrontDoorEndpointsWithWAFPolicyNotConfigured + 1
+        }
+        if(($_.IsPreventionMode -eq $false) -and ($_.IsWAFConfigured -eq $true))
+        {
+            $frontDoorEndpointsWithWAFPolicyNotInPrevention += $frontEndPoint
+        }
+    }
+    
+    if ($totalfrontDoorEndpointsWithWAFPolicyNotConfigured  -gt 0)
+    {
+         Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotConfigured)] Front Door Frontendpoints(s) found where WAF Policy is not configured. Use [Remediate-ConfigureWAFOnAzureFrontDoor.ps1] BRS to Configure WAF Policy on Front Door Endpoints without WAF Policy Configured." -ForegroundColor $([Constants]::MessageType.Update)
+         Write-Host $([Constants]::SingleDashLine)	
     }
 
     $totalfrontDoorEndpointsWithWAFPolicyNotInPrevention = ($frontDoorEndpointsWithWAFPolicyNotInPrevention | Measure-Object).Count

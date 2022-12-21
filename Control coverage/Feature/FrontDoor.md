@@ -54,11 +54,11 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to get Front Door resources in a subscription: /subscriptions/{0}/providers/Microsoft.Network/frontDoors?api-version=2019-05-01<br />
-**Properties:** [\*].properties.frontendEndpoints
+**Properties:** [*].properties.frontendEndpoints
  <br />
 
 - ARM API to get WAF Policy resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
-**Properties:** [\*].properties.frontendEndpointLinks, [\*].properties.policySettings
+**Properties:** [*].properties.frontendEndpointLinks, [\*].properties.policySettings
  <br />
 
 <br />

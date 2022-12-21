@@ -392,7 +392,8 @@ function Enable-WAFPolicyStateForFrontDoor
 
     # Includes Front Door Endpoint(s) where WAF Policy is not in Enabled State
     $frontDoorEndpointsWithWAFPolicyNotInEnabledState = @()
-
+    $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = 0
+    
     # Includes Front Door Endpoint(s) that were skipped during remediation. There were errors remediating them.
     $frontDoorEndpointsSkipped = @()
      
@@ -403,20 +404,31 @@ function Enable-WAFPolicyStateForFrontDoor
 
     $frontDoorFrontendPoints | ForEach-Object {
         $frontEndPoint = $_        
-            if(($_.IsWAFPolicyStateEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
-            {
-                $frontDoorEndpointsWithWAFPolicyNotInEnabledState += $frontEndPoint
-            }
+        if($_.IsWAFConfigured -eq $false)
+        {
+            $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = $totalfrontDoorEndpointsWithWAFPolicyNotConfigured + 1
+        }
+        if(($_.IsWAFPolicyStateEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
+        {
+            $frontDoorEndpointsWithWAFPolicyNotInEnabledState += $frontEndPoint
+        }
     }
 
     $totalfrontDoorEndpointsWithWAFPolicyNotInEnabledState = ($frontDoorEndpointsWithWAFPolicyNotInEnabledState | Measure-Object).Count
      
+    if ($totalfrontDoorEndpointsWithWAFPolicyNotConfigured  -gt 0)
+    {
+         Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotConfigured)] Front Door Frontendpoints(s) found where WAF Policy is not configured. Use [Remediate-ConfigureWAFOnAzureFrontDoor.ps1] BRS to Configure WAF Policy on Front Door Endpoints without WAF Policy Configured." -ForegroundColor $([Constants]::MessageType.Update)
+         Write-Host $([Constants]::SingleDashLine)	
+    }
+
     if ($frontDoorEndpointsWithWAFPolicyNotInEnabledState  -eq 0)
     {
         Write-Host "No Front Door Frontendpoints(s) found where WAF Policy is not in Enabled State.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)	
         return
     }
+    
 
     Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotInEnabledState)] Front Door Frontendpoints(s) found where WAF Policy is not in Enabled State ." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
