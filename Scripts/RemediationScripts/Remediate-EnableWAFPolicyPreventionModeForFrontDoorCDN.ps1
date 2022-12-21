@@ -527,6 +527,7 @@ function Enable-WAFPolicyPreventionModeForFrontDoorCDNEndPoints
 
     # Includes Front Door CDN Endpoint(s) where WAF Policy is in Prevention Mode
     $frontDoorEndpointsWithWAFPolicyNotInPrevention = @()
+    $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = 0
 
     # Includes Front Door CDN Endpoint(s) that were skipped during remediation. There were errors remediating them.
     $frontDoorEndpointsSkipped = @()
@@ -538,7 +539,11 @@ function Enable-WAFPolicyPreventionModeForFrontDoorCDNEndPoints
     Write-Host "Separating Front Door CDN Endpoint(s) for which WAF Policy is not in Prevention Mode..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $frontDoorEndPoints | ForEach-Object {
-        $endPoint = $_        
+        $endPoint = $_ 
+            if($_.IsWAFConfigured -eq $false)
+            {
+                $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = $totalfrontDoorEndpointsWithWAFPolicyNotConfigured + 1
+            }       
             if(($_.IsPreventionMode -eq $false) -and ($_.IsWAFConfigured -eq $true))
             {
                 $frontDoorEndpointsWithWAFPolicyNotInPrevention += $endPoint
@@ -557,6 +562,12 @@ function Enable-WAFPolicyPreventionModeForFrontDoorCDNEndPoints
 
     $totalfrontDoorEndpointsWithWAFPolicyNotInPrevention = ($frontDoorEndpointsWithWAFPolicyNotInPrevention | Measure-Object).Count
      
+    if ($totalfrontDoorEndpointsWithWAFPolicyNotConfigured  -gt 0)
+    {
+               Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotConfigured)] Front Door Endpoints(s) found where WAF Policy is not configured. Use [Remediate-ConfigureWAFOnAzureFrontDoor.ps1] BRS to Configure WAF Policy on Front Door Endpoints without WAF Policy Configured." -ForegroundColor $([Constants]::MessageType.Update)
+         Write-Host $([Constants]::SingleDashLine)	
+    }
+
     if ($totalfrontDoorEndpointsWithWAFPolicyNotInPrevention  -eq 0)
     {
         Write-Host "No Front Door CDN endpoints(s) found where WAF Policy is not in Prevention Mode.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)

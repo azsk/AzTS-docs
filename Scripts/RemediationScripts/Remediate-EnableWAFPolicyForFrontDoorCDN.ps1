@@ -532,6 +532,7 @@ function Enable-WAFPolicyForFrontDoorCDN
 
     # Includes Front Door CDN Endpoint(s) where WAF Policy is in not Enabled
     $frontDoorEndpointsWithWAFPolicyNotEnabled = @()
+    $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = 0
 
     # Includes Front Door CDN Endpoint(s) that were skipped during remediation. There were errors remediating them.
     $frontDoorEndpointsSkipped = @()
@@ -543,24 +544,34 @@ function Enable-WAFPolicyForFrontDoorCDN
     Write-Host $([Constants]::SingleDashLine)
     $frontDoorEndPoints | ForEach-Object {
         $endPoint = $_        
-            if(($_.IsWAFPolicyStateEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
-            {
-                $frontDoorEndpointsWithWAFPolicyNotEnabled += $endPoint
-            }
-            else
-            {
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.FrontDoorName))
-                $logResource.Add("EndPointName",($_.EndPointName))
-                $logResource.Add("Reason","WAF Policy already enabled on endpoint")    
-                $logSkippedResources += $logResource
+        if($_.IsWAFConfigured -eq $false)
+        {
+            $totalfrontDoorEndpointsWithWAFPolicyNotConfigured = $totalfrontDoorEndpointsWithWAFPolicyNotConfigured + 1
+        }
+        if(($_.IsWAFPolicyStateEnabled -eq $false) -and ($_.IsWAFConfigured -eq $true))
+        {
+            $frontDoorEndpointsWithWAFPolicyNotEnabled += $endPoint
+        }
+        else
+        {
+            $logResource = @{}
+            $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+            $logResource.Add("ResourceName",($_.FrontDoorName))
+            $logResource.Add("EndPointName",($_.EndPointName))
+            $logResource.Add("Reason","WAF Policy already enabled on endpoint")    
+            $logSkippedResources += $logResource
 
-            }
+        }
     }
 
     $totalfrontDoorEndpointsWithWAFPolicyNotEnabled = ($frontDoorEndpointsWithWAFPolicyNotEnabled | Measure-Object).Count
      
+    if ($totalfrontDoorEndpointsWithWAFPolicyNotConfigured  -gt 0)
+    {
+         Write-Host "Found [$($totalfrontDoorEndpointsWithWAFPolicyNotConfigured)] Front Door Endpoints(s) found where WAF Policy is not configured. Use [Remediate-ConfigureWAFOnAzureFrontDoor.ps1] BRS to Configure WAF Policy on Front Door Endpoints without WAF Policy Configured." -ForegroundColor $([Constants]::MessageType.Update)
+         Write-Host $([Constants]::SingleDashLine)	
+    }
+
     if ($totalfrontDoorEndpointsWithWAFPolicyNotEnabled  -eq 0)
     {
         Write-Host "No Front Door CDN endpoints(s) found where WAF Policy is not Enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
