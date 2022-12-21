@@ -499,7 +499,7 @@ function Configure-WAFPolicyForFrontDoor
                     {
                         if($_.EndpointName -eq $frontDoor[0].FrontendEndpoints[$k].Name)
                         {
-                            $frontDoor[0].FrontendEndpoints[$k].WebApplicationFirewallPolicyLink = $wafpolicy.Id
+                            $frontDoor[0].FrontendEndpoints[$k].WebApplicationFirewallPolicyLink = $policy.Id
                             $setPolicy = Set-AzFrontDoor -InputObject $frontDoor[0]
                             $frontDoorFrontendpointsRemediated += $frontDoorEndPoint
                             $frontDoorEndPoint.IsWAFConfigured = $true;
