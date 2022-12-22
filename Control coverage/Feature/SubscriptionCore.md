@@ -1003,11 +1003,12 @@ Each additional person in the admin/owner role increases the attack surface for 
 
 ### Control Spec 
 > **Passed:** 
-> The count of admin/owner accounts does not exceed 5.
+> The count of admin/owner accounts does not exceed the configured number of admin/owner count.
 Note : Approved central team accounts don't count against your limit
 > 
 > **Failed:** 
-> More than 5 admin/owner accounts found. Note : Approved central team accounts don't count against your limit
+> The count of admin/owner accounts exceed the configured number of admin/owner count. 
+Note : Approved central team accounts don't count against your limit
 > 
 > **Verify:** 
 > RBAC result not found (sufficient data is not available for evaluation).
