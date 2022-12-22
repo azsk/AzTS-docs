@@ -193,6 +193,18 @@
                   "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
                   "Arguments":["SubscriptionId"]
              }
+        },
+        {
+            "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
+            "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",     
+            "InitCommand": "Set-SASExpiryInterval",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SASExpiryInterval",
+                  "Arguments":["SubscriptionId"]
+             }
         }
     ]
 }

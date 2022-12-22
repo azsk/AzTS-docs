@@ -5,6 +5,7 @@
 <!-- TOC -->
 
 - [Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace](#azure_servicebus_authz_dont_use_policies_at_sb_namespace)
+- [Azure_ServiceBus_DP_Use_Secure_TLS_Version](#azure_servicebus_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
