@@ -221,7 +221,7 @@ function Enable-WAFPolicyStateForFrontDoor
     Write-Host $([Constants]::SingleDashLine)
     
 
-    Write-Host "To enable WAF Policy for Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To enable the state of WAF Policy Configured on Front Door Endpoint(s) in a Subscription, Contributor or higher privileges role on the Front Doors and WAF Policies are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 5] Preparing to fetch all Front Doors"
     Write-Host $([Constants]::SingleDashLine)
@@ -717,7 +717,7 @@ function Disable-WAFPolicyStateForFrontDoor
 
     # Note about the required access required for remediation
 
-    Write-Host "To set WAF Policy State to disabled for all Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To set WAF Policy State to disabled for all Front Door Endpoint(s) in a Subscription, Contributor or higher privileges role on the Front Doors and WAF Polcies are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Front Door Endpoints"
     Write-Host $([Constants]::SingleDashLine)
@@ -829,7 +829,7 @@ function Disable-WAFPolicyStateForFrontDoor
     
     if (-not $Force)
     {
-        Write-Host "Do you want to set WAF Policy State to be Disabled for all Front Door Endpoint(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to set WAF Policy State to be Disabled for all Front Door Endpoint(s) from Remediated File?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
@@ -855,7 +855,7 @@ function Disable-WAFPolicyStateForFrontDoor
 
     
  
-    Write-Host "[Step 4 of 4] Disabling WAF Policy State for Front Doors Frontendpoint(s)"
+    Write-Host "[Step 4 of 4] Disabling WAF Policy State Configured on Front Doors Frontendpoint(s)"
     Write-Host $([Constants]::SingleDashLine)
     # Includes Front Doors, to which, previously made changes were successfully rolled back.
     $frontDoorEndpointsRolledBack = @()

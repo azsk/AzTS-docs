@@ -9,7 +9,7 @@
      Front Door (Classic) should have Web Application Firewall configured
 
 # Prerequisites:
-    1. Contributor or higher privileges on the Front Doors in a Subscription.
+    1. Contributor or higher privileges role on the Front Doors in a Subscription.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
@@ -207,7 +207,7 @@ function Configure-WAFPolicyForFrontDoor
         Write-Host $([Constants]::SingleDashLine)
     
 
-    Write-Host "To configure WAF Policy for Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To configure WAF Policy for Front Door Endpoint(s) in a Subscription, Contributor or higher privileges role on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 5] Preparing to fetch all Front Doors"
     Write-Host $([Constants]::SingleDashLine)
@@ -372,7 +372,7 @@ function Configure-WAFPolicyForFrontDoor
     Write-Host $([Constants]::SingleDashLine)	
 
 
-    Write-Host "Following Front Door Frontendpoints(s) are having wihtout WAF Policies configured:" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Following Front Door are having Frontendpoints(s) wihtout WAF Policies configured:" -ForegroundColor $([Constants]::MessageType.Info)
     $colsProperty = @{Expression={$_.EndpointId};Label="Frontendpoint Id";Width=10;Alignment="left"},
                     @{Expression={$_.EndPointName};Label="Frontendpoint";Width=10;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
@@ -414,18 +414,18 @@ function Configure-WAFPolicyForFrontDoor
         Write-Host $([Constants]::SingleDashLine)
         if (-not $Force)
         {
-            Write-Host "Do you want to configure WAF Policy on Front Door Frontendpoint(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "Do you want to configure WAF Policy on Front Door Frontendpoint(s)? (Please note that this script does not provide the rollback functionality. Rollback can still be performed from Azure Portal.) " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             $userInput = Read-Host -Prompt "(Y|N)"
             Write-Host $([Constants]::SingleDashLine)
             if($userInput -ne "Y")
             {
-                Write-Host "WAF Policy Mode will not Configured for any Front Door FrontEndpoint(s). Exiting." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "WAF Policy will not Configured for any Front Door FrontEndpoint(s). Exiting." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::DoubleDashLine)
                 break
             }
             else
             {
-                Write-Host "WAF Policy Mode will be Configured for all Front Door FrontEndpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "WAF Policy will be Configured for all Front Door FrontEndpoint(s)" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }

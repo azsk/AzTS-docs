@@ -9,7 +9,7 @@
      Front Door (Classic) should have Web Application Firewall configured
 
 # Prerequisites:
-    1. Contributor or higher privileges on the Front Doors in a Subscription.
+    1. Contributor or higher privileges role on the Front Doors in a Subscription.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
@@ -223,7 +223,7 @@ function Enable-WAFPolicyPreventionModeForFrontDoor
     Write-Host $([Constants]::SingleDashLine)
 
 
-    Write-Host "To enable WAF Policy for Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To change the WAF Policy mode configured on Front Door Endpoint(s) in a Subscription, Contributor or higher privileges role on the Front Doors And WAF Policies are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 5] Preparing to fetch all Front Doors..."
     Write-Host $([Constants]::SingleDashLine) 
@@ -723,7 +723,7 @@ function Disable-WAFPolicyPreventionModeForFrontDoor
     # Note about the required access required for remediation
 
 
-    Write-Host "To Switich WAF Policy Mode to Detection for all Front Door Endpoint(s) in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To switch WAF Policy Mode to Detection for all Front Door Endpoint(s) in a Subscription, Contributor or higher privileges role on the Front Doors and WAF Policies are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Front Door Endpoints..."
     Write-Host $([Constants]::SingleDashLine)
@@ -799,9 +799,9 @@ function Disable-WAFPolicyPreventionModeForFrontDoor
 
     
  
-    Write-Host "[Step 3 of 4] Fetching Frontendpoint(s) where WAF Policy is not in Prevention Mode..."
+    Write-Host "[Step 3 of 4] Fetching Frontendpoint(s) where WAF Policy is in Prevention Mode..."
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Separating Front Door Endpoint(s) for which WAF Policy is not in Prevention Mode..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Separating Front Door Endpoint(s) for which WAF Policy is in Prevention Mode..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $frontDoorFrontendPoints | ForEach-Object {
         $frontEndPoint = $_        

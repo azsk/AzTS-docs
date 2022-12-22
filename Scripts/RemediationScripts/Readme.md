@@ -653,7 +653,7 @@ ___
 ## 31. Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
 
 ### Display Name
-WAF Policy should be configured on Endpoints in Front Door
+WAF Policy should be configured on Endpoints in Front Door.
 
 ### Link to Bulk Remediation Script (BRS)
 You can Configure WAF Policy on Front Door using below BRS:  <br/>
@@ -672,7 +672,7 @@ Contributor role at resource level
 Yes
 
 ### Supports rollback?
-Configured WAF Policy cannot be rolled Back. WAF Policy Prevention Mode & Enabled State can be rolledback
+Configured WAF Policy cannot be rolled Back. Setting Policy Mode & Enabling Policy State can still be rolled back.
 
 
 ___

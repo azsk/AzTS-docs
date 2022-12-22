@@ -23,14 +23,14 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
  ### Control Spec 
 
 > **Passed:** 
-> Web Application Firewall has been configured on Front Door </br>
-> and Configured WAF Policy mode must be Prevention only. </br> 
-> and Configured WAF Policy mode must be in Enabled State only. </br> 
+> Web Application Firewall has been configured on Front Door. <b>AND</b> </br>
+> Configured WAF Policy mode must be Prevention. <b>AND</b> </br> 
+> Configured WAF Policy mode must be in Enabled State. </br> 
 > 
 > **Failed:** 
-> WAF is not configured on Front Door. </br> 
-> or Configured WAF Policy mode is not Prevention. </br> 
-> or Configured WAF Policy mode is not in Enabled State. </br> 
+> WAF is not configured on Front Door. <b>OR</b>  </br> 
+> Configured WAF Policy mode is not Prevention. <b>OR</b> </br> 
+> Configured WAF Policy mode is not in Enabled State. </br> 
 > 
 > **Error:** 
 > There was an error fetching WAF Configuration details of Front Door.
@@ -46,6 +46,8 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 
 	You can configure WAF Policy on Front Door using below BRS:<br/>
 	 [Remediate-ConfigureWAFPolicyForFrontDoor](../../Scripts/RemediationScripts/Remediate-ConfigureWAFPolicyForFrontDoor.ps1) <br/>
+	 <b>Disclaimer: Rollback for above remediation is not available, Once WAF Configured on Front Door can only be disabled from Azure Portal. </b><br/>
+	 
 	 You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
 	 [Remediate-EnableWAFPolicyForFrontDoor](../../Scripts/RemediationScripts/Remediate-EnableWAFPolicyForFrontDoor.ps1) <br/>
 	 You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
