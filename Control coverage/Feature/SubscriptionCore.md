@@ -19,6 +19,7 @@
 - [Azure_Subscription_Config_MDC_Setup_SecurityContacts](#Azure_Subscription_Config_MDC_Setup_SecurityContacts)
 - [Azure_Subscription_SI_No_Billing_Activity](#Azure_Subscription_SI_No_Billing_Activity)
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
+- [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
 
 <!-- /TOC -->
 <br/>
@@ -973,6 +974,66 @@ By using Conditional Access policies for privileged roles, you can apply the rig
 
 - PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+'{uniquePimIdentifier}')+and+((roleDefinition/templateId+eq+'{ownerTemplateId}')+or+(roleDefinition/templateId+eq+'{userAccessAdminTemplateId}')+or+(roleDefinition/templateId+eq+'{contributorTemplateId}')) <br />
 **Properties:** [\*].roleDefinitionId, [\*].userMemberSettings, [\*].roleDefinition.displayName
+ <br />
+
+<br />
+
+___ 
+
+## Azure_Subscription_AuthZ_Limit_Admin_Owner_Count 
+
+### Display Name 
+Minimize the number of admins/owners
+
+### Rationale 
+Each additional person in the admin/owner role increases the attack surface for the entire subscription. The number of members in these roles should be kept to as low as possible. 
+
+### Control Settings 
+```json 
+{
+    "ExcludeUsers": [],
+    "NoOfAdminOrOwnerLimit": 5,
+    "EligibleAdminOrOwnerRoles": [
+        "CoAdministrator",
+        "ServiceAdministrator",
+        "owner"
+    ]
+}
+ ```  
+
+### Control Spec 
+> **Passed:** 
+> The count of admin/owner accounts does not exceed the configured number of admin/owner count.
+Note : Approved central team accounts don't count against your limit
+> 
+> **Failed:** 
+> The count of admin/owner accounts exceed the configured number of admin/owner count. 
+Note : Approved central team accounts don't count against your limit
+> 
+> **Verify:** 
+> RBAC result not found (sufficient data is not available for evaluation).
+> 
+
+
+### Recommendation 
+
+- **Azure Portal** 
+ <br/>Please follow these steps to remove classic role assignments : <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. <br />(e) Select the co-administrator account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the co-administrators that need to be removed from the subscription. <br/> 
+<br/>Please follow these steps to remove owner role assignments : <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Role Assignments' tab. <br />(e) Navigate to owner section and select the owner account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the owner accounts that need to be removed from the subscription. <br/> 
+
+
+- **PowerShell** 
+    <br> To remove owner role assignment.
+	 ```powershell 
+	 Remove-AzRoleAssignment -SignInName '{signInName}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
+     # Run 'Get-Help Remove-AzRoleAssignment -full' for more help.
+     # For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+	 `
+
+### Azure Policy or ARM API used for evaluation 
+
+-  ARM API to list role assignment at subscription level: - /subscriptions/{subscriptionId}}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-07-01<br />
+**Properties:** [\*].properties.scope , [\*].name
  <br />
 
 <br />
