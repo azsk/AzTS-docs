@@ -44,6 +44,8 @@ Below resource types can be checked for validating the security controls:
 |[VirtualMachineScaleSet](Feature/VirtualMachineScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|
 |[VirtualNetwork](Feature/VirtualNetwork.md)|Microsoft.Network/virtualNetworks|
 
+
+
 ## Externally Scanned controls in Azure Tenant Security (AzTS)
 
 There are certain controls that cannot be effectively evaluated by AzTS (due to various limitations for e.g. some controls requires VM instances to be in running state) for such controls AzTS will put verification result as 'ExtScanned'. And effective verification result of such controls should be determined based on external feeds later (if available). 

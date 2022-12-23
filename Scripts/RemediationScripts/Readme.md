@@ -40,6 +40,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
 29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#29-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
+32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
 
 
 
@@ -606,7 +607,6 @@ Yes
 ___
 
 
-
 ## 29. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
 
 ### Display Name
@@ -650,6 +650,31 @@ Yes
 
 ___
 
+
+## 32. Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration
+
+### Display Name
+WAF Policy should be configured on Endpoints in Front Door
+
+### Link to Bulk Remediation Script (BRS)
+You can Configure WAF Policy on Front Door CDN using below BRS:  <br/>
+[Remediate-ConfigureWAFPolicyForFrontDoorCDN](Remediate-ConfigureWAFPolicyForFrontDoorCDN.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyForFrontDoorCDN](Remediate-EnableWAFPolicyForFrontDoorCDN.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyPreventionModeForFrontDoorCDN](Remediate-EnableWAFPolicyPreventionModeForFrontDoorCDN.ps1) <br/>
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
 
 
 ## Supports managed identity based remediations
