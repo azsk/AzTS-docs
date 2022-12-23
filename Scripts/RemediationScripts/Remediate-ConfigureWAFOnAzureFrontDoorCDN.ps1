@@ -228,7 +228,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
     $logSkippedResources=@()	
 
     # Control Id	
-    $controlIds = "Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration"
+    $controlIds = "Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration"
 
     if ([String]::IsNullOrWhiteSpace($FilePath))	
     {
