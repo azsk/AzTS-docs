@@ -25,12 +25,12 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 > **Passed:** 
 > Web Application Firewall has been configured on Front Door. <b>AND</b> </br>
 > Configured WAF Policy mode must be Prevention. <b>AND</b> </br> 
-> Configured WAF Policy mode must be in Enabled State. </br> 
+> Configured WAF Policy must be in Enabled State. </br> 
 > 
 > **Failed:** 
 > WAF is not configured on Front Door. <b>OR</b>  </br> 
 > Configured WAF Policy mode is not Prevention. <b>OR</b> </br> 
-> Configured WAF Policy mode is not in Enabled State. </br> 
+> Configured WAF Policy is not in Enabled State. </br> 
 > 
 > **Error:** 
 > There was an error fetching WAF Configuration details of Front Door.
