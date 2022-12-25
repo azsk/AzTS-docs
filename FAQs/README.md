@@ -6,24 +6,78 @@
 # FAQs
 
 - ### Setup
- 1. [Getting error "Class keyword is not allowed in ConstrainedLanguage mode"](../00a-Setup/Readme.md#should-i-run-powershell-ise-as-administrator-or-regular-user)
- 2. [How to disable AzTS scan and uninstall the setup"](#how-to-disable-azts-scan-and-uninstall-the-setup? )
-3. [How to add new subscriptions/mangement groups after deploying AzTS"](../00a-Setup/Readme.md#should-i-run-powershell-ise-as-administrator-or-regular-user)
+ 1. [Getting error "Class keyword is not allowed in ConstrainedLanguage mode"](#1getting-error--class-keyword-is-not-allowed-in-constrainedlanguage-mode)
+ 2. [How to add new subscriptions or mangement groups after deploying AzTS?](#2-how-to-add-new-subscriptions-or-management-groups-after-deploying-azts)
+ 3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
+ 4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
+
+ - ### Scan
+ 1. [Today's AzTS scan has completed. How do I re-run the full scan?](#1-todays-azts-scan-has-completed-how-do-i-re-run-the-full-scan)
+ 2. [How to disable AzTS scan and uninstall the setup?](#2-how-to-disable-azts-scan-and-uninstall-the-setup)
+ 3. [The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?](#3-the-subscription-scan-in-azts-is-getting-terminated-due-to-function-timeout-how-can-i-fix-it-or-how-can-i-upgrade-the-pricing-tier-of-azts-function-apps)
 
 - ### Monitoring
- 1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert]()
-
-
+ 1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
 
 --------------------------------------------------
 </br>
 
-## <b>FAQs </b>
+## **FAQs **
+- ### Setup
 
- ### 1.<b>Getting error : Class keyword is not allowed in ConstrainedLanguage mode </b>
+ ### **1. Getting error : Class keyword is not allowed in ConstrainedLanguage mode** 
 This error can be observed where PowerShell is running in ConstrainedLanguage mode. If local settings for LaguageMode cannot be modified for some reason, AzTa setup can be done using aletrnate options. One of the options be copying deployment files to Azure storage and running the whole deployment procedure within Cloud Shell. 
 
-### 2. <b>How to disable AzTS scan and uninstall the setup? </b>
+### **2. How to add new subscriptions or management groups after deploying AzTS**
+You just need to provide reader access to scanner Managed Identity at subscription or Management Group level. From next schedule, AzTS will pick up new subscriptions for scanning. 
+
+### **3. On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."***
+
+This is probably happening because the user-assigned managed identity (internal MI) has been deleted from Azure Portal, but the role assignment of this MI is still present at the resource group scope in which the AzTS setup has been installed. The role assignment of a deleted identity looks like below,
+
+![FAQ_GhostIdentity](../Images/12_TSS_FAQ_RBACGhostAccount.png)
+
+To remove role assignment, go to resource group where AzTS solution has been installed --> Access control (IAM) --> Role assignments --> Look for deleted identity (as shown in the screenshot) --> Select the identity and click on 'Remove'.
+
+After deleting the identity, you can run the installation command again.
+
+### **4. While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?**
+
+To update the telemetry preferences, go to resource group where AzTS solution has been installed --> AzSK-AzTS-AutoUpdater-XXXXX --> Configuration --> Change the values of below listed configurations:
+
+- AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel
+
+  - All --> To opt in for both, Anonymized AzTS usage data and Organization/team contact details.
+  - Anonymous --> To opt in for only Anonymized AzTS usage data.
+  - Onboarding --> To opt in for only Organization/team contact details.
+  - None --> To opt out of both, Anonymized AzTS usage data and Organization/team contact details.
+
+- OnboardingDetails\_\_Organization
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your organization in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_Division
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the name of your division(division within your organization) in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+
+- OnboardingDetails\_\_ContactEmailAddressList
+
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
+  - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
+  
+<br> 
+<br> 
+<br>
+
+- ### Scan
+
+### **1. Today's AzTS scan has completed. How do I re-run the full scan?**
+
+You can use the on-demand scan command provided [here](../01-Setup%20and%20getting%20started/README.md/) with `-ForceFetch` flag.
+
+### **2. How to disable AzTS scan and uninstall the setup?**
 AzTS scans can be disabled by revoking reader access granted to scanner Managed Identity at individual subscription level.
 To uninstall or rollback AzTS scaner setup, below steps can be performed:
   1. Revoke scanner MI reader permissions for subscription(s) 
@@ -31,11 +85,60 @@ To uninstall or rollback AzTS scaner setup, below steps can be performed:
   3. Delete AzTS resource group. 
 </br>
 
-### 3. <b>How to add new subscriptions/mangement groups after deploying AzTS? </b>
-You just need to provide reader access to scanner Managed Identity at subscription or Management Group level. From next schedule, AzTS will pick up new subscriptions for scanning. 
+### **3. The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?**
 
-### 4. <b>I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert? 
-</b>
+AzTS installation command (`Install-AzSKTenantSecuritySolution`) creates three function apps which are as follows:
+1. AzSK-AzTS-MetadataAggregator-xxxxx
+2. AzSK-AzTS-WorkItemProcessor-xxxxx
+3. AzSK-AzTS-AutoUpdater-xxxxx
+
+These function apps share a common Consumption hosting plan. Azure Functions in a Consumption plan are limited to 10 minutes for a single execution. As a result, subscription scan which take longer than 10 minutes will get terminated. Read more about the hosting plans [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-scale).
+
+In this case, we recommend you to upgrade the Function app hosting plan (pricing tier) which will give you the flexibility to increase the function timeout value. Following steps will guide you on how to upgrade pricing tier and change function timeout value for AzTS setup.
+    
+1. To update pricing tier, run `Update-AzFunctionAppPlan` cmdlet as shown below. You can read more about pricing details of function app [here](https://azure.microsoft.com/en-us/pricing/details/functions/).
+
+    ```PowerShell
+      # 1. Clear existing login, if any
+
+      Disconnect-AzAccount
+
+      # 2. Connect to AzureAD and AzAccount
+      # Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
+
+      $TenantId = "<TenantId>"
+      Connect-AzAccount -Tenant $TenantId
+
+      # 3. Install module, if not already installed
+      # Az.Functions >= 4.8.0
+
+      Install-Module -Name Az.Functions -AllowClobber -Scope CurrentUser -repository PSGallery
+
+      # 4. Import module
+
+      Import-Module -Name Az.Functions
+
+      # 5. Update app service pricing tier
+
+      # AppServicePlanName: Your Function App Service plan (in the Azure portal, go to the AzTS Host RG > select one of function apps, say 'AzSK-AzTS-WorkItemProcessor-xxxxx' > Under the Overview section, copy name of the 'App Service Plan'.)
+      # In this example, we are updating service plan to EP2.
+
+      Update-AzFunctionAppPlan -ResourceGroupName <AzTSScanHostRG> `
+                                 -Name <AppServicePlanName> `
+                                 -Sku EP2
+
+    ```
+
+4. To increase function timeout, go to your function app (say, you want to increase timeout value for 'AzSK-AzTS-WorkItemProcessor-xxxxx'. This app contains function to scan subscription with baseline control.) > Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
+
+  > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
+<br> 
+<br>
+
+
+- ### Monitoring
+
+### **1. I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?** 
 Auto updater runs daily and check for any updates available or not, if there are no updates it will not raise any alert or error. Alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert" mostly indicates Auto updater function is not able to complete its job successfully in past runs.
 
 To get more details about reason behind Autoupdate failure:
@@ -54,7 +157,7 @@ traces
 
 If you see traces "Exception occurred in UpdateFunctionApp function while updating [AzSK-AzTS-UI-xxxxx]. Exception : [System.Exception: App service [AzSK-AzTS-UI-xxxxx] request to swap slot with production failed", then Auto-Updater is failing as staging and production slot swapping is failing for AzTS UI.You can disable the slot swap feature in Auto Updater with below steps:
 1. Go to Auto Updater Function App (AzSK-AzTS-AutoUpdater-b93ac)
-2. Configurations  Application Settings 
+2. Configurations -> Application Settings 
 3. Click on add new Application Settings 
 4. And setting with following Name and Value,
 Name: HostEnvironmentDetails__AutoUpdateConfig__3__DeploymentSlotId
@@ -63,5 +166,9 @@ Value: production
  
  
 The above steps should stop this recurring alert, please validate after 24 hours using the same queries.
+
+<br>
+<br>
+
 
 
