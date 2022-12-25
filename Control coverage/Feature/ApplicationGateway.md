@@ -5,6 +5,7 @@
 <!-- TOC -->
 
 - [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](#azure_applicationgateway_netsec_enable_waf_configuration)
+- [Azure_ApplicationGateway_NetSec_Enable_DDoS_Protection](#azure_applicationGateway_netsec_enable_ddos_protection)
 
 <!-- /TOC -->
 <br/>
@@ -88,14 +89,46 @@ Web application firewall configuration protects Application Gateway from interne
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list all Application Gateway: /subscriptions/{0}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
+- ARM API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
 
-- ARM API to list all Web Application Firewall Policies of type Application Gateway: /subscriptions/{0}/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?api-version=2022-01-01<br />
+- ARM API to list all Web Application Firewall Policies of type Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?api-version=2022-01-01<br />
 
 **Properties:** properties.rights
  <br />
 
 <br />
+
+## Azure_ApplicationGateway_NetSec_Enable_DDoS_Protection 
+
+### Display Name 
+Protect Internet First Applications with Azure AppGateway and DDoS Protection
+
+### Rationale 
+Enabling DDOS on Vnet of Application Gateway, provides protection and defense for Azure resources against the impacts of DDoS attacks
+
+### Control Spec 
+
+> **Passed:** 
+>  DDoS Protection Plan is configured on the Virtual Network of Application Gateway.
+> 
+> **Failed:** 
+> DDoS Protection Plan is not configured on the Virtual Network of Application Gateway.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+ Enable the DDOS on the associated Virtual Network being used in App Gateway.Refer [link](https://learn.microsoft.com/en-us/azure/ddos-protection/manage-ddos-protection#enable-ddos-protection-for-an-existing-virtual-network).
+
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
+
+- ARM API to get propoerties of associated Virtual Network: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
+
+**Properties:** properties.enableDdosProtection
+ <br />
 
 ___ 
 
