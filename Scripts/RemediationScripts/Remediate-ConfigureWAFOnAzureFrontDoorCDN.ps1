@@ -477,7 +477,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
 
             if($userInput -ne "Y")
             {
-                Write-Host "we are starting the procedure to configure the WAF on the Endpoint Domain(s) of Front Door CDNs(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "we are not proceeding to configure the WAF on the Endpoint Domain(s) of Front Door CDNs(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::DoubleDashLine)	
                 return
             }
@@ -486,7 +486,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
         # List for storing remediated Endpoint(s)
         $EndpointRemediated = @()
 
-        # List for storing skipped Subnet(s)
+        # List for storing skipped Endpoint(s)
         $EndpointSkipped = @()
 
         Write-Host "Enabling the WAF on Endpoint Domain(s)..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -537,7 +537,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
                         $logResource = @{}	
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                         $logResource.Add("ResourceName",($_.EndPointName))
-                        $logResource.Add("Reason", "Error Configuring NSG on : [$($endpointDomain)]")      
+                        $logResource.Add("Reason", "Error Configuring WAF on : [$($endpointDomain)]")      
                         $logSkippedResources += $logResource
                       }
                      }
@@ -547,7 +547,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
                       $logResource = @{}	
                       $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                       $logResource.Add("ResourceName",($_.EndPointName))
-                      $logResource.Add("Reason", "Error Configuring NSG on : [$($endpointDomain)]")      
+                      $logResource.Add("Reason", "Error Configuring WAF on : [$($endpointDomain)]")      
                       $logSkippedResources += $logResource	
                     }
                 }
@@ -597,7 +597,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
             $EndpointSkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
-            $EndpointSkippedFile = "$($backupFolderPath)\SkippedSubnet.csv"
+            $EndpointSkippedFile = "$($backupFolderPath)\SkippedEndpoint.csv"
             $EndpointSkipped | Export-CSV -Path $EndpointSkippedFile -NoTypeInformation
             Write-Host "This information has been saved to"  -NoNewline
             Write-Host " [$($EndpointSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -634,7 +634,7 @@ function Remove-WAFConfigurationOnFrontDoorCDNEndpointDomain
     None. Remove-WAFConfigurationOnFrontDoorCDNEndpointDomain does not return anything that can be piped and used as an input to another command.
 
     .EXAMPLE
-    PS> Remove-WAFConfigurationOnFrontDoorCDNEndpointDomain -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveNSGConfiguration\RemediatedFrontDoorEndpoints.csv
+    PS> Remove-WAFConfigurationOnFrontDoorCDNEndpointDomain -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\RemoveWAFConfiguration\RemediatedFrontDoorEndpoints.csv
 
     .LINK
     None
@@ -782,10 +782,10 @@ function Remove-WAFConfigurationOnFrontDoorCDNEndpointDomain
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    # List for storing rolled back Subnet resource.
+    # List for storing rolled back Endpoint resource.
     $EndpointsRolledBack = @()
 
-    # List for storing skipped rolled back Subnet resource.
+    # List for storing skipped rolled back Endpoint resource.
     $EndpointsSkipped = @()
 
     $validFrontDoorEndpointDetails | ForEach-Object {
@@ -806,7 +806,7 @@ function Remove-WAFConfigurationOnFrontDoorCDNEndpointDomain
         }
         catch
         {
-            $EndpointsSkipped += $Subnet
+            $EndpointsSkipped += $Endpoint
         }
     }
 
