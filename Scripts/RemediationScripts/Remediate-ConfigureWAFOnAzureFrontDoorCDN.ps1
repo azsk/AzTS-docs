@@ -413,7 +413,7 @@ function Add-WAFConfigurationOnFrontDoorCDNEndpointDomain
 
     if ($totalEndPointsWithoutWAFConfigured  -eq 0)
     {
-        Write-Host "No EndPoint Domain(s) found with where WAF is not configured.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No EndPoint Domain(s) found where WAF is not configured.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)	
         return
     }
