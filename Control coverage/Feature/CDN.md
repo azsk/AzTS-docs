@@ -68,7 +68,7 @@ properties.isHttpAllowed, properties.isHttpsAllowed, properties.deliveryPolicy.r
  ## Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration 
 
 ### Display Name 
-Front Door should have Web Application Firewall configured
+Protect Internet First Applications with Azure FrontDoor and WAF
 
 ### Rationale 
 Azure Web Application Firewall (WAF) on Azure Front Door provides centralized protection for your web applications. WAF defends your web services against common exploits & vulnerablities. It keeps your service highly available for your users and helps you meet compliance requirements.
