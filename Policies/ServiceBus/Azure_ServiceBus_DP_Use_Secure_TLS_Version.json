@@ -1,0 +1,70 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.ServiceBus/namespaces"
+        },
+        {
+          "anyOf": [
+            {
+              "field": "Microsoft.ServiceBus/namespaces/minimumTlsVersion",
+              "exists": false
+            },
+            {
+              "not": {
+                "field": "Microsoft.ServiceBus/namespaces/minimumTlsVersion",
+                "equals": "[parameters('minimumTlsVersion')]"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "roleDefinitionIds": [
+          "/providers/microsoft.authorization/roleDefinitions/090c5cfd-751d-490a-894a-3ce6f1109419"
+        ],
+        "conflictEffect": "audit",
+        "operations": [
+          {
+            "operation": "addOrReplace",
+            "field": "Microsoft.ServiceBus/namespaces/minimumTlsVersion",
+            "value": "1.2"
+          }
+        ]
+      }
+    }
+  },
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "The effect comes into enforcement when the policy rule is evaluated to match"
+      },
+      "allowedValues": [
+        "Audit",
+        "Deny",
+        "Disabled",
+        "Modify"
+      ],
+      "defaultValue": "Audit"
+    },
+    "minimumTlsVersion": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Minimum TLS Version",
+        "description": "Minimum version of TLS required to connect to Service Bus"
+      },
+      "allowedValues": [
+        "1.2"
+      ],
+      "defaultValue": "1.2"
+    }
+  }
+}

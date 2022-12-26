@@ -47,6 +47,9 @@ resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2015-06-01' = {
       name: vaultSku
       family: 'A'
     }
+    networkAcls: {
+      defaultAction: 'Deny'
+    }
   }
 }
 
