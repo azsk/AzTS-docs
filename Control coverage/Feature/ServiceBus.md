@@ -5,6 +5,7 @@
 <!-- TOC -->
 
 - [Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace](#azure_servicebus_authz_dont_use_policies_at_sb_namespace)
+- [Azure_ServiceBus_DP_Use_Secure_TLS_Version](#azure_servicebus_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
@@ -69,3 +70,57 @@ Get-Help Remove-AzServiceBusAuthorizationRule -full
 
 ___ 
 
+## Azure_ServiceBus_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Service Bus Namespace.
+
+### Rationale
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings
+
+```json
+{
+    "MinReqTLSVersion": "1.2"
+}
+```
+
+### Control Spec
+
+> **Passed:**
+> (*If Minimum TLS version is set to 1.2 or higher)
+> TLS settings are properly configured.
+>
+> **Failed:**
+> (*If Minimum TLS version is set to 1.0 or 1.1)
+> Current minimum TLS version is {currentMinTLSVersionString} which is less than required version 1.2
+> 
+> **Error:** 
+> Required minimum TLS version is not set properly in control settings.
+>
+### Recommendation
+
+- **Azure Portal**
+
+  Refer https://learn.microsoft.com/en-us/azure/service-bus-messaging/transport-layer-security-configure-minimum-version#specify-the-minimum-tls-version-in-the-azure-portal
+
+- **PowerShell**
+
+  Refer https://learn.microsoft.com/en-us/azure/service-bus-messaging/transport-layer-security-configure-minimum-version#use-azure-powershell
+
+- **Enforcement Policy**
+	[Azure_ServiceBus_DP_Use_Secure_TLS_Version Policy Definition](../../Policies/ServiceBus/Azure_ServiceBus_DP_Use_Secure_TLS_Version)
+	
+
+### ARM API used for evaluation
+
+- ARM API to list all service bus namespaces available under the subscription along with properties: https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.ServiceBus/namespaces?api-version=2022-01-01-preview
+
+  Refer [Azure Namespaces List API](https://learn.microsoft.com/en-us/rest/api/servicebus/preview/namespaces/list?tabs=HTTP)
+  <br />
+  **Properties:** [*].properties.minimumTlsVersion
+  <br />
+  <br />
+
+___

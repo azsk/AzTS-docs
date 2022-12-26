@@ -157,6 +157,54 @@
                   "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
                   "Arguments":["SubscriptionId"]
              }
+        },
+        {
+            "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version_Trial",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetStorageAccountMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetStorageAccountMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-StorageAccountRequiredTLSVersion",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-StorageAccountRequiredTLSVersion",
+                  "Arguments":["SubscriptionId"]
+             }
+         },    
+         {    
+            "ControlId": "Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetSQLServerMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetSQLServerMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-SQLServerRequiredTLSVersion",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SQLServerRequiredTLSVersion",
+                   "Arguments":["SubscriptionId"]
+             }
+        },
+        {
+            "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion",     
+            "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
+                  "Arguments":["SubscriptionId"]
+             }
+        },
+        {
+            "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
+            "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",     
+            "InitCommand": "Set-SASExpiryInterval",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SASExpiryInterval",
+                  "Arguments":["SubscriptionId"]
+             }
         }
     ]
 }
