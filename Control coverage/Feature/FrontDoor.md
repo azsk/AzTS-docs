@@ -65,7 +65,6 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 **Properties:** [*].properties.frontendEndpointLinks, [\*].properties.policySettings
  <br />
 
-<br /> 
 ___ 
 
 ## Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
@@ -104,14 +103,10 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API used to list existing Front Door endpoints at subscription level: <br />
-/subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoors/{2}/frontendEndpoints/{3}?api-version=2019-05-01
-<br />
-**Properties:**
-properties.minimumTlsVersion
- 
-<br />
+- ARM API used to list existing Front Door endpoints at subscription level: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoors/{2}/frontendEndpoints/{3}?api-version=2019-05-01<br />
+**Properties:** properties.minimumTlsVersion
+ <br />
 
- ---
+___
 
 
