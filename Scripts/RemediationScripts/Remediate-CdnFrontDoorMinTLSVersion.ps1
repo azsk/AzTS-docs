@@ -620,7 +620,7 @@ function Set-FrontDoorRequiredTLSVersion
             {
                 try
                 {
-                    Write-Host "Setting minimum required TLS version on custom domain..." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Setting minimum required TLS version on custom domain : $[$DomainName]" -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                     
                     $secrets =  Get-AzFrontDoorCdnSecret -ResourceGroupName $resourceGroupName -ProfileName $resourceName
