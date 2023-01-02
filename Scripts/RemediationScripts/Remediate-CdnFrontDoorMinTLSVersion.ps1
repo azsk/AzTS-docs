@@ -284,12 +284,12 @@ function Set-FrontDoorRequiredTLSVersion
             Write-Host $([Constants]::SingleDashLine)
             return
         }
-        $validResources | ForEach-Object { 
+        $validResources | ForEach-Object {
+            $resource = $_
             try
             {
-                $name = $_.ResourceName
-                $resFrontDoor = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -ErrorAction SilentlyContinue
-                $FrontDoorResources = $FrontDoorResources + $resFrontDoor
+                $resFrontDoor = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -Name $resource.ResourceName -ResourceGroupName $resource.ResourceGroupName  -ErrorAction SilentlyContinue
+                $FrontDoorResources += $resFrontDoor
             }
             catch
             {
@@ -525,7 +525,7 @@ function Set-FrontDoorRequiredTLSVersion
 
     if ($totalNonCompliantFrontDoorEndpoints -eq 0)
     {
-        Write-Host "No Front Door(s) found having minimum TLS version less than required minimum TLS version. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Front Door Endpoint(s) found having minimum TLS version less than required minimum TLS version. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
         if($AutoRemediation -and ($frontDoorsWithReqMinTLSVersion|Measure-Object).Count -gt 0) 
         {
@@ -683,7 +683,7 @@ function Set-FrontDoorRequiredTLSVersion
                 $logResource.Add("ResourceName",($_.ResourceName))
                 $logRemediatedResources += $logResource
                 #$customDomainsRemediated += $frontdoor
-                Write-Host "Successfully set the minimum required TLS version for Front Door." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set the minimum required TLS version for Front Door custom domain: $[$DomainName]" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
             else
@@ -693,7 +693,7 @@ function Set-FrontDoorRequiredTLSVersion
                 $logResource.Add("ResourceName",($_.ResourceName))
                 $logResource.Add("Reason", "Error while setting the minimum required TLS version for custom domain")
                 $logSkippedResources += $logResource
-                Write-Host "Error while setting the minimum required TLS version for Front Door." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error while setting the minimum required TLS version for custom domain: $[$DomainName]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 
             }
@@ -703,12 +703,12 @@ function Set-FrontDoorRequiredTLSVersion
 
         if (($customDomainsRemediated | Measure-Object).Count -eq $totalNonCompliantFrontDoorEndpoints)
         {
-            Write-Host "Successfully set the minimum required TLS version for all [$($totalNonCompliantFrontDoorEndpoints)] Front Door(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully set the minimum required TLS version for all [$($totalNonCompliantFrontDoorEndpoints)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
             
         }
         else
         {
-            Write-Host "Minimum required TLS version is successfully set on the custom domains for [$($($customDomainsRemediated | Measure-Object).Count)] out of [$($totalNonCompliantFrontDoorEndpoints)] Front Door(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Minimum required TLS version is successfully set on the custom domains for [$($($customDomainsRemediated | Measure-Object).Count)] out of [$($totalNonCompliantFrontDoorEndpoints)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         $colsProperty = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
@@ -730,7 +730,7 @@ function Set-FrontDoorRequiredTLSVersion
                 # Write this to a file.
                 $customDomainsRemediatedFile = "$($backupFolderPath)\RemediatedCdnFrontDoorsForMinReqTLSVersion.csv"
                 $customDomainsRemediated | Export-CSV -Path $customDomainsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Front Door(s) where minimum required TLS version is successfully set has been saved to [$($customDomainsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Front Door Endpoint(s) where minimum required TLS version is successfully set has been saved to [$($customDomainsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -739,7 +739,7 @@ function Set-FrontDoorRequiredTLSVersion
                 # Write this to a file.
                 $frontDoorSkippedFile = "$($backupFolderPath)\SkippedCdnFrontDoorForMinReqTLSVersion.csv"
                 $frontDoorsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
-                Write-Host "The information related to Front Door(s) where minimum required TLS version is not set has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Front Door Endpoint(s) where minimum required TLS version is not set has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -749,7 +749,7 @@ function Set-FrontDoorRequiredTLSVersion
         
             if ($($customDomainsRemediated | Measure-Object).Count -gt 0)
             {
-                Write-Host "Successfully set minimum required TLS version for the following Front Door(s):" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set minimum required TLS version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Update)
                 $customDomainsRemediated | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -762,7 +762,7 @@ function Set-FrontDoorRequiredTLSVersion
 
             if ($($frontDoorsSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "Error while setting the minimum required TLS Version for the following Front Door(s):" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error while setting the minimum required TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $frontDoorsSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -1048,7 +1048,7 @@ function Reset-FrontDoorRequiredTLSVersion
 
     if (($frontDoorsSkipped | Measure-Object).Count -eq 0)
     {
-        Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoors)] Front Door(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoors)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
@@ -1070,7 +1070,7 @@ function Reset-FrontDoorRequiredTLSVersion
         
         if ($($frontDoorsRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "Minimum TLS Version successfully reset on the following Front Door(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Minimum TLS Version successfully reset on the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Update)
             $frontDoorsRolledBack | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
@@ -1082,7 +1082,7 @@ function Reset-FrontDoorRequiredTLSVersion
 
         if ($($frontDoorsSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error resetting minimum TLS Version for the following Front Door(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error resetting minimum TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $frontDoorsSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
