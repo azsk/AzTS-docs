@@ -1,6 +1,6 @@
 <##########################################
 Overview:
-  This file contains functions to help remediate data factory plaintext secret issues
+  This file contains functions to help remediate App Services FTP State insecure configurations. These functions will work equally on Web Apps or Function Apps.
 
 ControlId: 
   Azure_AppService_DP_Use_Secure_FTP_Deployment
@@ -18,82 +18,59 @@ Steps to use:
   3. Call the functions with arguments
 
 Examples:
-  GetDataSetNamesAndParameters -SubscriptionId "00000000-0000-0000-0000-000000000000" -ResourceGroup "MyResourceGroup" -DataFactoryName "MyDataFactoryName"
+  GetFtpState -SubscriptionId "00000000-0000-0000-0000-000000000000" -ResourceGroupName "MyResourceGroup" -AppName "MyAppServiceName"
 ########################################
 #>
 
-function GetFtpState()
+function Get-FtpState()
 {
-  $rgName = "Patrick"
-  $appName = "plzm-eus-app-1"
+  <#
+    .SYNOPSIS
+    This command shows the current FTP state for the App Service Production slot and all non-Production slots.
+    .DESCRIPTION
+    This command shows the current FTP state for the App Service Production slot and all non-Production slots.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the App Service.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the App Service.
+    .PARAMETER AppName
+    The App Service name.
+  #>
 
-  $psSite = Get-AzWebApp -ResourceGroupName $rgName -Name $appName
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $AppName
+  )
 
-  $ftpConfigs = @{ "Production" = $psSite.SiteConfig.FtpsState }
+  $defaultProfile = Set-AzContext -Subscription $SubscriptionId
 
-  ForEach ($slotName in (Get-AzWebAppSlot -ResourceGroupName $rgName -Name $appName | Select-Object "Name"))
+  $psSite = Get-AzWebApp -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName
+
+  $ftpConfigs = [ordered]@{ "Production" = $psSite.SiteConfig.FtpsState }
+
+  ForEach ($slotNameRaw in (Get-AzWebAppSlot -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName).Name)
   {
-    #Write-Output $slotName
-    $slotConfig = @{ $slotName = ((Get-AzWebAppSlot -ResourceGroupName $rgName -Name $appName -Slot $slotName).SiteConfig.FtpsState) }
+    # List of slots in Get-AzWebAppSlot has full slot name. SiteConfig is blank on those.
+    # So we have to get just the bare slot name, then call Get-AzWebAppSlot for it to get the SiteConfig and FtpsState.
+    $slotName = $slotNameRaw.Replace($AppName + "/", "")
+    $slot = Get-AzWebAppSlot -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName -Slot $slotName
+
+    $slotConfig = @{ $slotName = $slot.SiteConfig.FtpsState }
     $ftpConfigs = $ftpConfigs + $slotConfig
   }
 
   return $ftpConfigs
 }
 
-function GetCurrentFtpState()
-{
-  <#
-    .SYNOPSIS
-    This command shows the current FTP state for the App Service.
-    .DESCRIPTION
-    This command shows the current FTP state for the App Service.
-    .PARAMETER SubscriptionId
-        The Azure subscription ID containing the App Service.
-    .PARAMETER ResourceGroup
-        The Resource Group containing the App Service.
-    .PARAMETER AppName
-        The App Service name.
-    .PARAMETER IsFunctionApp
-        Whether the App Service is a Function (true) or a Webapp (false). Defaults to true.
-  #>
-
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroup,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $AppName,
-    [Parameter(Mandatory = $false)]
-    [bool]
-    $IsFunctionApp = $true
-  )
-
-  if ($IsFunctionApp) {
-    az functionapp config show --verbose `
-      --subscription $subscriptionId `
-      -g $resourceGroupName `
-      -n $appName `
-      -o tsv `
-      --query 'ftpsState'
-  }
-  else {
-
-    az webapp config show --verbose `
-      --subscription $subscriptionId `
-      -g $resourceGroupName `
-      -n $appName `
-      -o tsv `
-      --query 'ftpsState'
-  }
-}
-
-function SetFtpState()
+function Set-FtpState()
 {
   <#
     .SYNOPSIS
@@ -101,15 +78,15 @@ function SetFtpState()
     .DESCRIPTION
     This command sets the FTP state for the App Service.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the App Service.
-    .PARAMETER ResourceGroup
-        The Resource Group containing the App Service.
+    The Azure subscription ID containing the App Service.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the App Service.
     .PARAMETER AppName
-        The App Service name.
+    The App Service name.
+    .PARAMETER SlotName
+    If a Slot FTP State is being set, provide the slot name.
     .PARAMETER FtpState
-        The FTP State to set. Either "Disabled" or "FtpsOnly". Defaults to "Disabled".
-    .PARAMETER IsFunctionApp
-        Whether the App Service is a Function (true) or a Webapp (false). Defaults to true.
+    The FTP State to set. Either "Disabled" or "FtpsOnly". Defaults to "Disabled".
   #>
 
   [CmdletBinding()]
@@ -119,30 +96,32 @@ function SetFtpState()
     $SubscriptionId,
     [Parameter(Mandatory = $true)]
     [string]
-    $ResourceGroup,
+    $ResourceGroupName,
     [Parameter(Mandatory = $true)]
     [string]
     $AppName,
     [Parameter(Mandatory = $false)]
     [string]
-    $FtpState = "Disabled",
+    $SlotName,
     [Parameter(Mandatory = $false)]
-    [bool]
-    $IsFunctionApp = $true
+    [string]
+    $FtpState = "Disabled"
   )
 
-  if ($IsFunctionApp) {
-    az functionapp config set --verbose `
-      --subscription $subscriptionId `
-      -g $resourceGroupName `
-      -n $appName `
-      --ftps-state $FtpState
+  $defaultProfile = Set-AzContext -Subscription $SubscriptionId
+
+  if ([string]::IsNullOrWhiteSpace($SlotName))
+  {
+    # No slot name so we're setting the app service itself
+    Set-AzWebApp -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName -FtpsState $FtpState
   }
-  else {
-    az webapp config set --verbose `
-      --subscription $subscriptionId `
-      -g $resourceGroupName `
-      -n $appName `
-      --ftps-state $FtpState
+  else
+  {
+    if ($SlotName.StartsWith($AppName))
+    {
+      $SlotName = $SlotName.Replace($AppName + "/", "")
+    }
+
+    Set-AzWebAppSlot -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName -Slot $SlotName -FtpsState $FtpState
   }
 }
