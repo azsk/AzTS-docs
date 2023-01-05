@@ -363,7 +363,7 @@ function Set-FrontDoorRequiredTLSVersion
     $compliantFrontDoorEPs = @()
 
     # Includes Front Doors that were skipped during remediation. There were errors remediating them.
-    $frontDoorsSkipped = @()
+    $frontDoorEPSkipped = @()
 
     $isMinTLSVersionSetOnCustomDomain = $null
 
@@ -471,7 +471,6 @@ function Set-FrontDoorRequiredTLSVersion
                 if($frontDoorResource.MinimumTlsVersion -ne $requiredMinTLSVersion)
                 {
                     $nonCompliantFrontDoorEPs += $frontDoorResource
-
                 }
                 
 
@@ -480,7 +479,7 @@ function Set-FrontDoorRequiredTLSVersion
             }
             catch
             {
-                $frontDoorsSkipped += $frontDoorResource
+                $frontDoorsEPSkipped += $frontDoorResource
                 Write-Host "Error fetching Front Door configuration: Resource Name: [$($resourceName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -543,7 +542,7 @@ function Set-FrontDoorRequiredTLSVersion
         return
     }
 
-    Write-Host "Found [$($totalNonCompliantFrontDoorEndpoints)] Endpoints of [$($totalFrontDoors)] Front Door(s) having minimum TLS version less than required minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantFrontDoorEndpoints)] Front Door Endpoint(s) having minimum TLS version less than required minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     
     # Back up snapshots to `%LocalApplicationData%'.
@@ -597,7 +596,7 @@ function Set-FrontDoorRequiredTLSVersion
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
         $customDomainsRemediated = @()
-        $frontDoorsSkipped = @()
+        $frontDoorsEPSkipped = @()
         
         $NonCompliantFrontDoorEndpoints | ForEach-Object {
             $frontdoor = $_
@@ -649,7 +648,7 @@ function Set-FrontDoorRequiredTLSVersion
                     }
                     else
                     {
-                        $frontDoorsSkipped += $frontdoor
+                        $frontDoorsEPSkipped += $frontdoor
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
@@ -663,7 +662,7 @@ function Set-FrontDoorRequiredTLSVersion
                 }
                 catch
                 {
-                    $frontDoorsSkipped += $frontdoor
+                    $frontDoorsEPSkipped += $frontdoor
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
@@ -675,7 +674,7 @@ function Set-FrontDoorRequiredTLSVersion
                 }
             }
         
-        if ($($frontDoorsSkipped | Measure-Object).Count -eq 0)
+        if ($($frontDoorsEPSkipped | Measure-Object).Count -eq 0)
             {
                 $frontdoor.isMinTlsVersionSetOnCustomDomain = $true
                 $logResource = @{}
@@ -734,11 +733,11 @@ function Set-FrontDoorRequiredTLSVersion
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            if ($($frontDoorsSkipped | Measure-Object).Count -gt 0)
+            if ($($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
             {   
                 # Write this to a file.
                 $frontDoorSkippedFile = "$($backupFolderPath)\SkippedCdnFrontDoorForMinReqTLSVersion.csv"
-                $frontDoorsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
+                $frontDoorsEPSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
                 Write-Host "The information related to Front Door Endpoint(s) where minimum required TLS version is not set has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -760,14 +759,14 @@ function Set-FrontDoorRequiredTLSVersion
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            if ($($frontDoorsSkipped | Measure-Object).Count -gt 0)
+            if ($($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
             {
                 Write-Host "Error while setting the minimum required TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-                $frontDoorsSkipped | Format-Table -Property $colsProperty -Wrap
+                $frontDoorsEPSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $frontDoorSkippedFile = "$($backupFolderPath)\SkippedFrontDoorsForMinReqTLSVersion.csv"
-                $frontDoorsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation 
+                $frontDoorsEPSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation 
                 Write-Host "This information has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -969,7 +968,7 @@ function Reset-FrontDoorRequiredTLSVersion
     $frontDoorsRolledBack = @()
 
     # Includes Front Doors that were skipped during roll back. There were errors rolling back the changes made previously.
-    $frontDoorsSkipped = @()
+    $frontDoorsEPSkipped = @()
 
     #$requiredMinTLSVersion = 'TLS10'
 
@@ -1016,7 +1015,7 @@ function Reset-FrontDoorRequiredTLSVersion
                     }
                     else
                     {
-                        $frontDoorsSkipped += $frontdoor
+                        $frontDoorsEPSkipped += $frontdoor
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
@@ -1031,7 +1030,7 @@ function Reset-FrontDoorRequiredTLSVersion
                 }
                 catch
                 {
-                    $frontDoorsSkipped += $frontdoor
+                    $frontDoorsEPSkipped += $frontdoor
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
@@ -1046,7 +1045,7 @@ function Reset-FrontDoorRequiredTLSVersion
             Write-Host "Successfully rolled back changes on the Front Door." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
-    if (($frontDoorsSkipped | Measure-Object).Count -eq 0)
+    if (($frontDoorsEPSkipped | Measure-Object).Count -eq 0)
     {
         Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoors)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
@@ -1063,7 +1062,7 @@ function Reset-FrontDoorRequiredTLSVersion
                         @{Expression={$_.isMinTlsVersionSetOnCustomDomain};Label="Is minimum required TLS version set on custom domain?";Width=20;Alignment="left"},
                         @{Expression={$_.isMinTLSVersionRolledBackCustomDomainPostRemediation};Label="Is minimum required TLS version reset on the custom domain - Post Roll back?";Width=20;Alignment="left"}
                         
-    if ($($frontDoorsRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsSkipped | Measure-Object).Count -gt 0)
+    if ($($frontDoorsRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -1080,14 +1079,14 @@ function Reset-FrontDoorRequiredTLSVersion
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($frontDoorsSkipped | Measure-Object).Count -gt 0)
+        if ($($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host "Error resetting minimum TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $frontDoorsSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
+            $frontDoorsEPSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
             $frontDoorSkippedFile = "$($backupFolderPath)\RollbackSkippedCdnFrontDoors.csv"
-            $frontDoorsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
+            $frontDoorsEPSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
             Write-Host "Note: This information has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
