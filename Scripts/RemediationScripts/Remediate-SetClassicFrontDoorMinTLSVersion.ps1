@@ -329,20 +329,6 @@ function Set-FrontDoorRequiredTLSVersion
             $validFrontDoorDetails = $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
             
             $FrontDoorResources = $validFrontDoorDetails
-            # $validFrontDoorDetails | ForEach-Object {
-            #     $resource =$_
-            #     $resourceId = $_.ResourceId
-            #     try
-            #     {
-            #         $frontDoorResource = Get-AzFrontDoor -ResourceGroupName $resource.ResourceGroupName -Name $resource.ResourceName -ErrorAction SilentlyContinue
-            #         $FrontDoorResources += $frontDoorResource
-            #     }
-            #     catch
-            #     {
-            #         Write-Host "Fetching Front Door resource: Resource ID: [$($resourceId)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-            #         Write-Host "Skipping this Front Door resource..." -ForegroundColor $([Constants]::MessageType.Warning)
-            #     }
-            # }
         }
     }
     $totalFrontDoors = ($FrontDoorResources | Measure-Object).Count
@@ -418,7 +404,7 @@ function Set-FrontDoorRequiredTLSVersion
         {
            $minTLSVersionofEndpoint = [decimal]$item.MinimumTlsVersion
            
-           if($minTLSVersionofEndpoint.Length -gt 0)
+           if(($minTLSVersionofEndpoint | Measure-Object).Count -gt 0)
            {
               if($minTLSVersionofEndpoint -lt $requiredMinTLSVersion)
               {
