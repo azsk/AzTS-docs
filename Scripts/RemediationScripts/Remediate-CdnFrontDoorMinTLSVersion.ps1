@@ -357,9 +357,6 @@ function Set-FrontDoorRequiredTLSVersion
     # Includes required version of TLS
     $requiredMinTLSVersion = "TLS12"
 
-    # Includes Front Doors where Minimum required TLS version is not set to 1.2.
-    $nonCompliantFrontDoorEPs = @()
-
     $compliantFrontDoorEPs = @()
 
     # Includes Front Doors that were skipped during remediation. There were errors remediating them.
@@ -445,7 +442,7 @@ function Set-FrontDoorRequiredTLSVersion
                                     
                                     if($null -ne $frontDoorEp)
                                     {
-                                        $nonCompliantFrontDoorEPs +=  $frontDoorEp | Select-Object @{N='ResourceGroupName';E={$frontDoorEp.ResourceGroup}},
+                                        $NonCompliantFrontDoorEndpoints +=  $frontDoorEp | Select-Object @{N='ResourceGroupName';E={$frontDoorEp.ResourceGroup}},
                                                                                         @{N='ResourceName';E={$frontDoorEp.FrontDoorName}},
                                                                                         @{N='DomainName';E={$frontDoorEp.DomainName}},
                                                                                         @{N='CertificateType';E={$frontDoorEp.TypeOfCertificate}},
@@ -470,9 +467,8 @@ function Set-FrontDoorRequiredTLSVersion
               {
                 if($frontDoorResource.MinimumTlsVersion -ne $requiredMinTLSVersion)
                 {
-                    $nonCompliantFrontDoorEPs += $frontDoorResource
+                    $NonCompliantFrontDoorEndpoints += $frontDoorResource
                 }
-                
 
               }
 
@@ -489,36 +485,6 @@ function Set-FrontDoorRequiredTLSVersion
                 Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
-    
-
-   foreach($item in $nonCompliantFrontDoorEPs)
-   {
-        if ($item.MinimumTlsVersion -eq $requiredMinTLSVersion)
-        {
-           Write-Host "Minimum TLS Version is set on the custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Update)
-           Write-Host "Skipping this Front Door..." -ForegroundColor $([Constants]::MessageType.Warning)
-           Write-Host $([Constants]::SingleDashLine)
-           $logResource = @{}
-           $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-           $logResource.Add("ResourceName",($_.ResourceName))
-           $logResource.Add("Reason","Minimum TLS Version is set on all the custom domains of front door.")    
-           $logSkippedResources += $logResource
-        }
-        else 
-        {
-            if (-not $item.MinimumTlsVersion -ne $requiredMinTLSVersion)
-            {
-                Write-Host "Minimum TLS Version is not set on the custom domain" $item.DomainName  -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
-            }
-            $NonCompliantFrontDoorEndpoints += $item | Select-Object @{N='ResourceGroupName';E={$item.ResourceGroupName}},
-                                                                                            @{N='ResourceName';E={$item.ResourceName}},
-                                                                                            @{N='DomainName';E={$item.DomainName}},
-                                                                                            @{N='CertificateType';E={$item.CertificateType}},
-                                                                                            @{N='MinimumTlsVersion';E={$item.MinimumTlsVersion}},
-                                                                                            @{N='isMinTLSVersionSetOnCustomDomain';E={$item.isMinTLSVersionSetOnCustomDomain}}
-        }
-    }
     
     $TotalNonCompliantFrontDoorEndpoints = ($NonCompliantFrontDoorEndpoints | Measure-Object).Count
 
