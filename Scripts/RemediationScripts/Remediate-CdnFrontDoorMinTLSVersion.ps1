@@ -366,7 +366,7 @@ function Set-FrontDoorRequiredTLSVersion
 
     $NonCompliantFrontDoorEndpoints = @()
     $ResourceAppIdURI = "https://management.azure.com/"
-    $customDomainResponse =@()
+    $customDomainApiResponse =@()
     $AccessMgtToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
     
     Write-Host "[Step 3 of 4] Fetch all Front Door configurations"
@@ -408,17 +408,17 @@ function Set-FrontDoorRequiredTLSVersion
                                 $header = "Bearer " + $AccessMgtToken
                                 $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
                                 $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/customDomains/{4}?api-version=2021-06-01",$ResourceAppIdURI,$SubscriptionId,$domainResourceGroupName,$resourceName,$domainName)
-                                $customDomainResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
+                                $customDomainApiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
                     
-                                if($customDomainResponse.StatusCode -ge 200 -and $customDomainResponse.StatusCode -le 399)
+                                if($customDomainApiResponse.StatusCode -ge 200 -and $customDomainApiResponse.StatusCode -le 399)
                                 {
-                                    if($null -ne $customDomainResponse.Content)
+                                    if($null -ne $customDomainApiResponse.Content)
                                     {
-                                        $custom = $customDomainResponse.Content | ConvertFrom-Json  
-                                        if($null -ne $custom)
+                                        $domain = $customDomainApiResponse.Content | ConvertFrom-Json  
+                                        if($null -ne $domain)
                                         {
-                                            $TypeOfCertificate = $custom.properties.tlsSettings.certificateType
-                                            $MinTLSVersion = $custom.properties.tlsSettings.minimumTlsVersion
+                                            $TypeOfCertificate = $domain.properties.tlsSettings.certificateType
+                                            $MinTLSVersion = $domain.properties.tlsSettings.minimumTlsVersion
                                         }
                                     }
                                 }
