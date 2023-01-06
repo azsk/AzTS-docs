@@ -493,7 +493,7 @@ function Set-FrontDoorRequiredTLSVersion
         Write-Host "No Front Door Endpoint(s) found having minimum TLS version less than required minimum TLS version. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
         
-        if($AutoRemediation -and ($frontDoorsWithReqMinTLSVersion|Measure-Object).Count -gt 0) 
+        if($AutoRemediation -and ($NonCompliantFrontDoorEndpoints|Measure-Object).Count -gt 0) 
         {
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
             $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
