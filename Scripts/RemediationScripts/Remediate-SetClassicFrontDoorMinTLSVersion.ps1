@@ -422,6 +422,10 @@ function Set-FrontDoorRequiredTLSVersion
                         #$EndpointsWithoutReqTls += $item 
                         $isMinTLSVersionSetOnCustomDomain = $false;
                     }
+                    else
+                    {
+                        $compliantEndpoints += $item
+                    }
                 }
                 else
                 {
@@ -440,7 +444,7 @@ function Set-FrontDoorRequiredTLSVersion
             $logSkippedResources += $logResource
             Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)
         }
-    }
+    }} #Ended for-each object for FrontDoorResources
     else
     {
        $nonCompliantEndpoints = $FrontDoorResources
@@ -887,10 +891,19 @@ function Reset-FrontDoorRequiredTLSVersion
         $minimumTlsVersion = $_.MinimumTlsVersion
         $isMinTlsVersionSetOnCustomDomain = $_.isMinTLSVersionSetOnCustomDomain
         $isMinTLSVersionRolledBackCustomDomainPostRemediation = $_.MinimumTlsVersion
-        $requiredMinTLSVersion = '1.0'
+        
+        #Using this logic as Decimal 1.0 is getting rounded off to 1.
+        if($_.PreviousMinimumTlsVersion -eq '1')
+        {
+            $requiredMinTLSVersion = '1.0'
+        }
+        else
+        {
+            $requiredMinTLSVersion = $_.PreviousMinimumTlsVersion
+        }
 
         $frontdoor | Add-Member -NotePropertyName isMinTLSVersionRolledBackCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionRolledBackCustomDomainPostRemediation
-
+        
         try
         {
             Write-Host "Fetching Front Door Endpoint configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
