@@ -526,9 +526,9 @@ function Set-FrontDoorRequiredTLSVersion
         if(-not $SkipBackup)
         {
             Write-Host "Backing up Front Doors details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
-            $backupFile = "$($backupFolderPath)\CdnFrontDoorsWithoutReqMinTLSVersion.csv"
-            $NonCompliantFrontDoorEndpoints | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "Front Doors details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+            $BackupFile = "$($backupFolderPath)\CdnFrontDoorsWithoutReqMinTLSVersion.csv"
+            $NonCompliantFrontDoorEndpoints | Export-CSV -Path $BackupFile -NoTypeInformation
+            Write-Host "Front Doors details have been backed up to [$($BackupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         Write-Host "Minimum required TLS Version [" $($requiredMinTLSVersion) "] will be set on all custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -729,12 +729,12 @@ function Set-FrontDoorRequiredTLSVersion
         Write-Host "[Step 4 of 4] Back up Front Doors details"
         Write-Host $([Constants]::SingleDashLine)
         # Backing up Front Doors details.
-        $backupFile = "$($backupFolderPath)\CdnFrontDoorsWithoutReqMinTLSVersion.csv"
-        $NonCompliantFrontDoorEndpoints | Export-CSV -Path $backupFile -NoTypeInformation
-        Write-Host "Front Door details have been backed up to [$($backupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
+        $BackupFile = "$($backupFolderPath)\CdnFrontDoorsWithoutReqMinTLSVersion.csv"
+        $NonCompliantFrontDoorEndpoints | Export-CSV -Path $BackupFile -NoTypeInformation
+        Write-Host "Front Door details have been backed up to [$($BackupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to set minimum required TLS Version for all custom domains of Front Doors listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Run the same command with -FilePath $($BackupFile) and without -DryRun, to set minimum required TLS Version for all custom domains of Front Doors listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 }
