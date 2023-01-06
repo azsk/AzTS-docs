@@ -530,7 +530,7 @@ function Set-FrontDoorRequiredTLSVersion
         $frontDoorEPsSkipped = @()
         
         $nonCompliantEndpoints | ForEach-Object {
-            $frontdoor = $_
+            $frontdoorEndpoint = $_
             $resourceId = $_.ResourceID
             $resourceGroupName = $_.ResourceGroupName
             $resourceName = $_.ResourceName
@@ -539,8 +539,8 @@ function Set-FrontDoorRequiredTLSVersion
             $isMinTlsVersionSetOnCustomDomain = $_.isMinTLSVersionSetOnCustomDomain
             $isMinTLSVersionSetOnCustomDomainPostRemediation = $_.MinimumTlsVersion;
             
-            $frontdoor | Add-Member -NotePropertyName isMinTLSVersionSetOnCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionSetOnCustomDomainPostRemediation
-            $frontdoor | Add-Member -NotePropertyName PreviousMinimumTlsVersion -NotePropertyValue $MinimumTlsVersion
+            $frontdoorEndpoint | Add-Member -NotePropertyName isMinTLSVersionSetOnCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionSetOnCustomDomainPostRemediation
+            $frontdoorEndpoint | Add-Member -NotePropertyName PreviousMinimumTlsVersion -NotePropertyValue $MinimumTlsVersion
 
             Write-Host "Setting minimum required TLS Version for  Front Door : Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
@@ -556,15 +556,15 @@ function Set-FrontDoorRequiredTLSVersion
                     
                     if($resource.MinimumTlsVersion -eq $requiredMinTLSVersion)
                     {
-                        $frontdoor.isMinTLSVersionSetOnCustomDomainPostRemediation = $true
-                        $frontdoor.minimumTlsVersion = $resource.MinimumTlsVersion
-                        $customDomainsRemediated += $frontdoor
+                        $frontdoorEndpoint.isMinTLSVersionSetOnCustomDomainPostRemediation = $true
+                        $frontdoorEndpoint.minimumTlsVersion = $resource.MinimumTlsVersion
+                        $customDomainsRemediated += $frontdoorEndpoint
                         Write-Host "Minimum required TLS version for Front Door endpoint has been set successfully for :" $hostName -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                     else
                     {
-                        $frontDoorsSkipped += $frontdoor
+                        $frontDoorsSkipped += $frontdoorEndpoint
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
@@ -578,7 +578,7 @@ function Set-FrontDoorRequiredTLSVersion
                 }
                 catch
                 {
-                    $frontDoorsSkipped += $frontdoor
+                    $frontDoorsSkipped += $frontdoorEndpoint
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
@@ -588,30 +588,6 @@ function Set-FrontDoorRequiredTLSVersion
                     Write-Host $([Constants]::SingleDashLine)
                     return
                 }
-            }
-        
-            if ($($frontDoorsSkipped | Measure-Object).Count -eq 0)
-            {
-                #$frontdoor.isMinTlsVersionSetOnCustomDomain = $true
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logRemediatedResources += $logResource
-                #$customDomainsRemediated += $frontdoor
-                Write-Host "Successfully set the minimum required TLS version for Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
-            }
-            else
-            {
-                $frontDoorsSkipped += $frontdoor
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason", "Error while setting the minimum required TLS version for custom domain")
-                $logSkippedResources += $logResource
-                Write-Host "Error while setting the minimum required TLS version for Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
-                
             }
         }
 
@@ -822,7 +798,7 @@ function Reset-FrontDoorRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
 
     $frontdoorDetails = Import-Csv -LiteralPath $FilePath
-    $validFrontDoorDetails += $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) 
+    $validFrontDoorEndpointDetails += $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) 
                                                                 ![String]::IsNullOrWhiteSpace($_.ResourceGroupName)
                                                                 ![String]::IsNullOrWhiteSpace($_.ResourceName)
                                                                 ![String]::IsNullOrWhiteSpace($_.HostName)
@@ -830,7 +806,7 @@ function Reset-FrontDoorRequiredTLSVersion
                                                                 ![String]::IsNullOrWhiteSpace($_.isMinTLSVersionSetOnCustomDomain)
                                                                 ![String]::IsNullOrWhiteSpace($_.PreviousMinimumTlsVersion)}
 
-    $totalFrontDoors = $(($validFrontDoorDetails|Measure-Object).Count)
+    $totalFrontDoors = $(($validFrontDoorEndpointDetails|Measure-Object).Count)
 
     if ($totalFrontDoors -eq 0)
     {
@@ -849,7 +825,7 @@ function Reset-FrontDoorRequiredTLSVersion
     }
 
     Write-Host "Minimum TLS Version will be reset on the following Front Door Endpoint(s):"
-    $validFrontDoorDetails | Select-Object @{N="Resource Id"; E={$_.ResourceId}}, @{N="Resource Group Name"; E={$_.ResourceGroupName}}, @{N="Resource Name"; E={$_.ResourceName}}| Format-Table -AutoSize -Wrap
+    $validFrontDoorEndpointDetails | Select-Object @{N="Resource Id"; E={$_.ResourceId}}, @{N="Resource Group Name"; E={$_.ResourceGroupName}}, @{N="Resource Name"; E={$_.ResourceName}}| Format-Table -AutoSize -Wrap
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $Force)
@@ -880,10 +856,10 @@ function Reset-FrontDoorRequiredTLSVersion
     $frontDoorsRolledBack = @()
 
     # Includes Front Doors that were skipped during roll back. There were errors rolling back the changes made previously.
-    $frontDoorsSkipped = @()
+    $frontDoorsEndpointSkipped = @()
 
-    $validFrontDoorDetails | ForEach-Object {
-        $frontdoor = $_
+    $validFrontDoorEndpointDetails | ForEach-Object {
+        $frontdoorEndpoint = $_
         $resourceId = $_.ResourceID
         $resourceGroupName = $_.ResourceGroupName
         $resourceName = $_.ResourceName
@@ -902,7 +878,7 @@ function Reset-FrontDoorRequiredTLSVersion
             $requiredMinTLSVersion = $_.PreviousMinimumTlsVersion
         }
 
-        $frontdoor | Add-Member -NotePropertyName isMinTLSVersionRolledBackCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionRolledBackCustomDomainPostRemediation
+        $frontdoorEndpoint | Add-Member -NotePropertyName isMinTLSVersionRolledBackCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionRolledBackCustomDomainPostRemediation
         
         try
         {
@@ -912,16 +888,16 @@ function Reset-FrontDoorRequiredTLSVersion
             $resource = Enable-AzFrontDoorCustomDomainHttps -ResourceGroupName $resourceGroupName -FrontDoorName $resourceName -FrontendEndpointName $hostName -MinimumTlsVersion $requiredMinTLSVersion
                     
                     if($resource.MinimumTlsVersion -eq $requiredMinTLSVersion){
-                       $frontdoor.isMinTLSVersionRolledBackCustomDomainPostRemediation = $true
-                       $frontdoor.isMinTlsVersionSetOnCustomDomain = $false
-                        $frontdoor.minimumTlsVersion = $resource.MinimumTlsVersion
-                        $frontDoorsRolledBack += $frontdoor
+                       $frontdoorEndpoint.isMinTLSVersionRolledBackCustomDomainPostRemediation = $true
+                       $frontdoorEndpoint.isMinTlsVersionSetOnCustomDomain = $false
+                        $frontdoorEndpoint.minimumTlsVersion = $resource.MinimumTlsVersion
+                        $frontDoorsRolledBack += $frontdoorEndpoint
                         Write-Host "Minimum required TLS version for Front Door Endpoint has been Rolled back successfully for : "  $hostName  -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
                     else
                     {
-                        $frontDoorsSkipped += $frontdoor
+                        $frontDoorsEndpointSkipped += $frontdoorEndpoint
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
@@ -936,7 +912,7 @@ function Reset-FrontDoorRequiredTLSVersion
                 }
                 catch
                 {
-                    $frontDoorsSkipped += $frontdoor
+                    $frontDoorsEndpointSkipped += $frontdoorEndpoint
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
@@ -953,7 +929,7 @@ function Reset-FrontDoorRequiredTLSVersion
         Write-Host "Successfully rolled back changes on the Front Door endpoint." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
-    if (($frontDoorsSkipped | Measure-Object).Count -eq 0)
+    if (($frontDoorsEndpointSkipped | Measure-Object).Count -eq 0)
     {
         Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoors)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
@@ -970,7 +946,7 @@ function Reset-FrontDoorRequiredTLSVersion
                         @{Expression={$_.isMinTLSVersionRolledBackCustomDomainPostRemediation};Label="Is minimum required TLS version reset on the custom domain - Post Roll back?";Width=20;Alignment="left"}
 
 
-    if ($($frontDoorsRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsSkipped | Measure-Object).Count -gt 0)
+    if ($($frontDoorsRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsEndpointSkipped | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -987,14 +963,14 @@ function Reset-FrontDoorRequiredTLSVersion
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($frontDoorsSkipped | Measure-Object).Count -gt 0)
+        if ($($frontDoorsEndpointSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host "Error resetting minimum TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $frontDoorsSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
+            $frontDoorsEndpointSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
             $frontDoorSkippedFile = "$($backupFolderPath)\RollbackSkippedFrontDoors.csv"
-            $frontDoorsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
+            $frontDoorsEndpointSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
             Write-Host "Note: This information has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
