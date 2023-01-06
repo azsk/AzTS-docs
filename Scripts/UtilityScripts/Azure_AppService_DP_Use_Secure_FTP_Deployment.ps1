@@ -50,21 +50,19 @@ function Get-FtpState()
     $AppName
   )
 
-  $defaultProfile = Set-AzContext -Subscription $SubscriptionId
+  $profile = Set-AzContext -Subscription $SubscriptionId
 
-  $psSite = Get-AzWebApp -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName
+  $appService = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $AppName
 
-  $ftpConfigs = [ordered]@{ "Production" = $psSite.SiteConfig.FtpsState }
+  $ftpConfigs = [ordered]@{ "Production" = $appService.SiteConfig.FtpsState }
 
-  ForEach ($slotNameRaw in (Get-AzWebAppSlot -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName).Name)
+  # List of slots in Get-AzWebAppSlot has full slot name. SiteConfig is blank on those.
+  # So we have to get just the bare slot name, then call Get-AzWebAppSlot for it to get the SiteConfig and FtpsState.
+  ForEach ($slotNameRaw in (Get-AzWebAppSlot -ResourceGroupName $ResourceGroupName -Name $AppName).Name)
   {
-    # List of slots in Get-AzWebAppSlot has full slot name. SiteConfig is blank on those.
-    # So we have to get just the bare slot name, then call Get-AzWebAppSlot for it to get the SiteConfig and FtpsState.
     $slotName = $slotNameRaw.Replace($AppName + "/", "")
-    $slot = Get-AzWebAppSlot -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName -Slot $slotName
-
-    $slotConfig = @{ $slotName = $slot.SiteConfig.FtpsState }
-    $ftpConfigs = $ftpConfigs + $slotConfig
+    $slot = Get-AzWebAppSlot -ResourceGroupName $ResourceGroupName -Name $AppName -Slot $slotName
+    $ftpConfigs = $ftpConfigs + @{ $slotName = $slot.SiteConfig.FtpsState }
   }
 
   return $ftpConfigs
@@ -108,12 +106,12 @@ function Set-FtpState()
     $FtpState = "Disabled"
   )
 
-  $defaultProfile = Set-AzContext -Subscription $SubscriptionId
+  $profile = Set-AzContext -Subscription $SubscriptionId
 
   if ([string]::IsNullOrWhiteSpace($SlotName))
   {
     # No slot name so we're setting the app service itself
-    Set-AzWebApp -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName -FtpsState $FtpState
+    Set-AzWebApp -ResourceGroupName $ResourceGroupName -Name $AppName -FtpsState $FtpState
   }
   else
   {
@@ -122,6 +120,6 @@ function Set-FtpState()
       $SlotName = $SlotName.Replace($AppName + "/", "")
     }
 
-    Set-AzWebAppSlot -DefaultProfile $defaultProfile -ResourceGroupName $ResourceGroupName -Name $AppName -Slot $SlotName -FtpsState $FtpState
+    Set-AzWebAppSlot -ResourceGroupName $ResourceGroupName -Name $AppName -Slot $SlotName -FtpsState $FtpState
   }
 }
