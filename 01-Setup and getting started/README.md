@@ -51,16 +51,20 @@ Let's start!
   
   </br>
 
-  1. b. PowerShell 5.0 or higher: </br>
-  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
-  Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
-  If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
+  1. b. PowerShell 5.0 or higher
+      All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
+      Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
+      If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).    
+        ![PowerShell Version](../Images/00_PS_Version.png)  
 
-      ![PowerShell Version](../Images/00_PS_Version.png)
-    
- 1. c.  PowerShell language mode FullLanguage: </br>
-  To run AzTS setup script, PowerShell language mode for the session must be FullLanguage.
-  Ensure that you are using FullLanguage mode by typing **$ExecutionContext.SessionState.LanguageMode** in the PowerShell ISE console window.More details about PowerShell language mode can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?source=recommendations&view=powershell-7.3).
+  </br>
+
+  1. c. PowerShell language mode FullLanguage:  
+      To run AzTS setup script, PowerShell language mode for the session must be FullLanguage.
+      Ensure that you are using FullLanguage mode by typing **$ExecutionContext.SessionState.LanguageMode** in the PowerShell ISE console window.More details about PowerShell language mode can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?source=recommendations&view=powershell-7.3).
+</br>
+
+
 
 
 </br>
@@ -465,12 +469,16 @@ Let's start!
   </br>
 
   1. b. PowerShell 5.0 or higher
-  All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
-  Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
-  If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).  
+      All setup steps will be performed with the help of PowerShell ISE console. If you are unaware of PowerShell ISE, refer [link](PowerShellTips.md) to get a basic understanding.
+      Ensure that you are using Windows OS and have PowerShell version 5.0 or higher by typing **$PSVersionTable** in the PowerShell ISE console window and looking at the PSVersion in the output as shown below.) 
+      If the PSVersion is older than 5.0, update PowerShell from [here](https://www.microsoft.com/en-us/download/details.aspx?id=54616).    
+        ![PowerShell Version](../Images/00_PS_Version.png)  
 
-      ![PowerShell Version](../Images/00_PS_Version.png)
+  </br>
 
+  1. c. PowerShell language mode FullLanguage:  
+      To run AzTS setup script, PowerShell language mode for the session must be FullLanguage.
+      Ensure that you are using FullLanguage mode by typing **$ExecutionContext.SessionState.LanguageMode** in the PowerShell ISE console window.More details about PowerShell language mode can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?source=recommendations&view=powershell-7.3).
 </br>
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)

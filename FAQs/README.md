@@ -6,7 +6,7 @@
 # FAQs
 
 - ### Setup
- 1. [Getting error "Class keyword is not allowed in ConstrainedLanguage mode"](#1getting-error--class-keyword-is-not-allowed-in-constrainedlanguage-mode)
+ 1. [Getting error "Class keyword is not allowed in ConstrainedLanguage mode"](#1-getting-error--class-keyword-is-not-allowed-in-constrainedlanguage-mode)
  2. [How to add new subscriptions or mangement groups after deploying AzTS?](#2-how-to-add-new-subscriptions-or-management-groups-after-deploying-azts)
  3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
  4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
@@ -17,7 +17,7 @@
  3. [The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?](#3-the-subscription-scan-in-azts-is-getting-terminated-due-to-function-timeout-how-can-i-fix-it-or-how-can-i-upgrade-the-pricing-tier-of-azts-function-apps)
 
 - ### Monitoring
- 1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
+ 1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
 
 --------------------------------------------------
 </br>
@@ -26,7 +26,7 @@
 - ### Setup
 
  ### **1. Getting error : Class keyword is not allowed in ConstrainedLanguage mode** 
-This error can be observed where PowerShell is running in ConstrainedLanguage mode. If local settings for LaguageMode cannot be modified for some reason, AzTa setup can be done using aletrnate options. One of the options be copying deployment files to Azure storage and running the whole deployment procedure within Cloud Shell. 
+This error can be observed where PowerShell is running in ConstrainedLanguage mode. If local settings for LaguageMode cannot be modified for some reason, AzTS setup can be done using aletrnate options. One of the option is copying deployment files to Azure storage and running the whole deployment procedure within Cloud Shell. 
 
 ### **2. How to add new subscriptions or management groups after deploying AzTS**
 You just need to provide reader access to scanner Managed Identity at subscription or Management Group level. From next schedule, AzTS will pick up new subscriptions for scanning. 
@@ -156,7 +156,7 @@ traces
 | project timestamp, message, severityLevel
 
 If you see traces "Exception occurred in UpdateFunctionApp function while updating [AzSK-AzTS-UI-xxxxx]. Exception : [System.Exception: App service [AzSK-AzTS-UI-xxxxx] request to swap slot with production failed", then Auto-Updater is failing as staging and production slot swapping is failing for AzTS UI.You can disable the slot swap feature in Auto Updater with below steps:
-1. Go to Auto Updater Function App (AzSK-AzTS-AutoUpdater-b93ac)
+1. Go to Auto Updater Function App (AzSK-AzTS-AutoUpdater-xxxxx)
 2. Configurations -> Application Settings 
 3. Click on add new Application Settings 
 4. And setting with following Name and Value,
