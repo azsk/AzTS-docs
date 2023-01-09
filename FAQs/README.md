@@ -8,7 +8,7 @@
 - ### Setup
  1. [Getting error "Class keyword is not allowed in ConstrainedLanguage mode"](#1-getting-error--class-keyword-is-not-allowed-in-constrainedlanguage-mode)
  2. [How to add new subscriptions or mangement groups after deploying AzTS?](#2-how-to-add-new-subscriptions-or-management-groups-after-deploying-azts)
- 3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message *"Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
+ 3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message "Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
  4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
 
  - ### Scan
@@ -22,8 +22,8 @@
 --------------------------------------------------
 </br>
 
-## **FAQs **
-- ### Setup
+## FAQs 
+- ### **Setup**
 
  ### **1. Getting error : Class keyword is not allowed in ConstrainedLanguage mode** 
 This error can be observed where PowerShell is running in ConstrainedLanguage mode. If local settings for LaguageMode cannot be modified for some reason, AzTS setup can be done using aletrnate options. One of the option is copying deployment files to Azure storage and running the whole deployment procedure within Cloud Shell. 
@@ -71,7 +71,7 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
 <br> 
 <br>
 
-- ### Scan
+- ### **Scan**
 
 ### **1. Today's AzTS scan has completed. How do I re-run the full scan?**
 
@@ -136,7 +136,7 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 <br>
 
 
-- ### Monitoring
+- ### **Monitoring**
 
 ### **1. I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?** 
 Auto updater runs daily and check for any updates available or not, if there are no updates it will not raise any alert or error. Alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert" mostly indicates Auto updater function is not able to complete its job successfully in past runs.
