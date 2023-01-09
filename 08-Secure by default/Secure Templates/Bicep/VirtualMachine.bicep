@@ -249,6 +249,7 @@ resource vmName_AzureMonitorWindowsAgent 'Microsoft.Compute/virtualMachines/exte
     type: 'AzureMonitorWindowsAgent'
     typeHandlerVersion: '1.0'
     autoUpgradeMinorVersion: true
+    enableAutomaticUpgrade: true
     settings: {
       authentication: {
         SystemAssigned: {

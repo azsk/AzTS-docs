@@ -245,6 +245,7 @@ resource vmExtension_AzureMonitorLinuxAgent 'Microsoft.Compute/virtualMachines/e
     publisher: 'Microsoft.Azure.Monitor'
     type: 'AzureMonitorLinuxAgent'
     typeHandlerVersion: '1.22'
+    enableAutomaticUpgrade: true
     autoUpgradeMinorVersion: true
     settings: {
      authentication : 'SystemAssigned'
