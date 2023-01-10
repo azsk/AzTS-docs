@@ -605,7 +605,7 @@ function Set-FrontDoorRequiredTLSVersion
             $frontdoorEndpoint | Add-Member -NotePropertyName isMinTLSVersionSetOnCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionSetOnCustomDomainPostRemediation
             $frontdoorEndpoint | Add-Member -NotePropertyName PrevMinimumTlsVersion -NotePropertyValue $PrevMinimumTlsVersion
 
-            Write-Host "Setting minimum required TLS Version for  Front Door :  Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Setting minimum required TLS Version for custom domains of Front Door :  Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             
             if (-not [System.Convert]::ToBoolean($isMinTlsVersionSetOnCustomDomain))
@@ -954,7 +954,7 @@ function Reset-FrontDoorRequiredTLSVersion
         
         try
         {
-            Write-Host "Fetching Front Door configuration: Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching Front Door Endpoint configuration: Custom domain Name: [$($DomainName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
                 $secrets =  Get-AzFrontDoorCdnSecret -ResourceGroupName $resourceGroupName -ProfileName $resourceName
@@ -962,7 +962,7 @@ function Reset-FrontDoorRequiredTLSVersion
 
                 foreach($secret in $secrets)
                 {
-                    if($secret.Name.Contains($DomainName))
+                    if($secret.Name.Substring(37).Equals($DomainName))
                     {
                         $secretObj = $secret
                     }
@@ -971,7 +971,7 @@ function Reset-FrontDoorRequiredTLSVersion
                 $updateTlsSetting = New-AzFrontDoorCdnCustomDomainTlsSettingParametersObject -CertificateType $CertificateType -MinimumTlsVersion $prevMinimumTlsVersion -Secret $secretResoure
                 $resource = Update-AzFrontDoorCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $resourceName -CustomDomainName $DomainName -TlsSetting $updateTlsSetting
                     
-                if($null -ne $resource -and $updateTlsSetting.MinimumTlsVersion -eq 'TLS10' )
+                if($null -ne $resource -and $updateTlsSetting.MinimumTlsVersion -eq $prevMinimumTlsVersion )
                 {
                     $frontdoorEndpoint.isMinTLSVersionRolledBackCustomDomainPostRemediation = $true
                     $frontdoorEndpoint.isMinTlsVersionSetOnCustomDomain = $false
