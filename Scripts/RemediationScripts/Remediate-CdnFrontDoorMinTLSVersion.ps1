@@ -620,7 +620,7 @@ function Set-FrontDoorRequiredTLSVersion
 
                     foreach($secret in $secrets)
                     {
-                        if($secret.Name.Contains($DomainName))
+                        if($secret.Name.Substring(37).Equals($DomainName))
                         {
                             $secretObj = $secret
                         }
