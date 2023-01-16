@@ -11,7 +11,7 @@
 - [Overview](README.md#overview)
 - [Prerequisite](README.md#prerequisite)
 - [Introduction to AzTS UI and video tutorial](README.md#introduction-to-azts-ui)
-- [Miscellaneous UI features](#miscellanoues-ui-featuresmi)
+- [Miscellaneous UI features](#miscellanoues-ui-features)
 - [FAQ](README.md#frequently-asked-questions)
 
 -----------------
@@ -74,7 +74,7 @@ Here are some additional video tutorials explaining the features provided by AzT
 ## Miscellanoues UI features
 - ### **Scan In Progress:**
 
-AzTS UI can be used to scan subscriptions(s) manually. Once such manusal scan is triggered, you can get notification about scan progress status (e.g. Scan In Progress or Scan completed) by enabling Scan In Progress feature in AzTS UI. 
+AzTS UI can be used to scan subscriptions(s) manually. Once such manual scan is triggered, you can get notification about scan progress status (e.g. Scan In Progress or Scan completed) by enabling Scan In Progress feature in AzTS UI. 
 This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned below:
 
 - Open the [Azure portal](https://portal.azure.com/).
@@ -87,7 +87,7 @@ This feature is not enabled by default. If you have not enabled this feature in 
 - Add **UIConfigurations__OnDemandScanProgressIndicatorConfiguration__IsEnabled** as the Name of the appsetting.
 - Add **true** as the value of the appsetting.
 Save these settings. This will restart AzTS API app service.
-
+- For AzTS API app service (AzSK-AzTS-WebApi-xxxxx), go to Settings -> Identity. In System assigned tab, set Status as 'On'. It will enable system assigned managed identity for this app service.
 - Assign "Storage Table Data Contributor" role to Managed Identity for AzTS WebAPI(AzSK-AzTS-WebApi-xxxxx) on the Storage Account in AzTS Host Resource Group(AzSK-AzTS-Storage-xxxxx).
 
  Next time, when you open AzTS UI and scan subscriprion(s) manually, an indicator about Scan In Progress or scan completed will be shown.
