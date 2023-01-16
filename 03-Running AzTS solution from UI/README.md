@@ -74,7 +74,7 @@ Here are some additional video tutorials explaining the features provided by AzT
 ## Miscellanoues UI features
 - ### **Scan In Progress:**
 
-AzTS UI can be used to scan subscriptions(s) manually. Once such manual scan is triggered, you can get notification about scan progress status (e.g. Scan In Progress or Scan completed) by enabling Scan In Progress feature in AzTS UI. 
+AzTS UI can be used to trigger on-demand scan(s) for subscriptions(s) manually. Once such on-demand scan is triggered, you can get notification about scan progress status (e.g. Scan In Progress or Scan completed) by enabling Scan In Progress feature in AzTS UI. 
 This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned below:
 
 - Open the [Azure portal](https://portal.azure.com/).
