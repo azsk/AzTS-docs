@@ -9,7 +9,7 @@
 - [Azure_Storage_NetSec_Restrict_Network_Access](#azure_storage_netsec_restrict_network_access)
 - [Azure_Storage_DP_Use_Secure_TLS_Version](#azure_storage_dp_use_secure_tls_version)
 - [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](#azure_storage_authz_set_sas_expiry_interval)
-- [Azure_Storage_SI_Rotate_Access_Keys_Trial](#azure_storage_si_rotate_access_keys_trial)
+- [Azure_Storage_SI_Rotate_Access_Keys](#azure_storage_si_rotate_access_keys)
 
 <!-- /TOC -->
 <br/>
@@ -320,7 +320,7 @@ Shared Access Signature (SAS) is used to provide secure delegate access to resou
 
 ___
 
-## Azure_Storage_SI_Rotate_Access_Keys_Trial
+## Azure_Storage_SI_Rotate_Access_Keys
 
 ### Display Name
 Azure Storage Account access keys should rotate on periodic basis
