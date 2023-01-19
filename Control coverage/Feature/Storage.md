@@ -9,6 +9,7 @@
 - [Azure_Storage_NetSec_Restrict_Network_Access](#azure_storage_netsec_restrict_network_access)
 - [Azure_Storage_DP_Use_Secure_TLS_Version](#azure_storage_dp_use_secure_tls_version)
 - [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](#azure_storage_authz_set_sas_expiry_interval)
+- [Azure_Storage_SI_Rotate_Access_Keys](#azure_storage_si_rotate_access_keys)
 
 <!-- /TOC -->
 <br/>
@@ -319,3 +320,52 @@ Shared Access Signature (SAS) is used to provide secure delegate access to resou
 
 ___
 
+## Azure_Storage_SI_Rotate_Access_Keys
+
+### Display Name
+Azure Storage Account access keys should rotate on periodic basis
+
+### Rationale
+Rotating access keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used.
+
+### Control Settings
+
+```json
+{
+    "RecommendedKeyRotationPeriodInDays": "90"
+}
+```
+
+### Control Spec
+
+> **Passed:**
+> Azure Storage account access keys are rotated less than or equal to the required key rotation period.
+>
+> **Failed:**
+> Azure Storage account access keys rotated period is greater than recommended key rotation period.
+>
+
+### Recommendation
+
+
+- **Azure Portal**
+
+  Refer https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal to rotate access keys in storage account.
+
+- **PowerShell**
+
+	```powershell
+   New-AzStorageAccountKey -ResourceGroupName '<ResourceGroupName>' -Name '<Name>' -KeyName '<KeyName>'
+   ```
+
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all the storage accounts available under the subscription:
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
+  <br />
+  **Properties:** [*].properties.keyCreationTime
+  <br />
+  <br />
+
+___
