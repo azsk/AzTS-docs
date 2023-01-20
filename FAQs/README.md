@@ -18,6 +18,9 @@
 
 - ### Monitoring
  1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
+ 
+- ### Control Remediation
+ 1. [I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?](#1-i-want-to-turn-off-public-access-on-key-vault-but-it-is-consumed-by-azure-function-apps-using-consumption-plan-how-do-i-add-the-ip-addresses-which-are-dynamically-changing)
 
 --------------------------------------------------
 </br>
@@ -171,4 +174,104 @@ The above steps should stop this recurring alert, please validate after 24 hours
 <br>
 
 
+- ### **Control Remediation**
+
+### **1. I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?** 
+To remediate the control [Azure_KeyVault_NetSec_Disable_Public_Network_Access](https://github.com/azsk/AzTS-docs/blob/users/vinala/keyvaultiprangescript/Control%20coverage/Feature/KeyVault.md#azure_keyvault_netsec_disable_public_network_access), You need to [configure network settings](https://learn.microsoft.com/en-us/azure/key-vault/general/how-to-azure-key-vault-network-security?tabs=azure-portal) on key vault to allow access only from selected virtual networks and IP Addresses. However, If the key vault is being consumed from Azure Function Apps which is deployed using Consumption plan, the IP Addresses are bound to dynamically change. One way to allow access to Azure Functions Apps (Consumption Plan) is to whitelist all the Azure IP Addresses pertaining to 'App Service' service tag and the corresponding function app deployed region. 
+
+Azure publishes the information [here](https://www.microsoft.com/en-us/download/details.aspx?id=56519) every week. Per their installation instruction mentioned in the download center, New ranges appearing in the file will not be used in Azure for at least one week. Hence, users have atmost one week to update the IP ranges to have uninterrupted access to the key vault from the function apps. 
+
+You can use the below PowerShell command let to whitelist the Azure IP ranges for a particular region on key vault. 
+
+``` Powershell
+function WhitelistAzureFunctionAppIPRangesOnKeyVault {
+
+param (
+$SubscriptionId,
+$ResourceGroup,
+$KeyVaultResourceId,
+$FunctionAppUsageRegion,
+$RemoveExistingIPRanges = $false
+)
+
+# Connect to the Azure account where the key vault is deployed.
+Connect-AzAccount -Subscription $SubscriptionId
+Set-AzContext -SubscriptionId $SubscriptionId
+
+# Installing MSIdentityTools Module
+Write-Host "Installing MSIdentityTools Module to fetch the Azure published IP ranges..." -ForegroundColor Yellow
+Install-Module -Name MSIdentityTools -Scope CurrentUser -Force
+# Download the IPRanges from Azure published location and filter the IP ranges for the specific region where the function apps are deployed.
+Write-Host "Downloading the Azure published IP ranges..." -ForegroundColor Yellow
+Get-MsIdAzureIpRange -ServiceTag AppService -Region $FunctionAppUsageRegion
+Write-Host "Successfully downloaded the Azure published IP ranges..." -ForegroundColor Green
+Write-Host "Filtering the IP ranges for IPv4 addresses" -ForegroundColor Yellow
+$FilteredIPRanges = ($IPRanges | Where-Object {$_.Contains("::") -eq $false })
+
+# Remove existing IP Ranges if flag is set.
+if($RemoveExistingIPRanges -eq $true)
+{
+Write-Host "Overridding the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
+Update-AzKeyVaultNetworkRuleSet -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges -SubscriptionId $SubscriptionId
+Write-Host "Successfully overridden the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Green
+
+}
+else
+{
+Write-Host "Appending the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
+Add-AzKeyVaultNetworkRule -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges -SubscriptionId $SubscriptionId
+Write-Host "Successfully appended the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Green
+
+}
+
+}
+```
+
+The same can be integrated into your DevOps pipeline using the YAML below to run it every 3 days on a scheduled basis to have the latest IP ranges updated on the allowed IP Addresses for key vault.
+
+``` yaml
+trigger:
+  branches:
+    include:
+    - main
+stages:
+- stage: __default
+  jobs:
+  - job: Job
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - task: AzurePowerShell@5
+      displayName: "Whitelist Azure IP Addressess on key vault"
+      inputs:
+        azureSubscription: $(AZURESUBSCRIPTIONSERVICECONNECTION)
+        ScriptType: 'InlineScript'
+        Inline: |
+          Set-AzContext -SubscriptionId $(SUBSCRIPTIONID)
+          # Installing MSIdentityTools Module
+          Write-Host "Installing MSIdentityTools Module to fetch the Azure published IP ranges..." -ForegroundColor Yellow
+          Install-Module -Name MSIdentityTools -Scope CurrentUser -Force
+          # Download the IPRanges from Azure published location and filter the IP ranges for the specific region where the function apps are deployed.
+          Write-Host "Downloading the Azure published IP ranges..." -ForegroundColor Yellow
+          $IPRanges = Get-MsIdAzureIpRange -ServiceTag AppService -Region $(FUNCTIONAPPUSAGEREGION)
+          Write-Host "Successfully downloaded the Azure published IP ranges..." -ForegroundColor Green
+          Write-Host "Filtering the IP ranges for IPv4 addresses" -ForegroundColor Yellow
+          $FilteredIPRanges = ($IPRanges | Where-Object {$_.Contains("::") -eq $false })
+
+           # Remove existing IP Ranges if flag is set.
+          if($(REMOVEEXISTINGIPRANGES) -eq $true)
+          {
+          Write-Host "Overridding the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
+          Update-AzKeyVaultNetworkRuleSet -ResourceId $(KEYVAULTRESOURCEID) -IpAddressRange $FilteredIPRanges -SubscriptionId $(SUBSCRIPTIONID)
+          Write-Host "Successfully overridden the IP Address ranges with the Azure IP ranges for specified function app region:" $(FUNCTIONAPPUSAGEREGION) -ForegroundColor Green
+
+          }
+          else
+          {
+          Write-Host "Appending the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
+          Add-AzKeyVaultNetworkRule -ResourceId $(KEYVAULTRESOURCEID) -IpAddressRange $FilteredIPRanges -SubscriptionId $(SUBSCRIPTIONID)
+          Write-Host "Successfully appended the IP Address ranges with the Azure IP ranges for specified function app region:" $(FUNCTIONAPPUSAGEREGION) -ForegroundColor Green
+          }
+        azurePowerShellVersion: 'LatestVersion'
+```
 
