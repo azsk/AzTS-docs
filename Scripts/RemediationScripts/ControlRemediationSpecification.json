@@ -207,7 +207,7 @@
         }
       },
       {
-        "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version_Trial",
+        "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version",
         "EnableRemediation": "true",
         "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
         "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion",

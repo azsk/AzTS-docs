@@ -3,10 +3,10 @@
     This script is used to set Tls version for Event Hub namespaces in a Subscription.
 
 # Control ID:
-    Azure_EventHub_DP_Use_Secure_TLS_Version_Trial
+    Azure_EventHub_DP_Use_Secure_TLS_Version
 
 # Display Name:
-    [Trial] Use approved version of TLS for Event Hub Namespace.
+    Use approved version of TLS for Event Hub Namespace.
 
 # Prerequisites:    
     Owner or higher priviliged role on the Event Hub Namespace(s) is required for remediation.
@@ -117,10 +117,10 @@ function Set-MinTLSVersionForEventHubNamespace
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_EventHub_DP_Use_Secure_TLS_Version_Trial' Control.
+        Remediates 'Azure_EventHub_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_EventHub_DP_Use_Secure_TLS_Version_Trial' Control.
+        Remediates 'Azure_EventHub_DP_Use_Secure_TLS_Version' Control.
         Set the min TLS version on Event Hub Namespace(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -257,7 +257,7 @@ function Set-MinTLSVersionForEventHubNamespace
     $logSkippedResources=@()	
 
     # Control Id	
-    $controlIds = "Azure_EventHub_DP_Use_Secure_TLS_Version_Trial"
+    $controlIds = "Azure_EventHub_DP_Use_Secure_TLS_Version"
 
 
     # No file path provided as input to the script. Fetch all Event Hub Namespace(s) in the Subscription.
@@ -604,10 +604,10 @@ function Set-PreviousTLSVersionForEventHubNamespace
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_EventHub_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_EventHub_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_EventHub_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_EventHub_DP_Use_Secure_TLS_Version' Control.
         Change TLS version to Previous Value on Event Hub Namespace(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
