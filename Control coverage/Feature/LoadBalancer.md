@@ -6,6 +6,8 @@
 
 - [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](#Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 
+- [Azure_LoadBalancer_NetSec_Enable_DDoS_Protection](azure_loadbalancer_netsec_enable_ddoS_protection)
+
 <!-- /TOC -->
 <br/>
 
@@ -44,13 +46,49 @@ Restricting traffic on the Load Balancer further strengthens the security postur
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{0}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
+- ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
 **Properties:** properties.SubnetIds <br />
 
-- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
+- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
 **Properties:** properties.BackendVnets<br />
 
 <br />
 
+
+## Azure_LoadBalancer_NetSec_Enable_DDoS_Protection 
+
+### Display Name 
+Protect Internet First Applications with Azure Load Balancer and Azure DDoS protection
+
+### Rationale 
+Enabling DDOS on Virtual Network of front end configurations, provides protection and defense for Azure resources against the impacts of DDoS attacks.
+
+### Control Spec 
+
+> **Passed:** 
+> DDoS Protection Plan is configured on the Virtual Network of Load Balancer
+OR <br/>No Virtual Network found attached either with FrontEnd or Backend of Load Balancer.
+> 
+> **Failed:** 
+>
+>1. DDoS must be enabled on the Virtual network of subnets being used in Load balancer Frontends or Backends.
+ 
+### Recommendation
+- **Azure Portal** 
+
+	To Remediate, Enable DDOS on the Virtual Network of every frontend IP configuration of Load balancer or refer [link](https://learn.microsoft.com/en-us/azure/ddos-protection/manage-ddos-protection#enable-ddos-protection-for-an-existing-virtual-network).
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
+**Properties:** properties.SubnetIds <br />
+
+- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
+**Properties:** properties.BackendVnets<br />
+
+- ARM API to get propoerties of associated Virtual Network: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
+
+**Properties:** properties.enableDdosProtection
+<br />
 ___ 
 

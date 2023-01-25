@@ -20,6 +20,7 @@
 - [Azure_Subscription_SI_No_Billing_Activity](#Azure_Subscription_SI_No_Billing_Activity)
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
 - [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
+- [Azure_Subscription_SI_Dont_Use_B2C_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
 
 <!-- /TOC -->
 <br/>
@@ -1034,6 +1035,37 @@ Note : Approved central team accounts don't count against your limit
 
 -  ARM API to list role assignment at subscription level: - /subscriptions/{subscriptionId}}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-07-01<br />
 **Properties:** [\*].properties.scope , [\*].name
+ <br />
+
+<br />
+
+
+## Azure_Subscription_SI_Dont_Use_B2C_Tenant 
+
+### Display Name 
+Remove Azure Active Directory B2C tenant(s) in a subscription
+
+### Rationale 
+This Service depends mainly on 3rd party identity provider, and that can cause authenticity attacks. Closing unnecessary or high-risk Azure B2C usage will reduce the attack surface, reduce risk to the enterprise and protect against identity attacks. 
+
+### Control Spec 
+> **Passed:** 
+> No Azure Active Directory B2C tenant found AND Resource Provider: 'Microsoft.AzureActiveDirectory' is not registered in this subscription
+> 
+> **Failed:** 
+> Azure Active Directory B2C tenant(s) are found OR <br/>Resource provider: 'Microsoft.AzureActiveDirectory' is registered in this subscription. 
+
+
+### Recommendation 
+
+- **Azure Portal** 
+ <br/>Refer: https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/active-directory-b2c/tutorial-delete-tenant.md to delete the Azure B2C tenant and unregister the 'Microsoft.AzureActiveDirectory' resource provider in the subscription.<br/>Refer to https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types for more information on resource providers.
+
+
+### Azure Policy or ARM API used for evaluation 
+
+-  ARM API to list providers at subscription level: - "/subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate<br />
+**Properties:** [\*].value.namespace , [\*].value.registrationState
  <br />
 
 <br />
