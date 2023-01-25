@@ -194,17 +194,28 @@
                   "Arguments":["SubscriptionId"]
              }
         },
+      {
+        "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
+        "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",
+        "InitCommand": "Set-SASExpiryInterval",
+        "RollbackMetadata": 
         {
-            "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
-            "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
-            "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",     
-            "InitCommand": "Set-SASExpiryInterval",
-            "RollbackMetadata":
-             {
-                  "RollbackCommand": "Reset-SASExpiryInterval",
-                  "Arguments":["SubscriptionId"]
-             }
+          "RollbackCommand": "Reset-SASExpiryInterval",
+           "Arguments": [ "SubscriptionId" ]
         }
+      },
+      {
+        "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version_Trial",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion",
+        "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
+        "RollbackMetadata": {
+          "RollbackCommand": "Set-PreviousTLSVersionForEventHubNamespace",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      }
     ]
 }
