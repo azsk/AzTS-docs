@@ -4,7 +4,7 @@
 
 <!-- TOC -->
 
-- [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial](#azure_dbformysqlflexibleserver_dp_enable_ssl_trial)
+- [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
 - [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial](#azure_dbformysqlflexibleServer_dp_use_secure_tls_version_trial)
 
 <!-- /TOC -->
@@ -12,7 +12,7 @@
 
 ___ 
 
-## Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial 
+## Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 ### Display Name 
 [Trial] Azure Database for MySQL - Flexible Servers Announcing SSL enforcement
@@ -38,7 +38,7 @@ Enforcing secure transport between your database server and your client applicat
 ### Recommendation 
 
 - **Azure Portal** 
-To configure secure transport for client communication, Go to Azure Portal --> Azure Database for MySQL flexible server -->Server parameters --> set parameter 'require-secure-transport' as 'ON'.
+To configure secure transport for client communication, Go to Azure Portal --> Azure Database for MySQL flexible server --> Select server --> Settings --> Server parameters --> search 'require_secure_transport' --> set parameter 'require_secure_transport' as 'ON' --> Click 'Save'.
 
 <!-- - **PowerShell** 
 
