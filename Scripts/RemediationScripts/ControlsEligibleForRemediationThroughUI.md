@@ -25,6 +25,14 @@
 
 12. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](ControlsEligibleForRemediationThroughUI.md#1-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
 
+13. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#13-azure_servicebus_dp_use_secure_tls_version)
+
+14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+
+15. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+
+16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
+
 13. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial](ControlsEligibleForRemediationThroughUI.md#1-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial)
 
 <br />
@@ -185,14 +193,3 @@ Cluster Protection Level must be EncryptandSign
 Owner or higher priviliged role on the Service Fabric(s)
 
 ___
-
-## 13. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial
-
-### Display Name
-[Trial] Azure Database for MySQL - Flexible Servers Announcing SSL enforcement
-
-### Link to Bulk Remediation Script (BRS)
-[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
-
-### Minimum permissions required to run the script
-Contributor or higher priviliged role on Azure Database for MySQL flexible server

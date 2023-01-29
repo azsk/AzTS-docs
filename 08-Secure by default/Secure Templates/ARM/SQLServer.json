@@ -138,7 +138,8 @@
       "location": "[parameters('sqlServerLocation')]",
       "properties": {
         "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
-        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]"
+        "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
+        "minimalTlsVersion": "1.2" //[Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial]
       }
     },
     {

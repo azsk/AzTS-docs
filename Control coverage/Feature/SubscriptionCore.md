@@ -7,7 +7,7 @@
 - [Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles](#Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities_Privileged_Roles)
 - [Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count](#Azure_Subscription_AuthZ_Limit_ClassicAdmin_Count)
 - [Azure_Subscription_AuthZ_Remove_Management_Certs - <b>DEPRECATED!!!</b>](#Azure_Subscription_AuthZ_Remove_Management_Certs)
-- [Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts](#Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts)
+- [Azure_Subscription_Audit_Resolve_MDC_Alerts](#azure_subscription_audit_resolve_mdc_alerts)
 - [Azure_Subscription_AuthZ_Custom_RBAC_Roles](#Azure_Subscription_AuthZ_Custom_RBAC_Roles)
 - [Azure_Subscription_SI_Classic_Resources](#Azure_Subscription_SI_Classic_Resources)
 - [Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access](#Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access)
@@ -19,6 +19,8 @@
 - [Azure_Subscription_Config_MDC_Setup_SecurityContacts](#Azure_Subscription_Config_MDC_Setup_SecurityContacts)
 - [Azure_Subscription_SI_No_Billing_Activity](#Azure_Subscription_SI_No_Billing_Activity)
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
+- [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
+- [Azure_Subscription_SI_Dont_Use_B2C_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
 
 <!-- /TOC -->
 <br/>
@@ -281,7 +283,7 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 ___ 
 
-## Azure_Subscription_Audit_Resolve_Azure_Security_Center_Alerts 
+## Azure_Subscription_Audit_Resolve_MDC_Alerts 
 
 ### Display Name 
 Resolve active Microsoft Defender for Cloud (MDC) alerts of medium severity or higher
@@ -973,6 +975,97 @@ By using Conditional Access policies for privileged roles, you can apply the rig
 
 - PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+'{uniquePimIdentifier}')+and+((roleDefinition/templateId+eq+'{ownerTemplateId}')+or+(roleDefinition/templateId+eq+'{userAccessAdminTemplateId}')+or+(roleDefinition/templateId+eq+'{contributorTemplateId}')) <br />
 **Properties:** [\*].roleDefinitionId, [\*].userMemberSettings, [\*].roleDefinition.displayName
+ <br />
+
+<br />
+
+___ 
+
+## Azure_Subscription_AuthZ_Limit_Admin_Owner_Count 
+
+### Display Name 
+Minimize the number of admins/owners
+
+### Rationale 
+Each additional person in the admin/owner role increases the attack surface for the entire subscription. The number of members in these roles should be kept to as low as possible. 
+
+### Control Settings 
+```json 
+{
+    "ExcludeUsers": [],
+    "NoOfAdminOrOwnerLimit": 5,
+    "EligibleAdminOrOwnerRoles": [
+        "CoAdministrator",
+        "ServiceAdministrator",
+        "owner"
+    ]
+}
+ ```  
+
+### Control Spec 
+> **Passed:** 
+> The count of admin/owner accounts does not exceed the configured number of admin/owner count.
+Note : Approved central team accounts don't count against your limit
+> 
+> **Failed:** 
+> The count of admin/owner accounts exceed the configured number of admin/owner count. 
+Note : Approved central team accounts don't count against your limit
+> 
+> **Verify:** 
+> RBAC result not found (sufficient data is not available for evaluation).
+> 
+
+
+### Recommendation 
+
+- **Azure Portal** 
+ <br/>Please follow these steps to remove classic role assignments : <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. <br />(e) Select the co-administrator account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the co-administrators that need to be removed from the subscription. <br/> 
+<br/>Please follow these steps to remove owner role assignments : <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Role Assignments' tab. <br />(e) Navigate to owner section and select the owner account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the owner accounts that need to be removed from the subscription. <br/> 
+
+
+- **PowerShell** 
+    <br> To remove owner role assignment.
+	 ```powershell 
+	 Remove-AzRoleAssignment -SignInName '{signInName}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
+     # Run 'Get-Help Remove-AzRoleAssignment -full' for more help.
+     # For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
+	 `
+
+### Azure Policy or ARM API used for evaluation 
+
+-  ARM API to list role assignment at subscription level: - /subscriptions/{subscriptionId}}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-07-01<br />
+**Properties:** [\*].properties.scope , [\*].name
+ <br />
+
+<br />
+
+
+## Azure_Subscription_SI_Dont_Use_B2C_Tenant 
+
+### Display Name 
+Remove Azure Active Directory B2C tenant(s) in a subscription
+
+### Rationale 
+This Service depends mainly on 3rd party identity provider, and that can cause authenticity attacks. Closing unnecessary or high-risk Azure B2C usage will reduce the attack surface, reduce risk to the enterprise and protect against identity attacks. 
+
+### Control Spec 
+> **Passed:** 
+> No Azure Active Directory B2C tenant found AND Resource Provider: 'Microsoft.AzureActiveDirectory' is not registered in this subscription
+> 
+> **Failed:** 
+> Azure Active Directory B2C tenant(s) are found OR <br/>Resource provider: 'Microsoft.AzureActiveDirectory' is registered in this subscription. 
+
+
+### Recommendation 
+
+- **Azure Portal** 
+ <br/>Refer: https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/active-directory-b2c/tutorial-delete-tenant.md to delete the Azure B2C tenant and unregister the 'Microsoft.AzureActiveDirectory' resource provider in the subscription.<br/>Refer to https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types for more information on resource providers.
+
+
+### Azure Policy or ARM API used for evaluation 
+
+-  ARM API to list providers at subscription level: - "/subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate<br />
+**Properties:** [\*].value.namespace , [\*].value.registrationState
  <br />
 
 <br />

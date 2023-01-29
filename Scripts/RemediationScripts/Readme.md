@@ -36,6 +36,15 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
+27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#29-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
+30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
+31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
+32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
+33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
+34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
+
 
 <br />
 
@@ -558,6 +567,167 @@ Yes
 
 ___
 
+
+## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in SQL Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLServerMinReqTLSVersion](Remediate-SetSQLServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetStorageAccountMinReqTLSVersion](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 29. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
+
+### Display Name
+Application Gateway should have Web Application Firewall configured
+
+### Link to Bulk Remediation Script (BRS) for Partially Remediating the control.
+[Remediate-NSGConfigurationOnApplicationGatewaySubnet](Remediate-NSGConfigurationOnApplicationGatewaySubnet.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+
+## 30. Azure_LoadBalancer_NetSec_Restrict_Network_Traffic
+
+### Display Name
+Protect Internet First Applications by restricting traffic on Azure Load Balancer
+
+### Link to Bulk Remediation Script (BRS) 
+[Remediate-NSGConfigurationOnLoadBalancerSubnet](Remediate-NSGConfigurationOnLoadBalancerSubnet.ps1)
+
+**Note** : BRS script can be used only to remediate control by configuring network security groups. Remediating with Azure Firewall is not part of this script.
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+
+
+## 31. Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
+
+### Display Name
+WAF Policy should be configured on Endpoints in Front Door.
+
+### Link to Bulk Remediation Script (BRS)
+You can Configure WAF Policy on Front Door using below BRS:  <br/>
+[Remediate-ConfigureWAFPolicyForFrontDoor](Remediate-ConfigureWAFPolicyForFrontDoor.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyForFrontDoor](Remediate-EnableWAFPolicyForFrontDoor.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyPreventionModeForFrontDoor](Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1) <br/>
+
+___
+
+
+## 32. Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration 
+
+### Display Name
+Protect Internet First Applications with Azure FrontDoor and WAF.
+
+### Link to Bulk Remediation Script (BRS)
+You can Configure WAF Policy on Front Door using below BRS:  <br/>
+[Remediate-ConfigureWAFOnAzureFrontDoorCDN](Remediate-ConfigureWAFOnAzureFrontDoorCDN.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyStateOfAzFrontDoorCDN](Remediate-EnableWAFPolicyStateOfAzFrontDoorCDN.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN](Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN.ps1) <br/>
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation?
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+[Trial] Front Door Classic should have Approved Minimum TLS version
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetClassicFrontDoorMinTLSVersion](Remediate-SetClassicFrontDoorMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+
+## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+[Trial] Front Door should have Approved Minimum TLS version.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
 
 
 ## Supports managed identity based remediations
