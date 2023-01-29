@@ -3,11 +3,11 @@
 <br>
 
 # AutoRemediation
-This feature is not enabled by default. Default AzTS UI with AutoRemediation feature off :
+This feature is not enabled by default. Below is the AzTS UI with AutoRemediation feature off by default:
 
 ![UIWithAutoRediationDisabled](../Images/04_DefaultUIWithAutoRemediationDisabled.png)
 
-If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned below:
+To enable this feature for your AzTS setup, please follow steps mentioned below:
 
 - Open the [Azure portal](https://portal.azure.com/).
 - Navigate to AzTS host subscription -> AzTS host resource group.
@@ -23,10 +23,10 @@ If you have not enabled this feature in your AzTS setup yet, please follow steps
 ![AddConfig](../Images/04_AddCofigForAutoRemediation.png)
 
 Save these settings. This will restart AzTS API app service. 
-Next time, when you open AzTS UI, you will see Remediation Mode as a toggle.
+Next time, when you open AzTS UI, you will see Remediation Mode toggle button.
 ![RemdiationMode](../Images/04_Autoremdiation_RemediationMode.png)
 
-It is turned off on UI load by default. Also there are few controls available to be remediated with autoremediation. You can find list for such controls [here](../Scripts/RemediationScripts/ControlsEligibleForRemediationThroughUI.md).
+It is turned off on UI load by default. Currently only few controls are supported for AutoRemediation. You can find list for such controls [here](../Scripts/RemediationScripts/ControlsEligibleForRemediationThroughUI.md).
 
-Once you turn on Remediation mode, you will get option to select failing controls(from above list available for remediation through UI). You can select multiple such failing controls and from Action button, downlaod zipped folder containing scripts and other files necessary for remediation.Detailed steps about using this zip folder for remediation can be found [here](../Scripts/RemediationScripts/Instructions.pdf).
+Once you turn on Remediation mode, you will get option to select failing controls(from above list available for remediation through UI). You can select multiple such failing controls and from Action button, download zipped folder containing scripts and other files necessary for remediation.Detailed steps about using this zip folder for remediation can be found [here](../Scripts/RemediationScripts/Instructions.pdf).
 
