@@ -33,17 +33,17 @@ Enforcing secure transport between your database server and your client applicat
 >  Server parameter 'require_secure_transport' is set as ON.
 > 
 > **Failed:** 
->  Server parameter 'require_secure_transport' is not set as ON.
+>  Server parameter 'require_secure_transport' is set as OFF.
 > 
 ### Recommendation 
 
 - **Azure Portal** 
 To configure secure transport for client communication, Go to Azure Portal --> Azure Database for MySQL flexible server --> Select server --> Settings --> Server parameters --> search 'require_secure_transport' --> set parameter 'require_secure_transport' as 'ON' --> Click 'Save'.
 
-<!-- - **PowerShell** 
+- **PowerShell** 
 
 	 ```powershell 
-	 $variable = 'apple' 
+	 Update-AzMySqlFlexibleServerConfiguration -Name "require_secure_transport"  -ResourceGroupName <ResourceGroupName>  -ServerName <ServerName> -Value "ON" 
 	 ```  
 
 - **Enforcement Policy** 
