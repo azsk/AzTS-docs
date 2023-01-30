@@ -3,7 +3,7 @@
     This script is used to set SSL for Azure Database for MySQL flexible server in a Subscription.
 
 # Control ID:
-    Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial
+    Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 # Display Name:
     Azure Database for MySQL - Flexible Servers Announcing SSL enforcement
@@ -13,13 +13,13 @@
 
 # Steps performed by the script:
     To remediate:
-        1. Validating and installing the modules required to run the script and validating the user.
+        1. Validate and install the modules required to run the script and validate the user..
         2. Get the list of Azure Database for MySQL flexible server(s) in a Subscription that have server parameter require_secure_transport not set as ON.
         3. Back up details of Azure Database for MySQL flexible server(s) that are to be remediated.
         4. Set SSL by updating server parameter require_secure_transport as ON for Azure Database for MySQL flexible server(s).
 
     To roll back:
-        1. Validate and install the modules required to run the script and validating the user.
+        1. Validate and install the modules required to run the script and validate the user.
         2. Get the list of Azure Database for MySQL flexible server(s) in a Subscription, the changes made to which previously, are to be rolled back.
         3. Set the server parameter require_secure_transport to original value as per input file.
 
@@ -38,27 +38,27 @@
     To remediate:
         1. To review the Azure Database for MySQL flexible server(s) in a Subscription that will be remediated:
     
-           Set-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+           Enable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. Set SSL for Azure Database for MySQL flexible server(s) in the Subscription:
        
-           Set-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+           Enable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. Set SSL for Azure Database for MySQL flexible server(s) in the Subscription, from a previously taken snapshot:
        
-           Set-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer\DBForMySQLFlexibleServerDetailsBackUp.csv
+           Enable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer\DBForMySQLFlexibleServerDetailsBackUp.csv
 
         To know more about the options supported by the remediation command, execute:
         
-        Get-Help Set-SSLForDBForMySQLFlexibleServer -Detailed
+        Get-Help Enable-SSLForDBForMySQLFlexibleServer -Detailed
 
     To roll back:
         1. Set SSL for Azure Database for MySQL flexible server(s) in the Subscription, from a previously taken snapshot:
-           Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer/DBForMySQLFlexibleServerDetailsBackUp.csv
+           Disable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer/DBForMySQLFlexibleServerDetailsBackUp.csv
        
         To know more about the options supported by the roll back command, execute:
         
-        Get-Help Set-SSLForDBForMySQLFlexibleServer -Detailed        
+        Get-Help Enable-SSLForDBForMySQLFlexibleServer -Detailed        
 ###>
 
 
@@ -110,13 +110,13 @@ function Setup-Prerequisites {
 }
 
 
-function Set-SSLForDBForMySQLFlexibleServer {
+function Enable-SSLForDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
-        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial' Control.
+        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial' Control.
+        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL' Control.
         Set SSL as ON for Azure Database for MySQL flexible server(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -144,19 +144,19 @@ function Set-SSLForDBForMySQLFlexibleServer {
         Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
-        None. You cannot pipe objects to Set-SSLForDBForMySQLFlexibleServer.
+        None. You cannot pipe objects to Enable-SSLForDBForMySQLFlexibleServer.
 
         .OUTPUTS
-        None. Set-SSLForDBForMySQLFlexibleServer does not return anything that can be piped and used as an input to another command.
+        None. Enable-SSLForDBForMySQLFlexibleServer does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Set-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Enable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Set-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Enable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer\DBForMySQLFlexibleServerDetailsBackUp.csv
+        PS> Enable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer\DBForMySQLFlexibleServerDetailsBackUp.csv
 
         .LINK
         None
@@ -202,7 +202,7 @@ function Set-SSLForDBForMySQLFlexibleServer {
 
     if ($PerformPreReqCheck) {
         try {
-            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user"
+            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
@@ -217,7 +217,7 @@ function Set-SSLForDBForMySQLFlexibleServer {
         }
     }
     else {
-        Write-Host "[Step 1 of 4] Validate the user"
+        Write-Host "[Step 1 of 4] Validate the user..."
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -244,7 +244,7 @@ function Set-SSLForDBForMySQLFlexibleServer {
     Write-Host "To set SSL for Azure Database for MySQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for MySQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)  
 
-    Write-Host "[Step 2 of 4] Fetch all Azure Database for MySQL flexible server(s)"
+    Write-Host "[Step 2 of 4] Preparing to fetch all Azure Database for MySQL flexible server(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
     # list to store Container details.
@@ -254,7 +254,7 @@ function Set-SSLForDBForMySQLFlexibleServer {
     $logRemediatedResources = @()	
     $logSkippedResources = @()	
 
-    $controlIds = "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial"
+    $controlIds = "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL"
 
     if ($AutoRemediation) {
         if (-not (Test-Path -Path $Path)) {	
@@ -277,21 +277,27 @@ function Set-SSLForDBForMySQLFlexibleServer {
             return	
         
         }
-        $validResources | ForEach-Object { 	
-            try {
-                $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-                $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
-                $DBForMySQLFlexibleServerDetails += $DBForMySQLFSResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
-                @{N = 'ResourceName'; E = { $_.Name } }, 
-                @{N = 'RequireSecureTransport'; E = { $parameterValue } }
+        $validResources | ForEach-Object { 
+            $resourceGroupName = $_.ResourceGroupName
+            $resourceName = $_.ResourceName
+            try 
+            {
+                $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction Continue
+                if(($DBForMySQLFSResource| Measure-Object).Count -gt 0)
+                {
+                    $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName) -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
+                    $DBForMySQLFlexibleServerDetails += $DBForMySQLFSResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
+                    @{N = 'ResourceName'; E = { $_.Name } }, 
+                    @{N = 'RequireSecureTransport'; E = { $parameterValue } }
+                }
             }
             catch {
                 Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Warning)	
-                Write-Host "Skipping the Resource:  [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)	
+                Write-Host "Skipping the Resource:  [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 $logResource = @{}
-                $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
-                $logResource.Add("ResourceName", ($_.ResourceName))	
+                $logResource.Add("ResourceGroupName", ($resourceGroupName))	
+                $logResource.Add("ResourceName", ($resourceName))	
                 $logResource.Add("Reason", "Valid resource id(s) not found in input json file.")    	
                 $logSkippedResources += $logResource	
                 Write-Host $([Constants]::SingleDashLine)
@@ -308,7 +314,6 @@ function Set-SSLForDBForMySQLFlexibleServer {
             $servers = @();
             $servers = Get-AzMySqlFlexibleServer -ErrorAction Stop
             $servers | ForEach-Object { 	
-                #$DBForMySQLFSResource =  Get-AzMySqlFlexibleServer -Name $_.Name -ResourceGroupName $_.Id.Split("/")[4]  -ErrorAction SilentlyContinue 
                 $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.Id.Split("/")[4] -ServerName $_.Name -SubscriptionId $SubscriptionId).Value 
                 $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                 @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
@@ -334,18 +339,20 @@ function Set-SSLForDBForMySQLFlexibleServer {
                 $resourceId = $_.ResourceId
 
                 try {                
-                    $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-            
-                    $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $[Constants]::ParameterName -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
-                    $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                    @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
-                    @{N = 'ResourceName'; E = { $_.Name } }, 
-                    @{N = 'RequireSecureTransport'; E = { $parameterValue } }
-            
+                    $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction Continue
+                    if(($DBForMySQLFSResource| Measure-Object).Count -gt 0)
+                    {
+                        $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName) -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
+                        $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.ResourceId } },
+                        @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName }},
+                        @{N = 'ResourceName'; E = { $_.ResourceName } }, 
+                        @{N = 'RequireSecureTransport'; E = { $parameterValue } }
+                    }
                 }
                 catch {
                     Write-Host "Error fetching Azure Database for MySQL flexible server(s) resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                 }
+                
             }
         }
                                                                 
@@ -366,7 +373,7 @@ function Set-SSLForDBForMySQLFlexibleServer {
     # list for storing Azure Database for MySQL flexible server(s) for which server parameter require_secure_transport in not ON
      $DBForMySQLFSWithSSLNotEnabled = @()
 
-    Write-Host "Separating Azure Database for MySQL flexible server(s) for which SSL is not enabled..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Separating Azure Database for MySQL flexible server(s) for which SSL is disabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $DBForMySQLFlexibleServerDetails | ForEach-Object {
         if (-not (CheckIfSSLConfigured($_.RequireSecureTransport))) {
@@ -400,13 +407,13 @@ function Set-SSLForDBForMySQLFlexibleServer {
         return
     }
 
-    Write-Host "Found [$( $totalDBForMySQLFSWithSSLNotEnabled )] Azure Database for MySQL flexible server(s) for which SSL is not enabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$( $totalDBForMySQLFSWithSSLNotEnabled )] Azure Database for MySQL flexible server(s) for which SSL is disabled." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.RequireSecureTransport }; Label = "RequireSecureTransport"; Width = 100; Alignment = "left" }
+    @{Expression = { $_.RequireSecureTransport }; Label = "RequireSecureTransport"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" }
 
     if (-not $AutoRemediation) {
         Write-Host "Azure Database for MySQL flexible server(s) with SSL disabled are:"
@@ -422,24 +429,22 @@ function Set-SSLForDBForMySQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "[Step 3 of 4] Back up Azure Database for MySQL flexible server(s) details"
+    Write-Host "[Step 3 of 4] Backing up Azure Database for MySQL flexible server(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
         # Backing up Azure Database for MySQL flexible server(s) details.
-        $backupFile = "$($backupFolderPath)\DBForMySQLFlexibleServerDetailsBackUp.csv"
+        $backupFile = "$($backupFolderPath)\DBForMySQLFlexibleServerWithSSLDisabled.csv"
          $DBForMySQLFSWithSSLNotEnabled  | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "Azure Database for MySQL flexible server(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host $([Constants]::SingleDashLine)
     }
     else {
         Write-Host "Skipped as -FilePath is provided." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
     }
 
     if (-not $DryRun) {
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "[Step 4 of 4] Enable SSL for Azure Database for MySQL flexible server(s) in the Subscription" 
+        Write-Host "[Step 4 of 4] Enable SSL for Azure Database for MySQL flexible server(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         
         if (-not $AutoRemediation) {
@@ -449,17 +454,16 @@ function Set-SSLForDBForMySQLFlexibleServer {
                 $userInput = Read-Host -Prompt "(Y|N)"
 
                 if ($userInput -ne "Y") {
-                    Write-Host "SSL will not be changed for Azure Database for MySQL flexible server(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "SSL will not be enabled for Azure Database for MySQL flexible server(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::DoubleDashLine)	
                     return
                 }
                 else {
-                    Write-Host "User has provided consent to update SSL for Azure Database for MySQL flexible server(s) in the Subscription" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Enabling server parameter 'require_secure_transport' to enforce SSL for Azure Database for MySQL flexible server(s) in the Subscription..." -ForegroundColor $([Constants]::MessageType.Update)
                 }
             }
             else {
-                Write-Host "'Force' flag is provided. SSL will be enabled on Azure Database for MySQL flexible server(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "'Force' flag is provided. Enabling server parameter 'require_secure_transport' to enforce SSL for Azure Database for MySQL flexible server(s) in the Subscription without any further prompts..." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
         # List for storing remediated Azure Database for MySQL flexible server(s)
@@ -468,11 +472,10 @@ function Set-SSLForDBForMySQLFlexibleServer {
         # List for storing skipped Azure Database for MySQL flexible server(s)
         $DBForMySQLFSSkipped = @()
 
-        Write-Host "Enabling SSL for Azure Database for MySQL flexible server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::SingleDashLine)
-
         # Loop through the list of Azure Database for MySQL flexible server(s) which needs to be remediated.
          $DBForMySQLFSWithSSLNotEnabled  | ForEach-Object {
+            $resourceGroupName = $_.ResourceGroupName
+            $resourceName = $_.ResourceName
             $DBForMySQLFS = $_
             try {
                 $paramValue = (Update-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $([Constants]::EnableSSLParameterValue)).Value 
@@ -496,23 +499,22 @@ function Set-SSLForDBForMySQLFlexibleServer {
             catch {
                 $DBForMySQLFSSkipped += $_
                 $logResource = @{}	
-                $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
-                $logResource.Add("ResourceName", ($_.ResourceName))	
+                $logResource.Add("ResourceGroupName", ($resourceGroupName))	
+                $logResource.Add("ResourceName", ($resourceName))	
                 $logResource.Add("Reason", "Encountered error while setting server parameter require_secure_transport")    	
                 $logSkippedResources += $logResource	
                 Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
-        Write-Host $([Constants]::DoubleDashLine)        
-        
+               
         if ($AutoRemediation) {
             if ($($DBForMySQLFSRemediated | Measure-Object).Count -gt 0) {        
                 # Write this to a file.
                 $DBForMySQLFSRemediatedFile = "$($backupFolderPath)\RemediatedDBForMySQLFS.csv"
                 $DBForMySQLFSRemediated | Export-CSV -Path $DBForMySQLFSRemediatedFile -NoTypeInformation
 
-                Write-Host "The information related to Azure Database for MySQL flexible server(s) where server parameter require_secure_transport changed has been saved to [$($DBForMySQLFSRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "The information related to Azure Database for MySQL flexible server(s) where SSL is enabled has been saved to [$($DBForMySQLFSRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }        
             if ($($DBForMySQLFSSkipped | Measure-Object).Count -gt 0) {
@@ -520,16 +522,17 @@ function Set-SSLForDBForMySQLFlexibleServer {
                 # Write this to a file.
                 $DBForMySQLFSSkippedFile = "$($backupFolderPath)\SkippedDBForMySQLFS.csv"
                 $DBForMySQLFSSkipped | Export-CSV -Path $DBForMySQLFSSkippedFile -NoTypeInformation
-                Write-Host "The information related to Azure Database for MySQL flexible server(s) where server parameter require_secure_transport not changed has been saved to [$($DBForMySQLFSSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Azure Database for MySQL flexible server(s) where error occured  while enabling SSL has been saved to [$($DBForMySQLFSSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
         else {
-
+            Write-Host $([Constants]::SingleDashLine) 
             Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
+
             if ($($DBForMySQLFSRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully set SSL for the following DBForMySQLFS(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Successfully enabled SSL for the following Azure Database for MySQL flexible server(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 $DBForMySQLFSRemediated | Format-Table -Property $colsProperty -Wrap
 
                 # Write this to a file.
@@ -539,14 +542,14 @@ function Set-SSLForDBForMySQLFlexibleServer {
                 Write-Host "This information has been saved to" -NoNewline
                 Write-Host " [$($DBForMySQLFSRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)
             }
         
             if ($($DBForMySQLFSSkipped | Measure-Object).Count -gt 0) {
 
-                Write-Host "Error while setting up the server parameter require_secure_transport for Azure Database for MySQL flexible server(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Error occured while enabling SSL for following Azure Database for MySQL flexible server(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
                 $DBForMySQLFSSkipped | Format-Table -Property $colsProperty -Wrap
-            
+               
                 # Write this to a file.
                 $DBForMySQLFSSkippedFile = "$($backupFolderPath)\SkippedDBForMySQLFS.csv"
                 $DBForMySQLFSSkipped | Export-CSV -Path $DBForMySQLFSSkippedFile -NoTypeInformation
@@ -568,23 +571,23 @@ function Set-SSLForDBForMySQLFlexibleServer {
         }
     }
     else {
-        Write-Host "[Step 4 of 4] Enable SSL on Azure Database for MySQL flexible server(s) in the Subscription." 
+        Write-Host "[Step 4 of 4] Enable SSL on Azure Database for MySQL flexible server(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to set SSL for Azure Database for MySQL flexible server(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to set SSL for Azure Database for MySQL flexible server(s) listed in the file."
         Write-Host $([Constants]::DoubleDashLine)
     }
 }
 
-function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
+function Disable-SSLForDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial' Control.
+        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial' Control.
+        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Enable_SSL' Control.
         Change SSL to Previous Value on Azure Database for MySQL flexible server(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -600,13 +603,13 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer.
+        None. You cannot pipe objects to Disable-SSLForDBForMySQLFlexibleServer.
 
         .OUTPUTS
-        None. Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer does not return anything that can be piped and used as an input to another command.
+        None. Disable-SSLForDBForMySQLFlexibleServer does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer\RemediatedDBForMySQLFS.csv
+        PS> Disable-SSLForDBForMySQLFlexibleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSSLForDBForMySQLFlexibleServer\RemediatedDBForMySQLFS.csv
 
         .LINK
         None
@@ -632,13 +635,12 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
 
     if ($PerformPreReqCheck) {
         try {
-            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user"
+            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
             Write-Host "Completed setting up prerequisites"	
-            Write-Host $([Constants]::SingleDashLine)
         }
         catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -647,8 +649,7 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
         }
     }
     else {
-        Write-Host "[Step 1 of 3] Validate the user" 
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "[Step 1 of 3] Validate the user..." 
     }  
 
     # Connect to Azure account
@@ -677,7 +678,7 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
     Write-Host "To set SSL for Azure Database for MySQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for MySQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 3] Prepare to fetch all Azure Database for MySQL flexible server(s)"
+    Write-Host "[Step 2 of 3] Preparing to fetch all Azure Database for MySQL flexible server(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
     if (-not (Test-Path -Path $FilePath)) {
@@ -687,7 +688,7 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
     }
 
     Write-Host "Fetching all Azure Database for MySQL flexible server(s) from" -NoNewline
-    Write-Host " [$($FilePath)\...]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host " [$($FilePath)\]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $DBForMySQLFlexibleServerDetails = Import-Csv -LiteralPath $FilePath
 
@@ -705,8 +706,8 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.RequireSecureTransport }; Label = "RequireSecureTransport"; Width = 100; Alignment = "left" }
+    @{Expression = { $_.RequireSecureTransport }; Label = "RequireSecureTransport"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" }
         
     $validDBForMySQLFSDetails | Format-Table -Property $colsProperty -Wrap
     
@@ -717,11 +718,11 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }  
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 3 of 3] Set SSL to previous value on all Azure Database for MySQL flexible server(s) in the Subscription"
+    Write-Host "[Step 3 of 3] Set SSL to previous value on all Azure Database for MySQL flexible server(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
     if ( -not $Force) {        
-        Write-Host "Do you want to enable SSL for all Azure Database for MySQL flexible server(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to disable SSL for all Azure Database for MySQL flexible server(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if ($userInput -ne "Y") {
@@ -729,12 +730,10 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
             Write-Host $([Constants]::DoubleDashLine)
             return
         }
-        Write-Host "SSL server parameter (require_secure_transport) will be rolled back on Azure Database for MySQL flexible server(s) mentioned in the file." -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Rolling back SSL server parameter (require_secure_transport) on Azure Database for MySQL flexible server(s) mentioned in the file..." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else {
-        Write-Host "'Force' flag is provided. SSL will be rolled back on Azure Database for MySQL flexible server(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "'Force' flag is provided. Rolling back SSL server parameter (require_secure_transport) on Azure Database for MySQL flexible server(s) in the Subscription without any further prompts..." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     # List for storing rolled back Service Fabric resource.
@@ -747,37 +746,45 @@ function Set-RequireSecureTransporttoPreviousValueforDBForMySQLFlexibleServer {
         $DBForMySQLFS = $_
         try {   
             $RequireSecureTransportRolledBack = Update-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.RequireSecureTransport
-            $DBForMySQLFSRolledBack += $DBForMySQLFS
-        }
-        catch {
+            if($RequireSecureTransportRolledBack.Value -eq "OFF")
+            {
+                $DBForMySQLFSRolledBack += $DBForMySQLFS
+            }
+            else 
+            {
                 $DBForMySQLFSSkipped += $DBForMySQLFS
+            }
+        }
+        catch 
+        {
+            $DBForMySQLFSSkipped += $DBForMySQLFS
         }
     }
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
 
     if ($($DBForMySQLFSRolledBack | Measure-Object).Count -gt 0) {
-        Write-Host "SSL server parameter (require_secure_transport) has been rolled back on the following Azure Database for MySQL flexible server(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Successfully rolled back SSL on the following Azure Database for MySQL flexible server(s) in the Subscription:" -ForegroundColor $([Constants]::MessageType.Update)
         $DBForMySQLFSRolledBack | Format-Table -Property $colsProperty -Wrap
-        Write-Host $([Constants]::SingleDashLine)
 
         # Write this to a file.
         $DBForMySQLFSRolledBackFile = "$($backupFolderPath)\RolledBackDBForMySQLFS.csv"
         $DBForMySQLFSRolledBack | Export-CSV -Path $DBForMySQLFSRolledBackFile -NoTypeInformation
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($DBForMySQLFSRolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+        Write-Host $([Constants]::SingleDashLine)
     }
 
     if ($($DBForMySQLFSSkipped | Measure-Object).Count -gt 0) {
-        Write-Host "Error while rolling back SSL server parameter (require_secure_transport) on Azure Database for MySQL flexible server(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Error occured while rolling back SSL on the following Azure Database for MySQL flexible server(s) in the Subscription:" -ForegroundColor $([Constants]::MessageType.Error)
         $DBForMySQLFSSkipped | Format-Table -Property $colsProperty -Wrap
-        Write-Host $([Constants]::SingleDashLine)
-
         # Write this to a file.
         $DBForMySQLFSSkippedFile = "$($backupFolderPath)\RollbackSkippedDBForMySQLFS.csv"
         $DBForMySQLFSSkipped | Export-CSV -Path $DBForMySQLFSSkippedFile -NoTypeInformation
         Write-Host "This information has been saved to" -NoNewline
         Write-Host " [$($DBForMySQLFSSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+        Write-Host $([Constants]::SingleDashLine)
     }
 }
 function  CheckIfSSLConfigured {
