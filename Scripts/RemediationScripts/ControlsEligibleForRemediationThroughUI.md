@@ -29,7 +29,7 @@
 
 14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
 
-15. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+15. [Azure_Storage_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version)
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
 
@@ -218,13 +218,13 @@ Contributor role at resource level
 
 ___
 
-## 15. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+## 15. Azure_Storage_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in Storage Account
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+[Remediate-Azure_Storage_DP_Use_Secure_TLS_Version](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Owner or higher priviliged role on the Storage Account(s)
