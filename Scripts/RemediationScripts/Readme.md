@@ -738,7 +738,7 @@ SSL must be enabled for Azure database for MySQL flexible server
 
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-CdnFrontDoorMinTLSVersion](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
+[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
