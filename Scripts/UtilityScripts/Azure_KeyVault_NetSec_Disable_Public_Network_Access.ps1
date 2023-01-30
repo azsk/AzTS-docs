@@ -50,12 +50,101 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
     $KeyVaultName
   )
 
+  # ##################################################
+  # Get my public IP address
+  $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
+  $myPublicIpAddress += "/32"
+  Write-Debug -Debug:$true -Message "Got my public IP address: $myPublicIpAddress."
+  # ##################################################
+
+  Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
+    -SubscriptionId $SubscriptionId `
+    -ResourceGroupName $ResourceGroupName `
+    -KeyVaultName $KeyVaultName `
+    -PublicIpAddress $myPublicIpAddress
+}
+
+function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
+{
+  <#
+    .SYNOPSIS
+    This command updates a Key Vault to enable public network access for the specified array of public IP addresses.
+    .DESCRIPTION
+    This command updates a Key Vault to enable public network access for the specified array of public IP addresses. All existing IP address and VNet rules are maintained.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the Key Vault.
+    .PARAMETER KeyVaultName
+    The Key Vault name.
+    .PARAMETER PublicIpAddresses
+    An array of public IP address to grant access to the Key Vault.
+  #>
+
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $PublicIpAddresses
+  )
+
+  ForEach ($publicIpAddress in $PublicIpAddresses)
+  {
+    Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
+      -SubscriptionId $SubscriptionId `
+      -ResourceGroupName $ResourceGroupName `
+      -KeyVaultName $KeyVaultName `
+      -PublicIpAddress $publicIpAddress
+  }
+}
+
+function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
+{
+  <#
+    .SYNOPSIS
+    This command updates a Key Vault to enable public network access for the specified public IP address.
+    .DESCRIPTION
+    This command updates a Key Vault to enable public network access for the specified public IP address. All existing IP address and VNet rules are maintained.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the Key Vault.
+    .PARAMETER KeyVaultName
+    The Key Vault name.
+    .PARAMETER PublicIpAddress
+    The public IP address to grant access to the Key Vault.
+  #>
+
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $PublicIpAddress
+  )
+
   # We are targeting the following final state for the Key Vault:
   # Public Network Access: Enabled
   # Default Action: Deny
   # IP Address range: What is currently on the Key Vault PLUS (if not already) the current public IP address
   # VNet rules: Maintain what is currently on the Key Vault - the context here is public network access, no op on VNet rules
-
 
   $azureProfile = Set-AzContext -Subscription $SubscriptionId
 
@@ -81,12 +170,6 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
   }
   # ##################################################
 
-  # ##################################################
-  # Get my public IP address
-  $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
-  $myPublicIpAddress += "/32"
-  Write-Debug -Debug:$true -Message "Got my public IP address: $myPublicIpAddress."
-  # ##################################################
 
   # ##################################################
   # Ensure Key Vault has the needed network ACL rules and default action Deny
@@ -100,16 +183,16 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
   $needToUpdateDefaultAction = $true
 
   # Check if the Key Vault network ACLs already contain my public IP address
-  If ($ipAddressRange.Count -gt 0 -and $ipAddressRange.Contains($myPublicIpAddress))
+  If ($ipAddressRange.Count -gt 0 -and $ipAddressRange.Contains($PublicIpAddress))
   {
     $needToUpdateIps = $false
-    Write-Debug -Debug:$true -Message "Current Key Vault public IP address range already contains $myPublicIpAddress, no change will be made to source IP network ACLs."
+    Write-Debug -Debug:$true -Message "Current Key Vault public IP address range already contains $PublicIpAddress, no change will be made to source IP network ACLs."
   }
   Else
   {
     $needToUpdateIps = $true  # Yes, this is redundant to start condition above. Regardless, set explicitly here in case someone changes the start condition later.
-    $ipAddressRange += $myPublicIpAddress
-    Write-Debug -Debug:$true -Message "Added my public IP address $myPublicIpAddress for new complete source IP address range: $ipAddressRange."
+    $ipAddressRange += $PublicIpAddress
+    Write-Debug -Debug:$true -Message "Added my public IP address $PublicIpAddress for new complete source IP address range: $ipAddressRange."
   }
 
   # Check if the Key Vault default action is already Deny
