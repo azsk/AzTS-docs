@@ -33,7 +33,7 @@
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
 
-13. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial](ControlsEligibleForRemediationThroughUI.md#1-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL_Trial)
+17. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](ControlsEligibleForRemediationThroughUI.md#1-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 
 <br />
 ___
@@ -193,3 +193,69 @@ Cluster Protection Level must be EncryptandSign
 Owner or higher priviliged role on the Service Fabric(s)
 
 ___
+
+## 13. Azure_ServiceBus_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Service Bus
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetServiceBusMinReqTLSVersion](./Remediate-SetServiceBusMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Azure Data Owner role on Service Bus Namespace
+
+___
+
+## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in SQL Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLServerMinReqTLSVersion](Remediate-SetSQLServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 15. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Owner or higher priviliged role on the Storage Account(s)
+
+___
+
+## 16. Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
+
+### Display Name
+Shared Access Signature (SAS) expiry interval must be less than approved upper limit for Azure Storage
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SASExpiryIntervalForStorageAccounts](Remediate-SASExpiryIntervalForStorageAccounts.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+## 17. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
+
+### Display Name
+SSL must be enabled for Azure database for MySQL flexible server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSSLForDBForMySQLFlexibleServer](Remediate-EnableSSLForDBForMySQLFlexibleServer.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Azure database for MYSQL flexible server
+
+___
+

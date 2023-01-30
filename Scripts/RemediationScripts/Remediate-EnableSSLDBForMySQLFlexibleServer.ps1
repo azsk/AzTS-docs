@@ -6,7 +6,7 @@
     Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 # Display Name:
-    Azure Database for MySQL - Flexible Servers Announcing SSL enforcement
+    SSL must be enabled for Azure database for MySQL flexible server
 
 # Prerequisites:    
     Contributor or higher priviliged role on the Azure Database for MySQL flexible server(s) is required for remediation.

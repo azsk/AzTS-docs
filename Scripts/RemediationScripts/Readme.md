@@ -734,7 +734,8 @@ ___
 ## 35. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 ### Display Name
-Azure Database for MySQL - Flexible Servers Announcing SSL enforcement
+SSL must be enabled for Azure database for MySQL flexible server
+
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-CdnFrontDoorMinTLSVersion](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
