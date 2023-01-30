@@ -202,7 +202,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
 
     if ($PerformPreReqCheck) {
         try {
-            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user..."
+            Write-Host "[Step 1 of 4] Validate and installing the modules required to run the script and validate the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
@@ -244,7 +244,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
     Write-Host "To set SSL for Azure Database for MySQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for MySQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)  
 
-    Write-Host "[Step 2 of 4] Preparing to fetch all Azure Database for MySQL flexible server(s)..."
+    Write-Host "[Step 2 of 4] Prepare to fetch all Azure Database for MySQL flexible server(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
     # list to store Container details.
@@ -429,7 +429,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "[Step 3 of 4] Backing up Azure Database for MySQL flexible server(s) details..."
+    Write-Host "[Step 3 of 4] Back up Azure Database for MySQL flexible server(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
@@ -678,7 +678,7 @@ function Disable-SSLForDBForMySQLFlexibleServer {
     Write-Host "To set SSL for Azure Database for MySQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for MySQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 3] Preparing to fetch all Azure Database for MySQL flexible server(s)..."
+    Write-Host "[Step 2 of 3] Prepare to fetch all Azure Database for MySQL flexible server(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
     if (-not (Test-Path -Path $FilePath)) {
