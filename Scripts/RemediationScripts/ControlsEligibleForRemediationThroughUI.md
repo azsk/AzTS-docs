@@ -33,7 +33,7 @@
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
 
-17. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](ControlsEligibleForRemediationThroughUI.md#1-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
+17. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](ControlsEligibleForRemediationThroughUI.md#17-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 
 <br />
 ___
@@ -252,7 +252,7 @@ ___
 SSL must be enabled for Azure database for MySQL flexible server
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-EnableSSLForDBForMySQLFlexibleServer](Remediate-EnableSSLForDBForMySQLFlexibleServer.ps1)
+[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Azure database for MYSQL flexible server
