@@ -213,7 +213,7 @@
         "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion",
         "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
         "RollbackMetadata": {
-          "RollbackCommand": "Set-PreviousTLSVersionForEventHubNamespace",
+          "RollbackCommand": "Reset-TLSVersionForEventHubNamespace",
           "Arguments": [ "SubscriptionId" ]
         }
       }

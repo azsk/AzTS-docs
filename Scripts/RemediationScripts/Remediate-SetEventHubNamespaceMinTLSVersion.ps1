@@ -1,6 +1,6 @@
 ﻿<###
 # Overview:
-    This script is used to set Tls version for Event Hub namespaces in a Subscription.
+    This script is used to set TLS version for Event Hub namespaces in a Subscription.
 
 # Control ID:
     Azure_EventHub_DP_Use_Secure_TLS_Version
@@ -54,11 +54,11 @@
 
     To roll back:
         1. Set the TLS version to Previous Value on Event Hub Namespace(s) in the Subscription, from a previously taken snapshot:
-           Set-PreviousTLSVersionForEventHubNamespace -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetEventHubNamespaceMinTLSVersion\EventHubNamespaceDetailsBackUp.csv
+           Reset-TLSVersionForEventHubNamespace -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetEventHubNamespaceMinTLSVersion\EventHubNamespaceDetailsBackUp.csv
        
         To know more about the options supported by the roll back command, execute:
         
-        Get-Help Set-PreviousTLSVersionForEventHubNamespace -Detailed        
+        Get-Help Reset-TLSVersionForEventHubNamespace -Detailed        
 ###>
 
 
@@ -508,8 +508,7 @@ function Set-MinTLSVersionForEventHubNamespace
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))	
                 $logResource.Add("ResourceName",($_.ResourceName))	
                 $logResource.Add("Reason","Error configuring TLS version for Event Hub Namespace")    	
-                $logSkippedResources += $logResource	
-                Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)	
+                $logSkippedResources += $logResource                
                 Write-Host $([Constants]::SingleDashLine)
                 }
              }
@@ -600,7 +599,7 @@ function Set-MinTLSVersionForEventHubNamespace
     }
 }
 
-function Set-PreviousTLSVersionForEventHubNamespace
+function Reset-TLSVersionForEventHubNamespace
 {
     <#
         .SYNOPSIS
@@ -623,13 +622,13 @@ function Set-PreviousTLSVersionForEventHubNamespace
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to Set-PreviousTLSVersionForEventHubNamespace.
+        None. You cannot pipe objects to Reset-TLSVersionForEventHubNamespace.
 
         .OUTPUTS
-        None. Set-PreviousTLSVersionForEventHubNamespace does not return anything that can be piped and used as an input to another command.
+        None. Reset-TLSVersionForEventHubNamespace does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Set-PreviousTLSVersionForEventHubNamespace -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetTLSVersionforEventHubNamespace\RemediatedEventHubNamespace.csv
+        PS> Reset-TLSVersionForEventHubNamespace -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetTLSVersionforEventHubNamespace\RemediatedEventHubNamespace.csv
 
         .LINK
         None

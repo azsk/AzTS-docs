@@ -143,7 +143,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 > TLS version of Event Hub Namespace is already defined as per the Security Recommendation.
 > 
 > **Failed:** 
-> Current minimum TLS version is less than required secured version .
+> Current minimum TLS version is less than required secured version.
 > 
 > **Error:** 
 > There was an error fetching TLS version of Event Hub Namespace.
@@ -169,7 +169,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{0}/providers/Microsoft.EventHub/namespaces?api-version=2022-01-01-preview<br />
-**Properties:** properties.rights
+**Properties:** properties.minimumTlsVersion
  <br />
 
 <br />
