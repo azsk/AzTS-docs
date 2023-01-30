@@ -18,7 +18,7 @@ Steps to use:
   3. Call the functions with arguments
 
 Examples:
-  Set-KeyVaultPublicNetworkAccessEnabledForMe -SubscriptionId "00000000-0000-0000-0000-000000000000" -ResourceGroupName "MyResourceGroup" KeyVaultName "MyKeyVaultName"
+  Set-KeyVaultPublicNetworkAccessEnabledForMe -SubscriptionId "MySubscriptionId" -ResourceGroupName "MyResourceGroup" KeyVaultName "MyKeyVaultName"
 ########################################
 #>
 
