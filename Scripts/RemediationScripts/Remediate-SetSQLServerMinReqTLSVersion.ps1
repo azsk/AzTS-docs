@@ -96,7 +96,9 @@ function Setup-Prerequisites
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
-    $AzSqlVersion = $(Get-Module -Name "Az.Sql").Version
+    $AzSqlModule = $availableModules | Where-Object{$_.Name -eq "Az.Sql"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+    $AzSqlVersion = $AzSqlModule.Version
+    
     # Check if the required modules are installed.
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
