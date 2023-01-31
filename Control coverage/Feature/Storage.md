@@ -222,14 +222,14 @@ TLS provides privacy and data integrity between client and server. Using approve
 > **Failed:**
 > Any of the following conditions is met.
 > * Minimum TLS version is not set (default 1.0).
-> * Minimum TLS version is set to 1.0 or 1.1.
->
+> * Minimum TLS version is less than 1.2 (configured min required tls version).
+><!--
 > **Verify:**
 > Not Applicable.
 >
 > **NotApplicable:**
 > Not Applicable.
->
+>-->
 ### Recommendation
 
 - **Azure Portal**
