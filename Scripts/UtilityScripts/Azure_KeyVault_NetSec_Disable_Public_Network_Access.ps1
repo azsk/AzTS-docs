@@ -237,3 +237,71 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
     }
   }
 }
+
+function Get-AppServiceAllPossibleOutboundPublicIps()
+{
+  <#
+  .SYNOPSIS
+  This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service.
+  .DESCRIPTION
+  This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service. Use this command and its output to set network access rules on other services, such as Key Vault when all public access is not enabled.
+  .PARAMETER SubscriptionId
+  The Azure subscription ID containing the App Service.
+  .PARAMETER ResourceGroupName
+  The Resource Group containing the App Service.
+  .PARAMETER AppName
+  The App Service name.
+#>
+
+[CmdletBinding()]
+param (
+  [Parameter(Mandatory = $true)]
+  [string]
+  $SubscriptionId,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $ResourceGroupName,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $AppName
+)
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $appService = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $AppName
+
+  $appService.PossibleOutboundIpAddresses
+}
+
+function Get-AppServiceAllCurrentOutboundPublicIps()
+{
+  <#
+  .SYNOPSIS
+  This command returns a comma-delimited string of all the CURRENT public IPs for the App Service.
+  .DESCRIPTION
+  This command returns a comma-delimited string of all the CURRENT public IPs for the App Service. These are the public IPs the App Service is currently using; they are a subset of all POSSIBLE public IPs.
+  .PARAMETER SubscriptionId
+  The Azure subscription ID containing the App Service.
+  .PARAMETER ResourceGroupName
+  The Resource Group containing the App Service.
+  .PARAMETER AppName
+  The App Service name.
+#>
+
+[CmdletBinding()]
+param (
+  [Parameter(Mandatory = $true)]
+  [string]
+  $SubscriptionId,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $ResourceGroupName,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $AppName
+)
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $appService = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $AppName
+
+  $appService.OutboundIpAddresses
+}
