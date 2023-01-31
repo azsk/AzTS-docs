@@ -159,7 +159,6 @@
              }
         },
         {
-            "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version",
             "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",
@@ -172,7 +171,7 @@
                 }
         },
         {
-            "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version_Trial",
+            "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetStorageAccountMinReqTLSVersion.ps1",
             "LoadCommand": "Remediate-SetStorageAccountMinReqTLSVersion.ps1",     
