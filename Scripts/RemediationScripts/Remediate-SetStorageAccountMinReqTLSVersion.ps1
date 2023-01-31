@@ -1,12 +1,12 @@
 ﻿<###
 # Overview:
-    This script is used to set required TLS version for Storage Account in a Subscription.
+    This script is used to set required minimum TLS version for Storage Accounts in a Subscription.
 
 # Control ID:
-    Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+    Azure_Storage_DP_Use_Secure_TLS_Version
 
 # Display Name:
-    Use Approved TLS Version in Storage Account.
+    Use approved version of TLS for Azure Storage.
 
 # Prerequisites:
     1. Contributor or higher privileges on the Storage Accounts in a Subscription.
@@ -14,26 +14,26 @@
 
 # Steps performed by the script:
     To remediate:
-        1. Validate and install the modules required to run the script.
-        2. Get the list of Storage Accounts in a Subscription that do not use the required TLS version
+        1. Validate and install the modules required to run the script and validate the user.
+        2. Get the list of Storage Accounts in a Subscription that do not use the required minimum TLS version.
         3. Back up details of Storage Accounts that are to be remediated.
-        4. Set the required TLS version on the all Storage Accounts in the Subscription.
+        4. Set the required minimum TLS version on the all Storage Accounts in the Subscription.
 
     To roll back:
-        1. Validate and install the modules required to run the script.
+        1. Validate and install the modules required to run the script and validate the user.
         2. Get the list of Storage Accounts in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Set the previous TLS versions on all Storage Accounts in the Subscription.
+        3. Set the previous minimum TLS versions on all Storage Accounts in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to set the required TLS version in all Storage Accounts in the Subscription. Refer `Examples`, below.
+        3. Execute the script to set the required minimum TLS version in all Storage Accounts in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to set the previous TLS versions in all Storage Accounts in the Subscription. Refer `Examples`, below.
+        3. Execute the script to set the previous minimum TLS versions in all Storage Accounts in the Subscription. Refer `Examples`, below.
         
 # Examples:
     To remediate:
@@ -44,7 +44,7 @@
            Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To set Minimum required TLS version on the of all Storage Accounts in a Subscription, from a previously taken snapshot:
-           Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForStorageAccounts\StorageAccountsWithoutMinReqTLSVersion.csv
+           Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForStorageAccounts\StorageAccountsWithoutMinReqTLSVersion.csv
 
         4. To set Minimum required TLS version of all Storage Accounts in a Subscription without taking back up before actual remediation:
            Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
@@ -53,11 +53,11 @@
         Get-Help Set-StorageAccountRequiredTLSVersion -Detailed
 
     To roll back:
-        1. To reset Minimum required TLS version of all Storage Accounts in a Subscription, from a previously taken snapshot:
-           Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
+        1. To rollback Minimum required TLS version of all Storage Accounts in a Subscription, from a previously taken snapshot:
+           Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
         
-        2. To reset Minimum required TLS version of all Storage Accounts in a Subscription, from a previously taken snapshot:
-           Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
+        2. To rollback Minimum required TLS version of all Storage Accounts in a Subscription, from a previously taken snapshot:
+           Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
 
         To know more about the options supported by the roll back command, execute:
         Get-Help Reset-StorageAccountRequiredTLSVersion -Detailed        
@@ -116,10 +116,10 @@ function Set-StorageAccountRequiredTLSVersion
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_StorageAccount_DP_Use_Secure_TLS_Version' Control.
+        Remediates 'Azure_Storage_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_StorageAccount_DP_Use_Secure_TLS_Version' Control.
+        Remediates 'Azure_Storage_DP_Use_Secure_TLS_Version' Control.
         Sets the required Minimum TLS version on the all Storage Accounts in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -162,7 +162,7 @@ function Set-StorageAccountRequiredTLSVersion
         PS> Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForStorageAccounts\StorageAccountsWithoutMinReqTLSVersion.csv
+        PS> Set-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForStorageAccounts\StorageAccountsWithoutMinReqTLSVersion.csv
 
         .LINK
         None
@@ -213,7 +213,7 @@ function Set-StorageAccountRequiredTLSVersion
     {
         try
         {
-            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user"
+            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
@@ -230,7 +230,7 @@ function Set-StorageAccountRequiredTLSVersion
     }
     else
     {
-        Write-Host "[Step 1 of 5] Validate the user"
+        Write-Host "[Step 1 of 4] Validate the user..."
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -261,7 +261,7 @@ function Set-StorageAccountRequiredTLSVersion
     Write-Host "To Set Minimum TLS version for Storage Accounts in a Subscription, Contributor or higher privileges on the Storage Accounts are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 2 of 5] Fetch all Storage Accounts"
+    Write-Host "[Step 2 of 4] Fetch Storage Accounts with Minimum TLS version less than required minimum TLS version..."
     Write-Host $([Constants]::SingleDashLine)
     
     $storageAccountResources = @()
@@ -273,7 +273,7 @@ function Set-StorageAccountRequiredTLSVersion
     $logSkippedResources=@()
 
     # Control Id
-    $controlIds = "Azure_Storage_DP_Use_Secure_TLS_Version_Trial"
+    $controlIds = "Azure_Storage_DP_Use_Secure_TLS_Version"
 
     if($AutoRemediation)
     {
@@ -303,11 +303,12 @@ function Set-StorageAccountRequiredTLSVersion
                 $resourceGroupName = $_.ResourceGroupName
             
                 $resStorageAccount = Get-AzStorageAccount  -Name $name  -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue
-                $storageAccountResources = $resStorageAccount | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
+                $storageAccountResources += $resStorageAccount | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                             @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                            @{N='PrimaryLocation';E={$_.PrimaryLocation}},
+                                                                            @{N='Kind';E={$_.Kind}},
                                                                             @{N ='MinimumTlsVersion';Expression={$_.MinimumTlsVersion}}
        
+                                                                            
             }
             catch
             {
@@ -335,7 +336,7 @@ function Set-StorageAccountRequiredTLSVersion
             $storageAccounts = Get-AzStorageAccount  -ErrorAction SilentlyContinue
             $storageAccountResources = $storageAccounts | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                        @{N='PrimaryLocation';E={$_.PrimaryLocation}},
+                                                                        @{N='Kind';E={$_.Kind}},
                                                                         @{N='MinimumTlsVersion';E={$_.MinimumTlsVersion}}
            
             $totalstorageAccountResources = ($storageAccountResources | Measure-Object).Count
@@ -362,7 +363,7 @@ function Set-StorageAccountRequiredTLSVersion
                     $storageAccount = Get-AzStorageAccount  -ResourceGroupName $resourceGroupName -Name $storageAccountName -ErrorAction SilentlyContinue
                     $storageAccountResources += $storageAccount | Select-Object @{N='StorageAccountName';E={$_.StorageAccountName}},
                                                                 @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                @{N='PrimaryLocation';E={$_.PrimaryLocation}}, 
+                                                                @{N='Kind';E={$_.Kind}}, 
                                                                 @{N='MinimumTlsVersion';E={$_.MinimumTlsVersion}}
                 }
                 catch
@@ -393,11 +394,7 @@ function Set-StorageAccountRequiredTLSVersion
     # Includes Storage Accounts that were skipped during remediation. There were errors remediating them.
     $StorageAccountsSkipped = @()
 
-     
-    
-    Write-Host "[Step 3 of 5] Fetching Storage Accounts with Minimum TLS less than required TLS version"
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Separating Storage Account(s) for which TLS is less than required TLS version ..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Separating Storage Account(s) for which minimum TLS is less than required minimum TLS version ..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $storageAccountResources | ForEach-Object {
         $storageAccount = $_        
@@ -411,7 +408,7 @@ function Set-StorageAccountRequiredTLSVersion
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason","Storage Account Minimum TLS version is already set to required Minimum TLS Version.")    
+                    $logResource.Add("Reason","Storage Account Minimum TLS version is already set to required Minimum TLS version.")    
                     $logSkippedResources += $logResource
                 }
         }
@@ -421,7 +418,7 @@ function Set-StorageAccountRequiredTLSVersion
      
     if ($totalStorageAccountsWithoutReqMinTLSVersion  -eq 0)
     {
-        Write-Host "No Storage Account(s) found where TLS is less than required TLS version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Storage Account(s) found where minimum TLS version is less than required minimum TLS version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)	
         
         if($AutoRemediation -and ($storageAccountResources |Measure-Object).Count -gt 0) 
@@ -440,16 +437,16 @@ function Set-StorageAccountRequiredTLSVersion
         return
     }
 
-    Write-Host "Found [$($totalStorageAccountsWithoutReqMinTLSVersion)] Storage Accounts where TLS version is either not set or less than required Minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalStorageAccountsWithoutReqMinTLSVersion)] Storage Accounts where minimum TLS version is either not set or less than required Minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
      
     if(-not($AutoRemediation))
     {
-        Write-Host "Following Storage Accounts are having TLS version either not set or less than required Minimum TLS version less than required Minimum TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
-       $colsProperty =  @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                        @{Expression={$_.PrimaryLocation};Label="Primary Location";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimumTlsVersion};Label="Minimum TLS Version";Width=7;Alignment="left"}
+        Write-Host "Following Storage Accounts are having minimum TLS version either not set or less than required Minimum TLS version:" -ForegroundColor $([Constants]::MessageType.Info)
+       $colsProperty =  @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=30;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=30;Alignment="left"},
+                        @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
+                        @{Expression={$_.MinimumTlsVersion};Label="Minimum TLS version";Width=30;Alignment="left"}
 
         $StorageAccountsWithoutReqMinTLSVersion | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
@@ -464,7 +461,7 @@ function Set-StorageAccountRequiredTLSVersion
     }
 
     
-    Write-Host "[Step 4 of 5] Backing up Storage Account(s) details"
+    Write-Host "[Step 3 of 4] Back up Storage Account(s) details..."
     Write-Host $([Constants]::SingleDashLine)
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {        
@@ -490,47 +487,44 @@ function Set-StorageAccountRequiredTLSVersion
         if(-not $AutoRemediation)
         {
 
-            Write-Host "TLS Version will be set to required TLS version for all Storage Accounts(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "[Step 4 of 4] Configure required minimum TLS version on the Storage Accounts in the Subscription..."
+            Write-Host $([Constants]::SingleDashLine)
 
             if (-not $Force)
             {
-                Write-Host "Do you want to set TLS version to required TLS version for all Storage Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                Write-Host "Do you want to set minimum TLS version to required minimum TLS version for all Storage Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         
 
                 $userInput = Read-Host -Prompt "(Y|N)" #TODO: 
                 Write-Host $([Constants]::SingleDashLine)
                 if($userInput -ne "Y")
                 {
-                    Write-Host "TLS version will not be changed for any Storage Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Minimum TLS version will not be changed for any Storage Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::DoubleDashLine)
                     return
                 }
                 else
                 {
-                    Write-Host "Minimum TLS version will be changed for all Storage Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Configuring required minimum TLS version for all Storage Account(s)..." -ForegroundColor $([Constants]::MessageType.Update)
                 }
             }
             else
             {
-                Write-Host "'Force' flag is provided. TLS version will be changed to required TLS version for all Storage Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "'Force' flag is provided. Setting required minimum TLS version for all Storage Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
 
-       
-        Write-Host "[Step 5 of 5] Configuring TLS version for Storage Account(s)"
-        Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
         $StorageAccountsRemediated = @()
     
-        # Remidiate Controls by setting TLS version to required TLS version
+        # Remidiate Controls by setting minimum TLS version to required minimum TLS version
         $StorageAccountsWithoutReqMinTLSVersion | ForEach-Object {
             $StorageAccount = $_
             $storageAccountName = $_.StorageAccountName;
             $resourceGroupName = $_.ResourceGroupName; 
-            $tls = $_.MinimumTlsVersion;
+            $TLS = $_.MinimumTlsVersion;
 
-            # Holds the list of Storage Accounts where TLS version change is skipped
+            # Holds the list of Storage Accounts where minimum TLS version change is skipped
             $StorageAccountsSkipped = @()
              
             try
@@ -549,13 +543,13 @@ function Set-StorageAccountRequiredTLSVersion
                 {
                     $StorageAccountsRemediated += $StorageAccount | Select-Object @{N='StorageAccountName';E={$StorageAccountName}},
                                                                         @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                        @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                        @{N='MinimumTlsVersionBefore';E={$tls}},
+                                                                        @{N='Kind';E={$_.Kind}},
+                                                                        @{N='MinimumTlsVersionBefore';E={$TLS}},
                                                                         @{N='MinimumTlsVersionAfter';E={$($storageAccount.MinimumTlsVersion)}}
 
                     $logResource = @{}
-                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.StorageAccountName))
+                    $logResource.Add("ResourceGroupName",($resourceGroupName))
+                    $logResource.Add("ResourceName",($storageAccountName))
                     $logRemediatedResources += $logResource
  
                 }
@@ -564,32 +558,16 @@ function Set-StorageAccountRequiredTLSVersion
             {
                 $StorageAccountsSkipped += $StorageAccount
                 $logResource = @{}
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.StorageAccountName))
+                $logResource.Add("ResourceGroupName",($resourceGroupName))
+                $logResource.Add("ResourceName",($storageAccountName))
                 $logResource.Add("Reason", "Error while setting the minimum required TLS version for Storage Account")
             }
         }
 
-        $totalRemediatedStorageAccounts = ($StorageAccountsRemediated | Measure-Object).Count
-
-        Write-Host $([Constants]::SingleDashLine)
-
-        if ($totalRemediatedStorageAccounts -eq $StorageAccountsWithoutReqMinTLSVersion)
-        {
-            Write-Host "TLS Version changed to required TLS version for all [$($totalStorageAccountsWithoutReqMinTLSVersion)] Storage Account(s) ." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)       
-        }
-        else
-        {
-            Write-Host "TLS Version changed to required TLS version for [$totalRemediatedStorageAccounts] out of [$($totalStorageAccountsWithoutReqMinTLSVersion)] Storage Account(s)" -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host $([Constants]::SingleDashLine)
-        }
-
-        $colsProperty = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                        @{Expression={$_.PrimaryLocation};Label="Primary Location";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimumTlsVersionBefore};Label="Minimum TLS Ver. Before";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimumTlsVersionAfter};Label="Minimum TLS Ver. After";Width=7;Alignment="left"}
+        $colsProperty1 = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=30;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=30;Alignment="left"},
+                        @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
+                        @{Expression={$_.MinimumTlsVersionAfter};Label="Minimum TLS version";Width=30;Alignment="left"}
  
                        
                       
@@ -616,13 +594,14 @@ function Set-StorageAccountRequiredTLSVersion
         }
         else
         {
+            Write-Host $([Constants]::SingleDashLine)
             Write-Host "Remediation Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
         
             if ($($StorageAccountsRemediated | Measure-Object).Count -gt 0)
             {
                 Write-Host "Successfully set the Minimum TLS version to required Minimum TLS version on the following Storage Account(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
-                $StorageAccountsRemediated | Format-Table -Property $colsProperty -Wrap
+                $StorageAccountsRemediated | Format-Table -Property $colsProperty1 -Wrap
 
                 # Write this to a file.
                 $StorageAccountsRemediatedFile = "$($backupFolderPath)\RemediatedStorageAccountsFileforMinTLS.csv"
@@ -663,13 +642,13 @@ function Set-StorageAccountRequiredTLSVersion
     else
     {
        
-        Write-Host "[Step 5 of 5] Changing Minimum TLS version for Storage Accounts(s)"
+        Write-Host "[Step 4 of 4] Configure required minimum TLS version on the Storage Accounts in the Subscription..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps: " -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to change the Minimum TLS version to required TLS version for all Storage Account(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to change the Minimum TLS version to required minimum TLS version for all Storage Account(s) listed in the file."
         Write-Host $([Constants]::SingleDashLine)
     }   
 }
@@ -678,11 +657,11 @@ function Reset-StorageAccountRequiredTLSVersion
 {
      <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_StorageAccount_DP_Use_Secure_TLS_Version' Control.
+        Rolls back remediation done for 'Azure_Storage_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_StorageAccount_DP_Use_Secure_TLS_Version' Control.
-        Resets Minimum TLS Version on the production slot and all non-production slots in all Storage Accounts in the Subscription. 
+        Rolls back remediation done for 'Azure_Storage_DP_Use_Secure_TLS_Version' Control.
+        Resets Minimum TLS version on all Storage Accounts in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -692,9 +671,6 @@ function Reset-StorageAccountRequiredTLSVersion
         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
-        
-        .Parameter ExcludeNonProductionSlots
-        Specifies exclusion of non-production slots from roll back.
         
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the roll back.
@@ -706,10 +682,10 @@ function Reset-StorageAccountRequiredTLSVersion
         None. Reset-StorageAccountRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
+        PS> Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
 
         .EXAMPLE
-        PS> Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -ExcludeNonProductionSlots -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
+        PS> Reset-StorageAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForStorageAccounts\RemediatedStorageAccounts.csv
 
         .LINK
         None
@@ -738,13 +714,12 @@ function Reset-StorageAccountRequiredTLSVersion
     {
         try
         {
-            Write-Host "[Step 1 of 4] Validate and install the modules required to run the script and validate the user"
+            Write-Host "[Step 1 of 3] Validate and install the modules required to run the script and validate the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..." -ForegroundColor $([Constants]::MessageType.Info)	
             Write-Host $([Constants]::SingleDashLine)
             Setup-Prerequisites
             Write-Host "Completed setting up prerequisites"	
-            Write-Host $([Constants]::SingleDashLine)
         }
         catch
         {
@@ -755,8 +730,7 @@ function Reset-StorageAccountRequiredTLSVersion
     }
     else
     {
-        Write-Host "[Step 1 of 4] Validate the user" 
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "[Step 1 of 3] Validate the user..." 
     }  
 
     # Connect to Azure account
@@ -775,9 +749,6 @@ function Reset-StorageAccountRequiredTLSVersion
         $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-    
-    
-    
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
     Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
@@ -787,9 +758,9 @@ function Reset-StorageAccountRequiredTLSVersion
 
     # Note about the required access required for remediation
 
-    Write-Host "To reset TLS Versions for Storage Account(s) in a Subscription, Contributor or higher privileges on the Storage Account(s) are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To rollback minimum TLS versions for Storage Account(s) in a Subscription, Contributor or higher privileges on the Storage Account(s) are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 4] Preparing to fetch all Storage Account(s)"
+    Write-Host "[Step 2 of 3] Prepare to fetch all Storage Account(s)..."
     Write-Host $([Constants]::SingleDashLine)
     if(-not (Test-Path -Path $FilePath))
     {
@@ -802,70 +773,28 @@ function Reset-StorageAccountRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
        
     $storageAccountsFromFile = Import-Csv -LiteralPath $FilePath
-    $validStorageAccounts = $storageAccountsFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.StorageAccountName) }
-        
-    $StorageAccounts = @()
-    $StorageAccountList = @()
-
-    $validStorageAccounts | ForEach-Object {
-        $storageAccount = $_
-        $storageAccountName = $_.StorageAccountName
-        $resourceGroupName = $_.ResourceGroupName
-        $MinimumTlsVersionBefore = $_.MinimumTlsVersionBefore
-        $MinimumTlsVersionAfter = $_.MinimumTlsVersionAfter
-
-        try
-        {
-            $StorageAccount = ( Get-AzStorageAccount -StorageAccountName $storageAccountName  -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue) 
-            $StorageAccounts += $StorageAccount | Select-Object @{N='StorageAccountName';E={$StorageAccountName}},
-                                                                    @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                    @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                    @{N='MinimumTlsVersionAfter';E={$_.MinimumTlsVersion}},
-                                                                    @{N='MinimumTlsVersionBefore';E={$MinimumTlsVersionBefore}}
-                                                                  
-
-
-        }
-        catch
-        {
-            Write-Host "Error fetching Storage Account : [$($storageAccountName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host "Skipping this Storage Account..." -ForegroundColor $([Constants]::MessageType.Warning)
-        }
-    }
-
-
-        
-    # Includes Storage Accounts
-    $StorageAccountsWithChangedTLS = @()
-
-    
+    $validStorageAccounts = $storageAccountsFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.StorageAccountName) }
    
-    Write-Host "[Step 3 of 4] Fetching Storage Account(s)"
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Separating Storage Accounts where Minimum TLS version is changed..." -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::SingleDashLine)
-    $StorageAccounts | ForEach-Object {
-        $StorageAccount = $_        
-            if($_.MinimumTlsVersionAfter -ne $_.MinimumTlsVersionBefore)
-            {
-                $StorageAccountsWithChangedTLS += $StorageAccount
-            }
-    }
-
-    $totalStorageAccountsWithChangedTLS = ($StorageAccountsWithChangedTLS | Measure-Object).Count
+    $totalStorageAccountsWithChangedTLS = ($validStorageAccounts | Measure-Object).Count
      
     if ($totalStorageAccountsWithChangedTLS  -eq 0)
     {
-        Write-Host "No Storage Accounts found where Minimum TLS version need to be changed.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No Storage Accounts found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         return
     } 
 
+    Write-Host "Found [$($totalStorageAccountsWithChangedTLS)] Storage Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
+
+    $colsProperty = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=30;Alignment="left"},
+    @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=30;Alignment="left"},
+    @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
+    @{Expression={$_.MinimumTlsVersionAfter};Label="Minimum TLS version";Width=30;Alignment="left"}
+                
+    $validStorageAccounts | Format-Table -Property $colsProperty -Wrap
     
-    Write-Host "Found [$($totalStorageAccountsWithChangedTLS)] Storage Accounts " -ForegroundColor $([Constants]::MessageType.Update)
-    Write-Host $([Constants]::SingleDashLine)	
-    
-     # Back up snapshots to `%LocalApplicationData%'.
+    # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\resetStorageAccountMinReqTLSVersion"
 
     if (-not (Test-Path -Path $backupFolderPath))
@@ -873,34 +802,36 @@ function Reset-StorageAccountRequiredTLSVersion
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     } 
     
+    Write-Host "[Step 3 of 3] Rollback the minimum TLS version for Storage Account(s)..."
+    Write-Host $([Constants]::SingleDashLine)
+
     if (-not $Force)
     {
-        Write-Host "Do you want to reset Minimum TLS Version for all Storage Account(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to rollback minimum TLS version for all Storage Account(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Minimum TLS Version will not be reseted for any of the Storage Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Minimum TLS version will not be rolledback for any of the Storage Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::DoubleDashLine)
             return
         }
+        Write-Host "Rolling back the minimum TLS version for Storage Account(s)..." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
-        Write-Host "'Force' flag is provided. TLS Version will  be reseted for all of the Storage Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. Rolling back minimum TLS version for all of the Storage Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
     }
 
-    Write-Host "[Step 3 of 4] Resetting the Minimum TLS Version for Storage Account(s)"
-    Write-Host $([Constants]::SingleDashLine)
     # Includes Storage Account(s), to which, previously made changes were successfully rolled back.
     $StorageAccountsRolledBack = @()
 
     # Includes Storage Account(s) that were skipped during roll back. There were errors rolling back the changes made previously.
     $StorageAccountsSkipped = @()
 
-     # Roll back by resetting TLS Version
-        $StorageAccountsWithChangedTLS | ForEach-Object {
+     # Roll back by resetting minimum TLS version
+        $validStorageAccounts | ForEach-Object {
             $StorageAccount = $_
             $StorageAccountName = $_.StorageAccountName
             $resourceGroupName = $_.ResourceGroupName
@@ -912,51 +843,42 @@ function Reset-StorageAccountRequiredTLSVersion
                 $StorageAccountResource =  Set-AzStorageAccount -StorageAccountName $StorageAccountName  -ResourceGroupName $resourceGroupName -MinimumTlsVersion $MinimumTlsVersionBefore
                 if ($StorageAccountResource.MinimumTlsVersion -ne $MinimumTlsVersionBefore)
                 {
-                    $StorageAccountsSkipped += $StorageAccount   
+                    $StorageAccountsSkipped += $StorageAccount | Select-Object  @{N='StorageAccountName';E={$StorageAccountName}},
+                                                                                @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                                @{N='Kind';E={$_.Kind}},
+                                                                                @{N='MinimumTlsVersion';E={$MinimumTlsVersionAfter}}   
                 }
                 else
                 {
                    
-                    $StorageAccountsRolledBack += $StorageAccount | Select-Object @{N='StorageAccountName';E={$StorageAccountName}},
-                                                                        @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                        @{N='PrimaryLocation';E={$_.PrimaryLocation}},
-                                                                        @{N='MinimumTlsVersionBefore';E={$MinimumTlsVersionAfter}},
-                                                                        @{N='MinimumTlsVersionAfter';E={$StorageAccountResource.MinimumTlsVersion}}
+                    $StorageAccountsRolledBack += $StorageAccount | Select-Object   @{N='StorageAccountName';E={$StorageAccountName}},
+                                                                                    @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                                    @{N='Kind';E={$_.Kind}},
+                                                                                    @{N='MinimumTlsVersion';E={$StorageAccountResource.MinimumTlsVersion}}
                 }
             }
             catch
             {
-                $StorageAccountsSkipped += $StorageAccount
+                $StorageAccountsSkipped +=$StorageAccount | Select-Object   @{N='StorageAccountName';E={$StorageAccountName}},
+                                                                            @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                            @{N='Kind';E={$_.Kind}},
+                                                                            @{N='MinimumTlsVersion';E={$MinimumTlsVersionAfter}} 
             }
        }
-    
-
-        $totalStorageAccountsRolledBack = ($StorageAccountsRolledBack | Measure-Object).Count
- 
-        if ($totalStorageAccountsRolledBack -eq $totalStorageAccountsWithChangedTLS)
-        {
-            Write-Host "TLS Version resetted for all [$($totalStorageAccountsWithChangedTLS)] Storage Account(s) ." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)
-        }
-        else
-        {
-            Write-Host "TLS Version resetted for [$($totalStorageAccountsRolledBack)] out of [$($totalStorageAccountsWithChangedTLS)] Storage Accounts(s)" -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host $([Constants]::SingleDashLine)
-        }
          
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
         
-        $colsProperty = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=10;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=10;Alignment="left"},
-                        @{Expression={$_.PrimaryLocation};Label="Primary Location";Width=10;Alignment="left"},
-                        @{Expression={$_.MinimumTlsVersionAfter};Label="Minimum Tls Version After";Width=7;Alignment="left"},
-                        @{Expression={$_.MinimumTlsVersionBefore};Label="Minimum Tls Version Before";Width=7;Alignment="left"}
-            
+        $colsProperty = @{Expression={$_.StorageAccountName};Label="Storage Account Name";Width=30;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=30;Alignment="left"},
+                        @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
+                        @{Expression={$_.MinimumTlsVersion};Label="Minimum TLS version";Width=30;Alignment="left"}
+                        
         if ($($StorageAccountsRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "Resetting TLS for following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully rolled back minimum TLS version for following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
             $StorageAccountsRolledBack | Format-Table -Property $colsProperty -Wrap
-            Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
             $StorageAccountsRolledBackFile = "$($backupFolderPath)\RolledBackStorageAccountForMinimumTls.csv"
             $StorageAccountsRolledBack| Export-CSV -Path $StorageAccountsRolledBackFile -NoTypeInformation
@@ -966,15 +888,13 @@ function Reset-StorageAccountRequiredTLSVersion
 
         if ($($StorageAccountsSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error resetting TLS for following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occured while rolling back minimum TLS version for following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $StorageAccountsSkipped | Format-Table -Property $colsProperty -Wrap
-            Write-Host $([Constants]::SingleDashLine)
-            
             # Write this to a file.
             $StorageAccountsSkippedFile = "$($backupFolderPath)\RollbackSkippedStorageAccountForMinimumTls.csv"
             $StorageAccountsSkipped | Export-CSV -Path $StorageAccountsSkippedFile -NoTypeInformation
             Write-Host "This information has been saved to [$($StorageAccountsSkippedFile)]"
-            Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::DoubleDashLine)
         }   
 }
 
