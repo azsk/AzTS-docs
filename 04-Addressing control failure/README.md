@@ -12,7 +12,7 @@
 
 The AzTS solution provides a UI-based tool that can be used by dev-engineers to perform on-demand scans to verify fixes sooner, check reasons for control failures and view the latest scan results. This tool leverages your current subscription permissions to show you subscriptions for which you are authorized to request scan.
 
-To check reason about control failure, you can refer Status Reason column in AzTS UI.
+To check reason about control failure, you can refer to the Status Reason column in AzTS UI.
 ![StatusReason](../Images/04_AddressingControlFailure_StausReason.png)
 
 Based on Status reason, you can update resource configurations to remediate control failures.
