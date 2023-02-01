@@ -28,5 +28,5 @@ When you open the AzTS-UI, you should now see a "Remediation Mode" toggle button
 ![RemdiationMode](../Images/04_Autoremdiation_RemediationMode.png)
 
 It is turned off on UI load by default. Once you turn on the Remediation Mode, you will see an option to select the failing controls (presently [limited controls](../Scripts/RemediationScripts/ControlsEligibleForRemediationThroughUI.md) are supported for remediation via the AzTS-UI).
-You can select multiple such failing controls and then download zipped folder containing scripts and other files necessary for remediation by clicking on the "Download Remediation Package" under the "Actions" button. Detailed steps about using this zip folder for remediation can be found [here](../Scripts/RemediationScripts/Instructions.pdf).
+You can select multiple such failing controls and then download zipped folder containing scripts and other files necessary for remediation by clicking on the "Download Remediation Package" under the "Actions" button. Detailed steps about using this zipped folder for remediation can be found [here](../Scripts/RemediationScripts/Instructions.pdf).
 
