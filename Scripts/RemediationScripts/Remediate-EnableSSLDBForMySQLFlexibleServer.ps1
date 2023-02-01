@@ -409,7 +409,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.SSLStatus }; Label = "'SSL Status'"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.SSLStatus }; Label = "'SSL Status'"; Width = 30; Alignment = "Center" },
     @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" }
 
     $colsProperty1 = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
@@ -572,6 +572,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
         }
     }
     else {
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "[Step 4 of 4] Enable SSL on Azure Database for MySQL flexible server(s) in the Subscription." 
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -709,7 +710,7 @@ function Disable-SSLForDBForMySQLFlexibleServer {
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.SSLStatus }; Label = "'SSL Status'"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.SSLStatus }; Label = "'SSL Status'"; Width = 30; Alignment = "center" },
     @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" }
 
     $colsProperty1 = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
@@ -771,7 +772,7 @@ function Disable-SSLForDBForMySQLFlexibleServer {
         }
     }
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
 
     if ($($DBForMySQLFSRolledBack | Measure-Object).Count -gt 0) {
