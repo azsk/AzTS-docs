@@ -16,7 +16,7 @@ resource eventHubNamespace_resource 'Microsoft.EventHub/namespaces@2022-01-01-pr
   }
   name: eventHubNamespace
   properties: {
-       minimumTlsVersion: '1.2'
+       minimumTlsVersion: '1.2' //[Azure_EventHub_DP_Use_Secure_TLS_Version]
   }
   location: 'Central US'
 }
