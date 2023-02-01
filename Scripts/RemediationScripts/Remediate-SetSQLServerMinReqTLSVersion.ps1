@@ -96,6 +96,9 @@ function Setup-Prerequisites
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
+    $AzSqlModule = $availableModules | Where-Object{$_.Name -eq "Az.Sql"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+    $AzSqlVersion = $AzSqlModule.Version
+    
     # Check if the required modules are installed.
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
@@ -107,7 +110,17 @@ function Setup-Prerequisites
         }
         else
         {
-            Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
+            if($_ -eq "Az.Sql" -and $AzSqlVersion -lt "4.2.0")
+            {
+                Write-Host "[$($_)] module is present but the version is older." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Installing required version of [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
+                Install-Module -Name $_ -AllowClobber -Force -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+                Write-Host "Required version of [$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
+            }
+            else
+            {
+                Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
+            }
         }
     }
 }
@@ -436,10 +449,8 @@ function Set-SQLServerRequiredTLSVersion
     if(-not($AutoRemediation))
     {
         Write-Host "Following SQL Servers are having TLS version either not set or less than required minimal TLS version less than required TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
-        $colsProperty =     @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
-                            @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                            @{Expression={$_.Location};Label="Location";Width=7;Alignment="left"},
-                            @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
+        $colsProperty =     @{Expression={$_.ServerName};Label="Server Name";Width=14;Alignment="left"},
+                            @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=14;Alignment="left"},
                             @{Expression={$_.minimalTlsVersion};Label="Minimal TLS Version";Width=7;Alignment="left"}
 
         $sqlServersWithoutReqMinTLSVersion | Format-Table -Property $colsProperty -Wrap
@@ -579,7 +590,6 @@ function Set-SQLServerRequiredTLSVersion
 
         $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                        @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
                         @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal TLS Ver. Before";Width=7;Alignment="left"},
                         @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal TLS Ver. After";Width=7;Alignment="left"}
   
@@ -905,6 +915,13 @@ function Reset-SQLServerRequiredTLSVersion
            
             try
             {  
+                if([String]::IsNullOrWhiteSpace($minimalTlsVersionBefore))
+                {
+                    $sqlServersSkipped += $sqlServer
+                    Write-Host "The TLS version for the SQL Server: [$($_.ServerName)] can't be rolled back as it was set to null before remediation and TLS version can't be set to null." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                    return;
+                }
                 $sqlserverResource =  Set-AzSqlServer -ServerName $serverName  -ResourceGroupName $resourceGroupName -MinimalTlsVersion $minimalTlsVersionBefore
 
                 if ($sqlserverResource.MinimalTlsVersion -ne $minimalTlsVersionBefore)
@@ -945,12 +962,10 @@ function Reset-SQLServerRequiredTLSVersion
     
     Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
     
-    $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
+    $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=14;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=10;Alignment="left"},
-                    @{Expression={$_.Location};Label="Location";Width=10;Alignment="left"},
-                    @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
-                    @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal Tls Version After";Width=7;Alignment="left"},
-                    @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal Tls Version Before";Width=7;Alignment="left"}
+                    @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal Tls Version Before";Width=10;Alignment="left"},
+                    @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal Tls Version After";Width=10;Alignment="left"}
         
 
     if ($($sqlServersRolledBack | Measure-Object).Count -gt 0)

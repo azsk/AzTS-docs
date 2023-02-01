@@ -37,7 +37,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
 27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
-28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+28. [Azure_Storage_DP_Use_Secure_TLS_Version](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version)
 29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#29-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
@@ -588,7 +588,7 @@ Yes
 
 ___
 
-## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+## 28. Azure_Storage_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in Storage Account

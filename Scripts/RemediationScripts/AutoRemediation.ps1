@@ -152,7 +152,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") -or
                 ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") -or
                 ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") -or
-                ($control.ControlId -eq "Azure_Storage_DP_Use_Secure_TLS_Version_Trial") -or
+                ($control.ControlId -eq "Azure_Storage_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN") -or
                 ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial") -or
