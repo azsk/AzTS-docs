@@ -205,6 +205,17 @@
                   "RollbackCommand": "Reset-SASExpiryInterval",
                   "Arguments":["SubscriptionId"]
              }
+        },
+        {
+            "ControlId": "Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetSQLServerMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1",
+            "InitCommand": "Set-SQLManagedInstanceRequiredTLSVersion",
+            "RollbackMetadata": {
+              "RollbackCommand": "Reset-SQLManagedInstanceRequiredTLSVersion",
+              "Arguments": [ "" ]
+            }
         }
     ]
 }
