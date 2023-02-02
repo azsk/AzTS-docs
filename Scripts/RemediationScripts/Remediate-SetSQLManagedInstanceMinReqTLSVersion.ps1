@@ -44,7 +44,7 @@
            Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To set minimal required TLS version on the of all SQL Managed Instances in a Subscription, from a previously taken snapshot:
-           Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLManagedInstances\SQLManagedInstancesWithoutMinReqTLSVersion.csv
+           Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLManagedInstanceMinReqTLSVersion\SQLManagedInstancesWithoutReqMinTLSVersion.csv
 
         4. To set minimal required TLS version of all SQL Managed Instances in a Subscription without taking back up before actual remediation:
            Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
@@ -54,11 +54,8 @@
 
     To roll back:
         1. To reset minimal required TLS version of all SQL Managed Instances in a Subscription, from a previously taken snapshot:
-           Reset-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLManagedInstances\RemediatedSQLManagedInstances.csv
+           Reset-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLManagedInstanceMinReqTLSVersion\RemediatedSQLManagedInstancesTLSVersion.csv
         
-        2. To reset minimal required TLS version of all SQL Managed Instances in a Subscription, from a previously taken snapshot:
-           Reset-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLManagedInstances\RemediatedSQLManagedInstances.csv
-
         To know more about the options supported by the roll back command, execute:
         Get-Help Reset-SQLManagedInstanceRequiredTLSVersion -Detailed        
 ###>
@@ -175,7 +172,7 @@ function Set-SQLManagedInstanceRequiredTLSVersion
         PS> Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLManagedInstances\SQLManagedInstancesWithoutMinReqTLSVersion.csv
+        PS> Set-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLManagedInstanceMinReqTLSVersion\SQLManagedInstancesWithoutReqMinTLSVersion.csv
 
         .LINK
         None
@@ -591,7 +588,7 @@ function Set-SQLManagedInstanceRequiredTLSVersion
             if ($($sqlManagedInstancesRemediated | Measure-Object).Count -gt 0)
             {
                 # Write this to a file.
-                $sqlManagedInstancesRemediatedFile = "$($backupFolderPath)\RemediatedSQLManagedInstancesFileforMinTLS.csv"
+                $sqlManagedInstancesRemediatedFile = "$($backupFolderPath)\RemediatedSQLManagedInstancesTLSVersion.csv"
                 $sqlManagedInstancesRemediated| Export-CSV -Path $sqlManagedInstancesRemediatedFile -NoTypeInformation
                 Write-Host "The information related to SQL Managed Instances where minimal TLS version is successfully set to minimal required TLS version has been saved to [$($sqlManagedInstancesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
@@ -617,7 +614,7 @@ function Set-SQLManagedInstanceRequiredTLSVersion
                 $sqlManagedInstancesRemediated | Format-Table -Property $colsProperty1 -Wrap
 
                 # Write this to a file.
-                $sqlManagedInstancesRemediatedFile = "$($backupFolderPath)\RemediatedSQLManagedInstancesFileforMinTLS.csv"
+                $sqlManagedInstancesRemediatedFile = "$($backupFolderPath)\RemediatedSQLManagedInstancesTLSVersion.csv"
                 $sqlManagedInstancesRemediated| Export-CSV -Path $sqlManagedInstancesRemediatedFile -NoTypeInformation
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "This information has been saved to [$($sqlManagedInstancesRemediatedFile)]"
@@ -699,10 +696,7 @@ function Reset-SQLManagedInstanceRequiredTLSVersion
         None. Reset-SQLManagedInstanceRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLManagedInstances\RemediatedSQLManagedInstances.csv
-
-        .EXAMPLE
-        PS> Reset-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLManagedInstances\RemediatedSQLManagedInstances.csv
+        PS> Reset-SQLManagedInstanceRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLManagedInstanceMinReqTLSVersion\RemediatedSQLManagedInstancesTLSVersion.csv
 
         .LINK
         None

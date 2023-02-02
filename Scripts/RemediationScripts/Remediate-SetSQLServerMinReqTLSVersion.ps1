@@ -44,7 +44,7 @@
            Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To set minimal required TLS version on the of all SQL Servers in a Subscription, from a previously taken snapshot:
-           Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\SQLServersWithoutMinReqTLSVersion.csv
+           Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\sqlServersWithoutReqMinTLSVersion.csv
 
         4. To set minimal required TLS version of all SQL Servers in a Subscription without taking back up before actual remediation:
            Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
@@ -54,11 +54,8 @@
 
     To roll back:
         1. To reset minimal required TLS version of all SQL Servers in a Subscription, from a previously taken snapshot:
-           Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
+           Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\RemediatedsqlServersFileforMinTLS.csv
         
-        2. To reset minimal required TLS version of all SQL Servers in a Subscription, from a previously taken snapshot:
-           Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
-
         To know more about the options supported by the roll back command, execute:
         Get-Help Reset-SQLServerRequiredTLSVersion -Detailed        
 ###>
@@ -175,7 +172,7 @@ function Set-SQLServerRequiredTLSVersion
         PS> Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\SQLServersWithoutMinReqTLSVersion.csv
+        PS> Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\sqlServersWithoutReqMinTLSVersion.csv
 
         .LINK
         None
@@ -284,7 +281,7 @@ function Set-SQLServerRequiredTLSVersion
     $logSkippedResources=@()
     
     # Control Id
-    $controlIds = "Azure_SQLDatabase_DP_Use_Secure_TLS_Version"
+    $controlIds = "Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial"
 
     if($AutoRemediation)
     {
@@ -708,10 +705,8 @@ function Reset-SQLServerRequiredTLSVersion
         None. Reset-SQLServerRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
+        PS> Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\RemediatedsqlServersFileforMinTLS.csv
 
-        .EXAMPLE
-        PS> Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
 
         .LINK
         None
