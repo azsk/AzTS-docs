@@ -42,8 +42,8 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
 32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
-33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
-34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
+33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version)
+34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version)
 
 
 <br />
@@ -691,10 +691,10 @@ Yes
 
 
 ___
-## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
+## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door Classic should have Approved Minimum TLS version
+Front Door Classic should have Approved Minimum TLS version
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetClassicFrontDoorMinTLSVersion](Remediate-SetClassicFrontDoorMinTLSVersion.ps1)
@@ -710,10 +710,10 @@ Yes
 
 ---
 
-## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door should have Approved Minimum TLS version.
+Front Door should have Approved Minimum TLS version.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
