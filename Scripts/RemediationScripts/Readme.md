@@ -45,7 +45,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
 34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
 35. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version)
-
+36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
 
 <br />
 
@@ -730,6 +730,43 @@ Yes
 
 ___
 
+## 35. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 36. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.

@@ -35,6 +35,8 @@
 
 17. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#17-azure_sqlmanagedinstance_dp_use_secure_tls_version)
 
+18. [Azure_EventHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#18-Azure_EventHub_DP_Use_Secure_TLS_Version)
+
 <br />
 ___
 
@@ -256,5 +258,19 @@ Use approved version of TLS for Azure SQL Managed Instance
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Managed Instance(s)
+
+___
+
+
+## 18. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
 
 ___
