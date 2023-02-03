@@ -6,6 +6,7 @@
 
 - [Azure_RedisCache_BCDR_Use_RDB_Backup](#azure_rediscache_bcdr_use_rdb_backup)
 - [Azure_RedisCache_DP_Use_SSL_Port](#azure_rediscache_dp_use_ssl_port)
+- [Azure_RedisCache_DP_Use_Secure_TLS_Version](#azure_rediscache_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
@@ -186,3 +187,42 @@ TLS provides privacy and data integrity between client and server. Using approve
 ___ 
 
 -->
+
+## Azure_RedisCache_DP_Use_Secure_TLS_Version 
+
+### Display Name 
+Use approved version of TLS for Azure RedisCache. 
+
+### Rationale 
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+```json 
+{
+        "MinReqTLSVersion": "1.2"
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Minimum TLS version is set to 1.2.
+> 
+> **Failed:** 
+> Any of the following conditions is met.
+> * Minimum TLS version is not set (default 1.0).
+> * Minimum TLS version is set to less than minimum required version.
+
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+Go to Azure Portal --> your Redis Cache instance --> Settings --> Advanced Settings --> Set Minimum TLS version to '1.2'.
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
+**Properties:** properties.minimumTlsVersion
+
+<br />

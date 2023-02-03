@@ -16,6 +16,7 @@
 - [Azure_AppService_DP_Use_Secure_TLS_Version](#azure_appservice_dp_use_secure_tls_version)
 - [Azure_AppService_AuthZ_Configure_IP_Restrictions](#azure_appservice_authz_configure_ip_restrictions)
 - [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
+- [Azure_AppService_DP_Use_Secure_FTP_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
 
 <!-- /TOC -->
 <br/>
@@ -577,6 +578,54 @@ Managed Service Identity (MSI) allows your app to easily access other AAD-protec
 
 - ARM API to list all deployment slots of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots?api-version=2019-08-01 <br />
 **Properties:** properties.identity.type<br />
+
+<br />
+
+___ 
+
+## Azure_AppService_DP_Use_Secure_FTP_Deployment
+
+### Display Name 
+App Services should use secure FTP deployments
+
+### Rationale 
+FTPS is used to enhance security for your Azure Web Application as it adds an extra layer of security to the FTP protocol. Enforcing FTPS-only access for your Azure App Services apps can guarantee that the encrypted traffic between the web apps and servers and the FTP clients cannot be decrypted by malicious actors.
+
+### Control Spec 
+
+ >**Passed :**
+ > - FTP State is found to be configured to "FTPS" (secure FTP) or marked as "disabled" for all slots in the App Service.
+ >
+> **Failed :**
+ > - FTP State is found to be configured as "All Allowed" for any of the production / non-production slots in the App Service.
+ >
+> **Note :** If Microsoft Defender for Cloud (MDC) assessment is not found for the App Service, then response from the ARM API is considered for the control evaluation.
+>
+
+### Recommendation 
+- **Azure Portal** 
+
+	 To make production slot compliant:
+	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> FTP state -->(Choose FTPS Only/Disabled based on the requirement) --> Save.
+
+	 To make non-production slot compliant
+	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> FTP state --> (Choose FTPS Only/Disabled based on the requirement) --> Save.
+
+
+### Azure Policy or ARM API used for evaluation 
+
+- Azure Policy (built-in):
+  [Function apps should require FTPS only](https://ms.portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F399b2637-a50f-4f95-96f8-3a145476eb15)
+  <br />
+- Azure Policy (built-in):
+  [App Service apps should require FTPS only](https://ms.portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F4d24b6d4-5e53-4a4f-a7f4-618fa573ee4b)
+  <br />
+
+- ARM API to get configuration of App Service: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Web/sites/{2}/config/web?api-version=2018-11-01<br />
+**Properties:** properties.ftpsState<br />
+
+- ARM API to get configuration of App Service Slot: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Web/sites/{2}/slots/{3}/config/web?api-version=2019-08-01 <br />
+**Properties:** properties.ftpsState<br />
 
 <br />
 

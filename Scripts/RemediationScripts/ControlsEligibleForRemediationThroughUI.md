@@ -19,8 +19,21 @@
 
 9. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
 
-<br />
+10. [Azure_SQLDatabase_DP_Enable_TDE](ControlsEligibleForRemediationThroughUI.md-Azure_SQLDatabase_DP_Enable_TDE)
 
+11. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](ControlsEligibleForRemediationThroughUI.md-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
+
+12. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](ControlsEligibleForRemediationThroughUI.md#1-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
+
+13. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#13-azure_servicebus_dp_use_secure_tls_version)
+
+14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+
+15. [Azure_Storage_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version)
+
+16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
+
+<br />
 ___
 
 ## 1. Azure_Storage_AuthN_Dont_Allow_Anonymous
@@ -137,5 +150,96 @@ Ensure API Management service is accessible only over HTTPS
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+___
+
+## 10. Azure_SQLDatabase_DP_Enable_TDE
+
+### Display Name
+Transparent data encryption (TDE) must be enabled
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-TransparentDataEncryptionForSQLServers](Remediate-TransparentDataEncryptionForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 11. Azure_CloudService_SI_Disable_RemoteDesktop_Access
+
+### Display Name
+Remote Desktop (RDP) access must be disabled on cloud service roles
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-RemoteDesktopAccess](Remediate-RemoteDesktopAccess.ps1)
+
+### Minimum permissions required to run the script
+Classic Role Assignment at subscription level
+
+___
+
+## 12. Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel
+
+### Display Name
+Cluster Protection Level must be EncryptandSign
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetClusterProtectionLevelForServiceFabric](Remediate-SetClusterProtectionLevelForServiceFabric.ps1)
+
+### Minimum permissions required to run the script
+Owner or higher priviliged role on the Service Fabric(s)
+
+___
+
+## 13. Azure_ServiceBus_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Service Bus
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetServiceBusMinReqTLSVersion](./Remediate-SetServiceBusMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Azure Data Owner role on Service Bus Namespace
+
+___
+
+## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+Use Approved TLS Version in SQL Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLServerMinReqTLSVersion](Remediate-SetSQLServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 15. Azure_Storage_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use Approved TLS Version in Storage Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetStorageAccountRequiredTLSVersion](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Owner or higher priviliged role on the Storage Account(s)
+
+___
+
+## 16. Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
+
+### Display Name
+Shared Access Signature (SAS) expiry interval must be less than approved upper limit for Azure Storage
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SASExpiryIntervalForStorageAccounts](Remediate-SASExpiryIntervalForStorageAccounts.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
 
 ___

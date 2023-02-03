@@ -147,17 +147,22 @@ Enter the choice (1|2)";
                 $commandString =""
                 if($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous"){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_Storage_DP_Encrypt_In_Transit") {
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") {
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") {
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") {
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN") {
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") {
+                }
+                elseif (($control.ControlId -eq "Azure_Storage_DP_Encrypt_In_Transit") -or 
+                ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") -or
+                ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") -or
+                ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_Storage_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN") -or
+                ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") -or
+                ($control.ControlId -eq "Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial") -or
+                ($control.ControlId -eq "Azure_CloudService_SI_Disable_RemoteDesktop_Access") -or
+                ($control.ControlId -eq "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel") -or
+                ($control.ControlId -eq "Azure_ServiceBus_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial") -or
+                ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") -or
+                ($control.ControlId -eq "Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial")-or
+                ($control.ControlId -eq "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -176,7 +181,27 @@ Enter the choice (1|2)";
                     $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
                     Write-Host $([Constants]::SingleDashLine)
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }else{
+                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_FTP_Deployment") {
+                    Write-Host "Secured FTP State for the App Service(s) is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
+                    $userInputforFTPState = Read-Host "You can choose one of the following mode to remediate non-compliant resources:
+                    [1] Remediate failing resorces by configuring FTP State as FtpsOnly on the production slot and all non-production slots for all App Services.
+                    [2] Remediate failing resorces by configuring FTP State as Disabled on the production slot and all non-production slots for all App Services.
+                    Enter the choice (1|2)";
+                    $FTPState=""
+                    if($userInputforFTPState -eq "1"){
+                        $FTPState="FTPSOnly"
+                    }
+                    elseif ($userInputforFTPState -eq "2"){
+                        $FTPState="Disabled"
+                    }
+                    Write-Host $([Constants]::SingleDashLine)
+                   $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -FTPState " + "`'" + $FTPState +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";              
+                }elseif ($control.ControlId -eq "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval") {
+                    Write-Host "Timespan of SAS Expiry Interval is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
+                    $timespan = UserInputTimeSpan
+                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -Timespan " + "`'" + $timespan +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                }
+                else{
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     continue;
@@ -192,7 +217,6 @@ Enter the choice (1|2)";
                 Write-Host "Completed remediation of Control Id [$($control.ControlId)] using [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
-
             # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
            if(($remediationLevel -eq 1) -or ($remediationLevel -eq 2))
            {
@@ -224,7 +248,6 @@ Enter the choice (1|2)";
                     }
                     $log | ConvertTo-json -depth 10  | Out-File $logFile
                 }
-
                 Write-Host "Skipped remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
            }
@@ -291,6 +314,91 @@ function SetExecutionPolicy
             return 
         }
     }
+}
+
+function ValidUserInput
+{
+    param
+    (
+        [String] 
+        $prompt,
+
+        [int]
+        $minimumValue,
+
+        [int]
+        $maximumValue
+    )
+    $validValue = $false
+    do
+    {
+        try
+        {
+            $userInput = Read-Host -Prompt $prompt
+            [int]$value = [int]::Parse($userInput)
+            if($value -le $maximumValue -and $value -ge $minimumValue)
+            {
+                $validValue = $true
+            }
+            else
+            {
+                Write-Host "The entered value was not in valid range of ($($minimumValue), $($maximumValue)). Kindly re-enter the value." -ForegroundColor $([Constants]::MessageType.Warning)
+            }
+        }
+        catch
+        {
+            Write-Host "The entered value was not valid integer. Kindly re-enter the value." -ForegroundColor $([Constants]::MessageType.Warning)
+        }
+    }while($validValue -eq $false)
+    return $value
+}
+
+function UserInputTimeSpan
+{
+    do
+    {
+        #take user input
+        $days = 0
+        $hours = 0
+        $minutes = 0
+        $seconds = 0
+        Write-Host "Enter the time span for SAS Expiry Interval " -ForegroundColor $([Constants]::MessageType.Warning)
+        $days = ValidUserInput "Days ( 0 - 7 )" 0 7
+        if($days -lt 7)
+        {
+            $hours = ValidUserInput "Hours ( 0 - 23 )" 0 23
+            $minutes = ValidUserInput "Minutes ( 0 - 59 )" 0 59
+            $seconds = ValidUserInput "Seconds ( 0 - 59 )" 0 59
+        }
+        if(($days -eq 0) -and ($hours -eq 0) -and ($minutes -eq 0) -and ($seconds -eq 0))
+        {
+            Write-Host "The time span can't be 0 days, 0 hours, 0 minutes, 0 seconds. Kindly re-enter the time span."
+        }
+        else
+        {
+            break;
+        }
+    }while($true)
+
+    $daysInString = [string]$days
+    $hoursInString = [string]$hours
+    $minutesInString = [string]$minutes
+    $secondsInString = [string]$seconds
+    if($hours -lt 10)
+    {
+        $hoursInString = "0" + [string]$hours
+    } 
+    if($minutes -lt 10)
+    {
+        $minutesInString = "0" + [string]$minutes
+    }
+    if($seconds -lt 10)
+    {
+        $secondsInString = "0" + [string]$seconds
+    }
+    
+    $timeSpanInString = "$($daysInString).$($hoursInString):$($minutesInString):$($secondsInString)"
+    return $timeSpanInString
 }
 
 function StartExecution

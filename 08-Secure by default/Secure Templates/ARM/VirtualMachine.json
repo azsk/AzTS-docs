@@ -117,6 +117,12 @@
         "description": "If “Auto-provisioning” for MMA is turned on in Azure Defender configuration, you can skip installation of MMA agent during VM creation as MDC will auto deploy MMA agent with desired configuations."
       }
     },
+    "deployAzureMonitoringAgent": {
+      "type": "bool",
+      "metadata": {
+        "description": "If “Auto-provisioning” for AMA is turned on in Azure Defender configuration, you can skip installation of AMA agent during VM creation as MDC will auto deploy AMA agent with desired configuations."
+      }
+    },
     "vmName": {
       "type": "string",
       "defaultValue": "sample-VM",
@@ -326,6 +332,31 @@
         },
         "protectedSettings": {
           "workspaceKey": "[if(parameters('deployMicrosoftMonitoringAgent'), listKeys(parameters('laWorkSpaceResourceId'), '2020-08-01').primarySharedKey, 'NotRequired')]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
+    },
+    {
+      //[Azure_VirtualMachine_SI_Enable_Monitoring_Agent_AMA_Trial]
+      "condition": "[parameters('deployAzureMonitoringAgent')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2020-12-01",
+      "name": "[format('{0}/{1}', parameters('vmName'), 'AzureMonitorWindowsAgent')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Monitor",
+        "type": "AzureMonitorWindowsAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "enableAutomaticUpgrade": true,
+        "settings": {
+          "authentication":{
+            "SystemAssigned":{
+              
+            }
+          }
         }
       },
       "dependsOn": [
