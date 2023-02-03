@@ -281,7 +281,7 @@ function Set-SQLServerRequiredTLSVersion
     $logSkippedResources=@()
     
     # Control Id
-    $controlIds = "Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial"
+    $controlIds = "Azure_SQLDatabase_DP_Use_Secure_TLS_Version"
 
     if($AutoRemediation)
     {
