@@ -33,6 +33,8 @@
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
 
+17. [Azure_EventHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#16-Azure_EventHub_DP_Use_Secure_TLS_Version)
+
 <br />
 ___
 
@@ -238,6 +240,20 @@ Shared Access Signature (SAS) expiry interval must be less than approved upper l
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SASExpiryIntervalForStorageAccounts](Remediate-SASExpiryIntervalForStorageAccounts.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+
+## 17. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Storage Account(s)
