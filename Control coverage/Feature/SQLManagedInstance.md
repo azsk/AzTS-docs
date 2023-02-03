@@ -5,6 +5,7 @@
 <!-- TOC -->
 
 - [Azure_SQLManagedInstance_Audit_Enable_Vuln_Assessment](#azure_sqlmanagedinstance_audit_enable_vuln_assessment)
+- [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](azure_sqlmanagedinstance_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
@@ -63,7 +64,6 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 
 <br />
 
-___ 
 <!-- 
 ## Azure_SQLManagedInstance_SI_Remediate_Security_Vulnerabilities 
 
@@ -185,4 +185,44 @@ TLS provides privacy and data integrity between client and server. Using approve
 <br />
 
 ___ 
- -->
+ --> 
+___ 
+
+## Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version 
+
+### Display Name 
+Use approved version of TLS for Azure SQL Managed Instance
+
+### Rationale 
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
+
+### Control Spec 
+
+> **Passed:** 
+> Minimum TLS version set to 1.2 or higher.
+> 
+> **Failed:** 
+>Minimum TLS version set to 1.0, 1.1 or None.
+> 
+### Recommendation 
+
+- **Azure Portal**
+
+  To Configure 'Minimum TLS Version' setting for SQL Managed Instance, go to Azure Portal --> Your SQL Managed Instance --> Networking --> Set the Minimum TLS Version to latest version.
+ 
+
+- **PowerShell** 
+
+	 Run following command to set minimal TLS version to `1.2`
+	 ```powershell
+	 Set-AzSqlInstance -Name '{InstanceName}' -ResourceGroupName '{ResourceGroupName}' -MinimalTlsVersion "1.2"
+	 ```
+
+-->
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to check SQL Managed Instance TLS version: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances?api-version=2021-11-01 <br />
+**Properties:** properties.minimalTlsVersion
+ <br />
+
+<br />
