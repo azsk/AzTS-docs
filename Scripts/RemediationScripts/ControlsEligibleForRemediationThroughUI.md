@@ -33,7 +33,7 @@
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
 
-17. [Azure_EventHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#16-Azure_EventHub_DP_Use_Secure_TLS_Version)
+17. [Azure_EventHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#17-Azure_EventHub_DP_Use_Secure_TLS_Version)
 
 <br />
 ___
