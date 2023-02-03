@@ -3,7 +3,7 @@
     This script is used to set minimium required TLS version for Azure Database for MySQL flexible server in a Subscription.
 
 # Control ID:
-    Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial
+    Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 # Display Name:
     Azure Database for MySQL - Flexible Servers Announcing SSL enforcement and minimum TLS version choice.
@@ -117,10 +117,10 @@ function Setup-Prerequisites {
 function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
-        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
+        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
+        Remediates 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
         Set secure TLS version as minimum required TLS version in Azure Database for MySQL flexible server(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -249,7 +249,7 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
     $logRemediatedResources = @()	
     $logSkippedResources = @()	
 
-    $controlIds = "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial"
+    $controlIds = "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version"
 
     # No file path provided as input to the script. Fetch all Azure Database for MySQL flexible server(s) in the Subscription.
 
@@ -334,9 +334,9 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
                     $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
             
                     $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName) -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
-                    $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                    @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
-                    @{N = 'ResourceName'; E = { $_.Name } }, 
+                    $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.ResourceId } },
+                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                    @{N = 'ResourceName'; E = { $_.ResourceName } }, 
                     @{N = 'TLSVersion'; E = { $parameterValue } }
             
                 }
@@ -450,11 +450,15 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
         # Loop through the list of Azure Database for MySQL flexible server(s) which needs to be remediated.
         $DBForMySQLFSWithNonSecureTLSVersionEnabled  | ForEach-Object {
             $DBForMySQLFS = $_
+            $prevTlsVersion = $DBForMySQLFS.TLSVersion
             try {
                 $paramValue = (Update-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $([Constants]::MinRequiredTLSVersionValue)).Value 
                 
                 if (CheckIfOnlySecureTLSVersionConfigured($paramValue)) {
-                    $DBForMySQLFSRemediated += $_
+                    $DBForMySQLFS | Add-Member -NotePropertyName prevTLSVersion -NotePropertyValue $prevTlsVersion
+                    $DBForMySQLFS.TLSVersion = $paramValue
+                    
+                    $DBForMySQLFSRemediated +=  $DBForMySQLFS
                     $logResource = @{}	
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
                     $logResource.Add("ResourceName", ($_.ResourceName))	
@@ -563,10 +567,10 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
 function Reset-SecureTLSVersionForDBForMySQLFlexibleServer {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version' Control.
         Change TLS version to Previous Value on Azure Database for MySQL flexible server(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
@@ -691,7 +695,8 @@ function Reset-SecureTLSVersionForDBForMySQLFlexibleServer {
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 100; Alignment = "left" }
+    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 100; Alignment = "left" },
+    @{Expression = { $_.prevTLSVersion }; Label = "PreviousTLSVersion"; Width = 100; Alignment = "left" }
         
     $validDBForMySQLFSDetails | Format-Table -Property $colsProperty -Wrap
     
@@ -734,8 +739,12 @@ function Reset-SecureTLSVersionForDBForMySQLFlexibleServer {
 
     $validDBForMySQLFSDetails | ForEach-Object {
         $DBForMySQLFS = $_
+        $TlsVersionBeforeRollback = $DBForMySQLFS.TLSVersion
         try {   
-            $tlsVersionRolledBack = Update-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.TLSVersion
+            $tlsVersionRolledBack = Update-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.prevTLSVersion
+            $DBForMySQLFS.TLSVersion = $tlsVersionRolledBack
+            $DBForMySQLFS.prevTLSVersion = $TlsVersionBeforeRollback
+
             $DBForMySQLFSRolledBack += $DBForMySQLFS
         }
             catch {
@@ -743,7 +752,7 @@ function Reset-SecureTLSVersionForDBForMySQLFlexibleServer {
             }
         }
 
-
+        
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
