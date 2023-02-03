@@ -204,6 +204,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 > **Failed:** 
 >Minimum TLS version set to 1.0, 1.1 or None.
 > 
+>
 ### Recommendation 
 
 - **Azure Portal**
@@ -218,7 +219,6 @@ TLS provides privacy and data integrity between client and server. Using approve
 	 Set-AzSqlInstance -Name '{InstanceName}' -ResourceGroupName '{ResourceGroupName}' -MinimalTlsVersion "1.2"
 	 ```
 
--->
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to check SQL Managed Instance TLS version: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances?api-version=2021-11-01 <br />
@@ -226,3 +226,5 @@ TLS provides privacy and data integrity between client and server. Using approve
  <br />
 
 <br />
+
+___
