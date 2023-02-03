@@ -14,6 +14,9 @@
 - [Azure_SQLDatabase_SI_Remediate_Security_Vulnerabilities](#azure_sqldatabase_si_remediate_security_vulnerabilities)
 - [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](#azure_sqldatabase_dp_use_secure_tls_version)
 
+- [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](#azure_sqlserver_authn_dont_allow_public_network_access)
+
+
 <!-- /TOC -->
 <br/>
 
@@ -655,4 +658,37 @@ TLS provides privacy and data integrity between client and server. Using approve
   <br />
  <br />
 
+___
+
+## Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
+
+### Display Name
+Public network access on Azure SQL Database should be disabled
+
+### Rationale
+Configuring public access on your SQL server allows the server access through a public endpoint which is not recommended.
+
+### Control Spec
+
+> **Passed:**
+> Public Network Access is configured as Disabled.
+>
+> **Failed:**
+Public Network Access is configured as Enabled.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+	To remediate, disable public network access on your SQL server or refer link https://learn.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings?view=azuresql&tabs=azure-portal
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to check a SQL server's public network access:
+subscriptions/{subscriptionId}/providers/Microsoft.Sql/servers?api-version=2021-11-01
+  <br />
+  **Properties:** properties.publicNetworkAccess
+  <br />
+ <br />
 ___
