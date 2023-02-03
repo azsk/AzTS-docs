@@ -1,6 +1,6 @@
 <###
 # Overview:
-    This script is used to set public network access as 'Disabled' for SQL Server in a Subscription.
+    This script is used to set required public network access for SQL Server in a Subscription.
 
 # Control ID:
     Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
