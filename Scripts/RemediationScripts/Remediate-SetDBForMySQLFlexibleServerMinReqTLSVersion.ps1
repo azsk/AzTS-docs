@@ -6,8 +6,8 @@
     Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 # Display Name:
-    Azure Database for MySQL - Flexible Servers Announcing SSL enforcement and minimum TLS version choice.
-
+    Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
+    
 # Prerequisites:    
     Contributor or higher priviliged role on the Azure Database for MySQL flexible server(s) is required for remediation.
 
