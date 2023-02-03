@@ -27,11 +27,13 @@
 
 13. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#13-azure_servicebus_dp_use_secure_tls_version)
 
-14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version)
 
 15. [Azure_Storage_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version)
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
+
+17. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#17-azure_sqlmanagedinstance_dp_use_secure_tls_version)
 
 <br />
 ___
@@ -205,7 +207,7 @@ Azure Data Owner role on Service Bus Namespace
 
 ___
 
-## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in SQL Server
@@ -241,5 +243,18 @@ Shared Access Signature (SAS) expiry interval must be less than approved upper l
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+## 17. Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure SQL Managed Instance
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLManagedInstanceMinReqTLSVersion](Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Managed Instance(s)
 
 ___
