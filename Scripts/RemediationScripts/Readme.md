@@ -44,6 +44,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
 33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
 34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
+35. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 
 
 <br />
@@ -729,6 +730,24 @@ Yes
 
 ___
 
+## 35. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
+
+### Display Name
+Azure Database for MySQL - Flexible Servers Announcing SSL enforcement and minimum TLS version choice.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
