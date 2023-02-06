@@ -199,7 +199,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Validate and install the modules required to run the script."
+    Write-Host "[Step 1 of 5] Validate and install the modules required to run the script."
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck) {
@@ -244,7 +244,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
     Write-Host "To enable SSL for Azure Database for MySQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for MySQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)  
 
-    Write-Host "[Step 2 of 4] Prepare to fetch all Azure Database for MySQL flexible server(s)."
+    Write-Host "[Step 2 of 5] Fetch all Azure Database for MySQL flexible server(s)."
     Write-Host $([Constants]::SingleDashLine)
     
     # list to store Container details.
@@ -358,7 +358,17 @@ function Enable-SSLForDBForMySQLFlexibleServer {
 
     if ($totalDBForMySQLFS -eq 0) {
         Write-Host "No Azure Database for MySQL flexible server(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host $([Constants]::DoubleDashLine)	
+        Write-Host $([Constants]::DoubleDashLine)
+        if ($AutoRemediation) {
+            $logFile = "LogFiles\" + $($TimeStamp) + "\log_" + $($SubscriptionId) + ".json"
+            $log = Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach ($logControl in $log.ControlList) {
+                if ($logControl.ControlId -eq $controlId) {
+                    $logControl.SkippedResources = $logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
         return
     }
   
@@ -367,9 +377,9 @@ function Enable-SSLForDBForMySQLFlexibleServer {
     Write-Host $([Constants]::SingleDashLine)
     
     # list for storing Azure Database for MySQL flexible server(s) for which server parameter require_secure_transport in not ON
-     $DBForMySQLFSWithSSLNotEnabled = @()
+    $DBForMySQLFSWithSSLNotEnabled = @()
 
-    Write-Host "Separating Azure Database for MySQL flexible server(s) for which SSL is disabled..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "[Step 3 of 5] Fetching Azure Database for MySQL Flexible Server(s) Configurations." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
 
     $DBForMySQLFlexibleServerDetails | ForEach-Object {
@@ -385,7 +395,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
         }   
     }
    
-     $totalDBForMySQLFSWithSSLNotEnabled = ( $DBForMySQLFSWithSSLNotEnabled  | Measure-Object).Count
+    $totalDBForMySQLFSWithSSLNotEnabled = ( $DBForMySQLFSWithSSLNotEnabled  | Measure-Object).Count
 
     if ( $totalDBForMySQLFSWithSSLNotEnabled -eq 0) {
         Write-Host "No Azure Database for MySQL flexible server(s) found with SSL disabled.Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
@@ -428,7 +438,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "[Step 3 of 4] Back up Azure Database for MySQL flexible server(s) details."
+    Write-Host "[Step 3 of 5] Back up Azure Database for MySQL flexible server(s) details."
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
@@ -442,7 +452,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
     }
 
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 4 of 4] Enable SSL for Azure Database for MySQL flexible server(s) in the Subscription."
+    Write-Host "[Step 4 of 5] Enable SSL for Azure Database for MySQL flexible server(s) in the Subscription."
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun) {
