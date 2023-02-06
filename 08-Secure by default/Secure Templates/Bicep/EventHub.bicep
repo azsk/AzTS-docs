@@ -8,13 +8,16 @@ param eventHubName string
 param storageAccountNameForDiagnostics string
 param AuthorizationRules string = 'RootManageSharedAccessKey'
 
-resource eventHubNamespace_resource 'Microsoft.EventHub/namespaces@2017-04-01' = {
+resource eventHubNamespace_resource 'Microsoft.EventHub/namespaces@2022-01-01-preview' = {
   sku: {
     name: 'Standard'
     tier: 'Standard'
     capacity: 1
   }
   name: eventHubNamespace
+  properties: {
+       minimumTlsVersion: '1.2' //[Azure_EventHub_DP_Use_Secure_TLS_Version]
+  }
   location: 'Central US'
 }
 

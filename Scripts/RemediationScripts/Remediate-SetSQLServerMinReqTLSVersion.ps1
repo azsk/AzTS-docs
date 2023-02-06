@@ -3,7 +3,7 @@
     This script is used to set required TLS version for SQL Server in a Subscription.
 
 # Control ID:
-    Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+    Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
 # Display Name:
     Use Approved TLS Version in SQL Server.
@@ -44,7 +44,7 @@
            Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To set minimal required TLS version on the of all SQL Servers in a Subscription, from a previously taken snapshot:
-           Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\SQLServersWithoutMinReqTLSVersion.csv
+           Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\sqlServersWithoutReqMinTLSVersion.csv
 
         4. To set minimal required TLS version of all SQL Servers in a Subscription without taking back up before actual remediation:
            Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
@@ -54,11 +54,8 @@
 
     To roll back:
         1. To reset minimal required TLS version of all SQL Servers in a Subscription, from a previously taken snapshot:
-           Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
+           Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\RemediatedsqlServersFileforMinTLS.csv
         
-        2. To reset minimal required TLS version of all SQL Servers in a Subscription, from a previously taken snapshot:
-           Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
-
         To know more about the options supported by the roll back command, execute:
         Get-Help Reset-SQLServerRequiredTLSVersion -Detailed        
 ###>
@@ -96,6 +93,9 @@ function Setup-Prerequisites
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
 
+    $AzSqlModule = $availableModules | Where-Object{$_.Name -eq "Az.Sql"} | Sort-Object -Property Version -Descending | Select-Object -First 1
+    $AzSqlVersion = $AzSqlModule.Version
+    
     # Check if the required modules are installed.
     $requiredModules | ForEach-Object {
         if ($availableModules.Name -notcontains $_)
@@ -107,7 +107,17 @@ function Setup-Prerequisites
         }
         else
         {
-            Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
+            if($_ -eq "Az.Sql" -and $AzSqlVersion -lt "4.2.0")
+            {
+                Write-Host "[$($_)] module is present but the version is older." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Installing required version of [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
+                Install-Module -Name $_ -AllowClobber -Force -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+                Write-Host "Required version of [$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
+            }
+            else
+            {
+                Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
+            }
         }
     }
 }
@@ -162,7 +172,7 @@ function Set-SQLServerRequiredTLSVersion
         PS> Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\SQLServersWithoutMinReqTLSVersion.csv
+        PS> Set-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\sqlServersWithoutReqMinTLSVersion.csv
 
         .LINK
         None
@@ -271,7 +281,7 @@ function Set-SQLServerRequiredTLSVersion
     $logSkippedResources=@()
     
     # Control Id
-    $controlIds = "Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial"
+    $controlIds = "Azure_SQLDatabase_DP_Use_Secure_TLS_Version"
 
     if($AutoRemediation)
     {
@@ -411,7 +421,7 @@ function Set-SQLServerRequiredTLSVersion
      
     if ($totalsqlServersWithoutReqMinTLSVersion  -eq 0)
     {
-        Write-Host "No SQL Server(s) found where TLS is less than required TLS version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No SQL Server(s) found where TLS is less than required TLS version. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)	
         
         if($AutoRemediation -and ($sqlServerResources |Measure-Object).Count -gt 0) 
@@ -436,10 +446,8 @@ function Set-SQLServerRequiredTLSVersion
     if(-not($AutoRemediation))
     {
         Write-Host "Following SQL Servers are having TLS version either not set or less than required minimal TLS version less than required TLS Version:" -ForegroundColor $([Constants]::MessageType.Info)
-        $colsProperty =     @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
-                            @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                            @{Expression={$_.Location};Label="Location";Width=7;Alignment="left"},
-                            @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
+        $colsProperty =     @{Expression={$_.ServerName};Label="Server Name";Width=14;Alignment="left"},
+                            @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=14;Alignment="left"},
                             @{Expression={$_.minimalTlsVersion};Label="Minimal TLS Version";Width=7;Alignment="left"}
 
         $sqlServersWithoutReqMinTLSVersion | Format-Table -Property $colsProperty -Wrap
@@ -512,7 +520,7 @@ function Set-SQLServerRequiredTLSVersion
         # To hold results from the remediation.
         $sqlServersRemediated = @()
     
-        # Remidiate Controls by setting TLS version to required TLS version
+        # Remediate Controls by setting minimum TLS version to required TLS version
         $sqlServersWithoutReqMinTLSVersion | ForEach-Object {
             $sqlServer = $_
             $serverName = $_.ServerName;
@@ -579,7 +587,6 @@ function Set-SQLServerRequiredTLSVersion
 
         $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=10;Alignment="left"},
-                        @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
                         @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal TLS Ver. Before";Width=7;Alignment="left"},
                         @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal TLS Ver. After";Width=7;Alignment="left"}
   
@@ -674,7 +681,7 @@ function Reset-SQLServerRequiredTLSVersion
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_SQLServer_DP_Use_Secure_TLS_Version' Control.
-        Resets minimal TLS Version on the production slot and all non-production slots in all SQL Servers in the Subscription. 
+        Resets minimal TLS Version in all SQL Servers in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -698,10 +705,8 @@ function Reset-SQLServerRequiredTLSVersion
         None. Reset-SQLServerRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
+        PS> Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSQLServerMinReqTLSVersion\RemediatedsqlServersFileforMinTLS.csv
 
-        .EXAMPLE
-        PS> Reset-SQLServerRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -ExcludeNonProductionSlots -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\setMinTLSVersionForSQLServers\RemediatedSQLServers.csv
 
         .LINK
         None
@@ -905,6 +910,13 @@ function Reset-SQLServerRequiredTLSVersion
            
             try
             {  
+                if([String]::IsNullOrWhiteSpace($minimalTlsVersionBefore))
+                {
+                    $sqlServersSkipped += $sqlServer
+                    Write-Host "The TLS version for the SQL Server: [$($_.ServerName)] can't be rolled back as it was set to null before remediation and TLS version can't be set to null." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                    return;
+                }
                 $sqlserverResource =  Set-AzSqlServer -ServerName $serverName  -ResourceGroupName $resourceGroupName -MinimalTlsVersion $minimalTlsVersionBefore
 
                 if ($sqlserverResource.MinimalTlsVersion -ne $minimalTlsVersionBefore)
@@ -945,17 +957,15 @@ function Reset-SQLServerRequiredTLSVersion
     
     Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
     
-    $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=10;Alignment="left"},
+    $colsProperty = @{Expression={$_.ServerName};Label="Server Name";Width=14;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=10;Alignment="left"},
-                    @{Expression={$_.Location};Label="Location";Width=10;Alignment="left"},
-                    @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
-                    @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal Tls Version After";Width=7;Alignment="left"},
-                    @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal Tls Version Before";Width=7;Alignment="left"}
+                    @{Expression={$_.MinimalTlsVersionBefore};Label="Minimal Tls Version Before";Width=10;Alignment="left"},
+                    @{Expression={$_.MinimalTlsVersionAfter};Label="Minimal Tls Version After";Width=10;Alignment="left"}
         
 
     if ($($sqlServersRolledBack | Measure-Object).Count -gt 0)
     {
-        Write-Host "Resetting TLS for following Storage Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Resetting TLS for following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
         $sqlServersRolledBack | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
 

@@ -36,7 +36,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
-27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version)
 28. [Azure_Storage_DP_Use_Secure_TLS_Version](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version)
 29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#29-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
@@ -44,9 +44,9 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
 33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
 34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
-35. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#35-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
-
-
+35. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version)
+36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
+37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#35-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 
 <br />
 
@@ -570,7 +570,7 @@ Yes
 ___
 
 
-## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in SQL Server
@@ -731,6 +731,32 @@ Yes
 
 ___
 
+## 35. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 36. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
 ## 35. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 ### Display Name
@@ -751,6 +777,17 @@ Yes
 
 ___
 
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
@@ -831,3 +868,26 @@ Connect-AzAccount
 **Step 4 of 4. Execute remediation scripts:**
 
 After completing above mentioned steps, open remediation script in PowerShell and follow instructions as per comments present in each script.
+
+___
+
+
+## 35. Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure SQL Managed Instance
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLManagedInstanceMinReqTLSVersion](Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
