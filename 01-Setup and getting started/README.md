@@ -1,23 +1,63 @@
-> The Azure Tenant Security Solution (AzTS) was created by the Core Services Engineering & Operations (CSEO) division at Microsoft, to help accelerate Microsoft IT's adoption of Azure. We have shared AzTS and its documentation with the community to provide guidance for rapidly scanning, deploying and operationalizing cloud resources, across the different stages of DevOps, while maintaining controls on security and governance.
-<br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community.
+<style>
+highlightedtext { background-color:yellow;color:black;}
+indexStyle { background-color:lightblue;color:white;}
+</style>
+> <highlightedtext> The Azure Tenant Security Solution (AzTS) was created by the Core Services Engineering & Operations (CSEO) division at Microsoft, to help accelerate Microsoft IT's adoption of Azure. We have shared AzTS and its documentation with the community to provide guidance for rapidly scanning, deploying and operationalizing cloud resources, across the different stages of DevOps, while maintaining controls on security and governance.
+<br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community.</highlightedtext>
 
-</br>
+<indexStyle>
+
+# Index
+
+<details> 
+<summary>
+  Setup Instructions
+  
+</summary>
+
+- [PowerShell Tips](PowerShellTips.md)
+- [ReadMe](README.md)
+
+</details>
+
+<details> 
+<summary>
+Monitoring Security
+</summary>
+
+- [Instructions]()
+- [Methods]()
+
+
+</details>
+</indexStyle>
+
 
 # Setting up Azure Tenant Security (AzTS) Solution - Step by Step
  
 </br>
 
 ## On this page:
-  - [Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
-  - [Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
-  - [Verifying that Tenant Security Solution installation is complete](README.md#3-verifying-that-tenant-security-solution-installation-is-complete)
-  - [Log Analytics visualization](README.md#4-log-analytics-visualization)
-  - [FAQ](README.md#faq)
+[1. Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
+
+   [1.1 test](README.md)
+
+  [2. Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
+
+  [3. Verifying that Tenant Security Solution installation is complete](README.md#3-verifying-that-tenant-security-solution-installation-is-complete)
+
+  [4. Log Analytics visualization](README.md#4-log-analytics-visualization)
+
+  [5. FAQ](README.md#faq)
 
 --------------------------------------------------
 </br>
 
-## **1. Steps to install AzTS Solution**
+<details>
+<summary> 
+<b> Steps to install AzTS Solution</b>
+
+</summary>
 
 In this section, we will walk through the steps of setting up AzTS Solution. This setup can take up to 30 minutes. There are two methods to setup AzTS solution:
 
@@ -27,7 +67,7 @@ In this section, we will walk through the steps of setting up AzTS Solution. Thi
 
 ## **Method A:**
 
-> _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
+> :memo: **Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
 This setup is divided into six steps:
 
@@ -656,8 +696,10 @@ To view scan result in AzTS UI:
 
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
-
-## **2. Manually trigger AzTS on-demand scan for entire tenant**
+</details>
+<details>
+<summary><b>Manually trigger AzTS on-demand scan for entire tenant</b>
+</summary>
 
 > **Note:** 
 > _AzTS has been designed to auto-trigger the scan once every 24 hours._ 
@@ -693,7 +735,10 @@ Start-AzSKTenantSecuritySolutionOnDemandScan -SubscriptionId $HostSubscriptionId
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
 
-## **3. Verifying that Tenant Security Solution installation is complete**
+</details>
+
+<details>
+<summary><b>Verifying that Tenant Security Solution installation is complete</b></summary>
 
 The below steps will help you to verify and understand different resources and functions created as part of the setup along with purpose. This step can take up to 30 minutes. 
 
@@ -859,8 +904,9 @@ After ATS_04_WorkItemScheduler completes pushing the messages in the queue, Work
 3. Log Analytics workspace in AzTS host resource group (as this contains scan results data)
 
   Also, as a good security practice, consider rotating keys for Storage account and  Log Analytics workspacere periodically. Once Log Analytics workspace key is rotated, Power BI dashboards used for monitoring would need updating and re-publishing.
-
-## **4. Log Analytics Visualization**
+</details>
+<details>
+<summary><b>Log Analytics Visualization</b></summary>
 
 For understanding the collected data, use the querying and visualization capabilities provided by Log Analytics. 
 To start, go to **Log Analytics workspace** created during setup --> Select **Logs**. 
@@ -941,7 +987,8 @@ AzSK_ControlResults_CL
 ```
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
+</details>
 
 ## FAQ
 Please find FAQs [here](../FAQs/README.md)
-
+</p>
