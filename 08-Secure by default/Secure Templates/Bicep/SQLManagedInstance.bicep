@@ -184,6 +184,6 @@ resource managedInstance 'Microsoft.Sql/managedInstances@2021-11-01-preview' = {
     storageSizeInGB: storageSizeInGB
     vCores: vCores
     licenseType: licenseType
-    minimalTlsVersion: minTLSVersion
+    minimalTlsVersion: minTLSVersion // Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
   }
 }

@@ -247,7 +247,7 @@
         "storageSizeInGB": "[parameters('storageSizeInGB')]",
         "vCores": "[parameters('vCores')]",
         "licenseType": "[parameters('licenseType')]",
-        "minimalTlsVersion":"1.2"
+        "minimalTlsVersion":"1.2" // Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
