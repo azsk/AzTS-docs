@@ -757,7 +757,19 @@ Use approved version of TLS for Event Hub Namespace.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
-## 35. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 37. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 ### Display Name
 SSL must be enabled for Azure database for MySQL flexible server
@@ -778,16 +790,6 @@ Yes
 ___
 
 
-### Minimum permissions required to run the script
-Contributor or Owner role at resource level
-
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
-Yes
-
-### Supports rollback?
-Yes
-
-___
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
