@@ -41,7 +41,7 @@ Monitoring Security
 ## On this page:
 [1. Steps to install AzTS Solution](README.md#1-steps-to-install-AzTS-solution)
 
-   [1.1 test](README.md)
+  &nbsp; &nbsp; [1.1 test](README.md)
 
   [2. Manually trigger AzTS on-demand scan for entire tenant](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant)
 
