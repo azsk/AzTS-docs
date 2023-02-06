@@ -37,6 +37,10 @@
 
 18. [Azure_EventHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#18-Azure_EventHub_DP_Use_Secure_TLS_Version)
 
+19. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#19-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
+
+
+
 <br />
 ___
 
@@ -269,6 +273,18 @@ Use approved version of TLS for Event Hub Namespace.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
+
+___
+## 19. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Storage Account(s)
