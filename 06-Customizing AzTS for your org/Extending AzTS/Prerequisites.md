@@ -1,5 +1,5 @@
-## Prerequisite AzTS configurations to add new control
-Below mentioned appsettings are required before adding new controls:
+## Prerequisite AzTS configurations to enable Control Medatadata Editor tool(CMET)
+Below mentioned appsettings are required for enabling CMET:
 
 ### AzTS API
 
