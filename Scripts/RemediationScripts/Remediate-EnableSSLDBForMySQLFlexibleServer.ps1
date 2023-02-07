@@ -438,7 +438,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host "[Step 3 of 5] Back up Azure Database for MySQL flexible server(s) details."
+    Write-Host "[Step 4 of 5] Back up Azure Database for MySQL flexible server(s) details."
     Write-Host $([Constants]::SingleDashLine)
 
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
@@ -452,7 +452,7 @@ function Enable-SSLForDBForMySQLFlexibleServer {
     }
 
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 4 of 5] Enable SSL for Azure Database for MySQL flexible server(s) in the Subscription."
+    Write-Host "[Step 5 of 5] Enable SSL for Azure Database for MySQL flexible server(s) in the Subscription."
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun) {
