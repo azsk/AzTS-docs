@@ -15,9 +15,13 @@ resource storageaccount 'Microsoft.Storage/storageAccounts@2021-04-01' = {
   }
   kind: 'StorageV2' //[Azure_Storage_AuthN_Dont_Allow_Anonymous]
   properties: {
-    minimumTlsVersion: 'TLS1_2' //[Azure_Storage_DP_Use_Secure_TLS_Version_Trial]
+    minimumTlsVersion: 'TLS1_2' //[Azure_Storage_DP_Use_Secure_TLS_Version]
     supportsHttpsTrafficOnly: true //[Azure_Storage_DP_Encrypt_In_Transit]
     allowBlobPublicAccess: false //[Azure_Storage_AuthN_Dont_Allow_Anonymous]
+    sasPolicy: {
+      sasExpirationPeriod: '7.00:00:00' //[Azure_Storage_AuthZ_Set_SAS_Expiry_Interval]
+      expirationAction: 'Log' //[Azure_Storage_AuthZ_Set_SAS_Expiry_Interval]
+    }
   }
 }
 

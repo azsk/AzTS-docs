@@ -8,6 +8,8 @@
 - [Azure_Storage_DP_Encrypt_In_Transit](#azure_storage_dp_encrypt_in_transit)
 - [Azure_Storage_NetSec_Restrict_Network_Access](#azure_storage_netsec_restrict_network_access)
 - [Azure_Storage_DP_Use_Secure_TLS_Version](#azure_storage_dp_use_secure_tls_version)
+- [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](#azure_storage_authz_set_sas_expiry_interval)
+- [Azure_Storage_SI_Rotate_Access_Keys](#azure_storage_si_rotate_access_keys)
 
 <!-- /TOC -->
 <br/>
@@ -64,7 +66,7 @@ Data in containers that have anonymous access can be downloaded by anyone on the
 ### Azure Policy or ARM API used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
-  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2019-06-01
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].kind, [*].properties.allowBlobPublicAccess
   <br />
@@ -133,7 +135,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
   <br />
 
 - ARM API to list all the storage accounts available under the subscription:
-  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2019-06-01
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.supportsHttpsTrafficOnly
   <br />
@@ -188,7 +190,7 @@ Restricting access using firewall/virtual network config reduces network exposur
 ### Azure Policy or ARM API used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
-  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2019-06-01
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.networkAcls.defaultAction
   <br />
@@ -220,14 +222,14 @@ TLS provides privacy and data integrity between client and server. Using approve
 > **Failed:**
 > Any of the following conditions is met.
 > * Minimum TLS version is not set (default 1.0).
-> * Minimum TLS version is set to 1.0 or 1.1.
->
+> * Minimum TLS version is less than 1.2 (configured min required tls version).
+><!--
 > **Verify:**
 > Not Applicable.
 >
 > **NotApplicable:**
 > Not Applicable.
->
+>-->
 ### Recommendation
 
 - **Azure Portal**
@@ -249,7 +251,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Azure Policy or ARM API used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
-  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2019-06-01
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.minimumTlsVersion
   <br />
@@ -257,3 +259,113 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ___
 
+## Azure_Storage_AuthZ_Set_SAS_Expiry_Interval
+
+### Display Name
+Shared Access Signature (SAS) expiry interval must be less than recommended upper limit for Azure Storage
+
+### Rationale
+Shared Access Signature (SAS) is used to provide secure delegate access to resources in storage account. Setting SAS expiry interval to less than recommended upper limit mitigates the risk of providing access to resources in storage account for a large amount of time.
+
+### Control Settings
+
+```json
+{
+    "SASExpirationPeriod": "7.00:00:00"
+}
+```
+
+### Control Spec
+
+> **Passed:**
+> Azure Storage current SAS expiry interval is set to either less than or equal to the recommended SAS expiry interval.
+>
+> **Failed:**
+> Any of the following conditions is met.
+> * Azure Storage current SAS expiry interval is greater than recommended SAS expiry interval.
+> * Azure Storage SAS expiry interval is null.
+>
+> **Verify:**
+> Not Applicable.
+>
+> **NotApplicable:**
+> Not Applicable.
+>
+### Recommendation
+
+- **Azure Portal**
+
+  Refer https://learn.microsoft.com/en-us/azure/storage/common/sas-expiration-policy?tabs=azure-portal#configure-a-sas-expiration-policy to configure SAS expiry interval for a storage account.
+
+- **PowerShell**
+
+  Refer https://learn.microsoft.com/en-us/azure/storage/common/sas-expiration-policy?tabs=azure-powershell#configure-a-sas-expiration-policy to configure SAS expiry interval for a storage account.
+
+<!--
+- **Enforcement Policy**
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
+-->
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all the storage accounts available under the subscription:
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
+  <br />
+  **Properties:** [*].properties.sasPolicy.sasExpirationPeriod
+  <br />
+  <br />
+
+___
+
+## Azure_Storage_SI_Rotate_Access_Keys
+
+### Display Name
+Azure Storage Account access keys should rotate on periodic basis
+
+### Rationale
+Rotating access keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used.
+
+### Control Settings
+
+```json
+{
+    "RecommendedKeyRotationPeriodInDays": "90"
+}
+```
+
+### Control Spec
+
+> **Passed:**
+> Azure Storage account access keys are rotated less than or equal to the required key rotation period.
+>
+> **Failed:**
+> Azure Storage account access keys rotated period is greater than recommended key rotation period.
+>
+
+### Recommendation
+
+
+- **Azure Portal**
+
+  Refer https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal to rotate access keys in storage account.
+
+- **PowerShell**
+
+	```powershell
+   New-AzStorageAccountKey -ResourceGroupName '<ResourceGroupName>' -Name '<Name>' -KeyName '<KeyName>'
+   ```
+
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all the storage accounts available under the subscription:
+  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
+  <br />
+  **Properties:** [*].properties.keyCreationTime
+  <br />
+  <br />
+
+___

@@ -6,6 +6,7 @@
 
 - [Azure_EventHub_AuthZ_Dont_Use_Policies_At_Event_Hub_Namespace](#azure_eventhub_authz_dont_use_policies_at_event_hub_namespace)
 - [Azure_EventHub_AuthZ_Use_Min_Permissions_Access_Policies](#azure_eventhub_authz_use_min_permissions_access_policies)
+- [Azure_EventHub_DP_Use_Secure_TLS_Version](#Azure_EventHub_DP_Use_Secure_TLS_Version)
 
 <!-- /TOC -->
 <br/>
@@ -119,6 +120,56 @@ Granting minimum access ensures that users are granted just enough permissions t
 - ARM API to list all Authorization Rules for an Event Hubs Instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs/{eventHubsInstanceName}/authorizationRules?
 api-version=2017-04-01<br />
 **Properties:** properties.rights
+ <br />
+
+<br />
+
+___ 
+
+## Azure_EventHub_DP_Use_Secure_TLS_Version 
+
+### Display Name 
+Use approved version of TLS for Event Hub Namespace.
+
+### Rationale 
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+
+
+### Control Spec 
+
+> **Passed:** 
+> TLS version of Event Hub Namespace is already defined as per the Security Recommendation.
+> 
+> **Failed:** 
+> Current minimum TLS version is less than required secured version.
+> 
+> **Error:** 
+> There was an error fetching TLS version of Event Hub Namespace.
+> 
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Use the Azure portal to configure TLS version as per the Security Recommendation.
+	 Go to Azure Portal --> your Event Hub Namespace --> Configuration --> Security --> Set the TLS Version.
+
+- **PowerShell** 
+
+	 ```powershell 
+
+     # Set the TLS Version
+     Set-MinTLSVersionForEventHubNamespace
+
+     # For more help run:
+	 Get-Help Set-MinTLSVersionForEventHubNamespace -full
+	 ```  
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{0}/providers/Microsoft.EventHub/namespaces?api-version=2022-01-01-preview<br />
+**Properties:** properties.minimumTlsVersion
  <br />
 
 <br />

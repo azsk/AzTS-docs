@@ -36,12 +36,18 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
-27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
-28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version)
+28. [Azure_Storage_DP_Use_Secure_TLS_Version](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version)
 29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#29-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
-
-
+31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
+32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
+33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
+34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
+35. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version)
+36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
+37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#37-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
+38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 
 <br />
 
@@ -565,7 +571,7 @@ Yes
 ___
 
 
-## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in SQL Server
@@ -585,7 +591,7 @@ Yes
 
 ___
 
-## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+## 28. Azure_Storage_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in Storage Account
@@ -602,10 +608,7 @@ Yes
 ### Supports rollback?
 Yes
 
-
 ___
-
-
 
 ## 29. Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration
 
@@ -647,6 +650,160 @@ Yes
 ### Supports rollback?
 Yes
 
+
+___
+
+
+## 31. Azure_FrontDoor_NetSec_Enable_WAF_Configuration 
+
+### Display Name
+WAF Policy should be configured on Endpoints in Front Door.
+
+### Link to Bulk Remediation Script (BRS)
+You can Configure WAF Policy on Front Door using below BRS:  <br/>
+[Remediate-ConfigureWAFPolicyForFrontDoor](Remediate-ConfigureWAFPolicyForFrontDoor.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyForFrontDoor](Remediate-EnableWAFPolicyForFrontDoor.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyPreventionModeForFrontDoor](Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1) <br/>
+
+___
+
+
+## 32. Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration 
+
+### Display Name
+Protect Internet First Applications with Azure FrontDoor and WAF.
+
+### Link to Bulk Remediation Script (BRS)
+You can Configure WAF Policy on Front Door using below BRS:  <br/>
+[Remediate-ConfigureWAFOnAzureFrontDoorCDN](Remediate-ConfigureWAFOnAzureFrontDoorCDN.ps1) <br/>
+You can enable State of WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-EnableWAFPolicyStateOfAzFrontDoorCDN](Remediate-EnableWAFPolicyStateOfAzFrontDoorCDN.ps1) <br/>
+You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
+[Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN](Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN.ps1) <br/>
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation?
+Yes
+
+### Supports rollback?
+Yes
+
+
+___
+## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+[Trial] Front Door Classic should have Approved Minimum TLS version
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetClassicFrontDoorMinTLSVersion](Remediate-SetClassicFrontDoorMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+
+## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+
+### Display Name
+[Trial] Front Door should have Approved Minimum TLS version.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+## 35. Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure SQL Managed Instance
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLManagedInstanceMinReqTLSVersion](Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 36. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+## 37. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
+
+### Display Name
+SSL must be enabled for Azure database for MySQL flexible server
+
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 38. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
 
 ___
 
@@ -731,3 +888,6 @@ Connect-AzAccount
 **Step 4 of 4. Execute remediation scripts:**
 
 After completing above mentioned steps, open remediation script in PowerShell and follow instructions as per comments present in each script.
+
+___
+
