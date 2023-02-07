@@ -316,7 +316,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
             if (($adAdmin|Measure-Object).Count -ne 0)
             {
                 $sqlServerInstance.IsAADAdminPreviouslyConfigured = $true
-                $sqlServerInstance.EmailId = "AlreadySet"
+                $sqlServerInstance.EmailId = "NA(as AAD Admin is already configured)"
                 if ($adAdmin.IsAzureADOnlyAuthentication -eq $true)
                 {
                     $sqlServersWithAADOnlyAuthEnabled += $sqlServerInstance
@@ -394,6 +394,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
             $sqlServerInstance = $_
             try
             {
+                # To enable AAD Only, AAD Admin should be set. We are first checking if it is previously set on the resource and proceeding for AAD Only.
                 if($_.IsAADAdminPreviouslyConfigured -eq $true)
                 {
                     if($_.IsSynapseWorkspace -eq $true)
@@ -414,6 +415,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
                         $skippedSqlServers += $sqlServerInstance                   
                     }
                 }
+                # If AAD Admin has not been previously set, we are setting it based on the EmailId input from the user and then enabling AAD Only.
                 else
                 {
                     if(![String]::IsNullOrWhiteSpace($_.EmailId))
@@ -683,49 +685,70 @@ function Disable-AADOnlyAuthenticationForSqlServers
     # Includes SQL Servers that were skipped during roll back. There were errors rolling back the changes made previously.
     $skippedSqlServers = @()
     $validSqlServerDetails | ForEach-Object {
-        
         $sqlServerInstance = $_
         try
         {
+            # Disabling AAD Only.
             if($_.IsSynapseWorkspace -eq $true)
             {
                 $aadOnlyAuth = Disable-AzSynapseActiveDirectoryOnlyAuthentication -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
 
+                # On success of disabling AAD Only, we also remove admin set by the Enable script in case it was not previously configured.
+                # Order is important, first AAD Only should be disabled and then AAD Admin should be removed if applicable.
                 if(($aadOnlyAuth|Measure-Object).Count -ne 0 -and $_.IsAADAdminPreviouslyConfigured -eq $false)
                 {
                     $adAdmin = Remove-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
+                }
+
+                if($_.IsAADAdminPreviouslyConfigured -eq $false)
+                {
+                    # $adAdmin does not return any object on success so not checking the object count, but in case of any error the control will move into catch block and this code is not executed.
+                    $rolledBackSqlServers += $sqlServerInstance 
+                }
+                else
+                {
+                    if (($aadOnlyAuth|Measure-Object).Count -ne 0)
+                    {
+                        $rolledBackSqlServers += $sqlServerInstance 
+                    }
+                    else
+                    {
+                        $skippedSqlServers += $sqlServerInstance                   
+                    }
                 }
             }
             else
             {
                 $aadOnlyAuth = Disable-AzSqlServerActiveDirectoryOnlyAuthentication -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName
 
+                # On success of disabling AAD Only, we also remove admin set by the Enable script in case it was not previously configured.
+                # Order is important, first AAD Only should be disabled and then AAD Admin should be removed if applicable.
                 if(($aadOnlyAuth|Measure-Object).Count -ne 0 -and $_.IsAADAdminPreviouslyConfigured -eq $false)
                 {
-                    $adAdmin =  Remove-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -ErrorAction Continue
+                    $adAdmin =  Remove-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName
                 }
-            }
 
-            if($_.IsAADAdminPreviouslyConfigured -eq $false)
-            {
-                if (($adAdmin|Measure-Object).Count -ne 0)
+                if($_.IsAADAdminPreviouslyConfigured -eq $false)
                 {
-                    $rolledBackSqlServers += $sqlServerInstance 
+                    if (($adAdmin|Measure-Object).Count -ne 0)
+                    {
+                        $rolledBackSqlServers += $sqlServerInstance 
+                    }
+                    else
+                    {
+                        $skippedSqlServers += $sqlServerInstance                   
+                    }
                 }
                 else
                 {
-                    $skippedSqlServers += $sqlServerInstance                   
-                }
-            }
-            else
-            {
-                if (($aadOnlyAuth|Measure-Object).Count -ne 0)
-                {
-                    $rolledBackSqlServers += $sqlServerInstance 
-                }
-                else
-                {
-                    $skippedSqlServers += $sqlServerInstance                   
+                    if (($aadOnlyAuth|Measure-Object).Count -ne 0)
+                    {
+                        $rolledBackSqlServers += $sqlServerInstance 
+                    }
+                    else
+                    {
+                        $skippedSqlServers += $sqlServerInstance                   
+                    }
                 }
             }
         }
@@ -745,8 +768,8 @@ function Disable-AADOnlyAuthenticationForSqlServers
     $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
-                         @{Expression={$_.IsSynapseWorkspace};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
+                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
+                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"}
 
     Write-Host $([Constants]::SingleDashLine)
 
