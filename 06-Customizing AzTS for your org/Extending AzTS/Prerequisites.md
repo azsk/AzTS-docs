@@ -1,5 +1,5 @@
 ## Prerequisite AzTS configurations to enable Control Medatadata Editor tool(CMET)
-Below mentioned appsettings are required before enabling CMET:
+Below mentioned appsettings are required for enabling CMET:
 
 ### AzTS API
 
