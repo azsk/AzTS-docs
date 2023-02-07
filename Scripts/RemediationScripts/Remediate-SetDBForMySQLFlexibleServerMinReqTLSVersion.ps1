@@ -305,7 +305,6 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
             $servers = @();
             $servers = Get-AzMySqlFlexibleServer -ErrorAction Stop
             $servers | ForEach-Object { 	
-                #$DBForMySQLFSResource =  Get-AzMySqlFlexibleServer -Name $_.Name -ResourceGroupName $_.Id.Split("/")[4]  -ErrorAction SilentlyContinue 
                 $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName)  -ResourceGroupName $_.Id.Split("/")[4] -ServerName $_.Name -SubscriptionId $SubscriptionId).Value 
                 $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                 @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
