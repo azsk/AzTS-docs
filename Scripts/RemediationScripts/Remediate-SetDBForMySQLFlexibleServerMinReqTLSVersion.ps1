@@ -376,12 +376,17 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
         Write-Host "No Azure Database for MySQL flexible server(s) found with non-secure TLS version enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         
-        $DBForMySQLFlexibleServerDetails | ForEach-Object {
-        $logResource = @{}	
-        $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
-        $logResource.Add("ResourceName", ($_.ResourceName))
-        $logResource.Add("Reason", "Secure TLS version found configured on Azure database for MySQL - Flexible server: [$($_.ResourceName)]")            
-        $logSkippedResources += $logResource
+        if($AutoRemediation) 
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$logSkippedResources
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
         return
     }
