@@ -39,6 +39,10 @@
 
 19. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](ControlsEligibleForRemediationThroughUI.md#19-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 
+20. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#20-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
+
+
+
 <br />
 ___
 
@@ -291,4 +295,15 @@ SSL must be enabled for Azure database for MySQL flexible server
 Contributor or higher privileged role on the Azure database for MYSQL flexible server
 
 ___
+## 20. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
 
+### Display Name
+Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
+
+___
