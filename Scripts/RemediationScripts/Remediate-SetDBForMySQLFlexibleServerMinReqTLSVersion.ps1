@@ -334,11 +334,11 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
                     $DBForMySQLFSResource = Get-AzMySqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
             
                     $parameterValue = (Get-AzMySqlFlexibleServerConfiguration -Name $([Constants]::ParameterName) -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
-                    $DBForMySQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.ResourceId } },
-                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
-                    @{N = 'ResourceName'; E = { $_.ResourceName } }, 
+                    $DBForMySQLFlexibleServerDetails += $DBForMySQLFSResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
+                    @{N = 'ResourceName'; E = { $_.Name } }, 
                     @{N = 'TLSVersion'; E = { $parameterValue } }
-            
+
                 }
                 catch {
                     Write-Host "Error fetching Azure Database for MySQL flexible server(s) resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -375,7 +375,15 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
 
     if ($totalDBForMySQLFSWithNonSecureTLSVersionEnabled -eq 0) {
         Write-Host "No Azure Database for MySQL flexible server(s) found with non-secure TLS version enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host $([Constants]::DoubleDashLine)	
+        Write-Host $([Constants]::DoubleDashLine)
+        
+        $DBForMySQLFlexibleServerDetails | ForEach-Object {
+        $logResource = @{}	
+        $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
+        $logResource.Add("ResourceName", ($_.ResourceName))
+        $logResource.Add("Reason", "Secure TLS version found configured on Azure database for MySQL - Flexible server: [$($_.ResourceName)]")            
+        $logSkippedResources += $logResource
+        }
         return
     }
 
