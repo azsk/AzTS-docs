@@ -46,6 +46,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
 35. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version)
 36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
+37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#37-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 
 <br />
 
@@ -768,6 +769,28 @@ Yes
 
 ___
 
+## 37. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
+
+### Display Name
+SSL must be enabled for Azure database for MySQL flexible server
+
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+
+
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
@@ -850,23 +873,3 @@ After completing above mentioned steps, open remediation script in PowerShell an
 
 ___
 
-
-## 35. Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
-
-### Display Name
-Use approved version of TLS for Azure SQL Managed Instance
-
-### Link to Bulk Remediation Script (BRS)
-[Remediate-SetSQLManagedInstanceMinReqTLSVersion](Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1)
-
-### Minimum permissions required to run the script
-Contributor role at resource level
-
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
-Yes
-
-### Supports rollback?
-Yes
-
-
-___
