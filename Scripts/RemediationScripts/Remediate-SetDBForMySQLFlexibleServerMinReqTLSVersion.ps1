@@ -368,6 +368,14 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
         if (-not (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion))) {
             $DBForMySQLFSWithNonSecureTLSVersionEnabled += $_
         }
+        else 
+        {
+            $logResource = @{}
+            $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
+            $logResource.Add("ResourceName", ($_.ResourceName))	
+            $logResource.Add("Reason", "TLS version(s) found configured on this Resource.")    	
+            $logSkippedResources += $logResource	
+        }
     }
    
     $totalDBForMySQLFSWithNonSecureTLSVersionEnabled = ($DBForMySQLFSWithNonSecureTLSVersionEnabled  | Measure-Object).Count
@@ -378,14 +386,6 @@ function Set-SecureTLSVersionForDBForMySQLFlexibleServer {
         
         if($AutoRemediation) 
         {
-            $DBForMySQLFlexibleServerDetails | ForEach-Object {
-                $logResource = @{}
-                $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
-                $logResource.Add("ResourceName", ($_.ResourceName))	
-                $logResource.Add("Reason", "TLS version(s) found configured on this Resource.")    	
-                $logSkippedResources += $logResource	
-            }
-        
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
             $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
             foreach($logControl in $log.ControlList){
