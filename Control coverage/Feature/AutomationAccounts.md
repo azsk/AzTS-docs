@@ -4,15 +4,15 @@
 
 <!-- TOC depthfrom:2 depthto:2 -->
 
-- [Azure_AutomationAccounts_DP_Encrypt_Variables_Trial](#azure_automationaccounts_dp_encrypt_variables_trial)
+- [Azure_AutomationAccounts_DP_Encrypt_Variables](#azure_automationaccounts_dp_encrypt_variables)
 
 <!-- /TOC -->
 <br/>
 
-## Azure_AutomationAccounts_DP_Encrypt_Variables_Trial
+## Azure_AutomationAccounts_DP_Encrypt_Variables
 
 ### Display Name 
-[Trial] Automation account variables should be encrypted
+Automation account variables should be encrypted
 
 ### Rationale 
 Encryption helps prevent sensitive data breaches during transfer and storage.
@@ -20,30 +20,34 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
 ### Control Spec 
 
 > **Passed:** 
-> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as `Healthy`.
-> (or)
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the Automation Account as `Healthy`.
+> <br>
+> OR
+> <br>
 > Any one of the following condition is met.
 > * All associated variables are encrypted.
 > * Count of associated variables is zero.
 > 
 > **Failed:** 
-> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
-> (or)
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the Automation Account as either `Unhealthy`, or `NotApplicable` with `cause` - `OffByPolicy` or `Exempt`.
+> <br>
+> OR
+> <br>
 > More than one variable is not encrypted.
 >
 > **Verify:**
-> Microsoft Defender for Cloud (MDC) reports the assessment status for the SQL server as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
+> Microsoft Defender for Cloud (MDC) reports the assessment status for the Automation Account as `Not Applicable` with `cause` other than `OffByPolicy` and `Exempt`.
 >
 > **NotApplicable:**
 > Not Applicable.
 >
-> **Note:** If no Microsoft Defender for Cloud (MDC) assessment is found for the SQL server, response from the ARM API is considered for the evaluation.
+> **Note:** If no Microsoft Defender for Cloud (MDC) assessment is found for the Automation Account, response from the ARM API is considered for the evaluation.
 >
 ### Recommendation
 
 - **Azure Portal**
 
-  Go to Azure Portal --> your Automation Account --> Shared Resources --> Variables. As variable's encrypted state cannot be modified after creation, you need to delete that variable and create another variable with same name and value with encryption enabled. 
+  Go to Azure Portal --> your Automation Account --> Shared Resources --> Variables. As variable's encrypted state cannot be modified after creation, you need to delete that variable and create another variable with the same name and value with encryption enabled. 
 
 - **PowerShell**
 
