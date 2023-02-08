@@ -5,7 +5,7 @@
 <!-- TOC -->
 
 - [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
-- [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial](#azure_dbformysqlflexibleServer_dp_use_secure_tls_version_trial)
+- [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](#azure_dbformysqlflexibleServer_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
@@ -15,7 +15,7 @@ ___
 ## Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
 
 ### Display Name 
-SSL must be enabled for Azure database for MySQL flexible server
+SSL connection must be enabled for Azure Database for MySQL - Flexible Servers
 
 ### Rationale 
 Enforcing secure transport between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. 
@@ -62,10 +62,10 @@ To configure secure transport for client communication, Go to Azure Portal --> A
 
 ___ 
 
-## Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version_Trial 
+## Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 ### Display Name 
-[Trial] Azure Database for MySQL - Flexible Servers Announcing SSL enforcement and minimum TLS version choice
+Use approved version of TLS for Azure Database for MySQL - Flexible Servers
 
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 

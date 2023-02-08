@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "managedInstanceName": {
+        "value": "<name of the SQL Managed Instance>"
+      },
+      "administratorLogin": {
+        "value": "<login name of the SQL Managed Instance administrator>"
+      },
+      "administratorLoginPassword": {
+        "value": "<login password of the SQL Managed Instance administrator>"
+      }
+    }
+  }
