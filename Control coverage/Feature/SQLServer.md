@@ -147,7 +147,7 @@ Azure AD authentication is used to centrally manage identities of database users
 	To enable AAD Admin,
 
     ```powershell
-	  Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin Display Name}'
+	  Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin EmailId}'
 	  ```
 
     Refer: https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator
@@ -165,7 +165,7 @@ Azure AD authentication is used to centrally manage identities of database users
 	To enable AAD Admin,
 
     ```powershell
-    Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}' -DisplayName '{AzureAdAdmin Display Name}'
+    Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}' -DisplayName '{AzureAdAdmin EmailId}'
     ```
     
 	Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlactivedirectoryadministrator

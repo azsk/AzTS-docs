@@ -88,9 +88,9 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql", "Az.Synapse")
+    $requiredModules = @("Az.Accounts", "Az.Resources")
 
-    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Required modules: $($requiredModules -join ', ')", "Az.Sql", "Az.Synapse" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
@@ -107,6 +107,34 @@ function Setup-Prerequisites
             Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+
+    # Checking if 'Az.Sql' module >=2.10.0 is available and installing otherwise.
+    Write-Host "Checking if Az.Sql>=2.10.0 is present..."
+
+    $azSql = Get-InstalledModule -Name "Az.Sql" -MinimumVersion 2.10.0 -ErrorAction SilentlyContinue
+    if(($azSql|Measure-Object).Count -eq 0)
+    {
+        Write-Host "Installing module Az.Sql with version 2.10.0..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Install-Module -Name Az.Sql -Scope CurrentUser -Repository 'PSGallery' -MinimumVersion 2.10.0 -Force
+    }
+    else
+    {
+        Write-Host "Az.Sql module of required version is available." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+
+    # Checking if 'Az.Synapse' module >=1.5.0 is available and installing otherwisee.
+    Write-Host "Checking if Az.Synapse>=1.5.0 is present..."
+
+    $azSynapse = Get-InstalledModule -Name "Az.Synapse" -MinimumVersion 1.5.0 -ErrorAction SilentlyContinue
+    if(($azSynapse|Measure-Object).Count -eq 0)
+    {
+        Write-Host "Installing module Az.Synapse with version 1.5.0..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Install-Module -Name Az.Synapse -Scope CurrentUser -Repository 'PSGallery' -MinimumVersion 1.5.0 -Force
+    }
+    else
+    {
+        Write-Host "Az.Synapse module of required version is available." -ForegroundColor $([Constants]::MessageType.Update)
+    }
 }
 
 function Enable-AADOnlyAuthenticationForSqlServers
@@ -253,7 +281,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
                                                                       @{N='ResourceType';E={$_.ResourceType}},
                                                                       @{N='IsSynapseWorkspace';E={$false}},
                                                                       @{N='IsAADAdminPreviouslyConfigured';E={$false}},
-                                                                   @{N='EmailId';E={""}}
+                                                                      @{N='EmailId';E={""}}
                                                                        
          # Add Synapse Workspaces to this list.
          $sqlServerResources += $synapseWorkspaces | Select-Object @{N='ResourceId';E={$_.ResourceId}},
@@ -347,8 +375,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
 
     $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
-                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"}
+                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
 
     Write-Host "`nFound $($totalSQLServersWithAADOnlyAuthDisabled) SQL Server(s) with Azure AD Only Authentication disabled." -ForegroundColor $([Constants]::MessageType.Update)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableAADOnlyAuthForSQLServers"
@@ -463,13 +490,11 @@ function Enable-AADOnlyAuthenticationForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"},
                          @{Expression={$_.EmailId};Label="Email Id";Width=35;Alignment="left"}
 
         $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
                
         Write-Host $([Constants]::SingleDashLine)
@@ -646,8 +671,7 @@ function Disable-AADOnlyAuthenticationForSqlServers
 
     $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
-                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured??";Width=25;Alignment="left"}
+                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
 
    
     $validSqlServerDetails | Format-Table -Property $colsProperty3 -Wrap
@@ -762,14 +786,12 @@ function Disable-AADOnlyAuthenticationForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"},
                          @{Expression={$_.EmailId};Label="Email Id";Width=35;Alignment="left"}
 
     $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
-                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.IsAADAdminPreviouslyConfigured};Label="Is AAD Admin Previously Configured?";Width=25;Alignment="left"}
+                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
 
     Write-Host $([Constants]::SingleDashLine)
 
