@@ -21,7 +21,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 9. [Azure_RedisCache_DP_Use_SSL_Port](Readme.md#9-Azure_RedisCache_DP_Use_SSL_Port)
 10. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](Readme.md#10-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
 11. [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](Readme.md#11-Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
-12. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#12-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
+12. [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](Readme.md#12-Azure_SQLDatabase_AuthZ_Use_AAD_Admin)
 13. [Azure_SQLDatabase_DP_Enable_TDE](Readme.md#13-Azure_SQLDatabase_DP_Enable_TDE)
 14. [Azure_Storage_AuthN_Dont_Allow_Anonymous](Readme.md#14-Azure_Storage_AuthN_Dont_Allow_Anonymous)
 15. [Azure_Storage_DP_Encrypt_In_Transit](Readme.md#15-Azure_Storage_DP_Encrypt_In_Transit)
@@ -44,6 +44,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
 33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
 34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
+35. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#12-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
 
 
 <br />
@@ -270,13 +271,13 @@ Yes
 ___ 
 
 
-## 12. Azure_SQLDatabase_AuthZ_Use_AAD_Only
+## 12. Azure_SQLDatabase_AuthZ_Use_AAD_Admin
 
 ### Display Name
-Use AAD Only Authentication for SQL Server
+Use AAD Authentication for SQL Database
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-EnableAADOnlyAuthenticationForSQLServers](./Remediate-EnableAADOnlyAuthenticationForSQLServers.ps1)
+[Remediate-EnableAADAuthenticationForSQLServers](Remediate-EnableAADAuthenticationForSQLServers.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
@@ -287,17 +288,7 @@ Restricted to 'User' account type
 ### Supports rollback?
 Yes
 
-### User Inputs Required?
-Yes 
-
-To set AAD Only Authentication on SQL Server, AAD Admin should be configured. 
-
-Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
-
-After running the above command a remediation file is generated where the user input is expected if applicable.
-
-If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers). 
-___ 
+___
 
 
 ## 13. Azure_SQLDatabase_DP_Enable_TDE
@@ -739,6 +730,35 @@ Yes
 
 ___
 
+
+## 35. Azure_SQLDatabase_AuthZ_Use_AAD_Only
+
+### Display Name
+Use AAD Only Authentication for SQL Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAADOnlyAuthenticationForSQLServers](./Remediate-EnableAADOnlyAuthenticationForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+### User Inputs Required?
+Yes 
+
+To set AAD Only Authentication on SQL Server, AAD Admin should be configured. 
+
+Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+
+After running the above command a remediation file is generated where the user input is expected if applicable.
+
+If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers). 
+___ 
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.

@@ -1,12 +1,12 @@
 <###
 # Overview:
-    This script is used to Enable Azure AD Only Authentication for the SQL Servers in a Subscription.
+    This script is used to Enable Azure AD admin for the SQL Servers in a Subscription.
 
 # Control ID:
-    Azure_SQLDatabase_AuthZ_Use_AAD_Only
+    Azure_SQLDatabase_AuthZ_Use_AAD_Admin
 
 # Display Name:
-    Use AAD Only Authentication for SQL Server
+    Use AAD Authentication for SQL Database
 
 # Prerequisites:
     Contributor and higher privileges on the SQL Servers in a Subscription.
@@ -16,52 +16,52 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script and validate the user.
-        2. Get the list of SQL Servers in a Subscription that do not have Azure AD Only Authentication enabled.
+        2. Get the list of SQL Servers in a Subscription that do not have Azure AD admin enabled.
         3. Back up details of SQL Servers that are going to be remediated.
-        4. Enable Azure AD Only Authentication on the SQL Servers in the Subscription.
+        4. Enable Azure AD admin on the SQL Servers in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script.
         2. Get the list of SQL Servers in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Disable Azure AD Only Authentication on the SQL Servers in the Subscription.
+        3. Disable Azure AD admin on the SQL Servers in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to enable Azure AD Only Authentication on the SQL Servers in the Subscription. Refer `Examples`, below.
+        3. Execute the script to enable Azure AD admin on the SQL Servers in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to disable Azure AD Only Authentication on the SQL Servers in the Subscription. Refer `Examples`, below.
+        3. Execute the script to disable Azure AD admin on the SQL Servers in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
         1. To review the SQL Server details in a Subscription that will be remediated:
 
-           Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
+           Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
 
         2. To review the SQL Server details in a Subscription that will be remediated with pre-requisites check:
 
-           Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun -PerformPreReqCheck
+           Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun -PerformPreReqCheck
 
-        3. To enable Azure AD Only Authentication on the SQL Servers in a Subscription, from a previously taken snapshot:
+        3. To enable Azure AD admin on the SQL Servers in a Subscription, from a previously taken snapshot:
 
-           Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\SQLServersWithADAdminDisabled.csv
+           Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\SQLServersWithADAdminDisabled.csv
 
         To know more about the options supported by the remediation command, execute:
 
-        Get-Help Enable-AADOnlyAuthenticationForSqlServers -Detailed
+        Get-Help Enable-ADAdminForSqlServers -Detailed
 
     To roll back:
-        1. To disable Azure AD Only Authentication on the SQL Servers in a Subscription, from a previously taken snapshot:
+        1. To disable Azure AD admin on the SQL Servers in a Subscription, from a previously taken snapshot:
 
-           Disable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\RemediatedSQLServers.csv
+           Disable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\RemediatedSQLServers.csv
 
         To know more about the options supported by the roll back command, execute:
 
-        Get-Help Disable-AADOnlyAuthenticationForSqlServers -Detailed
+        Get-Help Disable-ADAdminForSqlServers -Detailed
 ###>
 
 function Setup-Prerequisites
@@ -88,9 +88,9 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources")
+    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Sql", "Az.Synapse")
 
-    Write-Host "Required modules: $($requiredModules -join ', ')", "Az.Sql", "Az.Synapse" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
@@ -107,45 +107,17 @@ function Setup-Prerequisites
             Write-Host "$($_) module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-
-    # Checking if 'Az.Sql' module >=2.10.0 is available and installing otherwise.
-    Write-Host "Checking if Az.Sql>=2.10.0 is present..."
-
-    $azSql = Get-InstalledModule -Name "Az.Sql" -MinimumVersion 2.10.0 -ErrorAction SilentlyContinue
-    if(($azSql|Measure-Object).Count -eq 0)
-    {
-        Write-Host "Installing module Az.Sql with version 2.10.0..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Install-Module -Name Az.Sql -Scope CurrentUser -Repository 'PSGallery' -MinimumVersion 2.10.0 -Force
-    }
-    else
-    {
-        Write-Host "Az.Sql module of required version is available." -ForegroundColor $([Constants]::MessageType.Update)
-    }
-
-    # Checking if 'Az.Synapse' module >=1.5.0 is available and installing otherwisee.
-    Write-Host "Checking if Az.Synapse>=1.5.0 is present..."
-
-    $azSynapse = Get-InstalledModule -Name "Az.Synapse" -MinimumVersion 1.5.0 -ErrorAction SilentlyContinue
-    if(($azSynapse|Measure-Object).Count -eq 0)
-    {
-        Write-Host "Installing module Az.Synapse with version 1.5.0..." -ForegroundColor $([Constants]::MessageType.Warning)
-        Install-Module -Name Az.Synapse -Scope CurrentUser -Repository 'PSGallery' -MinimumVersion 1.5.0 -Force
-    }
-    else
-    {
-        Write-Host "Az.Synapse module of required version is available." -ForegroundColor $([Constants]::MessageType.Update)
-    }
 }
 
-function Enable-AADOnlyAuthenticationForSqlServers
+function Enable-ADAdminForSqlServers
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
+        Remediates 'Azure_SQLDatabase_AuthZ_Use_AAD_Admin' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
-        Azure AD Only Authentication must be enabled.
+        Remediates 'Azure_SQLDatabase_AuthZ_Use_AAD_Admin' Control.
+        Azure AD admin must be enabled.
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -160,13 +132,13 @@ function Enable-AADOnlyAuthenticationForSqlServers
         Specifies the path to the file to be used as input for the remediation.
 
         .EXAMPLE
-        PS> Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun
+        PS> Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\SQLServersWithADAdminDisabled.csv
+        PS> Enable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\SQLServersWithADAdminDisabled.csv
 
         .LINK
         None
@@ -248,7 +220,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
         Write-Host "[$($context.Account.Id)] is allowed to run this script..." -ForegroundColor $([Constants]::MessageType.Update)
     }
 
-    Write-Host "*** To enable Azure AD Only Authentication for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To enable Azure AD admin for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all SQL Server(s)..."
@@ -280,7 +252,6 @@ function Enable-AADOnlyAuthenticationForSqlServers
                                                                       @{N='ServerName';E={$_.Name}},
                                                                       @{N='ResourceType';E={$_.ResourceType}},
                                                                       @{N='IsSynapseWorkspace';E={$false}},
-                                                                      @{N='IsAADAdminPreviouslyConfigured';E={$false}},
                                                                       @{N='EmailId';E={""}}
                                                                        
          # Add Synapse Workspaces to this list.
@@ -289,7 +260,6 @@ function Enable-AADOnlyAuthenticationForSqlServers
                                                                    @{N='ServerName';E={$_.Name}},
                                                                    @{N='ResourceType';E={$_.ResourceType}},
                                                                    @{N='IsSynapseWorkspace';E={$true}},
-                                                                   @{N='IsAADAdminPreviouslyConfigured';E={$false}},
                                                                    @{N='EmailId';E={""}}
     }  
     else
@@ -319,15 +289,12 @@ function Enable-AADOnlyAuthenticationForSqlServers
 
     Write-Host "Found $($totalSqlServers) SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    # Includes SQL Servers where Azure AD Only Authentication is enabled.
-    $sqlServersWithAADOnlyAuthEnabled = @()
+    # Includes SQL Servers where Azure AD admin is enabled.
+    $sqlServersWithADAdminEnabled = @()
 
-    # Includes SQL Servers where Azure AD Only Authentication is disabled.
-    $sqlServersWithAADOnlyAuthDisabled = @()
-
-    # Includes SQL Servers Skipped
-    $sqlServersWithAADOnlyAuthEvaluationSkipped = @()
-    Write-Host "Checking if Azure AD Only Authentication is enabled on SQL Server(s)..."
+    # Includes SQL Servers where Azure AD admin is disabled.
+    $sqlServersWithADAdminDisabled = @()
+    Write-Host "checking if Azure AD admin is enabled on SQL Server(s)..."
 
     $sqlServerResources | ForEach-Object {
         try
@@ -343,53 +310,38 @@ function Enable-AADOnlyAuthenticationForSqlServers
                 $adAdmin = Get-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName
             }
              
-            # Check if Azure AD Only Authentication are enabled on the SQL Server.
+            # Check if Azure AD admin are enabled on the SQL Server.
             if (($adAdmin|Measure-Object).Count -ne 0)
             {
-                $sqlServerInstance.IsAADAdminPreviouslyConfigured = $true
-                $sqlServerInstance.EmailId = "NA(as AAD Admin is already configured)"
-                if ($adAdmin.IsAzureADOnlyAuthentication -eq $true)
-                {
-                    $sqlServersWithAADOnlyAuthEnabled += $sqlServerInstance
-                }
-                else
-                {
-                    $sqlServersWithAADOnlyAuthDisabled += $sqlServerInstance
-                }
+                $sqlServersWithADAdminEnabled += $sqlServerInstance
             }
             else
             {
-                $sqlServersWithAADOnlyAuthDisabled += $sqlServerInstance                                                 
+                $SQLServersWithADAdminDisabled += $sqlServerInstance                                                 
             }
         }
         catch
         {
-            $sqlServersWithAADOnlyAuthEvaluationSkipped += $sqlServerInstance 
+            $SQLServersWithADAdminDisabled += $sqlServerInstance 
         }
+    }
+
+    $totalSQLServersWithADAdminDisabled = ($SQLServersWithADAdminDisabled | Measure-Object).Count
+
+    if ($totalSQLServersWithADAdminDisabled -eq 0)
+    {
+        Write-Host "`nNo SQL Server found with Azure AD admin disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        break
     }
 
     $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
 
-    if (($sqlServersWithAADOnlyAuthEvaluationSkipped | Measure-Object).Count -ne 0)
-    {
-        Write-Host "`nError checking if AAD Only Authenticaton is enabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
-        $sqlServersWithAADOnlyAuthEvaluationSkipped | Format-Table -Property $colsProperty3 -Wrap
-    }
-
-    $totalSQLServersWithAADOnlyAuthDisabled = ($sqlServersWithAADOnlyAuthDisabled | Measure-Object).Count
-
-    if ($totalSQLServersWithAADOnlyAuthDisabled -eq 0)
-    {
-        Write-Host "`nNo SQL Server found with Azure AD Only Authentication disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        break
-    }
-
-    Write-Host "`nFound $($totalSQLServersWithAADOnlyAuthDisabled) SQL Server(s) with Azure AD Only Authentication disabled." -ForegroundColor $([Constants]::MessageType.Update)
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableAADOnlyAuthForSQLServers"
+    Write-Host "`nFound $($totalSQLServersWithADAdminDisabled) SQL Server(s) with Azure AD admin disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableADAdminForSQLServers"
    
-    $sqlServersWithAADOnlyAuthDisabled | Format-Table -Property $colsProperty3 -Wrap
+    $SQLServersWithADAdminDisabled | Format-Table -Property $colsProperty3 -Wrap
     
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -397,25 +349,25 @@ function Enable-AADOnlyAuthenticationForSqlServers
     }
 
     # Backing up SQL Server details.
-    $backupFile = "$($backupFolderPath)\SqlServersWithAADOnlyAuthDisabled.csv"
+    $backupFile = "$($backupFolderPath)\SQLServersWithADAdminDisabled.csv"
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 3 of 4] Backing up SQL Server details..."
    
-    $sqlServersWithAADOnlyAuthDisabled | Export-CSV -Path $backupFile -NoTypeInformation -ErrorAction Stop
+    $SQLServersWithADAdminDisabled | Export-CSV -Path $backupFile -NoTypeInformation -ErrorAction Stop
     Write-Host "SQL Server(s) details have been backed up to:" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host "$($backupFile)"
     Write-Host $([Constants]::DoubleDashLine)
 
     if (-not $DryRun)
     {
-        Write-Host "[Step 4 of 4] Enabling Azure AD Only Authentication for SQL Server(s)..." 
-        Write-Host "Do you want to enable AAD Only Authentication for SQL Server(s)?`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "[Step 4 of 4] Enabling Azure AD admin for SQL Server(s)..." 
+        Write-Host "Do you want to enable AD Admin for SQL Server(s)?`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if ($userInput -ne "Y")
         {
-            Write-Host "Azure AD Only Authentication will not be enabled for any SQL Server. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Azure AD admin will not be enabled for any SQL Server. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             break
         }
 
@@ -425,24 +377,23 @@ function Enable-AADOnlyAuthenticationForSqlServers
         # Includes SQL Servers that were skipped during remediation. There were errors remediating them.
         $skippedSqlServers = @()
        
-        Write-Host "Enabling Azure AD Only Authentication for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
-        $sqlServersWithAADOnlyAuthDisabled  | ForEach-Object {
+        Write-Host "Enabling Azure AD admin for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+        $SQLServersWithADAdminDisabled  | ForEach-Object {
             $sqlServerInstance = $_
             try
             {
-                # To enable AAD Only, AAD Admin should be set. We are first checking if it is previously set on the resource and proceeding for AAD Only.
-                if($_.IsAADAdminPreviouslyConfigured -eq $true)
+                if(![String]::IsNullOrWhiteSpace($_.EmailId))
                 {
                     if($_.IsSynapseWorkspace -eq $true)
                     {
-                        $aadOnlyAuth = Enable-AzSynapseActiveDirectoryOnlyAuthentication -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
+                        $adAdmin = Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -DisplayName $_.EmailId
                     }
                     else
                     {
-                        $aadOnlyAuth = Enable-AzSqlServerActiveDirectoryOnlyAuthentication -ServerName $_.ServerName -ResourceGroupName $_.ResourceGroupName
+                        $adAdmin = Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -DisplayName $_.EmailId
                     }
 
-                    if (($aadOnlyAuth|Measure-Object).Count -ne 0)
+                    if (($adAdmin|Measure-Object).Count -ne 0)
                     {
                         $remediatedSqlServers += $sqlServerInstance 
                     }
@@ -451,43 +402,10 @@ function Enable-AADOnlyAuthenticationForSqlServers
                         $skippedSqlServers += $sqlServerInstance                   
                     }
                 }
-                # If AAD Admin has not been previously set, we are setting it based on the EmailId input from the user and then enabling AAD Only.
                 else
                 {
-                    if(![String]::IsNullOrWhiteSpace($_.EmailId))
-                    {
-                        if($_.IsSynapseWorkspace -eq $true)
-                        {
-                            $adAdmin = Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName -DisplayName $_.EmailId
-
-                            if (($adAdmin|Measure-Object).Count -ne 0)
-                            {
-                                $aadOnlyAuth = Enable-AzSynapseActiveDirectoryOnlyAuthentication -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
-                            }
-                        }
-                        else
-                        {
-                            $adAdmin = Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -DisplayName $_.EmailId
-                            if (($adAdmin|Measure-Object).Count -ne 0)
-                            {
-                                $aadOnlyAuth = Enable-AzSqlServerActiveDirectoryOnlyAuthentication -ServerName $_.ServerName -ResourceGroupName $_.ResourceGroupName
-                            }
-                        }
-
-                        if (($aadOnlyAuth|Measure-Object).Count -ne 0)
-                        {
-                            $remediatedSqlServers += $sqlServerInstance 
-                        }
-                        else
-                        {
-                            $skippedSqlServers += $sqlServerInstance                   
-                        }
-                    }
-                    else
-                    {
-                       $skippedSqlServers += $sqlServerInstance   
-                    } 
-                }
+                   $skippedSqlServers += $sqlServerInstance   
+                } 
             } 
             catch
             {
@@ -499,7 +417,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.EmailId};Label="Email Id";Width=35;Alignment="left"}
+                         @{Expression={$_.EmailId};Label="Display Name";Width=35;Alignment="left"}
 
         $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
@@ -512,7 +430,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
 
         if ($($remediatedSqlServers | Measure-Object).Count -gt 0)
         {
-            Write-Host "Azure AD Only Authentication successfully enabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Azure AD admin successfully enabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
             $remediatedSqlServers | Format-Table -Property $colsProperty1 -Wrap
 
             # Write this to a file.
@@ -524,7 +442,7 @@ function Enable-AADOnlyAuthenticationForSqlServers
 
         if ($($skippedSqlServers | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error enabling AAD Only Authenticaton for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error enabling AD Admin for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $skippedSqlServers | Format-Table -Property $colsProperty2 -Wrap
 
             # Write this to a file.
@@ -537,26 +455,26 @@ function Enable-AADOnlyAuthenticationForSqlServers
     }
     else
     {
-        Write-Host "[Step 4 of 4] Enabling Azure AD Only Authentication for SQL Servers..."
+        Write-Host "[Step 4 of 4] Enabling Azure AD admin for SQL Servers..."
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Please provide corresponding AD Administrator Email Id for SQL Servers (in the blank cells) 'EmailId' column of the below file:"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Please provide corresponding AD Administrator Email Id for SQL Servers in the 'EmailId' column of the below file:"  -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "$($backupFile)"
         Write-Host "`nNext steps:"  -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun switch, to enable Azure AD Only Authentication for all SQL Servers listed in the file."
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun switch, to enable Azure AD admin for all SQL Servers listed in the file."
         Write-Host $([Constants]::DoubleDashLine)
     }
 }
 
-function Disable-AADOnlyAuthenticationForSqlServers
+function Disable-ADAdminForSqlServers
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
+        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_AAD_Admin' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
-        Disables Azure AD Only Authentication on the SQL Servers in the Subscription.
+        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_AAD_Admin' Control.
+        Disables Azure AD admin on the SQL Servers in the Subscription.
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -571,7 +489,7 @@ function Disable-AADOnlyAuthenticationForSqlServers
         Specifies the path to the file to be used as input for the roll back.
 
         .EXAMPLE
-        PS> Disable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\SQLServersWithADAdminDisabled.csv
+        PS> Disable-ADAdminForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202101010930\EnableADAdminForSQLServers\SQLServersWithADAdminDisabled.csv
 
         .LINK
         None
@@ -651,7 +569,7 @@ function Disable-AADOnlyAuthenticationForSqlServers
         Write-Host "[$($context.Account.Id)] is allowed to run this script."  -ForegroundColor $([Constants]::MessageType.Update)
     }
 
-    Write-Host "*** To disable Azure AD Only Authentication for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To disable Azure AD admin for SQL Server(s) in a Subscription, Contributor and higher privileges on the SQL Server(s) in the Subscription are required. ***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all SQL Server details..."
@@ -691,97 +609,53 @@ function Disable-AADOnlyAuthenticationForSqlServers
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Disabling Azure AD Only Authentication for SQL Server(s)..." 
+    Write-Host "[Step 3 of 3] Disabling Azure AD admin for SQL Server(s)..." 
    
     if (-not $Force)
     {
-        Write-Host "Do you want to disable Azure AD Only Authentication for all SQL Server(s)?`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to disable Azure AD admin for all SQL Server(s)?`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Azure AD Only Authentication will not be disabled for SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Azure AD admin will not be disabled for SQL Server(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             break
         }
     }
     else
     {
-        Write-Host "'Force' flag is provided. Azure AD Only Authentication will be disabled for SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. Azure AD admin will be disabled for SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
     }
 
     # Includes SQL Servers, to which, previously made changes were successfully rolled back.
     $rolledBackSqlServers = @()
 
-    Write-Host "Disabling Azure AD Only Authentication for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Disabling Azure AD admin for SQL Server(s)..." -ForegroundColor $([Constants]::MessageType.Info)
 
     # Includes SQL Servers that were skipped during roll back. There were errors rolling back the changes made previously.
     $skippedSqlServers = @()
     $validSqlServerDetails | ForEach-Object {
+        
         $sqlServerInstance = $_
         try
         {
-            # Disabling AAD Only.
             if($_.IsSynapseWorkspace -eq $true)
             {
-                $aadOnlyAuth = Disable-AzSynapseActiveDirectoryOnlyAuthentication -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
+                $adAdmin = Remove-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
+                $rolledBackSqlServers += $sqlServerInstance
+            }
+            else
+            {
+                $adAdmin =  Remove-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName -ErrorAction Continue
 
-                # On success of disabling AAD Only, we also remove admin set by the Enable script in case it was not previously configured.
-                # Order is important, first AAD Only should be disabled and then AAD Admin should be removed if applicable.
-                if(($aadOnlyAuth|Measure-Object).Count -ne 0 -and $_.IsAADAdminPreviouslyConfigured -eq $false)
+                if(($adAdmin|Measure-Object).Count -gt 0)
                 {
-                    $adAdmin = Remove-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -WorkspaceName $_.ServerName
-                }
-
-                if($_.IsAADAdminPreviouslyConfigured -eq $false)
-                {
-                    # $adAdmin does not return any object on success so not checking the object count, but in case of any error the control will move into catch block and this code is not executed.
                     $rolledBackSqlServers += $sqlServerInstance 
                 }
                 else
                 {
-                    if (($aadOnlyAuth|Measure-Object).Count -ne 0)
-                    {
-                        $rolledBackSqlServers += $sqlServerInstance 
-                    }
-                    else
-                    {
-                        $skippedSqlServers += $sqlServerInstance                   
-                    }
-                }
-            }
-            else
-            {
-                $aadOnlyAuth = Disable-AzSqlServerActiveDirectoryOnlyAuthentication -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName
-
-                # On success of disabling AAD Only, we also remove admin set by the Enable script in case it was not previously configured.
-                # Order is important, first AAD Only should be disabled and then AAD Admin should be removed if applicable.
-                if(($aadOnlyAuth|Measure-Object).Count -ne 0 -and $_.IsAADAdminPreviouslyConfigured -eq $false)
-                {
-                    $adAdmin =  Remove-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName $_.ResourceGroupName -ServerName $_.ServerName
-                }
-
-                if($_.IsAADAdminPreviouslyConfigured -eq $false)
-                {
-                    if (($adAdmin|Measure-Object).Count -ne 0)
-                    {
-                        $rolledBackSqlServers += $sqlServerInstance 
-                    }
-                    else
-                    {
-                        $skippedSqlServers += $sqlServerInstance                   
-                    }
-                }
-                else
-                {
-                    if (($aadOnlyAuth|Measure-Object).Count -ne 0)
-                    {
-                        $rolledBackSqlServers += $sqlServerInstance 
-                    }
-                    else
-                    {
-                        $skippedSqlServers += $sqlServerInstance                   
-                    }
+                    $skippedSqlServers += $sqlServerInstance 
                 }
             }
         }
@@ -795,7 +669,7 @@ function Disable-AADOnlyAuthenticationForSqlServers
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
                          @{Expression={$_.ResourceType};Label="Resource Type";Width=30;Alignment="left"},
                          @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"},
-                         @{Expression={$_.EmailId};Label="Email Id";Width=35;Alignment="left"}
+                         @{Expression={$_.EmailId};Label="Display Name";Width=35;Alignment="left"}
 
     $colsProperty2 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
                          @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
@@ -808,7 +682,7 @@ function Disable-AADOnlyAuthenticationForSqlServers
 
     if ($($rolledBackSqlServers | Measure-Object).Count -gt 0)
     {
-        Write-Host "Azure AD Only Authentication successfully disabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Azure AD admin successfully disabled for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Update)
         $rolledBackSqlServers | Format-Table -Property $colsProperty2 -Wrap
 
         # Write this to a file.
@@ -819,7 +693,7 @@ function Disable-AADOnlyAuthenticationForSqlServers
 
     if ($($skippedSqlServers | Measure-Object).Count -gt 0)
     {
-        Write-Host "Error disabling Azure AD Only Authentication for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Error disabling Azure AD admin for the following SQL Server(s):" -ForegroundColor $([Constants]::MessageType.Error)
         $skippedSqlServers |  Format-Table -Property $colsProperty1 -Wrap
 
         # Write this to a file.
@@ -845,4 +719,3 @@ class Constants
     static [String] $DoubleDashLine = "========================================================================================================================"
     static [String] $SingleDashLine = "------------------------------------------------------------------------------------------------------------------------"
 }
-
