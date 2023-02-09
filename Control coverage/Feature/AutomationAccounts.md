@@ -12,7 +12,7 @@
 ## Azure_AutomationAccounts_DP_Encrypt_Variables
 
 ### Display Name 
-Automation account variables should be encrypted
+Automation account variables must be encrypted
 
 ### Rationale 
 Encryption helps prevent sensitive data breaches during transfer and storage.
@@ -59,9 +59,10 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
 
     $variable = Get-AzAutomationVariable -AutomationAccountName <AutomationAccountName> -ResourceGroupName <RGName> -Name <VariableName>
 
-    Remove-AzAutomationVariable -AutomationAccountName $variable.AutomationAccountName -ResourceGroupName $variable.ResourceGroupName -Name $variable.Name
-
+    # Storing current value of the variable 
     $value = $variable.Value
+
+    Remove-AzAutomationVariable -AutomationAccountName $variable.AutomationAccountName -ResourceGroupName $variable.ResourceGroupName -Name $variable.Name
 
     New-AzAutomationVariable -AutomationAccountName $variable.AutomationAccountName -ResourceGroupName $variable.ResourceGroupName -Name $variable.Name -Encrypted $true -Value $value
 
@@ -70,7 +71,7 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
 ### Azure Policy or ARM API used for evaluation
 
 - Azure Policy (built-in):
-  [Automation account variables should be encrypted](https://ms.portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2Fmicrosoft.authorization%2Fpolicydefinitions%2F3657f5a0-770e-44a3-b44e-9431ba1e9735)
+  [Automation account variables must be encrypted](https://portal.azure.com/#view/Microsoft_Azure_Security/GenericRecommendationDetailsBlade/assessmentKey/b12bc79e-4f12-44db-acda-571820191ddc)
   <br />
 
 - ARM API to list all the automation accounts available under the subscription:
