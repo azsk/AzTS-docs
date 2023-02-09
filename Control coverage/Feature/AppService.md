@@ -362,7 +362,7 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01<br />
 **Properties:**  properties.httpsOnly
 
-- ARM API to list all security assessments in a Subscription:
+- ARM API to list all security assessments for a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
 [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
@@ -496,7 +496,7 @@ TLS provides privacy and data integrity between client and server. Using approve
  - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:**  properties.minTlsVersion
 
-- ARM API to list all security assessments in a Subscription:
+- ARM API to list all security assessments for a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
 [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
