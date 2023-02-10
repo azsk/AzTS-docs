@@ -1,5 +1,19 @@
 
 # ####################################################################################################
+# Azure Powershell Utility Methods
+
+function Remove-AllAzPowershell()
+{
+  Get-Package | Where-Object { $_.Name -Like 'Az*' } | ForEach-Object { Uninstall-Package -Name $_.Name -AllVersions }
+}
+
+function Install-AzPowershell()
+{
+  Install-Package -Name Az
+}
+# ####################################################################################################
+
+# ####################################################################################################
 # Azure_AppService_DP_Use_Secure_FTP_Deployment
 
 function Get-AppServiceFtpState()
@@ -379,3 +393,82 @@ function Get-DataFactoryV2Triggers()
 
 # ####################################################################################################
 
+# ####################################################################################################
+# Azure_DBForMYSQLFlexibleServer_DP_Enable_SSL
+
+function Get-MySqlFlexServerSslState()
+{
+  <#
+    .SYNOPSIS
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .DESCRIPTION
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .PARAMETER SubscriptionId
+    The Resource Group containing the Data Factory.
+    .PARAMETER DataFactoryName
+    The Data Factory name.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ServerName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $config = Get-AzMySqlFlexibleServerConfiguration `
+    -ResourceGroupName $ResourceGroupName `
+    -ServerName $ServerName
+  
+  $ssl = $config | `
+    Where-Object -FilterScript {$_.Name -eq 'require_secure_transport'}
+  
+  return $ssl.Value
+}
+
+function Set-MySqlFlexServerSslState()
+{
+  <#
+    .SYNOPSIS
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .DESCRIPTION
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .PARAMETER SubscriptionId
+    The Resource Group containing the Data Factory.
+    .PARAMETER DataFactoryName
+    The Data Factory name.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ServerName,
+      [Parameter(Mandatory=$false)]
+      [string]
+      $SslSetting = "ON"
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  Update-AzMySqlFlexibleServerConfiguration `
+    -ResourceGroupName $ResourceGroupName `
+    -ServerName $ServerName `
+    -Name 'require_secure_transport' `
+    -Value $SslSetting
+}
+# ####################################################################################################
