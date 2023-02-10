@@ -1,12 +1,12 @@
 <###
 # Overview:
-    This script is used to set required TLS version for CDN Front Door in a Subscription.
+    This script is used to set required TLS version for Front Door CDN Profile in a Subscription.
 
 # Control ID:
-    Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+    Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
 
 # Display Name:
-    [Trial] Front Door should have approved minimum TLS version.
+    Front Door should have approved minimum TLS version.
 
 # Prerequisites:
     1. Contributor or higher privileges on the Front Doors in a Subscription.
@@ -15,14 +15,14 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
-        2. Get the list of Front Doors custom domains in a Subscription that do not use the required TLS version.
-        3. Back up details of Front Doors custom domains that are required to be remediated.
-        4. Set the required TLS version on the custom domains in all Front Doors in the Subscription.
+        2. Get the list of Front Door CDN Profile Domains in a Subscription that do not use the required TLS version.
+        3. Back up details of Front Door CDN Profiles Domains that are required to be remediated.
+        4. Set the required TLS version on the Domains in all Front Doors CDN Profiles in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script.
-        2. Get the list of Front Doors in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Set the previous TLS versions for all Front Doors in the Subscription.
+        2. Get the list of Front Door CDN Profile Domains in a Subscription, the changes made to which previously, are to be rolled back.
+        3. Set the previous TLS versions for all Front Door CDN Profile Domains in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
@@ -33,31 +33,31 @@
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to set the previous TLS versions on the Front Doors. Refer `Examples`, below.
+        3. Execute the script to set the previous TLS versions on the Domains configured in Front Door CDN Profiles. Refer `Examples`, below.
 
 # Examples:
     To remediate:
-        1. To review the Front Doors in a Subscription that will be remediated:
-           Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        1. To review the Front Door CDN Profiles in a Subscription that will be remediated:
+           Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. To set minimum required TLS version on all custom domains of Front Doors in a Subscription:
-           Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        2. To set minimum required TLS version on all custom domains of Front Door CDN Profiles in a Subscription:
+           Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To set minimum required TLS version on all custom domains of Front Doors in a Subscription, from a previously taken snapshot:
-           Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\FrontDoorWithoutMinReqTLSVersion.csv
+        3. To set minimum required TLS version on all custom domains of Front Door CDN Profiles in a Subscription, from a previously taken snapshot:
+           Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\FrontDoorWithoutMinReqTLSVersion.csv
 
-        4. To set minimum required TLS version on all custom domains of Front Doors in a Subscription without taking back up before actual remediation:
-           Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
+        4. To set minimum required TLS version on all custom domains of Front Door CDN Profiles in a Subscription without taking back up before actual remediation:
+           Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
 
         To know more about the options supported by the remediation command, execute:
-        Get-Help Set-FrontDoorRequiredTLSVersion -Detailed
+        Get-Help Set-FrontDoorCDNProfileRequiredTLSVersion -Detailed
 
     To roll back:
-        1. To reset minimum required TLS version on all custom domains of Front Door in a Subscription, from a previously taken snapshot:
-           Reset-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedFrontDoors.csv
+        1. To reset minimum required TLS version on all domains of Front Door CDN Profiles in a Subscription, from a previously taken snapshot:
+           Reset-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedFrontDoors.csv
         
         To know more about the options supported by the roll back command, execute:
-        Get-Help Reset-FrontDoorRequiredTLSVersion -Detailed        
+        Get-Help Reset-FrontDoorCDNProfileRequiredTLSVersion -Detailed        
 ###>
 
 
@@ -85,7 +85,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Cdn", "Azure")
+    $requiredModules = @("Az.Accounts", "Az.Cdn")
     Write-Host "Required modules: $($requiredModules -join ', ')"
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Checking if the required modules are present..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -111,15 +111,15 @@ function Setup-Prerequisites
 
 }
 
-function Set-FrontDoorRequiredTLSVersion
+function Set-FrontDoorCDNProfileRequiredTLSVersion
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial' Control.
+        Remediates 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial' Control.
-        Sets the required TLS version on all the custom domains in all Front Door in the Subscription. 
+        Remediates 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version' Control.
+        Sets the required TLS version on all the custom domains in all Front Door CDN Profiles in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -146,22 +146,22 @@ function Set-FrontDoorRequiredTLSVersion
         Specifies script is run as a subroutine of AutoRemediation Script.
 
         .PARAMETER TimeStamp
-        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+        Specifies the time of creation of file to be us.ed for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
-        None. You cannot pipe objects to Set-FrontDoorRequiredTLSVersion.
+        None. You cannot pipe objects to Set-FrontDoorCDNProfileRequiredTLSVersion.
 
         .OUTPUTS
-        None. Set-FrontDoorRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
+        None. Set-FrontDoorCDNProfileRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\FrontDoorWithoutMinReqTLSVersion.csv
+        PS> Set-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\FrontDoorWithoutMinReqTLSVersion.csv
 
         .LINK
         None
@@ -208,7 +208,7 @@ function Set-FrontDoorRequiredTLSVersion
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Prepare to set required TLS version for all custom domain of Front Door in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Prepare to set required TLS version for all Domain of Front Door CDN Profiles in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -249,18 +249,20 @@ function Set-FrontDoorRequiredTLSVersion
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "To Set Minimum TLS version for front door in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To Set Minimum TLS version for front Door CDN Profiles in a Subscription, Contributor or higher privileges on the Front Door CDN Profiles are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 4] Fetch all Front Doors"
+    Write-Host "[Step 2 of 4] Fetch all Front Door CDN Profiles"
     Write-Host $([Constants]::SingleDashLine)
 
     $FrontDoorResources = @()
+
+    $FrontDoorDomainResources = @()
 
     # To keep track of remediated and skipped resources
     $logRemediatedResources = @()
     $logSkippedResources=@()
 
-    $controlIds = "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial"
+    $controlIds = "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version"
     
     # No file path provided as input to the script. Fetch all Front Doors in the Subscription.
     if($AutoRemediation)
@@ -272,7 +274,7 @@ function Set-FrontDoorRequiredTLSVersion
             return
         }
         
-        Write-Host "Fetching all Front Doors failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all Front Door CDN Profiles failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         
         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
@@ -282,7 +284,7 @@ function Set-FrontDoorRequiredTLSVersion
         
         if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
         {
-            Write-Host "No  Front Door(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "No  Front Door CDN Profiles(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
             return
         }
@@ -292,14 +294,32 @@ function Set-FrontDoorRequiredTLSVersion
             {
                 $resFrontDoor = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -Name $resource.ResourceName -ResourceGroupName $resource.ResourceGroupName  -ErrorAction SilentlyContinue
                 $FrontDoorResources += $resFrontDoor
+                $FrontDoorCustomDomains = @()
+
+                    $FrontDoorCustomDomains = Get-AzFrontDoorCdnCustomDomain -ProfileName $resFrontDoor.Name -ResourceGroupName $resFrontDoor.ResourceGroupName
+                
+                    if($FrontDoorCustomDomains -ne $null)
+                    {
+                        $FrontDoorDomainResources +=  $FrontDoorCustomDomains | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                                    @{N='ProfileName';E={$resourceName}},
+                                                                                    @{N='DomainName';E={$_.Name}},
+                                                                                    @{N='HostName';E={$_.HostName}},
+                                                                                    @{N='DomainDeploymentStatus';E={$_.DeploymentStatus}},
+                                                                                    @{N='DomainValidationState';E={$_.DomainValidationState}},
+                                                                                    @{N='MinimumTlsVersion';E={$_.TlsSetting.MinimumTlsVersion}}
+                            
+                        
+                    }
+
             }
             catch
             {
                 Write-Host "Valid resource(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
+                Write-Host "Skipping the Resource: [$($_.DomainName)]..."
                 $logResource = @{}
+                $logResource.Add("DomainName",($_.DomainName))
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("ResourceName",($_.ProfileName))
                 $logResource.Add("Reason","Valid resource(s) not found in input json file.")    
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
@@ -311,214 +331,137 @@ function Set-FrontDoorRequiredTLSVersion
         # Fetch all front doors in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
-            Write-Host "Fetching all Front Doors in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Front Door CDN Profiles in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             # Get all Front Doors in a Subscription
-            $FrontDoorResources = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -ErrorAction Stop             
+            $FrontDoorResources = Get-AzFrontDoorCdnProfile -SubscriptionId $SubscriptionId -ErrorAction Stop
+            foreach($frontdoor in $FrontDoorResources){
+            $FrontDoorCustomDomains = @()
+
+            $FrontDoorCustomDomains = Get-AzFrontDoorCdnCustomDomain -ProfileName $frontdoor.Name -ResourceGroupName $frontdoor.ResourceGroupName 
+                
+            if($FrontDoorCustomDomains)
+            {
+                Write-Host "Front Door CDN Profiles Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            if($FrontDoorCustomDomains -ne $null)
+            {
+                $FrontDoorDomainResources +=  $FrontDoorCustomDomains | Select-Object @{N='ResourceGroupName';E={$frontdoor.ResourceGroupName}},
+                                                                            @{N='ProfileName';E={$frontdoor.Name}},
+                                                                            @{N='DomainName';E={$_.Name}},
+                                                                            @{N='HostName';E={$_.HostName}},
+                                                                            @{N='DomainDeploymentStatus';E={$_.DeploymentStatus}},
+                                                                            @{N='DomainValidationState';E={$_.DomainValidationState}},
+                                                                            @{N='MinimumTlsVersion';E={$_.TlsSetting.MinimumTlsVersion}}
+                            
+                        
+            }
+            }           
         }
         else
         {
-            if (-not (Test-Path -Path $FilePath))
+           if (-not (Test-Path -Path $FilePath))
             {
-                Write-Host "Input file [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "ERROR: Input file: [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $([Constants]::DoubleDashLine)	
                 return
             }
 
-            Write-Host "Fetching all Front Doors from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Front Door CDN Profiles from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $frontdoorDetails = Import-Csv -LiteralPath $FilePath
             $validFrontDoorDetails = $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.DomainName) }
-            $FrontDoorResources = $validFrontDoorDetails            
-        }
-    }
-    $totalFrontDoors = ($FrontDoorResources | Measure-Object).Count
 
-    if ($totalFrontDoors -eq 0)
-    {
-        Write-Host "No Front Door found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-        return
-    }
-  
-    if([String]::IsNullOrWhiteSpace($FilePath)){
-        Write-Host "Found [$($totalFrontDoors)] Front Door(s)." -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host $([Constants]::SingleDashLine)
-    }
-    else{
-        Write-Host "Found [$($totalFrontDoors)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
-        Write-Host $([Constants]::SingleDashLine)
-    }
-
-    # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\SetMinTLSVersionForCdnFrontDoors"
-
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
-        New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
-    }
-    
-    # Includes required version of TLS
-    $requiredMinTLSVersion = "TLS12"
-
-    $compliantFrontDoorEPs = @()
-
-    # Includes Front Doors that were skipped during remediation. There were errors remediating them.
-    $frontDoorsEPSkipped = @()
-
-    $isMinTLSVersionSetOnCustomDomain = $null
-
-    $NonCompliantFrontDoorEndpoints = @()
-    $ResourceAppIdURI = "https://management.azure.com/"
-    $customDomainApiResponse =@()
-    $AccessMgtToken= (Get-AzAccessToken -ResourceUrl $ResourceAppIdURI).Token
-    
-    Write-Host "[Step 3 of 4] Fetch all Front Door configurations"
-    Write-Host $([Constants]::SingleDashLine)
-
-    # If we are not having filepath we are fetching endpoints from the front door resource(s)
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        $FrontDoorResources | ForEach-Object {
+            $validFrontDoorDetails | ForEach-Object {
                 $frontDoorResource = $_
                 $resourceGroupName = $_.ResourceGroupName
-                $resourceName = $_.Name
+                $resourceName = $_.ProfileName
                 try
                 {
-                    Write-Host "Fetching Front Door Endpoint configuration: Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Fetching Front Door CDN Profiles Domain configuration: Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                     $FrontDoorCustomDomains = @()
 
-                    $FrontDoorCustomDomains = Get-AzFrontDoorCdnCustomDomain -ProfileName $resourceName -ResourceGroupName $resourceGroupName
+                    $FrontDoorCustomDomains = Get-AzFrontDoorCdnCustomDomain -ProfileName $resourceName -ResourceGroupName $resourceGroupName -CustomDomainName $_.DomainName
                 
                     if($FrontDoorCustomDomains)
                     {
-                        Write-Host "Front Door Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host "Front Door CDN Profiles Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
                         Write-Host $([Constants]::SingleDashLine)
                     }
 
-                    if($null -ne $FrontDoorCustomDomains)
+                    if($FrontDoorCustomDomains -ne $null)
                     {
-                        foreach ($item in $FrontDoorCustomDomains) 
-                        {
-                            $frontDoorEp = [FrontendEndPointsClass]:: new()
-                            $apiError = $false
-                            $domainName = $item.Name
-                            $domainResourceGroupName = $item.ResourceGroupName
-                            $TypeOfCertificate = $null
-                            $MinTLSVersion = $null
-                                
-                            if($null -ne $AccessMgtToken)
-                            {
-                                $header = "Bearer " + $AccessMgtToken
-                                $headers = @{"Authorization"=$header;"Content-Type"="application/json"; "x-ms-version" ="2013-08-01"}
-                                $uri = [string]:: Format("{0}/subscriptions/{1}/resourceGroups/{2}/providers/Microsoft.Cdn/profiles/{3}/customDomains/{4}?api-version=2021-06-01",$ResourceAppIdURI,$SubscriptionId,$domainResourceGroupName,$resourceName,$domainName)
-                                $customDomainApiResponse = Invoke-WebRequest -Method GET -Uri $uri -Headers $headers -UseBasicParsing
-                    
-                                if($customDomainApiResponse.StatusCode -ge 200 -and $customDomainApiResponse.StatusCode -le 399)
-                                {
-                                    if($null -ne $customDomainApiResponse.Content)
-                                    {
-                                        $domain = $customDomainApiResponse.Content | ConvertFrom-Json  
-                                        if($null -ne $domain)
-                                        {
-                                            $TypeOfCertificate = $domain.properties.tlsSettings.certificateType
-                                            $MinTLSVersion = $domain.properties.tlsSettings.minimumTlsVersion
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    $apiError = $true;
-                                    Write-Host "Error fetching Front Door configuration..." -ForegroundColor $([Constants]::MessageType.Warning)
-                                    Write-Host $([Constants]::SingleDashLine)
-                                }        
-                            }
-                            if(($null -ne $MinTLSVersion) -and ($apiError -eq $false))
-                            {
-                                if($MinTLSVersion -ne $requiredMinTLSVersion)
-                                {
-                                    $frontDoorEp.DomainName = $domainName
-                                    $frontDoorEp.FrontDoorName = $resourceName
-                                    $frontDoorEp.MinTLSVersion = $MinTLSVersion
-                                    $frontDoorEp.ResourceGroup = $resourceGroupName
-                                    $frontDoorEp.TypeOfCertificate = $TypeOfCertificate
-                                    $frontDoorEp.isMinTLSVersionSetOnCustomDomain = $false
-                                  
-                                    if($null -ne $frontDoorEp)
-                                    {
-                                        $NonCompliantFrontDoorEndpoints +=  $frontDoorEp | Select-Object @{N='ResourceGroupName';E={$frontDoorEp.ResourceGroup}},
-                                                                                    @{N='ResourceName';E={$frontDoorEp.FrontDoorName}},
-                                                                                    @{N='DomainName';E={$frontDoorEp.DomainName}},
-                                                                                    @{N='CertificateType';E={$frontDoorEp.TypeOfCertificate}},
-                                                                                    @{N='MinimumTlsVersion';E={$frontDoorEp.MinTLSVersion}},
-                                                                                    @{N='isMinTLSVersionSetOnCustomDomain';E={$frontDoorEp.isMinTLSVersionSetOnCustomDomain}}
-                                    }
-                                }
-                                else
-                                {
-                                    $compliantFrontDoorEPs += $item
-                                }
-                            }
-                            else
-                            {
-                                Write-Host "Skipping this Front End Point..." -ForegroundColor $([Constants]::MessageType.Warning)
-                                Write-Host $([Constants]::SingleDashLine)
-                            }
-                        }
+                        $FrontDoorDomainResources +=  $FrontDoorCustomDomains | Select-Object @{N='ResourceGroupName';E={$resourceGroupName}},
+                                                                                    @{N='ProfileName';E={$resourceName}},
+                                                                                    @{N='DomainName';E={$_.Name}},
+                                                                                    @{N='HostName';E={$_.HostName}},
+                                                                                    @{N='DomainDeploymentStatus';E={$_.DeploymentStatus}},
+                                                                                    @{N='DomainValidationState';E={$_.DomainValidationState}},
+                                                                                    @{N='MinimumTlsVersion';E={$_.TlsSetting.MinimumTlsVersion}}
+                            
+                        
                     }
                 }
                 catch
                 {
-                    $frontDoorsEPSkipped += $frontDoorResource
-                    Write-Host "Error fetching Front Door configuration: Resource Name: [$($resourceName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    $frontDoorsDomainsSkipped += $frontDoorResource
+                    Write-Host "Error fetching Front Door CDN Profiles configuration: Resource Name: [$($resourceName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.ResourceName))
+                    $logResource.Add("DomainName",($_.DomainName))
+                    $logResource.Add("ResourceName",($_.ProfileName))
                     $logResource.Add("Reason","Encountered error while fetching Front Door configuration")    
                     $logSkippedResources += $logResource
                     Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
         }
-    }
-    else
-    {
-        # If filepath is present we are already having the endpoints so just filtering out the non compliant endpoints
-        $FrontDoorResources | ForEach-Object {
-            $frontDoorEndpointResource = $_
-            $resourceGroupName = $_.ResourceGroupName
-            $resourceName = $_.Name
-            try
-            {
-                if($frontDoorEndpointResource.MinimumTlsVersion -ne $requiredMinTLSVersion)
-                {
-                    $NonCompliantFrontDoorEndpoints += $frontDoorEndpointResource
-                }
-                else
-                {
-                    $compliantFrontDoorEPs += $frontDoorEndpointResource
-                }
-            }
-            catch
-            {
-                $frontDoorsEPSkipped += $frontDoorEndpointResource
-                Write-Host "Error fetching Front Door Endpoint configuration: Resource Name: [$($resourceName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-                $logResource.Add("DomainName",($_.DomainName))
-                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","Encountered error while fetching Front Door configuration")    
-                $logSkippedResources += $logResource
-                Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)
-            }
+                     
         }
     }
-    
-    $TotalNonCompliantFrontDoorEndpoints = ($NonCompliantFrontDoorEndpoints | Measure-Object).Count
+    $totalFrontDoorDomains = ($FrontDoorDomainResources | Measure-Object).Count
 
-    if ($totalNonCompliantFrontDoorEndpoints -eq 0)
+    if ($totalFrontDoorDomains -eq 0)
     {
-        Write-Host "No Front Door Endpoint(s) found having minimum TLS version less than required minimum TLS version. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Front Door CDN Profile Domain(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        return
+    }  
+    
+    Write-Host "Found [$($totalFrontDoorDomains)] Front Door CDN Profile Domain(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                                                                          
+    Write-Host $([Constants]::SingleDashLine)
+    
+    # Includes required version of TLS
+    $requiredMinTLSVersion = "TLS12"
+
+    $CompliantFrontDoorDomainPoints = @()
+
+    # Includes Front Door CDN Profiles that were skipped during remediation. There were errors remediating them.
+    $frontDoorsDomainsSkipped = @()
+
+    $NonCompliantFrontDoorDomains = @()
+
+     $FrontDoorDomainResources | ForEach-Object {
+            $frontDoorDomainResource = $_
+            $resourceGroupName = $_.ResourceGroupName
+            $resourceName = $_.DomainName
+           
+            if($frontDoorDomainResource.MinimumTlsVersion -ne $requiredMinTLSVersion)
+            {
+                $NonCompliantFrontDoorDomains += $frontDoorDomainResource
+            }            
+     }     
+    
+    $totalNonCompliantFrontDoorDomains = ($NonCompliantFrontDoorDomains | Measure-Object).Count
+
+    if ($totalNonCompliantFrontDoorDomains -eq 0)
+    {
+        Write-Host "No Front Door CDN Profiles Domain(s) found having minimum TLS version less than required minimum TLS version. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
         
-        if($AutoRemediation -and ($NonCompliantFrontDoorEndpoints|Measure-Object).Count -eq 0) 
+        if($AutoRemediation -and ($NonCompliantFrontDoorDomains|Measure-Object).Count -eq 0) 
         {
             $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
             $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
@@ -535,7 +478,7 @@ function Set-FrontDoorRequiredTLSVersion
         return
     }
 
-    Write-Host "Found [$($totalNonCompliantFrontDoorEndpoints)] Front Door Endpoint(s) having minimum TLS version less than required minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantFrontDoorDomains)] Front Door CDN Profiles Domain(s) having minimum TLS version less than required minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     
     # Back up snapshots to `%LocalApplicationData%'.
@@ -550,10 +493,10 @@ function Set-FrontDoorRequiredTLSVersion
     {
         if(-not $SkipBackup)
         {
-            Write-Host "Backing up Front Doors details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Backing up Front Door CDN Profiles details to [$($backupFolderPath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             $BackupFile = "$($backupFolderPath)\CdnFrontDoorsWithoutReqMinTLSVersion.csv"
-            $NonCompliantFrontDoorEndpoints | Export-CSV -Path $BackupFile -NoTypeInformation
-            Write-Host "Front Doors details have been backed up to [$($BackupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+            $NonCompliantFrontDoorDomains | Export-CSV -Path $BackupFile -NoTypeInformation
+            Write-Host "Front Door CDN Profiles details have been backed up to [$($BackupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         Write-Host "Minimum required TLS Version [" $($requiredMinTLSVersion) "] will be set on all custom domains of front doors." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -579,7 +522,7 @@ function Set-FrontDoorRequiredTLSVersion
             }
             else
             {
-                Write-Host "'Force' flag is provided. Minimum required TLS Version will be set on the for all Front Doors without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "'Force' flag is provided. Minimum required TLS Version will be set on the for all Front Door CDN Profiles Domain(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -588,123 +531,126 @@ function Set-FrontDoorRequiredTLSVersion
         Write-Host "`[Step 4 of 4] Set minimum required TLS Version for FrontDoors"
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
-        $customDomainsRemediated = @()
-        $frontDoorsEPSkipped = @()
+        $frontDoorsDomainsRemediated = @()
+        $frontDoorsDomainsSkipped = @()
         
-        $NonCompliantFrontDoorEndpoints | ForEach-Object {
+        $NonCompliantFrontDoorDomains | ForEach-Object {
             $frontdoorEndpoint = $_
             $resourceGroupName = $_.ResourceGroupName
-            $resourceName = $_.ResourceName
+            $resourceName = $_.ProfileName
             $DomainName = $_.DomainName
-            $CertificateType =$_.CertificateType
+            $DomainName = $_.DomainName
             $PrevMinimumTlsVersion = $_.MinimumTlsVersion
             $MinimumTlsVersion = $_.MinimumTlsVersion
-            $isMinTlsVersionSetOnCustomDomain = $_.isMinTLSVersionSetOnCustomDomain
-            $isMinTLSVersionSetOnCustomDomainPostRemediation = $false
             
-            $frontdoorEndpoint | Add-Member -NotePropertyName isMinTLSVersionSetOnCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionSetOnCustomDomainPostRemediation
+            
             $frontdoorEndpoint | Add-Member -NotePropertyName PrevMinimumTlsVersion -NotePropertyValue $PrevMinimumTlsVersion
 
-            Write-Host "Setting minimum required TLS Version for custom domains of Front Door :  Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Setting minimum required TLS Version for custom domains of Front Door CDN Profiles :  Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-            
-            if (-not [System.Convert]::ToBoolean($isMinTlsVersionSetOnCustomDomain))
+           
+            try
             {
-                try
-                {
-                    Write-Host "Setting minimum required TLS version on custom domain : [$DomainName]" -ForegroundColor $([Constants]::MessageType.Info)
-                    Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Setting minimum required TLS version on custom domain : [$DomainName]" -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)
                     
-                    $secrets =  Get-AzFrontDoorCdnSecret -ResourceGroupName $resourceGroupName -ProfileName $resourceName
-                    $secretObj = $null
-
-                    foreach($secret in $secrets)
-                    {
-                        if($secret.Name.Substring(37).Equals($DomainName))
-                        {
-                            $secretObj = $secret
-                        }
-                    }
-                   
-                    $secretResoure = New-AzFrontDoorCdnResourceReferenceObject -Id $secretObj.Id
-                    $updateTlsSetting = New-AzFrontDoorCdnCustomDomainTlsSettingParametersObject -CertificateType $CertificateType -MinimumTlsVersion $requiredMinTLSVersion -Secret $secretResoure
-                    $resource = Update-AzFrontDoorCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $resourceName -CustomDomainName $DomainName -TlsSetting $updateTlsSetting
-
-                    if($resource)
-                    {
-                        $frontdoorEndpoint.isMinTLSVersionSetOnCustomDomainPostRemediation = $true
-                        $frontdoorEndpoint.minimumTlsVersion = $requiredMinTLSVersion
-                        $customDomainsRemediated += $frontdoorEndpoint
-                        Write-Host "Minimum required TLS version for Front Door has been set successfully for " [$DomainName]  -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                    }
-                    else
-                    {
-                        $frontDoorsEPSkipped += $frontdoorEndpoint
-                        $logResource = @{}
-                        $logResource.Add("DomainName",($_.DomainName))
-                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                        $logResource.Add("ResourceName",($_.ResourceName))
-                        $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Endpoint.")
-                        $logSkippedResources += $logResource
-                        Write-Host "Error while setting the minimum required TLS version for this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
-                        Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host $([Constants]::SingleDashLine)
-                        return
-                    }
-                }
-                catch
+                $customDomain = Get-AzFrontDoorCdnCustomDomain -CustomDomainName $DomainName  -ProfileName $resourceName -ResourceGroupName $resourceGroupName
+                if($customDomain -ne $null)
                 {
-                    $frontDoorsEPSkipped += $frontdoorEndpoint
+                    if($customDomain.DomainValidationState -eq "Approved" -and $customDomain.DeploymentStatus -eq "Succeeded")
+                    {
+                        $tlsSettings = $customDomain.TlsSetting
+                        $tlsSettings.MinimumTlsVersion = $requiredMinTLSVersion
+                        $updatedDomain = Update-AzFrontDoorCdnCustomDomain -CustomDomainName $DomainName  -ProfileName $resourceName -ResourceGroupName $resourceGroupName -TlsSetting $tlsSettings
+                        if($updatedDomain -ne $null -and $updatedDomain.TlsSetting.MinimumTlsVersion -eq $requiredMinTLSVersion)
+                        {
+                            $frontdoorEndpoint.MinimumTlsVersion = $requiredMinTLSVersion
+                            $frontDoorsDomainsRemediated += $frontdoorEndpoint
+                            Write-Host "Minimum required TLS version for Front Door CDN Profiles has been set successfully for " [$DomainName]  -ForegroundColor $([Constants]::MessageType.Update)
+                            Write-Host $([Constants]::SingleDashLine)
+                        }
+                    }                
+                    else{
+                    $frontDoorsDomainsSkipped += $frontdoorEndpoint
                     $logResource = @{}
                     $logResource.Add("DomainName",($_.DomainName))
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason", "Error while setting the minimum required TLS version on the custom domain. Skipping this Front Door Endpoint.")
+                    $logResource.Add("ResourceName",($_.ProfileName))
+                    $logResource.Add("Reason", "Warning! Domain Deployment Status and Domain Validation State must be Succeeded and Approved, Skipping this Front Door domain.")
                     $logSkippedResources += $logResource
-                    Write-Host "Error while setting the minimum required TLS version on the custom domain of Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Warning! Domain Deployment Status and Domain Validation State must be Succeeded and Approved." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
-                    return
+                    }
+                    
+                }
+                 else
+                {
+                    $frontDoorsDomainsSkipped += $frontdoorEndpoint
+                    $logResource = @{}
+                    $logResource.Add("DomainName",($_.DomainName))
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.ProfileName))
+                    $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Endpoint.")
+                    $logSkippedResources += $logResource
+                    Write-Host "Error while setting the minimum required TLS version for this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
                 }
             }
+            catch
+            {
+                $frontDoorsDomainsSkipped += $frontdoorEndpoint
+                $logResource = @{}
+                $logResource.Add("DomainName",($_.DomainName))
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ProfileName))
+                $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Endpoint.")
+                $logSkippedResources += $logResource
+                Write-Host "Error while setting the minimum required TLS version for this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+                
+            }
+            
         }
 
-        if (($customDomainsRemediated | Measure-Object).Count -eq $totalNonCompliantFrontDoorEndpoints)
+        if (($frontDoorsDomainsRemediated | Measure-Object).Count -eq $totalNonCompliantFrontDoorDomains)
         {
-            Write-Host "Successfully set the minimum required TLS version for all [$($totalNonCompliantFrontDoorEndpoints)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)   
+            Write-Host "Successfully set the minimum required TLS version for all [$($totalNonCompliantFrontDoorDomains)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)   
         }
         else
         {
-            Write-Host "Minimum required TLS version is successfully set on the custom domains for [$($($customDomainsRemediated | Measure-Object).Count)] out of [$($totalNonCompliantFrontDoorEndpoints)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Minimum required TLS version is successfully set on the custom domains for [$($($frontDoorsDomainsRemediated | Measure-Object).Count)] out of [$($totalNonCompliantFrontDoorDomains)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         $colsProperty = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
-                        @{Expression={$_.DomainName};Label="Host Name";Width=20;Alignment="left"},
-                        @{Expression={$_.CertificateType};Label="Certificate Type";Width=20;Alignment="left"},
+                        @{Expression={$_.ResourceName};Label="Profile Name";Width=20;Alignment="left"},
+                        @{Expression={$_.DomainName};Label="Domain Name";Width=20;Alignment="left"},
+                        @{Expression={$_.HostName};Label="Host Name";Width=20;Alignment="left"},
                         @{Expression={$_.PrevMinimumTlsVersion};Label="Previous Min TLS Version";Width=20;Alignment="left"},
                         @{Expression={$_.MinimumTlsVersion};Label="Current Min TLS Version";Width=20;Alignment="left"},
-                        @{Expression={$_.isMinTlsVersionSetOnCustomDomain};Label="Is minimum required TLS version set on custom domain?";Width=20;Alignment="left"},
-                        @{Expression={$_.isMinTLSVersionSetOnCustomDomainPostRemediation};Label="Is minimum required TLS version set on the custom domain - Post remediation?";Width=20;Alignment="left"}
+                        @{Expression={$_.DomainDeploymentStatus};Label="DomainDeploymentStatus";Width=20;Alignment="left"},
+                        @{Expression={$_.DomainValidationState};Label="DomainValidationState";Width=20;Alignment="left"}
                         
         Write-Host $([Constants]::DoubleDashLine)
         
         if($AutoRemediation)
         {
-            if ($($customDomainsRemediated | Measure-Object).Count -gt 0)
+            if ($($frontDoorsDomainsRemediated | Measure-Object).Count -gt 0)
             {
                 # Write this to a file.
-                $customDomainsRemediatedFile = "$($backupFolderPath)\RemediatedCdnFrontDoorsForMinReqTLSVersion.csv"
-                $customDomainsRemediated | Export-CSV -Path $customDomainsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Front Door Endpoint(s) where minimum required TLS version is successfully set has been saved to [$($customDomainsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                $frontDoorsDomainsRemediatedFile = "$($backupFolderPath)\RemediatedCdnFrontDoorsForMinReqTLSVersion.csv"
+                $frontDoorsDomainsRemediated | Export-CSV -Path $frontDoorsDomainsRemediatedFile -NoTypeInformation
+                Write-Host "The information related to Front Door Endpoint(s) where minimum required TLS version is successfully set has been saved to [$($frontDoorsDomainsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            if ($($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
+            if ($($frontDoorsDomainsSkipped | Measure-Object).Count -gt 0)
             {   
                 # Write this to a file.
                 $frontDoorSkippedFile = "$($backupFolderPath)\SkippedCdnFrontDoorForMinReqTLSVersion.csv"
-                $frontDoorsEPSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
+                $frontDoorsDomainsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
                 Write-Host "The information related to Front Door Endpoint(s) where minimum required TLS version is not set has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -713,27 +659,27 @@ function Set-FrontDoorRequiredTLSVersion
         {
             Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
-            if ($($customDomainsRemediated | Measure-Object).Count -gt 0)
+            if ($($frontDoorsDomainsRemediated | Measure-Object).Count -gt 0)
             {
                 Write-Host "Successfully set minimum required TLS version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Update)
-                $customDomainsRemediated | Format-Table -Property $colsProperty -Wrap
+                $frontDoorsDomainsRemediated | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
-                $customDomainsRemediatedFile = "$($backupFolderPath)\RemediatedCdnFrontDoorForMinReqTLSVersion.csv"
-                $customDomainsRemediated | Export-CSV -Path $customDomainsRemediatedFile -NoTypeInformation
-                Write-Host "This information has been saved to [$($customDomainsRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                $frontDoorsDomainsRemediatedFile = "$($backupFolderPath)\RemediatedCdnFrontDoorForMinReqTLSVersion.csv"
+                $frontDoorsDomainsRemediated | Export-CSV -Path $frontDoorsDomainsRemediatedFile -NoTypeInformation
+                Write-Host "This information has been saved to [$($frontDoorsDomainsRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            if ($($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
+            if ($($frontDoorsDomainsSkipped | Measure-Object).Count -gt 0)
             {
                 Write-Host "Error while setting the minimum required TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-                $frontDoorsEPSkipped | Format-Table -Property $colsProperty -Wrap
+                $frontDoorsDomainsSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
                 $frontDoorSkippedFile = "$($backupFolderPath)\SkippedFrontDoorsForMinReqTLSVersion.csv"
-                $frontDoorsEPSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation 
+                $frontDoorsDomainsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation 
                 Write-Host "This information has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -745,7 +691,7 @@ function Set-FrontDoorRequiredTLSVersion
                 if($logControl.ControlId -eq $controlIds){
                     $logControl.RemediatedResources=$logRemediatedResources
                     $logControl.SkippedResources=$logSkippedResources
-                    $logControl.RollbackFile = $customDomainsRemediatedFile
+                    $logControl.RollbackFile = $frontDoorsDomainsRemediatedFile
                 }
             }
             $log | ConvertTo-json -depth 10  | Out-File $logFile
@@ -757,7 +703,7 @@ function Set-FrontDoorRequiredTLSVersion
         Write-Host $([Constants]::SingleDashLine)
         # Backing up Front Doors details.
         $BackupFile = "$($backupFolderPath)\CdnFrontDoorsWithoutReqMinTLSVersion.csv"
-        $NonCompliantFrontDoorEndpoints | Export-CSV -Path $BackupFile -NoTypeInformation
+        $NonCompliantFrontDoorDomains | Export-CSV -Path $BackupFile -NoTypeInformation
         Write-Host "Front Door details have been backed up to [$($BackupFile)]. Please review before remediating them." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -766,15 +712,15 @@ function Set-FrontDoorRequiredTLSVersion
     }
 }
 
-function Reset-FrontDoorRequiredTLSVersion
+function Reset-FrontDoorCDNProfileRequiredTLSVersion
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial' Control.
+        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial' Control.
-        Resets Minimum TLS Version on the custom domain in all Front Doors in the Subscription. 
+        Rolls back remediation done for 'Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version' Control.
+        Resets Minimum TLS Version on the custom domain in Front Door CDN Profiles in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -789,16 +735,16 @@ function Reset-FrontDoorRequiredTLSVersion
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to Reset-FrontDoorRequiredTLSVersion.
+        None. You cannot pipe objects to Reset-FrontDoorCDNProfileRequiredTLSVersion.
 
         .OUTPUTS
-        None. Reset-FrontDoorRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
+        None. Reset-FrontDoorCDNProfileRequiredTLSVersion does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedCdnFrontDoorForMinReqTLSVersion.csv
+        PS> Reset-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedCdnFrontDoorForMinReqTLSVersion.csv
 
         .EXAMPLE
-        PS> Reset-FrontDoorRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck  -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedCdnFrontDoorForMinReqTLSVersion.csv
+        PS> Reset-FrontDoorCDNProfileRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck  -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetMinTLSVersionForCdnFrontDoors\RemediatedCdnFrontDoorForMinReqTLSVersion.csv
 
         .LINK
         None
@@ -823,7 +769,7 @@ function Reset-FrontDoorRequiredTLSVersion
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 3] Prepare to reset minimum TLS version on Front Doors in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 3] Prepare to reset minimum TLS version on Front Door CDN Profile Domain(s) in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -861,7 +807,7 @@ function Reset-FrontDoorRequiredTLSVersion
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "To Reset Minimum TLS version for for Front Doors in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To Reset Minimum TLS version for domain of Front Door CDN Profiles in a Subscription, Contributor or higher privileges on the Front Doors are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 3] Fetch all Front Doors"
     Write-Host $([Constants]::SingleDashLine)
@@ -876,24 +822,21 @@ function Reset-FrontDoorRequiredTLSVersion
     Write-Host $([Constants]::SingleDashLine)
 
     $frontdoorDetails = Import-Csv -LiteralPath $FilePath
-    $validFrontDoorEndpointDetails = $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName)
-                                                                ![String]::IsNullOrWhiteSpace($_.ResourceName)
+    $validFrontDoorDomainDetails = $frontdoorDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceGroupName)
+                                                                ![String]::IsNullOrWhiteSpace($_.ProfileName)
                                                                 ![String]::IsNullOrWhiteSpace($_.DomainName)
                                                                 ![String]::IsNullOrWhiteSpace($_.MinimumTlsVersion)
-                                                                ![String]::IsNullOrWhiteSpace($_.isMinTLSVersionSetOnCustomDomain)
-                                                                ![String]::IsNullOrWhiteSpace($_.CertificateType)
-                                                                ![String]::IsNullOrWhiteSpace($_.PrevMinimumTlsVersion)
                                                             }
 
-    $totalFrontDoorEndpoints = $(($validFrontDoorEndpointDetails|Measure-Object).Count)
+    $totalFrontDoorDomain = $(($validFrontDoorDomainDetails|Measure-Object).Count)
 
-    if ($totalFrontDoorEndpoints -eq 0)
+    if ($totalFrontDoorDomain -eq 0)
     {
         Write-Host "No Front door End points found. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         return
     }
 
-    Write-Host "Found [$($totalFrontDoorEndpoints)] Front Door End point(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalFrontDoorDomain)] Front Door End point(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\SetMinTLSVersionForCdnFrontDoors"
@@ -903,109 +846,113 @@ function Reset-FrontDoorRequiredTLSVersion
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host "Minimum TLS Version will be reset on the following Front Door End point(s):"
-    $validFrontDoorEndpointDetails | Select-Object @{N="Resource Group Name"; E={$_.ResourceGroupName}},@{N="Resource Name"; E={$_.ResourceName}}, @{N="Domain Name"; E={$_.DomainName}},@{N="Certificate Type"; E={$_.CertificateType}},@{N="Previous Minimum Tls Version"; E={$_.PrevMinimumTlsVersion}},@{N="Current Minimum Tls Version"; E={$_.MinimumTlsVersion}} | Format-Table -AutoSize -Wrap
+    Write-Host "Minimum TLS Version will be reset on the following Front Door Domain(s):"
+    $validFrontDoorDomainDetails | Select-Object 
+                    @{N="Resource Group Name"; E={$_.ResourceGroupName}},
+                    @{N="Resource Name"; E={$_.ProfileName}}, 
+                    @{N="Domain Name"; E={$_.DomainName}},
+                    @{N="Host Name"; E={$_.HostName}},
+                    @{N="Domain Deployment Status"; E={$_.DomainDeploymentStatus}},
+                    @{N="Domain Validation State"; E={$_.DomainValidationState}},
+                    @{N="MinimumTlsVersion"; E={$_.MinimumTlsVersion}} | Format-Table -AutoSize -Wrap
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $Force)
     {
-        Write-Host "Do you want to reset minimum TLS Version for all Front Door? " -NoNewline
+        Write-Host "Do you want to reset minimum TLS Version for all Front Door CDN Profile Domain(s)? " -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
-            Write-Host "Minimum TLS Version will not be reset for any Front Door. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Minimum TLS Version will not be reset for any Front Door CDN Profile Domain(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
             return
         }
-        Write-Host "User has provided consent to reset minimum TLS Version on all Front Doors." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "User has provided consent to reset minimum TLS Version on all Front Door CDN Profile Domain(s)." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
     else
     {
-        Write-Host "'Force' flag is provided. Minimum TLS Version will be reset on all Front Doors without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. Minimum TLS Version will be reset on all Front Door CDN Profile Domain(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "[Step 3 of 3] Reset Minimum TLS Version for Front Doors" 
+    Write-Host "[Step 3 of 3] Reset Minimum TLS Version for Front Door CDN Profile Domain(s)" 
     Write-Host $([Constants]::SingleDashLine)
 
-    # Includes Front Doors, to which, previously made changes were successfully rolled back.
-    $frontDoorEndpointsRolledBack = @()
+    # Includes Front Door CDN Profile Domain(s), to which, previously made changes were successfully rolled back.
+    $frontDoorDomainRolledBack = @()
 
-    # Includes Front Doors that were skipped during roll back. There were errors rolling back the changes made previously.
-    $frontDoorsEPSkipped = @()
+    # Includes Front Door CDN Profile Domain(s) that were skipped during roll back. There were errors rolling back the changes made previously.
+    $frontDoorsDomainsSkipped = @()
 
-    #$requiredMinTLSVersion = 'TLS10'
 
-    $validFrontDoorEndpointDetails | ForEach-Object {
-        $frontdoorEndpoint = $_
+
+    $validFrontDoorDomainDetails | ForEach-Object {
+        $frontdoorDomain = $_
         $resourceGroupName = $_.ResourceGroupName
-        $resourceName = $_.ResourceName
+        $resourceName = $_.ProfileName
         $DomainName = $_.DomainName
-        $CertificateType =$_.CertificateType
         $minimumTlsVersion = $_.MinimumTlsVersion
-        $prevMinimumTlsVersion =$_.PrevMinimumTlsVersion
-        $isMinTLSVersionSetOnCustomDomain = $_.isMinTLSVersionSetOnCustomDomain
-        $isMinTLSVersionRolledBackCustomDomainPostRemediation = $false;
-
-        $frontdoorEndpoint | Add-Member -NotePropertyName isMinTLSVersionRolledBackCustomDomainPostRemediation -NotePropertyValue $isMinTLSVersionRolledBackCustomDomainPostRemediation
-        
+        $PrevMinimumTlsVersion = $_.PrevMinimumTlsVersion
         try
         {
-            Write-Host "Fetching Front Door Endpoint configuration: Custom domain Name: [$($DomainName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching Front Front Door CDN Profiles configuration: Custom domain Name: [$($DomainName)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-
-                $secrets =  Get-AzFrontDoorCdnSecret -ResourceGroupName $resourceGroupName -ProfileName $resourceName
-                $secretObj = $null
-
-                foreach($secret in $secrets)
+                $customDomain = Get-AzFrontDoorCdnCustomDomain -CustomDomainName $DomainName  -ProfileName $resourceName -ResourceGroupName $resourceGroupName
+                if($customDomain -ne $null)
                 {
-                    if($secret.Name.Substring(37).Equals($DomainName))
+                    $tlsSettings = $customDomain.TlsSetting
+                    $tlsSettings.MinimumTlsVersion = $PrevMinimumTlsVersion
+                    $updatedDomain = Update-AzFrontDoorCdnCustomDomain -CustomDomainName $DomainName  -ProfileName $resourceName -ResourceGroupName $resourceGroupName -TlsSetting $tlsSettings
+                    if($updatedDomain -ne $null -and $updatedDomain.TlsSetting.MinimumTlsVersion -eq $PrevMinimumTlsVersion)
                     {
-                        $secretObj = $secret
+                        $frontDoorDomainRolledBack += $frontdoorDomain
+                        Write-Host "Minimum required TLS version for Front Door CDN Profiles Domain has been Rolled back successfully for FrontDoor" ($resourceName) "with Domain" ($DomainName) -ForegroundColor $([Constants]::MessageType.Update)
+                        Write-Host $([Constants]::SingleDashLine)
                     }
-                }
-                $secretResoure = New-AzFrontDoorCdnResourceReferenceObject -Id $secretObj.Id
-                $updateTlsSetting = New-AzFrontDoorCdnCustomDomainTlsSettingParametersObject -CertificateType $CertificateType -MinimumTlsVersion $prevMinimumTlsVersion -Secret $secretResoure
-                $resource = Update-AzFrontDoorCdnCustomDomain -ResourceGroupName $resourceGroupName -ProfileName $resourceName -CustomDomainName $DomainName -TlsSetting $updateTlsSetting
-                    
-                if($null -ne $resource -and $updateTlsSetting.MinimumTlsVersion -eq $prevMinimumTlsVersion )
-                {
-                    $frontdoorEndpoint.isMinTLSVersionRolledBackCustomDomainPostRemediation = $true
-                    $frontdoorEndpoint.isMinTlsVersionSetOnCustomDomain = $false
-                    $frontdoorEndpoint.minimumTlsVersion = $requiredMinTLSVersion
-                    $frontDoorEndpointsRolledBack += $frontdoorEndpoint
-                    Write-Host "Minimum required TLS version for Front Door has been Rolled back successfully for FrontDoor" ($resourceName) "with Domain" ($DomainName) -ForegroundColor $([Constants]::MessageType.Update)
-                    Write-Host $([Constants]::SingleDashLine)
+                    else
+                    {
+                        $frontDoorsDomainsSkipped += $frontdoorDomain
+                        $logResource = @{}
+                        $logResource.Add("DomainName",($_.DomainName))
+                        $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                        $logResource.Add("ResourceName",($_.ProfileName))
+                        $logResource.Add("Reason", "Error while Rolling back the minimum required TLS version. Skipping this Front Door CDN Profiles Domain.")
+                        $logSkippedResources += $logResource
+                        Write-Host "Error while Rolling back the minimum required TLS version for this Front Door CDN Profiles Domain." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Skipping this Front Door." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+                        return
+                    }
+                 
                 }
                 else
                 {
-                    $frontDoorsEPSkipped += $frontdoorEndpoint
+                    $frontDoorsDomainsSkipped += $frontdoorDomain
                     $logResource = @{}
                     $logResource.Add("DomainName",($_.DomainName))
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason", "Error while Rolling back the minimum required TLS version. Skipping this Front Door.")
+                    $logResource.Add("ResourceName",($_.ProfileName))
+                    $logResource.Add("Reason", "Error while Rolling back the minimum required TLS version. Skipping this Front Door CDN Profiles Domain.")
                     $logSkippedResources += $logResource
-                    Write-Host "Error while Rolling back the minimum required TLS version for this Front Door." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error while Rolling back the minimum required TLS version for this Front Door CDN Profiles Domain." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this Front Door." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     return
-                }
-                    
+                }                    
             }
             catch
             {
-                $frontDoorsEPSkipped += $frontdoorEndpoint
+                $frontDoorsDomainsSkipped += $frontdoorDomain
                 $logResource = @{}
                 $logResource.Add("DomainName",($_.DomainName))
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason", "Error while resetting the minimum required TLS version on the custom domain. Skipping this Front Door.")
+                $logResource.Add("ResourceName",($_.ProfileName))
+                $logResource.Add("Reason", "Error while resetting the minimum required TLS version on the custom domain. Skipping this Front Door CDN Profiles Domain.")
                 $logSkippedResources += $logResource
-                Write-Host "Error while resetting the minimum required TLS version on the custom domain of Front Door." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error while resetting the minimum required TLS version on the custom domain of Front Door CDN Profiles Domain." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 return
             }   
@@ -1014,48 +961,48 @@ function Reset-FrontDoorRequiredTLSVersion
         Write-Host "Successfully rolled back changes on the Front Door." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
-    if (($frontDoorsEPSkipped | Measure-Object).Count -eq 0)
+    if (($frontDoorsDomainsSkipped | Measure-Object).Count -eq 0)
     {
         Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoorEndpoints)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
-        Write-Host "Minimum TLS Version successfully reset for [$($($frontDoorEndpointsRolledBack | Measure-Object).Count)] out of [$($totalFrontDoorEndpoints)] Front Door Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Minimum TLS Version successfully reset for [$($($frontDoorDomainRolledBack | Measure-Object).Count)] out of [$($totalFrontDoorEndpoints)] Front Door Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     $colsProperty =     @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
+                        @{Expression={$_.ProfileName};Label="Profile Name";Width=20;Alignment="left"},
                         @{Expression={$_.DomainName};Label="Domain Name";Width=20;Alignment="left"},
-                        @{Expression={$_.CertificateType};Label="Certificate Type";Width=20;Alignment="left"},
-                        @{Expression={$_.PrevMinimumTlsVersion};Label="Minimum Tls Version";Width=20;Alignment="left"},
-                        @{Expression={$_.isMinTlsVersionSetOnCustomDomain};Label="Is minimum required TLS version set on custom domain?";Width=20;Alignment="left"},
-                        @{Expression={$_.isMinTLSVersionRolledBackCustomDomainPostRemediation};Label="Is minimum required TLS version reset on the custom domain - Post Roll back?";Width=20;Alignment="left"}
+                        @{Expression={$_.HostName};Label="Host Name";Width=20;Alignment="left"},
+                        @{Expression={$_.DomainDeploymentStatus};Label="Domain Deployment Status";Width=20;Alignment="left"},
+                        @{Expression={$_.DomainValidationState};Label="Domain Validation State";Width=20;Alignment="left"},
+                        @{Expression={$_.MinimumTlsVersion};Label="Minimum Tls Version";Width=20;Alignment="left"}
                         
-    if ($($frontDoorEndpointsRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
+    if ($($frontDoorDomainRolledBack | Measure-Object).Count -gt 0 -or $($frontDoorsDomainsSkipped | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($frontDoorEndpointsRolledBack | Measure-Object).Count -gt 0)
+        if ($($frontDoorDomainRolledBack | Measure-Object).Count -gt 0)
         {
             Write-Host "Minimum TLS Version successfully reset on the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Update)
-            $frontDoorEndpointsRolledBack | Format-Table -Property $colsProperty -Wrap -AutoSize
+            $frontDoorDomainRolledBack | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
-            $frontDoorEndpointsRolledBackFile = "$($backupFolderPath)\RolledBackCdnFrontDoors.csv"
-            $frontDoorEndpointsRolledBack | Export-CSV -Path $frontDoorEndpointsRolledBackFile -NoTypeInformation
-            Write-Host "Note: This information has been saved to [$($frontDoorEndpointsRolledBackFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+            $frontDoorDomainRolledBackFile = "$($backupFolderPath)\RolledBackCdnFrontDoors.csv"
+            $frontDoorDomainRolledBack | Export-CSV -Path $frontDoorDomainRolledBackFile -NoTypeInformation
+            Write-Host "Note: This information has been saved to [$($frontDoorDomainRolledBackFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($frontDoorsEPSkipped | Measure-Object).Count -gt 0)
+        if ($($frontDoorsDomainsSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error resetting minimum TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
-            $frontDoorsEPSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
+            Write-Host "Error resetting minimum TLS Version for the following Front Door CDN Profiles Domain(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            $frontDoorsDomainsSkipped | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
             $frontDoorSkippedFile = "$($backupFolderPath)\RollbackSkippedCdnFrontDoors.csv"
-            $frontDoorsEPSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
+            $frontDoorsDomainsSkipped | Export-CSV -Path $frontDoorSkippedFile -NoTypeInformation
             Write-Host "Note: This information has been saved to [$($frontDoorSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
@@ -1087,5 +1034,4 @@ class FrontendEndPointsClass
     [string] $DomainName
     [string] $FrontDoorName
     [string] $ResourceGroup
-    [string] $isMinTLSVersionSetOnCustomDomain
 }
