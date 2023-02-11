@@ -76,9 +76,6 @@ function Setup-Prerequisites
     Write-Host $([Constants]::SingleDashLine)
 
     $availableModules = $(Get-Module -ListAvailable $requiredModules -ErrorAction Stop)
-
-    $AzSqlModule = $availableModules | Where-Object{$_.Name -eq "Az.Sql"} | Sort-Object -Property Version -Descending | Select-Object -First 1
-    $AzSqlVersion = $AzSqlModule.Version
     
     # Check if the required modules are installed.
     $requiredModules | ForEach-Object {
@@ -94,6 +91,7 @@ function Setup-Prerequisites
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 function Encrypt-AutomationAccountVariables
@@ -459,7 +457,7 @@ function Encrypt-AutomationAccountVariables
     {        
         if(-not $SkipBackup)
         {
-            # Backing up SQL Managed Instance details.
+            # Backing up Automation Account details.
             $backupFile = "$($backupFolderPath)\AutomationAccountsWithUnencryptedVariables.csv"
             $automationAccountsWithUnEncryptedVariables | Export-CSV -Path $backupFile -NoTypeInformation
             Write-Host "Automation Account details have been successful backed up to [$($backupFolderPath)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -567,6 +565,7 @@ function Encrypt-AutomationAccountVariables
         }
 
         $totalAutomationAccountsRemediated = ($automationAccountsRemediated | Measure-Object).Count
+        $totalAutomationAccountsSkipped = ($automationAccountsSkipped | Measure-Object).Count
         Write-Host "[$($totalAutomationAccountsRemediated)] out of [$($totalAutomationAccountResources)] Automation Accounts remediated." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
@@ -582,16 +581,16 @@ function Encrypt-AutomationAccountVariables
                 # Write this to a file.
                 $automationAccountsRemediatedFile = "$($backupFolderPath)\RemediatedEncryptAutomationAccountsVariables.csv"
                 $automationAccountsRemediated | Export-CSV -Path $automationAccountsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($sqlManagedInstancesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($automationAccountsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            if ($($sqlManagedInstancesSkipped | Measure-Object).Count -gt 0)
+            if ($totalAutomationAccountsSkipped -gt 0)
             {   
                 # Write this to a file.
                 $automationAccountsSkippedFile = "$($backupFolderPath)\SkippedEncryptAutomationAccountsVariables.csv"
                 $automationAccountsSkipped | Export-CSV -Path $automationAccountsSkippedFile -NoTypeInformation
-                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are not encrypted successfully, has been saved to [$($sqlManagedInstancesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are not encrypted successfully, has been saved to [$($automationAccountsSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -607,11 +606,11 @@ function Encrypt-AutomationAccountVariables
                 # Write this to a file.
                 $automationAccountsRemediatedFile = "$($backupFolderPath)\RemediatedEncryptAutomationAccountsVariables.csv"
                 $automationAccountsRemediated | Export-CSV -Path $automationAccountsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($sqlManagedInstancesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($automationAccountsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            if ($($sqlManagedInstancesSkipped | Measure-Object).Count -gt 0)
+            if ($totalAutomationAccountsSkipped -gt 0)
             {   
                 Write-Host "Unable to encrypted all the associated unencrypted variables in the following Automation Accounts in the Subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
@@ -619,7 +618,7 @@ function Encrypt-AutomationAccountVariables
                 # Write this to a file.
                 $automationAccountsSkippedFile = "$($backupFolderPath)\SkippedEncryptAutomationAccountsVariables.csv"
                 $automationAccountsSkipped | Export-CSV -Path $automationAccountsSkippedFile -NoTypeInformation
-                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are not encrypted successfully, has been saved to [$($sqlManagedInstancesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are not encrypted successfully, has been saved to [$($automationAccountsSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
