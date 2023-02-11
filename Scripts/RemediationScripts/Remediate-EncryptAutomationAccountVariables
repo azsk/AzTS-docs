@@ -369,6 +369,7 @@ function Encrypt-AutomationAccountVariables
         {
             $variables = Get-AzAutomationVariable -AutomationAccountName $automationAccountName  -ResourceGroupName $resourceGroupName  
             $unencryptedVariables = @()
+            $unencryptedVariablesName = @()
             $variables | ForEach-Object {
                 $variable = $_
                 $name = $variable.Name
@@ -379,16 +380,19 @@ function Encrypt-AutomationAccountVariables
                 {
                     $unencryptedVariables +=  $variable | Select-Object @{N='Name';E={$name}},
                                                                     @{N='Value';E={$value}}
+                    
+                    $unencryptedVariablesName += $name
                 }
             }
 
             $unencryptedVariablesCount = ($unencryptedVariables | Measure-Object).Count
-
+            $unencryptedVariablesNameStr = $unencryptedVariablesName -join ', '
             if($unencryptedVariablesCount -gt 0)
             {
                 $automationAccountsWithUnEncryptedVariables += $automationAccount | Select-Object @{N="AutomationAccountName";E={$automationAccountName}},
                                                                                                 @{N="ResourceGroupName";E={$resourceGroupName}},
-                                                                                                @{N="UnencryptedVariables";E={$unencryptedVariables}}
+                                                                                                @{N="UnencryptedVariables";E={$unencryptedVariables}},
+                                                                                                @{N="UnencryptedVaribalesNameStr"; E={$unencryptedVariablesNameStr}}
             }
             else
             {
@@ -434,8 +438,8 @@ function Encrypt-AutomationAccountVariables
     Write-Host $([Constants]::SingleDashLine)	
      
     $colsProperty = @{Expression={$_.AutomationAccountName};Label="Automation Account Name";Width=35;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
-                    @{Expression={$_.UnencryptedVariabled};Label="Unencrypted Variables";Width=10;Alignment="left"}
+                    @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=20;Alignment="left"},
+                    @{Expression={$_.UnencryptedVaribalesNameStr};Label="Unencrypted Variables Name";Width=30;Alignment="left"}
 
     if(-not($AutoRemediation))
     {
@@ -570,7 +574,7 @@ function Encrypt-AutomationAccountVariables
         Write-Host $([Constants]::SingleDashLine)
 
         $colsProperty = @{Expression={$_.AutomationAccountName};Label="Automation Account Name";Width=20;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=20;Alignment="left"},
+                        @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=20;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
 
@@ -581,7 +585,7 @@ function Encrypt-AutomationAccountVariables
                 # Write this to a file.
                 $automationAccountsRemediatedFile = "$($backupFolderPath)\RemediatedEncryptAutomationAccountsVariables.csv"
                 $automationAccountsRemediated | Export-CSV -Path $automationAccountsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($automationAccountsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($automationAccountsRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -606,7 +610,7 @@ function Encrypt-AutomationAccountVariables
                 # Write this to a file.
                 $automationAccountsRemediatedFile = "$($backupFolderPath)\RemediatedEncryptAutomationAccountsVariables.csv"
                 $automationAccountsRemediated | Export-CSV -Path $automationAccountsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($automationAccountsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Automation Accounts, where all the associated unencrypted variables are encrypted successfully, has been saved to [$($automationAccountsRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -631,7 +635,6 @@ function Encrypt-AutomationAccountVariables
                 if($logControl.ControlId -eq $controlIds){
                     $logControl.RemediatedResources=$logRemediatedResources
                     $logControl.SkippedResources=$logSkippedResources 
-                    $logControl.RollbackFile = $automationAccountsRemediatedFile
                 }
             }
             
