@@ -250,6 +250,17 @@
           "RollbackCommand": "Reset-SecureTLSVersionForDBForMySQLFlexibleServer",
           "Arguments": [ "SubscriptionId" ]
         }
+      },
+      {
+        "ControlId": "Azure_AutomationAccounts_DP_Encrypt_Variables",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
+        "LoadCommand": "Remediate-EncryptAutomationAccountVariables",
+        "InitCommand": "Set-SecureTLSVersionForDBForMySQLFlexibleServer",
+        "RollbackMetadata": {
+          "RollbackCommand": "",
+          "Arguments": [ "" ]
+        }
       }
     ]
 }
