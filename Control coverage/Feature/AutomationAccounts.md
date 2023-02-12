@@ -85,7 +85,7 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
   /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
   **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData 
   <br />
-  **Assessments:** 
+  **Assessment:** 
   b12bc79e-4f12-44db-acda-571820191ddc - [Automation account variables must be encrypted](https://portal.azure.com/#view/Microsoft_Azure_Security/GenericRecommendationDetailsBlade/assessmentKey/b12bc79e-4f12-44db-acda-571820191ddc)
 
   <br>
