@@ -70,10 +70,6 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
 
 ### Azure Policy or ARM API used for evaluation
 
-- Azure Policy (built-in):
-  [Automation account variables must be encrypted](https://portal.azure.com/#view/Microsoft_Azure_Security/GenericRecommendationDetailsBlade/assessmentKey/b12bc79e-4f12-44db-acda-571820191ddc)
-  <br />
-
 - ARM API to list all the automation accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Automation/automationAccounts?api-version=2021-06-22
   <br />
@@ -84,6 +80,15 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/variables?api-version=2019-06-01"
   <br />
   **Properties:** [*].properties.isEncrypted
+
+- ARM API to list all security assessments in a Subscription:
+  /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+  **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData 
+  <br />
+  **Assessments:** 
+  b12bc79e-4f12-44db-acda-571820191ddc - [Automation account variables must be encrypted](https://portal.azure.com/#view/Microsoft_Azure_Security/GenericRecommendationDetailsBlade/assessmentKey/b12bc79e-4f12-44db-acda-571820191ddc)
+
+  <br>
 
 ___
 
