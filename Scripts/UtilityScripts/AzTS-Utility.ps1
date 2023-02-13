@@ -147,11 +147,11 @@ function Get-DataFactoryV2()
     .DESCRIPTION
     This command shows the data factory.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the Data Factory.
+    The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-        The Resource Group containing the Data Factory.
+    The Resource Group containing the Data Factory.
     .PARAMETER DataFactoryName
-        The Data Factory name.
+    The Data Factory name.
   #>
 
   [CmdletBinding()]
@@ -217,11 +217,11 @@ function Get-DataFactoryV2DataSets()
     .DESCRIPTION
     This command lists dataset names and parameters for datasets that have at least one parameter. This is to review parameter values to try and locate parameters that may contain strings identified by the control as plaintext secrets.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the Data Factory.
+    The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-        The Resource Group containing the Data Factory.
+    The Resource Group containing the Data Factory.
     .PARAMETER DataFactoryName
-        The Data Factory name.
+    The Data Factory name.
   #>
 
   [CmdletBinding()]
@@ -252,11 +252,11 @@ function Get-DataFactoryV2IntegrationRuntimes()
     .DESCRIPTION
     This command lists pipeline names and parameters for pipelines that have at least one parameter. This is to review parameter values to try and locate parameters that may contain strings identified by the control as plaintext secrets.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the Data Factory.
+    The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-        The Resource Group containing the Data Factory.
+    The Resource Group containing the Data Factory.
     .PARAMETER DataFactoryName
-        The Data Factory name.
+    The Data Factory name.
   #>
 
   [CmdletBinding()]
@@ -287,11 +287,11 @@ function Get-DataFactoryV2LinkedServices()
     .DESCRIPTION
     This command lists linked service names and parameters for linked services that have at least one parameter. This is to review parameter values to try and locate parameters that may contain strings identified by the control as plaintext secrets.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the Data Factory.
+    The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-        The Resource Group containing the Data Factory.
+    The Resource Group containing the Data Factory.
     .PARAMETER DataFactoryName
-        The Data Factory name.
+    The Data Factory name.
   #>
 
   [CmdletBinding()]
@@ -322,11 +322,11 @@ function Get-DataFactoryV2Pipelines()
     .DESCRIPTION
     This command lists pipeline names and parameters for pipelines that have at least one parameter. This is to review parameter values to try and locate parameters that may contain strings identified by the control as plaintext secrets.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the Data Factory.
+    The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-        The Resource Group containing the Data Factory.
+    The Resource Group containing the Data Factory.
     .PARAMETER DataFactoryName
-        The Data Factory name.
+    The Data Factory name.
   #>
 
   [CmdletBinding()]
@@ -357,11 +357,11 @@ function Get-DataFactoryV2Triggers()
     .DESCRIPTION
     This command lists triggers. This is to try and locate strings identified by the control as plaintext secrets.
     .PARAMETER SubscriptionId
-        The Azure subscription ID containing the Data Factory.
+    The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-        The Resource Group containing the Data Factory.
+    The Resource Group containing the Data Factory.
     .PARAMETER DataFactoryName
-        The Data Factory name.
+    The Data Factory name.
   #>
 
   [CmdletBinding()]
@@ -452,46 +452,6 @@ function Get-MySqlFlexServerSslState()
   return $ssl.Value
 }
 
-function Get-MySqlFlexServerTlsVersion()
-{
-  <#
-    .SYNOPSIS
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
-    .DESCRIPTION
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the MySQL Flexible Server.
-    .PARAMETER ResourceGroupName
-    The Resource Group containing the MySQL Flexible Server.
-    .PARAMETER ServerName
-    The MySQL Flexible Server name.
-  #>
-
-  [CmdletBinding()]
-  param (
-      [Parameter(Mandatory=$true)]
-      [string]
-      $SubscriptionId,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $ResourceGroupName,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $ServerName
-  )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  $config = Get-AzMySqlFlexibleServerConfiguration `
-    -ResourceGroupName $ResourceGroupName `
-    -ServerName $ServerName
-  
-  $tls = $config | `
-    Where-Object -FilterScript {$_.Name -eq 'tls_version'}
-  
-  return $tls.Value
-}
-
 function Set-MySqlFlexServerSslState()
 {
   <#
@@ -534,13 +494,58 @@ function Set-MySqlFlexServerSslState()
     -Value $SslSetting
 }
 
-function Set-MySqlFlexServerTlsVersion()
+# ####################################################################################################
+
+# ####################################################################################################
+# Azure_DBForMySQLFlexibleServer_TLS
+
+function Get-MySqlFlexServerTlsVersion()
 {
   <#
     .SYNOPSIS
     This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
     .DESCRIPTION
     This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the MySQL Flexible Server.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the MySQL Flexible Server.
+    .PARAMETER ServerName
+    The MySQL Flexible Server name.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ServerName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $config = Get-AzMySqlFlexibleServerConfiguration `
+    -ResourceGroupName $ResourceGroupName `
+    -ServerName $ServerName
+  
+  $tls = $config | `
+    Where-Object -FilterScript {$_.Name -eq 'tls_version'}
+  
+  return $tls.Value
+}
+
+function Set-MySqlFlexServerTlsVersion()
+{
+  <#
+    .SYNOPSIS
+    This command sets the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .DESCRIPTION
+    This command sets the specified Azure Database for MySQL Flexible Server's Require SSL setting.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
@@ -581,3 +586,87 @@ function Set-MySqlFlexServerTlsVersion()
 
 # ####################################################################################################
 
+# ####################################################################################################
+# Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+function Get-SqlManagedInstanceMinimumTlsVersion()
+{
+  <#
+    .SYNOPSIS
+    This command returns the current state of the specified SQL Managed Instance's MinimalTlsVersion setting.
+    .DESCRIPTION
+    This command returns the current state of the specified SQL Managed Instance's MinimalTlsVersion setting.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the SQL Managed Instance.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the SQL Managed Instance.
+    .PARAMETER SqlInstanceName
+    The SQL Managed Instance name.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SqlInstanceName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $instance = Get-AzSqlInstance `
+    -ResourceGroupName $ResourceGroupName `
+    -Name $SqlInstanceName
+
+  $tlsVersion = $instance.MinimalTlsVersion
+
+  return $tlsVersion
+}
+
+function Set-SqlManagedInstanceMinimumTlsVersion()
+{
+  <#
+    .SYNOPSIS
+    This command sets the specified SQL Managed Instance's MinimalTlsVersion setting.
+    .DESCRIPTION
+    This command sets the specified SQL Managed Instance's MinimalTlsVersion setting.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the SQL Managed Instance.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the SQL Managed Instance.
+    .PARAMETER SqlInstanceName
+    The SQL Managed Instance name.
+    .PARAMETER MinimalTlsVersion
+    The SQL Managed Instance MinimalTlsVersion setting value.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SqlInstanceName,
+      [Parameter(Mandatory=$false)]
+      [string]
+      $MinimalTlsVersion = "1.2"
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  Set-AzSqlInstance `
+    -ResourceGroupName $ResourceGroupName `
+    -Name $SqlInstanceName `
+    -MinimalTlsVersion $TlsVersion
+}
+
+# ####################################################################################################
