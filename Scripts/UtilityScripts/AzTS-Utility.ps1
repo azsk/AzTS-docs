@@ -1,5 +1,20 @@
 
 # ####################################################################################################
+# Powershell Execution Policy
+
+# To run this or other downloaded scripts, you may need to set your Powershell execution policy.
+# Reference: https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies
+
+# To run a script like this
+# Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser
+
+# To then reset the execution policy either to default (Restricted) or RemoteSigned
+# Set-ExecutionPolicy -ExecutionPolicy Default -Scope CurrentUser
+# Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# ####################################################################################################
+
+# ####################################################################################################
 # Azure Powershell Utility Methods
 
 function Remove-AllAzPowershell()
@@ -9,8 +24,9 @@ function Remove-AllAzPowershell()
 
 function Install-AzPowershell()
 {
-  Install-Package -Name Az
+  Install-Module -Name Az
 }
+
 # ####################################################################################################
 
 # ####################################################################################################
@@ -404,9 +420,11 @@ function Get-MySqlFlexServerSslState()
     .DESCRIPTION
     This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
     .PARAMETER SubscriptionId
-    The Resource Group containing the Data Factory.
-    .PARAMETER DataFactoryName
-    The Data Factory name.
+    The Azure subscription ID containing the MySQL Flexible Server.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the MySQL Flexible Server.
+    .PARAMETER ServerName
+    The MySQL Flexible Server name.
   #>
 
   [CmdletBinding()]
@@ -434,6 +452,46 @@ function Get-MySqlFlexServerSslState()
   return $ssl.Value
 }
 
+function Get-MySqlFlexServerTlsVersion()
+{
+  <#
+    .SYNOPSIS
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .DESCRIPTION
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the MySQL Flexible Server.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the MySQL Flexible Server.
+    .PARAMETER ServerName
+    The MySQL Flexible Server name.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ServerName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $config = Get-AzMySqlFlexibleServerConfiguration `
+    -ResourceGroupName $ResourceGroupName `
+    -ServerName $ServerName
+  
+  $tls = $config | `
+    Where-Object -FilterScript {$_.Name -eq 'tls_version'}
+  
+  return $tls.Value
+}
+
 function Set-MySqlFlexServerSslState()
 {
   <#
@@ -442,9 +500,13 @@ function Set-MySqlFlexServerSslState()
     .DESCRIPTION
     This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
     .PARAMETER SubscriptionId
-    The Resource Group containing the Data Factory.
-    .PARAMETER DataFactoryName
-    The Data Factory name.
+    The Azure subscription ID containing the MySQL Flexible Server.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the MySQL Flexible Server.
+    .PARAMETER ServerName
+    The MySQL Flexible Server name.
+    .PARAMETER SslSetting
+    The MySQL Flexible Server Require SSL setting value.
   #>
 
   [CmdletBinding()]
@@ -471,4 +533,51 @@ function Set-MySqlFlexServerSslState()
     -Name 'require_secure_transport' `
     -Value $SslSetting
 }
+
+function Set-MySqlFlexServerTlsVersion()
+{
+  <#
+    .SYNOPSIS
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .DESCRIPTION
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the MySQL Flexible Server.
+    .PARAMETER ResourceGroupName
+    The Resource Group containing the MySQL Flexible Server.
+    .PARAMETER ServerName
+    The MySQL Flexible Server name.
+    .PARAMETER TlsVersion
+    The MySQL Flexible Server TLS Version setting value.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ServerName,
+      [Parameter(Mandatory=$false)]
+      [string]
+      $TlsVersion = "TLSv1.2"
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  Update-AzMySqlFlexibleServerConfiguration `
+    -ResourceGroupName $ResourceGroupName `
+    -ServerName $ServerName `
+    -Name 'tls_version' `
+    -Value $TlsVersion
+
+  # This is a static server parameter so we must reboot the Flexible Server for the change to take effect
+  Restart-AzMySqlFlexibleServer -ResourceGroupName $ResourceGroupName -ServerName $ServerName
+}
+
 # ####################################################################################################
+
