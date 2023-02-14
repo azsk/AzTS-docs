@@ -41,7 +41,7 @@
 
 20. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#20-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 
-
+21. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#21-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version)
 
 <br />
 ___
@@ -278,7 +278,7 @@ Use approved version of TLS for Event Hub Namespace.
 [Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or higher privileged role on the Storage Account(s)
+Contributor or higher privileged role on the Event Hub Namespace(s)
 
 ___
 
@@ -305,5 +305,18 @@ Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+## 21. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
+
+### Display Name
+Front Door should have approved minimum TLS version.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Front Door CDN Profile(s)
 
 ___

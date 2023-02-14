@@ -146,7 +146,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
         Specifies script is run as a subroutine of AutoRemediation Script.
 
         .PARAMETER TimeStamp
-        Specifies the time of creation of file to be us.ed for logging remediation details when AutoRemediation switch is used.
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
         .INPUTS
         None. You cannot pipe objects to Set-FrontDoorCDNProfileRequiredTLSVersion.
