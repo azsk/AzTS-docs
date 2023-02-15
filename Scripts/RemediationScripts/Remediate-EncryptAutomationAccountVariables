@@ -464,7 +464,7 @@ function Encrypt-AutomationAccountVariables
             # Backing up Automation Account details.
             $backupFile = "$($backupFolderPath)\AutomationAccountsWithUnencryptedVariables.csv"
             $automationAccountsWithUnEncryptedVariables | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "Automation Account details have been successful backed up to [$($backupFolderPath)]" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Automation Account details have been successfully backed up to [$($backupFolderPath)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
