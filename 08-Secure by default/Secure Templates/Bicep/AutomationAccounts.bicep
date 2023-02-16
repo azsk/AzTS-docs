@@ -13,7 +13,7 @@ param automationAccountVariableValue string
 @description('Specify the description of automation account\'s variable')
 param automationAccountVariableDescription string
 
-resource automationAccount 'Microsoft.Automation/automationAccounts@2020-01-13-preview' = {
+resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
   name: automationAccountName
   location: location
   identity: {
