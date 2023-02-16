@@ -11,7 +11,7 @@ Control can be covered with the below mentioned Azure policy:
 Following policy can be used with 'Deny' effect to disallow users to create any classic resources in subscription (Greenfield Scenario).
 
 #### Policy Definition
-[Security - Subscription - DenyClassicResources](Security%20-%20Subscription%20-%20DenyClassicResources.json)
+[Security - Subscription - ClassicResources](Security%20-%20Subscription%20-%20ClassicResources.json)
 
 #### Parameter details
 
