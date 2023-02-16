@@ -10,7 +10,7 @@ Control can be covered with the below mentioned Azure policy.
 Following policy can be used with 'Modify' effect to avoid further non-compliant resource creation and existing non-compliant resources can be remediated by policy remediation task.
 
 #### Policy Definition
-[Azure_ServiceBus_DP_Use_Secure_TLS_Version](./Security%20-%20Service%20Bus%20-%20SetMinimumRequiredTLSVersion.json)
+[Security - Service Bus - SetMinimumRequiredTLSVersion](./Security%20-%20Service%20Bus%20-%20SetMinimumRequiredTLSVersion.json)
 
 #### Parameter details
 

@@ -10,7 +10,7 @@ Control can be covered with the below mentioned Azure policy.
 Following policy can be used with 'Audit' effect to view the compliance of Key Vaults having `Public Network Access` disabled at the policy assignment scope.
 
 #### Policy Definition
-[Azure_KeyVault_NetSec_Disable_Public_Network_Access](./Security%20-%20Key%20Vault%20-%20DisablePublicNetworkAccess.json)
+[Security - Key Vault - DisablePublicNetworkAccess](./Security%20-%20Key%20Vault%20-%20DisablePublicNetworkAccess.json)
 
 #### Parameter details
 
