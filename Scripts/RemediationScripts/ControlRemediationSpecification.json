@@ -1,7 +1,7 @@
 {
     "Description": "Specifies metadata about Remediation scripts",
     "RemediationScriptsBaseUrl": "https://aka.ms/azts/remediation/",
-  "RemediationSpecification": [
+    "RemediationSpecification": [
     {
       "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
       "EnableRemediation": "true",
@@ -178,28 +178,28 @@
         "Arguments": [ "SubscriptionId" ]
       }
     },
-    {
-      "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion",
-      "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
-      "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",
-      "InitCommand": "Set-SASExpiryInterval",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SASExpiryInterval",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
+      {
+        "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion.ps1",
+        "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      },
+      {
+        "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
+        "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts.ps1",
+        "InitCommand": "Set-SASExpiryInterval",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-SASExpiryInterval",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      },
     {
       "ControlId": "Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version",
       "EnableRemediation": "true",
@@ -211,38 +211,27 @@
         "Arguments": [ "" ]
       }
     },
-    {
-      "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion",
-      "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-TLSVersionForEventHubNamespace",
-        "Arguments": [ "SubscriptionId" ]
+      {
+        "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
+        "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-TLSVersionForEventHubNamespace",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      },
+      {
+        "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
+        "InitCommand": "Set-SecureTLSVersionForDBForMySQLFlexibleServer",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-SecureTLSVersionForDBForMySQLFlexibleServer",
+          "Arguments": [ "SubscriptionId" ]
+        }
       }
-    },
-    {
-      "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion",
-      "InitCommand": "Set-SecureTLSVersionForDBForMySQLFlexibleServer",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SecureTLSVersionForDBForMySQLFlexibleServer",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-CdnFrontDoorMinTLSVersion.ps1",
-      "LoadCommand": "Remediate-CdnFrontDoorMinTLSVersion",
-      "InitCommand": "Set-FrontDoorCDNProfileRequiredTLSVersion",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-FrontDoorCDNProfileRequiredTLSVersion",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    }
   ]
 }

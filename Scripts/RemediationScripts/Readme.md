@@ -713,10 +713,10 @@ Yes
 
 ---
 
-## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door should have Approved Minimum TLS version.
+Front Door should have Approved Minimum TLS version.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
