@@ -49,6 +49,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#37-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
+40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
 
 <br />
 
@@ -920,3 +921,21 @@ After completing above mentioned steps, open remediation script in PowerShell an
 
 ___
 
+## 40. Azure_AutomationAccounts_DP_Encrypt_Variables
+
+### Display Name
+Automation account variables must be encrypted
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___

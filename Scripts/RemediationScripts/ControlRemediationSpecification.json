@@ -1,237 +1,266 @@
 {
-  "Description": "Specifies metadata about Remediation scripts",
-  "RemediationScriptsBaseUrl": "https://aka.ms/azts/remediation/",
-  "RemediationSpecification": [
-    {
-      "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
-      "LoadCommand": "Remediate-AnonymousAccessOnContainers.ps1",
-      "InitCommand": "Remove-AnonymousAccessOnContainers",
-      "RollbackMetadata": {
-        "RollbackCommand": "Set-AnonymousAccessOnContainers",
-        "Arguments": [ "SubscriptionId", "RollBackType" ]
+    "Description": "Specifies metadata about Remediation scripts",
+    "RemediationScriptsBaseUrl": "https://aka.ms/azts/remediation/",
+    "RemediationSpecification": [
+        {
+            "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",
+            "LoadCommand": "Remediate-AnonymousAccessOnContainers.ps1",     
+            "InitCommand": "Remove-AnonymousAccessOnContainers",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Set-AnonymousAccessOnContainers",
+                    "Arguments":["SubscriptionId","RollBackType"]
+                }
+        },
+        {
+            "ControlId": "Azure_Storage_DP_Encrypt_In_Transit",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncryptionInTransitForStorageAccounts.ps1",
+            "LoadCommand": "Remediate-EnableEncryptionInTransitForStorageAccounts.ps1",     
+            "InitCommand": "Enable-StorageEncryptionInTransit",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-StorageEncryptionInTransit",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_AppService_Config_Disable_Remote_Debugging",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
+            "LoadCommand": "Remediate-DisableRemoteDebuggingForAppServices.ps1",     
+            "InitCommand": "Disable-RemoteDebuggingForAppServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Enable-RemoteDebuggingForAppServices",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_AppService_DP_Dont_Allow_HTTP_Access",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAppServices.ps1",
+            "LoadCommand": "Remediate-EnableHTTPSForAppServices.ps1",     
+            "InitCommand": "Enable-HttpsForAppServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-HttpsForAppServices",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_AppService_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetAppServiceMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetAppServiceMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-AppServiceRequiredTLSVersion",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Reset-AppServiceRequiredTLSVersion",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_ContainerRegistry_Config_Enable_Security_Scanning",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSecurityScanningForContainerRegistry.ps1",
+            "LoadCommand": "Remediate-EnableSecurityScanningForContainerRegistry.ps1",     
+            "InitCommand": "Enable-SecurityScanningIdentityForContainerRegistry",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-SecurityScanningIdentityForContainerRegistry",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_KubernetesService_AuthN_Enabled_AAD",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableAADForKubernetesService.ps1",
+            "LoadCommand": "Remediate-EnableAADForKubernetesService.ps1",     
+            "InitCommand": "Enable-AADForKubernetes",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1",
+            "LoadCommand": "Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1",     
+            "InitCommand": "Delete-NonAadIdentityProvidersInApiManagementServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1",
+            "LoadCommand": "Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1",     
+            "InitCommand": "Enable-HttpsForApisInApiManagementServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-HttpsForApisInApiManagementServices",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_SQLDatabase_DP_Enable_TDE",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-TransparentDataEncryptionForSQLServers.ps1",
+            "LoadCommand": "Remediate-TransparentDataEncryptionForSQLServers.ps1",     
+            "InitCommand": "Enable-TransparentDataEncryptionForSqlServers",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-TransparentDataEncryptionForSqlServers",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_CloudService_SI_Disable_RemoteDesktop_Access",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-RemoteDesktopAccess.ps1",
+            "LoadCommand": "Remediate-RemoteDesktopAccess.ps1",
+            "InitCommand": "Disable-RemoteDesktopAccess",
+            "RollbackMetadata": 
+               {
+                    "RollbackCommand": "",
+                    "Arguments": [ "SubscriptionId" ]
+               }
+        },
+        {
+            "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+            "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
+            "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
+            "RollbackMetadata":
+               {
+                    "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
+                    "Arguments": [ "SubscriptionId", "RollBackType" ]
+               }
+        },
+        {
+            "ControlId": "Azure_AppService_DP_Use_Secure_FTP_Deployment",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SecureFTPDeploymentForAppServices.ps1",
+            "LoadCommand": "Remediate-SecureFTPDeploymentForAppServices.ps1",     
+            "InitCommand": "Enable-SecureFTPDeploymentForAppServices",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
+                  "Arguments":["SubscriptionId"]
+             }
+        },
+        {
+            "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",
+            "LoadCommand": "Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",     
+            "InitCommand": "Enable-SSLForDBForMySQLFlexibleServer",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-SSLForDBForMySQLFlexibleServer",
+                    "Arguments":["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetStorageAccountMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetStorageAccountMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-StorageAccountRequiredTLSVersion",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-StorageAccountRequiredTLSVersion",
+                  "Arguments":["SubscriptionId"]
+             }
+         },    
+         {    
+            "ControlId": "Azure_SQLDatabase_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetSQLServerMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetSQLServerMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-SQLServerRequiredTLSVersion",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SQLServerRequiredTLSVersion",
+                   "Arguments":["SubscriptionId"]
+             }
+        },
+        {
+            "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
+                  "Arguments":["SubscriptionId"]
+             }
+        },
+        {
+            "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
+            "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts.ps1",     
+            "InitCommand": "Set-SASExpiryInterval",
+            "RollbackMetadata":
+             {
+                  "RollbackCommand": "Reset-SASExpiryInterval",
+                  "Arguments":["SubscriptionId"]
+             }
+        },
+      {
+        "ControlId": "Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetSQLServerMinReqTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1",
+        "InitCommand": "Set-SQLManagedInstanceRequiredTLSVersion",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-SQLManagedInstanceRequiredTLSVersion",
+          "Arguments": [ "" ]
+        }
+      },
+      {
+        "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
+        "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-TLSVersionForEventHubNamespace",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      },
+      {
+        "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
+        "LoadCommand": "Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
+        "InitCommand": "Set-SecureTLSVersionForDBForMySQLFlexibleServer",
+        "RollbackMetadata": {
+          "RollbackCommand": "Reset-SecureTLSVersionForDBForMySQLFlexibleServer",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      },
+      {
+        "ControlId": "Azure_AutomationAccounts_DP_Encrypt_Variables",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EncryptAutomationAccountVariables.ps1",
+        "LoadCommand": "Remediate-EncryptAutomationAccountVariables.ps1",
+        "InitCommand": "Encrypt-AutomationAccountVariables",
+        "RollbackMetadata": {
+          "RollbackCommand": "",
+          "Arguments": [ "" ]
+        }
       }
-    },
-    {
-      "ControlId": "Azure_Storage_DP_Encrypt_In_Transit",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncryptionInTransitForStorageAccounts.ps1",
-      "LoadCommand": "Remediate-EnableEncryptionInTransitForStorageAccounts.ps1",
-      "InitCommand": "Enable-StorageEncryptionInTransit",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-StorageEncryptionInTransit",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_AppService_Config_Disable_Remote_Debugging",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableRemoteDebuggingForAppServices.ps1",
-      "LoadCommand": "Remediate-DisableRemoteDebuggingForAppServices.ps1",
-      "InitCommand": "Disable-RemoteDebuggingForAppServices",
-      "RollbackMetadata": {
-        "RollbackCommand": "Enable-RemoteDebuggingForAppServices",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_AppService_DP_Dont_Allow_HTTP_Access",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAppServices.ps1",
-      "LoadCommand": "Remediate-EnableHTTPSForAppServices.ps1",
-      "InitCommand": "Enable-HttpsForAppServices",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-HttpsForAppServices",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_AppService_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetAppServiceMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetAppServiceMinReqTLSVersion.ps1",
-      "InitCommand": "Set-AppServiceRequiredTLSVersion",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-AppServiceRequiredTLSVersion",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_ContainerRegistry_Config_Enable_Security_Scanning",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSecurityScanningForContainerRegistry.ps1",
-      "LoadCommand": "Remediate-EnableSecurityScanningForContainerRegistry.ps1",
-      "InitCommand": "Enable-SecurityScanningIdentityForContainerRegistry",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-SecurityScanningIdentityForContainerRegistry",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_KubernetesService_AuthN_Enabled_AAD",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableAADForKubernetesService.ps1",
-      "LoadCommand": "Remediate-EnableAADForKubernetesService.ps1",
-      "InitCommand": "Enable-AADForKubernetes",
-      "RollbackMetadata": {
-        "RollbackCommand": "",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1",
-      "LoadCommand": "Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1",
-      "InitCommand": "Delete-NonAadIdentityProvidersInApiManagementServices",
-      "RollbackMetadata": {
-        "RollbackCommand": "",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1",
-      "LoadCommand": "Remediate-EnableHTTPSForAPIsInAPIManagementServices.ps1",
-      "InitCommand": "Enable-HttpsForApisInApiManagementServices",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-HttpsForApisInApiManagementServices",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_SQLDatabase_DP_Enable_TDE",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-TransparentDataEncryptionForSQLServers.ps1",
-      "LoadCommand": "Remediate-TransparentDataEncryptionForSQLServers.ps1",
-      "InitCommand": "Enable-TransparentDataEncryptionForSqlServers",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-TransparentDataEncryptionForSqlServers",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_CloudService_SI_Disable_RemoteDesktop_Access",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-RemoteDesktopAccess.ps1",
-      "LoadCommand": "Remediate-RemoteDesktopAccess.ps1",
-      "InitCommand": "Disable-RemoteDesktopAccess",
-      "RollbackMetadata": {
-        "RollbackCommand": "",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
-      "LoadCommand": "Remediate-SetClusterProtectionLevelForServiceFabric.ps1",
-      "InitCommand": "Set-ClusterProtectionLeveltoEncryptandSignforServiceFabric",
-      "RollbackMetadata": {
-        "RollbackCommand": "Set-ClusterProtectionLeveltoPreviousValueforServiceFabric",
-        "Arguments": [ "SubscriptionId", "RollBackType" ]
-      }
-    },
-    {
-      "ControlId": "Azure_AppService_DP_Use_Secure_FTP_Deployment",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SecureFTPDeploymentForAppServices.ps1",
-      "LoadCommand": "Remediate-SecureFTPDeploymentForAppServices.ps1",
-      "InitCommand": "Enable-SecureFTPDeploymentForAppServices",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-SecureFTPDeploymentForAppServices",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",
-      "LoadCommand": "Remediate-EnableSSLDBForMySQLFlexibleServer.ps1",
-      "InitCommand": "Enable-SSLForDBForMySQLFlexibleServer",
-      "RollbackMetadata": {
-        "RollbackCommand": "Disable-SSLForDBForMySQLFlexibleServer",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_Storage_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetStorageAccountMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetStorageAccountMinReqTLSVersion.ps1",
-      "InitCommand": "Set-StorageAccountRequiredTLSVersion",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-StorageAccountRequiredTLSVersion",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_SQLDatabase_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetSQLServerMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetSQLServerMinReqTLSVersion.ps1",
-      "InitCommand": "Set-SQLServerRequiredTLSVersion",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SQLServerRequiredTLSVersion",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion",
-      "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SecureTLSVersionForServiceBusNamespaces",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
-      "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",
-      "InitCommand": "Set-SASExpiryInterval",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SASExpiryInterval",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetSQLServerMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1",
-      "InitCommand": "Set-SQLManagedInstanceRequiredTLSVersion",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SQLManagedInstanceRequiredTLSVersion",
-        "Arguments": [ "" ]
-      }
-    },
-    {
-      "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion",
-      "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-TLSVersionForEventHubNamespace",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    },
-    {
-      "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version",
-      "EnableRemediation": "true",
-      "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
-      "LoadCommand": "Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion",
-      "InitCommand": "Set-SecureTLSVersionForDBForMySQLFlexibleServer",
-      "RollbackMetadata": {
-        "RollbackCommand": "Reset-SecureTLSVersionForDBForMySQLFlexibleServer",
-        "Arguments": [ "SubscriptionId" ]
-      }
-    }
-  ]
+    ]
 }
