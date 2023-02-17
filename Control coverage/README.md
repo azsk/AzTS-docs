@@ -14,6 +14,7 @@ Below resource types can be checked for validating the security controls:
 |[APIManagement](Feature/APIManagement.md)|Microsoft.ApiManagement/service|
 |[ApplicationGateway](Feature/ApplicationGateway.md)|Microsoft.Network/applicationGateways|
 |[AppService](Feature/AppService.md)|Microsoft.Web/sites|
+|[AutomationAccount](Feature/AutomationAccounts.md)|Microsoft.Automation/automationAccounts|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
 |[ContainerRegistry](Feature/ContainerRegistry.md)|Microsoft.ContainerRegistry/registries|

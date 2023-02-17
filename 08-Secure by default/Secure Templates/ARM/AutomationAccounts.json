@@ -1,0 +1,68 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "automationAccountName": {
+            "type": "string",
+            "metadata": {
+            "description": "Specify the name of automation account to be created.\r\nUse only alphanumerics and hyphens.\r\nThe name must not start or end with alphanumeric and must be 6 - 50 characters in length.\r\n"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Enter location. If you leave this field blank resource group location would be used."
+            }
+        },
+        "automationAccountVariableName": {
+            "type": "string",
+            "metadata": {
+            "description": "Specify the name of automation account's variable"
+            }
+        },
+        "automationAccountVariableValue": {
+            "type": "string",
+            "metadata": {
+            "description": "Specify the value of automation account's variable"
+            }
+        },
+        "automationAccountVariableDescription": {
+            "type": "string",
+            "metadata": {
+            "description": "Specify the description of automation account's variable"
+            }
+        }
+    },
+    "resources": [
+      {
+        "type": "Microsoft.Automation/automationAccounts",
+        "apiVersion": "2022-08-08",
+        "name": "[parameters('automationAccountName')]",
+        "location": "[parameters('location')]",
+        "identity": {
+          "type": "SystemAssigned"
+        },
+        "properties": {
+          "sku": {
+            "name": "Basic"
+          }
+        },
+        "resources" : [
+          {
+            "type": "variables",
+            "apiVersion": "2022-08-08",
+            "name": "[parameters('automationAccountVariableName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Automation/automationAccounts', parameters('automationAccountName'))]"
+            ],
+            "properties": {
+                "description": "[parameters('automationAccountVariableDescription')]",
+                "isEncrypted": true, // Azure_AutomationAccounts_DP_Encrypt_Variables
+                "value": "[concat('\"', parameters('automationAccountVariableValue'), '\"')]"
+            }
+          }
+        ]
+      }
+    ]
+  }
