@@ -278,13 +278,13 @@ function Encrypt-AutomationAccountVariables
             return
         } 
 
+        $allAutomationAccountResources = Get-AzAutomationAccount -ErrorAction SilentlyContinue
         $validResources | ForEach-Object { 
             try
             {
                 $name = $_.ResourceName
                 $resourceGroupName = $_.ResourceGroupName
-                $automationAccount = Get-AzAutomationAccount -ResourceGroupName $resourceGroupName -Name $name -ErrorAction SilentlyContinue
-                $automationAccountResources += $automationAccount
+                $automationAccountResources += $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
             }
             catch
             {
@@ -323,14 +323,14 @@ function Encrypt-AutomationAccountVariables
             Write-Host $([Constants]::SingleDashLine)
             $automationAccountResourcesFromFile = Import-Csv -LiteralPath $FilePath
             $validAutomationAccountResources = $automationAccountResourcesFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.AutomationAccountName) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) }
-    
+            $allAutomationAccountResources = Get-AzAutomationAccount -ErrorAction SilentlyContinue
             $validAutomationAccountResources | ForEach-Object {
                 $resourceGroupName = $_.ResourceGroupName        
                 $name = $_.AutomationAccountName               
 
                 try
                 {
-                    $automationAccountResources += (Get-AzAutomationAccount -ResourceGroupName $resourceGroupName -Name $name -ErrorAction SilentlyContinue) 
+                    $automationAccountResources += $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
 
                 }
                 catch
@@ -414,6 +414,13 @@ function Encrypt-AutomationAccountVariables
     }
 
     $totalAutomationAccountsWithUnEncryptedVariables = ($automationAccountsWithUnEncryptedVariables | Measure-Object).Count
+
+    $automationAccountsWithUnEncryptedVariablesBackup = @()
+    $automationAccountsWithUnEncryptedVariables | ForEach-Object {
+        $automationAccountsWithUnEncryptedVariablesBackup += $_ | Select-Object @{N="AutomationAccountName";E={$_.AutomationAccountName}},
+                                                                                    @{N="ResourceGroupName";E={$_.ResourceGroupName}},
+                                                                                    @{N="UnencryptedVaribalesNameStr"; E={$_.UnencryptedVaribalesNameStr}}
+    }
      
     if ($totalAutomationAccountsWithUnEncryptedVariables  -eq 0)
     {
@@ -463,7 +470,7 @@ function Encrypt-AutomationAccountVariables
         {
             # Backing up Automation Account details.
             $backupFile = "$($backupFolderPath)\AutomationAccountsWithUnencryptedVariables.csv"
-            $automationAccountsWithUnEncryptedVariables | Export-CSV -Path $backupFile -NoTypeInformation
+            $automationAccountsWithUnEncryptedVariablesBackup | Export-CSV -Path $backupFile -NoTypeInformation
             Write-Host "Automation Account details have been successfully backed up to [$($backupFolderPath)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
@@ -551,15 +558,19 @@ function Encrypt-AutomationAccountVariables
             
             if($totalRemediatedVariables -eq $totalVariables)
             {
-                $automationAccountsRemediated += $automationAccount 
-                 $logResource = @{}
+                $automationAccountsRemediated += $automationAccount | Select-Object @{N="AutomationAccountName";E={$automationAccountName}},
+                                                                                    @{N="ResourceGroupName";E={$resourceGroupName}},
+                                                                                    @{N="UnencryptedVaribalesNameStr"; E={$_.UnencryptedVaribalesNameStr}}
+                $logResource = @{}
                 $logResource.Add("ResourceGroupName",($resourceGroupName))
                 $logResource.Add("ResourceName",($automationAccountName))
                 $logRemediatedResources += $logResource
             }
             else
             {
-                $automationAccountsSkipped += $automationAccount
+                $automationAccountsSkipped += $automationAccount | Select-Object @{N="AutomationAccountName";E={$automationAccountName}},
+                                                                                @{N="ResourceGroupName";E={$resourceGroupName}},
+                                                                                @{N="UnencryptedVaribalesNameStr"; E={$_.UnencryptedVaribalesNameStr}}
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($resourceGroupName))
                 $logResource.Add("ResourceName",($automationAccountName))
