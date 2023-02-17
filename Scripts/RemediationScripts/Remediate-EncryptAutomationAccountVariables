@@ -284,7 +284,23 @@ function Encrypt-AutomationAccountVariables
             {
                 $name = $_.ResourceName
                 $resourceGroupName = $_.ResourceGroupName
-                $automationAccountResources += $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
+                $automationAccountResource = $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
+                if($automationAccountResource -ne $null)
+                {
+                    $automationAccountResources += automationAccountResource
+                }
+                else
+                {
+                    Write-Host "Automation Account not found. Automation Account: [$(name)] - Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Automation Account..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                    $logResource = @{}
+                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                    $logResource.Add("ResourceName",($_.ResourceName))
+                    $logResource.Add("Reason","Resource not found.")    
+                    $logSkippedResources += $logResource
+                }
+                
             }
             catch
             {
@@ -330,8 +346,17 @@ function Encrypt-AutomationAccountVariables
 
                 try
                 {
-                    $automationAccountResources += $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
-
+                    $automationAccountResource = $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
+                    if($automationAccountResource -ne $null)
+                    {
+                        $automationAccountResources += automationAccountResource
+                    }
+                    else
+                    {
+                        Write-Host "Automation Account not found. Automation Account: [$(name)] - Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Skipping this Automation Account..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+                    }
                 }
                 catch
                 {
