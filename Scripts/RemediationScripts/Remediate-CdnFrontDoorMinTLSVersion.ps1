@@ -247,7 +247,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
                 
                 if($FrontDoorCustomDomains)
                 {
-                    Write-Host "Front Door CDN Profiles Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Domains Configurations successfully fetched for Front Door CDN Profile:" [$($frontdoor.Name)] -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
@@ -299,7 +299,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
                 
                 if($FrontDoorCustomDomains)
                 {
-                    Write-Host "Front Door CDN Profiles Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Domains Configurations successfully fetched for Front Door CDN Profile:" [$($resourceName)] -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
@@ -422,7 +422,6 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
             $resourceGroupName = $_.ResourceGroupName
             $resourceName = $_.ProfileName
             $DomainName = $_.DomainName
-            $DomainName = $_.DomainName
             $PrevMinimumTlsVersion = $_.MinimumTlsVersion
             $MinimumTlsVersion = $_.MinimumTlsVersion
             
@@ -468,7 +467,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
                         $logResource.Add("Reason", "Warning! Skipping this resource as Domain Deployment Status and Domain Validation State must be Succeeded and Approved, Skipping this Front Door domain.")
                         $logSkippedResources += $logResource
                         Write-Host "Warning! Skipping this resource as Domain Deployment Status and Domain Validation State must be Succeeded and Approved." -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Skipping this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                     }                    
                 }
@@ -479,10 +478,10 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
                     $logResource.Add("DomainName",($_.DomainName))
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ProfileName))
-                    $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Endpoint.")
+                    $logResource.Add("Reason", "Error while retrieving the domain details to minimum required TLS version. Skipping this Front Door Domain.")
                     $logSkippedResources += $logResource
-                    Write-Host "Error while setting the minimum required TLS version for this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Error while setting the minimum required TLS version for this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
@@ -493,10 +492,10 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
                 $logResource.Add("DomainName",($_.DomainName))
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ProfileName))
-                $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Endpoint.")
+                $logResource.Add("Reason", "Error while setting the minimum required TLS version. Skipping this Front Door Domain.")
                 $logSkippedResources += $logResource
-                Write-Host "Error while setting the minimum required TLS version for this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "Skipping this Front Door Endpoint." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Error while setting the minimum required TLS version for this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
                 
             }
@@ -505,11 +504,11 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
 
         if (($frontDoorsDomainsRemediated | Measure-Object).Count -eq $totalNonCompliantFrontDoorDomains)
         {
-            Write-Host "Successfully set the minimum required TLS version for all [$($totalNonCompliantFrontDoorDomains)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)   
+            Write-Host "Successfully set the minimum required TLS version for all [$($totalNonCompliantFrontDoorDomains)] Front Door Domain(s)." -ForegroundColor $([Constants]::MessageType.Update)   
         }
         else
         {
-            Write-Host "Minimum required TLS version is successfully set on the domains for [$($($frontDoorsDomainsRemediated | Measure-Object).Count)] out of [$($totalNonCompliantFrontDoorDomains)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Minimum required TLS version is successfully set on the domains for [$($($frontDoorsDomainsRemediated | Measure-Object).Count)] out of [$($totalNonCompliantFrontDoorDomains)] Front Door Domain(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         $colsProperty = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
@@ -529,7 +528,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
         
         if ($($frontDoorsDomainsRemediated | Measure-Object).Count -gt 0)
         {
-            Write-Host "Successfully set minimum required TLS version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully set minimum required TLS version for the following Front Door Domain(s):" -ForegroundColor $([Constants]::MessageType.Update)
             $frontDoorsDomainsRemediated | Format-Table -Property $colsProperty -Wrap
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
@@ -542,7 +541,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
 
         if ($($frontDoorsDomainsSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error while setting the minimum required TLS Version for the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error while setting the minimum required TLS Version for the following Front Door Domain(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $frontDoorsDomainsSkipped | Format-Table -Property $colsProperty -Wrap
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
@@ -818,11 +817,11 @@ function Reset-FrontDoorCDNProfileRequiredTLSVersion
 
     if (($frontDoorsDomainsSkipped | Measure-Object).Count -eq 0)
     {
-        Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoorEndpoints)] Front Door Endpoint(s)." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Minimum TLS Version successfully reset on the for all [$($totalFrontDoorEndpoints)] Front Door Domain(s)." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
-        Write-Host "Minimum TLS Version successfully reset for [$($($frontDoorDomainRolledBack | Measure-Object).Count)] out of [$($totalFrontDoorEndpoints)] Front Door Endpoint(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Minimum TLS Version successfully reset for [$($($frontDoorDomainRolledBack | Measure-Object).Count)] out of [$($totalFrontDoorEndpoints)] Front Door Domain(s)" -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     $colsProperty =     @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
@@ -840,7 +839,7 @@ function Reset-FrontDoorCDNProfileRequiredTLSVersion
         
         if ($($frontDoorDomainRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "Minimum TLS Version successfully reset on the following Front Door Endpoint(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Minimum TLS Version successfully reset on the following Front Door Domain(s):" -ForegroundColor $([Constants]::MessageType.Update)
             $frontDoorDomainRolledBack | Format-Table -Property $colsProperty -Wrap -AutoSize
             Write-Host $([Constants]::SingleDashLine)
             # Write this to a file.
