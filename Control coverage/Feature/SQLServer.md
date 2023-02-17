@@ -5,6 +5,7 @@
 <!-- TOC -->
 
 - [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](#azure_sqldatabase_authz_use_aad_admin)
+- [Azure_SQLDatabase_AuthZ_Use_AAD_Only](#azure_sqldatabase_authz_use_aad_only)
 - [Azure_SQLDatabase_DP_Enable_TDE](#azure_sqldatabase_dp_enable_tde)
 - [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](#azure_sqldatabase_audit_enable_threat_detection_server)
 - [Azure_SQLDatabase_Audit_Enable_Vuln_Assessment](#azure_sqldatabase_audit_enable_vuln_assessment)
@@ -91,6 +92,99 @@ Using the native enterprise directory for authentication ensures that there is a
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/administrators?api-version=2014-04-01
   <br />
   **Properties:** [*]
+  <br />
+  <br />
+
+___
+
+## Azure_SQLDatabase_AuthZ_Use_AAD_Only
+
+### Display Name
+Enable Azure AD Only Authentication for SQL Server
+
+### Rationale
+Azure AD authentication is used to centrally manage identities of database users. Enforcing AAD Only Authentication prevents the proliferation of user identities across servers.
+
+### Control Spec
+
+> **Passed:**
+> Azure Active Directory (AAD) Only Authentication is enabled the SQL server.
+>
+> **Failed:**
+> Azure Active Directory (AAD) Only Authentication is disabled on the SQL server.
+><!--
+> **Verify:**
+> Not Applicable.
+>
+> **NotApplicable:**
+> Not Applicable.
+>-->
+### Recommendation
+
+
+- **Azure Portal**
+
+  * **For standard SQL servers:**
+  
+    ```azure portal
+    Search for and select 'SQL server' --> Under 'Settings' section select 'Azure Active Directory'--> In 'Azure Active Directory authentication only' section, Enable 'Support only Azure Active Directory authentication for this serve' --> Select 'Save'.
+    ```
+
+  * **For Synapse Analytics Workspaces:**
+
+    ```azure portal
+    Search for and select 'Azure Synapse Analytics'. --> Under Settings section select 'Azure Active Directory' --> Select 'Manage Azure AD identity and access for {Server Name}' -->  In 'Azure Active Directory authentication only' section, Enable 'Support only Azure Active Directory authentication for this serve' --> Select 'Save'.
+    ```
+
+
+- **PowerShell**
+
+	To enable Azure AD Only Authentication enable Azure AD Admin for SQL server and turn on the Support for Azure AD Only Authentication.
+
+
+  * **For standard SQL servers:**
+
+	To enable AAD Admin,
+
+    ```powershell
+	  Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin EmailId}'
+	  ```
+
+    Refer: https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator
+
+	To enable AAD Only Authentication,
+
+	```powershell
+	Enable-AzSqlServerActiveDirectoryOnlyAuthentication -ServerName '{ServerName}' -ResourceGroupName '{ResourceGroupName}'
+	```
+	
+	Refer https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-azure-ad-only-authentication?view=azuresql&tabs=azure-powershell
+
+  * **For Synapse Analytics Workspaces:**
+
+	To enable AAD Admin,
+
+    ```powershell
+    Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}' -DisplayName '{AzureAdAdmin EmailId}'
+    ```
+    
+	Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlactivedirectoryadministrator
+
+
+	To enable AAD Only Authentication,
+
+	```powershell
+	Enable-AzSynapseActiveDirectoryOnlyAuthentication  -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}'
+	```
+	
+	Refer https://learn.microsoft.com/en-us/azure/azure-sql/database/authentication-azure-ad-only-authentication?view=azuresql&tabs=azure-powershell
+
+### ARM API used for evaluation
+
+- ARM API to get if Azure Active Directory Only Authentication is enabled on a SQL server:
+  /{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/administrators?api-version=2021-11-01
+  <br />
+  **Properties:** "azureADOnlyAuthentication"
   <br />
   <br />
 

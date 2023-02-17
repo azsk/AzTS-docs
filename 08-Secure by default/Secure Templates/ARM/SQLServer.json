@@ -97,6 +97,18 @@
       ]
     },
     {
+      "type": "Microsoft.Sql/servers/azureADOnlyAuthentications", // Azure_SQLDatabase_AuthZ_Use_AAD_Only - Enable Azure AD Only Authentication for the SQL Server.
+      "apiVersion": "2021-11-01",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), 'Default')]",
+      "properties": {
+        "azureADOnlyAuthentication": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/administrators', parameters('sqlServerName'), 'ActiveDirectory')]",
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Sql/servers/auditingSettings",
       "apiVersion": "2021-08-01-preview",
       "name": "[format('{0}/{1}', parameters('sqlServerName'), 'default')]",
