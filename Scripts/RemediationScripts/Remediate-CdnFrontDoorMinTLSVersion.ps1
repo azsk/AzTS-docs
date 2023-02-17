@@ -444,7 +444,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
                  else
                 {
                     $frontDoorsDomainsSkipped += $frontdoorEndpoint
-                    Write-Host "Error while setting the minimum required TLS version for this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error while retrieving the details for this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this Front Door Domain." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
