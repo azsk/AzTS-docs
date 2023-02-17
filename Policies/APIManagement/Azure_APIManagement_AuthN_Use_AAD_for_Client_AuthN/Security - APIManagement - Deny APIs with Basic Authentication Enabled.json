@@ -1,0 +1,43 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.ApiManagement/service/portalsettings"
+        },
+        {
+          "allOf": [
+            {
+              "field": "name",
+              "contains": "signup"
+            },
+            {
+              "field": "Microsoft.ApiManagement/service/portalsettings/enabled",
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effectType')]"
+    }
+  },
+  "parameters": {
+    "effectType": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "Audit",
+        "Disabled",
+        "Deny"
+      ],
+      "defaultValue": "Audit"
+    }
+  }
+}
