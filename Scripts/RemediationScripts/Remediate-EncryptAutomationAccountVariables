@@ -287,11 +287,11 @@ function Encrypt-AutomationAccountVariables
                 $automationAccountResource = $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
                 if($automationAccountResource -ne $null)
                 {
-                    $automationAccountResources += automationAccountResource
+                    $automationAccountResources += $automationAccountResource
                 }
                 else
                 {
-                    Write-Host "Automation Account not found. Automation Account: [$(name)] - Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Automation Account not found. Automation Account: [$($name)] - Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Skipping this Automation Account..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     $logResource = @{}
@@ -349,11 +349,11 @@ function Encrypt-AutomationAccountVariables
                     $automationAccountResource = $allAutomationAccountResources | Where-Object {$_.AutomationAccountName -eq $name -and $_.ResourceGroupName -eq $resourceGroupName}
                     if($automationAccountResource -ne $null)
                     {
-                        $automationAccountResources += automationAccountResource
+                        $automationAccountResources += $automationAccountResource
                     }
                     else
                     {
-                        Write-Host "Automation Account not found. Automation Account: [$(name)] - Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Automation Account not found. Automation Account: [$($name)] - Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
                         Write-Host "Skipping this Automation Account..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                     }
