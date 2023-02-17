@@ -5,7 +5,7 @@
 <!-- TOC -->
 
 - [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](#azure_frontdoor_netsec_enable_waf_configuration)
-- [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](#Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
+- [Azure_FrontDoor_DP_Use_Secure_TLS_Version](#Azure_FrontDoor_DP_Use_Secure_TLS_Version)
 
 
 <!-- /TOC -->
@@ -67,10 +67,10 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 
 ___ 
 
-## Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
+## Azure_FrontDoor_DP_Use_Secure_TLS_Version
 
 ### Display Name 
-[Trial] Front Door Classic should have approved minimum TLS version
+Front Door Classic should have approved minimum TLS version
 
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 

@@ -372,7 +372,7 @@ function Set-FrontDoorCDNProfileRequiredTLSVersion
     if (-not $DryRun)
     {  
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "`[Step 4 of 4] Set minimum required TLS Version for Front Door CDN Profile Domain(s)."
+        Write-Host "[Step 4 of 4] Set minimum required TLS Version for Front Door CDN Profile Domain(s)."
         Write-Host $([Constants]::SingleDashLine)        
        
         if (-not $Force)
