@@ -92,6 +92,13 @@ Using the native enterprise directory for authentication ensures that there is a
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/administrators?api-version=2014-04-01
   <br />
   **Properties:** [*]
+  
+- ARM API to list all security assessments in a Subscription:
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** 
+[\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
+ **Assessments:** 
+ f0553104-cfdb-65e6-759c-002812e38500 - SQL servers should have an Azure Active Directory administrator provisioned.
   <br />
   <br />
 
