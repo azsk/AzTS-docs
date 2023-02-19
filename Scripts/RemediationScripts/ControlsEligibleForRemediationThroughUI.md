@@ -280,7 +280,7 @@ Use approved version of TLS for Event Hub Namespace.
 [Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or higher privileged role on the Storage Account(s)
+Contributor or higher privileged role on the Event Hub Namespace(s)
 
 ___
 
