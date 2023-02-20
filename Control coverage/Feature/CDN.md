@@ -6,7 +6,7 @@
 
 - [Azure_CDN_DP_Enable_Https](#azure_cdn_dp_enable_https)
 - [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](#Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
-- [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial ](#Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial )
+- [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version](#Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version)
 <!-- /TOC -->
 <br/>
 
@@ -126,10 +126,10 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 
 ___ 
 
-## Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial 
+## Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
 
 ### Display Name 
-[Trial] Front Door should have Approved Minimum TLS version
+Front Door should have Approved Minimum TLS version
 
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
@@ -147,7 +147,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Recommendation 
 
 - **Azure Portal** 
-    To configure TLS Version, Go to Azure Portal --> Front Door and CDN profiles -> Select Front door with pricing tier as Standard/Premium -> Goto Domains -> Select Certification Type for All the domains listed -> Select Minimum TLS Version as 1.2
+    To configure TLS Version, Go to Azure Portal --> Front Door and CDN profiles -> Select Front door with pricing tier as Standard/Premium -> Goto Domains -> Select Minimum TLS Version as 1.2
 
 - **PowerShell** 
 
