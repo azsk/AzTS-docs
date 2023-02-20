@@ -7,7 +7,7 @@
 Control can be covered with the below mentioned Azure policy.
 
 #### Policy Details
-Following policy can be used with 'Audit' effect to view the compliance of Key Vaults having `Public Network Access` disabled at the policy assignment scope.
+Following policy can be used with 'Audit' effect to detect non-compliant resources.
 
 #### Policy Definition
 [Security - Key Vault - DisablePublicNetworkAccess](./Security%20-%20Key%20Vault%20-%20DisablePublicNetworkAccess.json)

@@ -19,6 +19,10 @@
       "if": {
         "allof": [
           {
+            "field": "type",
+            "equals": "Microsoft.KeyVault/vaults"
+          },
+          {
             "field": "Microsoft.KeyVault/vaults/publicNetworkAccess",
             "equals": "Enabled"
           },

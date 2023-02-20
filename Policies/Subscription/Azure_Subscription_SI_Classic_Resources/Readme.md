@@ -8,7 +8,7 @@ Control can be covered with the below mentioned Azure policy:
 
 #### Policy Details
 
-Following policy can be used with 'Audit' effect to disallow users to create any classic resources in subscription (Greenfield Scenario).
+Following policy can be used with 'Deny' effect to disallow users to create any classic resources in subscription (Greenfield Scenario) and with 'Audit' effect to detect non-compliant resources.
 
 #### Policy Definition
 [Security - Subscription - RemoveClassicResources](./Security%20-%20Subscription%20-%20RemoveClassicResources.json)
