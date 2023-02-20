@@ -13,7 +13,7 @@ Control can be covered with the below mentioned Azure policy:
 Following policy can be used to validate if Basic Authentication is enabled.
 
 #### Policy Definition
-[Security - APIManagement - Deny APIs with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20Basic%20Authentication%20Enabled.json)
+[Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20Basic%20Authentication%20Enabled.json)
 
 #### Parameter details
 Param Name|Description|Default Value|Mandatory?
@@ -29,7 +29,7 @@ Following policy can be used to validate if Identity Provider is enabled other t
 
 #### Policy Definition
 
-[Security - APIManagement - Deny APIs with other than AAD Identity Provider Enabled](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20other%20than%20AAD%20Identity%20Provider%20Enabled.json)
+[Security - APIManagement - Deny API Management Services with other than AAD Identity Provider Enabled](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20other%20than%20AAD%20Identity%20Provider%20Enabled.json)
 
 #### Parameter details
 Param Name|Description|Default Value|Mandatory?
@@ -37,7 +37,7 @@ Param Name|Description|Default Value|Mandatory?
 | Effect | The effect determines what happens when the policy rule is evaluated to match| Audit |No |
 
 ### Notes
-1. Policy will flag/target individual APIs(Microsoft.ApiManagement/service/apis) in API Management service.
+1. Both Policy will flag/target API Management Service.
 
 
 

@@ -5,17 +5,19 @@
       "allOf": [
         {
           "field": "type",
-          "equals": "Microsoft.ApiManagement/service/portalsettings"
+          "equals": "Microsoft.ApiManagement/service/identityProviders"
         },
         {
-          "allOf": [
+          "anyOf": [
             {
-              "field": "name",
-              "contains": "signup"
-            },
-            {
-              "field": "Microsoft.ApiManagement/service/portalsettings/enabled",
-              "equals": true
+              "field": "Microsoft.ApiManagement/service/identityProviders/type",
+              "in": [
+                "google",
+                "facebook",
+                "microsoft",
+                "twitter",
+                "aadb2c"
+              ]
             }
           ]
         }
