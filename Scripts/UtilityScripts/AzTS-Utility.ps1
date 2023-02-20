@@ -710,6 +710,166 @@ function Get-DeletedUser()
 # ####################################################################################################
 # Azure_Subscription_DP_Avoid_Plaintext_Secrets_Deployments
 
+function Get-ResourceGroupDeployment()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves ARM deployment(s) for the Resource Group.
+    .DESCRIPTION
+    This command retrieves ARM deployment(s) for the Resource Group.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID.
+    .PARAMETER ResourceGroupName
+    The Resource Group to which the Deployment was run.
+    .PARAMETER DeploymentName
+    Optional: a Deployment name. If not specified, all Resource Group deployments will be retrieved.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$false)]
+      [string]
+      $DeploymentName = ""
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  if ( $DeploymentName )
+  {
+    Get-AzResourceGroupDeployment -ResourceGroup $ResourceGroupName -Name $DeploymentName
+  }
+  else
+  {
+    Get-AzResourceGroupDeployment -ResourceGroup $ResourceGroupName
+  }
+}
+
+function Get-ResourceGroupDeploymentOperations()
+{
+  <#
+    .SYNOPSIS
+    This command lists ARM deployment operations for the Resource Group Deployment.
+    .DESCRIPTION
+    This command lists ARM deployment operations for the Resource Group Deployment.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID.
+    .PARAMETER ResourceGroupName
+    The Resource Group to which the Deployment was run.
+    .PARAMETER DeploymentName
+    The Deployment name.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $DeploymentName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  Get-AzResourceGroupDeploymentOperation -ResourceGroup $ResourceGroupName -Name $DeploymentName
+}
+
+function Get-ResourceGroupDeploymentsAndOperations()
+{
+  <#
+    .SYNOPSIS
+    This command lists ARM deployments and operations for the Resource Group.
+    .DESCRIPTION
+    This command lists ARM deployments and operations for the Resource Group.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID.
+    .PARAMETER ResourceGroupName
+    The Resource Group to which Deployments were run.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $ResourceGroupName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $deployments = Get-AzResourceGroupDeployment -ResourceGroup $ResourceGroupName
+
+  foreach ($deployment in $deployments)
+  {
+    Write-Debug -Debug:$true -Message ("Deployment: " + $deployment.DeploymentName)
+
+    Get-AzResourceGroupDeploymentOperation -ResourceGroup $ResourceGroupName -Name $deployment.DeploymentName
+  }
+}
+
+function Get-SubscriptionDeployments()
+{
+  <#
+    .SYNOPSIS
+    This command lists ARM deployments for the Subscription.
+    .DESCRIPTION
+    This command lists ARM deployments for the Subscription.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  Get-AzDeployment
+}
+
+function Get-SubscriptionDeploymentsAndOperations()
+{
+  <#
+    .SYNOPSIS
+    This command lists ARM deployments and operations for the Subscription.
+    .DESCRIPTION
+    This command lists ARM deployments and operations for the Subscription.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID.
+  #>
+
+  [CmdletBinding()]
+  param (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $SubscriptionId
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $deployments = Get-AzDeployment
+
+  foreach ($deployment in $deployments)
+  {
+    Write-Debug -Debug:$true -Message ("Deployment: " + $deployment.DeploymentName)
+
+    Get-AzDeploymentOperation -DeploymentName $deployment.DeploymentName
+  }
+}
 # ####################################################################################################
 
 # ####################################################################################################
