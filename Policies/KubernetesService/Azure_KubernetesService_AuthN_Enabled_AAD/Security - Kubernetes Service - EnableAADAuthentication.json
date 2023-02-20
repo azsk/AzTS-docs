@@ -1,0 +1,66 @@
+{
+    "mode": "All",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "The effect determines what happens when the policy rule is evaluated to match"
+        },
+        "allowedValues": [
+          "Audit",
+          "Disabled",
+          "Deny"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    
+    "policyRule": {
+      "if": {
+        "allof":[
+          {
+            "field": "type",
+            "equals": "Microsoft.ContainerService/managedClusters"
+          },
+          {
+            "not":{
+              "anyof":[
+                {
+                  "allof":[
+                    {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
+                      "exists": "True"
+                    },
+                    {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
+                      "equals": "True"
+                    }
+                  ]
+                },
+                {
+                  "allof":[
+                    {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
+                      "exists": "True"
+                    },
+                    {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
+                      "exists": "True"
+                    },
+                    {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
+                      "exists": "True"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+  }
