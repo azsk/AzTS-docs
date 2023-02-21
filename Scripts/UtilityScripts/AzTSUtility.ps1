@@ -19,6 +19,14 @@ function Install-AzPowershell()
     This function installs Azure Powershell on the system where it is run.
     .DESCRIPTION
     This function installs Azure Powershell on the system where it is run. It runs with -Force and -AllowClobber so that confirmation or warning messages are not shown.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Install-AzPowershel
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -36,6 +44,14 @@ function Uninstall-AzPowershell()
     This function uninstalls all Azure Powershell packages on the system where it is run.
     .DESCRIPTION
     This function uninstalls all Azure Powershell packages on the system where it is run. If more than one version of a package is installed, all versions will be uninstalled. Use this for a deep cleanout of installed Azure Powershell packages.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Uninstall-AzPowershell
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -57,11 +73,19 @@ function Get-AppServiceFtpState()
     .DESCRIPTION
     This command shows the current FTP state for the App Service Production slot and all non-Production slots.
     .PARAMETER SubscriptionId
-    The Azure subscription ID containing the App Service.
+    The Azure subscription ID containing the App Service to be remediated.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the App Service.
+    The Resource Group name containing the App Service.
     .PARAMETER AppServiceName
     The App Service name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Dictionary whose keys are App Service slot names, and whose values are the corresponding slot FTP settings.
+    .EXAMPLE
+    PS> Get-AppServiceFtpState -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -AppServiceName "MyAppServiceName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -105,13 +129,21 @@ function Set-AppServiceFtpState()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the App Service.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the App Service.
+    The Resource Group name containing the App Service.
     .PARAMETER AppServiceName
     The App Service name.
     .PARAMETER SlotName
-    If a Slot FTP State is being set, provide the slot name.
+    If a non-production slot's FTP state is being set, provide the slot name. To set the default production slot FTP state, do not specify this parameter.
     .PARAMETER FtpState
     The FTP State to set. Either "Disabled" or "FtpsOnly". Defaults to "Disabled".
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-AppServiceFtpState -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -AppServiceName "MyAppServiceName" -SlotName "MyNonProductionSlotName" -FtpState "Disabled"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -166,9 +198,17 @@ function Get-DataFactoryV2()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
+    The Resource Group name containing the Data Factory.
     .PARAMETER DataFactoryName
     The Data Factory name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with the Data Factory name and its Tag names/values.
+    .EXAMPLE
+    PS> Get-DataFactoryV2 -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DataFactoryName "MyDataFactoryName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -203,9 +243,17 @@ function Get-DataFactoryV2DataFlows()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
+    The Resource Group name containing the Data Factory.
     .PARAMETER DataFactoryName
     The Data Factory name.
+    .INPUTS
+    None
+    .OUTPUTS
+    For each Data Flow, text with the Data Flow name and its script lines, which begin with parameters and default parameter values.
+    .EXAMPLE
+    PS> Get-DataFactoryV2DataFlows -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DataFactoryName "MyDataFactoryName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -245,9 +293,17 @@ function Get-DataFactoryV2DataSets()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
+    The Resource Group name containing the Data Factory.
     .PARAMETER DataFactoryName
     The Data Factory name.
+    .INPUTS
+    None
+    .OUTPUTS
+    For each Dataset, text with the Dataset name and its parameter names and values.
+    .EXAMPLE
+    PS> Get-DataFactoryV2DataSets -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DataFactoryName "MyDataFactoryName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -289,9 +345,17 @@ function Get-DataFactoryV2LinkedServices()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
+    The Resource Group name containing the Data Factory.
     .PARAMETER DataFactoryName
     The Data Factory name.
+    .INPUTS
+    None
+    .OUTPUTS
+    For each Linked Service, text with the Linked Service name and its parameter names and values.
+    .EXAMPLE
+    PS> Get-DataFactoryV2LinkedServices -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DataFactoryName "MyDataFactoryName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -333,9 +397,17 @@ function Get-DataFactoryV2Pipelines()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Data Factory.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
+    The Resource Group name containing the Data Factory.
     .PARAMETER DataFactoryName
     The Data Factory name.
+    .INPUTS
+    None
+    .OUTPUTS
+    For each Pipeline, text with the Pipeline name and its parameter names and values.
+    .EXAMPLE
+    PS> Get-DataFactoryV2Pipelines -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DataFactoryName "MyDataFactoryName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -382,9 +454,17 @@ function Get-MySqlFlexServerSslState()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the MySQL Flexible Server.
+    The Resource Group name containing the MySQL Flexible Server.
     .PARAMETER ServerName
     The MySQL Flexible Server name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with the current value of server parameter 'require_secure_transport'
+    .EXAMPLE
+    PS> Get-MySqlFlexServerSslState -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -ServerName "MyFlexServerName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -422,11 +502,19 @@ function Set-MySqlFlexServerSslState()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the MySQL Flexible Server.
+    The Resource Group name containing the MySQL Flexible Server.
     .PARAMETER ServerName
     The MySQL Flexible Server name.
     .PARAMETER SslSetting
     The MySQL Flexible Server Require SSL setting value.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-MySqlFlexServerSslState -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -ServerName "MyFlexServerName" -SslSetting "ON"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -469,9 +557,17 @@ function Get-MySqlFlexServerTlsVersion()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the MySQL Flexible Server.
+    The Resource Group name containing the MySQL Flexible Server.
     .PARAMETER ServerName
     The MySQL Flexible Server name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with the current value of server parameter 'tls_version'
+    .EXAMPLE
+    PS> Get-MySqlFlexServerTlsVersion -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -ServerName "MyFlexServerName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -509,11 +605,19 @@ function Set-MySqlFlexServerTlsVersion()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the MySQL Flexible Server.
+    The Resource Group name containing the MySQL Flexible Server.
     .PARAMETER ServerName
     The MySQL Flexible Server name.
     .PARAMETER TlsVersion
     The MySQL Flexible Server TLS Version setting value.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-MySqlFlexServerTlsVersion -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -ServerName "MyFlexServerName" -TlsVersion "TLSv1.2"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -559,9 +663,17 @@ function Get-SqlManagedInstanceMinimumTlsVersion()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the SQL Managed Instance.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the SQL Managed Instance.
+    The Resource Group name containing the SQL Managed Instance.
     .PARAMETER SqlInstanceName
     The SQL Managed Instance name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with the SQL Managed Instance's current minimal TLS version setting value.
+    .EXAMPLE
+    PS> Get-SqlManagedInstanceMinimumTlsVersion -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -SqlInstanceName "MySQLManagedInstanceName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -598,11 +710,19 @@ function Set-SqlManagedInstanceMinimumTlsVersion()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the SQL Managed Instance.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the SQL Managed Instance.
+    The Resource Group name containing the SQL Managed Instance.
     .PARAMETER SqlInstanceName
     The SQL Managed Instance name.
     .PARAMETER MinimalTlsVersion
     The SQL Managed Instance MinimalTlsVersion setting value.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-SqlManagedInstanceMinimumTlsVersion -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -SqlInstanceName "MySQLManagedInstanceName" -MinimalTlsVersion "1.2"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -637,16 +757,24 @@ function Set-SqlManagedInstanceMinimumTlsVersion()
 function Get-AppServiceAllPossibleOutboundPublicIps()
 {
   <#
-  .SYNOPSIS
-  This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service.
-  .DESCRIPTION
-  This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service. Use this command and its output to set network access rules on other services, such as Key Vault when all public access is not enabled.
-  .PARAMETER SubscriptionId
-  The Azure subscription ID containing the App Service.
-  .PARAMETER ResourceGroupName
-  The Resource Group containing the App Service.
-  .PARAMETER AppServiceName
-  The App Service name.
+    .SYNOPSIS
+    This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service.
+    .DESCRIPTION
+    This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service. Use this command and its output to set network access rules on other services, such as Key Vault when all public access is not enabled.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the App Service.
+    .PARAMETER ResourceGroupName
+    The Resource Group name containing the App Service.
+    .PARAMETER AppServiceName
+    The App Service name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with the App Service's possible outbound public IP addresses.
+    .EXAMPLE
+    PS> Get-AppServiceAllPossibleOutboundPublicIps -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -AppServiceName "MyAppServiceName"
+    .LINK
+    None
 #>
 
 [CmdletBinding()]
@@ -671,16 +799,24 @@ param (
 function Get-AppServiceAllCurrentOutboundPublicIps()
 {
   <#
-  .SYNOPSIS
-  This command returns a comma-delimited string of all the CURRENT public IPs for the App Service.
-  .DESCRIPTION
-  This command returns a comma-delimited string of all the CURRENT public IPs for the App Service. These are the public IPs the App Service is currently using; they are a subset of all POSSIBLE public IPs.
-  .PARAMETER SubscriptionId
-  The Azure subscription ID containing the App Service.
-  .PARAMETER ResourceGroupName
-  The Resource Group containing the App Service.
-  .PARAMETER AppServiceName
-  The App Service name.
+    .SYNOPSIS
+    This command returns a comma-delimited string of all the CURRENT public IPs for the App Service.
+    .DESCRIPTION
+    This command returns a comma-delimited string of all the CURRENT public IPs for the App Service. These are the public IPs the App Service is currently using; they are a subset of all POSSIBLE public IPs.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the App Service.
+    .PARAMETER ResourceGroupName
+    The Resource Group name containing the App Service.
+    .PARAMETER AppServiceName
+    The App Service name.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with the App Service's current outbound public IP addresses.
+    .EXAMPLE
+    PS> Get-AppServiceAllCurrentOutboundPublicIps -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -AppServiceName "MyAppServiceName"
+    .LINK
+    None
 #>
 
 [CmdletBinding()]
@@ -712,9 +848,17 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Key Vault.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Key Vault.
+    The Resource Group name containing the Key Vault.
     .PARAMETER KeyVaultName
     The Key Vault name.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultPublicNetworkAccessEnabledForMe -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -756,11 +900,19 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Key Vault.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Key Vault.
+    The Resource Group name containing the Key Vault.
     .PARAMETER KeyVaultName
     The Key Vault name.
     .PARAMETER PublicIpAddresses
     An array of public IP address to grant access to the Key Vault.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddresses "1.1.1.1","1.1.1.2","1.1.1.3"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -801,11 +953,19 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the Key Vault.
     .PARAMETER ResourceGroupName
-    The Resource Group containing the Key Vault.
+    The Resource Group name containing the Key Vault.
     .PARAMETER KeyVaultName
     The Key Vault name.
     .PARAMETER PublicIpAddress
     The public IP address to grant access to the Key Vault.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultPublicNetworkAccessEnabledForIpAddress -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddress "1.1.1.1"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -944,8 +1104,18 @@ function Get-DeletedUser()
     .DESCRIPTION
     This command shows a deleted user. This is helpful when trying to translate a scanner status message user GUID to a human display name in order to locate the user on a list of assignments.
     This command requires the Microsoft.Graph SDK. See installation instructions: https://learn.microsoft.com/powershell/microsoftgraph/installation?view=graph-powershell-1.0#installation
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
     .PARAMETER DeletedUserId
     The user GUID for the deleted user.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Get-DeletedUser -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -DeletedUserId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -983,6 +1153,14 @@ function Get-ResourceGroupDeployment()
     The Resource Group to which the Deployment was run.
     .PARAMETER DeploymentName
     Optional: a Deployment name. If not specified, all Resource Group deployments will be retrieved.
+    .INPUTS
+    None
+    .OUTPUTS
+    [PSResourceGroupDeployment](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psresourcegroupdeployment)
+    .EXAMPLE
+    PS> Get-ResourceGroupDeployment -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DeploymentName "MyDeploymentName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1023,6 +1201,14 @@ function Get-ResourceGroupDeploymentOperations()
     The Resource Group to which the Deployment was run.
     .PARAMETER DeploymentName
     The Deployment name.
+    .INPUTS
+    None
+    .OUTPUTS
+    [PSDeploymentOperation](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psdeploymentoperation)
+    .EXAMPLE
+    PS> Get-ResourceGroupDeploymentOperations -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -DeploymentName "MyDeploymentName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1054,6 +1240,14 @@ function Get-ResourceGroupDeploymentsAndOperations()
     The Azure subscription ID.
     .PARAMETER ResourceGroupName
     The Resource Group to which Deployments were run.
+    .INPUTS
+    None
+    .OUTPUTS
+    For each deployment: text with each deployment name, and [PSDeploymentOperation](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psdeploymentoperation)
+    .EXAMPLE
+    PS> Get-ResourceGroupDeploymentsAndOperations -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1072,7 +1266,7 @@ function Get-ResourceGroupDeploymentsAndOperations()
 
   foreach ($deployment in $deployments)
   {
-    Write-Debug -Debug:$true -Message ("Deployment: " + $deployment.DeploymentName)
+    Write-Output ("Deployment: " + $deployment.DeploymentName)
 
     Get-AzResourceGroupDeploymentOperation -ResourceGroup $ResourceGroupName -Name $deployment.DeploymentName
   }
@@ -1087,6 +1281,14 @@ function Get-SubscriptionDeployments()
     This command lists ARM deployments for the Subscription.
     .PARAMETER SubscriptionId
     The Azure subscription ID.
+    .INPUTS
+    None
+    .OUTPUTS
+    [PSDeployment](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psdeployment)
+    .EXAMPLE
+    PS> Get-SubscriptionDeployments -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1110,6 +1312,14 @@ function Get-SubscriptionDeploymentsAndOperations()
     This command lists ARM deployments and operations for the Subscription.
     .PARAMETER SubscriptionId
     The Azure subscription ID.
+    .INPUTS
+    None
+    .OUTPUTS
+    For each deployment: text with each deployment name, and [PSDeploymentOperation](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psdeploymentoperation)
+    .EXAMPLE
+    PS> Get-SubscriptionDeploymentsAndOperations -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1144,6 +1354,14 @@ function Get-AzureADB2CTenants()
     This command lists the AAD B2C tenants in the Subscription.
     .PARAMETER SubscriptionId
     The Azure subscription ID.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Get-AzureADB2CTenants -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1175,6 +1393,14 @@ function Get-AzureADB2CResourceProvider()
     This command shows the Microsoft.AzureActiveDirectory Resource Provider and its registration state on the Subscription.
     .PARAMETER SubscriptionId
     The Azure subscription ID.
+    .INPUTS
+    None
+    .OUTPUTS
+    [PSResourceProvider](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psresourceprovider)
+    .EXAMPLE
+    PS> Get-AzureADB2CResourceProvider -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1199,6 +1425,14 @@ function Get-RegisteredResourceProviders()
     This command lists the Resource Providers registered on the Subscription.
     .PARAMETER SubscriptionId
     The Azure subscription ID.
+    .INPUTS
+    None
+    .OUTPUTS
+    [PSResourceProvider](https://learn.microsoft.com/dotnet/api/microsoft.azure.commands.resourcemanager.cmdlets.sdkmodels.psresourceprovider)
+    .EXAMPLE
+    PS> Get-RegisteredResourceProviders -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1224,6 +1458,14 @@ function Unregister-AzureADB2CResoureProvider()
     Reference to validate that this RP is for AADB2C: https://learn.microsoft.com/azure/azure-resource-manager/management/azure-services-resource-providers#match-resource-provider-to-service
     .PARAMETER SubscriptionId
     The Azure subscription ID.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Unregister-AzureADB2CResoureProvider -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000"
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1249,6 +1491,14 @@ function Get-MDEPreferences() {
     This command returns whether Realtime Monitoring is Disabled as well as connection and signature attributes.
     .DESCRIPTION
     This command returns whether Realtime Monitoring is Disabled as well as connection and signature attributes.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with names and values of several MDE preference configuration settings.
+    .EXAMPLE
+    PS> Get-MDEPreferences
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1263,6 +1513,14 @@ function Get-MDEStatus() {
     This command returns various MDE status properties.
     .DESCRIPTION
     This command returns various MDE status properties.
+    .INPUTS
+    None
+    .OUTPUTS
+    Text with names and values of several MDE status properties.
+    .EXAMPLE
+    PS> Get-MDEStatus
+    .LINK
+    None
   #>
 
   [CmdletBinding()]
@@ -1277,6 +1535,14 @@ function Set-MDESignatureUpdateScheduledTask() {
     This command creates a Windows scheduled task that runs hourly to update MDE signatures.
     .DESCRIPTION
     This command creates a Windows scheduled task that runs hourly to update MDE signatures. MUST BE RUN IN ELEVATED CONTEXT!
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-MDESignatureUpdateScheduledTask
+    .LINK
+    None
   #>
 
   [CmdletBinding()]

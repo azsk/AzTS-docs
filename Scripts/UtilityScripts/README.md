@@ -37,11 +37,13 @@ Note that you can also use the [Azure Cloud Shell](https://shell.azure.com) (sel
 ## How to use
 
 - Ensure you meet the pre-requisites above
-- Log into Azure with Connect-AzAccount
+- Log into Azure with [Connect-AzAccount](https://learn.microsoft.com/powershell/module/az.accounts/connect-azaccount)
 - Download [AzTSUtility.ps1](AzTSUtility.ps1)
-- Open a Powershell prompt where you downloaded AzTSUtility.ps1
+- Open a Powershell prompt in the folder where you downloaded AzTSUtility.ps1
 - Dot-source as follows: `. ./AzTSUtility.ps1`
-- Now you can run the various functions with their required parameters - see below
+  - Note the leading period!
+  - Dot-sourcing lets you run the functions in the file at the command line
+- Now you can run the functions with their required parameters - see below
 - You can also run `Get-Help` for any of the functions to see more information about it. Example: `Get-Help Get-AppServiceFtpState`
 
 ### Powershell Execution Policy
