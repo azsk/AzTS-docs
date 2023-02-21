@@ -41,6 +41,8 @@
 
 20. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#20-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 
+21. [Azure_AutomationAccounts_DP_Encrypt_Variables](ControlsEligibleForRemediationThroughUI.md#21-Azure_AutomationAccounts_DP_Encrypt_Variables)
+
 
 
 <br />
@@ -278,7 +280,7 @@ Use approved version of TLS for Event Hub Namespace.
 [Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or higher privileged role on the Storage Account(s)
+Contributor or higher privileged role on the Event Hub Namespace(s)
 
 ___
 
@@ -295,6 +297,8 @@ SSL must be enabled for Azure database for MySQL flexible server
 Contributor or higher privileged role on the Azure database for MYSQL flexible server
 
 ___
+
+
 ## 20. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 ### Display Name
@@ -305,5 +309,19 @@ Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+
+## 21. Azure_AutomationAccounts_DP_Encrypt_Variables
+
+### Display Name
+Automation account variables must be encrypted
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Automation Account(s)
 
 ___

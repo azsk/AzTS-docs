@@ -42,13 +42,14 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
 32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
-33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
-34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
+33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version)
+34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version)
 35. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version)
 36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
 37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#37-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
+40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
 
 <br />
 
@@ -695,10 +696,10 @@ Yes
 
 
 ___
-## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
+## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door Classic should have Approved Minimum TLS version
+Front Door Classic should have Approved Minimum TLS version
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetClassicFrontDoorMinTLSVersion](Remediate-SetClassicFrontDoorMinTLSVersion.ps1)
@@ -714,10 +715,10 @@ Yes
 
 ---
 
-## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door should have Approved Minimum TLS version.
+Front Door should have Approved Minimum TLS version.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
@@ -920,3 +921,21 @@ After completing above mentioned steps, open remediation script in PowerShell an
 
 ___
 
+## 40. Azure_AutomationAccounts_DP_Encrypt_Variables
+
+### Display Name
+Automation account variables must be encrypted
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___

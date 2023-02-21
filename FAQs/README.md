@@ -184,11 +184,10 @@ Azure publishes the information [here](https://www.microsoft.com/en-us/download/
 You can use the below PowerShell command let to whitelist the Azure IP ranges for a particular region on key vault. 
 
 ``` Powershell
-function WhitelistAzureFunctionAppIPRangesOnKeyVault {
+function AddAzureFunctionAppRegionIPRangesOnKeyVault {
 
 param (
 $SubscriptionId,
-$ResourceGroup,
 $KeyVaultResourceId,
 $FunctionAppUsageRegion,
 $RemoveExistingIPRanges = $false
@@ -203,7 +202,18 @@ Write-Host "Installing MSIdentityTools Module to fetch the Azure published IP ra
 Install-Module -Name MSIdentityTools -Scope CurrentUser -Force
 # Download the IPRanges from Azure published location and filter the IP ranges for the specific region where the function apps are deployed.
 Write-Host "Downloading the Azure published IP ranges..." -ForegroundColor Yellow
-Get-MsIdAzureIpRange -ServiceTag AppService -Region $FunctionAppUsageRegion
+$location = Get-AzLocation | Where-Object { $_.Location -eq $FunctionAppUsageRegion -or $_.DisplayName -eq $FunctionAppUsageRegion} | Select-Object -First 1
+if ($null -ne $location)
+{
+    $FunctionAppUsageRegion = $location.Location
+}
+else
+{
+  Write-Host "Specified function app region '$($FunctionAppUsageRegion)' is invalid. Exiting..."  -ForegroundColor Red
+  return;
+}
+
+$IPRanges = Get-MsIdAzureIpRange -ServiceTag AppService -Region $FunctionAppUsageRegion
 Write-Host "Successfully downloaded the Azure published IP ranges..." -ForegroundColor Green
 Write-Host "Filtering the IP ranges for IPv4 addresses" -ForegroundColor Yellow
 $FilteredIPRanges = ($IPRanges | Where-Object {$_.Contains("::") -eq $false })
@@ -212,14 +222,14 @@ $FilteredIPRanges = ($IPRanges | Where-Object {$_.Contains("::") -eq $false })
 if($RemoveExistingIPRanges -eq $true)
 {
 Write-Host "Overridding the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
-Update-AzKeyVaultNetworkRuleSet -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges -SubscriptionId $SubscriptionId
+Update-AzKeyVaultNetworkRuleSet -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges
 Write-Host "Successfully overridden the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Green
 
 }
 else
 {
 Write-Host "Appending the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
-Add-AzKeyVaultNetworkRule -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges -SubscriptionId $SubscriptionId
+Add-AzKeyVaultNetworkRule -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges
 Write-Host "Successfully appended the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Green
 
 }
@@ -242,7 +252,7 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - task: AzurePowerShell@5
-      displayName: "Whitelist Azure IP Addressess on key vault"
+      displayName: "Add Azure Function App region IPRanges on key vault"
       inputs:
         azureSubscription: $(AZURESUBSCRIPTIONSERVICECONNECTION)
         ScriptType: 'InlineScript'
@@ -253,6 +263,16 @@ stages:
           Install-Module -Name MSIdentityTools -Scope CurrentUser -Force
           # Download the IPRanges from Azure published location and filter the IP ranges for the specific region where the function apps are deployed.
           Write-Host "Downloading the Azure published IP ranges..." -ForegroundColor Yellow
+          $location = Get-AzLocation | Where-Object { $_.Location -eq $FunctionAppUsageRegion -or $_.DisplayName -eq $FunctionAppUsageRegion} | Select-Object -First 1
+          if ($null -ne $location)
+          {
+              $FunctionAppUsageRegion = $location.Location
+          }
+          else
+          {
+            Write-Host "Specified function app region '$($FunctionAppUsageRegion)' is invalid. Exiting..."  -ForegroundColor Red
+            return;
+          }
           $IPRanges = Get-MsIdAzureIpRange -ServiceTag AppService -Region $(FUNCTIONAPPUSAGEREGION)
           Write-Host "Successfully downloaded the Azure published IP ranges..." -ForegroundColor Green
           Write-Host "Filtering the IP ranges for IPv4 addresses" -ForegroundColor Yellow
@@ -262,14 +282,14 @@ stages:
           if($(REMOVEEXISTINGIPRANGES) -eq $true)
           {
           Write-Host "Overridding the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
-          Update-AzKeyVaultNetworkRuleSet -ResourceId $(KEYVAULTRESOURCEID) -IpAddressRange $FilteredIPRanges -SubscriptionId $(SUBSCRIPTIONID)
+          Update-AzKeyVaultNetworkRuleSet -ResourceId $(KEYVAULTRESOURCEID) -IpAddressRange $FilteredIPRanges
           Write-Host "Successfully overridden the IP Address ranges with the Azure IP ranges for specified function app region:" $(FUNCTIONAPPUSAGEREGION) -ForegroundColor Green
 
           }
           else
           {
           Write-Host "Appending the IP Address ranges with the Azure IP ranges for specified function app region:" $FunctionAppUsageRegion -ForegroundColor Yellow
-          Add-AzKeyVaultNetworkRule -ResourceId $(KEYVAULTRESOURCEID) -IpAddressRange $FilteredIPRanges -SubscriptionId $(SUBSCRIPTIONID)
+          Add-AzKeyVaultNetworkRule -ResourceId $(KEYVAULTRESOURCEID) -IpAddressRange $FilteredIPRanges
           Write-Host "Successfully appended the IP Address ranges with the Azure IP ranges for specified function app region:" $(FUNCTIONAPPUSAGEREGION) -ForegroundColor Green
           }
         azurePowerShellVersion: 'LatestVersion'
