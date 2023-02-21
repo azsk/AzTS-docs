@@ -4,6 +4,22 @@ This readme describes the Powershell functions available in [AzTSUtility.ps1](Az
 
 The functions are provided to help with assessment and remediation of Azure Tenant Scanner control compliance issues. The controls and provided functions are listed below.
 
+- [Azure Tenant Scanner Powershell Utility Scripts](#azure-tenant-scanner-powershell-utility-scripts)
+  - [Pre-Requisites](#pre-requisites)
+  - [How to use](#how-to-use)
+    - [Powershell Execution Policy](#powershell-execution-policy)
+  - [Controls and Functions](#controls-and-functions)
+    - [Azure\_AppService\_DP\_Use\_Secure\_FTP\_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
+    - [Azure\_DataFactory\_DP\_Avoid\_Plaintext\_Secrets](#azure_datafactory_dp_avoid_plaintext_secrets)
+    - [Azure\_DBForMYSQLFlexibleServer\_DP\_Enable\_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
+    - [Azure\_DBForMySQLFlexibleServer\_TLS](#azure_dbformysqlflexibleserver_tls)
+    - [Azure\_SQLManagedInstance\_DP\_Use\_Secure\_TLS\_Version](#azure_sqlmanagedinstance_dp_use_secure_tls_version)
+    - [Azure\_KeyVault\_NetSec\_Disable\_Public\_Network\_Access](#azure_keyvault_netsec_disable_public_network_access)
+    - [Azure\_Subscription\_AuthZ\_Remove\_Deprecated\_Accounts](#azure_subscription_authz_remove_deprecated_accounts)
+    - [Azure\_Subscription\_DP\_Avoid\_Plaintext\_Secrets\_Deployments](#azure_subscription_dp_avoid_plaintext_secrets_deployments)
+    - [Azure\_Subscription\_SI\_Dont\_Use\_B2C\_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
+    - [Azure\_VirtualMachine\_SI\_Enable\_Antimalware](#azure_virtualmachine_si_enable_antimalware)
+
 ## Pre-Requisites
 
 - Windows Powershell 5.1 or [Powershell 7.x+](https://learn.microsoft.com/powershell/scripting/install/installing-powershell)
