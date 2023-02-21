@@ -42,6 +42,7 @@ Note that you can also use the [Azure Cloud Shell](https://shell.azure.com) (sel
 - Open a Powershell prompt where you downloaded AzTSUtility.ps1
 - Dot-source as follows: `. ./AzTSUtility.ps1`
 - Now you can run the various functions with their required parameters - see below
+- You can also run `Get-Help` for any of the functions to see more information about it. Example: `Get-Help Get-AppServiceFtpState`
 
 ### Powershell Execution Policy
 
@@ -58,6 +59,18 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />
 
 ## Controls and Functions
+
+### Utility
+
+`Install-AzPowershell()`
+<br />Purpose: install the latest version of Azure Powershell.
+<br />Parameters: None.
+
+`Uninstall-AzPowershell()`
+<br />Purpose: uninstalls all versions of installed Azure Powershell packages.
+<br />Parameters: None.
+
+<br />
 
 ### Azure_AppService_DP_Use_Secure_FTP_Deployment
 
