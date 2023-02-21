@@ -8,17 +8,13 @@
           "equals": "Microsoft.ApiManagement/service/identityProviders"
         },
         {
-          "anyOf": [
-            {
-              "field": "Microsoft.ApiManagement/service/identityProviders/type",
-              "in": [
-                "google",
-                "facebook",
-                "microsoft",
-                "twitter",
-                "aadb2c"
-              ]
-            }
+          "field": "Microsoft.ApiManagement/service/identityProviders/type",
+          "in": [
+            "google",
+            "facebook",
+            "microsoft",
+            "twitter",
+            "aadb2c"
           ]
         }
       ]

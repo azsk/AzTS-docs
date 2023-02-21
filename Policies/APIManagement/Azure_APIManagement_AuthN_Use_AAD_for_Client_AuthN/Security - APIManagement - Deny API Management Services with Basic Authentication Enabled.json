@@ -8,16 +8,12 @@
           "equals": "Microsoft.ApiManagement/service/portalsettings"
         },
         {
-          "allOf": [
-            {
-              "field": "name",
-              "equals": "signup"
-            },
-            {
-              "field": "Microsoft.ApiManagement/service/portalsettings/enabled",
-              "equals": true
-            }
-          ]
+          "field": "name",
+          "equals": "signup"
+        },
+        {
+          "field": "Microsoft.ApiManagement/service/portalsettings/enabled",
+          "equals": true
         }
       ]
     },
