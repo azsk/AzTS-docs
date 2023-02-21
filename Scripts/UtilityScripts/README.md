@@ -27,8 +27,8 @@ The functions are provided to help with assessment and remediation of Azure Tena
 - [Azure Powershell](https://learn.microsoft.com/powershell/azure/install-az-ps)
 
 Note that you can also use the [Azure Cloud Shell](https://shell.azure.com) (select Powershell, not Bash), which has all required pre-requisites already installed.
-  
-  
+
+<br />
 
 ## How to use
 
