@@ -12,7 +12,7 @@
         "AuditIfNotExists",
         "Disabled"
       ],
-      "defaultValue": "DeployIfNotExists"
+      "defaultValue": "AuditIfNotExists"
     },
     "emailAddress": {
       "type": "String",
@@ -38,7 +38,7 @@
           "/providers/Microsoft.Authorization/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
         ],
         "existenceCondition": {
-          "anyOf": [
+          "allOf": [
             {
               "field": "Microsoft.Security/securityContacts/email",
               "notEquals": ""

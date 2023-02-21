@@ -6,11 +6,56 @@
 ### Required Policies
 Control can be covered with Azure policies mentioned below:
 - Policy to enable Microsoft Defender with Standard tier for SQL servers at Subscription level (if not enabled).
-- Policy to configure email address in Microsoft Defender security contacts (if security contacts not setup as per requirements).
+- Policy to configure/audit email address in Microsoft Defender security contacts (if security contacts not setup as per requirements).
 - Policy to enable Advanced Threat Protection (ATP) for each non-compliant SQL server.
 - Policy to enable SQL auditing for each non-compliant SQL server.
+- Policy to audit SQL auditing for SQL server.
+- Policy to audit Advanced Threat Protection (ATP) for each non-compliant SQL server.
+- Policy to audit Security Alert contacts for SQL server.
+___ 
+
+#### Policy Details
+
+Following policy can be used to validate if SQL auditing is enabled for SQL server.
+
+#### Policy Definition
+[Security - SQL Server - AuditSqlServerAuditingSettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerAuditingSettings.json)
+
+#### Parameter details
+Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | The effect determines what happens when the policy rule is evaluated to match| Audit |No |
 
 ___ 
+
+#### Policy Details
+
+Following policy can be used to validate if Advanced Threat Protection (ATP) is enabled for SQL server.
+
+#### Policy Definition
+[Security - SQL Server - AuditSqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20AuditSqlServerThreatDetection.json)
+
+#### Parameter details
+Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | The effect determines what happens when the policy rule is evaluated to match| Audit |No |
+
+___ 
+
+#### Policy Details
+
+Following policy can be used to validate Security Alert contacts for SQL server
+
+#### Policy Definition
+[Security - SQL Server - AuditSqlServerSecuritySettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerSecuritySettings.json)
+
+#### Parameter details
+Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | The effect determines what happens when the policy rule is evaluated to match| Audit |No |
+
+___ 
+
 
 #### Policy Details
 
@@ -29,7 +74,7 @@ ___
 
 #### Policy Details
 
-Following policy will configure security contacts (email) at Subscription scope.
+Following policy will configure/Audit security contacts (email) at Subscription scope.
 
 #### Policy Definition
 [Security - Subscription - UpdateSecurityContacts](Security%20-%20Subscription%20-%20UpdateSecurityContacts.json)

@@ -1,0 +1,39 @@
+{
+  "mode": "All",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "The effect determines what happens when the policy rule is evaluated to match"
+      },
+      "allowedValues": [
+        "DeployIfNotExists",
+        "Disabled",
+        "AuditIfNotExists"
+      ],
+      "defaultValue": "AuditIfNotExists"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Sql/servers"
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.Sql/servers/securityAlertPolicies",
+        "name": "Default",
+        "existenceCondition": {
+          "field": "Microsoft.Sql/securityAlertPolicies.state",
+          "notEquals": "Enabled"
+        }
+      }
+    }
+  }
+}
