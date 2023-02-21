@@ -50,11 +50,11 @@ To run this or other downloaded scripts, you may need to set your Powershell exe
 Reference: https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies
 
 Example so you can run script and functions in a downloaded file like AzTSUtility.ps1:
-`Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser`
+<br />`Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser`
 
 Example to then reset the execution policy either to default (Restricted) or RemoteSigned:
-`Set-ExecutionPolicy -ExecutionPolicy Default -Scope CurrentUser`
-`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+<br />`Set-ExecutionPolicy -ExecutionPolicy Default -Scope CurrentUser`
+<br />`Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
 
 <br />
 
