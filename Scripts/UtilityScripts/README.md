@@ -4,7 +4,10 @@ This readme describes the Powershell functions available in [AzTSUtility.ps1](Az
 
 The functions are provided to help with assessment and remediation of Azure Tenant Scanner control compliance issues. The controls and provided functions are listed below.
 
+## Contents
+
 - [Azure Tenant Scanner Powershell Utility Scripts](#azure-tenant-scanner-powershell-utility-scripts)
+  - [Contents](#contents)
   - [Pre-Requisites](#pre-requisites)
   - [How to use](#how-to-use)
     - [Powershell Execution Policy](#powershell-execution-policy)
