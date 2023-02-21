@@ -91,15 +91,11 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
 
 `Get-DataFactoryV2DataFlows()`
-<br />Purpose: Show the Data Factory Data Flows so they can be inspected for plain-text secrets.
+<br />Purpose: Show the Data Factory Data Flows with script lines including parameters so they can be inspected for plain-text secrets.
 <br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
 
 `Get-DataFactoryV2DataSets()`
-<br />Purpose: Show the Data Factory Data Sets so they can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2IntegrationRuntimes()`
-<br />Purpose: Show the Data Factory Integration Runtimes so they can be inspected for plain-text secrets.
+<br />Purpose: Show the Data Factory Datasets with parameters so they can be inspected for plain-text secrets.
 <br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
 
 `Get-DataFactoryV2LinkedServices()`
@@ -108,10 +104,6 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 `Get-DataFactoryV2Pipelines()`
 <br />Purpose: Show the Data Factory Pipelines so they can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2Triggers()`
-<br />Purpose: Show the Data Factory Triggers so they can be inspected for plain-text secrets.
 <br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
 
 <br />

@@ -186,9 +186,11 @@ function Get-DataFactoryV2()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Write-Debug -Debug -Message "Check returned ADFV2 object Tags property for plain-text secrets"
+  $factory = Get-AzDataFactoryV2 -ResourceGroupName $ResourceGroupName -Name $DataFactoryName
 
-  Get-AzDataFactoryV2 -ResourceGroupName $ResourceGroupName -Name $DataFactoryName
+  Write-Output ("Data Factory: " + $factory.DataFactoryName)
+  Write-Output "Tags:"
+  Write-Output $factory.Tags
 }
 
 function Get-DataFactoryV2DataFlows()
@@ -221,9 +223,16 @@ function Get-DataFactoryV2DataFlows()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Get-AzDataFactoryV2DataFlow -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
+  $dataflows = Get-AzDataFactoryV2DataFlow -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  #  --query "[].[name, properties.scriptLines, properties.sources, properties.sinks, properties.transformations]"
+  foreach ($dataflow in $dataflows)
+  {
+    Write-Host ("Dataflow: " + $dataflow.Name)
+    Write-Host "Dataflow Script Lines:"
+    $dataflows.Properties.ScriptLines
+    Write-Host ""
+  }
+
 }
 
 function Get-DataFactoryV2DataSets()
@@ -256,44 +265,18 @@ function Get-DataFactoryV2DataSets()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Get-AzDataFactoryV2Dataset -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
+  $datasets = Get-AzDataFactoryV2Dataset -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  #  --query "[?@.properties.parameters.*] | [].{dataSetName:name, parameters:properties.parameters}"
-}
-
-function Get-DataFactoryV2IntegrationRuntimes()
-{
-  <#
-    .SYNOPSIS
-    This command lists pipeline names and parameters for pipelines that have at least one parameter.
-    .DESCRIPTION
-    This command lists pipeline names and parameters for pipelines that have at least one parameter. This is to review parameter values to try and locate parameters that may contain strings identified by the control as plaintext secrets.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Data Factory.
-    .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
-    .PARAMETER DataFactoryName
-    The Data Factory name.
-  #>
-
-  [CmdletBinding()]
-  param (
-      [Parameter(Mandatory=$true)]
-      [string]
-      $SubscriptionId,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $ResourceGroupName,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $DataFactoryName
-  )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  Get-AzDataFactoryV2IntegrationRuntime -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
-
-  #  #--query "[?@.parameters.*] | [].{pipelineName:name, parameters:parameters}"
+  foreach ($dataset in $datasets)
+  {
+    Write-Host ("Dataset: " + $dataset.Name)
+    Write-Host "Parameter Names and Values:"
+    foreach ( $h in $dataset.Properties.Parameters.GetEnumerator() )
+    {
+      Write-Host "- $($h.Key) = $($h.Value.DefaultValue)"
+    }
+    Write-Host ""
+  }
 }
 
 function Get-DataFactoryV2LinkedServices()
@@ -326,9 +309,18 @@ function Get-DataFactoryV2LinkedServices()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Get-AzDataFactoryV2LinkedService -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
+  $linkedServices = Get-AzDataFactoryV2LinkedService -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  #  --query "[].{name:name, properties_credential:properties.credential, properties_encryptedCredential:properties.encryptedCredential, properties_parameters:properties.parameters}"
+  foreach ($linkedService in $linkedServices)
+  {
+    Write-Host ("Linked Service: " + $linkedService.Name)
+    Write-Host "Parameter Names and Values:"
+    foreach ( $h in $linkedService.Properties.Parameters.GetEnumerator() )
+    {
+      Write-Host "- $($h.Key) = $($h.Value.DefaultValue)"
+    }
+    Write-Host ""
+  }
 }
 
 function Get-DataFactoryV2Pipelines()
@@ -361,42 +353,18 @@ function Get-DataFactoryV2Pipelines()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Get-AzDataFactoryV2Pipeline -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
+  $pipelines = Get-AzDataFactoryV2Pipeline -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  #  --query "[?@.parameters.*] | [].{pipelineName:name, parameters:parameters}"
-}
-
-function Get-DataFactoryV2Triggers()
-{
-  <#
-    .SYNOPSIS
-    This command lists triggers.
-    .DESCRIPTION
-    This command lists triggers. This is to try and locate strings identified by the control as plaintext secrets.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Data Factory.
-    .PARAMETER ResourceGroupName
-    The Resource Group containing the Data Factory.
-    .PARAMETER DataFactoryName
-    The Data Factory name.
-  #>
-
-  [CmdletBinding()]
-  param (
-      [Parameter(Mandatory=$true)]
-      [string]
-      $SubscriptionId,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $ResourceGroupName,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $DataFactoryName
-  )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  Get-AzDataFactoryV2Trigger -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
+  foreach ($pipeline in $pipelines)
+  {
+    Write-Host ("Pipeline: " + $pipeline.Name)
+    Write-Host "Parameter Names and Values:"
+    foreach ( $h in $pipeline.Parameters.GetEnumerator() )
+    {
+      Write-Host "- $($h.Key) = $($h.Value.DefaultValue)"
+    }
+    Write-Host ""
+  }
 }
 
 # ####################################################################################################
