@@ -8,7 +8,7 @@ Control can be covered with the below mentioned Azure policy:
 
 #### Policy Details
 
-Following policy can be used with 'Audit' effect to view the details of Kubernetes service, which doesn't have AAD Authentication enabled, at the policy assignment scope.
+Following policy can be used with 'Audit' effect to detect non-compliant resources.
 
 #### Policy Definition
 [Security - Kubernetes Service - EnableAADAuthentication](./Security%20-%20Kubernetes%20Service%20-%20EnableAADAuthentication)

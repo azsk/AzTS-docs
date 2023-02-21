@@ -30,11 +30,11 @@
                   "allof":[
                     {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
-                      "exists": "True"
+                      "exists": "true"
                     },
                     {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
-                      "equals": "True"
+                      "equals": "true"
                     }
                   ]
                 },
@@ -42,15 +42,15 @@
                   "allof":[
                     {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
-                      "exists": "True"
+                      "exists": "true"
                     },
                     {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
-                      "exists": "True"
+                      "exists": "true"
                     },
                     {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
-                      "exists": "True"
+                      "exists": "true"
                     }
                   ]
                 }

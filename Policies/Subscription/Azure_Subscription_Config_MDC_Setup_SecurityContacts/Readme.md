@@ -8,7 +8,7 @@ Control can be covered with the below mentioned Azure policy:
 
 #### Policy Details
 
-Following policy can be used with 'Audit' effect to view the details of subscription(s), where Security Contacts for Microsoft Defender for Cloud are not yet set up, at the policy assignment scope.
+Following policy can be used with 'Audit' effect to detect non-compliant resources.
 
 #### Policy Definition
 [Security - Subscription - ConfigMDCSecurityContacts](./Security%20-%20Subscription%20-%20ConfigMDCSecurityContacts)

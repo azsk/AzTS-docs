@@ -8,7 +8,7 @@ Control can be covered with the below mentioned Azure policy:
 
 #### Policy Details
 
-Following policy can be used with 'Audit' effect to view the details of B2C tenants in use at the policy assignment scope.
+Following policy can be used with 'Audit' effect to detect non-compliant resources.
 
 #### Policy Definition
 [Security - Subscription - DontUseB2CTenant](./Security%20-%20Subscription%20-%20DontUseB2CTenant.json)
@@ -21,4 +21,4 @@ Following policy can be used with 'Audit' effect to view the details of B2C tena
 
 
 ### Notes
-NA
+The policy evaluation has a gap i.e., it doesn't check whether the resource provider `Azure Active Directory` is registered or not. 

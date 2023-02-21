@@ -17,7 +17,57 @@
     },
     "policyRule": {
       "if": {
-        
+        "anyof": [
+          {
+            "field": "Microsoft.Security/securityContacts/email",
+            "exists": "false"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/email",
+            "equals": ""
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/alertNotifications.state",
+            "exists" :"false"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/alertNotifications.state",
+            "equals": "Off"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity",
+            "exists" :"false"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity",
+            "equals": "High"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/notificationsByRole.state",
+            "exists": "false"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/notificationsByRole.state",
+            "equals": "Off"
+          },
+          {
+            "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
+            "exists": "false"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
+              "where": {
+                "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
+                "in": [
+                  "Owner",
+                  "ServiceAdmin"
+                ]
+              }
+            },
+            "notEquals": 2
+          }
+        ]
       },
       "then": {
         "effect": "[parameters('effect')]"
