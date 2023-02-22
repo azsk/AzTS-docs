@@ -8,7 +8,6 @@
         "description": "The effect determines what happens when the policy rule is evaluated to match"
       },
       "allowedValues": [
-        "DeployIfNotExists",
         "Disabled",
         "AuditIfNotExists"
       ],
