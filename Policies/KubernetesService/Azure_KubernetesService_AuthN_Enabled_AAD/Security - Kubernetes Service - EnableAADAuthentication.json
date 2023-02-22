@@ -24,46 +24,42 @@
             "equals": "Microsoft.ContainerService/managedClusters"
           },
           {
-            "allof":[
+            "anyof":[
               {
-                "anyof":[
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
-                    "exists": "false"
-                  },
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
-                    "equals": "false"
-                  }
-                ]
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
+                "exists": "false"
               },
               {
-                "anyof":[
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
-                    "exists": "false"
-                  },
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
-                    "Equals": ""
-                  },
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
-                    "exists": "false"
-                  },
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
-                    "Equals": ""
-                  },
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
-                    "exists": "false"
-                  },
-                  {
-                    "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
-                    "Equals": ""
-                  }
-                ]
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.managed",
+                "equals": "false"
+              }
+            ]
+          },
+          {
+            "anyof":[
+              {
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
+                "exists": "false"
+              },
+              {
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
+                "Equals": ""
+              },
+              {
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
+                "exists": "false"
+              },
+              {
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
+                "Equals": ""
+              },
+              {
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
+                "exists": "false"
+              },
+              {
+                "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
+                "Equals": ""
               }
             ]
           }
