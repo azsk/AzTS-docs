@@ -17,7 +17,7 @@ Following policy can be used with 'Audit' effect to detect non-compliant resourc
 
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
-| Effect | The effect determines what happens when the policy rule is evaluated to match| Audit |No |
+| Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
 
 
 ### Notes
