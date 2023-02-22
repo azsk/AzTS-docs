@@ -51,7 +51,7 @@
               },
               {
                 "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
-                "Equals": ""
+                "equals": ""
               },
               {
                 "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",

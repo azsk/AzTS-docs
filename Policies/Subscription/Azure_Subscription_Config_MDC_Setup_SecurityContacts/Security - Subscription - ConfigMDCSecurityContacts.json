@@ -8,69 +8,76 @@
           "description": "The effect determines what happens when the policy rule is evaluated to match"
         },
         "allowedValues": [
-          "Audit",
-          "Disabled",
-          "Deny"
+          "AuditIfNotExists",
+          "Disabled"
         ],
-        "defaultValue": "Audit"
+        "defaultValue": "AuditIfNotExists"
       }
     },
     "policyRule": {
       "if": {
-        "anyof": [
-          {
-            "field": "Microsoft.Security/securityContacts/email",
-            "exists": "false"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/email",
-            "equals": ""
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/alertNotifications.state",
-            "exists" :"false"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/alertNotifications.state",
-            "equals": "Off"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity",
-            "exists" :"false"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity",
-            "equals": "High"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/notificationsByRole.state",
-            "exists": "false"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/notificationsByRole.state",
-            "equals": "Off"
-          },
-          {
-            "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
-            "exists": "false"
-          },
-          {
-            "count": {
-              "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
-              "where": {
-                "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
-                "in": [
-                  "Owner",
-                  "ServiceAdmin"
-                ]
-              }
-            },
-            "notEquals": 2
-          }
-        ]
+        "field": "type",
+        "equals": "Microsoft.Resources/subscriptions"
       },
       "then": {
-        "effect": "[parameters('effect')]"
+        "effect": "[parameters('effect')]",
+        "details":{
+          "type": "Microsoft.Security/securityContacts",
+          "existenceScope": "subscription",
+          "existenceCondition":{
+            "allof": [
+              {
+                "field": "Microsoft.Security/securityContacts/email",
+                "exists": "true"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/email",
+                "notEquals": ""
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/alertNotifications.state",
+                "exists" :"true"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/alertNotifications.state",
+                "equals": "On"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity",
+                "exists" :"true"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/alertNotifications.minimalSeverity",
+                "notEquals": "High"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/notificationsByRole.state",
+                "exists": "true"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/notificationsByRole.state",
+                "equals": "On"
+              },
+              {
+                "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
+                "exists": "true"
+              },
+              {
+                "count": {
+                  "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
+                  "where": {
+                    "field": "Microsoft.Security/securityContacts/notificationsByRole.roles[*]",
+                    "in": [
+                      "Owner",
+                      "ServiceAdmin"
+                    ]
+                  }
+                },
+                "equals": 2
+              }
+            ]
+          }
+        }
       }
     }
   }
