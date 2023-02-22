@@ -35,8 +35,11 @@
 				"capacity": 1
 			},
 			"name": "[parameters('eventHubNamespace')]",
-			"apiVersion": "2017-04-01",
+			"apiVersion": "2022-01-01-preview",
 			"location": "Central US",
+			"properties": {
+				"minimumTlsVersion": "1.2" //[Azure_EventHub_DP_Use_Secure_TLS_Version]
+			},
 			"resources": [
 				{
 					"type": "providers/diagnosticSettings",//[Azure_EventHub_Audit_Enable_Diagnostics_Log] to enable diagnostic logs

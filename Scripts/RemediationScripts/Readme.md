@@ -36,16 +36,21 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 24. [Azure_Subscription_Use_Only_Alt_Credentials](Readme.md#24-Azure_Subscription_Use_Only_Alt_Credentials)
 25. [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](Readme.md#25-Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port)
 26. [Azure_AppService_DP_Use_Secure_FTP_Deployment](Readme.md#26-Azure_AppService_DP_Use_Secure_FTP_Deployment)
-27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
-28. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+27. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](Readme.md#27-Azure_SQLDatabase_DP_Use_Secure_TLS_Version)
+28. [Azure_Storage_DP_Use_Secure_TLS_Version](Readme.md#28-Azure_Storage_DP_Use_Secure_TLS_Version)
 29. [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](Readme.md#29-Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration)
 30. [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](Readme.md#30-Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 31. [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](Readme.md#31-Azure_FrontDoor_NetSec_Enable_WAF_Configuration)
 32. [Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration](Readme.md#32-Azure_FrontDoor_CDNProfile_NetSec_Enable_WAF_Configuration)
-33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial)
-34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial)
-35. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](Readme.md#35-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
-
+33. [Azure_FrontDoor_DP_Use_Secure_TLS_Version](Readme.md#33-Azure_FrontDoor_DP_Use_Secure_TLS_Version)
+34. [Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version](Readme.md#34-Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version)
+35. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](Readme.md#35-Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version)
+36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
+37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#37-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
+38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
+39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
+40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
+41. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](Readme.md#41-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
 
 <br />
 
@@ -288,7 +293,7 @@ Restricted to 'User' account type
 ### Supports rollback?
 Yes
 
-___ 
+___
 
 
 ## 13. Azure_SQLDatabase_DP_Enable_TDE
@@ -569,7 +574,7 @@ Yes
 ___
 
 
-## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+## 27. Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in SQL Server
@@ -589,7 +594,7 @@ Yes
 
 ___
 
-## 28. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+## 28. Azure_Storage_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in Storage Account
@@ -692,10 +697,10 @@ Yes
 
 
 ___
-## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial
+## 33. Azure_FrontDoor_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door Classic should have Approved Minimum TLS version
+Front Door Classic should have Approved Minimum TLS version
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetClassicFrontDoorMinTLSVersion](Remediate-SetClassicFrontDoorMinTLSVersion.ps1)
@@ -711,10 +716,10 @@ Yes
 
 ---
 
-## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial
+## 34. Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version
 
 ### Display Name
-[Trial] Front Door should have Approved Minimum TLS version.
+Front Door should have Approved Minimum TLS version.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-CdnFrontDoorMinTLSVersion](Remediate-CdnFrontDoorMinTLSVersion.ps1)
@@ -728,8 +733,133 @@ Yes
 ### Supports rollback?
 Yes
 
+___
+## 35. Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure SQL Managed Instance
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLManagedInstanceMinReqTLSVersion](Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 36. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or Owner role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+## 37. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
+
+### Display Name
+SSL must be enabled for Azure database for MySQL flexible server
+
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 38. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 39. Azure_SQLDatabase_AuthZ_Use_AAD_Only
+
+### Display Name
+Use AAD Only Authentication for SQL Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAADOnlyAuthenticationForSQLServers](./Remediate-EnableAADOnlyAuthenticationForSQLServers.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Restricted to 'User' account type
+
+### Supports rollback?
+Yes
+
+### User Inputs Required?
+Yes 
+
+To set AAD Only Authentication on SQL Server, AAD Admin should be configured. 
+
+Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+
+After running the above command a remediation file is generated where the user input is expected if applicable.
+
+If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers). 
 ---
-## 35. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
+___
+
+## 40. Azure_AutomationAccounts_DP_Encrypt_Variables
+
+### Display Name
+Automation account variables must be encrypted
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___
+
+## 41. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
 
 ### Display Name
 Public network access on Azure SQL Database should be disabled

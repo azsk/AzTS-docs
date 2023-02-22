@@ -2,7 +2,7 @@
 Please follow the below mentioned steps to add new controls based on custom Azure Policy:
 
 **Step 0:** Following prerequisites are required to add new control.
-   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-add-new-control).
+   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-medatadata-editor-toolcmet).
 
    2. CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user (This is only required once per user).
 
@@ -38,7 +38,7 @@ Please follow the below mentioned steps to add new controls based on custom Azur
 
 **Step 3:** Go to **AzTS UI**. (To get AzTS UI URL, check this [FAQ](https://github.com/azsk/AzTS-docs/blob/main/03-Running%20AzTS%20solution%20from%20UI/README.md#frequently-asked-questions))
 
-**Step 4:** Open **Control editor tool**.
+**Step 4:** Open **Control metadata editor tool**.
 
 ![Open CMET Editor](../../Images/06_ExtendingAzTS_Open_CMET.png)
 

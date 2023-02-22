@@ -54,6 +54,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
     administratorLogin: sqlServerAdministratorLogin
     administratorLoginPassword: sqlServerAdministratorLoginPassword
     minimalTlsVersion: '1.2' //[Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial]
+    publicNetworkAccess: 'Disabled' //[Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access] 
   }
 
   // To enable Azure Active Directory (AAD) authentication on the SQL server.
@@ -66,6 +67,17 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
       sid: sqlServerAdministratorSettings.sqlServerAdministratorSID
       tenantId: tenant().tenantId
     }
+  }
+
+  // To enable Azure Active Directory (AAD) Only Authentication on the SQL server.
+  // Azure_SQLDatabase_AuthZ_Use_AAD_Only - Enable Azure AD Only Authentication for the SQL Server.
+
+  resource sqlAzureADOnlyAuthentication 'azureADOnlyAuthentications@2021-11-01' = {
+    name: 'Default'
+    properties: {
+      azureADOnlyAuthentication: true
+    }
+    dependsOn: [ sqlAdministrator ]
   }
 
   // Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server - To enable auditing on the SQL server.

@@ -27,11 +27,23 @@
 
 13. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#13-azure_servicebus_dp_use_secure_tls_version)
 
-14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial)
+14. [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#14-Azure_SQLDatabase_DP_Use_Secure_TLS_Version)
 
-15. [Azure_Storage_DP_Use_Secure_TLS_Version_Trial](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version_Trial)
+15. [Azure_Storage_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#15-Azure_Storage_DP_Use_Secure_TLS_Version)
 
 16. [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](ControlsEligibleForRemediationThroughUI.md#16-Azure_Storage_AuthZ_Set_SAS_Expiry_Interval)
+
+17. [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#17-azure_sqlmanagedinstance_dp_use_secure_tls_version)
+
+18. [Azure_EventHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#18-Azure_EventHub_DP_Use_Secure_TLS_Version)
+
+19. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](ControlsEligibleForRemediationThroughUI.md#19-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
+
+20. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#20-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
+
+21. [Azure_AutomationAccounts_DP_Encrypt_Variables](ControlsEligibleForRemediationThroughUI.md#21-Azure_AutomationAccounts_DP_Encrypt_Variables)
+
+
 
 <br />
 ___
@@ -205,7 +217,7 @@ Azure Data Owner role on Service Bus Namespace
 
 ___
 
-## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version_Trial
+## 14. Azure_SQLDatabase_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in SQL Server
@@ -218,13 +230,13 @@ Contributor role at resource level
 
 ___
 
-## 15. Azure_Storage_DP_Use_Secure_TLS_Version_Trial
+## 15. Azure_Storage_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use Approved TLS Version in Storage Account
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-Azure_Storage_DP_Use_Secure_TLS_Version_Trial](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
+[Remediate-SetStorageAccountRequiredTLSVersion](Remediate-SetStorageAccountMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Owner or higher priviliged role on the Storage Account(s)
@@ -241,5 +253,75 @@ Shared Access Signature (SAS) expiry interval must be less than approved upper l
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+
+## 17. Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure SQL Managed Instance
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetSQLManagedInstanceMinReqTLSVersion](Remediate-SetSQLManagedInstanceMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Managed Instance(s)
+
+___
+
+
+## 18. Azure_EventHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Event Hub Namespace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetEventHubNamespaceMinTLSVersion](Remediate-SetEventHubNamespaceMinTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Event Hub Namespace(s)
+
+___
+
+
+## 19. Azure_DBForMySQLFlexibleServer_DP_Enable_SSL
+
+### Display Name
+SSL must be enabled for Azure database for MySQL flexible server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSSLDBForMySQLFlexibleServer](Remediate-EnableSSLDBForMySQLFlexibleServer.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Azure database for MYSQL flexible server
+
+___
+
+
+## 20. Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for MySQL - Flexible Servers.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Storage Account(s)
+
+___
+
+
+## 21. Azure_AutomationAccounts_DP_Encrypt_Variables
+
+### Display Name
+Automation account variables must be encrypted
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Automation Account(s)
 
 ___
