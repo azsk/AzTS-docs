@@ -27,10 +27,10 @@
     "then": {
       "effect": "[parameters('effect')]",
       "details": {
-        "type": "Microsoft.Sql/servers/securityAlertPolicies",
+        "type": "Microsoft.Sql/servers/auditingSettings",
         "name": "Default",
         "existenceCondition": {
-          "field": "Microsoft.Sql/securityAlertPolicies.state",
+          "field": "Microsoft.Sql/auditingSettings.state",
           "notEquals": "Enabled"
         }
       }
