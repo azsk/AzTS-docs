@@ -50,7 +50,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
 40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
-41. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](Readme.md#41-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
+41. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial](Readme.md#41-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial)
 
 <br />
 
@@ -859,7 +859,7 @@ No
 
 ___
 
-## 41. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
+## 41. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial
 
 ### Display Name
 Public network access on Azure SQL Database should be disabled

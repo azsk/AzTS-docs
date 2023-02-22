@@ -3,7 +3,7 @@
     This script is used to set required public network access for SQL Server in a Subscription.
 
 # Control ID:
-    Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
+    Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial
 
 # Display Name:
     Public network access on Azure SQL Database should be disabled.
@@ -116,10 +116,10 @@ function Disable-SQLServerPublicNetworkAccess
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
+        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
+        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
         Public network access on Azure SQL Database should be disable. 
         
         .PARAMETER SubscriptionId
@@ -269,7 +269,7 @@ function Disable-SQLServerPublicNetworkAccess
     $logSkippedResources=@()
     
     # Control Id
-    $controlIds = "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access"
+    $controlIds = "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial"
 
     if($AutoRemediation)
     {
@@ -673,10 +673,10 @@ function Enable-SQLServerPublicNetworkAccess
 {
      <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
+        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
+        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
         Resets public network access to 'Enabled' for all SQL Servers in the Subscription. 
         
         .PARAMETER SubscriptionId
