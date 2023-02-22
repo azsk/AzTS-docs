@@ -45,12 +45,24 @@
                       "exists": "true"
                     },
                     {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
+                      "notEquals": ""
+                    },
+                    {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
                       "exists": "true"
                     },
                     {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
+                      "notEquals": ""
+                    },
+                    {
                       "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
                       "exists": "true"
+                    },
+                    {
+                      "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
+                      "notEquals": ""
                     }
                   ]
                 }

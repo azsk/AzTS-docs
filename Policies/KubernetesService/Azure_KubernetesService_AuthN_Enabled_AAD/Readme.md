@@ -1,7 +1,7 @@
 ## Azure_KubernetesService_AuthN_Enabled_AAD
 
 ### DisplayName 
-[Remove Azure Active Directory B2C tenant(s) in a subscription](../../../Control%20coverage/Feature/KubernetesService.md#Azure_KubernetesService_AuthN_Enabled_AAD)
+[AAD should be enabled in Kubernetes Service](../../../Control%20coverage/Feature/KubernetesService.md#Azure_KubernetesService_AuthN_Enabled_AAD)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:
