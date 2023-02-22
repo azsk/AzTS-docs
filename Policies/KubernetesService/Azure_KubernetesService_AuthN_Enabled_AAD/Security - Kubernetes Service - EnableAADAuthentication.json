@@ -43,7 +43,7 @@
               },
               {
                 "field": "Microsoft.ContainerService/managedClusters/aadProfile.clientAppID",
-                "Equals": ""
+                "equals": ""
               },
               {
                 "field": "Microsoft.ContainerService/managedClusters/aadProfile.serverAppID",
@@ -59,7 +59,7 @@
               },
               {
                 "field": "Microsoft.ContainerService/managedClusters/aadProfile.tenantID",
-                "Equals": ""
+                "equals": ""
               }
             ]
           }
