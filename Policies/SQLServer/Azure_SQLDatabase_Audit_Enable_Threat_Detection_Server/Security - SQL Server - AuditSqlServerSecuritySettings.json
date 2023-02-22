@@ -33,7 +33,7 @@
           "allOf": [
             {
               "field": "Microsoft.Sql/securityAlertPolicies.emailAccountAdmins",
-              "equals": "false"
+              "equals": "true"
             },
             {
               "count": {
@@ -43,7 +43,7 @@
                   "equals": ""
                 }
               },
-              "equals": 0
+              "notEquals": 0
             }
           ]
         }

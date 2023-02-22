@@ -39,7 +39,7 @@
               "anyOf": [
                 {
                   "field": "Microsoft.Sql/securityAlertPolicies.disabledAlerts",
-                  "exists": "true"
+                  "exists": "false"
                 },
                 {
                   "count": {
@@ -49,7 +49,7 @@
                       "notEquals": ""
                     }
                   },
-                  "notEquals": 0
+                  "equals": 0
                 }
               ]
             }

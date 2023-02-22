@@ -31,7 +31,7 @@
         "name": "Default",
         "existenceCondition": {
           "field": "Microsoft.Sql/auditingSettings.state",
-          "notEquals": "Enabled"
+          "equals": "Enabled"
         }
       }
     }
