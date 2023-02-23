@@ -3,7 +3,7 @@
     This script is used to set required public network access for SQL Server in a Subscription.
 
 # Control ID:
-    Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial
+    Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
 
 # Display Name:
     Public network access on Azure SQL Database should be disabled.
@@ -116,10 +116,10 @@ function Disable-SQLServerPublicNetworkAccess
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
+        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
+        Remediates 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
         Public network access on Azure SQL Database should be disable. 
         
         .PARAMETER SubscriptionId
@@ -269,7 +269,7 @@ function Disable-SQLServerPublicNetworkAccess
     $logSkippedResources=@()
     
     # Control Id
-    $controlIds = "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial"
+    $controlIds = "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access"
 
     if($AutoRemediation)
     {
@@ -370,7 +370,7 @@ function Disable-SQLServerPublicNetworkAccess
     Write-Host "Found [$($totalsqlServerResources)] SQL Server(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
  
-    # Includes SQL Servers where public network access is Enabled  
+    # Includes SQL Servers where public network access is Disabled  
     $compliantSqlServers= @()
 
     # Includes SQL Servers where public network access is Enabled  
@@ -673,10 +673,10 @@ function Enable-SQLServerPublicNetworkAccess
 {
      <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
+        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial' Control.
+        Rolls back remediation done for 'Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access' Control.
         Resets public network access to 'Enabled' for all SQL Servers in the Subscription. 
         
         .PARAMETER SubscriptionId
