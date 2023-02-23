@@ -44,7 +44,7 @@
            Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To disable public network access on all SQL Servers in a Subscription, from a previously taken snapshot:
-           Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\disablePublicNetworkAccessForSQLServers\NonCompliantSqlServers.csv
+           Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\disablePublicNetworkAccessForSQLServers\SqlServersWithPublicAccessEnabled.csv
 
         4. To disable public network access on all SQL Servers in a Subscription without taking back up before actual remediation:
            Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
@@ -162,7 +162,7 @@ function Disable-SQLServerPublicNetworkAccess
         PS> Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\disablePublicNetworkAccessForSQLServers\NonCompliantSqlServers.csv
+        PS> Disable-SQLServerPublicNetworkAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\disablePublicNetworkAccessForSQLServers\SqlServersWithPublicAccessEnabled.csv
 
         .LINK
         None
@@ -339,7 +339,7 @@ function Disable-SQLServerPublicNetworkAccess
             Write-Host "Fetching all SQL Servers(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $sqlServerResourcesFromFile = Import-Csv -LiteralPath $FilePath
-            $validsqlServerResources = $sqlServerResourcesFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.ServerName) }
+            $validsqlServerResources = $sqlServerResourcesFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.ServerName)-and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName)}
     
             $validsqlServerResources | ForEach-Object {
                 $resourceGroupName = $_.ResourceGroupName        
@@ -371,10 +371,10 @@ function Disable-SQLServerPublicNetworkAccess
     Write-Host $([Constants]::SingleDashLine)
  
     # Includes SQL Servers where public network access is Disabled  
-    $compliantSqlServers= @()
+    $SqlServersWithPublicAccessDisabled= @()
 
     # Includes SQL Servers where public network access is Enabled  
-    $nonCompliantSqlServers= @()
+    $SqlServersWithPublicAccessEnabled= @()
 
     # Includes SQL Servers that were skipped during remediation. There were errors remediating them.
     $sqlServersSkipped = @()
@@ -387,7 +387,7 @@ function Disable-SQLServerPublicNetworkAccess
         $sqlServerResource = $_  
         if($_.PublicNetworkAccess -ne "Disabled")
         {
-            $nonCompliantSqlServers += $sqlServerResource | Select-Object @{N='ServerName';E={$_.ServerName}},
+            $SqlServersWithPublicAccessEnabled += $sqlServerResource | Select-Object @{N='ServerName';E={$_.ServerName}},
                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                     @{N='Location';E={$_.Location}},
                                                     @{N='ServerVersion';E={$_.ServerVersion}},
@@ -395,7 +395,7 @@ function Disable-SQLServerPublicNetworkAccess
         }
         else
         {
-            $compliantSqlServers += $sqlServerResource | Select-Object @{N='ServerName';E={$_.ServerName}},
+            $SqlServersWithPublicAccessDisabled += $sqlServerResource | Select-Object @{N='ServerName';E={$_.ServerName}},
                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                     @{N='Location';E={$_.Location}},
                                                     @{N='ServerVersion';E={$_.ServerVersion}},
@@ -410,9 +410,9 @@ function Disable-SQLServerPublicNetworkAccess
         }
     }
 
-    $totalNonCompliantSqlServers = ($nonCompliantSqlServers | Measure-Object).Count
+    $totalSqlServersWithPublicAccessEnabled = ($SqlServersWithPublicAccessEnabled | Measure-Object).Count
      
-    if ($totalNonCompliantSqlServers  -eq 0)
+    if ($totalSqlServersWithPublicAccessEnabled  -eq 0)
     {
         Write-Host "No SQL Server(s) found where public network access is enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)	
@@ -433,7 +433,7 @@ function Disable-SQLServerPublicNetworkAccess
         return
     }
 
-    Write-Host "Found [$($totalNonCompliantSqlServers)] SQL servers where public network access is not 'Disabled'." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalSqlServersWithPublicAccessEnabled)] SQL servers where public network access is not 'Disabled'." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
      
     if(-not($AutoRemediation))
@@ -445,7 +445,7 @@ function Disable-SQLServerPublicNetworkAccess
                             @{Expression={$_.ServerVersion};Label="Server Version";Width=7;Alignment="left"},
                             @{Expression={$_.PublicNetworkAccess};Label="Public Network Access";Width=7;Alignment="left"}
 
-        $nonCompliantSqlServers | Format-Table -Property $colsProperty -Wrap
+        $SqlServersWithPublicAccessEnabled | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -464,8 +464,8 @@ function Disable-SQLServerPublicNetworkAccess
         if(-not $SkipBackup)
         {
             # Backing up SQL Server details.
-            $backupFile = "$($backupFolderPath)\NonCompliantSqlServers.csv"
-            $nonCompliantSqlServers | Export-CSV -Path $backupFile -NoTypeInformation
+            $backupFile = "$($backupFolderPath)\SqlServersWithPublicAccessEnabled.csv"
+            $SqlServersWithPublicAccessEnabled | Export-CSV -Path $backupFile -NoTypeInformation
             Write-Host "SQL Server(s) details have been successful backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
@@ -516,7 +516,7 @@ function Disable-SQLServerPublicNetworkAccess
         $sqlServersRemediated = @()
     
         # Remediate Controls by disabling public network access
-        $nonCompliantSqlServers | ForEach-Object {
+        $SqlServersWithPublicAccessEnabled | ForEach-Object {
             $sqlServer = $_
             $serverName = $_.ServerName;
             $resourceGroupName = $_.ResourceGroupName; 
@@ -569,14 +569,14 @@ function Disable-SQLServerPublicNetworkAccess
         $totalRemediatedSQLServers = ($sqlServersRemediated | Measure-Object).Count
          
 
-        if ($totalRemediatedSQLServers -eq ($nonCompliantSqlServers | Measure-Object).Count)
+        if ($totalRemediatedSQLServers -eq ($SqlServersWithPublicAccessEnabled | Measure-Object).Count)
         {
-            Write-Host "Public network access changed to 'Disabled' for all [$($totalNonCompliantSqlServers)] SQL Server(s) ." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Public network access changed to 'Disabled' for all [$($totalSqlServersWithPublicAccessEnabled)] SQL Server(s) ." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         else
         {
-            Write-Host "Public network access changed to 'Disabled' for [$($totalRemediatedSQLServers)] out of [$($totalNonCompliantSqlServers)] SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Public network access changed to 'Disabled' for [$($totalRemediatedSQLServers)] out of [$($totalSqlServersWithPublicAccessEnabled)] SQL Server(s)" -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
