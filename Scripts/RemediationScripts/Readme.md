@@ -836,8 +836,7 @@ Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxx
 
 After running the above command a remediation file is generated where the user input is expected if applicable.
 
-If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers). 
----
+If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers).
 ___
 
 ## 40. Azure_AutomationAccounts_DP_Encrypt_Variables
