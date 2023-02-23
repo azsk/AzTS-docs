@@ -15,7 +15,7 @@
 - [Azure_SQLDatabase_SI_Remediate_Security_Vulnerabilities](#azure_sqldatabase_si_remediate_security_vulnerabilities)
 - [Azure_SQLDatabase_DP_Use_Secure_TLS_Version](#azure_sqldatabase_dp_use_secure_tls_version)
 
-- [_Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial](#azure_sqlserver_authn_dont_allow_public_network_access_trial)
+- [_Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](#azure_sqlserver_authn_dont_allow_public_network_access)
 
 
 <!-- /TOC -->
@@ -761,7 +761,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ___
 
-## Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial
+## Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
 
 ### Display Name
 Public network access on Azure SQL Database should be disabled

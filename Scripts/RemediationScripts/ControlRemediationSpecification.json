@@ -263,7 +263,7 @@
         }
       },
       {
-        "ControlId": "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial",
+        "ControlId": "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access",
         "EnableRemediation": "true",
         "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisablePublicNetworkAccessOnSqlServer.ps1",
         "LoadCommand": "Remediate-DisablePublicNetworkAccessOnSqlServer.ps1",

@@ -43,7 +43,7 @@
 
 21. [Azure_AutomationAccounts_DP_Encrypt_Variables](ControlsEligibleForRemediationThroughUI.md#21-Azure_AutomationAccounts_DP_Encrypt_Variables)
 
-22. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial](ControlsEligibleForRemediationThroughUI.md#22-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial)
+22. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](ControlsEligibleForRemediationThroughUI.md#22-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
 
 
 
@@ -327,7 +327,7 @@ Automation account variables must be encrypted
 Contributor or higher privileged role on the Automation Account(s)
 
 ___
-## 22. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access_Trial
+## 22. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
 
 ### Display Name
 Public network access on Azure SQL Database should be disabled
