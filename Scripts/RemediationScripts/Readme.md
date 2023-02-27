@@ -50,6 +50,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
 39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
 40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
+41. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](Readme.md#41-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
 
 <br />
 
@@ -835,8 +836,46 @@ Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxx
 
 After running the above command a remediation file is generated where the user input is expected if applicable.
 
-If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers). 
-___ 
+If the SQL Server being remediated is having AAD Admin configured already, no input is required, Email Id value for the respective SQL Server in the remediation file shows NA(as AAD Admin is already configured), otherwise user is expected to fill in the Email Id (ex: abc@microsoft.com) in the blank cells of Email Id column (indicates AAD Admin has not been already set for the respective SQL Servers).
+___
+
+## 40. Azure_AutomationAccounts_DP_Encrypt_Variables
+
+### Display Name
+Automation account variables must be encrypted
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___
+
+## 41. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
+
+### Display Name
+Public network access on Azure SQL Database should be disabled
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisablePublicNetworkAccessOnSqlServer](Remediate-DisablePublicNetworkAccessOnSqlServer.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
 
 
 ## Supports managed identity based remediations
@@ -918,24 +957,3 @@ Connect-AzAccount
 **Step 4 of 4. Execute remediation scripts:**
 
 After completing above mentioned steps, open remediation script in PowerShell and follow instructions as per comments present in each script.
-
-___
-
-## 40. Azure_AutomationAccounts_DP_Encrypt_Variables
-
-### Display Name
-Automation account variables must be encrypted
-
-### Link to Bulk Remediation Script (BRS)
-[Remediate-EncryptAutomationAccountVariables](Remediate-EncryptAutomationAccountVariables.ps1)
-
-### Minimum permissions required to run the script
-Contributor role at resource level
-
-### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
-Yes
-
-### Supports rollback?
-No
-
-___
