@@ -13,7 +13,7 @@ Control can be covered with the below mentioned Azure policy:
 Following policy can be used to validate if Basic Authentication is enabled.
 
 #### Policy Definition
-[Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20Basic%20Authentication%20Enabled.json)
+[Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20Basic%20Authentication%20Enabled.json)
 
 #### Parameter details
 Param Name|Description|Default Value|Mandatory?
