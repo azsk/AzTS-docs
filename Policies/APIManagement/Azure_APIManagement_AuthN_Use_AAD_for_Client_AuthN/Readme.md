@@ -29,7 +29,7 @@ Following policy can be used to validate if Identity Provider is enabled other t
 
 #### Policy Definition
 
-[Security - APIManagement - Deny API Management Services with other than AAD Identity Provider Enabled](Security%20-%20APIManagement%20-%20Deny%20APIs%20with%20other%20than%20AAD%20Identity%20Provider%20Enabled.json)
+[Security - APIManagement - Deny API Management Services with other than AAD Identity Provider Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20other%20than%20AAD%20Identity%20Provider Enabled.json)
 
 #### Parameter details
 Param Name|Description|Default Value|Mandatory?
