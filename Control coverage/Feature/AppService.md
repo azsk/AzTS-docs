@@ -361,6 +361,14 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 - ARM API to list properties of all slots of app service: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{site}/slots?api-version=2019-08-01<br />
 **Properties:**  properties.httpsOnly
+
+- ARM API to list all security assessments for a Subscription:
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** 
+[\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
+ **Assessments:** 
+ <br/>cb0acdc6-0846-fd48-debe-9905af151b6d - Function App should only be accessible over HTTPS.
+ <br/>1b351b29-41ca-6df5-946c-c190a56be5fe - Web Application should only be accessible over HTTPS.
  <br />
 
 <br />
@@ -487,6 +495,14 @@ TLS provides privacy and data integrity between client and server. Using approve
 
  - ARM API to get configuration of App Service slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/slots/{slotName}/config/web?api-version=2019-08-01 <br />
 **Properties:**  properties.minTlsVersion
+
+- ARM API to list all security assessments for a Subscription:
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** 
+[\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
+ **Assessments:** 
+ <br/>15be5f3c-e0a4-c0fa-fbff-8e50339b4b22 - TLS should be updated to the latest version for function apps.
+ <br/>2a54c352-7ca4-4bae-ad46-47ecd9595bd2 - TLS should be updated to the latest version for web apps.
 <br />
 
 <br />

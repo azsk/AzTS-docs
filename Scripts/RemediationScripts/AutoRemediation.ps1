@@ -163,9 +163,10 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_ServiceBus_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") -or
-                ($control.ControlId -eq "Azure_FrontDoor_DP_Use_Secure_TLS_Version_Trial")-or
+                ($control.ControlId -eq "Azure_AutomationAccounts_DP_Encrypt_Variables") -or
                 ($control.ControlId -eq "Azure_EventHub_DP_Use_Secure_TLS_Version")-or
-                ($control.ControlId -eq "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial")){
+                ($control.ControlId -eq "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial") -or
+                ($control.ControlId -eq "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD") {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)

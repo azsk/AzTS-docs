@@ -5,14 +5,14 @@
       "type": "String",
       "metadata": {
         "displayName": "Effect",
-        "description": "Enable or disable the execution of the policy"
+        "description": "The effect determines what happens when the policy rule is evaluated to match"
       },
       "allowedValues": [
         "Audit",
         "Disabled",
         "Deny"
       ],
-      "defaultValue": "Deny"
+      "defaultValue": "Audit"
     }
   },
   "policyRule": {

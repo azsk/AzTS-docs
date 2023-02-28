@@ -1,0 +1,57 @@
+{
+    "mode": "All",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "The effect determines what happens when the policy rule is evaluated to match"
+        },
+        "allowedValues": [
+          "Audit",
+          "Disabled",
+          "Deny"
+        ],
+        "defaultValue": "Audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allof": [
+          {
+            "field": "type",
+            "equals": "Microsoft.KeyVault/vaults"
+          },
+          {
+            "field": "Microsoft.KeyVault/vaults/publicNetworkAccess",
+            "equals": "Enabled"
+          },
+          {
+            "anyof": [
+              {
+                "field": "Microsoft.KeyVault/vaults/networkAcls",
+                "exists": "false"
+              },
+              {
+                "field": "Microsoft.KeyVault/vaults/networkAcls.defaultAction",
+                "equals": "Allow"
+              },
+              {
+                "count": {
+                  "field": "Microsoft.KeyVault/vaults/networkAcls.ipRules[*]",
+                  "where": {
+                    "field": "Microsoft.KeyVault/vaults/networkAcls.ipRules[*].value",
+                    "like": "*/0"
+                  }
+                },
+                "greater": 0
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    }
+}

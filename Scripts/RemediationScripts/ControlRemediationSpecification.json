@@ -198,7 +198,7 @@
             "ControlId": "Azure_ServiceBus_DP_Use_Secure_TLS_Version",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetServiceBusMinReqTLSVersion.ps1",
-            "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion",     
+            "LoadCommand": "Remediate-SetServiceBusMinReqTLSVersion.ps1",     
             "InitCommand": "Set-SecureTLSVersionForServiceBusNamespaces",
             "RollbackMetadata":
              {
@@ -210,7 +210,7 @@
             "ControlId": "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SASExpiryIntervalForStorageAccounts.ps1",
-            "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts",     
+            "LoadCommand": "Remediate-SASExpiryIntervalForStorageAccounts.ps1",     
             "InitCommand": "Set-SASExpiryInterval",
             "RollbackMetadata":
              {
@@ -233,7 +233,7 @@
         "ControlId": "Azure_EventHub_DP_Use_Secure_TLS_Version",
         "EnableRemediation": "true",
         "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
-        "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion",
+        "LoadCommand": "Remediate-SetEventHubNamespaceMinTLSVersion.ps1",
         "InitCommand": "Set-MinTLSVersionForEventHubNamespace",
         "RollbackMetadata": {
           "RollbackCommand": "Reset-TLSVersionForEventHubNamespace",
@@ -244,10 +244,32 @@
         "ControlId": "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version",
         "EnableRemediation": "true",
         "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
-        "LoadCommand": "Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion",
+        "LoadCommand": "Remediate-SetDBForMySQLFlexibleServerMinReqTLSVersion.ps1",
         "InitCommand": "Set-SecureTLSVersionForDBForMySQLFlexibleServer",
         "RollbackMetadata": {
           "RollbackCommand": "Reset-SecureTLSVersionForDBForMySQLFlexibleServer",
+          "Arguments": [ "SubscriptionId" ]
+        }
+      },
+      {
+        "ControlId": "Azure_AutomationAccounts_DP_Encrypt_Variables",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EncryptAutomationAccountVariables.ps1",
+        "LoadCommand": "Remediate-EncryptAutomationAccountVariables.ps1",
+        "InitCommand": "Encrypt-AutomationAccountVariables",
+        "RollbackMetadata": {
+          "RollbackCommand": "",
+          "Arguments": [ "" ]
+        }
+      },
+      {
+        "ControlId": "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access",
+        "EnableRemediation": "true",
+        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisablePublicNetworkAccessOnSqlServer.ps1",
+        "LoadCommand": "Remediate-DisablePublicNetworkAccessOnSqlServer.ps1",
+        "InitCommand": "Disable-SQLServerPublicNetworkAccess",
+        "RollbackMetadata": {
+          "RollbackCommand": "Enable-SQLServerPublicNetworkAccess",
           "Arguments": [ "SubscriptionId" ]
         }
       }

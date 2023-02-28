@@ -14,8 +14,10 @@ The following are the AzTS controls for which Azure policy definitions are avail
 4. [Azure_Storage_DP_Encrypt_In_Transit](Storage/Azure_Storage_DP_Encrypt_In_Transit/Readme.md)
 5. [Azure_Subscription_SI_Classic_Resources](Subscription/Azure_Subscription_SI_Classic_Resources/Readme.md)
 6. [Azure_ContainerRegistry_Config_Enable_Security_Scanning](ContainerRegistry/Azure_ContainerRegistry_Config_Enable_Security_Scanning/Readme.md)
-7. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](./ServiceBus/README.md)
-8. [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](APIManagement/Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN/Readme.md)
+7. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](./ServiceBus/Azure_ServiceBus_DP_Use_Secure_TLS_Version/README.md)
+8. [Azure_KeyVault_NetSec_Disable_Public_Network_Access](./KeyVault/Azure_KeyVault_NetSec_Disable_Public_Network_Access/Readme.md)
+9. [Azure_KubernetesService_AuthN_Enabled_AAD](./KubernetesService/Azure_KubernetesService_AuthN_Enabled_AAD/Readme.md)
+10. [Azure_Subscription_Config_MDC_Setup_SecurityContacts](./Subscription/Azure_Subscription_Config_MDC_Setup_SecurityContacts/Readme.md)
 
 ## Using Azure policy to bring your resources to compliance
 

@@ -109,6 +109,14 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 - ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.enableNonSslPort
+
+- ARM API to list all security assessments in a Subscription:
+/subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+**Properties:** 
+[\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
+ **Assessments:** 
+ 35b25be2-d08a-e340-45ed-f08a95d804fc - Redis Cache should allow access only via SSL.
+
  <br />
 
 <br />
