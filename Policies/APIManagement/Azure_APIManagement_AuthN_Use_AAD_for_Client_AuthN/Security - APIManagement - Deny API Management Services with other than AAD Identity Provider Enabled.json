@@ -1,0 +1,41 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.ApiManagement/service/identityProviders"
+        },
+        {
+          "field": "Microsoft.ApiManagement/service/identityProviders/type",
+          "in": [
+            "google",
+            "facebook",
+            "microsoft",
+            "twitter",
+            "aadb2c"
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effectType')]"
+    }
+  },
+  "parameters": {
+    "effectType": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "The effect determines what happens when the policy rule is evaluated to match"
+      },
+      "allowedValues": [
+        "Audit",
+        "Disabled",
+        "Deny"
+      ],
+      "defaultValue": "Audit"
+    }
+  }
+}
