@@ -66,7 +66,7 @@ Following policy can be used to audit/enforce Advanced Threat Protection (ATP) f
 (policy to audit/enforce ATP settings on SQL Server which are part of Synapse Workspace.)
 
 #### Parameter details
-Param Name|Description|Default Value|Mandatory?
+|Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
 
