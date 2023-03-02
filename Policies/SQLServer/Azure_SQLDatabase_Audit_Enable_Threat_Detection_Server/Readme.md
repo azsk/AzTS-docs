@@ -31,7 +31,7 @@ Following policy can be used to audit/enforce SQL Auditing on SQL server.
 (Policy to audit/enforce the SQL Auditing on SQL Server which are part of Synapse Workspace.)
 
 #### Parameter details
-Param Name|Description|Default Value|Mandatory?
+|Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
 
