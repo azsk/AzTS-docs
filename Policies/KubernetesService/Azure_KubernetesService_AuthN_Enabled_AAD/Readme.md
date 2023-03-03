@@ -11,7 +11,7 @@ Control can be covered with the below mentioned Azure policy:
 Following policy can be used with 'Audit' effect to detect non-compliant resources.
 
 #### Policy Definition
-[Security - Kubernetes Service - EnableAADAuthentication](./Security%20-%20Kubernetes%20Service%20-%20EnableAADAuthentication)
+[Security - Kubernetes Service - EnableAADAuthentication](Security%20-%20Kubernetes%20Service%20-%20EnableAADAuthentication.json)
 
 #### Parameter details
 
