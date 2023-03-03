@@ -17,7 +17,7 @@ Following policy can be used with 'Deny' effect to disallow users to create non-
 
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
-| effectType | Enable or disable the execution of the policy | Deny |No |
+| Effect | The effect determines what happens when the policy rule is evaluated to match| Audit |No |
 
 
 ### Notes

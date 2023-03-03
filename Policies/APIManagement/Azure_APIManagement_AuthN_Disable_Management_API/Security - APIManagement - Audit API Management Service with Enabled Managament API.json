@@ -1,0 +1,38 @@
+{
+  "mode": "All",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "The effect determines what happens when the policy rule is evaluated to match"
+      },
+      "allowedValues": [
+        "Disabled",
+        "AuditIfNotExists"
+      ],
+      "defaultValue": "AuditIfNotExists"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "field": "type",
+      "equals": "Microsoft.ApiManagement/service"
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.ApiManagement/service/tenant",
+        "name": "access",
+        "existenceCondition": {
+          "allOf": [
+            {
+              "field": "Microsoft.ApiManagement/service/tenant/enabled",
+              "equals": "false"
+            }
+          ]
+        }
+      }
+    }
+  }
+}
