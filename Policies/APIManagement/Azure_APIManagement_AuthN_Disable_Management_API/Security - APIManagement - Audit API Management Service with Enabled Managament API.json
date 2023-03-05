@@ -28,6 +28,10 @@
           "allOf": [
             {
               "field": "Microsoft.ApiManagement/service/tenant/enabled",
+              "exists": "true"
+            },
+            {
+              "field": "Microsoft.ApiManagement/service/tenant/enabled",
               "equals": "false"
             }
           ]
