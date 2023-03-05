@@ -35,7 +35,7 @@
                 "field": "Microsoft.Sql/servers/securityAlertPolicies/emailAddresses[*]",
                 "where": {
                   "field": "Microsoft.Sql/servers/securityAlertPolicies/emailAddresses[*]",
-                  "equals": ""
+                  "notEquals": ""
                 }
               },
               "notEquals": 0

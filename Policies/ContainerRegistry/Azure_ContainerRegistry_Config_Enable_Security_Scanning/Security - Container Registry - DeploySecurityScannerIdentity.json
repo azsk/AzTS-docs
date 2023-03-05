@@ -47,20 +47,24 @@
 			  "equals": "[concat('/subscriptions/',subscription().subscriptionId,'/providers/Microsoft.Authorization/roleDefinitions/acdd72a7-3385-48ef-bd42-f606fba81ae7')]"
 			},
 			{
-			  "anyOf": [
-				{
-				  "field": "Microsoft.Authorization/roleAssignments/scope",
-				  "equals": "[field('id')]"
-				},
-				{
-				  "field": "Microsoft.Authorization/roleAssignments/scope",
-				  "equals": "[concat('/subscriptions/',subscription().subscriptionId)]"
-				},
-				{
-				  "field": "Microsoft.Authorization/roleAssignments/scope",
-				  "equals": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourcegroup().name)]"
-				}
-			  ]
+				"anyOf": [
+					{
+						"field": "Microsoft.Authorization/roleAssignments/scope",
+						"equals": "[field('id')]"
+					},
+					{
+						"field": "Microsoft.Authorization/roleAssignments/scope",
+						"contains": "/providers/Microsoft.Management/managementGroups/"
+					},
+					{
+						"field": "Microsoft.Authorization/roleAssignments/scope",
+						"equals": "[concat('/subscriptions/',subscription().subscriptionId)]"
+					},
+					{
+						"field": "Microsoft.Authorization/roleAssignments/scope",
+						"equals": "[concat('/subscriptions/',subscription().subscriptionId,'/resourcegroups/',resourcegroup().name)]"
+					}
+				]
 			}
 		  ]
 		},
