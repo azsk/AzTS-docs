@@ -63,23 +63,25 @@ Following policy can be used to audit/enforce Advanced Threat Protection (ATP) f
 [Security - SQL Server - AuditSqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20AuditSqlServerThreatDetection.json)
 (policy to audit ATP settings on SQL Server)
 
-[Security - SQL Server - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20DeploySqlServerThreatDetection.json)
-(policy to enforce ATP settings on SQL Server)
-
-[Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerThreatDetection.json)
-(policy to audit/enforce ATP settings on SQL Server which are part of Synapse Workspace.)
-
 #### Parameter details
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
 
+[Security - SQL Server - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20DeploySqlServerThreatDetection.json)
+(policy to enforce ATP settings on SQL Server)
+
+#### Parameter details
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
 | RetentionDays | The value in days of the retention period (0 indicates unlimited retention) | 365 |No |
 | StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
 
+[Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerThreatDetection.json)
+(policy to audit/enforce ATP settings on SQL Server which are part of Synapse Workspace.)
+
+#### Parameter details
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | Enable or disable the execution of the policy | AuditIfNotExists |No |
