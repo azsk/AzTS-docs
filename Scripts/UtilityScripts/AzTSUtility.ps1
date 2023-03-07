@@ -880,7 +880,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
   # Get my public IP address
   $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
   $myPublicIpAddress += "/32"
-  Write-Debug -Debug:$true -Message "Got my public IP address: $myPublicIpAddress."
+  Write-Information -InformationAction Continue -MessageData "Got my public IP address: $myPublicIpAddress."
   # ##################################################
 
   Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
@@ -999,18 +999,19 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   #       So we ensure the KV has public network access Enabled first, so that we don't accidentally wipe out all existing network ACLs.
   # https://github.com/Azure/azure-powershell/issues/20744
 
-  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $VaultName
+  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
 
   If ($keyVault.PublicNetworkAccess -ne "Enabled")
   {
-    Write-Debug -Debug:$true -Message "Update Key Vault to enable public network access so that the specified public source IPs can access the Key Vault."
+    Write-Information -InformationAction Continue -MessageData "Update Key Vault to enable public network access so that the specified public source IPs can access the Key Vault."
+
     Update-AzKeyVault `
       -InputObject $keyVault `
       -PublicNetworkAccess Enabled
   }
   Else
   {
-    Write-Debug -Debug:$true -Message "Key Vault has public network access enabled, so specified public source IPs can access the Key Vault. No change will be made."
+    Write-Information -InformationAction Continue -MessageData "Key Vault has public network access enabled, so specified public source IPs can access the Key Vault. No change will be made."
   }
   # ##################################################
 
@@ -1018,7 +1019,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   # ##################################################
   # Ensure Key Vault has the needed network ACL rules and default action Deny
 
-  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $VaultName
+  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
 
   if ($keyVault.NetworkAcls.IpAddressRanges)
   {
@@ -1039,38 +1040,38 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   If ($ipAddressRange.Count -gt 0 -and $ipAddressRange.Contains($PublicIpAddress))
   {
     $needToUpdateIps = $false
-    Write-Debug -Debug:$true -Message "Current Key Vault public IP address range already contains $PublicIpAddress, no change will be made to source IP network ACLs."
+    Write-Information -InformationAction Continue -MessageData "Current Key Vault public IP address range already contains $PublicIpAddress, no change will be made to source IP network ACLs."
   }
   Else
   {
     $needToUpdateIps = $true  # Yes, this is redundant to start condition above. Regardless, set explicitly here in case someone changes the start condition later.
     $ipAddressRange += $PublicIpAddress
-    Write-Debug -Debug:$true -Message "Added my public IP address $PublicIpAddress for new complete source IP address range: $ipAddressRange."
+    Write-Information -InformationAction Continue -MessageData "Added my public IP address $PublicIpAddress for new complete source IP address range: $ipAddressRange."
   }
 
   # Check if the Key Vault default action is already Deny
   If ($keyVault.NetworkAcls.DefaultAction -ne "Deny")
   {
     $needToUpdateDefaultAction = $true  # Yes, this is redundant to start condition above. Regardless, set explicitly here in case someone changes the start condition later.
-    Write-Debug -Debug:$true -Message "Current Key Vault default network ACL action is not Deny, and it will be changed to Deny."
+    Write-Information -InformationAction Continue -MessageData "Current Key Vault default network ACL action is not Deny, and it will be changed to Deny."
   }
   Else
   {
     $needToUpdateDefaultAction = $false
-    Write-Debug -Debug:$true -Message "Current Key Vault default network ACL action is already Deny, so it will not be changed."
+    Write-Information -InformationAction Continue -MessageData "Current Key Vault default network ACL action is already Deny, so it will not be changed."
   }
 
   # If either the source IPs or the default action need to be updated, do that here
   If ($needToUpdateIps -or $needToUpdateDefaultAction)
   {
-    Write-Debug -Debug:$true -Message "Update Key Vault network access rules."
+    Write-Information -InformationAction Continue -MessageData "Update Key Vault network access rules."
 
     If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
     {
-      Write-Debug -Debug:$true -Message "Update Key Vault network access rules for specified source IPs network access rules and default action Deny."
+      Write-Information -InformationAction Continue -MessageData "Update Key Vault network access rules for specified source IPs network access rules and default action Deny."
       Update-AzKeyVaultNetworkRuleSet `
         -SubscriptionId $SubscriptionId `
-        -ResourceGroup $ResourceGroupName `
+        -ResourceGroupName $ResourceGroupName `
         -VaultName $KeyVaultName `
         -DefaultAction Deny `
         -Bypass AzureServices `
@@ -1078,10 +1079,10 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
     }
     else
     {
-      Write-Debug -Debug:$true -Message "Update Key Vault network access rules for specified source IPs and existing VNet network access rules and default action Deny."
+      Write-Information -InformationAction Continue -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules and default action Deny."
       Update-AzKeyVaultNetworkRuleSet `
         -SubscriptionId $SubscriptionId `
-        -ResourceGroup $ResourceGroupName `
+        -ResourceGroupName $ResourceGroupName `
         -VaultName $KeyVaultName `
         -DefaultAction Deny `
         -Bypass AzureServices `
@@ -1091,6 +1092,57 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   }
 }
 
+function Remove-KeyVaultNetworkAccessRuleForIpAddress()
+{
+  <#
+  .SYNOPSIS
+  This command removes a Key Vault network access rule for the specified public IP address.
+  .DESCRIPTION
+  This command removes a Key Vault network access rule for the specified public IP address.
+  .PARAMETER SubscriptionId
+  The Azure subscription ID containing the Key Vault.
+  .PARAMETER ResourceGroupName
+  The Resource Group name containing the Key Vault.
+  .PARAMETER KeyVaultName
+  The Key Vault name.
+  .PARAMETER PublicIpAddress
+  The public IP address to match to the rule to be removed. Must be in CIDR format; for a single IP address, put it in form a.b.c.d/32
+  .INPUTS
+  None
+  .OUTPUTS
+  None
+  .EXAMPLE
+  PS> Remove-KeyVaultNetworkAccessRuleForIpAddress -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddress "1.1.1.1"
+  .LINK
+  None
+#>
+
+[CmdletBinding()]
+param (
+  [Parameter(Mandatory = $true)]
+  [string]
+  $SubscriptionId,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $ResourceGroupName,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $KeyVaultName,
+  [Parameter(Mandatory = $true)]
+  [string]
+  $PublicIpAddress
+)
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  Write-Information -InformationAction Continue -MessageData "Removing rule for $PublicIpAddress"
+
+  Remove-AzKeyVaultNetworkRule `
+    -SubscriptionId $SubscriptionId `
+    -ResourceGroupName $ResourceGroupName `
+    -VaultName $KeyVaultName `
+    -IpAddressRange $PublicIpAddress
+}
 # ####################################################################################################
 
 # ####################################################################################################
@@ -1180,11 +1232,11 @@ function Get-ResourceGroupDeployment()
 
   if ( $DeploymentName )
   {
-    Get-AzResourceGroupDeployment -ResourceGroup $ResourceGroupName -Name $DeploymentName
+    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $DeploymentName
   }
   else
   {
-    Get-AzResourceGroupDeployment -ResourceGroup $ResourceGroupName
+    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName
   }
 }
 
@@ -1226,7 +1278,7 @@ function Get-ResourceGroupDeploymentOperations()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Get-AzResourceGroupDeploymentOperation -ResourceGroup $ResourceGroupName -Name $DeploymentName
+  Get-AzResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -Name $DeploymentName
 }
 
 function Get-ResourceGroupDeploymentsAndOperations()
@@ -1262,13 +1314,13 @@ function Get-ResourceGroupDeploymentsAndOperations()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  $deployments = Get-AzResourceGroupDeployment -ResourceGroup $ResourceGroupName
+  $deployments = Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName
 
   foreach ($deployment in $deployments)
   {
     Write-Output ("Deployment: " + $deployment.DeploymentName)
 
-    Get-AzResourceGroupDeploymentOperation -ResourceGroup $ResourceGroupName -Name $deployment.DeploymentName
+    Get-AzResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -Name $deployment.DeploymentName
   }
 }
 
@@ -1335,7 +1387,7 @@ function Get-SubscriptionDeploymentsAndOperations()
 
   foreach ($deployment in $deployments)
   {
-    Write-Debug -Debug:$true -Message ("Deployment: " + $deployment.DeploymentName)
+    Write-Information -InformationAction Continue -MessageData ("Deployment: " + $deployment.DeploymentName)
 
     Get-AzDeploymentOperation -DeploymentName $deployment.DeploymentName
   }

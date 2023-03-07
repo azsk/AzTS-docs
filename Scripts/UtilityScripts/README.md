@@ -168,6 +168,10 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Purpose: Adds a network access rule to the Key Vault for the provided public IP address. Also sets public network access enabled with default action Deny.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
 
+`Remove-KeyVaultNetworkAccessRuleForIpAddress()`
+<br />Purpose: Removes a network access rule for the provided public IP address from the Key Vault.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
+
 <br />
 
 ### Azure_Subscription_AuthZ_Remove_Deprecated_Accounts
