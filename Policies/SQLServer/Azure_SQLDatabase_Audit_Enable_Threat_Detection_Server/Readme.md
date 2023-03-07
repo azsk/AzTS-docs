@@ -24,18 +24,17 @@ Following policy can be used to audit/enforce SQL Auditing on SQL server.
 [Security - SQL Server - AuditSqlServerAuditingSettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerAuditingSettings.json)
 (Policy to audit the SQL Auditing on SQL Server.)
 
-[Security - SQL Server - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20DeploySqlServerAuditSettings.json)
-(Policy to enforce the SQL Auditing on SQL Server.)
-
-[Security - SQL Server - Synapse SQL pools - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerAuditSettings.json)
-(Policy to audit/enforce the SQL Auditing on SQL Server which are part of Synapse Workspace.)
-
 #### Parameter details
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
 
 
+#### Policy Definition
+[Security - SQL Server - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20DeploySqlServerAuditSettings.json)
+(Policy to enforce the SQL Auditing on SQL Server.)
+
+#### Parameter details
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
@@ -43,6 +42,11 @@ Following policy can be used to audit/enforce SQL Auditing on SQL server.
 | StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
 
 
+#### Policy Definition
+[Security - SQL Server - Synapse SQL pools - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerAuditSettings.json)
+(Policy to audit/enforce the SQL Auditing on SQL Server which are part of Synapse Workspace.)
+
+#### Parameter details
 |Param Name|Description|Default Value|Mandatory?
 |----|----|----|----|
 | Effect | Enable or disable the execution of the policy | AuditIfNotExists |No |
