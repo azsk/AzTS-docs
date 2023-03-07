@@ -5,17 +5,17 @@
       "allOf": [
         {
           "field": "type",
-          "equals": "Microsoft.ApiManagement/service/apis"
+          "equals": "Microsoft.ApiManagement/service/identityProviders"
         },
         {
-          "count": {
-            "field": "Microsoft.ApiManagement/service/apis/protocols[*]",
-            "where": {
-              "field": "Microsoft.ApiManagement/service/apis/protocols[*]",
-              "equals": "http"
-            }
-          },
-          "greater": 0
+          "field": "Microsoft.ApiManagement/service/identityProviders/type",
+          "in": [
+            "google",
+            "facebook",
+            "microsoft",
+            "twitter",
+            "aadb2c"
+          ]
         }
       ]
     },

@@ -5,17 +5,15 @@
       "allOf": [
         {
           "field": "type",
-          "equals": "Microsoft.ApiManagement/service/apis"
+          "equals": "Microsoft.ApiManagement/service/portalsettings"
         },
         {
-          "count": {
-            "field": "Microsoft.ApiManagement/service/apis/protocols[*]",
-            "where": {
-              "field": "Microsoft.ApiManagement/service/apis/protocols[*]",
-              "equals": "http"
-            }
-          },
-          "greater": 0
+          "field": "name",
+          "equals": "signup"
+        },
+        {
+          "field": "Microsoft.ApiManagement/service/portalsettings/enabled",
+          "equals": true
         }
       ]
     },
