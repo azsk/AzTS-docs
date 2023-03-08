@@ -228,9 +228,9 @@ function Get-DataFactoryV2()
 
   $factory = Get-AzDataFactoryV2 -ResourceGroupName $ResourceGroupName -Name $DataFactoryName
 
-  Write-Output ("Data Factory: " + $factory.DataFactoryName)
-  Write-Output "Tags:"
-  Write-Output $factory.Tags
+  Write-Information -InformationAction Continue -MessageData ("Data Factory: " + $factory.DataFactoryName)
+  Write-Information -InformationAction Continue -MessageData "Tags:"
+  Write-Information -InformationAction Continue -MessageData $factory.Tags
 }
 
 function Get-DataFactoryV2DataFlows()
@@ -275,10 +275,10 @@ function Get-DataFactoryV2DataFlows()
 
   foreach ($dataflow in $dataflows)
   {
-    Write-Host ("Dataflow: " + $dataflow.Name)
-    Write-Host "Dataflow Script Lines:"
+    Write-Information -InformationAction Continue -MessageData ("Dataflow: " + $dataflow.Name)
+    Write-Information -InformationAction Continue -MessageData "Dataflow Script Lines:"
     $dataflows.Properties.ScriptLines
-    Write-Host ""
+    Write-Information -InformationAction Continue -MessageData ""
   }
 
 }
@@ -325,13 +325,13 @@ function Get-DataFactoryV2DataSets()
 
   foreach ($dataset in $datasets)
   {
-    Write-Host ("Dataset: " + $dataset.Name)
-    Write-Host "Parameter Names and Values:"
+    Write-Information -InformationAction Continue -MessageData ("Dataset: " + $dataset.Name)
+    Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
     foreach ( $h in $dataset.Properties.Parameters.GetEnumerator() )
     {
-      Write-Host "- $($h.Key) = $($h.Value.DefaultValue)"
+      Write-Information -InformationAction Continue -MessageData "- $($h.Key) = $($h.Value.DefaultValue)"
     }
-    Write-Host ""
+    Write-Information -InformationAction Continue -MessageData ""
   }
 }
 
@@ -377,13 +377,13 @@ function Get-DataFactoryV2LinkedServices()
 
   foreach ($linkedService in $linkedServices)
   {
-    Write-Host ("Linked Service: " + $linkedService.Name)
-    Write-Host "Parameter Names and Values:"
+    Write-Information -InformationAction Continue -MessageData ("Linked Service: " + $linkedService.Name)
+    Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
     foreach ( $h in $linkedService.Properties.Parameters.GetEnumerator() )
     {
-      Write-Host "- $($h.Key) = $($h.Value.DefaultValue)"
+      Write-Information -InformationAction Continue -MessageData "- $($h.Key) = $($h.Value.DefaultValue)"
     }
-    Write-Host ""
+    Write-Information -InformationAction Continue -MessageData ""
   }
 }
 
@@ -429,13 +429,13 @@ function Get-DataFactoryV2Pipelines()
 
   foreach ($pipeline in $pipelines)
   {
-    Write-Host ("Pipeline: " + $pipeline.Name)
-    Write-Host "Parameter Names and Values:"
+    Write-Information -InformationAction Continue -MessageData ("Pipeline: " + $pipeline.Name)
+    Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
     foreach ( $h in $pipeline.Parameters.GetEnumerator() )
     {
-      Write-Host "- $($h.Key) = $($h.Value.DefaultValue)"
+      Write-Information -InformationAction Continue -MessageData "- $($h.Key) = $($h.Value.DefaultValue)"
     }
-    Write-Host ""
+    Write-Information -InformationAction Continue -MessageData ""
   }
 }
 
@@ -1318,7 +1318,7 @@ function Get-ResourceGroupDeploymentsAndOperations()
 
   foreach ($deployment in $deployments)
   {
-    Write-Output ("Deployment: " + $deployment.DeploymentName)
+    Write-Information -InformationAction Continue -MessageData ("Deployment: " + $deployment.DeploymentName)
 
     Get-AzResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -Name $deployment.DeploymentName
   }
