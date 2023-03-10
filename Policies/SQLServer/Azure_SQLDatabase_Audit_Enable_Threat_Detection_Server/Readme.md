@@ -44,7 +44,7 @@ Following policy can be used to audit/enforce SQL Auditing on SQL server.
 
 #### Policy Definition
 [Security - SQL Server - Synapse SQL pools - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerAuditSettings.json)
-(Policy to audit/enforce the SQL Auditing on SQL Server which are part of Synapse Workspace.)
+(Policy to enforce the SQL Auditing on SQL Server which are part of Synapse Workspace.)
 
 #### Parameter details
 |Param Name|Description|Default Value|Mandatory?
@@ -79,7 +79,7 @@ Following policy can be used to audit/enforce Advanced Threat Protection (ATP) f
 | StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
 
 [Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerThreatDetection.json)
-(policy to audit/enforce ATP settings on SQL Server which are part of Synapse Workspace.)
+(policy to enforce ATP settings on SQL Server which are part of Synapse Workspace.)
 
 #### Parameter details
 |Param Name|Description|Default Value|Mandatory?
