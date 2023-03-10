@@ -9,10 +9,9 @@
         },
         "allowedValues": [
           "DeployIfNotExists",
-          "Disabled",
-          "AuditIfNotExists"
+          "Disabled"
         ],
-        "defaultValue": "AuditIfNotExists"
+        "defaultValue": "DeployIfNotExists"
       }
     },
     "policyRule": {
