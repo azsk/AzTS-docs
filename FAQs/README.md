@@ -10,6 +10,7 @@
  2. [How to add new subscriptions or mangement groups after deploying AzTS?](#2-how-to-add-new-subscriptions-or-management-groups-after-deploying-azts)
  3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message "Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
  4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
+ 5. [On running the Autoupdater function getting some error related to function runtime version.](#5-on-running-the-autoupdater-function-getting-some-error-related-to-function-runtime-version)
 
  - ### Scan
  1. [Today's AzTS scan has completed. How do I re-run the full scan?](#1-todays-azts-scan-has-completed-how-do-i-re-run-the-full-scan)
@@ -70,6 +71,28 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
   - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
   - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
   
+### **5. On running the Autoupdater function getting some error related to function runtime version.**
+
+
+- Run below command for AzSK-AzTS-AutoUpdater-xxxxx function app. 
+
+  ``` Powershell
+  $appSettings = @{}
+  $appSettings.add("FUNCTIONS_EXTENSION_VERSION","~4")
+  $appSettings.add("WEBSITE_RUN_FROM_PACKAGE","https://aka.ms/DevOpsKit/AzTS/V4/AutoUpdater")
+
+  Update-AzFunctionAppSetting -AppSetting $appSettings -Name <APP_NAME> -ResourceGroupName <RESOURCE_GROUP_NAME> -Force
+
+  Set-AzWebApp -NetFrameworkVersion v6.0 -Name <APP_NAME> -ResourceGroupName <RESOURCE_GROUP_NAME>
+  ```
+- Run below command for AzSK-AzTS-MetadataAggregator-xxxxx and AzSK-AzTS-WorkItemProcessor-xxxxx.
+
+  ``` Powershell
+  Update-AzFunctionAppSetting -AppSetting @{"FUNCTIONS_EXTENSION_VERSION" = "~4"} -Name <APP_NAME> -ResourceGroupName <RESOURCE_GROUP_NAME> -Force
+
+  Set-AzWebApp -NetFrameworkVersion v6.0 -Name <APP_NAME> -ResourceGroupName <RESOURCE_GROUP_NAME>
+  ```
+- Try running the Autoupdater once again.
 <br> 
 <br> 
 <br>
