@@ -71,8 +71,7 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
   - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'All' or 'Onboarding', then specify the team's contact DL in this.
   - If AIConfigurations\_\_AnonymousUsageTelemetry\_\_LogLevel is either 'Anonymous' or 'None', then specify 'N/A' in this.
   
-### **5. On running the Autoupdater function getting some error related to function runtime version.**
-
+### **5. On running the Autoupdater function I am encountering an error related to conflicts in function runtime version.**
 
 - Step-1: Run below command for AzSK-AzTS-AutoUpdater-xxxxx function app. 
     ``` Powershell
@@ -96,7 +95,7 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
     # Update Net framework version
     Set-AzWebApp -NetFrameworkVersion v6.0 -Name <APP_NAME> -ResourceGroupName <RESOURCE_GROUP_NAME>
     ```
-- Step-3. Re-run the AutoUpdater function after completing Step 2 and the operation should complete successfully.This also ensures that the function runtime is updated to V4 for AzSK-AzTS-AutoUpdater-xxxxx, AzSK-AzTS-MetadataAggregator-xxxxx and AzSK-AzTS-WorkItemProcessor-xxxxx function app.
+- Step-3. Re-run the AutoUpdater function after completing Step 2 and the operation should complete successfully. This also ensures that the function runtime is updated to V4 for AzSK-AzTS-AutoUpdater-xxxxx, AzSK-AzTS-MetadataAggregator-xxxxx and AzSK-AzTS-WorkItemProcessor-xxxxx function app.
 <br> 
 <br> 
 
