@@ -134,6 +134,26 @@ Following policy will configure/Audit security contacts (email) at Subscription 
 
 ___ 
 
+#### Policy Assessment Evaluation
+
+To collect the complete audit evaluation for a control, please run the policies in below order. The assessment result should be combination of 
+
+|Policy Name| Description
+|----|----|
+| [Security - SQL Server - AuditSqlServerAuditingSettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerAuditingSettings.json) |  Audit if Audit Setting is enabled on SQL Server |
+|----|----|----|
+|[Security - SQL Server - AuditSqlServerSecuritySettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerSecuritySettings.json) |  Audit if Security Settings has been properly configured |
+|----|----|----|
+| [Security - SQL Server - AuditSqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20AuditSqlServerThreatDetection.json) |  Audit if threat detection has been enabled on control level |
+|OR |----|----|
+| [Security - Subscription - UpdateSecurityContacts](Security%20-%20Subscription%20-%20UpdateSecurityContacts.json) |  Audit if threat detection has been enabled on subscription level |
+
+
+1. [Security - SQL Server - AuditSqlServerAuditingSettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerAuditingSettings.json)
+2. [Security - SQL Server - AuditSqlServerSecuritySettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerSecuritySettings.json)
+3. [Security - SQL Server - AuditSqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20AuditSqlServerThreatDetection.json) OR [Security - Subscription - UpdateSecurityContacts](Security%20-%20Subscription%20-%20UpdateSecurityContacts.json)
+___ 
+
 
 ### Notes
 1. It is recommended to assign policy to setup MDC security contacts at Subscription scope (or Management group with subscriptions managed by same team) as it will configure same email address for all subscriptions in scope.
