@@ -6,11 +6,102 @@
 ### Required Policies
 Control can be covered with Azure policies mentioned below:
 - Policy to enable Microsoft Defender with Standard tier for SQL servers at Subscription level (if not enabled).
-- Policy to configure email address in Microsoft Defender security contacts (if security contacts not setup as per requirements).
-- Policy to enable Advanced Threat Protection (ATP) for each non-compliant SQL server.
-- Policy to enable SQL auditing for each non-compliant SQL server.
+- Policy to configure/audit email address in Microsoft Defender security contacts (if security contacts not setup as per requirements).
+- Policy to audit/enforce Advanced Threat Protection (ATP) for each non-compliant SQL server.
+- Policy to audit/enforce SQL auditing for each non-compliant SQL server.
+- Policy to audit Security Alert contacts for SQL server (if security contacts not setup as per requirements).
+___ 
+
+#### Policy Details
+
+Following policy can be used to audit/enforce SQL Auditing on SQL server.
+ > **Important**: 
+    1. Two different policy definitions are required to cover both general SQL servers and SQL servers which are part of Synapse Workspace as policy aliases are different.  
+    2. In the provided resource group, Storage account will be created in each region where a SQL Server is created that will be shared by all servers in that region.
+    3. Provided resource group should pre-exist in all the subscriptions (in scope), otherwise remediation will fail. 
+
+#### Policy Definition
+[Security - SQL Server - AuditSqlServerAuditingSettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerAuditingSettings.json)
+(Policy to audit the SQL Auditing on SQL Server.)
+
+#### Parameter details
+|Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
+
+
+#### Policy Definition
+[Security - SQL Server - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20DeploySqlServerAuditSettings.json)
+(Policy to enforce the SQL Auditing on SQL Server.)
+
+#### Parameter details
+|Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
+| RetentionDays | The value in days of the retention period (0 indicates unlimited retention) | 365 |No |
+| StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
+
+
+#### Policy Definition
+[Security - SQL Server - Synapse SQL pools - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerAuditSettings.json)
+(Policy to enforce the SQL Auditing on SQL Server which are part of Synapse Workspace.)
+
+#### Parameter details
+|Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | Enable or disable the execution of the policy | AuditIfNotExists |No |
+| RetentionDays | The value in days of the retention period (0 indicates unlimited retention) | 365 |No |
+| StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
+___ 
+
+
+#### Policy Details
+
+Following policy can be used to audit/enforce Advanced Threat Protection (ATP) for SQL server.
+
+#### Policy Definition
+[Security - SQL Server - AuditSqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20AuditSqlServerThreatDetection.json)
+(policy to audit ATP settings on SQL Server)
+
+#### Parameter details
+|Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
+
+[Security - SQL Server - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20DeploySqlServerThreatDetection.json)
+(policy to enforce ATP settings on SQL Server)
+
+#### Parameter details
+|Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
+| RetentionDays | The value in days of the retention period (0 indicates unlimited retention) | 365 |No |
+| StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
+
+[Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerThreatDetection.json)
+(policy to enforce ATP settings on SQL Server which are part of Synapse Workspace.)
+
+#### Parameter details
+|Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | Enable or disable the execution of the policy | AuditIfNotExists |No |
 
 ___ 
+
+#### Policy Details
+
+Following policy can be used to audit Security Alert contacts for SQL server.
+
+#### Policy Definition
+[Security - SQL Server - AuditSqlServerSecuritySettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerSecuritySettings.json)
+
+#### Parameter details
+Param Name|Description|Default Value|Mandatory?
+|----|----|----|----|
+| Effect | The effect determines what happens when the policy rule is evaluated to match| AuditIfNotExists |No |
+
+___ 
+
 
 #### Policy Details
 
@@ -29,7 +120,7 @@ ___
 
 #### Policy Details
 
-Following policy will configure security contacts (email) at Subscription scope.
+Following policy will configure/Audit security contacts (email) at Subscription scope.
 
 #### Policy Definition
 [Security - Subscription - UpdateSecurityContacts](Security%20-%20Subscription%20-%20UpdateSecurityContacts.json)
@@ -40,49 +131,6 @@ Following policy will configure security contacts (email) at Subscription scope.
 |----|----|----|----|
 | Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
 | EmailAddress | Email address for security contact | NA |Yes|
-
-___ 
-
-#### Policy Details
-
-Following policy will enable Advanced Threat Protection (ATP) for each non-compliant SQL server.
-
-    > **Important**: Two different policy definitions are required to cover both general SQL servers and SQL servers which are part of Synapse Workspace as policy aliases are different.  
-
-#### Policy Definition
-[Security - SQL Server - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20DeploySqlServerThreatDetection.json)
-
-[Security - SQL Server - Synapse SQL pools - DeploySqlServerThreatDetection](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerThreatDetection.json)
-
-#### Parameter details
-
-|Param Name|Description|Default Value|Mandatory?
-|----|----|----|----|
-| Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
-
-___ 
-
-#### Policy Details
-
-Following policy will enable SQL auditing for each non-compliant SQL server.
-
-    > **Important**: 
-    1. Two different policy definitions are required to cover both general SQL servers and SQL servers which are part of Synapse Workspace as policy aliases are different.  
-    2. In the provided resource group, Storage account will be created in each region where a SQL Server is created that will be shared by all servers in that region.
-    3. Provided resource group should pre-exist in all the subscriptions (in scope), otherwise remediation will fail. 
-
-#### Policy Definition
-[Security - SQL Server - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20DeploySqlServerAuditSettings.json)
-
-[Security - SQL Server - Synapse SQL pools - DeploySqlServerAuditSettings](Security%20-%20SQL%20Server%20-%20Synapse%20SQL%20pools%20-%20DeploySqlServerAuditSettings.json)
-
-#### Parameter details
-
-|Param Name|Description|Default Value|Mandatory?
-|----|----|----|----|
-| Effect | Enable or disable the execution of the policy | DeployIfNotExists |No |
-| RetentionDays | The value in days of the retention period (0 indicates unlimited retention) | 365 |No |
-| StorageAccountsResourceGroup | Resource group name for storage accounts | NA |Yes |
 
 ___ 
 

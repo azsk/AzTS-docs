@@ -1,94 +1,94 @@
 {
-    "mode": "Indexed",
-    "parameters": {
-        "effect": {
-            "type": "String",
-            "metadata": {
-                "displayName": "Effect",
-                "description": "Enable or disable the execution of the policy"
-            },
-            "allowedValues": [
-                "DeployIfNotExists",
-                "Disabled"
-            ],
-            "defaultValue": "DeployIfNotExists"
-        }
-    },
-    "policyRule": {
-        "if": {
-            "allOf": [
-                {
-                    "field": "type",
-                    "equals": "Microsoft.Synapse/workspaces"
-                }
-            ]
-        },
-        "then": {
-            "effect": "[parameters('effect')]",
-            "details": {
-                "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
-                "name": "Default",
-                "existenceCondition": {
-                    "allOf": [
-                        {
-                            "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/state",
-                            "equals": "Enabled"
-                        },
-                        {
-                            "anyOf": [
-                                {
-                                    "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts",
-                                    "exists": "false"
-                                },
-                                {
-                                    "count": {
-                                        "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts[*]",
-                                        "where": {
-                                            "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts[*]",
-                                            "notEquals": ""
-                                        }
-                                    },
-                                    "equals": 0
-                                }
-                            ]
-                        }
-                    ]
-                },
-                "roleDefinitionIds": [
-                    "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-                ],
-                "deployment": {
-                    "properties": {
-                        "mode": "incremental",
-                        "template": {
-                            "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-                            "contentVersion": "1.0.0.0",
-                            "parameters": {
-                                "serverName": {
-                                    "type": "string"
-                                }
-                            },
-                            "variables": {},
-                            "resources": [
-                                {
-                                    "name": "[concat(parameters('serverName'), '/Default')]",
-                                    "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
-                                    "apiVersion": "2021-06-01-preview",
-                                    "properties": {
-                                        "state": "Enabled",
-                                        "disabledAlerts": []
-                                    }
-                                }
-                            ]
-                        },
-                        "parameters": {
-                            "serverName": {
-                                "value": "[field('name')]"
-                            }
-                        }
-                    }
-                }
-            }
-        }
+  "mode": "Indexed",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "Enable or disable the execution of the policy"
+      },
+      "allowedValues": [
+        "DeployIfNotExists",
+        "Disabled"
+      ],
+      "defaultValue": "DeployIfNotExists"
     }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Synapse/workspaces"
+        }
+      ]
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
+        "name": "Default",
+        "existenceCondition": {
+          "allOf": [
+            {
+              "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/state",
+              "equals": "Enabled"
+            },
+            {
+              "anyOf": [
+                {
+                  "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts",
+                  "exists": "false"
+                },
+                {
+                  "count": {
+                    "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts[*]",
+                    "where": {
+                      "field": "Microsoft.Synapse/workspaces/securityAlertPolicies/disabledAlerts[*]",
+                      "notEquals": ""
+                    }
+                  },
+                  "equals": 0
+                }
+              ]
+            }
+          ]
+        },
+        "roleDefinitionIds": [
+          "/providers/microsoft.authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ],
+        "deployment": {
+          "properties": {
+            "mode": "incremental",
+            "template": {
+              "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+              "contentVersion": "1.0.0.0",
+              "parameters": {
+                "serverName": {
+                  "type": "string"
+                }
+              },
+              "variables": {},
+              "resources": [
+                {
+                  "name": "[concat(parameters('serverName'), '/Default')]",
+                  "type": "Microsoft.Synapse/workspaces/securityAlertPolicies",
+                  "apiVersion": "2021-06-01-preview",
+                  "properties": {
+                    "state": "Enabled",
+                    "disabledAlerts": []
+                  }
+                }
+              ]
+            },
+            "parameters": {
+              "serverName": {
+                "value": "[field('name')]"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
