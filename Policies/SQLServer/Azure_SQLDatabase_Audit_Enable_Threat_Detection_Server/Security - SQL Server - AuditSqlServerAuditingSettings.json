@@ -1,0 +1,34 @@
+{
+  "mode": "All",
+  "parameters": {
+    "effect": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Effect",
+        "description": "The effect determines what happens when the policy rule is evaluated to match"
+      },
+      "allowedValues": [
+        "Disabled",
+        "AuditIfNotExists"
+      ],
+      "defaultValue": "AuditIfNotExists"
+    }
+  },
+  "policyRule": {
+    "if": {
+      "field": "type",
+      "equals": "Microsoft.Sql/servers"
+    },
+    "then": {
+      "effect": "[parameters('effect')]",
+      "details": {
+        "type": "Microsoft.Sql/servers/auditingSettings",
+        "name": "Default",
+        "existenceCondition": {
+          "field": "Microsoft.Sql/auditingSettings.state",
+          "equals": "Enabled"
+        }
+      }
+    }
+  }
+}
