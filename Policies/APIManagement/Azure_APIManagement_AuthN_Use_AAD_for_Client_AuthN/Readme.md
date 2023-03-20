@@ -44,7 +44,7 @@ To collect the complete audit evaluation for a control, please run the policies 
 The assessment result should be a combination of:
 
 1. [Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20Basic%20Authentication%20Enabled.json)
-2. [Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20Basic%20Authentication%20Enabled.json)
+2. [Security - APIManagement - Deny API Management Services with other than AAD Identity Provider Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20other%20than%20AAD%20Identity%20Provider%20Enabled.json)
 
 ___ 
 
