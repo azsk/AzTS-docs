@@ -50,7 +50,7 @@ ___
 
 
 ### Notes
-1. Both Policy will flag/target API Management Service only.
+1. The above 2 policies will target API Management Service only.
 
 
 
