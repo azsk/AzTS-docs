@@ -138,7 +138,7 @@ ___
 
 To collect the complete audit evaluation for a control, please run the policies in below order.
 
-The assessment result should be combination of:
+The assessment result should be a combination of:
 
 1. [Security - SQL Server - AuditSqlServerAuditingSettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerAuditingSettings.json)
 2. [Security - SQL Server - AuditSqlServerSecuritySettings](Security%20-%20SQL%20Server%20-%20AuditSqlServerSecuritySettings.json)
@@ -147,5 +147,5 @@ ___
 
 
 ### Notes
-1. It is recommended to assign policy to setup MDC security contacts at Subscription scope (or Management group with subscriptions managed by same team) as it will configure same email address for all subscriptions in scope.
+1. It is recommended to assign the policy to audit the MDC security contacts configuration at Subscription scope (or Management group with subscriptions managed by the same team) as the policy will configure the same email address for all subscriptions in a given MG scope.
 2. It is recommended to assign policy to enable SQL auditing at Subscription scope (or Management group with subscriptions managed by same team) as it will require one existing resource group (in all subscriptions in scope) at the time of policy assignment and a Storage account will be created in each region where a SQL Server is created that will be shared by all servers (in the subscription) in that region.

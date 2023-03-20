@@ -41,7 +41,7 @@ Param Name|Description|Default Value|Mandatory?
 
 To collect the complete audit evaluation for a control, please run the policies in below order.
 
-The assessment result should be combination of:
+The assessment result should be a combination of:
 
 1. [Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20Basic%20Authentication%20Enabled.json)
 2. [Security - APIManagement - Deny API Management Services with Basic Authentication Enabled](Security%20-%20APIManagement%20-%20Deny%20API%20Management%20Services%20with%20Basic%20Authentication%20Enabled.json)
@@ -50,7 +50,7 @@ ___
 
 
 ### Notes
-1. Both Policy will flag/target API Management Service.
+1. Both Policy will flag/target API Management Service only.
 
 
 
