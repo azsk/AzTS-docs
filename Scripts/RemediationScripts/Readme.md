@@ -51,6 +51,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
 40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
 41. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](Readme.md#41-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
+42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 
 <br />
 
@@ -877,6 +878,25 @@ Yes
 
 ___
 
+
+## 42. Azure_KubernetesService_AuthN_Disable_Local_Accounts
+
+### Display Name
+Local accounts should be disabled in Kubernetes Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableLocalAccountsForKubernetesService](Remediate-DisableLocalAccountsForKubernetesService.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___ 
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
