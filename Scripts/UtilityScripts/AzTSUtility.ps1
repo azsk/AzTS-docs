@@ -174,7 +174,10 @@ function Set-AppServiceFtpState()
   }
   else
   {
-    if ($SlotName.StartsWith($AppServiceName))
+    # Check if the slot name that was passed is prepended with the App Service Name and slash
+    # Get-AzWebAppSlot returns slots in that format, but Set-AzWebAppSlot wants only the slot name without the prepended app svc name and slash
+    # Mitigate possible corner case here by checking for app svc name AND slash
+    if ($SlotName.StartsWith($AppServiceName + "/"))
     {
       $SlotName = $SlotName.Replace($AppServiceName + "/", "")
     }
@@ -229,8 +232,19 @@ function Get-DataFactoryV2()
   $factory = Get-AzDataFactoryV2 -ResourceGroupName $ResourceGroupName -Name $DataFactoryName
 
   Write-Information -InformationAction Continue -MessageData ("Data Factory: " + $factory.DataFactoryName)
+
   Write-Information -InformationAction Continue -MessageData "Tags:"
-  Write-Information -InformationAction Continue -MessageData $factory.Tags
+  if ($factory.Tags)
+  {
+    foreach ( $tag in $factory.Tags.GetEnumerator() )
+      {
+        Write-Information -InformationAction Continue -MessageData "$($tag.Key) = $($tag.Value)"
+      }
+  }
+  else
+  {
+    Write-Information -InformationAction Continue -MessageData "Data Factory has no Tags."
+  }
 }
 
 function Get-DataFactoryV2DataFlows()
@@ -273,12 +287,18 @@ function Get-DataFactoryV2DataFlows()
 
   $dataflows = Get-AzDataFactoryV2DataFlow -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  foreach ($dataflow in $dataflows)
+  if ( $dataFlows.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData ("Dataflow: " + $dataflow.Name)
-    Write-Information -InformationAction Continue -MessageData "Dataflow Script Lines:"
-    $dataflows.Properties.ScriptLines
-    Write-Information -InformationAction Continue -MessageData ""
+    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Data Flows."
+  }
+  else
+  {
+    foreach ($dataflow in $dataflows)
+    {
+      Write-Information -InformationAction Continue -MessageData ("Dataflow: " + $dataflow.Name)
+      Write-Information -InformationAction Continue -MessageData "Dataflow Script Lines:"
+      $dataflows.Properties.ScriptLines
+    }
   }
 
 }
@@ -323,15 +343,29 @@ function Get-DataFactoryV2DataSets()
 
   $datasets = Get-AzDataFactoryV2Dataset -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  foreach ($dataset in $datasets)
+  if ( $datasets.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData ("Dataset: " + $dataset.Name)
-    Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
-    foreach ( $h in $dataset.Properties.Parameters.GetEnumerator() )
+    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Datasets."
+  }
+  else
+  {
+    foreach ($dataset in $datasets)
     {
-      Write-Information -InformationAction Continue -MessageData "- $($h.Key) = $($h.Value.DefaultValue)"
+      Write-Information -InformationAction Continue -MessageData ("Dataset: " + $dataset.Name)
+
+      if ($dataset.Properties.Parameters)
+      {
+        Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
+        foreach ( $param in $dataset.Properties.Parameters.GetEnumerator() )
+        {
+          Write-Information -InformationAction Continue -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
+        }
+      }
+      else
+      {
+        Write-Information -InformationAction Continue -MessageData "Dataset has no Parameters."
+      }
     }
-    Write-Information -InformationAction Continue -MessageData ""
   }
 }
 
@@ -375,15 +409,29 @@ function Get-DataFactoryV2LinkedServices()
 
   $linkedServices = Get-AzDataFactoryV2LinkedService -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  foreach ($linkedService in $linkedServices)
+  if ( $linkedServices.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData ("Linked Service: " + $linkedService.Name)
-    Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
-    foreach ( $h in $linkedService.Properties.Parameters.GetEnumerator() )
+    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Linked Services."
+  }
+  else
+  {
+    foreach ($linkedService in $linkedServices)
     {
-      Write-Information -InformationAction Continue -MessageData "- $($h.Key) = $($h.Value.DefaultValue)"
+      Write-Information -InformationAction Continue -MessageData ("Linked Service: " + $linkedService.Name)
+
+      if ($linkedService.Properties.Parameters)
+      {
+        Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
+        foreach ( $param in $linkedService.Properties.Parameters.GetEnumerator() )
+        {
+          Write-Information -InformationAction Continue -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
+        }
+      }
+      else
+      {
+        Write-Information -InformationAction Continue -MessageData "Linked Service has no Parameters."
+      }
     }
-    Write-Information -InformationAction Continue -MessageData ""
   }
 }
 
@@ -427,15 +475,29 @@ function Get-DataFactoryV2Pipelines()
 
   $pipelines = Get-AzDataFactoryV2Pipeline -ResourceGroupName $ResourceGroupName -DataFactoryName $DataFactoryName
 
-  foreach ($pipeline in $pipelines)
+  if ( $pipelines.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData ("Pipeline: " + $pipeline.Name)
-    Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
-    foreach ( $h in $pipeline.Parameters.GetEnumerator() )
+    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Pipelines."
+  }
+  else
+  {
+    foreach ($pipeline in $pipelines)
     {
-      Write-Information -InformationAction Continue -MessageData "- $($h.Key) = $($h.Value.DefaultValue)"
+      Write-Information -InformationAction Continue -MessageData ("Pipeline: " + $pipeline.Name)
+
+      if ($pipeline.Properties.Parameters)
+      {
+        Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
+        foreach ( $param in $pipeline.Parameters.GetEnumerator() )
+        {
+          Write-Information -InformationAction Continue -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
+        }
+      }
+      else
+      {
+        Write-Information -InformationAction Continue -MessageData "Pipeline has no Parameters."
+      }
     }
-    Write-Information -InformationAction Continue -MessageData ""
   }
 }
 
