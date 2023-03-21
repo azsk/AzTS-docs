@@ -75,11 +75,12 @@
       "properties": {
         "dnsPrefix": "[parameters('dnsPrefix')]",
         "enableRBAC": true, //[Azure_KubernetesService_Deploy_Enable_Cluster_RBAC]
-        "aadProfile": { 
+        "aadProfile": {
           "managed": true, //[Azure_KubernetesService_AuthN_Enabled_AAD]
           "adminGroupObjectIDs": "[parameters('adminGroupObjectIDs')]",
           "enableAzureRBAC": true
         },
+        "disableLocalAccounts": true, //[Azure_KubernetesService_AuthN_Disable_Local_Accounts]
         "agentPoolProfiles": [
           {
             "name": "agentpool",
