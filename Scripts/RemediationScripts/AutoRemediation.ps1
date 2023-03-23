@@ -168,7 +168,8 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial") -or
                 ($control.ControlId -eq "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD" -or $control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts") {
+                }elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD" ) -or
+                ($control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts")) {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $proceedWithRemediation = Read-Host -Prompt "Do you want to proceed with remediation for the control [$($control.ControlId)]? (Y|N)"
                     Write-Host $([Constants]::SingleDashLine)

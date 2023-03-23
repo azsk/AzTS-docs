@@ -753,7 +753,7 @@ class disableLocalAccounts
         }
         catch
         {
-            Write-Host "Error occurred while setting local accounts profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while fetching Kubernetes Cluster configurations. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         }
         
         return($kubernetesClusters)
@@ -824,7 +824,7 @@ class disableLocalAccounts
         }
         catch
         {
-            Write-Host "Error occurred while setting local accounts profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while disabling local accounts profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         }
         
         return($content)
