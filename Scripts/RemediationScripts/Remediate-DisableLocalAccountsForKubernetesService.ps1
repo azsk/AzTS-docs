@@ -37,7 +37,7 @@
         3. To Disable local accounts in all Kubernetes Services in a Subscription, from a previously taken snapshot:
            Disable-LocalAccountsForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\DisableLocalAccountsForKubernetesServices\KubernetesClusterWithLocalAccountsEnabled.csv
 
-        **Note: If you want to add local accounts group to AKS cluster, please provide ADD group object id for each of the cluster.
+        **Note: If you want to add AAD group to AKS cluster, please provide ADD group object id for each of the cluster.
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Disable-LocalAccountsForKubernetes -Detailed        
