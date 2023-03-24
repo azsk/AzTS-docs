@@ -198,7 +198,7 @@ function Disable-LocalAccountsForKubernetes
     {
         Write-Host "[Step 1 of 5] Validate and install the modules required to run the script"
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Skipped as -PerformPreReqCheck switch is not provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }  
     # Connect to Azure account
@@ -216,16 +216,16 @@ function Disable-LocalAccountsForKubernetes
      # Setting up context for the current Subscription.
      $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     
-     if(-not($AutoRemediation))
-     {
-         Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-         Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-         Write-Host "Account Name: [$($context.Account.Id)]"
-         Write-Host "Account Type: [$($context.Account.Type)]"
-         Write-Host $([Constants]::SingleDashLine)
-     }
+    if(-not($AutoRemediation))
+    {
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }
 
-    Write-Host "To Disable local accounts for Kubernetes Services in a Subscription, Contributor or higher privileges on the Kubernetes Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To disable local accounts for Kubernetes Services in a Subscription, Contributor or higher privileges on the Kubernetes Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "[Step 2 of 5] Fetch all Kubernetes Services"
@@ -381,7 +381,7 @@ function Disable-LocalAccountsForKubernetes
                                                                                                    @{N='IsAADEnabled';E={$isAADEnabled}},
                                                                                                    @{N='IsLocalAccountsDisabled';E={$isLocalAccountsDisabled}}
 
-                Write-Host "Skipping this Kubernetes Service with resource name: [$($resourceName)] and resource group name: [$($resourceGroupName)] as local accounts is already disabled..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Skipping this Kubernetes Service with resource name: [$($resourceName)] and resource group name: [$($resourceGroupName)] as local accounts is already disabled." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($resourceGroupName))
@@ -406,18 +406,6 @@ function Disable-LocalAccountsForKubernetes
     $totalKubernetesServicesWithoutLocalAccountsDisabled = ($kubernetesServicesWithoutLocalAccountsDisabled | Measure-Object).Count
     $totalSkippedKubernetesServices = ($kubernetesServicesSkipped | Measure-Object).Count
     
-    if ((-not $AutoRemediation) -and $totalSkippedKubernetesServices -gt 0)
-    {
-        Write-Host "Following Kubernetes Service(s) have been skipped for remediation:"
-        $colsProperty =  @{Expression={$_.Name};Label="Resource Name";Width=30;Alignment="left"},
-                        @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=30;Alignment="left"},
-                        @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"},
-                        @{Expression={$_.Id};Label="Resource ID";Width=80;Alignment="left"}
-
-        $kubernetesServicesSkipped | Format-Table -Property $colsProperty -Wrap
-        Write-Host $([Constants]::SingleDashLine)
-    }
-
     if ($totalKubernetesServicesWithoutLocalAccountsDisabled -eq 0)
     {
         Write-Host "No Kubernetes Service found with local accounts disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
@@ -432,7 +420,7 @@ function Disable-LocalAccountsForKubernetes
                     $logControl.SkippedResources=$logSkippedResources
                 }
             }
-            $log | ConvertTo-json -depth 100  | Out-File $logFile
+            $log | ConvertTo-json -depth 10 | Out-File $logFile
         }
         return
     }
@@ -482,7 +470,7 @@ function Disable-LocalAccountsForKubernetes
         Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
-            Write-Host "local accounts will not be disabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Local accounts will not be disabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::DoubleDashLine)
             return
         }
@@ -612,7 +600,8 @@ function Disable-LocalAccountsForKubernetes
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"},
                         @{Expression={$_.IsLocalAccountsDisabled};Label="Is local accounts disabled?";Width=30;Alignment="left"},
                         @{Expression={$_.Id};Label="Resource ID";Width=80;Alignment="left"}
-
+        
+        Write-Host $([Constants]::DoubleDashLine)
         if($AutoRemediation)
         {
             if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
@@ -634,11 +623,9 @@ function Disable-LocalAccountsForKubernetes
                 Write-Host "`nThis information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
-
         }
         else 
         { 
-            Write-Host $([Constants]::DoubleDashLine)
             Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
             if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
             {
@@ -672,10 +659,9 @@ function Disable-LocalAccountsForKubernetes
                 if($logControl.ControlId -eq $controlIds){
                     $logControl.RemediatedResources = $logRemediatedResources
                     $logControl.SkippedResources = $logSkippedResources
-                    $logControl.RollbackFile = $appServicesRemediatedFile
                 }
             }
-            $log | ConvertTo-json -depth 100  | Out-File $logFile
+            $log | ConvertTo-json -depth 10 | Out-File $logFile
         }
     }
     else

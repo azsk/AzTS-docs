@@ -409,11 +409,11 @@ Disable local accounts with AAD authentication enabled on the kubernete cluster 
 
 - **Azure Portal**
 
-	Go to Azure Portal --> Kubernetes Services --> Select Kubernetes Cluster --> Settings --> Cluster configuration --> Authentication and Authorization options -->  Authentication and Authorization option --> Select 'Azure AD Authentication with Kubernetes RBAC' --> Cluster admin ClusterRoleBinding option --> Click 'choose AAD Group' --> select group and click Select --> Uncheck Kubernetes local accounts option --> Select Apply.
+	Go to Azure Portal --> Kubernetes Services --> Select Kubernetes Cluster --> Settings --> Cluster configuration --> Authentication and Authorization options -->  Authentication and Authorization option --> Select 'Azure AD Authentication with Kubernetes RBAC' --> Cluster admin ClusterRoleBinding option --> Click 'choose AAD Group' --> select group and click, Select --> Uncheck Kubernetes local accounts option --> Select Apply.
 
 ### Azure Policy or ARM API used for evaluation
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
+- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:**
 properties.disableLocalAccounts<br />
  <br />

@@ -878,7 +878,6 @@ Yes
 
 ___
 
-
 ## 42. Azure_KubernetesService_AuthN_Disable_Local_Accounts
 
 ### Display Name
