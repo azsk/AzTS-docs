@@ -558,9 +558,9 @@ function Set-MySqlFlexServerSslState()
 {
   <#
     .SYNOPSIS
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command sets the specified Azure Database for MySQL Flexible Server's Require SSL setting to the specified value.
     .DESCRIPTION
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command sets the specified Azure Database for MySQL Flexible Server's Require SSL setting to the specified value.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
@@ -602,6 +602,9 @@ function Set-MySqlFlexServerSslState()
     -ServerName $ServerName `
     -Name 'require_secure_transport' `
     -Value $SslSetting
+
+  Write-Information -InformationAction Continue -MessageData "Retrieve the Require SSL State value to ensure it was updated correctly:"
+  Get-MySqlFlexServerSslState -SubscriptionId "$SubscriptionId" -ResourceGroupName "$ResourceGroupName" -ServerName "$ServerName"
 }
 
 # ####################################################################################################
@@ -661,9 +664,9 @@ function Set-MySqlFlexServerTlsVersion()
 {
   <#
     .SYNOPSIS
-    This command sets the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command sets the specified Azure Database for MySQL Flexible Server's TLS version. NOTE: this command will restart the MySQL Flexible Server! This will briefly affect availability.
     .DESCRIPTION
-    This command sets the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command sets the specified Azure Database for MySQL Flexible Server's TLS version. NOTE: this command will restart the MySQL Flexible Server! This will briefly affect availability.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
@@ -707,6 +710,8 @@ function Set-MySqlFlexServerTlsVersion()
     -Value $TlsVersion
 
   # This is a static server parameter so we must reboot the Flexible Server for the change to take effect
+  Write-Information -InformationAction Continue -MessageData "Since TLSVersion is a static server parameter, the MySQL Flexible Server will now be restarted."
+  Write-Information -InformationAction Continue -MessageData "PLEASE NOTE: this will briefly affect MySQL Flexible Server availability."
   Restart-AzMySqlFlexibleServer -ResourceGroupName $ResourceGroupName -ServerName $ServerName
 }
 
@@ -938,18 +943,27 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  # ##################################################
-  # Get my public IP address
-  $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
-  $myPublicIpAddress += "/32"
-  Write-Information -InformationAction Continue -MessageData "Got my public IP address: $myPublicIpAddress."
-  # ##################################################
+  # Test whether I can use a public site to get my public IP address
+  $statusCode = (Invoke-WebRequest "http://ipinfo.io/json").StatusCode
 
-  Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
-    -SubscriptionId $SubscriptionId `
-    -ResourceGroupName $ResourceGroupName `
-    -KeyVaultName $KeyVaultName `
-    -PublicIpAddress $myPublicIpAddress
+  if ("200" -eq "$statusCode")
+  {
+    # Get my public IP address
+    $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
+    $myPublicIpAddress += "/32"
+
+    Write-Information -InformationAction Continue -MessageData "Got my public IP address: $myPublicIpAddress. Now adding network access rule to Key Vault."
+
+    Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
+      -SubscriptionId $SubscriptionId `
+      -ResourceGroupName $ResourceGroupName `
+      -KeyVaultName $KeyVaultName `
+      -PublicIpAddress $myPublicIpAddress
+  }
+  else
+  {
+    Write-Information -InformationAction Continue -MessageData "Unable to connect to public internet resource to get my public IP address. No change made to Key Vault network access rules."
+  }
 }
 
 function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
@@ -1218,8 +1232,6 @@ function Get-DeletedUser()
     .DESCRIPTION
     This command shows a deleted user. This is helpful when trying to translate a scanner status message user GUID to a human display name in order to locate the user on a list of assignments.
     This command requires the Microsoft.Graph SDK. See installation instructions: https://learn.microsoft.com/powershell/microsoftgraph/installation?view=graph-powershell-1.0#installation
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Key Vault.
     .PARAMETER DeletedUserId
     The user GUID for the deleted user.
     .INPUTS
@@ -1227,22 +1239,17 @@ function Get-DeletedUser()
     .OUTPUTS
     None
     .EXAMPLE
-    PS> Get-DeletedUser -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -DeletedUserId "00000000-xxxx-0000-xxxx-000000000000"
+    PS> Get-DeletedUser -DeletedUserId "00000000-xxxx-0000-xxxx-000000000000"
     .LINK
-    None
+    None`
   #>
 
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
     [Parameter(Mandatory=$true)]
     [string]
     $DeletedObjectId
   )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
 
   Connect-MgGraph
 
@@ -1292,13 +1299,13 @@ function Get-ResourceGroupDeployment()
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  if ( $DeploymentName )
+  if ([string]::IsNullOrWhiteSpace($DeploymentName))
   {
-    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $DeploymentName
+    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName
   }
   else
   {
-    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName
+    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $DeploymentName
   }
 }
 

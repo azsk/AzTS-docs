@@ -131,6 +131,7 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 `Set-MySqlFlexServerTlsVersion()`
 <br />Purpose: Sets the MySQL Flexible Server's minimum TLS version configured via the `tls_version` server parameter.
 <br />Parameters: SubscriptionId, ResourceGroupName, ServerName, TlsVersion
+<br />NOTE: this command will restart the MySQL Flexible Server! This will briefly affect availability.
 
 <br />
 
@@ -178,7 +179,8 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 `Get-DeletedUser()`
 <br />Purpose: Retrieves the recently deleted object from Microsoft Graph's deleted objects. Useful when trying to match a name to a deleted object ID (e.g. user or service principal GUID).
-<br />Parameters: SubscriptionId, DeletedObjectId
+<br />Parameters: DeletedObjectId
+<br />NOTE: This command requires the Microsoft.Graph SDK. See installation instructions: https://learn.microsoft.com/powershell/microsoftgraph/installation?view=graph-powershell-1.0#installation
 
 <br />
 
