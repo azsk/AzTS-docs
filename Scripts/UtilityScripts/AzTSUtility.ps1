@@ -24,7 +24,7 @@ function Install-AzPowershell()
     .OUTPUTS
     None
     .EXAMPLE
-    PS> Install-AzPowershel
+    PS> Install-AzPowershell
     .LINK
     None
   #>
