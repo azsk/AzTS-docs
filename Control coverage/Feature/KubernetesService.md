@@ -11,7 +11,7 @@
 - [Azure_KubernetesService_NetSec_Dont_Open_Management_Ports](#azure_kubernetesservice_netsec_dont_open_management_ports)
 - [Azure_KubernetesService_Audit_Enable_Diagnostics_Log](#azure_kubernetesservice_audit_enable_diagnostics_log)
 - [Azure_KubernetesService_DP_Disable_HTTP_Application_Routing](#azure_kubernetesservice_dp_disable_http_application_routing)
-
+- [Azure_KubernetesService_AuthN_Disable_Local_Accounts](#azure_kubernetesservice_authn_disable_local_accounts)
 <!-- /TOC -->
 <br/>
 
@@ -388,3 +388,36 @@ Enabling HTTP application routing creates publicly accessible DNS names for appl
 
 ___ 
 
+
+## Azure_KubernetesService_AuthN_Disable_Local_Accounts
+
+### Display Name
+Local accounts should be disabled in Kubernetes Service.
+
+### Rationale
+Disable local accounts with AAD authentication enabled on the kubernete cluster to avoid non-auditable access to the cluster access and improve cluster security.
+
+### Control Spec
+
+> **Passed:**
+> Local accounts is disabled on the Kubernetes cluster.
+>
+> **Failed:**
+> Local accounts is enabled on the Kubernetes cluster.
+>
+### Recommendation
+
+- **Azure Portal**
+
+	Go to Azure Portal --> Kubernetes Services --> Select Kubernetes Cluster --> Settings --> Cluster configuration --> Authentication and Authorization options -->  Authentication and Authorization option --> Select 'Azure AD Authentication with Kubernetes RBAC' --> Cluster admin ClusterRoleBinding option --> Click 'choose AAD Group' --> select group and click, Select --> Uncheck Kubernetes local accounts option --> Select Apply.
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+**Properties:**
+properties.disableLocalAccounts<br />
+ <br />
+
+<br />
+
+___

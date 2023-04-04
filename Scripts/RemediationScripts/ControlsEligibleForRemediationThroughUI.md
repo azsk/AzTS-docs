@@ -45,6 +45,8 @@
 
 22. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](ControlsEligibleForRemediationThroughUI.md#22-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
 
+23. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](ControlsEligibleForRemediationThroughUI.md#23-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
+
 
 
 <br />
@@ -327,6 +329,7 @@ Automation account variables must be encrypted
 Contributor or higher privileged role on the Automation Account(s)
 
 ___
+
 ## 22. Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access
 
 ### Display Name
@@ -337,5 +340,19 @@ Public network access on Azure SQL Database should be disabled
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Automation Account(s)
+
+___
+
+
+## 23. Azure_KubernetesService_AuthN_Disable_Local_Accounts
+
+### Display Name
+Local accounts should be disabled in Kubernetes Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableLocalAccountsForKubernetesService](Remediate-DisableLocalAccountsForKubernetesService.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
 
 ___

@@ -38,6 +38,7 @@ resource clusterName_resource 'Microsoft.ContainerService/managedClusters@2021-0
       adminGroupObjectIDs: adminGroupObjectIDs
       enableAzureRBAC: true
     }
+    disableLocalAccounts: true //[Azure_KubernetesService_AuthN_Disable_Local_Accounts]
     agentPoolProfiles: [
       {
         name: 'agentpool'
