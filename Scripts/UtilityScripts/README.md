@@ -36,15 +36,15 @@ Note that you can also use the [Azure Cloud Shell](https://shell.azure.com) (sel
 
 ## How to use
 
-- Ensure you meet the pre-requisites above
-- Log into Azure with [Connect-AzAccount](https://learn.microsoft.com/powershell/module/az.accounts/connect-azaccount)
-- Download [AzTSUtility.ps1](AzTSUtility.ps1)
-- Open a Powershell prompt in the folder where you downloaded AzTSUtility.ps1
-- Dot-source as follows: `. ./AzTSUtility.ps1`
-  - Note the leading period!
-  - Dot-sourcing lets you run the functions in the file at the command line
-- Now you can run the functions with their required parameters - see below
-- You can also run `Get-Help` for any of the functions to see more information about it. Example: `Get-Help Get-AppServiceFtpState`
+1. Ensure you meet the pre-requisites above
+1. Log into Azure with [Connect-AzAccount](https://learn.microsoft.com/powershell/module/az.accounts/connect-azaccount)
+1. Download [AzTSUtility.ps1](AzTSUtility.ps1)
+1. Open a Powershell prompt in the folder where you downloaded AzTSUtility.ps1
+1. Dot-source as follows: `. ./AzTSUtility.ps1`
+    1. Note the leading period!
+    1. Dot-sourcing lets you run the functions in the file at the command line
+1. Now you can run the functions with their required parameters - see below
+1. You can also run `Get-Help` for any of the functions to see more information about it. Example: `Get-Help Get-AppServiceFtpState`
 
 ### Powershell Execution Policy
 
@@ -83,30 +83,6 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 `Set-AppServiceFtpState()`
 <br />Purpose: Sets the specified App Service slot's FTP state.
 <br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName, SlotName, FtpState
-
-<br />
-
-### Azure_DataFactory_DP_Avoid_Plaintext_Secrets
-
-`Get-DataFactoryV2()`
-<br />Purpose: Show the Data Factory so that it can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2DataFlows()`
-<br />Purpose: Show the Data Factory Data Flows with script lines including parameters so they can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2DataSets()`
-<br />Purpose: Show the Data Factory Datasets with parameters so they can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2LinkedServices()`
-<br />Purpose: Show the Data Factory Linked Services so they can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2Pipelines()`
-<br />Purpose: Show the Data Factory Pipelines so they can be inspected for plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
 
 <br />
 
@@ -184,26 +160,6 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 <br />
 
-### Azure_Subscription_DP_Avoid_Plaintext_Secrets_Deployments
-
-`Get-ResourceGroupDeployment()`
-<br />Purpose: Show the specified Azure Resource Group deployment (or list all if no deployment is specified by name). Useful to check for secrets on Deployment parameters.
-<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
-
-`Get-ResourceGroupDeploymentOperations()`
-<br />Purpose: Show the Azure Resource Group deployment's detailed operations.
-<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
-
-`Get-SubscriptionDeployments()`
-<br />Purpose: Show Azure Subscription deployments. Useful to check for secrets on Deployment parameters.
-<br />Parameters: SubscriptionId
-
-`Get-SubscriptionDeploymentsAndOperations()`
-<br />Purpose: Show Azure Subscription deployments as well as detailed operations for each. Useful to check for secrets on Deployment parameters.
-<br />Parameters: SubscriptionId
-
-<br />
-
 ### Azure_Subscription_SI_Dont_Use_B2C_Tenant
 
 `Get-AzureADB2CTenants()`
@@ -227,15 +183,64 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 ### Azure_VirtualMachine_SI_Enable_Antimalware
 
 `Get-MDEPreferences()`
-<br />Purpose: Run on a VM to show current configuration preferences for Microsoft Defender for Endpoint.
+<br />Purpose: While RDPed onto a VM, run this to show current configuration preferences for Microsoft Defender for Endpoint.
 <br />Parameters: None
 
 `Get-MDEStatus()`
-<br />Purpose: Run on a VM to show current status for Microsoft Defender for Endpoint.
+<br />Purpose: While RDPed onto a VM, run this to show current status for Microsoft Defender for Endpoint.
 <br />Parameters: None
 
 `Set-MDESignatureUpdateScheduledTask()`
-<br />Purpose: Run on a VM to create an hourly scheduled task to run Microsoft Defender for Endpoints signature update. Normally, this should not be needed, but can be useful when investigating possible signature update timing/scheduling issues.
+<br />Purpose: While RDPed onto a VM, run this to create an hourly scheduled task to run Microsoft Defender for Endpoints signature update. Normally, this should not be needed, but can be useful when investigating possible signature update timing/scheduling issues.
 <br />Parameters: None
+
+<br />
+
+### Azure Data Factory
+
+`Get-DataFactoryV2()`
+<br />Purpose: Show the Data Factory so that it can be inspected for control failures.
+<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
+
+`Get-DataFactoryV2DataFlows()`
+<br />Purpose: Show the Data Factory Data Flows with script lines including parameters so they can be inspected for control failures or issues such as plain-text secrets.
+<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
+
+`Get-DataFactoryV2DataSets()`
+<br />Purpose: Show the Data Factory Datasets with parameters so they can be inspected for control failures or issues such as plain-text secrets.
+<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
+
+`Get-DataFactoryV2LinkedServices()`
+<br />Purpose: Show the Data Factory Linked Services so they can be inspected for control failures or issues such as plain-text secrets.
+<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
+
+`Get-DataFactoryV2Pipelines()`
+<br />Purpose: Show the Data Factory Pipelines so they can be inspected for control failures or issues such as plain-text secrets.
+<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
+
+<br />
+
+
+### Azure Deployments
+
+`Get-ResourceGroupDeployment()`
+<br />Purpose: Show the specified Azure Resource Group deployment (or list all if no deployment is specified by name). Useful to check for control failures or issues such as plain-text secrets on Deployment parameters.
+<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
+
+`Get-ResourceGroupDeploymentOperations()`
+<br />Purpose: Show the Azure Resource Group deployment's detailed operations.
+<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
+
+`Get-ResourceGroupDeploymentsAndOperations()`
+<br />Purpose: Show the Azure Resource Group deployments and detailed operations.
+<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
+
+`Get-SubscriptionDeployments()`
+<br />Purpose: Show Azure Subscription deployments. Useful to check for control failures or issues such as plain-text secrets on Deployment parameters.
+<br />Parameters: SubscriptionId
+
+`Get-SubscriptionDeploymentsAndOperations()`
+<br />Purpose: Show Azure Subscription deployments as well as detailed operations for each. Useful to check for control failures or issues such as plain-text secrets on Deployment parameters.
+<br />Parameters: SubscriptionId
 
 <br />

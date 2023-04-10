@@ -1,3 +1,5 @@
+using namespace System.Management.Automation
+
 <####################################################################################################
 Overview:
   This file contains utility functions to help assess and remediate Azure Tenant Security control compliance issues.
@@ -58,6 +60,29 @@ function Uninstall-AzPowershell()
   param ()
 
   Get-Package | Where-Object { $_.Name -Like 'Az*' } | ForEach-Object { Uninstall-Package -Name $_.Name -AllVersions }
+}
+
+# H/T to Kieran Marron https://blog.kieranties.com/2018/03/26/write-information-with-colours
+function Write-InformationFormatted()
+{
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory)]
+      [Object]$MessageData,
+      [ConsoleColor]$ForegroundColor = $Host.UI.RawUI.ForegroundColor, # Make sure we use the current colours by default
+      [ConsoleColor]$BackgroundColor = $Host.UI.RawUI.BackgroundColor,
+      [Switch]$NoNewline
+  )
+
+  $msg = [HostInformationMessage]@{
+      Message         = $MessageData
+      ForegroundColor = $ForegroundColor
+      BackgroundColor = $BackgroundColor
+      NoNewline       = $NoNewline.IsPresent
+  }
+
+  Write-Information -MessageData $msg -InformationAction Continue
 }
 
 # ####################################################################################################
@@ -231,19 +256,19 @@ function Get-DataFactoryV2()
 
   $factory = Get-AzDataFactoryV2 -ResourceGroupName $ResourceGroupName -Name $DataFactoryName
 
-  Write-Information -InformationAction Continue -MessageData ("Data Factory: " + $factory.DataFactoryName)
+  Write-InformationFormatted -MessageData ("Data Factory: " + $factory.DataFactoryName)
 
-  Write-Information -InformationAction Continue -MessageData "Tags:"
+  Write-InformationFormatted -MessageData "Tags:"
   if ($factory.Tags)
   {
     foreach ( $tag in $factory.Tags.GetEnumerator() )
       {
-        Write-Information -InformationAction Continue -MessageData "$($tag.Key) = $($tag.Value)"
+        Write-InformationFormatted -MessageData "$($tag.Key) = $($tag.Value)"
       }
   }
   else
   {
-    Write-Information -InformationAction Continue -MessageData "Data Factory has no Tags."
+    Write-InformationFormatted -MessageData "Data Factory has no Tags."
   }
 }
 
@@ -289,14 +314,14 @@ function Get-DataFactoryV2DataFlows()
 
   if ( $dataFlows.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Data Flows."
+    Write-InformationFormatted -MessageData "Data factory did not contain any Data Flows."
   }
   else
   {
     foreach ($dataflow in $dataflows)
     {
-      Write-Information -InformationAction Continue -MessageData ("Dataflow: " + $dataflow.Name)
-      Write-Information -InformationAction Continue -MessageData "Dataflow Script Lines:"
+      Write-InformationFormatted -MessageData ("Dataflow: " + $dataflow.Name)
+      Write-InformationFormatted -MessageData "Dataflow Script Lines:"
       $dataflows.Properties.ScriptLines
     }
   }
@@ -345,25 +370,25 @@ function Get-DataFactoryV2DataSets()
 
   if ( $datasets.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Datasets."
+    Write-InformationFormatted -MessageData "Data factory did not contain any Datasets."
   }
   else
   {
     foreach ($dataset in $datasets)
     {
-      Write-Information -InformationAction Continue -MessageData ("Dataset: " + $dataset.Name)
+      Write-InformationFormatted -MessageData ("Dataset: " + $dataset.Name)
 
       if ($dataset.Properties.Parameters)
       {
-        Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
+        Write-InformationFormatted -MessageData "Parameter Names and Values:"
         foreach ( $param in $dataset.Properties.Parameters.GetEnumerator() )
         {
-          Write-Information -InformationAction Continue -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
+          Write-InformationFormatted -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
         }
       }
       else
       {
-        Write-Information -InformationAction Continue -MessageData "Dataset has no Parameters."
+        Write-InformationFormatted -MessageData "Dataset has no Parameters."
       }
     }
   }
@@ -411,25 +436,25 @@ function Get-DataFactoryV2LinkedServices()
 
   if ( $linkedServices.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Linked Services."
+    Write-InformationFormatted -MessageData "Data factory did not contain any Linked Services."
   }
   else
   {
     foreach ($linkedService in $linkedServices)
     {
-      Write-Information -InformationAction Continue -MessageData ("Linked Service: " + $linkedService.Name)
+      Write-InformationFormatted -MessageData ("Linked Service: " + $linkedService.Name)
 
       if ($linkedService.Properties.Parameters)
       {
-        Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
+        Write-InformationFormatted -MessageData "Parameter Names and Values:"
         foreach ( $param in $linkedService.Properties.Parameters.GetEnumerator() )
         {
-          Write-Information -InformationAction Continue -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
+          Write-InformationFormatted -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
         }
       }
       else
       {
-        Write-Information -InformationAction Continue -MessageData "Linked Service has no Parameters."
+        Write-InformationFormatted -MessageData "Linked Service has no Parameters."
       }
     }
   }
@@ -477,25 +502,25 @@ function Get-DataFactoryV2Pipelines()
 
   if ( $pipelines.Count -eq 0)
   {
-    Write-Information -InformationAction Continue -MessageData "Data factory did not contain any Pipelines."
+    Write-InformationFormatted -MessageData "Data factory did not contain any Pipelines."
   }
   else
   {
     foreach ($pipeline in $pipelines)
     {
-      Write-Information -InformationAction Continue -MessageData ("Pipeline: " + $pipeline.Name)
+      Write-InformationFormatted -MessageData ("Pipeline: " + $pipeline.Name)
 
       if ($pipeline.Properties.Parameters)
       {
-        Write-Information -InformationAction Continue -MessageData "Parameter Names and Values:"
+        Write-InformationFormatted -MessageData "Parameter Names and Values:"
         foreach ( $param in $pipeline.Parameters.GetEnumerator() )
         {
-          Write-Information -InformationAction Continue -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
+          Write-InformationFormatted -MessageData "$($param.Key) = $($param.Value.DefaultValue)"
         }
       }
       else
       {
-        Write-Information -InformationAction Continue -MessageData "Pipeline has no Parameters."
+        Write-InformationFormatted -MessageData "Pipeline has no Parameters."
       }
     }
   }
@@ -603,7 +628,7 @@ function Set-MySqlFlexServerSslState()
     -Name 'require_secure_transport' `
     -Value $SslSetting
 
-  Write-Information -InformationAction Continue -MessageData "Retrieve the Require SSL State value to ensure it was updated correctly:"
+  Write-InformationFormatted -MessageData "Retrieve the Require SSL State value to ensure it was updated correctly:"
   Get-MySqlFlexServerSslState -SubscriptionId "$SubscriptionId" -ResourceGroupName "$ResourceGroupName" -ServerName "$ServerName"
 }
 
@@ -710,8 +735,8 @@ function Set-MySqlFlexServerTlsVersion()
     -Value $TlsVersion
 
   # This is a static server parameter so we must reboot the Flexible Server for the change to take effect
-  Write-Information -InformationAction Continue -MessageData "Since TLSVersion is a static server parameter, the MySQL Flexible Server will now be restarted."
-  Write-Information -InformationAction Continue -MessageData "PLEASE NOTE: this will briefly affect MySQL Flexible Server availability."
+  Write-InformationFormatted -MessageData "Since TLSVersion is a static server parameter, the MySQL Flexible Server will now be restarted."
+  Write-InformationFormatted -MessageData "PLEASE NOTE: this will briefly affect MySQL Flexible Server availability."
   Restart-AzMySqlFlexibleServer -ResourceGroupName $ResourceGroupName -ServerName $ServerName
 }
 
@@ -952,7 +977,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
     $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
     $myPublicIpAddress += "/32"
 
-    Write-Information -InformationAction Continue -MessageData "Got my public IP address: $myPublicIpAddress. Now adding network access rule to Key Vault."
+    Write-InformationFormatted -MessageData "Got my public IP address: $myPublicIpAddress. Now adding network access rule to Key Vault."
 
     Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
       -SubscriptionId $SubscriptionId `
@@ -962,7 +987,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
   }
   else
   {
-    Write-Information -InformationAction Continue -MessageData "Unable to connect to public internet resource to get my public IP address. No change made to Key Vault network access rules."
+    Write-InformationFormatted -MessageData "Unable to connect to public internet resource to get my public IP address. No change made to Key Vault network access rules."
   }
 }
 
@@ -1079,7 +1104,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
 
   If ($keyVault.PublicNetworkAccess -ne "Enabled")
   {
-    Write-Information -InformationAction Continue -MessageData "Update Key Vault to enable public network access so that the specified public source IPs can access the Key Vault."
+    Write-InformationFormatted -MessageData "Update Key Vault to enable public network access so that the specified public source IPs can access the Key Vault."
 
     Update-AzKeyVault `
       -InputObject $keyVault `
@@ -1087,7 +1112,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   }
   Else
   {
-    Write-Information -InformationAction Continue -MessageData "Key Vault has public network access enabled, so specified public source IPs can access the Key Vault. No change will be made."
+    Write-InformationFormatted -MessageData "Key Vault has public network access enabled, so specified public source IPs can access the Key Vault. No change will be made."
   }
   # ##################################################
 
@@ -1116,35 +1141,35 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   If ($ipAddressRange.Count -gt 0 -and $ipAddressRange.Contains($PublicIpAddress))
   {
     $needToUpdateIps = $false
-    Write-Information -InformationAction Continue -MessageData "Current Key Vault public IP address range already contains $PublicIpAddress, no change will be made to source IP network ACLs."
+    Write-InformationFormatted -MessageData "Current Key Vault public IP address range already contains $PublicIpAddress, no change will be made to source IP network ACLs."
   }
   Else
   {
     $needToUpdateIps = $true  # Yes, this is redundant to start condition above. Regardless, set explicitly here in case someone changes the start condition later.
     $ipAddressRange += $PublicIpAddress
-    Write-Information -InformationAction Continue -MessageData "Added my public IP address $PublicIpAddress for new complete source IP address range: $ipAddressRange."
+    Write-InformationFormatted -MessageData "Added my public IP address $PublicIpAddress for new complete source IP address range: $ipAddressRange."
   }
 
   # Check if the Key Vault default action is already Deny
   If ($keyVault.NetworkAcls.DefaultAction -ne "Deny")
   {
     $needToUpdateDefaultAction = $true  # Yes, this is redundant to start condition above. Regardless, set explicitly here in case someone changes the start condition later.
-    Write-Information -InformationAction Continue -MessageData "Current Key Vault default network ACL action is not Deny, and it will be changed to Deny."
+    Write-InformationFormatted -MessageData "Current Key Vault default network ACL action is not Deny, and it will be changed to Deny."
   }
   Else
   {
     $needToUpdateDefaultAction = $false
-    Write-Information -InformationAction Continue -MessageData "Current Key Vault default network ACL action is already Deny, so it will not be changed."
+    Write-InformationFormatted -MessageData "Current Key Vault default network ACL action is already Deny, so it will not be changed."
   }
 
   # If either the source IPs or the default action need to be updated, do that here
   If ($needToUpdateIps -or $needToUpdateDefaultAction)
   {
-    Write-Information -InformationAction Continue -MessageData "Update Key Vault network access rules."
+    Write-InformationFormatted -MessageData "Update Key Vault network access rules."
 
     If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
     {
-      Write-Information -InformationAction Continue -MessageData "Update Key Vault network access rules for specified source IPs network access rules and default action Deny."
+      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs network access rules and default action Deny."
       Update-AzKeyVaultNetworkRuleSet `
         -SubscriptionId $SubscriptionId `
         -ResourceGroupName $ResourceGroupName `
@@ -1155,7 +1180,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
     }
     else
     {
-      Write-Information -InformationAction Continue -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules and default action Deny."
+      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules and default action Deny."
       Update-AzKeyVaultNetworkRuleSet `
         -SubscriptionId $SubscriptionId `
         -ResourceGroupName $ResourceGroupName `
@@ -1211,7 +1236,7 @@ param (
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
-  Write-Information -InformationAction Continue -MessageData "Removing rule for $PublicIpAddress"
+  Write-InformationFormatted -MessageData "Removing rule for $PublicIpAddress"
 
   Remove-AzKeyVaultNetworkRule `
     -SubscriptionId $SubscriptionId `
@@ -1301,12 +1326,34 @@ function Get-ResourceGroupDeployment()
 
   if ([string]::IsNullOrWhiteSpace($DeploymentName))
   {
-    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName
+    $deployments = Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName
   }
   else
   {
-    Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $DeploymentName
+    $deployments = Get-AzResourceGroupDeployment -ResourceGroupName $ResourceGroupName -Name $DeploymentName
   }
+
+  foreach ($deployment in $deployments)
+  {
+    Write-InformationFormatted -MessageData ("Deployment: " + $deployment.DeploymentName) -ForegroundColor Green
+
+    if ( $deployment.Parameters -and $deployment.Parameters.Count -gt 0 )
+    {
+      Write-InformationFormatted -MessageData ("Parameters:")
+
+      foreach ( $parameter in $deployment.Parameters.GetEnumerator() )
+      {
+          Write-InformationFormatted -MessageData "$($parameter.Key) = $($parameter.Value.Value)" -ForegroundColor Blue
+      }
+    }
+    else
+    {
+      Write-InformationFormatted -MessageData "Parameters: Deployment has no Parameters"
+    }
+
+    Write-InformationFormatted -MessageData ""
+  }
+
 }
 
 function Get-ResourceGroupDeploymentOperations()
@@ -1387,7 +1434,7 @@ function Get-ResourceGroupDeploymentsAndOperations()
 
   foreach ($deployment in $deployments)
   {
-    Write-Information -InformationAction Continue -MessageData ("Deployment: " + $deployment.DeploymentName)
+    Write-InformationFormatted -MessageData ("Deployment: " + $deployment.DeploymentName)
 
     Get-AzResourceGroupDeploymentOperation -ResourceGroupName $ResourceGroupName -Name $deployment.DeploymentName
   }
@@ -1456,7 +1503,7 @@ function Get-SubscriptionDeploymentsAndOperations()
 
   foreach ($deployment in $deployments)
   {
-    Write-Information -InformationAction Continue -MessageData ("Deployment: " + $deployment.DeploymentName)
+    Write-InformationFormatted -MessageData ("Deployment: " + $deployment.DeploymentName)
 
     Get-AzDeploymentOperation -DeploymentName $deployment.DeploymentName
   }
@@ -1497,12 +1544,28 @@ function Get-AzureADB2CTenants()
 
   $apiVersionAad = "2022-03-01-preview"
 
-  Invoke-AzRestMethod `
+  $result = Invoke-AzRestMethod `
     -Subscription $SubscriptionId `
     -ResourceProviderName 'Microsoft.AzureActiveDirectory' `
     -ResourceType 'b2cDirectories' `
     -ApiVersion $apiVersionAad `
     -Method GET
+
+  $tenants = ($result.Content | ConvertFrom-Json).Value
+
+  if ($tenants.Count -gt 0)
+  {
+    ForEach ($tenant in $tenants)
+    {
+      Write-InformationFormatted -MessageData ("B2C Tenant Name: " + $tenant.name) -ForegroundColor Green
+      Write-InformationFormatted -MessageData ("B2C Tenant ID: " + $tenant.id) -ForegroundColor Blue
+      Write-InformationFormatted -MessageData ""
+    }
+  }
+  else
+  {
+    Write-InformationFormatted -MessageData "Subscription contains no B2C tenants."
+  }
 }
 
 function Get-AzureADB2CResourceProvider()
