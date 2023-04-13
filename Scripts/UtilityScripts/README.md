@@ -126,23 +126,27 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 ### Azure_KeyVault_NetSec_Disable_Public_Network_Access
 
 `Get-AppServiceAllPossibleOutboundPublicIps()`
-<br />Purpose: Show the App Service's possible outbound public IPs, which can be used to create Azure Key Vault network access rules.
+<br />Purpose: Show the App Service's possible outbound public IPs, which can be used to create Azure Key Vault network access rules. **This is not reliable for Consumption or Premium Plan App Services!**
 <br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
 
 `Get-AppServiceAllCurrentOutboundPublicIps()`
-<br />Purpose: Show the App Service's current outbound public IPs. These will be a subset of all _possible_ outbound public IPs, so `Get-AppServiceAllPossibleOutboundPublicIps()` is the better function to use, but this is included for reference and comparison.
+<br />Purpose: Show the App Service's current outbound public IPs. These will be a subset of all _possible_ outbound public IPs, so `Get-AppServiceAllPossibleOutboundPublicIps()` is the better function to use, but this is included for reference and comparison. **This is not reliable for Consumption or Premium Plan App Services!**
 <br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
 
+`Set-KeyVaultSecurePublicNetworkSettings()`
+<br />Purpose: Updates an existing Key Vault to enable public network access with default action Deny, and to allow trusted Azure services.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
+
 `Set-KeyVaultPublicNetworkAccessEnabledForMe()`
-<br />Purpose: Adds a network access rule to the Key Vault for the public IP address which you are currently using. Also sets public network access enabled with default action Deny.
+<br />Purpose: Adds a network access rule to the Key Vault for the public IP address which you are currently using. Uses a third-party web site to get your egress public IP.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
 
 `Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()`
-<br />Purpose: Adds a network access rule to the Key Vault for each provided public IP address. Also sets public network access enabled with default action Deny.
+<br />Purpose: Adds a network access rule to the Key Vault for each provided public IP address.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddresses
 
 `Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()`
-<br />Purpose: Adds a network access rule to the Key Vault for the provided public IP address. Also sets public network access enabled with default action Deny.
+<br />Purpose: Adds a network access rule to the Key Vault for the provided public IP address.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
 
 `Remove-KeyVaultNetworkAccessRuleForIpAddress()`
