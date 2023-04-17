@@ -91,7 +91,7 @@ ___
 |VerificationResult|string|It indicates control status.|Passed|
 |ScannedOn|datetime|Control scanned date and time.|Fr, 14 Apr 2023 08:39:24 GMT|
 |StatusReason|string|Reason associated with control status.|Secure transfer is enabled for the storage account.|
-|ScannedBy|string||null|
+|ScannedBy|string|Scanned by.|null|
 |ScanSource|string|The scan source of control.|Reader|
 |AssessmentName|string|Name of the assessment evulated by control.|00x0x00x-x000-0xxx-x0x0-000x000x00x0|
 |CustomField1|string|This field contains custom data.|This field contains custom data.|
@@ -107,8 +107,8 @@ ___
 |FirstFailedOn|datetime|Control first Failed date and time.|2020-11-9T15:44:39|
 |LastResultTransitionOn|datetime|Control status last changed date and time.|2020-11-9T15:44:39|
 |ExceptionDetails|string|Details related to exception if exception is raised.|{"ExceptionExpiryDate":"2023-09-29T00:00:00","ExceptionGrantedOn":"2022-11-11T04:03:20.5833333","RequestedById":"xxxxxxx@microsoft.com"}|
-|DueDate|datetime||2023-05-06T07:57:45.9650292|
-|AssignedTo|string||null
+|DueDate|datetime|Due date.|2023-05-06T07:57:45.9650292|
+|AssignedTo|string|Assigned to.|null
 |UniqueId|string|Unique ID associated with the control scan.|0x0xx0x0xx0x0000x0xx000000000x0|
 |AdditionalInformation|string|Additional information associated with the control scan which is helpful in remediation.|{"Stale identities":[{"RoleName":"Reader","PrincipalName":"identity not found or stale account","Scope":"/subscriptions/xxx0000x-00x0-00x0-000x-00xxxxx000x0","UserName":"xxx0000x-00x0-00x0-000x-00xxxxx000x0","IdentityType":"ServicePrincipal","AssignmentType":"Permanent"}]}|
 
