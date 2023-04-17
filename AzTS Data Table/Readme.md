@@ -80,7 +80,7 @@ ___
 |ControlScanSource|string|The control scan source.|Reader|
 |AssessmentProperties|string|The assessment properties.|{"AssessmentNames": ["000000xx-0xxx-0x00-0x00-00x00x0000x0"]}|
 |CustomPolicyProperties|string|The custom policy. properties|{"PolicyDefinitionIds": ["/providers/Microsoft.Authorization/policyDefinitions/000xx000-xx0x-0000-00dd-000000xx000x"]},|
-|Automated|string|Yes|Whether the control is manual or automated.|
+|Automated|string|Whether the control is manual or automated.|Yes|
 
 ___
 
@@ -117,7 +117,7 @@ ___
 |LastResultTransitionOn|datetime|The control status last changed date and time.|2020-11-9T15:44:39|
 |ExceptionDetails|string|Details realted to exception if exception is raised.|{"ExceptionExpiryDate":"2023-09-29T00:00:00","ExceptionGrantedOn":"2022-11-11T04:03:20.5833333","RequestedById":"xxxxxxx@microsoft.com"}|
 |DueDate|datetime||2023-05-06T07:57:45.9650292|
-|AssignedTo|string|null
+|AssignedTo|string||null
 |UniqueId|string|Unique ID associated with the control scan.|0x0xx0x0xx0x0000x0xx000000000x0|
 |AdditionalInformation|string|The additional information associated with the control scan which is helpful in remediation.|{"Stale identities":[{"RoleName":"Reader","PrincipalName":"identity not found or stale account","Scope":"/subscriptions/xxx0000x-00x0-00x0-000x-00xxxxx000x0","UserName":"xxx0000x-00x0-00x0-000x-00xxxxx000x0","IdentityType":"ServicePrincipal","AssignmentType":"Permanent"}]}|
 
@@ -216,12 +216,12 @@ ___
 |ResourceGroup|string|The resource group name.|sampleresourcegroup|
 |ResourceType|string|The resource type.|Microsoft.Compute/virtualMachines|
 |ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource|
-|StateWeight|int|The relative weight for each subscription.|200|
+|StateWeight|int|The weight of policy state.|200|
 |TimeStamp|datetime|Timestamp for the policy state record.|4/10/2023 3:31:14 AM|
 |ManagementGroupIds|string|Comma separated list of management group IDs, which represent the hierarchy of the management groups the resource is under.|00000xxx-xx00-0x00-x0x0-00xx00000x00,00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |PolicyAssignmentParameters|string|The policy assignment parameters.|null|
 |PolicyDefinitionReferenceId|string|The reference ID for the policy definition inside the policy set, if the policy assignment is for a policy set.|null|
-|PolicyStateId|string|Policy state ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource/providers/microsoft.policyinsights/policystates/00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx|
+|PolicyStateId|string|The policy state ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource/providers/microsoft.policyinsights/policystates/00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx|
 
 
 ___
