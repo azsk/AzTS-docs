@@ -161,7 +161,6 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 4. To increase function timeout, go to your function app (say, you want to increase timeout value for 'AzSK-AzTS-WorkItemProcessor-xxxxx'. This app contains function to scan subscription with baseline control.) > Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
 
   > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
-<br>
 
 ### **4. How do I pull data of AzTS scan and push to different data sources?**
 
@@ -170,7 +169,6 @@ Below are some help links for pulling data from azure blob storage and push to d
 1. https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-portal
 2. https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-tool
 3. https://learn.microsoft.com/en-us/azure/data-explorer/create-event-grid-connection?tabs=portal-adx%2Cportal-2
-
 
 <br>
 <br>
@@ -203,12 +201,10 @@ Name: HostEnvironmentDetails__AutoUpdateConfig__3__DeploymentSlotId
 Value: production
 5. Select ‘Deployment Slot Setting’ and save.
  
- 
 The above steps should stop this recurring alert, please validate after 24 hours using the same queries.
 
 <br>
 <br>
-
 
 - ### **Control Remediation**
 
