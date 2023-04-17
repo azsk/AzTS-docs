@@ -3,22 +3,22 @@
 
 ## **Overview**
 
-Azure Tenant Security Solution centrally scans subscriptions and get control scan result, processed RBAC data, resource inventory data, subscription meta data etc and push all the data into a central storage account.
+Azure Tenant Security Solution centrally scans subscriptions and get control scan result, processed RBAC data, resource inventory data, subscription meta data etc. and push all the data into a blob storage of central storage account.
 
 ## **AzTS Data Table details**
 
 | Table Name | Description |
 |--|--|
 | [RBAC data](Readme.md#rbac-data)  | Role Based Access Control (RBAC) contains all PIM, permanent and classic role assignments details. |
-| [Baseline Controls data](Readme.md#baseline-control-data) | Baseline Controls data  contains list of all controls (both baseline & non-baseline) supported by Azure Tenant Security (AzTS).   |
+| [Baseline controls data](Readme.md#baseline-control-data) | Baseline Controls data  contains list of all controls (both baseline & non-baseline) supported by Azure Tenant Security (AzTS).   |
 | [Control result data](Readme.md#control-result-data)  | Control result data  contains evaluated control scan result with appropriate status reason. |
 | [Resource Inventory data](Readme.md#resource-inventory-data)|Resource inventory data  contains details of all resources present in subscription. It includes resource name, resource id, resource type, resource group name etc. |
 | [Subscription metadata](Readme.md#subscription-metadata)| Subscription metadata  contains each subscription details like subscription id, tenant id, state etc. |
-| [Assessment Details](Readme.md#assessment-details)| Assessment Details  contains the evaluated assessment details with the appropriate status reason.|
-| [Policy State](Readme.md#policy-state) | Policy State  contains the evaluated Policy State details with the assigned scope and it's state.|
-| [Role Definition](Readme.md#role-definition)| Role Definition Details  contains both custom and built in roles information along with assigned scope.|
-| [Secure Score Control](Readme.md#secure-score-control) | Secure Score Control  contains the secure score evaluated control details with the current score and healthy and unhealty resource count.|
-| [Secure Score](Readme.md#secure-score) | Secure score  contains the evaluated secure score details current and maximum score. |
+| [Assessment data](Readme.md#assessment-data)| Assessment Details  contains the evaluated assessment details with the appropriate status reason.|
+| [Policy State data](Readme.md#policy-state-data) | Policy State  contains the evaluated Policy State details with the assigned scope and it's state.|
+| [Role definition data](Readme.md#role-definition-data)| Role Definition Details  contains both custom and built in roles information along with assigned scope.|
+| [Secure Score Control data](Readme.md#secure-score-control-data) | Secure Score Control  contains the secure score evaluated control details with the current score and healthy and unhealty resource count.|
+| [Secure Score data](Readme.md#secure-score-data) | Secure score  contains the evaluated secure score details current and maximum score. |
 ___
 
 ### **RBAC data**
@@ -166,7 +166,7 @@ ___
 |ResourceId|string|The subscription fully qualified ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
 ___
 
-### **Assessment Details**
+### **Assessment data**
 
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
@@ -182,7 +182,7 @@ ___
 
 ___
 
-### **Policy state**
+### **Policy state data**
 
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
@@ -211,7 +211,7 @@ ___
 
 ___
 
-### **Role definition**
+### **Role definition data**
 
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
@@ -230,7 +230,7 @@ ___
 
 ___
 
-### **Secure score control**
+### **Secure score control data**
 
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
@@ -254,7 +254,7 @@ ___
 
 ___
 
-### **Secure score**
+### **Secure score data**
 
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
