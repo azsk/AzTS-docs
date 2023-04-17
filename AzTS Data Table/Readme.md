@@ -1,12 +1,11 @@
 # AzTS Data Table
-___
+
 
 ## **Overview**
-___
+
 Azure Tenant Security Solution centrally scans subscriptions and get control scan result, processed RBAC data, resource inventory data, subscription meta data etc and push all the data into a central storage account.
 
 ## **AzTS Data Table details**
-___
 
 | Table Name | Description |
 |--|--|
@@ -20,12 +19,9 @@ ___
 | [Role Definition](Readme.md#role-definition)| Role Definition Details  contains both custom and built in roles information along with assigned scope.|
 | [Secure Score Control](Readme.md#secure-score-control) | Secure Score Control  contains the secure score evaluated control details with the current score and healthy and unhealty resource count.|
 | [Secure Score](Readme.md#secure-score) | Secure score  contains the evaluated secure score details current and maximum score. |
-
 ___
 
 ### **RBAC data**
-
-___
 
 |Field Name|Field Type|Description|Sample Value| 
 |--|--|--|--|
@@ -50,12 +46,9 @@ ___
 |CustomField3|string|This field contains custom data.|This field contains custom data.|
 |CustomField4|string|This field contains custom data.|This field contains custom data.|
 |CustomField5|string|This field contains custom data.|This field contains custom data.|
-
 ___
 
 ### **Baseline control data**
-
-___
 
 |Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
@@ -85,8 +78,6 @@ ___
 ___
 
 ### **Control result data**
-
-___
 
 |Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
@@ -125,8 +116,6 @@ ___
 
 ### **Resource Inventory data**
 
-___
-
 |Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
 |JobId|int|Job ID for scan (YYYYMMDD).|20230414|
@@ -149,8 +138,8 @@ ___
 |Tags|string|Tags associated with the resource.|{"cognitive": "storage"}|
 
 ___
+
 ### **Subscription metadata**
-___
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
@@ -175,12 +164,9 @@ ___
 |CustomField4|string|This field contains custom data.|This field contains custom data.|
 |CustomField5|string|This field contains custom data.|This field contains custom data.|
 |ResourceId|string|The subscription fully qualified ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
-
-
 ___
 
 ### **Assessment Details**
-___
 
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
@@ -198,7 +184,6 @@ ___
 
 ### **Policy state**
 
-___
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
 |JobId|int|Job ID for scan (YYYYMMDD).|20230414|
@@ -228,8 +213,6 @@ ___
 
 ### **Role definition**
 
-___
-
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
 |JobId|int|Job ID for scan (YYYYMMDD).|20230414|
@@ -249,7 +232,6 @@ ___
 
 ### **Secure score control**
 
-___
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
@@ -270,12 +252,10 @@ ___
 |JobId|int|Job ID for scan (YYYYMMDD).|20230414|
 |TotalResourceCount|int|The total number of resources in the control.|3|
 
-
 ___
 
 ### **Secure score**
 
-___
 |Field Name| Field Type | Description | Sample value |
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
@@ -289,6 +269,5 @@ ___
 |PercentageScore|double|The ratio of the current score divided by the maximum. Rounded to 4 digits after the decimal point.|10.0|
 |MaxScore|string|The maximum score available.|10|
 |JobId|int|Job ID for scan (YYYYMMDD).|20230414|
-
 
 ___
