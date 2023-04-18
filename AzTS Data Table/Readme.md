@@ -17,7 +17,7 @@ Azure Tenant Security Solution centrally scans subscriptions and gets control sc
 |[Assessment details](Readme.md#assessment-Details)|Assessment details contains the evaluated assessment details with the appropriate status reason.|
 |[Policy state](Readme.md#policy-state)|Policy state contains the evaluated Policy State details with the assigned scope and its state.|
 |[Role definition](Readme.md#role-definition)|Role definition Details contains both custom and built-in roles information along with the assigned scope.|
-|[Secure score Control](Readme.md#secure-score-control)|Secure score Control contains the secure score evaluated control details with the current score and healthy and unhealthy resource count.|
+|[Secure score control](Readme.md#secure-score-control)|Secure score control contains the secure score evaluated control details with the current score and healthy and unhealthy resource count.|
 |[Secure score](Readme.md#secure-score)|Secure score contains the evaluated secure score details current and maximum score.|
 ___
 
