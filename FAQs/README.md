@@ -16,7 +16,7 @@
  1. [Today's AzTS scan has completed. How do I re-run the full scan?](#1-todays-azts-scan-has-completed-how-do-i-re-run-the-full-scan)
  2. [How to disable AzTS scan and uninstall the setup?](#2-how-to-disable-azts-scan-and-uninstall-the-setup)
  3. [The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?](#3-the-subscription-scan-in-azts-is-getting-terminated-due-to-function-timeout-how-can-i-fix-it-or-how-can-i-upgrade-the-pricing-tier-of-azts-function-apps)
- 4. [How do I pull data of AzTS scan and push to different data sources?](#4-how-do-i-pull-data-of-azts-scan-and-push-to-different-data-sources)
+ 4. [How do I pull data from AzTS scan and push it to different data sources?](#4-how-do-i-pull-data-from-azts-scan-and-push-it-to-different-data-sources)
 
 - ### Monitoring
  1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
@@ -162,10 +162,10 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 
   > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
 
-### **4. How do I pull data of AzTS scan and push to different data sources?**
+### **4. How do I pull data from AzTS scan and push it to different data sources?**
 
-Azure Tenant Security Solution centrally scans subscriptions and get control scan result, processed RBAC data, resource inventory data, subscription meta data etc. and push all the data into a central storage account.<br>
-Below are some help links for pulling data from azure blob storage and push to different data sources:
+Azure Tenant Security Solution centrally scans subscriptions and gets control scan results, processed RBAC data, resource inventory data, subscription metadata, etc., and pushes all the data into a central storage account.<br>
+Below are some helpful links for pulling data from Azure blob storage and push to different data sources:
 1. https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-portal
 2. https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-tool
 3. https://learn.microsoft.com/en-us/azure/data-explorer/create-event-grid-connection?tabs=portal-adx%2Cportal-2
