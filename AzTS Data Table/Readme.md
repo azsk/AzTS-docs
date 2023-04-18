@@ -7,23 +7,23 @@ Azure Tenant Security Solution centrally scans subscriptions and gets control sc
 
 ## **AzTS Data Table details**
 
-| Table Name | Description |
+|Table Name|Description|
 |--|--|
-| [RBAC ](Readme.md#rbac) | Role-Based Access Control (RBAC) contains all PIM, permanent, and classic role assignment details. |
-| [Baseline controls](Readme.md#baseline-control) | Baseline Controls contains a list of all controls (both baseline & non-baseline) supported by Azure Tenant Security (AzTS). |
-| [Control result](Readme.md#control-result) | Control result contains evaluated control scan result with appropriate status reason. |
-| [Resource Inventory](Readme.md#resource-inventory)|Resource inventory contains details of all resources present in the subscription. It includes resource name, resource id, resource type, resource group name etc. |
-| [Subscription metadata](Readme.md#subscription-metadata)| Subscription metadata contains each subscription details like subscription id, tenant id, state, etc. |
-| [Assessment Details](Readme.md#assessment-Details)| Assessment Details contains the evaluated assessment details with the appropriate status reason.|
-| [Policy State](Readme.md#policy-state) | Policy State contains the evaluated Policy State details with the assigned scope and its state.|
-| [Role definition](Readme.md#role-definition)| Role Definition Details contains both custom and built-in roles information along with the assigned scope.|
-| [Secure Score Control](Readme.md#secure-score-control) | Secure Score Control contains the secure score evaluated control details with the current score and healthy and unhealthy resource count.|
-| [Secure Score](Readme.md#secure-score) | Secure score contains the evaluated secure score details current and maximum score. |
+|[RBAC ](Readme.md#rbac)|Role-Based Access Control (RBAC) contains all PIM, permanent, and classic role assignment details.|
+|[Baseline controls](Readme.md#baseline-control)|Baseline controls contains a list of all controls (both baseline & non-baseline) supported by Azure Tenant Security (AzTS).|
+|[Control result](Readme.md#control-result)|Control result contains evaluated control scan result with appropriate status reason.|
+|[Resource Inventory](Readme.md#resource-inventory)|Resource Inventory contains details of all resources present in the subscription. It includes resource name, resource id, resource type, resource group name etc.|
+|[Subscription metadata](Readme.md#subscription-metadata)|Subscription metadata contains each subscription details like subscription id, tenant id, state, etc.|
+|[Assessment details](Readme.md#assessment-Details)|Assessment details contains the evaluated assessment details with the appropriate status reason.|
+|[Policy state](Readme.md#policy-state)|Policy state contains the evaluated Policy State details with the assigned scope and its state.|
+|[Role definition](Readme.md#role-definition)|Role definition Details contains both custom and built-in roles information along with the assigned scope.|
+|[Secure score Control](Readme.md#secure-score-control)|Secure score Control contains the secure score evaluated control details with the current score and healthy and unhealthy resource count.|
+|[Secure score](Readme.md#secure-score)|Secure score contains the evaluated secure score details current and maximum score.|
 ___
 
 ### **RBAC**
 
-|Field Name|Field Type|Description|Sample Value| 
+|Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |RoleName|string|The role assignment name.|Reader|
@@ -65,14 +65,14 @@ ___
 |ControlSeverity|string|The severity of the control.|Critical|
 |FeatureName|string|Type of feature this control belongs to.|Storage|
 |ControlSettings|string|Settings specific to the control to be provided for the scan.|{"ApplicableOsTypes": ["Windows"]}|
-|Tags|string|Labels that denote the control to be of a specific type and belongs to a specific domain.|["Baseline", "SDL", "TCP","Automated" ] |
+|Tags|string|Labels that denote the control to be of a specific type and belongs to a specific domain.|["Baseline", "SDL", "TCP", "Automated"]|
 |Enabled|bool|Field to indicate whether the control is enabled or disabled.|true|
 |PolicyDefinitionGuid|string|The policy definition guide.|0x0xxx00-x0x0-000x-xx0x-0000x0000000|
 |ResourceType|string|The type of resources this control scans.|"Microsoft.Storage/storageAccounts"|
 |Remediation|string|Steps to remediate control.|For remediation using PowerShell commands, run the command: 'Set-AzStorageAccount -ResourceGroupName <RGName> -Name <StorageAccountName> -EnableHttpsTrafficOnly $true'. Run 'Get-Help Set-AzStorageAccount -full' for more help.|
 |ControlScanSource|string|The control scan source.|Reader|
 |AssessmentProperties|string|The assessment properties.|{"AssessmentNames": ["000000xx-0xxx-0x00-0x00-00x00x0000x0"]}|
-|CustomPolicyProperties|string|The custom policy properties.|{"PolicyDefinitionIds": ["/providers/Microsoft.Authorization/policyDefinitions/000xx000-xx0x-0000-00dd-000000xx000x"]},|
+|CustomPolicyProperties|string|The custom policy properties.|{"PolicyDefinitionIds": ["/providers/Microsoft.Authorization/policyDefinitions/000xx000-xx0x-0000-00dd-000000xx000x"]}|
 |Automated|string|Whether the control is manual or automated.|Yes|
 
 ___
@@ -106,11 +106,11 @@ ___
 |FirstScannedOn|datetime|Control first scan date and time.|2020-11-10T15:44:39|
 |FirstFailedOn|datetime|Control first Failed date and time.|2020-11-9T15:44:39|
 |LastResultTransitionOn|datetime|Control status last changed date and time.|2020-11-9T15:44:39|
-|ExceptionDetails|string|Details related to exception if exception is raised.|{"ExceptionExpiryDate":"2023-09-29T00:00:00","ExceptionGrantedOn":"2022-11-11T04:03:20.5833333","RequestedById":"xxxxxxx@microsoft.com"}|
+|ExceptionDetails|string|Details related to exception if exception is raised.|{"ExceptionExpiryDate":"2023-09-29T00:00:00", "ExceptionGrantedOn":"2022-11-11T04:03:20.5833333", "RequestedById": "xxxxxxx@microsoft.com"}|
 |DueDate|datetime|Due date.|2023-05-06T07:57:45.9650292|
-|AssignedTo|string|Assigned to.|null
+|AssignedTo|string|Assigned to.|null|
 |UniqueId|string|Unique ID associated with the control scan.|0x0xx0x0xx0x0000x0xx000000000x0|
-|AdditionalInformation|string|Additional information associated with the control scan which is helpful in remediation.|{"Stale identities":[{"RoleName":"Reader","PrincipalName":"identity not found or stale account","Scope":"/subscriptions/xxx0000x-00x0-00x0-000x-00xxxxx000x0","UserName":"xxx0000x-00x0-00x0-000x-00xxxxx000x0","IdentityType":"ServicePrincipal","AssignmentType":"Permanent"}]}|
+|AdditionalInformation|string|Additional information associated with the control scan which is helpful in remediation.|{"Stale identities": [{"RoleName": "Reader", "PrincipalName": "identity not found or stale account", "Scope": "/subscriptions/xxx0000x-00x0-00x0-000x-00xxxxx000x0", "UserName": "xxx0000x-00x0-00x0-000x-00xxxxx000x0", "IdentityType": "ServicePrincipal", "AssignmentType": "Permanent"}]}|
 
 ___
 
@@ -147,16 +147,16 @@ ___
 |Timestamp|datetime|The subscription metadata fetched time.|Fr, 14 Apr 2023 08:39:24 GMT|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |SubscriptionName|string|The subscription display name.|Microsoft Azure Test|
-|OrgTenantId|string|The subscription tenant ID.| 00x000xx-00x0-00xx-00xx-0x0xx000xx00|
+|OrgTenantId|string|The subscription tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
 |RetryCount|int|Number of retries count to fetch subscription details.|0|
 |Tags|string|Tags attached to the subscription.|{"Env": "Prod"}|
 |State|string|The subscription state.|Enabled|
 |PIMResourceId|string|PIM resource ID of the subscription.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |CreatedDate|datetime|Subscription creatio date and time.|2020-11-11T13:38:39|Subscription creation date.|
-|StateUpdatedOn|datetime|Last date and time on which subscription state is updated. |2021-07-15T12:34:47|
+|StateUpdatedOn|datetime|Last date and time on which subscription state is updated.|2021-07-15T12:34:47|
 |IsBillingInfoAvailable|bool|Indicates whether subscription billing information is available or not.|true|
 |MaxBillingDate|datetime|Subscription billing date and time.|2023-04-03T00:00:00|
-|SubscriptionOfferType|string|The subscription offer type.|null|,
+|SubscriptionOfferType|string|The subscription offer type.|null|
 |SubscriptionExpiryDate|datime|Subscription expiry date and time.|2025-04-03T00:00:00|
 |CustomField1|string|This field contains custom data.|This field contains custom data.|
 |CustomField2|string|This field contains custom data.|This field contains custom data.|
@@ -168,23 +168,23 @@ ___
 
 ### **Assessment**
 
-|Field Name| Field Type | Description | Sample value |
+|Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
-| SubscriptionId |string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
-| AssessmentName | string|The assessment name.| 00000xxx-xx00-0x00-x0x0-00xx00000x00|
-| AssessmentId | string |The assessment ID.| /subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/Microsoft.Security/assessments/00000xxx-xx00-0x00-x0x0-00xx00000x00|
-| AzureResourceId | string |Azure resource Id of the assessed resource.| /subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00 |
-| RecommendationDisplayName | string |The recommendation display name.| MFA should be enabled on accounts with read permissions on subscriptions |
-| StatusCode | string |Programmatic code for the status of the assessment.| Healthy |
-| StatusMessage | string |The assessment status message.|{ "code": "Healthy"} |
-| AdditionalData |string|The assessment additional data. |{"usersWithNoMfaObjectIdList": "[]"} |
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|AssessmentName|string|The assessment name.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|AssessmentId|string|The assessment ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/Microsoft.Security/assessments/00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|AzureResourceId|string|Azure resource Id of the assessed resource.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|RecommendationDisplayName|string|The recommendation display name.|MFA should be enabled on accounts with read permissions on subscriptions|
+|StatusCode|string|Programmatic code for the status of the assessment.|Healthy|
+|StatusMessage|string|The assessment status message.|{"code": "Healthy"}|
+|AdditionalData|string|The assessment additional data.|{"usersWithNoMfaObjectIdList": "[]"}|
 
 ___
 
 ### **Policy state**
 
-|Field Name| Field Type | Description | Sample value |
+|Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |PolicyDefinitionAction|string|Policy definition action, i.e. effect.|deployifnotexists|
@@ -203,7 +203,7 @@ ___
 |ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource|
 |StateWeight|int|The weight of policy state.|200|
 |TimeStamp|datetime|Timestamp for the policy state record.|4/10/2023 3:31:14 AM|
-|ManagementGroupIds|string| Comma-separated list of management group IDs, which represent the hierarchy of the management groups the resource is under.|00000xxx-xx00-0x00-x0x0-00xx00000x00,00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|ManagementGroupIds|string|Comma-separated list of management group IDs,  which represent the hierarchy of the management groups the resource is under.|00000xxx-xx00-0x00-x0x0-00xx00000x00, 00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |PolicyAssignmentParameters|string|The policy assignment parameters.|null|
 |PolicyDefinitionReferenceId|string|Reference ID for the policy definition inside the policy set, if the policy assignment is for a policy set.|null|
 |PolicyStateId|string|The policy state ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource/providers/microsoft.policyinsights/policystates/00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx|
@@ -213,14 +213,14 @@ ___
 
 ### **Role definition**
 
-|Field Name| Field Type | Description | Sample value |
+|Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |RoleName|string|The role definition name.|reader|
 |Type|string|The role definition type.|CustomRole|
 |Description|string|A basic description of the role and its permissions.|Lets you view everything, but not make any changes|
 |AssignableScopes|string|The role definition assignable scopes.|["/"]|
-|Permissions|string|The role definition permissions.|[{"actions": ["*/read"],"notActions": [],"dataActions": [],"notDataActions": []}]|
+|Permissions|string|The role definition permissions.|[{"actions": ["*/read"], "notActions": [], "dataActions": [], "notDataActions": []}]|
 |CreatedOn|datetime|Date and time of creation.|14/04/2023 23:38:05|
 |UpdatedOn|datetime|Date and time of the last update.|14/04/2023 23:38:05|
 |CreatedBy|string|ID of the user who created the role definition.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
@@ -232,7 +232,7 @@ ___
 
 ### **Secure score control**
 
-|Field Name| Field Type | Description | Sample value |
+|Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
 |subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
@@ -248,7 +248,7 @@ ___
 |UnhealthyResourceCount|int|Number of unhealthy resources in the control.|0|
 |HealthyResourceCount|int|Number of healthy resources in the control.|0|
 |SourceType|string|The type of security control.|BuiltIn|
-|AssessmentDefinitions|string|Array of assessments metadata IDs that are included in this security control.|["/providers/Microsoft.Security/assessmentMetadata/00000xxx-xx00-0x00-x0x0-00xx00000x00","/providers/Microsoft.Security/assessmentMetadata/00000xxx-xx00-0x00-x0x0-00xx00000x00"]|
+|AssessmentDefinitions|string|Array of assessments metadata IDs that are included in this security control.|["/providers/Microsoft.Security/assessmentMetadata/00000xxx-xx00-0x00-x0x0-00xx00000x00", "/providers/Microsoft.Security/assessmentMetadata/00000xxx-xx00-0x00-x0x0-00xx00000x00"]|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |TotalResourceCount|int|The total number of resources in the control.|3|
 
@@ -256,7 +256,7 @@ ___
 
 ### **Secure score**
 
-|Field Name| Field Type | Description | Sample value |
+|Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
 |subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
