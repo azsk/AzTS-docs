@@ -30,7 +30,7 @@ ___
 |RoleId|string|The role assignment ID.|xx0x0xx0-0xx0-0000-0x00-000x0x00000x|
 |AccountType|string|The role assignment account type.|ServicePrincipal|
 |UserName|string|The role assignment user name.|xx0000x0-00x0-000x-000x-x0x00x00xxxx|
-|UserNameMApped|string|User name mapped to role assignment user name.|xx0000x0-00x0-000x-000x-x0x00x00xxxx|
+|UserNameMapped|string|User name mapped to role assignment user name.|xx0000x0-00x0-000x-000x-x0x00x00xxxx|
 |PrincipalName|string|The principal name.|user_alias@microsoft.com|
 |UserMail|string|The mail of user.|user_alias@microsoft.com|
 |DisplayName|string|The role assignment name.|Username|
@@ -82,7 +82,7 @@ ___
 |Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
 |JobId|int|JobID for scan (YYYYMMDD).|20230414|
-|subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |ResourceGroupName|string|The resource group name.|TestRG|
 |ResourceName|string|The resource name.|storageaccount|
 |ResourceType|string|The resource type.|Microsoft.Storage/storageAccounts|
@@ -128,7 +128,7 @@ ___
 |ProvisioningState|string|The resource current state.|Succeeded|
 |CreatedTime|datetime|Resource creation time.|2023-03-14T09:25:13.8285199Z|
 |ChangedTime|datetime|Resouce last changed date and time.|2023-03-14T09:25:13.8285199Z|
-|Subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
 |CustomField1|string|This field contains custom data.|This field contains custom data.|
 |CustomField2|string|This field contains custom data.|This field contains custom data.|
@@ -143,7 +143,7 @@ ___
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
-|subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |Timestamp|datetime|The subscription metadata fetched time.|Fr, 14 Apr 2023 08:39:24 GMT|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |SubscriptionName|string|The subscription display name.|Microsoft Azure Test|
@@ -196,7 +196,7 @@ ___
 |PolicySetDefinitionName|string|Policy set definition name, if the policy assignment is for a policy set.|00000xxxxx000x00x0x000xx|
 |ComplianceState|string|Compliance state of the resource.|Compliant|
 |OrgTenantId|string|The tenant ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
-|subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |ResourceLocation|string|The resource location.|eastus|
 |ResourceGroup|string|The resource group name.|sampleresourcegroup|
 |ResourceType|string|The resource type.|Microsoft.Compute/virtualMachines|
@@ -235,7 +235,7 @@ ___
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
-|subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |Id|string|The resource Id.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/Microsoft.Security/secureScores/ascScore/secureScoreControls/00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |Name|string|The resource name.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |DisplayName|string|User friendly display name of the control.|Restrict unauthorized network access|
@@ -259,7 +259,7 @@ ___
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
-|subscriptionid|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |Id|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/Microsoft.Security/secureScores/ascScore|
 |Name|string|The resource name.|ascScore|
 |DisplayName|string|The initiative’s name.|ascScore|
