@@ -10,15 +10,15 @@ Azure Tenant Security Solution centrally scans subscriptions and gets control sc
 |Table Name|Description|
 |--|--|
 |[RBAC ](Readme.md#rbac)|Role-Based Access Control (RBAC) contains all PIM, permanent, and classic role assignment details.|
-|[Baseline controls](Readme.md#baseline-control)|Baseline controls contains a list of all controls (both baseline & non-baseline) supported by Azure Tenant Security (AzTS).|
-|[Control result](Readme.md#control-result)|Control result contains evaluated control scan result with appropriate status reason.|
+|[Baseline Controls](Readme.md#baseline-controls)|Baseline Controls contains a list of all controls (both baseline & non-baseline) supported by Azure Tenant Security (AzTS).|
+|[Control Results](Readme.md#control-results)|Control results contains evaluated control scan result with appropriate status reason.|
 |[Resource Inventory](Readme.md#resource-inventory)|Resource Inventory contains details of all resources present in the subscription. It includes resource name, resource id, resource type, resource group name etc.|
-|[Subscription metadata](Readme.md#subscription-metadata)|Subscription metadata contains each subscription details like subscription id, tenant id, state, etc.|
-|[Assessment details](Readme.md#assessment-Details)|Assessment details contains the evaluated assessment details with the appropriate status reason.|
-|[Policy state](Readme.md#policy-state)|Policy state contains the evaluated Policy State details with the assigned scope and its state.|
-|[Role definition](Readme.md#role-definition)|Role definition Details contains both custom and built-in roles information along with the assigned scope.|
-|[Secure score control](Readme.md#secure-score-control)|Secure score control contains the secure score evaluated control details with the current score and healthy and unhealthy resource count.|
-|[Secure score](Readme.md#secure-score)|Secure score contains the evaluated secure score details current and maximum score.|
+|[Subscription Metadata](Readme.md#subscription-metadata)|Subscription Metadata contains each subscription details like subscription id, tenant id, state, etc.|
+|[Assessment Details](Readme.md#assessment-details)|Assessment Details contains the evaluated assessment details with the appropriate status reason.|
+|[Policy State](Readme.md#policy-state)|Policy State contains the evaluated Policy State details with the assigned scope and its state.|
+|[Role Definitions](Readme.md#role-definitions)|Role Definitions details contains both custom and built-in roles information along with the assigned scope.|
+|[Secure Score Controls](Readme.md#secure-score-controls)|Secure Score Controls contains the secure score evaluated control details with the current score and healthy and unhealthy resource count.|
+|[Secure Scores](Readme.md#secure-scores)|Secure Score contains the evaluated secure score details current and maximum score.|
 ___
 
 ### **RBAC**
@@ -48,7 +48,7 @@ ___
 |CustomField5|string|This field contains custom data.|This field contains custom data.|
 ___
 
-### **Baseline control**
+### **Baseline Controls**
 
 |Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
@@ -77,7 +77,7 @@ ___
 
 ___
 
-### **Control result**
+### **Control Results**
 
 |Field Name|Field Type|Description|Sample Value|
 |--|--|--|--|
@@ -139,7 +139,7 @@ ___
 
 ___
 
-### **Subscription metadata**
+### **Subscription Metadata**
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
@@ -166,7 +166,7 @@ ___
 |ResourceId|string|The subscription fully qualified ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
 ___
 
-### **Assessment**
+### **Assessment Details**
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
@@ -182,7 +182,7 @@ ___
 
 ___
 
-### **Policy state**
+### **Policy State**
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
@@ -211,7 +211,7 @@ ___
 
 ___
 
-### **Role definition**
+### **Role Definitions**
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
@@ -230,7 +230,7 @@ ___
 
 ___
 
-### **Secure score control**
+### **Secure Score Controls**
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
@@ -254,7 +254,7 @@ ___
 
 ___
 
-### **Secure score**
+### **Secure Scores**
 
 |Field Name|Field Type|Description|Sample value|
 |--|--|--|--|
