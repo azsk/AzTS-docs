@@ -86,7 +86,7 @@ ___
 |ResourceGroupName|string|The resource group name.|TestRG|
 |ResourceName|string|The resource name.|storageaccount|
 |ResourceType|string|The resource type.|Microsoft.Storage/storageAccounts|
-|ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourceGroups/sampleresourcegroup/providersMicrosoft.Storage/storageAccounts/resourcename|
+|ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourceGroups/<br/>sampleresourcegroup/providersMicrosoft.Storage/storageAccounts/<br/>resourcename|
 |ControlName|string|The control name.|Azure_Storage_DP_Encrypt_In_Transit|
 |VerificationResult|string|It indicates control status.|Possible values: {"Passed", "Failed", "NotApplicable", "ExtScanned", "Verify", "Exempted", "Error", "NotScanned"}|
 |ScannedOn|datetime|Control scanned date and time.|Fr, 14 Apr 2023 08:39:24 GMT|
@@ -120,7 +120,7 @@ ___
 |--|--|--|--|
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |Name|string|The resource name.|test|
-|ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourceGroups/RG_Name/providers/Microsoft.Storage/storageAccounts/Resource_Name|
+|ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/<br/>resourceGroups/RG_Name/providers/Microsoft.Storage/storageAccounts/<br/>Resource_Name|
 |ResourceType|string|The resource provider type.|Microsoft.Storage/storageAccounts|
 |Location|string|The resource location.|EastUS|
 |ResourceGroup|string|The resource group name.|RG name|
@@ -189,10 +189,10 @@ ___
 |JobId|int|Job ID for the scan (YYYYMMDD).|20230414|
 |PolicyDefinitionAction|string|Policy definition action, i.e. effect.|deployifnotexists|
 |PolicyAssignmentScope|string|The policy assignment scope.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
-|PolicyAssignmentId|string|The policy assignment ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/microsoft.authorization/policyassignments/PolicyAssignmentName|
-|PolicyDefinitionId|string|The policy assignment name.|/providers/microsoft.authorization/policydefinitions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|PolicyAssignmentId|string|The policy assignment ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/<br/>providers/microsoft.authorization/policyassignments/<br/>PolicyAssignmentName|
+|PolicyDefinitionId|string|The policy assignment name.|/providers/microsoft.authorization/<br/>policydefinitions/00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |PolicyDefinitionName|string|The policy definition name.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
-|PolicySetDefinitionId|string|Policy set definition ID, if the policy assignment is for a policy set.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/Microsoft.Authorization/policySetDefinitions/00000xxxxx000x00x0x000xx|
+|PolicySetDefinitionId|string|Policy set definition ID, if the policy assignment is for a policy set.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/<br/>providers/Microsoft.Authorization/policySetDefinitions/<br/>00000xxxxx000x00x0x000xx|
 |PolicySetDefinitionName|string|Policy set definition name, if the policy assignment is for a policy set.|00000xxxxx000x00x0x000xx|
 |ComplianceState|string|Compliance state of the resource.|Possible values: {"Compliant", "NonCompliant"}|
 |OrgTenantId|string|The tenant ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
@@ -200,13 +200,13 @@ ___
 |ResourceLocation|string|The resource location.|eastus|
 |ResourceGroup|string|The resource group name.|sampleresourcegroup|
 |ResourceType|string|The resource type.|Microsoft.Compute/virtualMachines|
-|ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource|
+|ResourceId|string|The resource ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/<br/>resourcegroups/sampleresourcegroup/providers/microsoft.compute/<br/>virtualmachines/sampleresource|
 |StateWeight|int|The weight of policy state.|200|
 |TimeStamp|datetime|Timestamp for the policy state record.|4/10/2023 3:31:14 AM|
 |ManagementGroupIds|string|Comma-separated list of management group IDs,  which represent the hierarchy of the management groups the resource is under.|00000xxx-xx00-0x00-x0x0-00xx00000x00, 00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |PolicyAssignmentParameters|string|The policy assignment parameters.|{"allowedSkus": {"value": "Standard_A1"}}|
 |PolicyDefinitionReferenceId|string|Reference ID for the policy definition inside the policy set, if the policy assignment is for a policy set.|StorageAccountNetworkACLs|
-|PolicyStateId|string|The policy state ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/resourcegroups/sampleresourcegroup/providers/microsoft.compute/virtualmachines/sampleresource/providers/microsoft.policyinsights/policystates/00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000xx|
+|PolicyStateId|string|The policy state ID.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/<br/>resourcegroups/sampleresourcegroup/providers/microsoft.compute/<br/>virtualmachines/sampleresource/providers/microsoft.policyinsights<br/>/policystates/00000xxxxx000x00x0x000xx00000xxxxx000x00x0x000<br/>xx00000xxxxx000x00x0x000xx|
 
 
 ___
@@ -236,7 +236,7 @@ ___
 |--|--|--|--|
 |OrgTenantId|string|The tenant ID.|00x000xx-00x0-00xx-00xx-0x0xx000xx00|
 |SubscriptionId|string|The subscription ID.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
-|Id|string|The resource Id.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/Microsoft.Security/secureScores/ascScore/secureScoreControls/00000xxx-xx00-0x00-x0x0-00xx00000x00|
+|Id|string|The resource Id.|/subscriptions/00000xxx-xx00-0x00-x0x0-00xx00000x00/providers/<br/>Microsoft.Security/secureScores/ascScore/secureScoreControls/<br/>00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |Name|string|The resource name.|00000xxx-xx00-0x00-x0x0-00xx00000x00|
 |DisplayName|string|User friendly display name of the control.|Restrict unauthorized network access|
 |Weight|int|Relative weight for this specific control in each of your subscriptions. Used when calculating an aggregated score for this control across all of your subscriptions.|0|
