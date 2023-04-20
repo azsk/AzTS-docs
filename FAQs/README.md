@@ -164,7 +164,7 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 
 ### **4. How do I pull data from AzTS scan and push it to different data sources?**
 
-Azure Tenant Security Solution centrally scans subscriptions and gets control scan results, processed RBAC data, resource inventory data, subscription metadata, etc., and pushes all the data into a central storage account 'azskaztsstoragexx00x'.<br>
+Azure Tenant Security Solution centrally scans subscriptions and produces control scan results, processed RBAC data, resource inventory data, subscription metadata, etc., and pushes all the data into a central storage account 'azskaztsstoragexx00x'.<br>
 Below are some helpful links for pulling data from Azure blob storage in central storage account 'azskaztsstoragexx00x' and push to different data sources:
 1. [Copy data from Azure Blob storage to a database in Azure SQL Database by using Azure Data Factory](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-portal)
 2. [Copy data from Azure Blob storage to a SQL Database by using the Copy Data tool](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-tool)

@@ -3,7 +3,7 @@
 
 ## **Overview**
 
-Azure Tenant Security Solution centrally scans subscriptions and gets control scan results, processed RBAC data, resource inventory data, subscription metadata, etc., and pushes all the data into a blob storage of a central storage account.
+Azure Tenant Security Solution centrally scans subscriptions and produces control scan results, processed RBAC data, resource inventory data, subscription metadata, etc., and pushes all the data into a blob storage of a central storage account.
 
 ## **AzTS Data Table details**
 
