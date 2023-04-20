@@ -245,8 +245,7 @@ ___
 |PercentageScore|double|Ratio of the current score divided by the maximum. Rounded to 4 digits after the decimal point.|0.0|
 |MaxScore|string|The maximum score available.|0|
 |NotApplicableResourceCount|string|Number of not applicable resources in the control.|3|
-|UnhealthyResourceCount|int|Number ofi
-unhealthy resources in the control.|0|
+|UnhealthyResourceCount|int|Number of unhealthy resources in the control.|0|
 |HealthyResourceCount|int|Number of healthy resources in the control.|0|
 |SourceType|string|The type of security control.|Possible values: {"Custom", "BuiltIn"}|
 |AssessmentDefinitions|string|Array of assessments metadata IDs that are included in this security control.|["/providers/Microsoft.Security/assessmentMetadata/00000xxx-xx00-0x00-x0x0-00xx00000x00", "/providers/Microsoft.Security/assessmentMetadata/00000xxx-xx00-0x00-x0x0-00xx00000x00"]|
