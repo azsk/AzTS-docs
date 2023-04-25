@@ -65,14 +65,41 @@ function Uninstall-AzPowershell()
 # H/T to Kieran Marron https://blog.kieranties.com/2018/03/26/write-information-with-colours
 function Write-InformationFormatted()
 {
+    <#
+    .SYNOPSIS
+    This function adds text color to Write-Information
+    .DESCRIPTION
+    This function adds text color to Write-Information
+    .PARAMETER MessageData
+    The message to write
+    .PARAMETER ForegroundColor
+    Text color
+    .PARAMETER BackgroundColor
+    Background color
+    .PARAMETER NoNewline
+    Switch whether to suppress new line
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Write-InformationFormatted -MessageData "Hello Wordl" -ForegroundColor Blue
+    .LINK
+    None
+  #>
+
   [CmdletBinding()]
   param
   (
       [Parameter(Mandatory)]
-      [Object]$MessageData,
-      [ConsoleColor]$ForegroundColor = $Host.UI.RawUI.ForegroundColor, # Make sure we use the current colours by default
-      [ConsoleColor]$BackgroundColor = $Host.UI.RawUI.BackgroundColor,
-      [Switch]$NoNewline
+      [Object]
+      $MessageData,
+      [ConsoleColor]
+      $ForegroundColor = $Host.UI.RawUI.ForegroundColor, # Make sure we use the current colours by default
+      [ConsoleColor]
+      $BackgroundColor = $Host.UI.RawUI.BackgroundColor,
+      [Switch]
+      $NoNewline
   )
 
   $msg = [HostInformationMessage]@{
@@ -86,6 +113,50 @@ function Write-InformationFormatted()
 }
 
 # ####################################################################################################
+
+# ####################################################################################################
+# Control Utility functions
+
+function Get-MyPublicIpAddress()
+{
+    <#
+    .SYNOPSIS
+    This function reaches out to a third-party web site and gets "my" public IP address, typically the egress address from my local network
+    .DESCRIPTION
+    This function reaches out to a third-party web site and gets "my" public IP address, typically the egress address from my local network
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> $myPublicIpAddress = Get-MyPublicIpAddress
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  $ipUrl = "https://api.ipify.org"
+
+  $myPublicIpAddress = ""
+
+  # Test whether I can use a public site to get my public IP address
+  $statusCode = (Invoke-WebRequest "$ipUrl").StatusCode
+
+  if ("200" -eq "$statusCode")
+  {
+    # Get my public IP address
+    $myPublicIpAddress = Invoke-RestMethod "$ipUrl"
+    $myPublicIpAddress += "/32"
+
+    Write-InformationFormatted -MessageData "Got my public IP address: $myPublicIpAddress."
+  }
+  else
+  {
+    Write-InformationFormatted -MessageData "Error! Could not get my public IP address." -ForegroundColor Red
+  }
+
+  return $myPublicIpAddress
+}
 
 # ####################################################################################################
 # Azure_AppService_DP_Use_Secure_FTP_Deployment
@@ -114,7 +185,8 @@ function Get-AppServiceFtpState()
   #>
 
   [CmdletBinding()]
-  param (
+  param
+  (
     [Parameter(Mandatory = $true)]
     [string]
     $SubscriptionId,
@@ -172,7 +244,8 @@ function Set-AppServiceFtpState()
   #>
 
   [CmdletBinding()]
-  param (
+  param
+  (
     [Parameter(Mandatory = $true)]
     [string]
     $SubscriptionId,
@@ -852,7 +925,7 @@ function Get-AppServiceAllPossibleOutboundPublicIps()
     .SYNOPSIS
     This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service.
     .DESCRIPTION
-    This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service. Use this command and its output to set network access rules on other services, such as Key Vault when all public access is not enabled.
+    This command returns a comma-delimited string of all the POSSIBLE public IPs for the App Service. Use this command and its output to set network access rules on other services, such as Key Vault when all public access is not enabled. NOTE that this is not reliable for Consumption or Premium plan Functions - please see the control documentation for details.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the App Service.
     .PARAMETER ResourceGroupName
@@ -894,7 +967,7 @@ function Get-AppServiceAllCurrentOutboundPublicIps()
     .SYNOPSIS
     This command returns a comma-delimited string of all the CURRENT public IPs for the App Service.
     .DESCRIPTION
-    This command returns a comma-delimited string of all the CURRENT public IPs for the App Service. These are the public IPs the App Service is currently using; they are a subset of all POSSIBLE public IPs.
+    This command returns a comma-delimited string of all the CURRENT public IPs for the App Service. These are the public IPs the App Service is currently using; they are a subset of all POSSIBLE public IPs. NOTE that this is not reliable for Consumption or Premium plan Functions - please see the control documentation for details.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the App Service.
     .PARAMETER ResourceGroupName
@@ -928,120 +1001,6 @@ param (
   $appService = Get-AzWebApp -ResourceGroupName $ResourceGroupName -Name $AppServiceName
 
   $appService.OutboundIpAddresses
-}
-
-function Set-KeyVaultPublicNetworkAccessEnabledForMe()
-{
-  <#
-    .SYNOPSIS
-    This command updates a Key Vault to enable public network access for the public IP address of the machine (or its internet-facing proxy) that this is being run on.
-    .DESCRIPTION
-    This command updates a Key Vault to enable public network access for the public IP address of the machine (or its internet-facing proxy) that this is being run on. All existing IP address and VNet rules are maintained.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Key Vault.
-    .PARAMETER ResourceGroupName
-    The Resource Group name containing the Key Vault.
-    .PARAMETER KeyVaultName
-    The Key Vault name.
-    .INPUTS
-    None
-    .OUTPUTS
-    None
-    .EXAMPLE
-    PS> Set-KeyVaultPublicNetworkAccessEnabledForMe -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $KeyVaultName
-  )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  # Test whether I can use a public site to get my public IP address
-  $statusCode = (Invoke-WebRequest "http://ipinfo.io/json").StatusCode
-
-  if ("200" -eq "$statusCode")
-  {
-    # Get my public IP address
-    $myPublicIpAddress = Invoke-RestMethod http://ipinfo.io/json | Select -exp ip
-    $myPublicIpAddress += "/32"
-
-    Write-InformationFormatted -MessageData "Got my public IP address: $myPublicIpAddress. Now adding network access rule to Key Vault."
-
-    Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
-      -SubscriptionId $SubscriptionId `
-      -ResourceGroupName $ResourceGroupName `
-      -KeyVaultName $KeyVaultName `
-      -PublicIpAddress $myPublicIpAddress
-  }
-  else
-  {
-    Write-InformationFormatted -MessageData "Unable to connect to public internet resource to get my public IP address. No change made to Key Vault network access rules."
-  }
-}
-
-function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
-{
-  <#
-    .SYNOPSIS
-    This command updates a Key Vault to enable public network access for the specified array of public IP addresses.
-    .DESCRIPTION
-    This command updates a Key Vault to enable public network access for the specified array of public IP addresses. All existing IP address and VNet rules are maintained.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Key Vault.
-    .PARAMETER ResourceGroupName
-    The Resource Group name containing the Key Vault.
-    .PARAMETER KeyVaultName
-    The Key Vault name.
-    .PARAMETER PublicIpAddresses
-    An array of public IP address to grant access to the Key Vault.
-    .INPUTS
-    None
-    .OUTPUTS
-    None
-    .EXAMPLE
-    PS> Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddresses "1.1.1.1","1.1.1.2","1.1.1.3"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $KeyVaultName,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    $PublicIpAddresses
-  )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  ForEach ($publicIpAddress in $PublicIpAddresses)
-  {
-    Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
-      -SubscriptionId $SubscriptionId `
-      -ResourceGroupName $ResourceGroupName `
-      -KeyVaultName $KeyVaultName `
-      -PublicIpAddress $publicIpAddress
-  }
 }
 
 function Set-KeyVaultSecurePublicNetworkSettings()
@@ -1115,6 +1074,159 @@ function Set-KeyVaultSecurePublicNetworkSettings()
     }
 }
 
+function Set-KeyVaultPublicNetworkAccessEnabledForMe()
+{
+  <#
+    .SYNOPSIS
+    This command updates a Key Vault to enable public network access for the public IP address of the machine (or its internet-facing proxy) that this is being run on.
+    .DESCRIPTION
+    This command updates a Key Vault to enable public network access for the public IP address of the machine (or its internet-facing proxy) that this is being run on. All existing IP address and VNet rules are maintained.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
+    .PARAMETER ResourceGroupName
+    The Resource Group name containing the Key Vault.
+    .PARAMETER KeyVaultName
+    The Key Vault name.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultPublicNetworkAccessEnabledForMe -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $myPublicIpAddress = Get-MyPublicIpAddress
+
+  if ($myPublicIpAddress)
+  {
+    Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
+      -SubscriptionId $SubscriptionId `
+      -ResourceGroupName $ResourceGroupName `
+      -KeyVaultName $KeyVaultName `
+      -PublicIpAddress $myPublicIpAddress
+
+    Write-InformationFormatted -MessageData "Added my public IP address $myPublicIpAddress to Key Vault network access rules." -ForegroundColor Green
+  }
+  else
+  {
+    Write-InformationFormatted -MessageData "Unable to get my public IP address. No change made to Key Vault network access rules." -ForegroundColor Red
+  }
+}
+
+function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
+{
+  <#
+    .SYNOPSIS
+    This command updates a Key Vault to enable public network access for the specified array of public IP addresses.
+    .DESCRIPTION
+    This command updates a Key Vault to enable public network access for the specified array of public IP addresses. All existing IP address and VNet rules are maintained.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
+    .PARAMETER ResourceGroupName
+    The Resource Group name containing the Key Vault.
+    .PARAMETER KeyVaultName
+    The Key Vault name.
+    .PARAMETER PublicIpAddresses
+    An array of public IP address to grant access to the Key Vault.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddresses "1.1.1.1","1.1.1.2","1.1.1.3"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $PublicIpAddresses
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
+
+  $needToUpdate = $false
+
+  if ($keyVault.NetworkAcls.IpAddressRanges)
+  {
+    $ipAddressRanges = $keyVault.NetworkAcls.IpAddressRanges
+  }
+  else
+  {
+    $ipAddressRanges = @()
+  }
+
+  foreach($ipAddress in $PublicIpAddresses)
+  {
+    # Check if the Key Vault network ACLs already contain my public IP address
+    If ($ipAddressRanges.Contains($ipAddress))
+    {
+      Write-InformationFormatted -MessageData "Current Key Vault public IP address range already contains $ipAddress."
+    }
+    Else
+    {
+      $ipAddressRanges += $ipAddress
+      $needToUpdate = $true
+      Write-InformationFormatted -MessageData "Added IP address $ipAddress to Key Vault address address ranges."
+    }
+  }
+
+  If ($needToUpdate)
+  {
+    Write-InformationFormatted -MessageData "Update Key Vault network access rules."
+
+    If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
+    {
+      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs network access rules."
+      Update-AzKeyVaultNetworkRuleSet `
+        -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -VaultName $KeyVaultName `
+        -IpAddressRange $ipAddressRange
+    }
+    else
+    {
+      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules."
+      Update-AzKeyVaultNetworkRuleSet `
+        -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -VaultName $KeyVaultName `
+        -IpAddressRange $ipAddressRange `
+        -VirtualNetworkResourceId $keyVault.NetworkAcls.VirtualNetworkResourceIds
+    }
+  }
+}
+
 function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
 {
   <#
@@ -1160,11 +1272,6 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
   # VNet rules: Maintain what is currently on the Key Vault - the context here is public network access, no op on VNet rules
 
   $profile = Set-AzContext -Subscription $SubscriptionId
-
-  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
-
-  # ##################################################
-  # Ensure Key Vault has the needed network ACL rules and default action Deny
 
   $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
 
