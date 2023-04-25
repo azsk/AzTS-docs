@@ -1,4 +1,4 @@
-function Get-PublicIpsForServiceTags()
+function Get-PublicIpRangesForServiceTags()
 {
   <#
     .SYNOPSIS
@@ -61,3 +61,4 @@ function Get-PublicIpsForServiceTags()
 
   return $ips
 }
+
