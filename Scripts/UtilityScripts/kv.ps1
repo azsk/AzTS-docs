@@ -1,3 +1,52 @@
+function Get-PublicIpRanges()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .INPUTS
+    None
+    .OUTPUTS
+    Service Tags
+    .EXAMPLE
+    PS> Get-PublicIpRanges
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param()
+
+  $fileMatch = "ServiceTags_Public"
+  $ipRanges = @()
+
+  $uri = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+
+  $response = Invoke-WebRequest -Uri $uri
+
+  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
+
+  if ($links -and $links.Count -gt 0)
+  {
+    $link = $links[0]
+
+    if ($link)
+    {
+      $jsonUri = $link.href
+
+      $response = Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json
+
+      if ($response -and $response.values)
+      {
+        $ipRanges = $response.values
+      }
+    }
+  }
+
+  return $ipRanges
+}
+
 function Get-PublicIpRangesForServiceTags()
 {
   <#
@@ -12,7 +61,7 @@ function Get-PublicIpRangesForServiceTags()
     .OUTPUTS
     Array of IPv4 CIDRs for the specified Service tags
     .EXAMPLE
-    PS> Get-MicrosoftPublicIps -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
+    PS> Get-PublicIpRangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
     .LINK
     None
   #>
@@ -25,35 +74,18 @@ function Get-PublicIpRangesForServiceTags()
       $ServiceTags
   )
 
-  $fileMatch = "ServiceTags_Public"
   $ips = @()
 
-  $uri = " https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+  $ipRanges = Get-PublicIpRanges
 
-  $response = Invoke-WebRequest -Uri $uri
-
-  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
-
-  if ($links -and $links.Count -gt 0)
+  if ($ipRanges)
   {
-    $link = $links[0]
-
-    if ($link)
+    foreach($serviceTag in $ServiceTags)
     {
-      $jsonUri = $link.href
+      $ipsForServiceTag = ($ipRanges | Where-Object {$_.name -eq $serviceTag})
 
-      $response = (Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json)
-
-      if ($response -and $response.values)
-      {
-        foreach($serviceTag in $ServiceTags)
-        {
-          $ipsForServiceTag = ($response.values | Where-Object {$_.name -eq $serviceTag})
-
-          #Filter out IPV4 Only
-          $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
-        }
-      }
+      #Filter out IPV4 Only
+      $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
     }
   }
 
@@ -62,3 +94,15 @@ function Get-PublicIpRangesForServiceTags()
   return $ips
 }
 
+function Get-ServiceTagsForIp()
+{
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $IpAddress
+  )
+
+
+}
