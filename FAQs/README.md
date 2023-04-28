@@ -11,6 +11,7 @@
  3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message "Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
  4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
 5. [On running the Autoupdater function I am encountering an error related to conflicts in function runtime version.](#5-on-running-the-autoupdater-function-i-am-encountering-an-error-related-to-conflicts-in-function-runtime-version)
+6. [Are there any recommended settings/changes to for existing AzTS setup?](#6are-there-any-recommended-settingschanges-for-existing-azts-setup)
 
  - ### Scan
  1. [Today's AzTS scan has completed. How do I re-run the full scan?](#1-todays-azts-scan-has-completed-how-do-i-re-run-the-full-scan)
@@ -99,6 +100,17 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
 - Step-3. Re-run the AutoUpdater function after completing Step 2 and the operation should complete successfully. This also ensures that the function runtime is updated to V4 for AzSK-AzTS-AutoUpdater-xxxxx, AzSK-AzTS-MetadataAggregator-xxxxx and AzSK-AzTS-WorkItemProcessor-xxxxx function app.
 <br> 
 <br> 
+
+
+### **6. Are there any recommended settings/changes for existing AzTS setup? **
+- We have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth/publishing profile. It is recommended to disable basic authentication for all App services/Function App deployed as part of AzTS setup as it is no more required for AzTS functioning. You can disable basic authentication by using following steps: 
+- Step-1: Go to resource group where AzTS solution has been installed.
+
+- Step-2: Go to Function App AzSK-AzTS-MetadataAggregator-xxxxx --> Configuration --> General Settings --> Basic Authentication --> Select Off and save.
+
+- Step-3: Repeat Step-2 for AzSK-AzTS-WorkItemProcessor-xxxxx, AzSK-ATS-AutoUpdater--xxxxx, AzSK-AzTS-WebApi-xxxxx and AzSK-AzTS-UI-xxxxx. If there are any slots available for any of these, please repeat Step 2 for those as well.
+<br>
+<br>
 
 - ### **Scan**
 
