@@ -3,7 +3,7 @@
 
 </br>
 
-> We have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth or publishing profile. Please refer details [here](../FAQs/README.md/#6are-there-any-recommended-settingschanges-for-existing-azts-setup). 
+> We have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth or publishing profile. Please refer details [here](../FAQs/README.md/#6-are-there-any-recommended-settingschanges-for-existing-azts-setup). 
 
 # Setting up Azure Tenant Security (AzTS) Solution - Step by Step
  
