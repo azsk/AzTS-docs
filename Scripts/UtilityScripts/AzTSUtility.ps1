@@ -1380,6 +1380,215 @@ param (
     -VaultName $KeyVaultName `
     -IpAddressRange $PublicIpAddress
 }
+
+function Get-AzurePublicIpRanges()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .INPUTS
+    None
+    .OUTPUTS
+    Service Tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpRanges
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param()
+
+  $fileMatch = "ServiceTags_Public"
+  $ipRanges = @()
+
+  $uri = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+
+  $response = Invoke-WebRequest -Uri $uri
+
+  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
+
+  if ($links -and $links.Count -gt 0)
+  {
+    $link = $links[0]
+
+    if ($link)
+    {
+      $jsonUri = $link.href
+
+      $response = Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json
+
+      if ($response -and $response.values)
+      {
+        $ipRanges = $response.values
+      }
+    }
+  }
+
+  return $ipRanges
+}
+
+function Get-AzurePublicIpv4RangesForServiceTags()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
+    .PARAMETER ServiceTags
+    An array of one or more Service Tags from the Microsoft Public IP file at https://www.microsoft.com/en-us/download/details.aspx?id=53602.
+    .INPUTS
+    None
+    .OUTPUTS
+    Array of IPv4 CIDRs for the specified Service tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string[]]
+      $ServiceTags
+  )
+
+  $ips = @()
+
+  $ipRanges = Get-AzurePublicIpRanges
+
+  if ($ipRanges)
+  {
+    foreach($serviceTag in $ServiceTags)
+    {
+      $ipsForServiceTag = ($ipRanges | Where-Object {$_.name -eq $serviceTag})
+
+      #Filter out IPV4 Only
+      $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
+    }
+  }
+
+  $ips = $ips | Sort-Object
+
+  return $ips
+}
+
+function Test-IsIpInCidr()
+{
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $IpAddress,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $Cidr
+  )
+
+  $ip = $IpAddress.Split('/')[0]
+  $cidrIp = $Cidr.Split('/')[0]
+  $cidrBitsToMask = $Cidr.Split('/')[1]
+
+  Write-InformationFormatted -MessageData "ip = $ip"
+  Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
+  Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
+
+  [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
+  [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
+  [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl ( 32 - $cidrBitsToMask))
+
+  Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
+  Write-InformationFormatted -MessageData "Address = $Address"
+  Write-InformationFormatted -MessageData "Mask = $Mask"
+
+  $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
+
+  return $result
+}
+
+function Get-ServiceTagsForAzurePublicIp()
+{
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $IpAddress
+  )
+
+  $ipRanges = Get-AzurePublicIpRanges
+
+  $isFound = $false
+  $serviceTags = @()
+
+  foreach ($ipRange in $ipRanges)
+  {
+    Write-InformationFormatted -MessageData "==================================================" -ForegroundColor Green
+    Write-InformationFormatted -MessageData "ipRange"
+
+    $region = $ipRange.properties.region
+    $addressPrefixes = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
+
+    Write-InformationFormatted -MessageData "region = $region"
+    Write-InformationFormatted -MessageData "addressPrefixes = $addressPrefixes"
+
+    foreach ($addressPrefix in $addressPrefixes)
+    {
+      Write-InformationFormatted -MessageData "addressPrefix = $addressPrefix"
+
+      $curIpMatch = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $addressPrefix
+
+      Write-InformationFormatted -MessageData "curIpMatch = $curIpMatch"
+
+      if ($curIpMatch)
+      {
+        # Name will sometimes be "AzureCloud.<region>" and caps is not consistent. Take just the left part
+        $ipRangeName = $ipRange.name.Split('.')[0]
+
+        Write-InformationFormatted -MessageData "ipRangeName = $ipRangeName"
+
+        $serviceTagInfo = [PSCustomObject]
+        @{
+          Name = $ipRangeName;
+          Region = $region; 
+          AddressPrefixCount = $addressPrefixes.Count;
+        }
+
+        Write-InformationFormatted -MessageData "serviceTagInfo = $serviceTagInfo"
+
+        $serviceTags += $serviceTagInfo
+
+        Write-InformationFormatted -MessageData "`tRange: $($addressPrefix.PadRight(18))`t Tag: $($serviceTagInfo.Name).`t Region: $($serviceTagInfo.Region)" -ForegroundColor Blue
+
+        $isFound = $true
+      }
+
+      if ($isFound -eq $true)
+      {
+        break
+      }
+    }  
+    Write-InformationFormatted -MessageData "==================================================" -ForegroundColor Green
+
+    if ($isFound -eq $true)
+    {
+      break
+    }
+}
+
+  if($isFound -eq $false)
+  {
+    Write-InformationFormatted -MessageData "`t$($IpAddress): Not found in any range" -ForegroundColor Red
+  }
+
+  return $serviceTags # | Sort-Object -Property Name, Region -Unique
+}
+
 # ####################################################################################################
 
 # ####################################################################################################
