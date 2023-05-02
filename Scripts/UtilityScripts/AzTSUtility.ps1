@@ -1479,6 +1479,25 @@ function Get-AzurePublicIpv4RangesForServiceTags()
 
 function Test-IsIpInCidr()
 {
+  <#
+    .SYNOPSIS
+    This function checks if the specified IP address is contained in the specified CIDR.
+    .DESCRIPTION
+    This function checks if the specified IP address is contained in the specified CIDR.
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .PARAMETER Cidr
+    A CIDR, i.e. a network address range like 13.82.0.0/16
+    .INPUTS
+    None
+    .OUTPUTS
+    A bool indicating whether or not the IP address is contained in the CIDR
+    .EXAMPLE
+    PS> Test-IsIpInCidr -IpAddress "13.82.13.23/32" -Cidr "13.82.0.0/16"
+    .LINK
+    None
+  #>
+
   [CmdletBinding()]
   param
   (
@@ -1494,17 +1513,17 @@ function Test-IsIpInCidr()
   $cidrIp = $Cidr.Split('/')[0]
   $cidrBitsToMask = $Cidr.Split('/')[1]
 
-  Write-InformationFormatted -MessageData "ip = $ip"
-  Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
-  Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
+  #Write-InformationFormatted -MessageData "ip = $ip"
+  #Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
+  #Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
 
   [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
   [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
   [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl ( 32 - $cidrBitsToMask))
 
-  Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
-  Write-InformationFormatted -MessageData "Address = $Address"
-  Write-InformationFormatted -MessageData "Mask = $Mask"
+  #Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
+  #Write-InformationFormatted -MessageData "Address = $Address"
+  #Write-InformationFormatted -MessageData "Mask = $Mask"
 
   $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
 
@@ -1513,57 +1532,65 @@ function Test-IsIpInCidr()
 
 function Get-ServiceTagsForAzurePublicIp()
 {
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .PARAMETER StopOnFirstMatch
+    Optional - true to stop on the first CIDR match, or false to process all public IP ranges. Default is true.
+    .INPUTS
+    None
+    .OUTPUTS
+    Array of IPv4 CIDRs for the specified Service tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
+    .LINK
+    None
+  #>
+
   [CmdletBinding()]
   param
   (
-      [Parameter(Mandatory=$true)]
-      [string]
-      $IpAddress
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress,
+    [Parameter(Mandatory=$false)]
+    [bool]
+    $StopOnFirstMatch=$true
   )
 
   $ipRanges = Get-AzurePublicIpRanges
 
   $isFound = $false
-  $serviceTags = @()
+  $result = @()
+
+  Write-InformationFormatted -MessageData "Processing - please wait... this will take a couple of minutes" -ForegroundColor Green
 
   foreach ($ipRange in $ipRanges)
   {
-    Write-InformationFormatted -MessageData "==================================================" -ForegroundColor Green
-    Write-InformationFormatted -MessageData "ipRange"
-
+    $ipRangeName = $ipRange.name
     $region = $ipRange.properties.region
-    $addressPrefixes = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
+    $cidrs = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
 
-    Write-InformationFormatted -MessageData "region = $region"
-    Write-InformationFormatted -MessageData "addressPrefixes = $addressPrefixes"
+    #Write-InformationFormatted -MessageData "ipRangeName = $ipRangeName" -ForegroundColor Green
 
-    foreach ($addressPrefix in $addressPrefixes)
+    if (!$region) { $region = "(N/A)"}
+
+    foreach ($cidr in $cidrs)
     {
-      Write-InformationFormatted -MessageData "addressPrefix = $addressPrefix"
+      $ipIsInCidr = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $cidr
 
-      $curIpMatch = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $addressPrefix
-
-      Write-InformationFormatted -MessageData "curIpMatch = $curIpMatch"
-
-      if ($curIpMatch)
+      if ($ipIsInCidr)
       {
-        # Name will sometimes be "AzureCloud.<region>" and caps is not consistent. Take just the left part
-        $ipRangeName = $ipRange.name.Split('.')[0]
-
-        Write-InformationFormatted -MessageData "ipRangeName = $ipRangeName"
-
-        $serviceTagInfo = [PSCustomObject]
+        $result +=
         @{
           Name = $ipRangeName;
-          Region = $region; 
-          AddressPrefixCount = $addressPrefixes.Count;
+          Region = $region;
+          Cidr = $cidr;
         }
-
-        Write-InformationFormatted -MessageData "serviceTagInfo = $serviceTagInfo"
-
-        $serviceTags += $serviceTagInfo
-
-        Write-InformationFormatted -MessageData "`tRange: $($addressPrefix.PadRight(18))`t Tag: $($serviceTagInfo.Name).`t Region: $($serviceTagInfo.Region)" -ForegroundColor Blue
 
         $isFound = $true
       }
@@ -1572,21 +1599,22 @@ function Get-ServiceTagsForAzurePublicIp()
       {
         break
       }
-    }  
-    Write-InformationFormatted -MessageData "==================================================" -ForegroundColor Green
+    }
 
-    if ($isFound -eq $true)
+    if ($StopOnFirstMatch -eq $true -and $isFound -eq $true)
     {
       break
     }
-}
+  }
 
   if($isFound -eq $false)
   {
-    Write-InformationFormatted -MessageData "`t$($IpAddress): Not found in any range" -ForegroundColor Red
+    Write-InformationFormatted -MessageData "$IpAddress"": Not found in any range" -ForegroundColor Red
   }
 
-  return $serviceTags # | Sort-Object -Property Name, Region -Unique
+  Write-InformationFormatted -MessageData "Done!" -ForegroundColor Green
+
+  ,$result
 }
 
 # ####################################################################################################
