@@ -1540,8 +1540,6 @@ function Get-ServiceTagsForAzurePublicIp()
     This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
     .PARAMETER IpAddress
     An IP address like 13.82.13.23 or 13.82.13.23/32
-    .PARAMETER StopOnFirstMatch
-    Optional - true to stop on the first CIDR match, or false to process all public IP ranges. Default is true.
     .INPUTS
     None
     .OUTPUTS
@@ -1557,26 +1555,24 @@ function Get-ServiceTagsForAzurePublicIp()
   (
     [Parameter(Mandatory=$true)]
     [string]
-    $IpAddress,
-    [Parameter(Mandatory=$false)]
-    [bool]
-    $StopOnFirstMatch=$true
+    $IpAddress
   )
 
   $ipRanges = Get-AzurePublicIpRanges
 
-  $isFound = $false
   $result = @()
 
   Write-InformationFormatted -MessageData "Processing - please wait... this will take a couple of minutes" -ForegroundColor Green
 
   foreach ($ipRange in $ipRanges)
   {
+    $isFound = $false
+
     $ipRangeName = $ipRange.name
     $region = $ipRange.properties.region
     $cidrs = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
 
-    #Write-InformationFormatted -MessageData "ipRangeName = $ipRangeName" -ForegroundColor Green
+    Write-InformationFormatted -MessageData "Checking ipRangeName = $ipRangeName" -ForegroundColor Green
 
     if (!$region) { $region = "(N/A)"}
 
@@ -1601,11 +1597,6 @@ function Get-ServiceTagsForAzurePublicIp()
         break
       }
     }
-
-    if ($StopOnFirstMatch -eq $true -and $isFound -eq $true)
-    {
-      break
-    }
   }
 
   if($isFound -eq $false)
@@ -1615,7 +1606,7 @@ function Get-ServiceTagsForAzurePublicIp()
 
   Write-InformationFormatted -MessageData "Done!" -ForegroundColor Green
 
-  ,$result
+  ,($result | Sort-Object -Property "Name")
 }
 
 # ####################################################################################################
@@ -2152,24 +2143,24 @@ function Update-BastionDisableShareableLink()
   PS> Update-BastionDisableShareableLink -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -BastionHostName "MyKBastionHostName" -ShareableLinkEnabled $false
   .LINK
   None
-#>
+  #>
 
-[CmdletBinding()]
-param
-(
-  [Parameter(Mandatory = $true)]
-  [string]
-  $SubscriptionId,
-  [Parameter(Mandatory = $true)]
-  [string]
-  $ResourceGroupName,
-  [Parameter(Mandatory = $true)]
-  [string]
-  $BastionHostName,
-  [Parameter(Mandatory = $false)]
-  [bool]
-  $ShareableLinkEnabled = $false
-)
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $BastionHostName,
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $ShareableLinkEnabled = $false
+  )
 
   $profile = Set-AzContext -Subscription $SubscriptionId
 
