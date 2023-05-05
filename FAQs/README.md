@@ -99,8 +99,7 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
     ```
 
 - Step-3. Re-run the AutoUpdater function after completing Step 2 and the operation should complete successfully. This also ensures that the function runtime is updated to V4 for AzSK-AzTS-AutoUpdater-xxxxx, AzSK-AzTS-MetadataAggregator-xxxxx and AzSK-AzTS-WorkItemProcessor-xxxxx function app.
-<br>
-<br>
+
 
 ### **6. What are the recommended authentication settings for all App services or Function Apps?**
 Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. We have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth/publishing profile. It is recommended to disable basic authentication for all App services/Function App deployed as part of AzTS setup as it is no more required for AzTS functioning.  You can disable basic authentication by using following steps: 
