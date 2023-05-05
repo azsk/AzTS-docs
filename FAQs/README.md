@@ -102,7 +102,7 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
 
 
 ### **6. What are the recommended authentication settings for all App services or Function Apps?**
-Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. We have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth/publishing profile. It is recommended to disable basic authentication for all App services/Function App deployed as part of AzTS setup as it is no more required for AzTS functioning.  You can disable basic authentication by using following steps: 
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. As a part of rolling out security improvements in AzTS setup, we have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth/publishing profile. It is recommended to disable basic authentication for all App services/Function App deployed as part of AzTS setup as it is no more required for AzTS functioning.  You can disable basic authentication by using following steps: 
 - Step-1: Find the resource group where the AzTS solution has been installed.
 
 - Step-2: Look for a Function App named "AzSK-AzTS-MetadataAggregator-xxxxx" within that resource group, and then navigate to its "Configuration" menu. Within "General Settings," you'll see an option for "Basic Authentication." Turn this option OFF, then click "Save."
