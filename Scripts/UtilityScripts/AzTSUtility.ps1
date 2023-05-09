@@ -158,6 +158,456 @@ function Get-MyPublicIpAddress()
   return $myPublicIpAddress
 }
 
+function Get-AzurePublicIpRanges()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .INPUTS
+    None
+    .OUTPUTS
+    Service Tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpRanges
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param()
+
+  $fileMatch = "ServiceTags_Public"
+  $ipRanges = @()
+
+  $uri = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+
+  $response = Invoke-WebRequest -Uri $uri
+
+  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
+
+  if ($links -and $links.Count -gt 0)
+  {
+    $link = $links[0]
+
+    if ($link)
+    {
+      $jsonUri = $link.href
+
+      $response = Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json
+
+      if ($response -and $response.values)
+      {
+        $ipRanges = $response.values
+      }
+    }
+  }
+
+  return $ipRanges
+}
+
+function Get-AzurePublicIpv4RangesForServiceTags()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
+    .PARAMETER ServiceTags
+    An array of one or more Service Tags from the Microsoft Public IP file at https://www.microsoft.com/en-us/download/details.aspx?id=53602.
+    .INPUTS
+    None
+    .OUTPUTS
+    Array of IPv4 CIDRs for the specified Service tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string[]]
+      $ServiceTags
+  )
+
+  $ips = @()
+
+  $ipRanges = Get-AzurePublicIpRanges
+
+  if ($ipRanges)
+  {
+    foreach($serviceTag in $ServiceTags)
+    {
+      $ipsForServiceTag = ($ipRanges | Where-Object {$_.name -eq $serviceTag})
+
+      #Filter out IPV4 Only
+      $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
+    }
+  }
+
+  $ips = $ips | Sort-Object
+
+  return $ips
+}
+
+function Test-IsIpInCidr()
+{
+  <#
+    .SYNOPSIS
+    This function checks if the specified IP address is contained in the specified CIDR.
+    .DESCRIPTION
+    This function checks if the specified IP address is contained in the specified CIDR.
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .PARAMETER Cidr
+    A CIDR, i.e. a network address range like 13.82.0.0/16
+    .INPUTS
+    None
+    .OUTPUTS
+    A bool indicating whether or not the IP address is contained in the CIDR
+    .EXAMPLE
+    PS> Test-IsIpInCidr -IpAddress "13.82.13.23/32" -Cidr "13.82.0.0/16"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $IpAddress,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $Cidr
+  )
+
+  $ip = $IpAddress.Split('/')[0]
+  $cidrIp = $Cidr.Split('/')[0]
+  $cidrBitsToMask = $Cidr.Split('/')[1]
+
+  #Write-InformationFormatted -MessageData "ip = $ip"
+  #Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
+  #Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
+
+  [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
+  [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
+  [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl ( 32 - $cidrBitsToMask))
+
+  #Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
+  #Write-InformationFormatted -MessageData "Address = $Address"
+  #Write-InformationFormatted -MessageData "Mask = $Mask"
+
+  $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
+
+  return $result
+}
+
+function Get-ServiceTagsForAzurePublicIp()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .INPUTS
+    None
+    .OUTPUTS
+    Array of IPv4 CIDRs for the specified Service tags
+    .EXAMPLE
+    PS> Get-ServiceTagsForAzurePublicIp -IpAddress "13.82.13.23"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress
+  )
+
+  $ipRanges = Get-AzurePublicIpRanges
+
+  $result = @()
+
+  Write-InformationFormatted -MessageData "Processing - please wait... this will take a couple of minutes" -ForegroundColor Green
+
+  foreach ($ipRange in $ipRanges)
+  {
+    $isFound = $false
+
+    $ipRangeName = $ipRange.name
+    $region = $ipRange.properties.region
+    $cidrs = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
+
+    Write-InformationFormatted -MessageData "Checking ipRangeName = $ipRangeName" -ForegroundColor Green
+
+    if (!$region) { $region = "(N/A)"}
+
+    foreach ($cidr in $cidrs)
+    {
+      $ipIsInCidr = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $cidr
+
+      if ($ipIsInCidr)
+      {
+        $result +=
+        @{
+          Name = $ipRangeName;
+          Region = $region;
+          Cidr = $cidr;
+        }
+
+        $isFound = $true
+      }
+
+      if ($isFound -eq $true)
+      {
+        break
+      }
+    }
+  }
+
+  if($isFound -eq $false)
+  {
+    Write-InformationFormatted -MessageData "$IpAddress"": Not found in any range" -ForegroundColor Red
+  }
+
+  Write-InformationFormatted -MessageData "Done!" -ForegroundColor Green
+
+  ,($result | Sort-Object -Property "Name")
+}
+
+# ##########
+# Following utility methods include code from Chris Grumbles/Microsoft
+# ##########
+
+function ConvertTo-BinaryIpAddress()
+{
+  <#
+    .SYNOPSIS
+    This function converts a passed IP Address to binary
+    .DESCRIPTION
+    This function converts a passed IP Address to binary
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .INPUTS
+    None
+    .OUTPUTS
+    Binary IP address string
+    .EXAMPLE
+    PS> ConvertTo-BinaryIpAddress -IpAddress "13.82.13.23"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress
+  )
+
+  return -join ($IpAddress.split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
+}
+
+function ConvertFrom-BinaryIpAddress()
+{
+  <#
+    .SYNOPSIS
+    This function converts a passed binary IP Address to normal CIDR-notation IP Address
+    .DESCRIPTION
+    This function converts a passed binary IP Address to normal CIDR-notation IP Address
+    .PARAMETER IpAddress
+    A binary IP address like 00001101010100100000110100010111
+    .INPUTS
+    None
+    .OUTPUTS
+    Binary IP address string
+    .EXAMPLE
+    PS> ConvertFrom-BinaryIpAddress -IpAddress "00001101010100100000110100010111"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress
+  )
+
+  $ipArray = @()
+
+  for ($i = 0; $i -lt 4; $i++)
+  {
+    $ipArray += $ipAddress.Substring(($i)*8, 8)
+  }
+
+  $ip = $ipArray | ForEach-Object {[System.Convert]::ToByte($_,2)}
+
+  return $ip -join "."
+}
+
+function Get-EndIpForCidr()
+{
+  <#
+    .SYNOPSIS
+    This function gets the end IP for a passed CIDR
+    .DESCRIPTION
+    This function gets the end IP for a passed CIDR
+    .PARAMETER Cidr
+    A CIDR like 13.23.0.0/16
+    .INPUTS
+    None
+    .OUTPUTS
+    An IP address like 13.23.254.254/32
+    .EXAMPLE
+    PS> Get-EndIpForCidr -Cidr "13.23.0.0/16"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $Cidr
+  )
+
+  $startIp = $cidr.Split('/')[0]
+  $prefix = [Convert]::ToInt32($cidr.Split('/')[1])
+
+  return Get-EndIp -StartIp $startIp -Prefix $prefix
+}
+
+function Get-EndIp()
+{
+  <#
+    .SYNOPSIS
+    This function gets the end IP for a passed start IP and prefix
+    .DESCRIPTION
+    This function gets the end IP for a passed start IP and prefix
+    .PARAMETER StartIp
+    An IP address in the CIDR like 13.23.0.0
+    .PARAMETER Prefix
+    A prefix like 16
+    .INPUTS
+    None
+    .OUTPUTS
+    IP Address
+    .EXAMPLE
+    PS> Get-EndIp -IpAddress "13.23.0.0" -Prefix "16"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $StartIp,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $Prefix
+  )
+
+  try
+  {
+
+    $ipCount = ([System.Math]::Pow(2, 32-$Prefix)) -1
+
+    $startIpAdd = ([System.Net.IPAddress]$StartIp).GetAddressBytes()
+
+    # reverse bits & recreate IP
+    [Array]::Reverse($startIpAdd)
+    $startIpAdd = ([System.Net.IPAddress]($startIpAdd -join ".")).Address
+
+    $endIp = [Convert]::ToDouble($startIpAdd + $ipCount)
+    $endIp = [System.Net.IPAddress]$endIP
+
+    return $endIp.ToString()
+  }
+  catch
+  {
+    Write-InformationFormatted -MessageData "Could not find end IP for $($StartIp)/$($Prefix)" -ForegroundColor Red
+
+    throw
+  }
+}
+
+function Get-CidrRangeBetweenIps()
+{
+  <#
+    .SYNOPSIS
+    This function gets the end IP for a passed start IP and prefix
+    .DESCRIPTION
+    This function gets the end IP for a passed start IP and prefix
+    .PARAMETER IpAddresses
+    An array of IP addresses
+    .INPUTS
+    None
+    .OUTPUTS
+    A CIDR like 13.23.
+    .EXAMPLE
+    PS> Get-CidrRangeBetweenIps -IpAddresses @("13.23.13.0", "13.23.14.0")
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string[]]
+    $IpAddresses
+  )
+
+  $binaryIps = [System.Collections.ArrayList]@()
+
+  foreach ($ipAddress in $IpAddresses)
+  {
+    $binaryIp = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
+    $binaryIps.Add($binaryIp)
+  }
+
+  $binaryIps | Sort-Object
+
+  $smallestIp = $binaryIps[0]
+  $biggestIp = $binaryIps[$binaryIps.Count - 1]
+
+  #Write-InformationFormatted -MessageData ("Smallest IP: " + $smallestIp) -ForegroundColor Blue
+  #Write-InformationFormatted -MessageData ("Biggest IP: " + $biggestIp) -ForegroundColor Blue
+
+  for($i = 0; $i -lt $smallestIp.Length; $i++)
+  {
+    if($smallestIp[$i] -ne $biggestIp[$i])
+    {
+      break
+    }
+  }
+
+  # deal with /31 as a special case
+  if($i -eq 31) { $i = 30 }
+
+  $baseIp = $smallestIp.Substring(0, $i) + "".PadRight(32 - $i, "0")
+  $baseIp = (ConvertFrom-BinaryIpAddress -IpAddress $baseIp)
+
+  return @{startAddress = $baseIp; prefix = $i}
+}
+
+
 # ####################################################################################################
 # Azure_AppService_DP_Use_Secure_FTP_Deployment
 
@@ -1382,233 +1832,6 @@ param
     -IpAddressRange $PublicIpAddress
 }
 
-function Get-AzurePublicIpRanges()
-{
-  <#
-    .SYNOPSIS
-    This command retrieves the Service Tags from the current Microsoft public IPs file download.
-    .DESCRIPTION
-    This command retrieves the Service Tags from the current Microsoft public IPs file download.
-    .INPUTS
-    None
-    .OUTPUTS
-    Service Tags
-    .EXAMPLE
-    PS> Get-AzurePublicIpRanges
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param()
-
-  $fileMatch = "ServiceTags_Public"
-  $ipRanges = @()
-
-  $uri = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
-
-  $response = Invoke-WebRequest -Uri $uri
-
-  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
-
-  if ($links -and $links.Count -gt 0)
-  {
-    $link = $links[0]
-
-    if ($link)
-    {
-      $jsonUri = $link.href
-
-      $response = Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json
-
-      if ($response -and $response.values)
-      {
-        $ipRanges = $response.values
-      }
-    }
-  }
-
-  return $ipRanges
-}
-
-function Get-AzurePublicIpv4RangesForServiceTags()
-{
-  <#
-    .SYNOPSIS
-    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
-    .DESCRIPTION
-    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
-    .PARAMETER ServiceTags
-    An array of one or more Service Tags from the Microsoft Public IP file at https://www.microsoft.com/en-us/download/details.aspx?id=53602.
-    .INPUTS
-    None
-    .OUTPUTS
-    Array of IPv4 CIDRs for the specified Service tags
-    .EXAMPLE
-    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-      [Parameter(Mandatory=$true)]
-      [string[]]
-      $ServiceTags
-  )
-
-  $ips = @()
-
-  $ipRanges = Get-AzurePublicIpRanges
-
-  if ($ipRanges)
-  {
-    foreach($serviceTag in $ServiceTags)
-    {
-      $ipsForServiceTag = ($ipRanges | Where-Object {$_.name -eq $serviceTag})
-
-      #Filter out IPV4 Only
-      $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
-    }
-  }
-
-  $ips = $ips | Sort-Object
-
-  return $ips
-}
-
-function Test-IsIpInCidr()
-{
-  <#
-    .SYNOPSIS
-    This function checks if the specified IP address is contained in the specified CIDR.
-    .DESCRIPTION
-    This function checks if the specified IP address is contained in the specified CIDR.
-    .PARAMETER IpAddress
-    An IP address like 13.82.13.23 or 13.82.13.23/32
-    .PARAMETER Cidr
-    A CIDR, i.e. a network address range like 13.82.0.0/16
-    .INPUTS
-    None
-    .OUTPUTS
-    A bool indicating whether or not the IP address is contained in the CIDR
-    .EXAMPLE
-    PS> Test-IsIpInCidr -IpAddress "13.82.13.23/32" -Cidr "13.82.0.0/16"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-      [Parameter(Mandatory=$true)]
-      [string]
-      $IpAddress,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $Cidr
-  )
-
-  $ip = $IpAddress.Split('/')[0]
-  $cidrIp = $Cidr.Split('/')[0]
-  $cidrBitsToMask = $Cidr.Split('/')[1]
-
-  #Write-InformationFormatted -MessageData "ip = $ip"
-  #Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
-  #Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
-
-  [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
-  [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
-  [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl ( 32 - $cidrBitsToMask))
-
-  #Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
-  #Write-InformationFormatted -MessageData "Address = $Address"
-  #Write-InformationFormatted -MessageData "Mask = $Mask"
-
-  $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
-
-  return $result
-}
-
-function Get-ServiceTagsForAzurePublicIp()
-{
-  <#
-    .SYNOPSIS
-    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
-    .DESCRIPTION
-    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
-    .PARAMETER IpAddress
-    An IP address like 13.82.13.23 or 13.82.13.23/32
-    .INPUTS
-    None
-    .OUTPUTS
-    Array of IPv4 CIDRs for the specified Service tags
-    .EXAMPLE
-    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $IpAddress
-  )
-
-  $ipRanges = Get-AzurePublicIpRanges
-
-  $result = @()
-
-  Write-InformationFormatted -MessageData "Processing - please wait... this will take a couple of minutes" -ForegroundColor Green
-
-  foreach ($ipRange in $ipRanges)
-  {
-    $isFound = $false
-
-    $ipRangeName = $ipRange.name
-    $region = $ipRange.properties.region
-    $cidrs = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
-
-    Write-InformationFormatted -MessageData "Checking ipRangeName = $ipRangeName" -ForegroundColor Green
-
-    if (!$region) { $region = "(N/A)"}
-
-    foreach ($cidr in $cidrs)
-    {
-      $ipIsInCidr = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $cidr
-
-      if ($ipIsInCidr)
-      {
-        $result +=
-        @{
-          Name = $ipRangeName;
-          Region = $region;
-          Cidr = $cidr;
-        }
-
-        $isFound = $true
-      }
-
-      if ($isFound -eq $true)
-      {
-        break
-      }
-    }
-  }
-
-  if($isFound -eq $false)
-  {
-    Write-InformationFormatted -MessageData "$IpAddress"": Not found in any range" -ForegroundColor Red
-  }
-
-  Write-InformationFormatted -MessageData "Done!" -ForegroundColor Green
-
-  ,($result | Sort-Object -Property "Name")
-}
-
 # ####################################################################################################
 
 # ####################################################################################################
@@ -2163,8 +2386,6 @@ function Update-BastionDisableShareableLink()
   )
 
   $profile = Set-AzContext -Subscription $SubscriptionId
-
-  #Write-InformationFormatted -MessageData "Removing rule for $PublicIpAddress"
 
   $apiVersion = "2022-09-01"
 
