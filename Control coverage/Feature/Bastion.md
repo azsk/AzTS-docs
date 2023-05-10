@@ -36,7 +36,7 @@ One of the following conditions is met:
 >- Bastion sku is of type "Standard" and Bastion shareable link is disabled.
 > 
 > **Failed:** 
-> Bastion sku is of type "Standard" and Bastion shareable link is enabled for VM.
+> Bastion sku is of type "Standard" and Bastion shareable link is enabled.
 
 > 
 ### Recommendation 
