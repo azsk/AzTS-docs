@@ -42,8 +42,8 @@ One of the following conditions is met:
 ### Recommendation 
 
 - **Azure Portal** 
-    To disable shareable link of the bastion : Go to Azure Portal --> Select your Bastion --> Settings blade --> 'Shareable links' -->  select all the VMs with links --> Click 'Delete'-->  Settings blade --> Configuration --> Uncheck 'Shareable Link' option --> Click 'Apply'.
-  
+   "To delete all the shareable links: Go to Azure Portal --> Select your Bastion --> Settings blade --> 'Shareable links' --> select all the VMs with links --> Click 'Delete' and to disable shareable link flag: Select your Bastion --> Settings blade --> Configuration --> Uncheck 'Shareable Link' option --> Click 'Apply'.",
+      
 
 ### Azure Policy or ARM API used for evaluation 
 
