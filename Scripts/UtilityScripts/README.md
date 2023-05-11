@@ -13,6 +13,7 @@ The functions are provided to help with assessment and remediation of Azure Tena
   - [Powershell Execution Policy](#powershell-execution-policy)
 - [Controls and Functions](#controls-and-functions)
   - [Azure\_AppService\_DP\_Use\_Secure\_FTP\_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
+  - [Azure\_Bastion\_AuthZ\_Disable\_Shareable\_Link](#azure_bastion_authz_disable_shareable_link)
   - [Azure\_DataFactory\_DP\_Avoid\_Plaintext\_Secrets](#azure_datafactory_dp_avoid_plaintext_secrets)
   - [Azure\_DBForMYSQLFlexibleServer\_DP\_Enable\_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
   - [Azure\_DBForMySQLFlexibleServer\_TLS](#azure_dbformysqlflexibleserver_tls)
@@ -62,7 +63,7 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 ## Controls and Functions
 
-### Utility
+### Azure Powershell Utility
 
 `Install-AzPowershell()`
 <br />Purpose: install the latest version of Azure Powershell.
@@ -71,6 +72,62 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 `Uninstall-AzPowershell()`
 <br />Purpose: uninstalls all versions of installed Azure Powershell packages.
 <br />Parameters: None.
+
+`Write-InformationFormatted()`
+<br />Purpose: Formatted output without cluttering function return values.
+<br />Parameters: MessageData, ForegroundColor
+
+<br />
+
+### Network Utility (mostly for Key Vault control functions)
+
+`ConvertFrom-BinaryIpAddress()`
+<br />Purpose: Utility method used by other Network Utility functions
+<br />Parameters: IpAddress
+
+`ConvertTo-BinaryIpAddress()`
+<br />Purpose: Utility method used by other Network Utility functions
+<br />Parameters: IpAddress
+
+`Get-CidrRangeBetweenIps()`
+<br />Purpose: Gets the CIDR or a passed set  of IP addresses.
+<br />Parameters: IpAddresses
+
+`Get-CidrRanges()`
+<br />Purpose: Gets CIDRs for a set of start/end IPs.
+<br />Parameters: IpAddresses, MaxSizePrefix, AddCidrToSingleIPs
+
+`Get-CondensedCidrRanges()`
+<br />Purpose: Gets consolidated CIDRs for a set of CIDRs. Goal is to reduce the number of items in a list of CIDRs to a shorter number of bigger CIDRs that include all the passed CIDRs. This can help with Key Vault's limit of 1,000 network access rules for CIDRs.
+<br />Parameters: CidrRanges, MaxSizePrefix, AddCidrToSingleIPs
+
+`Get-EndIpForCidr()`
+<br />Purpose: Gets the end IP address for the specified CIDR.
+<br />Parameters: Cidr
+
+`Get-EndIp()`
+<br />Purpose: Gets the end IP address for the specified start IP and prefix.
+<br />Parameters: StartIp, Prefix
+
+`Get-MyPublicIpAddress()`
+<br />Purpose: gets my public IP address as Azure/internet would see me. Uses a third-party web site.
+<br />Parameters: None.
+
+`Get-AzurePublicIpRanges()`
+<br />Purpose: gets the weekly updated Microsoft Azure public IPs file and returns the IP ranges therein. Goal is to make automation scenarios (e.g. update Key Vault network access rules) much easier.
+<br />Parameters: None.
+
+`Get-AzurePublicIpv4RangesForServiceTags()`
+<br />Purpose: given an array of service tags (e.g. AzureCloud.westus), returns the IPv4 CIDRs in the service tags.
+<br />Parameters: ServiceTags
+
+`Test-IsIpInCidr()`
+<br />Purpose: checks if the specified IP address is in the specified CIDR.
+<br />Parameters: IpAddress, Cidr
+
+`Get-ServiceTagsForAzurePublicIp()`
+<br />Purpose: gets the Azure service tags which include the specified Azure public IP address.
+<br />Parameters: IpAddress
 
 <br />
 
@@ -85,6 +142,16 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName, SlotName, FtpState
 
 <br />
+
+### Azure_Bastion_AuthZ_Disable_Shareable_Link
+
+`Update-BastionDisableShareableLink()`
+<br />Purpose: Enables or disables the Azure Bastion's Shareable Link feature. Default = disables.
+<br />Parameters: SubscriptionId, ResourceGroupName, BastionHostName, ShareableLinkEnabled
+
+`Remove-SharedLinksForVmsInRg()`
+<br />Purpose: Removes shared links for all the VMs in the specified Resource Group from the Bastion.
+<br />Parameters: SubscriptionId, ResourceGroupName, BastionHostName, VmResourceGroupName
 
 ### Azure_DBForMYSQLFlexibleServer_DP_Enable_SSL
 
@@ -111,18 +178,6 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 <br />
 
-### Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
-
-`Get-SqlManagedInstanceMinimumTlsVersion()`
-<br />Purpose: Show the Azure SQL DB Managed Instance's current minimum TLS version.
-<br />Parameters: SubscriptionId, ResourceGroupName, SqlInstanceName
-
-`Set-SqlManagedInstanceMinimumTlsVersion()`
-<br />Purpose: Sets the Azure SQL DB Managed Instance's minimum TLS version.
-<br />Parameters: SubscriptionId, ResourceGroupName, SqlInstanceName, MinimalTlsVersion
-
-<br />
-
 ### Azure_KeyVault_NetSec_Disable_Public_Network_Access
 
 `Get-AppServiceAllPossibleOutboundPublicIps()`
@@ -133,25 +188,37 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Purpose: Show the App Service's current outbound public IPs. These will be a subset of all _possible_ outbound public IPs, so `Get-AppServiceAllPossibleOutboundPublicIps()` is the better function to use, but this is included for reference and comparison. **This is not reliable for Consumption or Premium Plan App Services!**
 <br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
 
+`Remove-KeyVaultNetworkAccessRuleForIpAddress()`
+<br />Purpose: Removes a network access rule for the provided public IP address from the Key Vault.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
+
 `Set-KeyVaultSecurePublicNetworkSettings()`
 <br />Purpose: Updates an existing Key Vault to enable public network access with default action Deny, and to allow trusted Azure services.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
-
-`Set-KeyVaultPublicNetworkAccessEnabledForMe()`
-<br />Purpose: Adds a network access rule to the Key Vault for the public IP address which you are currently using. Uses a third-party web site to get your egress public IP.
-<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
-
-`Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()`
-<br />Purpose: Adds a network access rule to the Key Vault for each provided public IP address.
-<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddresses
 
 `Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()`
 <br />Purpose: Adds a network access rule to the Key Vault for the provided public IP address.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
 
-`Remove-KeyVaultNetworkAccessRuleForIpAddress()`
-<br />Purpose: Removes a network access rule for the provided public IP address from the Key Vault.
-<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
+`Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()`
+<br />Purpose: Adds a network access rule to the Key Vault for each provided public IP address.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddresses
+
+`Set-KeyVaultPublicNetworkAccessEnabledForMe()`
+<br />Purpose: Adds a network access rule to the Key Vault for the public IP address which you are currently using. Uses a third-party web site to get your egress public IP.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
+
+<br />
+
+### Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version
+
+`Get-SqlManagedInstanceMinimumTlsVersion()`
+<br />Purpose: Show the Azure SQL DB Managed Instance's current minimum TLS version.
+<br />Parameters: SubscriptionId, ResourceGroupName, SqlInstanceName
+
+`Set-SqlManagedInstanceMinimumTlsVersion()`
+<br />Purpose: Sets the Azure SQL DB Managed Instance's minimum TLS version.
+<br />Parameters: SubscriptionId, ResourceGroupName, SqlInstanceName, MinimalTlsVersion
 
 <br />
 

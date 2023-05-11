@@ -115,7 +115,7 @@ function Write-InformationFormatted()
 # ####################################################################################################
 
 # ####################################################################################################
-# Control Utility functions
+# Network Utility functions (mostly used by the Key Vault control functions)
 
 function Get-MyPublicIpAddress()
 {
@@ -387,6 +387,7 @@ function Get-ServiceTagsForAzurePublicIp()
 
 # ##########
 # Following utility methods include code from Chris Grumbles/Microsoft
+# Updated for style conformance to AzTS-Docs, and some logic updates
 # ##########
 
 function ConvertTo-BinaryIpAddress()
@@ -552,9 +553,9 @@ function Get-CidrRangeBetweenIps()
 {
   <#
     .SYNOPSIS
-    This function gets CIDR range for a passed start IP and prefix
+    This function gets CIDR range for a passed set  of IP addresses
     .DESCRIPTION
-    This function gets CIDR range for a passed start IP and prefix
+    This function gets CIDR range for a passed set  of IP addresses
     .PARAMETER IpAddresses
     An array of IP addresses
     .INPUTS
@@ -822,7 +823,7 @@ function Get-CondensedCidrRanges()
   return $finalCidrRanges | Get-Unique
 }
 
-
+# ####################################################################################################
 
 # ####################################################################################################
 # Azure_AppService_DP_Use_Secure_FTP_Deployment
