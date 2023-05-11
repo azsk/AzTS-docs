@@ -416,7 +416,8 @@ function ConvertTo-BinaryIpAddress()
     $IpAddress
   )
 
-  return -join ($IpAddress.split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
+  $address = $IpAddress.Split("/")[0]
+  return -join ($address.Split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
 }
 
 function ConvertFrom-BinaryIpAddress()
@@ -450,12 +451,13 @@ function ConvertFrom-BinaryIpAddress()
 
   for ($i = 0; $i -lt 4; $i++)
   {
+    #Write-InformationFormatted -MessageData $ipAddress.Substring(($i)*8, 8) -ForegroundColor Blue
     $ipArray += $ipAddress.Substring(($i)*8, 8)
   }
 
   $ip = $ipArray | ForEach-Object {[System.Convert]::ToByte($_,2)}
-
-  return $ip -join "."
+  $ip = $ip -join "."
+  return $ip
 }
 
 function Get-EndIpForCidr()
@@ -525,7 +527,6 @@ function Get-EndIp()
 
   try
   {
-
     $ipCount = ([System.Math]::Pow(2, 32-$Prefix)) -1
 
     $startIpAdd = ([System.Net.IPAddress]$StartIp).GetAddressBytes()
@@ -551,15 +552,15 @@ function Get-CidrRangeBetweenIps()
 {
   <#
     .SYNOPSIS
-    This function gets the end IP for a passed start IP and prefix
+    This function gets CIDR range for a passed start IP and prefix
     .DESCRIPTION
-    This function gets the end IP for a passed start IP and prefix
+    This function gets CIDR range for a passed start IP and prefix
     .PARAMETER IpAddresses
     An array of IP addresses
     .INPUTS
     None
     .OUTPUTS
-    A CIDR like 13.23.
+    A CIDR lrange as a hashtable with keys startAddress, endAddress, prefix
     .EXAMPLE
     PS> Get-CidrRangeBetweenIps -IpAddresses @("13.23.13.0", "13.23.14.0")
     .LINK
@@ -579,16 +580,15 @@ function Get-CidrRangeBetweenIps()
   foreach ($ipAddress in $IpAddresses)
   {
     $binaryIp = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
-    $binaryIps.Add($binaryIp)
+    $binaryIps.Add($binaryIp) | Out-Null
   }
 
-  $binaryIps | Sort-Object
+  $binaryIps = $binaryIps | Sort-Object
 
   $smallestIp = $binaryIps[0]
+  #Write-InformationFormatted -MessageData "smallestIp = $smallestIp" -ForegroundColor Blue
   $biggestIp = $binaryIps[$binaryIps.Count - 1]
-
-  #Write-InformationFormatted -MessageData ("Smallest IP: " + $smallestIp) -ForegroundColor Blue
-  #Write-InformationFormatted -MessageData ("Biggest IP: " + $biggestIp) -ForegroundColor Blue
+  #Write-InformationFormatted -MessageData "biggestIp = $biggestIp" -ForegroundColor Blue
 
   for($i = 0; $i -lt $smallestIp.Length; $i++)
   {
@@ -602,10 +602,226 @@ function Get-CidrRangeBetweenIps()
   if($i -eq 31) { $i = 30 }
 
   $baseIp = $smallestIp.Substring(0, $i) + "".PadRight(32 - $i, "0")
-  $baseIp = (ConvertFrom-BinaryIpAddress -IpAddress $baseIp)
+  $baseIp2 = (ConvertFrom-BinaryIpAddress -IpAddress $baseIp)
 
-  return @{startAddress = $baseIp; prefix = $i}
+  $result = @{startAddress = $baseIp2; prefix = $i; endAddress = ""}
+
+  return $result
 }
+
+function Get-CidrRanges()
+{
+  <#
+    .SYNOPSIS
+    This function gets CIDRs for a set of start/end IPs
+    .DESCRIPTION
+    This function gets CIDRs for a set of start/end IPs
+    .PARAMETER IpAddresses
+    An array of IP addresses
+    .PARAMETER MaxSizePrefix
+    Maximum CIDR prefix
+    .PARAMETER AddCidrToSingleIPs
+    Whether to append /32 to single IP addresses
+    .INPUTS
+    None
+    .OUTPUTS
+    An array of CIDRs
+    .EXAMPLE
+    PS> Get-CidrRanges -IpAddresses @("13.23.13.13", "13.23.13.244") -MaxSizePrefix 32 -AddCidrToSingleIPs $true
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string[]]
+    $IpAddresses,
+    [Parameter(Mandatory=$false)]
+    [int]
+    $MaxSizePrefix = 32,
+    [Parameter(Mandatory=$false)]
+    [bool]
+    $AddCidrToSingleIPs = $true
+  )
+
+  $ipAddressesBinary = [System.Collections.ArrayList]@()
+  $ipAddressesSorted = [System.Collections.ArrayList]@()
+  [string[]]$cidrRanges = @()
+
+  # Convert each IP address to binary and add to array list
+  foreach ($ipAddress in $IpAddresses)
+  {
+    $ipAddressBinary = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
+    $ipAddressesBinary.Add($ipAddressBinary) | Out-Null
+  }
+
+  # Sort the binary IP addresses
+  $ipAddressesBinary = $ipAddressesBinary | Sort-Object
+
+  # Convert the now-sorted binary IP addresses back into regular and add to array list
+  foreach ($ipAddressBinary in $ipAddressesBinary)
+  {
+    $ipAddress = ConvertFrom-BinaryIpAddress -IpAddress $ipAddressBinary
+    $ipAddressesSorted.Add($ipAddress) | Out-Null
+  }
+
+  $curRange = @{ startAddress = $ipAddressesSorted[0]; prefix=32 }
+
+  for($i = 0; $i -le $ipAddressesSorted.Count; $i++)
+  {
+      if($i -lt $ipAddressesSorted.Count)
+      {
+        $testRange = Get-CidrRangeBetweenIps @($curRange.startAddress, $ipAddressesSorted[$i])
+      }
+
+      if(($testRange.prefix -lt $MaxSizePrefix) -or ($i -eq $ipAddressesSorted.Count))
+      {
+        # Too big. Apply the existing range & set the current IP to the start                
+        $ipToAdd = $curRange.startAddress
+
+        if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
+        {
+          $ipToAdd += "/" + $curRange.prefix
+        }
+
+        $cidrRanges += $ipToAdd
+
+        # reset the range to the current IP
+        if($i -lt $ipAddressesSorted.Count)
+        {
+          $curRange = @{ startAddress=$ipAddressesSorted[$i]; prefix=32 }
+        }
+      }
+      else
+      {
+        $curRange = $testRange
+      }
+  }
+
+  return $cidrRanges
+}
+
+function Get-CondensedCidrRanges()
+{
+  <#
+    .SYNOPSIS
+    This function gets condensed CIDRs for a set of initial CIDRs
+    .DESCRIPTION
+    This function gets condensed CIDRs for a set of initial CIDRs
+    .PARAMETER CidrRanges
+    An array of CIDRs
+    .PARAMETER MaxSizePrefix
+    Maximum prefix for condensed CIDRs. This means that the prefix for a result CIDR will be no lower
+    than this (bigger network), but can be higher if that is the smallest the CIDR can be.
+    .PARAMETER AddCidrToSingleIPs
+    Whether to append /32 to single IP addresses
+    .INPUTS
+    None
+    .OUTPUTS
+    An array of CIDRs - may be the original ones or consolidated if possible
+    .EXAMPLE
+    PS> Get-CondensedCidrRanges -CidrRanges @("13.23.13.0/16", "13.23.14.0/16", "13.24.4.0/16") -MaxSizePrefix 8 -AddCidrToSingleIPs $true
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string[]]
+    $CidrRanges,
+    [Parameter(Mandatory=$false)]
+    [int]
+    $MaxSizePrefix = 32,
+    [Parameter(Mandatory=$false)]
+    [bool]
+    $AddCidrToSingleIPs = $true
+  )
+
+  [string[]]$finalCidrRanges = @()
+  $cidrObjs = @()
+
+  # 1. Convert CIDR to Start/End/Count
+  foreach($cidr in $cidrRanges)
+  {
+    $startIp = $cidr.Split('/')[0]
+    $prefix = $cidrBitsToMask = [Convert]::ToInt32($cidr.Split('/')[1])
+    $ipCount = [Math]::Pow(2, 32-$cidrBitsToMask)
+    $endIp = Get-EndIp -StartIp $startIp -Prefix $prefix
+
+    $cidrObj = @{ startAddress = $startIp; endAddress = $endIp; prefix = $prefix; ipCount = $ipCount }
+    $cidrObjs += $cidrObj
+  }
+
+  # 2. Sort by CIDR start, number desc
+  $cidrObjs = $cidrObjs | Sort-Object @{Expression = {$_.startAddress}; Ascending = $true} , @{Expression = {$_.ipCount}; Ascending = $false}
+
+  #foreach ($cidrObj in $cidrObjs)
+  #{
+  #  Write-InformationFormatted -MessageData $cidrObj.startAddress -ForegroundColor Blue
+  #  Write-InformationFormatted -MessageData $cidrObj.endAddress -ForegroundColor Blue
+  #  Write-InformationFormatted -MessageData $cidrObj.prefix -ForegroundColor Blue
+  #  Write-InformationFormatted -MessageData $cidrObj.ipCount -ForegroundColor Blue
+  #}
+
+  # 3. Try to merge
+  $curRange = $cidrObjs[0]
+
+  for($i = 0; $i -le $cidrObjs.Count; $i++)
+  {
+    if($i -lt $cidrObjs.Count)
+    {
+      $testRange = (Get-CidrRangeBetweenIps @($curRange.startAddress, $cidrObjs[$i].endAddress))
+      #Write-InformationFormatted -MessageData $testRange.startAddress -ForegroundColor Blue
+      #Write-InformationFormatted -MessageData $testRange.endAddress -ForegroundColor Blue
+      #Write-InformationFormatted -MessageData $testRange.prefix -ForegroundColor Blue
+
+      $testRange.endAddress = Get-EndIp -StartIp $testRange.startAddress -Prefix $testRange.prefix
+
+      $isSameRange = ($testRange.startAddress -eq $curRange.startAddress) -and ($testRange.endAddress -eq $curRange.endAddress)
+
+      if(($testRange.prefix -lt $MaxSizePrefix) -and ($isSameRange -eq $false))
+      {
+        # This range is too big. Apply the existing range & set the current IP to the start
+        $cidrToAdd = $curRange.startAddress
+
+        if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
+        {
+          $cidrToAdd += "/" + $curRange.prefix
+        }
+
+        $finalCidrRanges += $cidrToAdd
+
+        # We added one, so reset the range to the current IP range
+        if($i -lt $cidrObjs.Count)
+        {
+          $curRange = $cidrObjs[$i]
+        }
+      }
+      else
+      {
+        $curRange = $testRange
+      }
+    }
+    else
+    { 
+      $cidrToAdd = $curRange.startAddress
+
+      if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
+      {
+        $cidrToAdd += "/" + $curRange.prefix
+      }
+
+      $finalCidrRanges += $cidrToAdd
+    }
+  }
+
+  return $finalCidrRanges | Get-Unique
+}
+
 
 
 # ####################################################################################################
