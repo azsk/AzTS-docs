@@ -12,13 +12,15 @@ The functions are provided to help with assessment and remediation of Azure Tena
 - [How to use](#how-to-use)
   - [Powershell Execution Policy](#powershell-execution-policy)
 - [Controls and Functions](#controls-and-functions)
+  - [Azure Powershell Utility](#azure-powershell-utility)
+  - [Network Utility](#network-utility)
   - [Azure\_AppService\_DP\_Use\_Secure\_FTP\_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
   - [Azure\_Bastion\_AuthZ\_Disable\_Shareable\_Link](#azure_bastion_authz_disable_shareable_link)
   - [Azure\_DataFactory\_DP\_Avoid\_Plaintext\_Secrets](#azure_datafactory_dp_avoid_plaintext_secrets)
   - [Azure\_DBForMYSQLFlexibleServer\_DP\_Enable\_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
   - [Azure\_DBForMySQLFlexibleServer\_TLS](#azure_dbformysqlflexibleserver_tls)
-  - [Azure\_SQLManagedInstance\_DP\_Use\_Secure\_TLS\_Version](#azure_sqlmanagedinstance_dp_use_secure_tls_version)
   - [Azure\_KeyVault\_NetSec\_Disable\_Public\_Network\_Access](#azure_keyvault_netsec_disable_public_network_access)
+  - [Azure\_SQLManagedInstance\_DP\_Use\_Secure\_TLS\_Version](#azure_sqlmanagedinstance_dp_use_secure_tls_version)
   - [Azure\_Subscription\_AuthZ\_Remove\_Deprecated\_Accounts](#azure_subscription_authz_remove_deprecated_accounts)
   - [Azure\_Subscription\_DP\_Avoid\_Plaintext\_Secrets\_Deployments](#azure_subscription_dp_avoid_plaintext_secrets_deployments)
   - [Azure\_Subscription\_SI\_Dont\_Use\_B2C\_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
@@ -79,7 +81,7 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 <br />
 
-### Network Utility (mostly for Key Vault control functions)
+### Network Utility
 
 `ConvertFrom-BinaryIpAddress()`
 <br />Purpose: Utility method used by other Network Utility functions
