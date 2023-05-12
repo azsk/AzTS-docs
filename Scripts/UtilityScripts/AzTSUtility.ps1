@@ -1733,11 +1733,15 @@ function Set-KeyVaultSecurePublicNetworkSettings()
     -Method PATCH `
     -Payload $payload
 
-    Write-InformationFormatted -MessageData "Result status code was " + $result.StatusCode -ForegroundColor Cyan
 
     if ("200" -ne $result.StatusCode)
     {
+      Write-InformationFormatted -MessageData "Result status code was " + $result.StatusCode -ForegroundColor Red
       $result
+    }
+    else
+    {
+      Write-InformationFormatted -MessageData "Result status code was " + $result.StatusCode -ForegroundColor Green
     }
 }
 
@@ -2155,8 +2159,6 @@ function Get-ResourceGroupDeployment()
     {
       Write-InformationFormatted -MessageData "Parameters: Deployment has no Parameters"
     }
-
-    Write-InformationFormatted -MessageData ""
   }
 
 }
@@ -2364,7 +2366,6 @@ function Get-AzureADB2CTenants()
     {
       Write-InformationFormatted -MessageData ("B2C Tenant Name: " + $tenant.name) -ForegroundColor Green
       Write-InformationFormatted -MessageData ("B2C Tenant ID: " + $tenant.id) -ForegroundColor Blue
-      Write-InformationFormatted -MessageData ""
     }
   }
   else
