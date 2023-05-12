@@ -11,11 +11,13 @@
  3. [On running the AzTS installation command (`Install-AzSKTenantSecuritySolution`) I am getting an error message "Tenant ID, application ID, principal ID, and scope are not allowed to be updated."](#3-on-running-the-azts-installation-command-install-azsktenantsecuritysolution-i-am-getting-an-error-message-tenant-id-application-id-principal-id-and-scope-are-not-allowed-to-be-updated)
  4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
 5. [On running the Autoupdater function I am encountering an error related to conflicts in function runtime version.](#5-on-running-the-autoupdater-function-i-am-encountering-an-error-related-to-conflicts-in-function-runtime-version)
+6. [What are the recommended authentication settings for all App services or Function Apps?](#6-what-are-the-recommended-authentication-settings-for-all-app-services-or-function-apps)
 
  - ### Scan
  1. [Today's AzTS scan has completed. How do I re-run the full scan?](#1-todays-azts-scan-has-completed-how-do-i-re-run-the-full-scan)
  2. [How to disable AzTS scan and uninstall the setup?](#2-how-to-disable-azts-scan-and-uninstall-the-setup)
  3. [The subscription scan in AzTS is getting terminated due to function timeout. How can I fix it? OR How can I upgrade the pricing tier of AzTS function apps?](#3-the-subscription-scan-in-azts-is-getting-terminated-due-to-function-timeout-how-can-i-fix-it-or-how-can-i-upgrade-the-pricing-tier-of-azts-function-apps)
+ 4. [How do I pull data from AzTS scan and push it to different data sources?](#4-how-do-i-pull-data-from-azts-scan-and-push-it-to-different-data-sources)
 
 - ### Monitoring
  1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
@@ -95,9 +97,19 @@ To update the telemetry preferences, go to resource group where AzTS solution ha
     # Update Net framework version
     Set-AzWebApp -NetFrameworkVersion v6.0 -Name <APP_NAME> -ResourceGroupName <RESOURCE_GROUP_NAME>
     ```
+
 - Step-3. Re-run the AutoUpdater function after completing Step 2 and the operation should complete successfully. This also ensures that the function runtime is updated to V4 for AzSK-AzTS-AutoUpdater-xxxxx, AzSK-AzTS-MetadataAggregator-xxxxx and AzSK-AzTS-WorkItemProcessor-xxxxx function app.
-<br> 
-<br> 
+
+
+### **6. What are the recommended authentication settings for all App services or Function Apps?**
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. As a part of rolling out security improvements in AzTS setup, we have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth/publishing profile. It is recommended to disable basic authentication for all App services/Function App deployed as part of AzTS setup as it is no more required for AzTS functioning.  You can disable basic authentication by using following steps: 
+- Step-1: Find the resource group where the AzTS solution has been installed.
+
+- Step-2: Look for a Function App named "AzSK-AzTS-MetadataAggregator-xxxxx" within that resource group, and then navigate to its "Configuration" menu. Within "General Settings," you'll see an option for "Basic Authentication." Turn this option OFF, then click "Save."
+
+- Step-3: Repeat Step 2 for each of the following Function Apps within the same resource group: "AzSK-AzTS-WorkItemProcessor-xxxxx", "AzSK-ATS-AutoUpdater--xxxxx", "AzSK-AzTS-WebApi-xxxxx", and "AzSK-AzTS-UI-xxxxx". If there are any slots available for these, you should also repeat Step 2 for those.
+<br>
+<br>
 
 - ### **Scan**
 
@@ -160,9 +172,17 @@ In this case, we recommend you to upgrade the Function app hosting plan (pricing
 4. To increase function timeout, go to your function app (say, you want to increase timeout value for 'AzSK-AzTS-WorkItemProcessor-xxxxx'. This app contains function to scan subscription with baseline control.) > Settings > Configuration > Application settings > Update the value of `AzureFunctionsJobHost__functionTimeout` to '01:00:00' to increase the timeout value to 1 hour.
 
   > _**Note:** In future if you run the AzTS installation command (`Install-AzSKTenantSecuritySolution`) to upgrade your existing AzTS setup, you will have to repeat the above steps._
-<br> 
-<br>
 
+### **4. How do I pull data from AzTS scan and push it to different data sources?**
+
+Azure Tenant Security Solution centrally scans subscriptions and produces control scan results, processed RBAC data, resource inventory data, subscription metadata, etc., and pushes all the data into a central storage account 'azskaztsstoragexx00x'.<br>
+Below are some helpful links for pulling data from Azure blob storage in central storage account 'azskaztsstoragexx00x' and push to different data sources:
+1. [Copy data from Azure Blob storage to a database in Azure SQL Database by using Azure Data Factory](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-portal)
+2. [Copy data from Azure Blob storage to a SQL Database by using the Copy Data tool](https://learn.microsoft.com/en-us/azure/data-factory/tutorial-copy-data-tool)
+3. [Copy data from Azure Blob storage to a Azure Data Explorer by using the Event Grid data connection](https://learn.microsoft.com/en-us/azure/data-explorer/create-event-grid-connection?tabs=portal-adx%2Cportal-2)
+
+<br>
+<br>
 
 - ### **Monitoring**
 
@@ -192,12 +212,10 @@ Name: HostEnvironmentDetails__AutoUpdateConfig__3__DeploymentSlotId
 Value: production
 5. Select ‘Deployment Slot Setting’ and save.
  
- 
 The above steps should stop this recurring alert, please validate after 24 hours using the same queries.
 
 <br>
 <br>
-
 
 - ### **Control Remediation**
 
