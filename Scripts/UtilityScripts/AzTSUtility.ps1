@@ -313,7 +313,7 @@ function Get-ServiceTagsForAzurePublicIp()
     .SYNOPSIS
     This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
     .DESCRIPTION
-    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download. The output is a hashtable, so to use, set the output equal to a variable (see example) and work with that variable.
     .PARAMETER IpAddress
     An IP address like 13.82.13.23 or 13.82.13.23/32
     .INPUTS
@@ -321,7 +321,7 @@ function Get-ServiceTagsForAzurePublicIp()
     .OUTPUTS
     Array of IPv4 CIDRs for the specified Service tags
     .EXAMPLE
-    PS> Get-ServiceTagsForAzurePublicIp -IpAddress "13.82.13.23"
+    PS> $result = Get-ServiceTagsForAzurePublicIp -IpAddress "13.82.13.23"
     .LINK
     None
   #>
