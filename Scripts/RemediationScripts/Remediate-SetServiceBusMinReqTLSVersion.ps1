@@ -6,7 +6,7 @@
     Azure_ServiceBus_DP_Use_Secure_TLS_Version
 
 # Display Name:
-    Azure Service Bus Namespaces Announcing SSL enforcement and minimum TLS version choice.
+    Use approved version of TLS for Azure Service Bus
 
 # Prerequisites:    
     Contributor on Subscription/RG or Azure Data Owner role on the Service Bus Namespace(s) is required.
@@ -467,7 +467,6 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
                 $updatedTLSVersion = (Set-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -NamespaceName $_.ResourceName -MinimumTlsVersion $([Constants]::MinRequiredTLSVersionValue)).MinimumTlsVersion 
 
                 if (CheckIfCurrentTLSVersionIsSecure($updatedTLSVersion)) {
-                    $_.MinimumTLSVersion = $updatedTLSVersion
                     $serviceBusNamespacesRemediated += $_
                     $logResource = @{}	
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
@@ -521,7 +520,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
 
             Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
             if ($($serviceBusNamespacesRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully set secure TLS version for the following Service Bus Namespaces(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set secure TLS version to [$($MinRequiredTLSVersionValue)] for the following Service Bus Namespaces(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $serviceBusNamespacesRemediated | Format-Table -Property $colsProperty -Wrap
 
