@@ -1,0 +1,167 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceHash": {
+            "type": "string"
+        },
+        "keyVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "Specifies the name of the key vault."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Specifies the Azure location where the key vault should be created."
+            }
+        },
+        "tenantId": {
+            "type": "string",
+            "defaultValue": "[subscription().tenantId]",
+            "metadata": {
+                "description": "Specifies the Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. Get it by using Get-AzSubscription cmdlet."
+            }
+        },
+        "skuName": {
+            "type": "string",
+            "defaultValue": "standard",
+            "allowedValues": [
+                "standard",
+                "premium"
+            ],
+            "metadata": {
+                "description": "Specifies whether the key vault is a standard vault or a premium vault."
+            }
+        },
+        "secretName": {
+            "type": "string",
+            "defaultValue": "AzTSScannerIdentityConnectionString",
+            "metadata": {
+                "description": "Specifies the name of the secret that you want to create."
+            }
+        },
+        "secretValue": {
+            "type": "secureString",
+            "metadata": {
+                "description": "Specifies the value of the secret that you want to create."
+            }
+        },
+        "laRetentionInDays": {
+            "type": "int",
+            "defaultValue": 365,
+            "metadata": {
+                "description": "The workspace data retention in days. -1 means Unlimited retention for the Unlimited Sku."
+            }
+        },
+        "laDailyQuotaGb": {
+            "type": "int",
+            "defaultValue": -1,
+            "metadata": {
+                "description": "The workspace daily quota for ingestion. -1 means unlimited."
+            }
+        },
+        "laSkuName": {
+            "type": "string",
+            "defaultValue": "pergb2018",
+            "allowedValues": [
+                "pergb2018",
+                "Premium",
+                "Standalone",
+                "Standard"
+            ],
+            "metadata": {
+                "description": "Specifies whether the key vault is a standard vault or a premium vault."
+            }
+        }
+    },
+    "variables": {
+        "laWorkspaceName": "[concat('AzSK-AzTS-LAWSForAuditing-', parameters('ResourceHash'))]",
+        "diagnosticSettingsName": "[concat('AzSK-AzTS-AuditSetting-', parameters('ResourceHash'))]"
+    },
+    "functions": [],
+    "resources": [
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2021-04-01-preview",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false,
+                "tenantId": "[parameters('tenantId')]",
+                "sku": {
+                    "name": "[parameters('skuName')]",
+                    "family": "A"
+                },
+                "accessPolicies": []
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2021-04-01-preview",
+            "name": "[format('{0}/{1}', parameters('keyVaultName'), parameters('secretName'))]",
+            "properties": {
+                "value": "[parameters('secretValue')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "apiVersion": "2020-03-01-preview",
+            "name": "[variables('laWorkspaceName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled",
+                "retentionInDays": "[parameters('laRetentionInDays')]",
+                "sku": {
+                    "name": "[parameters('laSkuName')]"
+                },
+                "workspaceCapping": {
+                    "dailyQuotaGb": "[parameters('laDailyQuotaGb')]"
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('keyVaultName'), '/Microsoft.Insights/', variables('diagnosticSettingsName'))]",
+            "properties": {
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "AuditEvent",
+                        "enabled": true
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "keyVaultResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+        },
+        "secretURI": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.KeyVault/vaults/secrets', parameters('keyVaultName'), parameters('secretName'))).secretUri]"
+        },
+        "logAnalyticsResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('laWorkspaceName'))]"
+        }
+    }
+}
