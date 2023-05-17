@@ -1,0 +1,62 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "UnintendedSecretAccessAlertQuery" : {
+            "type" : "string"
+        },
+        "ActionGroupId" : {
+            "type" : "string"
+        },
+        "LAResourceId" : {
+            "type" : "string"
+        },
+        "Location" : {
+            "type" : "string"
+        }
+    },
+    "variables": {
+        "laAlertSource":{
+            "SourceId": "[parameters('LAResourceId')]",
+            "Type":"ResultCount"
+        },
+        "actionGrp":{
+            "ActionGroup": "[parameters('ActionGroupId')]"
+        },
+        "unintendedSecretAccessAlert": "AzTS Secret access Alert",
+        "unintendedSecretAccessAlertDescription": "This is to notify you that AzTS scanning identity credentials, stored as secret in Key Vault has been accessed by some identity other than AzTS solution identity.`r`n**Next steps**`r`n Review the Key Vault activity logs, audit logs and access policy to identify the identity details and take appropriate action."
+    },
+    "resources":[ 
+        {
+            "name":"[variables('unintendedSecretAccessAlert')]",
+            "type":"Microsoft.Insights/scheduledQueryRules",
+            "apiVersion": "2018-04-16",
+            "location": "[parameters('Location')]",
+            "properties":{
+                "description": "[variables('unintendedSecretAccessAlertDescription')]",
+                "enabled": true,
+                "source": {
+                    "query": "[parameters('UnintendedSecretAccessAlertQuery')]",
+                    "dataSourceId": "[variables('laAlertSource').SourceId]",
+                    "queryType":"[variables('laAlertSource').Type]"
+                },
+                "schedule":{
+                    "frequencyInMinutes": "60",
+                    "timeWindowInMinutes": "60"
+                },
+                "action":{
+                    "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                    "severity":"1",
+                    "aznsAction":{
+                        "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                        "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('unintendedSecretAccessAlert'))]"
+                    },
+                    "trigger":{
+                        "thresholdOperator":"GreaterThan",
+                        "threshold":"0"
+                    }
+                }
+            }
+        }
+  ]
+}
