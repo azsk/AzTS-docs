@@ -520,7 +520,7 @@ function Set-SecureTLSVersionForServiceBusNamespaces {
 
             Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
             if ($($serviceBusNamespacesRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully set secure TLS version to [$($MinRequiredTLSVersionValue)] for the following Service Bus Namespaces(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set secure TLS version to $([Constants]::MinRequiredTLSVersionValue) for the following Service Bus Namespaces(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $serviceBusNamespacesRemediated | Format-Table -Property $colsProperty -Wrap
 
