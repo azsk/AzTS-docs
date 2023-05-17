@@ -29,7 +29,7 @@ In this section, we will walk through the steps of setting up AzTS Solution. Thi
 
 ## **Method A:**
 
-> _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip?raw=1) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
+> _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
 This setup is divided into six steps:
 
