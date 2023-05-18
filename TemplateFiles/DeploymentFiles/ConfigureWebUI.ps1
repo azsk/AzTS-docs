@@ -26,7 +26,7 @@ function GetAuthHeader {
             $resourceAppIdUri); 
 
             $header = "Bearer " + $authResult.AccessToken
-            $headers = @{"Authorization"=$header}
+            $headers = @{"Authorization"=$header; 'If-Match'='*';}
         }
         catch 
         {
