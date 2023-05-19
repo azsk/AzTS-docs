@@ -415,7 +415,7 @@ function Set-RedisCacheMinReqTLSVersion
 
     if ($totalNonCompliantTLSRedisCache  -eq 0)
     {
-        Write-Host "No Redis Cache(s) found with non compliant [$($requiredMinTLSVersion)] Min TLS Version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No Redis Cache(s) found with non compliant less than [$($requiredMinTLSVersion)] Min TLS Version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
@@ -634,7 +634,7 @@ function Reset-RedisCacheMinReqTLSVersion
         None. Reset-MinTLSVersionOnRedisCache does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-MinTLSVersionOnRedisCache -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EnableSecurityScanningIdentityForRedisCache\RemediatedRedisCache.csv
+        PS> Reset-MinTLSVersionOnRedisCache -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\MinTLSVersionForRedisCache\RemediatedRedisCache.csv
 
         .LINK
         None
