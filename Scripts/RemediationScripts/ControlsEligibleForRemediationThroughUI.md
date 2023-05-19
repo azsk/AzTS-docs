@@ -47,6 +47,8 @@
 
 23. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](ControlsEligibleForRemediationThroughUI.md#23-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 
+24. [Azure_RedisCache_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#24-Azure_RedisCache_DP_Use_Secure_TLS_Version)
+
 
 
 <br />
@@ -351,6 +353,20 @@ Local accounts should be disabled in Kubernetes Service
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DisableLocalAccountsForKubernetesService](Remediate-DisableLocalAccountsForKubernetesService.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 24. Azure_RedisCache_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure RedisCache.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetRedisCacheMinReqTLSVersion]
+(Remediate-SetRedisCacheMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
