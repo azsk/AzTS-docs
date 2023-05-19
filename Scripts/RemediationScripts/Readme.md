@@ -904,8 +904,7 @@ ___
 Use approved version of TLS for Azure RedisCache.
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-SetRedisCacheMinReqTLSVersion]
-(Remediate-SetRedisCacheMinReqTLSVersion.ps1)
+[Remediate-SetRedisCacheMinReqTLSVersion](Remediate-SetRedisCacheMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
