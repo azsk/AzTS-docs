@@ -1,0 +1,288 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "AutoUpdaterFailureAlertQuery" : {
+            "type" : "string"
+        },
+        "AutoUpdaterNewReleaseAlertQuery": {
+            "type" : "string"
+        },
+        "SubscriptionInvRefreshFailureAlertQuery": {
+            "type" : "string"
+        },
+        "BaselineControlsInvRefreshFailureAlertQuery":{
+            "type" : "string"
+        },
+        "RBACInvRefreshFailureAlertQuery":{
+            "type" : "string"
+        },
+        "ControlResultsRefreshFailureAlertQuery":{
+            "type" : "string"
+        },
+        "ScanProgressSummaryQuery":{
+            "type" : "string"
+        },
+        "ActionGroupId" : {
+            "type" : "string"
+        },
+        "AIResourceId" : {
+            "type" : "string"
+        },
+        "LAResourceId" : {
+            "type" : "string"
+        },
+        "IsAutoUpdaterEnabled": {
+        "type" : "bool",
+        "defaultValue": true
+        }
+    },
+    "variables": {
+        "aiAlertSource":{
+            "SourceId": "[parameters('AIResourceId')]",
+            "Type":"ResultCount"
+        },
+        "laAlertSource":{
+            "SourceId": "[parameters('LAResourceId')]",
+            "Type":"ResultCount"
+        },
+        "actionGrp":{
+            "ActionGroup": "[parameters('ActionGroupId')]"
+        },
+        "autoUpdaterFailureAlert": "AzTS Auto-Updater Failure Alert",
+        "autoUpdaterFailureAlertDescription": "This is to notify you that AzTS Auto-Updater has not completed as expected in the last 24 hours.`r`n**Next steps**`r`n Run 'Install-AzSKTenantSecuritySolution' cmdlet. If this does not fix the issue, contact us at: azsksup@microsoft.com.",
+        "autoUpdaterNewReleaseAlert": "AzTS Service Updated to a New Version",
+        "autoUpdaterNewReleaseAlertDescription": "This is to notify you that AzTS service has been recently upgraded.",
+        "subscriptionInvRefreshFailureAlert" : "AzTS Subscription Inv Refresh Failure",
+        "subscriptionInvRefreshFailureAlertDescription" : "This is to notify you that subscription inventory has not refreshed in the last 24 hours. Try running the 'ATS_01_SubscriptionInvProcessor' function manually. If this does not fix the issue, contact us at: azsksup@microsoft.com. Note: If you have recently install the setup and first scan is yet to be completed then you can ignore this alert. ",
+        "baselineControlsInvRefreshFailureAlert" : "AzTS Baseline Controls Inv Refresh Failure" ,
+        "baselineControlsInvRefreshFailureAlertDescription" :  "This is to notify you that baseline control inventory has not refreshed in the last 24 hours. Try running the 'ATS_02_BaselineControlsInvProcessor' function manually. If this does not fix the issue, contact us at: azsksup@microsoft.com. Note: If you have recently install the setup and first scan is yet to be completed then you can ignore this alert. ",
+        "rbacInvRefreshFailureAlert" : "AzTS Subscription RBAC Inv Refresh Failure",
+        "rbacInvRefreshFailureAlertDescription" : "This is to notify you that subscription RBAC inventory has not refreshed in the last 24 hours. Try running the 'ATS_03_SubscriptionRBACProcessor' function manually. If this does not fix the issue, contact us at: azsksup@microsoft.com. Note: If you have recently install the setup and first scan is yet to be completed then you can ignore this alert.",
+        "controlResultsRefreshFailureAlert" : "AzTS Control Results Refresh Failure",
+        "controlResultsRefreshFailureAlertDescription": "This is to notify you that control results have not refreshed in the last 24 hours. Try running the 'ATS_04_WorkItemScheduler' function manually. If this does not fix the issue, contact us at: azsksup@microsoft.com. Note: If you have recently install the setup and first scan is yet to be completed then you can ignore this alert. ",
+        "scanProgressSummaryAlert" : "AzTS Scan Progress Summary",
+        "scanProgressSummaryAlertDescription": "This is to inform you of today's AzTS scan progress. Please use the following result to verify that the scan has completed for all subscriptions configured for the AzTS scan."
+    },
+    "resources":[ 
+        {
+        "condition": "[parameters('IsAutoUpdaterEnabled')]",
+        "name":"[variables('autoUpdaterFailureAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('autoUpdaterFailureAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('AutoUpdaterFailureAlertQuery')]",
+                "dataSourceId": "[variables('aiAlertSource').SourceId]",
+                "queryType":"[variables('aiAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "2880"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"1",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('autoUpdaterFailureAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator":"Equal",
+                    "threshold":"0"
+                }
+            }
+        }
+    },
+    {
+        "condition": "[parameters('IsAutoUpdaterEnabled')]",
+        "name":"[variables('autoUpdaterNewReleaseAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('autoUpdaterNewReleaseAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('AutoUpdaterNewReleaseAlertQuery')]",
+                "dataSourceId": "[variables('aiAlertSource').SourceId]",
+                "queryType":"[variables('aiAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "1440"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"3",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('autoUpdaterNewReleaseAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator":"GreaterThan",
+                    "threshold":"0"
+                }
+            }
+        }
+    },
+    {
+        "name":"[variables('subscriptionInvRefreshFailureAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('subscriptionInvRefreshFailureAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('SubscriptionInvRefreshFailureAlertQuery')]",
+                "dataSourceId": "[variables('laAlertSource').SourceId]",
+                "queryType":"[variables('laAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "1440"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"1",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('subscriptionInvRefreshFailureAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator":"Equal",
+                    "threshold":"0"
+                }
+            }
+        }
+    },
+    {
+        "name":"[variables('baselineControlsInvRefreshFailureAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('baselineControlsInvRefreshFailureAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('BaselineControlsInvRefreshFailureAlertQuery')]",
+                "dataSourceId": "[variables('laAlertSource').SourceId]",
+                "queryType":"[variables('laAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "1440"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"1",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('baselineControlsInvRefreshFailureAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator":"Equal",
+                    "threshold":"0"
+                }
+            }
+        }
+    },
+    {
+        "name":"[variables('rbacInvRefreshFailureAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('rbacInvRefreshFailureAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('RBACInvRefreshFailureAlertQuery')]",
+                "dataSourceId": "[variables('laAlertSource').SourceId]",
+                "queryType":"[variables('laAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "1440"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"1",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('rbacInvRefreshFailureAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator":"Equal",
+                    "threshold":"0"
+                }
+            }
+        }
+    },
+    {
+        "name":"[variables('controlResultsRefreshFailureAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('controlResultsRefreshFailureAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('ControlResultsRefreshFailureAlertQuery')]",
+                "dataSourceId": "[variables('laAlertSource').SourceId]",
+                "queryType":"[variables('laAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "1440"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"1",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('controlResultsRefreshFailureAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator":"Equal",
+                    "threshold":"0"
+                }
+            }
+        }
+    },
+    {
+        "name":"[variables('scanProgressSummaryAlert')]",
+        "type":"Microsoft.Insights/scheduledQueryRules",
+        "apiVersion": "2018-04-16",
+        "location": "[resourceGroup().location]",
+        "properties":{
+            "description": "[variables('scanProgressSummaryAlertDescription')]",
+            "enabled": true,
+            "source": {
+                "query": "[parameters('ScanProgressSummaryQuery')]",
+                "dataSourceId": "[variables('laAlertSource').SourceId]",
+                "queryType":"[variables('laAlertSource').Type]"
+            },
+            "schedule":{
+                "frequencyInMinutes": "1440",
+                "timeWindowInMinutes": "2880"
+            },
+            "action":{
+                "odata.type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.Microsoft.AppInsights.Nexus.DataContracts.Resources.ScheduledQueryRules.AlertingAction",
+                "severity":"3",
+                "aznsAction":{
+                    "actionGroup":"[array(variables('actionGrp').ActionGroup)]",
+                    "emailSubject": "[concat('AzTS MONITORING ALERT: ',variables('scanProgressSummaryAlert'))]"
+                },
+                "trigger":{
+                    "thresholdOperator": "GreaterThanOrEqual",
+                    "threshold":"0"
+                }
+            }
+        }
+    }
+  ]
+}
