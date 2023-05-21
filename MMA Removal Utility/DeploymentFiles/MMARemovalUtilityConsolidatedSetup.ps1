@@ -141,8 +141,6 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         ##############################################################################
         # Step 1: Setting up remediation identity  
         # 1- Create remediation MI and grant 'Reader' and 'VM Contributor' permission on target subscriptions.
-        $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
-        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("**Step 1**: Set up managed identity to discover/remove MMA agent.", $([Constants]::MessageType.Info))
         $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("Setting up AzTS MMA Removal Utility Solution identity...`n", $([Constants]::MessageType.Info))
@@ -172,13 +170,10 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         {
             $logger.PublishLogMessage("Resource id and principal Id generated for user identity:`r`nPrincipalId: $($UserAssignedIdentity.PrincipalId) `r`nResourceId: $($UserAssignedIdentity.Id) `r`n$([Constants]::DoubleDashLine)")
         }
-        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
 
         ##############################################################################
         # Step 2. Set context and deploy AzTS resources in Host RG and Subscription ****
 
-        $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
-        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("**Step 2**: Install AzTS MMA Removal Utility Solution setup.", $([Constants]::MessageType.Info))
         $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("Started setting up AzTS MMA Removal Utility Solution..." ,$([Constants]::MessageType.Info))
@@ -210,24 +205,32 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         }
 
         $logger.PublishLogMessage("Deployment of AzTS components completed.")
-        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
 
         ##############################################################################
         # Step 3. Set required discovery scopes in scope resolver trigger processor.
-        $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
-        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("**Step 3**: Configure MMA Removal utility scope(s).", $([Constants]::MessageType.Info))
         $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("Started setting up MMA Removal utility scope(s)..." ,$([Constants]::MessageType.Info))
 
-        $CommandArguments = @{
-            SubscriptionId = $HostSubscriptionId
-            ResourceGroupName = $HostRGName
-            TargetSubscriptionIds = $TargetSubscriptionIds
-            TargetManagementGroupNames = $TargetManagementGroupNames
-            TenantScope = $TenantScope
-            ConsolidatedSetup = $true
+        if ($TenantScope -eq $true)
+        {
+            $CommandArguments = @{
+                SubscriptionId = $SubscriptionId
+                ResourceGroupName = $HostRGName
+                TenantScope = $TenantScope
+            }
         }
+        else
+        {
+            $CommandArguments = @{
+                SubscriptionId = $SubscriptionId
+                ResourceGroupName = $HostRGName
+                TargetSubscriptionIds = $TargetSubscriptionIds
+                TargetManagementGroupNames = $TargetManagementGroupNames
+                ConsolidatedSetup = $true
+            }
+        }
+        
 
         $response = Set-AzTSMMARemovalUtilitySolutionScopes @CommandArguments
 

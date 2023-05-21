@@ -41,7 +41,7 @@ Let's start!
 
   # Note: Make sure you copy  '.' present at the start of the line.
   ```
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
 
@@ -57,7 +57,7 @@ Please make sure you point current path to extracted folder location and load se
 Set-Prerequisites
 ```
 
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
 
@@ -71,7 +71,7 @@ For executing the above phases, setup requires a [User-Assigned Managed Identity
 > _Note:_
 > 1. _For creation of remediation user-assigned MI setup (preferably in a separate new RG), user running this script should have **Owner** access on the subscription in which MI is being created. If the MI is being created in an existing RG, user should have **Contributor** access on the RG._
 > 
-> 2. _For granting remediation user-assigned MI with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configurged scopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the remediated user-assigned MI with the required permissions._
+> 2. _For granting remediation user-assigned MI with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configurged scopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the remediation user-assigned MI with the required permissions._
 >
 
 Before setting up the remediation user-assigned MI, please log in to Azure Account using the following PowerShell command.
@@ -120,7 +120,7 @@ $Identity.Id
 |TargetManagementGroupNames| List of target management group name(s) on which AzTS MMA Removal Utility setup will run.| No|
 |TenantScope| Switch for tenant scope in case you want to scope the run at tenant level, which helps in assigning appropriate roles at the tenant scope for the tenant id from the context of user.| No|
 
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
 
@@ -156,13 +156,13 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolution `
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup needs to be created.| Yes|
-|ResourceGroupName| Resource group name in which setup needs to be created. Default value is 'AzTS-MMARemovalUtility-Host-RG'| No|
+|HostRGName| Resource group name in which setup needs to be created. Default value is 'AzTS-MMARemovalUtility-Host-RG'| No|
 |Location| Location in which setup needs to be created. For better performance, we recommend hosting the MI and AzTS MMA Removal Utility setup in the same location. Default value is 'EastUS2'| No|
 |ManagedIdentityId| ResourceId of the remediation MI.| Yes|
 |AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud. Default value is 'AzureCloud'| No|
 |DisableUsageTelemetry| DisableUsageTelemetry switch will not prompt for user preferences that captures usage data (stored in Microsoft servers). Avoiding this switch will help in improving the product quality and prioritize meaningfully on the highly used features.| No|
 
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
 
@@ -191,7 +191,7 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
 |TargetManagementGroupNames| List of target management group name(s) to be configued as part of target scopes.| No|
 |TenantScope| Switch for tenant scope in case you want to scope the run at tenant level, configures scope at tenant level using tenant id from the context of user.| No|
 
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
 
@@ -223,7 +223,7 @@ Let's start!
 
   # Note: Make sure you copy  '.' present at the start of the line.
   ```
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
 
@@ -268,7 +268,7 @@ Connect-AzAccount -Tenant $TenantId
 # Consolidated installation
 # -----------------------------------------------------------------#
 
-$SetupInstallation = Install-AzTSMMARemovalUtilitySolution ` 
+$SetupInstallation = Install-AzTSMMARemovalUtilitySolutionConsolidated `
          -RemediationIdentityHostSubId <MIHostingSubId> `
          -RemediationIdentityHostRGName <MIHostingRGName> `
          -RemediationIdentityName <MIName> `
@@ -276,7 +276,7 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolution `
          -TargetManagementGroupNames @("<MGName1>","<MGName2>","<MGName3>") `
          -TenantScope `
          -SubscriptionId <HostingSubId> `
-         -ResourceGroupName <HostingRGName> `
+         -HostRGName <HostingRGName> `
          -Location <Location> `
          -AzureEnvironmentName <AzureEnvironmentName> `
          -DisableUsageTelemetry
@@ -292,11 +292,11 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolution `
 |TargetManagementGroupNames| List of target management group name(s) on which AzTS MMA Removal Utility Setup will run.| No|
 |TenantScope| Switch for tenant scope in case you want to scope the run at tenant level, configures scope and assigns appropriate roles at the tenant level using tenant id from the context of user.| No|
 |SubscriptionId| Subscription id in which setup is installed.| Yes|
-|ResourceGroupName| Resource group name in which remediation MI needs to be created. Default value is 'AzTS-MMARemovalUtility-Host-RG'| No|
-|Location| Location in which remediation MI needs to be created. For better performance, we recommend hosting the MI and AzTS MMA Removal Utility setup in the same location. Default value is 'EastUS2'| No|
+|HostRGName| Resource group name in which remediation MI needs to be created. Default value is 'AzTS-MMARemovalUtility-Host-RG'| No|
+|Location| Location in which AzTS MMA Removal Utility setup is created. Default value is 'EastUS2'| No|
 |AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud. Default value is 'AzureCloud'| No|
 |DisableUsageTelemetry| DisableUsageTelemetry switch will not prompt for user preferences that captures usage data (stored in Microsoft servers). Avoiding this switch will help in improving the product quality and prioritize meaningfully on the highly used features.| No|
 
-[Back to top…](#1-steps-to-install-azts-mma-removal-utility)
+[Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
 <br/>
