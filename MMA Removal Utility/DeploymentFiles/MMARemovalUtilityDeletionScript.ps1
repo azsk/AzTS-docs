@@ -51,6 +51,22 @@
                 return;
             }
 
+            # Installing requied modules.
+            Write-Host "Required module(s): Az.Resources" -ForegroundColor Cyan
+            Write-Host "Checking for required module(s)..."
+            $availableModules = $(Get-Module -ListAvailable Az.Resources)
+
+            # Checking if 'Az.Resources' module is available or not.
+            if($availableModules.Name -notcontains 'Az.Resources')
+            {
+                Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
+                Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
+            }
+            else
+            {
+                Write-Host "Az.Resources module is available." -ForegroundColor Green
+            }
+
             Write-Host "Validating whether the current user [$($currentContext.Account.Id)] has the required permissions to run the script for resource group [$($ResourceGroupName)]..."
             
             # Safe Check: Checking whether the current account is of type User.

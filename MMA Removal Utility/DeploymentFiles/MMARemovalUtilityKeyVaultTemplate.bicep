@@ -42,8 +42,11 @@ var laWorkspaceName = 'MMARemovalUtility-LAWSForAuditing-${resourceHash}'
 var diagnosticSettingsName = 'MMARemovalUtility-AuditSetting-${resourceHash}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: keyVaultName
+  name: '${keyVaultName}-${resourceHash}'
   location: location
+  tags: {
+    AzTSMMARemovalUtilityIdentifier: resourceHash
+  }
   properties: {
     enabledForDeployment: false
     enabledForDiskEncryption: false
@@ -70,7 +73,10 @@ resource keyVaultName_secret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
 }
 
 resource laWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
-  name: laWorkspaceName
+  name: '${laWorkspaceName}-${resourceHash}'
+  tags: {
+    AzTSMMARemovalUtilityIdentifier: resourceHash
+  }
   location: location
   properties: {
     publicNetworkAccessForIngestion: 'Enabled'

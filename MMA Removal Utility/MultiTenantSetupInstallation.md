@@ -10,11 +10,11 @@ This setup is divided into nine steps:
 2. [Installing required Az modules](#step-2-of-9-installing-required-az-modules)
 3. [Setup multi-tenant remediation identity](#step-3-of-9-setup-multi-tenant-remediation-identity)
 4. [Setup secrets storage](#step-4-of-9-setup-secrets-storage)
-5. [Setup installation](#step-4-of-9-setup-secrets-storage)
+5. [Setup installation](#step-5-of-9-setup-installation)
 6. [Grant remediation identity with access on key vault](#step-6-of-9-grant-remediation-identity-with-access-on-key-vault)
-6. [Setup runbook for managing key vault IP ranges](#step-7-of-9-setup-runbook-for-managing-key-vault-ip-ranges)
-7. [Setup SPN and grant required roles for each tenant](#step-8-of-9-setup-spn-and-grant-required-roles-for-each-tenant)
-8. [Configure scopes per tenant](#step-9-of-9-configure-target-scopes)
+7. [Setup runbook for managing key vault IP ranges](#step-7-of-9-setup-runbook-for-managing-key-vault-ip-ranges)
+8. [Setup SPN and grant required roles for each tenant](#step-8-of-9-setup-spn-and-grant-required-roles-for-each-tenant)
+9. [Configure scopes per tenant](#step-9-of-9-configure-target-scopes)
 
 Let's start!
 

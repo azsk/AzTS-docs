@@ -881,7 +881,7 @@ function Set-AzTSMMARemovalUtilitySolutionSecretStorage
                     -keyVaultName $KeyVaultName `
                     -secretName $secretName `
                     -secretValue $credentialSecureString `
-                    -ResourceHash $ResourceHash `
+                    -resourceHash $ResourceHash `
                     -location $Location
             if($validationResult)
             {
@@ -1480,6 +1480,7 @@ function Set-AzTSMMARemovalUtilityRunbook {
                 -Mode Incremental `
                 -ResourceGroupName $ResourceGroupName  `
                 -TemplateFile ".\MMARemovalUtilityAutomationAccountTemplate.bicep" `
+                -resourceHash $ResourceHash `
                 -automationAccountName $AutomationAccountName `
                 -location $Location
 
