@@ -8,7 +8,7 @@
 -----------------------------------------------------------------
 ## Overview 
 
-AzTS MMA Discovery and Removal Utility can be used to remove MMA extension/agent from Azure Virtual Machine (VMs) across subscriptions. Microsoft Monitoring Agent (MMA) [will be retired on 31 August 2024](https://azure.microsoft.com/en-us/updates/were-retiring-the-log-analytics-agent-in-azure-monitor-on-31-august-2024/) and users need to migrate to Azure Monitor agent (AMA). If you have already migrated all of your Virtual Machines (VMs) to start using AMA for monitoring, it is recommened to remove MMA agent to avoid duplication of logs.
+AzTS MMA Discovery and Removal Utility can be used to remove MMA extension/agent from Azure Virtual Machine (VMs) across subscriptions. Microsoft Monitoring Agent (MMA) [will be retired on 31 August 2024](https://azure.microsoft.com/en-us/updates/were-retiring-the-log-analytics-agent-in-azure-monitor-on-31-august-2024/) and users need to migrate to Azure Monitor agent (AMA). If you have already migrated all of your Virtual Machines (VMs) to start using AMA for monitoring, it is recommended to remove MMA agent to avoid duplication of logs.
 
 AzTS MMA Discovery and Removal Utility can help to remove MMA extension from VMs which already have AMA extension present, in bulk/at tenant scale in centralized manner instead of doing it per VM manually.
 
@@ -22,7 +22,7 @@ AzTS MMA Discovery and Removal Utility works in two phases:
 
 In this phase, it will prepare the inventory of all Virtual Machines and their extensions to identify, which VMs have both MMA and AMA or only MMA agents installed. In next phase (i.e., 'Removal Phase'), users can choose to remove MMA extension from VMs having either both MMA and AMA agents or just MMA agent. 
 
-It is recommended to avoid creating new VMs with MMA extension or installing MMA extension on existing VMs after AzTS MMA Discovery and Removal utility starts processing. For this you can assign Azure policy with 'Deny' effect on your subscriptions before running this utility. Guidance for same is available [here] (link).
+It is recommended to avoid creating new VMs with MMA extension or installing MMA extension on existing VMs after AzTS MMA Discovery and Removal utility starts processing. For this you can assign Azure policy with 'Deny' effect on your subscriptions before running this utility. Guidance for same is available [here](link).
 
 **2- Removal Phase**
 
@@ -48,8 +48,8 @@ Once all MMA agents have been successfully removed from the VMs, it is recommend
 Estimated average cost for a single run (both discovery and removal phase) of utility on a scope of approx 100K VMs is less than 5$.
 It is important to consider that if you choose to retain inventory or process logs, the cost may increase depending on the selected retention period.
 
-### **5. How much time AzTS MMA Discovery and Removal Utility will take to remove MMA agnets?**
-Estimated average time required for a single run (both discovery and removal phase) of utility on a scope of approx 100K VMs is around 30 Mins.
+### **5. How much time AzTS MMA Discovery and Removal Utility will take to remove MMA agents?**
+Estimated average time required for a single run (both discovery and removal phase) of utility on a scope of approx. 100K VMs is around 30 Mins.
 
 ### **6. How I can get list of all the VMs available in configured scope(s)?**
 VMs inventory is collected in Log Analytics workspace. To list all VMs discovered by utility, go to Log Analytics workspace created during setup --> Select Logs and run following query: 
