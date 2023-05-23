@@ -106,6 +106,8 @@ function Setup-Prerequisites
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
+    Write-Host "All required modules are present." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
 }
 
 
@@ -243,7 +245,7 @@ function Set-RedisCacheMinReqTLSVersion
     
     if(-not($AutoRemediation))
     {
-        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Current context has been set to below details:" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host "Subscription Name: [$($context.Subscription.Name)]"
         Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
         Write-Host "Account Name: [$($context.Account.Id)]"
@@ -251,7 +253,7 @@ function Set-RedisCacheMinReqTLSVersion
         Write-Host $([Constants]::SingleDashLine)
     } 
     
-    Write-Host "*** To Set MinTLSVersion on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "***To Set MinTLSVersion on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Redis Cache(s)..."
@@ -393,6 +395,9 @@ function Set-RedisCacheMinReqTLSVersion
     # list for storing Redis Cache(s) where required TLS Version is not configured
     $NonCompliantTLSRedisCache = @()
 
+    # Non Compliant Redis cache(s) with TLS Version as default
+    $TLSwithDefaultValue = @()
+
     Write-Host "Separating Redis Cache(s) for which TLS Version [$($requiredMinTLSVersion)] is not configured..."
 
     $RedisCacheDetails | ForEach-Object {
@@ -400,6 +405,10 @@ function Set-RedisCacheMinReqTLSVersion
         if($_.MinimumTlsVersion -lt $requiredMinTLSVersion)
         {
             $NonCompliantTLSRedisCache += $RedisCache
+
+            if(!$_.MinimumTlsVersion){
+                $TLSwithDefaultValue += $RedisCache
+            }
         }
         else
         {
@@ -419,7 +428,7 @@ function Set-RedisCacheMinReqTLSVersion
         break
     }
 
-    Write-Host "Found [$($totalNonCompliantTLSRedisCache)] Redis Cache(s) for which Min TLS Version [$($requiredMinTLSVersion)] is not configured." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantTLSRedisCache)] Redis Cache(s) with non compliant TLS Version:" -ForegroundColor $([Constants]::MessageType.Update)
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
@@ -458,14 +467,16 @@ function Set-RedisCacheMinReqTLSVersion
     if (-not $DryRun)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Use approved version of TLS for Azure RedisCache..." 
+        Write-Host "[Step 4 of 4] Remediating non compliant Azure Redis Cache..." 
         Write-Host $([Constants]::SingleDashLine)
         
         if(-not $AutoRemediation)
         {
             if (-not $Force)
             {
-                Write-Host "Do you want to Use approved version of TLS [$($requiredMinTLSVersion)] for Azure RedisCache? " -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Found total [$($TLSwithDefaultValue.count)] Redis cache(s) with default version. TLS version for these resources can not be reverted back to default value after remediation." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "This step will configure TLS version [$($requiredMinTLSVersion)] for all non-complaint [$($NonCompliantTLSRedisCache.count)] Redis cache(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
                 $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -487,7 +498,8 @@ function Set-RedisCacheMinReqTLSVersion
         # List for storing skipped Redis Cache(s)
         $RedisCacheSkipped = @()
 
-        Write-Host "Configuring Min TLS Version [$($requiredMinTLSVersion)] on Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Configuring Min TLS Version [$($requiredMinTLSVersion)] on all listed Redis Cache(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Redis Cache(s) which needs to be remediated.
         $NonCompliantTLSRedisCache | ForEach-Object {
@@ -498,36 +510,32 @@ function Set-RedisCacheMinReqTLSVersion
             Write-Host "Configuring TLS Version [$($requiredMinTLSVersion)] on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
             try
             {
-                # Need to remove this line befor PR review
-                if($_.ResourceGroupName -eq 'v-hararoraTestRG')
-                {
-                $RedisCacheResource = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -MinimumTlsVersion $requiredMinTLSVersion
-                if($RedisCacheResource.MinimumTlsVersion -ge $requiredMinTLSVersion)
-                {
-                    $RedisCache.isMinTLSVersionSetPostRemediation = $true
-                    $RedisCache.MinimumTlsVersion = $requiredMinTLSVersion
-                    $RedisCacheRemediated += $RedisCache
-                    
-                    $logResource = @{}
-                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.ResourceName))
-                    $logRemediatedResources += $logResource
-                    Write-Host "Successfully set the minimum required TLS version on Redis Cache." -ForegroundColor $([Constants]::MessageType.Update)
-                    Write-Host $([Constants]::SingleDashLine)
-                }
-                else
-                {
-                    $RedisCache.isMinTLSVersionSetPostRemediation = $false
-                    $RedisCacheSkipped += $RedisCache
-                    $logResource = @{}
-                    $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
-                    $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason", "Error occured while setting the minimum required TLS version on Redis cache.")
-                    $logSkippedResources += $logResource
-                    Write-Host "Skipping this Redis Cache resource." -ForegroundColor $([Constants]::MessageType.Warning)
-                    Write-Host $([Constants]::SingleDashLine)
-                }
-                }
+              $RedisCacheResource = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -MinimumTlsVersion $requiredMinTLSVersion
+              if($RedisCacheResource.MinimumTlsVersion -ge $requiredMinTLSVersion)
+              {
+                  $RedisCache.isMinTLSVersionSetPostRemediation = $true
+                  $RedisCache.MinimumTlsVersion = $requiredMinTLSVersion
+                  $RedisCacheRemediated += $RedisCache
+                  
+                  $logResource = @{}
+                  $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                  $logResource.Add("ResourceName",($_.ResourceName))
+                  $logRemediatedResources += $logResource
+                  Write-Host "Successfully set the minimum required TLS version on Redis Cache [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                  Write-Host $([Constants]::SingleDashLine)
+              }
+              else
+              {
+                  $RedisCache.isMinTLSVersionSetPostRemediation = $false
+                  $RedisCacheSkipped += $RedisCache
+                  $logResource = @{}
+                  $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                  $logResource.Add("ResourceName",($_.ResourceName))
+                  $logResource.Add("Reason", "Error occured while setting the minimum required TLS version on Redis cache.")
+                  $logSkippedResources += $logResource
+                  Write-Host "Skipping this Redis Cache resource." -ForegroundColor $([Constants]::MessageType.Warning)
+                  Write-Host $([Constants]::SingleDashLine)
+              }  
             }
             catch
             {
@@ -552,7 +560,7 @@ function Set-RedisCacheMinReqTLSVersion
 
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
-        
+
         if ($($RedisCacheRemediated | Measure-Object).Count -gt 0)
         {
             Write-Host "TLS Version [$($requiredMinTLSVersion)] configured on the following Redis Cache(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
@@ -595,13 +603,13 @@ function Set-RedisCacheMinReqTLSVersion
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Use approved version of TLS[$($requiredMinTLSVersion)] for Azure RedisCache..."
+        Write-Host "[Step 4 of 4]  Remediating non compliant Azure Redis Cache..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "*    Run the same command with -FilePath $($backupFile) and without -DryRun, configure TLS Version on Redis Cache(s) listed in the file."
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, configure TLS Version on Redis Cache(s) listed in the file."
     }
 }
 
@@ -699,7 +707,7 @@ function Reset-RedisCacheMinReqTLSVersion
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To configure TLS Version on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "*** To configure TLS Version on Redis Cache in a Subscription, Contributor or higher privileges on the Redis Cache are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Redis Cache(s)..."
@@ -746,13 +754,13 @@ function Reset-RedisCacheMinReqTLSVersion
  
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Reverting back TLS Versions for all Redis Cache(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Rolling back TLS Versions for all Redis Cache(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
     if( -not $Force)
     {
-        
-        Write-Host "Do you want to roll back previous TLS Versions on all Redis Cache(s) mentioned in the file ?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Please note: This will not roll back redis cache(s) resources where previous minimum TLS Version was default."  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
@@ -760,8 +768,6 @@ function Reset-RedisCacheMinReqTLSVersion
                 Write-Host "Minimum TLS Version will not be rolled back for any Redis Cache(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
-            Write-Host "Rolling back TLS Versions on Redis Cache(s) in the Subscription." -ForegroundColor $([Constants]::MessageType.Update)
-
     }
     else
     {
@@ -774,23 +780,42 @@ function Reset-RedisCacheMinReqTLSVersion
     # List for storing skipped rolled back Redis Cache resource.
     $RedisCacheSkipped = @()
 
+    # List for redis cache(s) where previous MinTLSVersion was default
+    $RedisCacheWithDefaultValue = @()
+
+    Write-Host "Starting Roll back operation..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+
     $validRedisCacheDetails | ForEach-Object {
         $RedisCache = $_
         $RedisCache | Add-Member -NotePropertyName isMinTLSVersionRolledback -NotePropertyValue $false
         try
         {
-            $RedisCacheResource = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -MinimumTlsVersion $_.PreviousMinimumTlsVersion
-        
-            if($RedisCacheResource.MinimumTlsVersion -eq $_.PreviousMinimumTlsVersion)
+            if($_.PreviousMinimumTlsVersion)
             {
-                $RedisCache.PreviousMinimumTlsVersion = $RedisCache.MinimumTLSVersion
-                $RedisCache.MinimumTlsVersion = $RedisCacheResource.MinimumTlsVersion
-                $RedisCache.isMinTLSVersionSetPostRemediation = $false
-                $RedisCache.isMinTLSVersionRolledback = $true
-                $RedisCacheRolledBack += $RedisCache    
+                Write-Host "Rolling back TLS Versions on Redis Cache(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                $RedisCacheResource = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -MinimumTlsVersion $_.PreviousMinimumTlsVersion
+        
+                if($RedisCacheResource.MinimumTlsVersion -eq $_.PreviousMinimumTlsVersion)
+                {
+                    Write-Host "Succesfully rolled back TLS Versions on Redis Cache(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    $RedisCache.PreviousMinimumTlsVersion = $RedisCache.MinimumTLSVersion
+                    $RedisCache.MinimumTlsVersion = $RedisCacheResource.MinimumTlsVersion
+                    $RedisCache.isMinTLSVersionSetPostRemediation = $false
+                    $RedisCache.isMinTLSVersionRolledback = $true
+                    $RedisCacheRolledBack += $RedisCache    
+                }
+                else
+                {
+                    $RedisCache.isMinTLSVersionRolledback = $false
+                    $RedisCacheSkipped += $RedisCache
+                }
             }
             else
             {
+                $RedisCacheWithDefaultValue += $RedisCache
+                Write-Host "Roll back failed for [$($_.ResourceName)] as 'PreviousMinimumTlsVersion' found to be empty. Skipping this resource." -ForegroundColor $([Constants]::MessageType.Error)
                 $RedisCache.isMinTLSVersionRolledback = $false
                 $RedisCacheSkipped += $RedisCache
             }
@@ -825,18 +850,22 @@ function Reset-RedisCacheMinReqTLSVersion
             $RedisCacheRolledBack | Export-CSV -Path $RedisCacheRolledBackFile -NoTypeInformation
             Write-Host "This information has been saved to" -NoNewline
             Write-Host " [$($RedisCacheRolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+            Write-Host $([Constants]::SingleDashLine)
         }
 
         if ($($RedisCacheSkipped | Measure-Object).Count -gt 0)
         {
+            Write-Host "Found [$($RedisCacheWithDefaultValue.count)] redis cache(s) of total count [$($validRedisCacheDetails.count)] where previous TLS Version was set to default." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
             Write-Host "Error configuring TLS Version on following Redis Cache(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
+            
             $RedisCacheSkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
             $RedisCacheSkippedFile = "$($backupFolderPath)\RollbackSkippedRedisCache.csv"
             $RedisCacheSkipped | Export-CSV -Path $RedisCacheSkippedFile -NoTypeInformation
             Write-Host "This information has been saved to" -NoNewline
-            Write-Host " [$($RedisCacheSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+            Write-Host " [$($RedisCacheSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
         }
     }
 }
