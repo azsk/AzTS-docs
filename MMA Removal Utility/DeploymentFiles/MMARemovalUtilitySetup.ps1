@@ -711,29 +711,25 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
         
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "RunImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
         $SubscriptionId,
 
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "RunImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         $ResourceGroupName,
 
         [int]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target subscription(s).")]
-        $RunAfterMinutes,
-
-        [int]
-        [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
-        $RunAfterHours,
+        $StartAfterMinutes,
 
         [switch]
-        [Parameter(Mandatory = $true, ParameterSetName = "RunImmediatley", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
-        $RunImmediatley,
+        [Parameter(Mandatory = $true, ParameterSetName = "StartImmediatley", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
+        $StartImmediatley,
 
         [switch]
         [Parameter(Mandatory = $false, ParameterSetName = "RunAfterSchedule", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "RunImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false
     )
 
@@ -755,7 +751,7 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
 
             if (-not $ConsolidatedSetup) {
                 Write-Host $([Constants]::DoubleDashLine)
-                Write-Host "Configuring MMA Removal utility scope(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Configuring MMA Removal utility discovery phase trigger..." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -773,6 +769,7 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
                 return;
             }
 
+            Write-Host "Configuring scope resolver trigger..." -ForegroundColor $([Constants]::MessageType.Info)  
             # Step 3:  Get Scope resolver trigger processor function app.
 
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName;
@@ -780,7 +777,11 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
             $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
             $ScopeResolverTriggerAppName = "MMARemovalUtility-ScopeResolverTrigger-" + $ResourceHash
 
-            Write-Host "Checking if ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)            
+            if (-not $ConsolidatedSetup)
+            {
+                Write-Host "Checking if ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+            }
+                     
             $ScopeResolverTriggerApp = Get-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
             $scopeIndex = 0;
             if ($null -eq $ScopeResolverTriggerApp) {
@@ -788,113 +789,57 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
                 Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
                 return;
             }
-            else {
-                $configuredScopes = $ScopeResolverTriggerApp.SiteConfig.AppSettings | Where-Object { $_.Name -like 'ScopeResolverTriggerConfigurations__DiscoveryScopes__*' } 
-                if (($configuredScopes | Measure-Object).Count -gt 0) {
-                    $configuredScopeIds = $configuredScopes | Where-Object { $_.Name -like 'ScopeResolverTriggerConfigurations__DiscoveryScopes__*__ScopeId' } | Select-Object "Value"
-
-                    [int32[]]$IndexCollection = @();
-                    $configuredScopes | Select-Object "Name" | ForEach-Object {
-                        $splitParts = $_.Name -split '__'
-                        $IndexCollection += $splitParts[2]
-                    }
-                    
-                    $IndexCollection = $IndexCollection | Sort-Object 
-                    $scopeIndex = $IndexCollection[-1] + 1 
-                }
+            elseif (-not $ConsolidatedSetup){
+                Write-Host "ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
             }
-            
-            $scopeObjects = @()
-            
-
-            # Grant User Identity Reader permission on target subscription(s).
-            Write-Host "Configuring target scope(s)..." -ForegroundColor $([Constants]::MessageType.Info)         
-            $targetSubscriptionCount = ($TargetSubscriptionIds | Measure-Object).Count
-            $targetMgtGroupCount = ($TargetManagementGroupNames | Measure-Object).Count
-            if ($targetSubscriptionCount -gt 0) {
-                $TargetSubscriptionIds | ForEach-Object {
-
-                    $scopeObject = "" | Select-Object "ScopeType", "ScopeId", "TenantId"
-                    $scopeObject.ScopeType = "Subscription"
-                    $scopeObject.ScopeId = $("/subscriptions/$_")
-                    $scopeObject.TenantId = $TenantId
-                    $scopeObjects += $scopeObject
-                }
-            }
-
-            if ($targetMgtGroupCount -gt 0) {
-                $TargetManagementGroupNames | ForEach-Object {
-                    $scopeObject = "" | Select-Object "ScopeType", "ScopeId", "TenantId"
-                    $scopeObject.ScopeType = "ManagementGroup"
-                    $scopeObject.ScopeId = $("/providers/Microsoft.Management/managementGroups/$_")
-                    $scopeObject.TenantId = $TenantId
-                    $scopeObjects += $scopeObject
-                }
-            }
-            
-            if ($TenantScope) {
-                $scopeObject = "" | Select-Object "ScopeType", "ScopeId", "TenantId"
-                $scopeObject.ScopeType = "Tenant"
-                $scopeObject.ScopeId = $TenantId
-                $scopeObject.TenantId = $TenantId
-                $scopeObjects += $scopeObject
-            }
-
-            if (-not [string]::IsNullOrWhiteSpace($ScopesFilePath) -and (Test-Path $ScopesFilePath -PathType Leaf)) {
-                $scopesContent = Import-Csv -Path $ScopesFilePath
-                if (($scopesContent | Measure-Object).Count -gt 0) {
-                    $scopesContent | ForEach-Object {
-                        $scopeObject = "" | Select-Object "ScopeType", "ScopeId", "TenantId"
-                        $scopeObject.ScopeType = $_.ScopeType
-                        $scopeObject.ScopeId = $_.ScopeId
-                        $scopeObject.TenantId = $_.TenantId
-                        $scopeObjects += $scopeObject
-                    }
-                }
-            }
-
-            if (($scopeObjects | Measure-Object).Count -eq 0) {
-                Write-Host "No target subscription or management group specified." -ForegroundColor $([Constants]::MessageType.Warning)       
-                return;     
-            }    
-            
+                        
             #setup the current app settings
             $settings = @{}
             ForEach ($setting in $ScopeResolverTriggerApp.SiteConfig.AppSettings) {
                 $settings[$setting.Name] = $setting.Value
             }
 
-            $duplicateScopeIds = @()
-            $anyUniqueScopes = $false
-            $scopeObjects | ForEach-Object {
-                if ($configuredScopeIds.Value -contains $_.ScopeId) {
-                    $duplicateScopeIds += $_.ScopeId
-                }
-                else {
-                    #adding new settings to the app settigns
-                    $anyUniqueScopes = $true
-                    $settings[$("ScopeResolverTriggerConfigurations__DiscoveryScopes__{0}__ScopeType" -f $scopeIndex)] = $_.ScopeType;
-                    $settings[$("ScopeResolverTriggerConfigurations__DiscoveryScopes__{0}__ScopeId" -f $scopeIndex)] = $_.ScopeId;
-                    $settings[$("ScopeResolverTriggerConfigurations__DiscoveryScopes__{0}__TenantId" -f $scopeIndex)] = $_.TenantId;
-                    $scopeIndex += 1;
-                }
-            }
-
-            if (($duplicateScopeIds | Measure-Object).Count -gt 0) {
-                Write-Host "Following duplicate scope(s) found, these scope(s) will be skipped:" -ForegroundColor $([Constants]::MessageType.Warning) 
-                Write-Host $duplicateScopeIds 
-            }
-
+            $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression(0, $StartAfterMinutes, $StartImmediatley)
             # Update Scope resolver trigger procesor function app settings
-            if ($anyUniqueScopes) {
-                $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+            $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+
+            Write-Host "Successfully configured scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
+
+            # Grant User Identity Reader permission on target subscription(s).
+            Write-Host "Configuring extension inventory scheduler trigger..." -ForegroundColor $([Constants]::MessageType.Info)    
+
+            $workItemSchedulerAppName = "MMARemovalUtility-WorkItemScheduler-" + $ResourceHash
+
+            if (-not $ConsolidatedSetup)
+            {
+                Write-Host "Checking if WorkItemScheduler function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
             }
-            else {
-                Write-Host "`r`nAll provided scope(s) as input are already present, no new scope(s) will be added.`r`n" -ForegroundColor $([Constants]::MessageType.Warning) 
+                     
+            $workItemSchedulerApp = Get-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+            $scopeIndex = 0;
+            if ($null -eq $workItemSchedulerApp) {
+                Write-Host "`n`rFailed to get WorkItemScheduler function app [$($ScopeResolverTriggerProcessorName)]." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                return;
             }
+            elseif (-not $ConsolidatedSetup){
+                Write-Host "WorkItemScheduler function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+            }
+                        
+            #setup the current app settings
+            $settings = @{}
+            ForEach ($setting in $workItemSchedulerApp.SiteConfig.AppSettings) {
+                $settings[$setting.Name] = $setting.Value
+            }
+
+            $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-OneTimeCronExpression($StartAfterHours, $StartAfterMinutes, $StartImmediatley)
+            # Update Work Item Scheduler procesor function app settings
+            $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+
+            Write-Host "Successfully configured extension inventory scheduler trigger." -ForegroundColor $([Constants]::MessageType.Update)    
 
             if (-not $ConsolidatedSetup) {
-                Write-Host "Completed MMA Removal utility scope(s) configuration." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Completed MMA Removal utility discovery phase trigger setup." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)    
                 Write-Host $([Constants]::DoubleDashLine)
                 return; 
@@ -906,7 +851,7 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
             
         }
         catch {
-            Write-Host "Error occurred while configuring scope(s) for MMA Removal utility. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while configuring discovery phase trigger for MMA Removal utility. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             return;    
         }
     }
@@ -1879,10 +1824,10 @@ function Get-TimeStamp {
     return "{0:h:m:ss tt} - " -f (Get-Date -UFormat %T)
 }
 
-function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$runImmediatley) {
+function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$StartImmediatley) {
     $dateTime = [DateTime]::UtcNow
 
-    if ($runImmediatley -eq $true)
+    if ($StartImmediatley -eq $true)
     {
         $dateTime = $dateTime.AddMinutes(3);
     }
