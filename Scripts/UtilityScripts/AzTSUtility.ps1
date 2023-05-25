@@ -977,6 +977,7 @@ function Set-KeyVaultNetworkRulesFromCidrs()
     $cidrsSortedUnique = Get-CondensedCidrRanges -CidrRanges $cidrsSortedUnique -MaxSizePrefix 8 -AddCidrToSingleIPs $true
   }
 
+  Write-InformationFormatted -MessageData ("CIDR count is " + $cidrsSortedUnique.Count) -ForegroundColor Green
 
   if ($cidrsSortedUnique.Count -gt 1000)
   {
@@ -1707,7 +1708,7 @@ function Get-ServiceTagsForAzurePublicIp()
 }
 
 # ##########
-# Following utility methods include code from Chris Grumbles/Microsoft
+# Following utility methods include code from Chris Grumbles / Microsoft
 # Updated for style conformance and logic
 # ##########
 
@@ -1740,7 +1741,6 @@ function ConvertTo-BinaryIpAddress()
 
   $ipAddressArray = $IpAddress.Split("/")
   $address = $ipAddressArray[0]
-
   if ($ipAddressArray.Count -gt 1)
   {
     $mask = $ipAddressArray[1]
@@ -1750,10 +1750,31 @@ function ConvertTo-BinaryIpAddress()
     $mask = "32"
   }
 
-  $addressBinary = -Join ($address.Split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
-  $maskBinary = [System.Convert]::ToString($mask, 2).PadLeft(8, "1")
+  $addressBinary = -Join ($address.Split(".") | ForEach-Object {ConvertTo-Binary -RawValue $_})
+
+  $maskIp = ConvertTo-IPv4MaskString -MaskBits $mask
+
+  $maskBinary = -Join ($maskIp.Split(".") | ForEach-Object {ConvertTo-Binary -RawValue $_})
 
   $result = $addressBinary + "/" + $maskBinary
+
+  return $result
+}
+
+function ConvertTo-Binary()
+{
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $RawValue,
+    [Parameter(Mandatory=$false)]
+    [string]
+    $Padding = "0"
+  )
+
+  $result = [System.Convert]::ToString($RawValue, 2).PadLeft(8, $Padding)
 
   return $result
 }
@@ -1765,14 +1786,14 @@ function ConvertFrom-BinaryIpAddress()
     This function converts a passed binary IP Address to normal CIDR-notation IP Address
     .DESCRIPTION
     This function converts a passed binary IP Address to normal CIDR-notation IP Address
-    .PARAMETER IpAddress
-    A binary IP address like 00001101010100100000110100010111
+    .PARAMETER IpAddressBinary
+    A binary IP address like 11000000101010000000000000000000/11111111111111110000000000000000
     .INPUTS
     None
     .OUTPUTS
-    Binary IP address string
+    Binary IP address string that is the output of ConvertTo-BinaryIpAddress
     .EXAMPLE
-    PS> ConvertFrom-BinaryIpAddress -IpAddress "00001101010100100000110100010111"
+    PS> ConvertFrom-BinaryIpAddress -IpAddressBinary "11000000101010000000000000000000/11111111111111110000000000000000"
     .LINK
     None
   #>
@@ -1782,20 +1803,46 @@ function ConvertFrom-BinaryIpAddress()
   (
     [Parameter(Mandatory=$true)]
     [string]
-    $IpAddress
+    $IpAddressBinary
   )
 
+  $ipAddressArray = $IpAddressBinary.Split("/")
+
+  $ipAddress = $ipAddressArray[0]
   $ipArray = @()
 
   for ($i = 0; $i -lt 4; $i++)
   {
-    #Write-InformationFormatted -MessageData $ipAddress.Substring(($i)*8, 8) -ForegroundColor Blue
-    $ipArray += $ipAddress.Substring(($i)*8, 8)
+    $ipArray += $ipAddress.Substring(($i) * 8, 8)
   }
 
-  $ip = $ipArray | ForEach-Object {[System.Convert]::ToByte($_,2)}
-  $ip = $ip -join "."
-  return $ip
+  $ipFinal = $ipArray | ForEach-Object {[System.Convert]::ToByte($_, 2)}
+  $ipFinal = $ipFinal -join "."
+
+  if ($ipAddressArray.Count -gt 1)
+  {
+    $maskAddress = $ipAddressArray[1]
+
+    $maskArray = @()
+
+    for ($i = 0; $i -lt 4; $i++)
+    {
+      $maskArray += $maskAddress.Substring(($i) * 8, 8)
+    }
+
+    $maskFinal = $maskArray | ForEach-Object {[System.Convert]::ToByte($_, 2)}
+    $maskFinal = $maskFinal -join "."
+  
+    $mask = ConvertTo-IPv4MaskBits -MaskString $maskFinal
+  }
+  else
+  {
+    $mask = "32"
+  }
+
+  $result = $ipFinal + "/" + $mask
+
+  return $result
 }
 
 function Get-EndIpForCidr()
@@ -2159,6 +2206,64 @@ function Get-CondensedCidrRanges()
 
   return $finalCidrRanges | Get-Unique
 }
+# ##########
+
+# ##########
+# Following utility methods include code from Bill Stewart / https://www.itprotoday.com/powershell/working-ipv4-addresses-powershell
+# Updated for style conformance and logic
+# ##########
+function ConvertTo-IPv4MaskString
+{
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [ValidateRange(0, 32)]
+    [Int] $MaskBits
+  )
+
+  $mask = ([Math]::Pow(2, $MaskBits) - 1) * [Math]::Pow(2, (32 - $MaskBits))
+
+  $bytes = [BitConverter]::GetBytes([UInt32] $mask)
+
+  (($bytes.Count - 1)..0 | ForEach-Object { [String] $bytes[$_] }) -join "."
+}
+
+function Test-IPv4MaskString
+{
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [String] $MaskString
+  )
+
+  $validBytes = '0|128|192|224|240|248|252|254|255'
+
+  $MaskString -match `
+    ('^((({0})\.0\.0\.0)|'      -f $validBytes) +
+    ('(255\.({0})\.0\.0)|'      -f $validBytes) +
+    ('(255\.255\.({0})\.0)|'    -f $validBytes) +
+    ('(255\.255\.255\.({0})))$' -f $validBytes)
+}
+
+function ConvertTo-IPv4MaskBits
+{
+  param
+  (
+    [parameter(Mandatory = $true)]
+    [ValidateScript({Test-IPv4MaskString $_})]
+    [String] $MaskString
+  )
+
+  $mask = ([IPAddress] $MaskString).Address
+
+  for ( $bitCount = 0; $mask -ne 0; $bitCount++ )
+  {
+    $mask = $mask -band ($mask - 1)
+  }
+
+  $bitCount
+}
+# ##########
 
 # ####################################################################################################
 
