@@ -875,6 +875,44 @@ function Set-SqlManagedInstanceMinimumTlsVersion()
 # ####################################################################################################
 # Azure_KeyVault_NetSec_Disable_Public_Network_Access
 
+function Set-KeyVaultNetworkRulesFromServiceTags()
+{
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $ServiceTags,
+    [Parameter(Mandatory = $false)]
+    [string]
+    [ValidateSet("Merge", "Replace")]
+    $Action = "Merge",
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $ConsolidateCidrsIfNeeded = $false
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $cidrs = Get-AzurePublicIpv4RangesForServiceTags -ServiceTags $ServiceTags
+
+  Set-KeyVaultNetworkRulesFromCidrs `
+    -SubscriptionId $SubscriptionId `
+    -ResourceGroupName $ResourceGroupName `
+    -KeyVaultName $KeyVaultName `
+    -Cidrs $cidrs `
+    -Action $Action `
+    -ConsolidateCidrsIfNeeded $ConsolidateCidrsIfNeeded
+}
+
 function Set-KeyVaultNetworkRulesFromCidrs()
 {
   [CmdletBinding()]
@@ -946,24 +984,41 @@ function Set-KeyVaultNetworkRulesFromCidrs()
   }
   else
   {
-    If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
+    # Remove all current KV network access rules
+    # This is needed because no Azure KV Powershell cmdlet supports ADDING a range
+    # Update-AzKeyVaultNetworkRuleSet REPLACES what's there - no option to add
+    # Update-AzKeyVaultNetworkRuleSet also has a limit of 127 rules, whereas KV supports 1,000... WHY???????????
+    # Update-AzKeyVault does NOT accept a network rule object and does not allow for network rule updating
+    # There is no way to manage Key Vault network access rules with Powershell except wipe existing and then
+    # write new rules, whether we merge them as above or just replace with new ones
+
+    if ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
     {
-      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs network access rules."
       Update-AzKeyVaultNetworkRuleSet `
         -SubscriptionId $SubscriptionId `
         -ResourceGroupName $ResourceGroupName `
         -VaultName $KeyVaultName `
-        -IpAddressRange $cidrsSortedUnique
+        -IpAddressRange @()
     }
     else
     {
-      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules."
       Update-AzKeyVaultNetworkRuleSet `
         -SubscriptionId $SubscriptionId `
         -ResourceGroupName $ResourceGroupName `
         -VaultName $KeyVaultName `
-        -IpAddressRange $cidrsSortedUnique `
+        -IpAddressRange @() `
         -VirtualNetworkResourceId $keyVault.NetworkAcls.VirtualNetworkResourceIds
+    }
+
+    # Now add new rules. Again, would be best to do this as a batch, but Azure Powershell for KV --does not support-- this when we have >127 rules.
+    foreach ($cidr in $cidrsSortedUnique)
+    {
+      Write-InformationFormatted -MessageData "Adding CIDR $cidr" -ForegroundColor Blue
+      Add-AzKeyVaultNetworkRule `
+        -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -VaultName $KeyVaultName `
+        -IpAddressRange $cidr
     }
   }
 }
