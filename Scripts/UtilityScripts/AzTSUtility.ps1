@@ -922,7 +922,7 @@ function Set-KeyVaultNetworkRulesFromCidrs()
     $cidrsBinary += $cidrBinary
   }
 
-  $cidrsBinary | Sort-Object| Get-Unique -OutVariable cidrsBinary
+  $cidrsBinary = $cidrsBinary | Sort-Object | Get-Unique # -OutVariable cidrsBinary
 
 
   $cidrsSortedUnique = [System.Collections.ArrayList]@()
