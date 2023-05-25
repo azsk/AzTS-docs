@@ -877,6 +877,33 @@ function Set-SqlManagedInstanceMinimumTlsVersion()
 
 function Set-KeyVaultNetworkRulesFromServiceTags()
 {
+  <#
+    .SYNOPSIS
+    This function is a single-call way to set Key Vault network access rules for the CIDRs corresponding to the specified Azure Service Tags.
+    .DESCRIPTION
+    This function is a single-call way to set Key Vault network access rules for the CIDRs corresponding to the specified Azure Service Tags.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
+    .PARAMETER ResourceGroupName
+    The Resource Group name containing the Key Vault.
+    .PARAMETER KeyVaultName
+    The Key Vault name.
+    .PARAMETER ServiceTags
+    A string array of Azure Service Tags such as AzureCloud.westus2.
+    .PARAMETER Action
+    How to handle any existing Key Vault network access rules. Allowable values are Merge or Replace. In the case of Merge, de-duplication is handled by this function. Default is Merge.
+    .PARAMETER ConsolidateCidrsIfNeeded
+    If the specified Service Tags result in more than 1,000 CIDRs, the function will attempt to consolidate CIDRs into fewer, larger CIDRs to fit into Key Vault's 1,000-rule limit. Default is false.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultNetworkRulesFromServiceTags -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -ServiceTags @("AzureCloud.eastus2", "AzureCloud.westus2") -Action "Replace" -ConsolidateCidrsIfNeeded $true
+    .LINK
+    None
+  #>
+
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -915,6 +942,33 @@ function Set-KeyVaultNetworkRulesFromServiceTags()
 
 function Set-KeyVaultNetworkRulesFromCidrs()
 {
+  <#
+    .SYNOPSIS
+    This function is a single-call way to set Key Vault network access rules for the specified CIDRs.
+    .DESCRIPTION
+    This function is a single-call way to set Key Vault network access rules for the specified CIDRs.
+    .PARAMETER SubscriptionId
+    The Azure subscription ID containing the Key Vault.
+    .PARAMETER ResourceGroupName
+    The Resource Group name containing the Key Vault.
+    .PARAMETER KeyVaultName
+    The Key Vault name.
+    .PARAMETER Cidrs
+    A string array of CIDRs to set on network access rules.
+    .PARAMETER Action
+    How to handle any existing Key Vault network access rules. Allowable values are Merge or Replace. In the case of Merge, de-duplication is handled by this function. Default is Merge.
+    .PARAMETER ConsolidateCidrsIfNeeded
+    If the specified CIDRs exceed 1,000, the function will attempt to consolidate CIDRs into fewer, larger CIDRs to fit into Key Vault's 1,000-rule limit. Default is false.
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> Set-KeyVaultNetworkRulesFromCidrs -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -Cidrs @("23.45.67.89", "40.16.23.0/24") -Action "Replace" -ConsolidateCidrsIfNeeded $true
+    .LINK
+    None
+  #>
+
   [CmdletBinding()]
   param (
     [Parameter(Mandatory = $true)]
@@ -985,6 +1039,7 @@ function Set-KeyVaultNetworkRulesFromCidrs()
   }
   else
   {
+    Write-InformationFormatted -MessageData "Now starting to add CIDRs. This will take several minutes."
     # Remove all current KV network access rules
     # This is needed because no Azure KV Powershell cmdlet supports ADDING a range
     # Update-AzKeyVaultNetworkRuleSet REPLACES what's there - no option to add
@@ -1225,11 +1280,13 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
 
   if ($myPublicIpAddress)
   {
-    Set-KeyVaultPublicNetworkAccessEnabledForIpAddress `
+    Set-KeyVaultNetworkRulesFromCidrs `
       -SubscriptionId $SubscriptionId `
       -ResourceGroupName $ResourceGroupName `
       -KeyVaultName $KeyVaultName `
-      -PublicIpAddress $myPublicIpAddress
+      -Cidrs @($myPublicIpAddress) `
+      -Action "Merge" `
+      -ConsolidateCidrsIfNeeded $false
 
     Write-InformationFormatted -MessageData "Added my public IP address $myPublicIpAddress to Key Vault network access rules." -ForegroundColor Green
   }
@@ -1237,153 +1294,6 @@ function Set-KeyVaultPublicNetworkAccessEnabledForMe()
   {
     Write-InformationFormatted -MessageData "Unable to get my public IP address. No change made to Key Vault network access rules." -ForegroundColor Red
   }
-}
-
-function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
-{
-  <#
-    .SYNOPSIS
-    This command updates a Key Vault to enable public network access for the specified array of public IP addresses.
-    .DESCRIPTION
-    This command updates a Key Vault to enable public network access for the specified array of public IP addresses. All existing IP address and VNet rules are maintained.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Key Vault.
-    .PARAMETER ResourceGroupName
-    The Resource Group name containing the Key Vault.
-    .PARAMETER KeyVaultName
-    The Key Vault name.
-    .PARAMETER PublicIpAddresses
-    An array of public IP address to grant access to the Key Vault.
-    .INPUTS
-    None
-    .OUTPUTS
-    None
-    .EXAMPLE
-    PS> Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddresses "1.1.1.1","1.1.1.2","1.1.1.3"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $KeyVaultName,
-    [Parameter(Mandatory = $true)]
-    [string[]]
-    $PublicIpAddresses
-  )
-
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
-
-  $needToUpdate = $false
-
-  if ($keyVault.NetworkAcls.IpAddressRanges)
-  {
-    $ipAddressRanges = $keyVault.NetworkAcls.IpAddressRanges
-  }
-  else
-  {
-    $ipAddressRanges = @()
-  }
-
-  foreach($ipAddress in $PublicIpAddresses)
-  {
-    # Check if the Key Vault network ACLs already contain my public IP address
-    If ($ipAddressRanges.Contains($ipAddress))
-    {
-      Write-InformationFormatted -MessageData "Current Key Vault public IP address range already contains $ipAddress."
-    }
-    Else
-    {
-      $ipAddressRanges += $ipAddress
-      $needToUpdate = $true
-      Write-InformationFormatted -MessageData "Added IP address $ipAddress to Key Vault address address ranges."
-    }
-  }
-
-  If ($needToUpdate)
-  {
-    Write-InformationFormatted -MessageData "Update Key Vault network access rules."
-
-    If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
-    {
-      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs network access rules."
-      Update-AzKeyVaultNetworkRuleSet `
-        -SubscriptionId $SubscriptionId `
-        -ResourceGroupName $ResourceGroupName `
-        -VaultName $KeyVaultName `
-        -IpAddressRange $ipAddressRanges
-    }
-    else
-    {
-      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules."
-      Update-AzKeyVaultNetworkRuleSet `
-        -SubscriptionId $SubscriptionId `
-        -ResourceGroupName $ResourceGroupName `
-        -VaultName $KeyVaultName `
-        -IpAddressRange $ipAddressRanges `
-        -VirtualNetworkResourceId $keyVault.NetworkAcls.VirtualNetworkResourceIds
-    }
-  }
-}
-
-function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
-{
-  <#
-    .SYNOPSIS
-    This command updates a Key Vault to enable public network access for the specified public IP address.
-    .DESCRIPTION
-    This command updates a Key Vault to enable public network access for the specified public IP address. All existing IP address and VNet rules are maintained.
-    .PARAMETER SubscriptionId
-    The Azure subscription ID containing the Key Vault.
-    .PARAMETER ResourceGroupName
-    The Resource Group name containing the Key Vault.
-    .PARAMETER KeyVaultName
-    The Key Vault name.
-    .PARAMETER PublicIpAddress
-    The public IP address to grant access to the Key Vault.
-    .INPUTS
-    None
-    .OUTPUTS
-    None
-    .EXAMPLE
-    PS> Set-KeyVaultPublicNetworkAccessEnabledForIpAddress -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ResourceGroupName "MyResourceGroupName" -KeyVaultName "MyKeyVaultName" -PublicIpAddress "1.1.1.1"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param (
-    [Parameter(Mandatory = $true)]
-    [string]
-    $SubscriptionId,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $ResourceGroupName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $KeyVaultName,
-    [Parameter(Mandatory = $true)]
-    [string]
-    $PublicIpAddress
-  )
-
-  $ipAddresses = @($PublicIpAddress)
-
-  Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses `
-    -SubscriptionId $SubscriptionId `
-    -ResourceGroupName $ResourceGroupName `
-    -KeyVaultName $KeyVaultName `
-    -PublicIpAddresses $ipAddresses
 }
 
 function Remove-KeyVaultNetworkAccessRuleForIpAddress()
