@@ -706,30 +706,41 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
     }
 }
 
-function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
+function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
     Param(
         
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
         $SubscriptionId,
 
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         $ResourceGroupName,
 
         [int]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target subscription(s).")]
-        $StartAfterMinutes,
+        $StartScopeResolverAfterMinutes,
 
         [switch]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartImmediatley", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
-        $StartImmediatley,
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
+        $StartScopeResolverImmediatley,
+
+        [int]
+        [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target subscription(s).")]
+        $StartExtensionDiscoveryAfterMinutes,
+
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
+        $StartExtensionDiscoveryImmediatley,
 
         [switch]
         [Parameter(Mandatory = $false, ParameterSetName = "RunAfterSchedule", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "StartImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false
     )
 
@@ -769,42 +780,46 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
                 return;
             }
 
-            Write-Host "Configuring scope resolver trigger..." -ForegroundColor $([Constants]::MessageType.Info)  
-            # Step 3:  Get Scope resolver trigger processor function app.
-
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName;
             $ResourceIdHash = get-hash($ResourceId)
             $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
-            $ScopeResolverTriggerAppName = "MMARemovalUtility-ScopeResolverTrigger-" + $ResourceHash
 
-            if (-not $ConsolidatedSetup)
+            if ($StartExtensionDiscoveryImmediatley -eq $false)
             {
-                Write-Host "Checking if ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
-            }
-                     
-            $ScopeResolverTriggerApp = Get-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
-            $scopeIndex = 0;
-            if ($null -eq $ScopeResolverTriggerApp) {
-                Write-Host "`n`rFailed to get ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerProcessorName)]." -ForegroundColor $([Constants]::MessageType.Error)
-                Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
-                return;
-            }
-            elseif (-not $ConsolidatedSetup){
-                Write-Host "ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
-            }
-                        
-            #setup the current app settings
-            $settings = @{}
-            ForEach ($setting in $ScopeResolverTriggerApp.SiteConfig.AppSettings) {
-                $settings[$setting.Name] = $setting.Value
-            }
+                Write-Host "Configuring scope resolver trigger..." -ForegroundColor $([Constants]::MessageType.Info)  
+                # Step 3:  Get Scope resolver trigger processor function app.
+                $ScopeResolverTriggerAppName = "MMARemovalUtility-ScopeResolverTrigger-" + $ResourceHash
+    
+                if (-not $ConsolidatedSetup)
+                {
+                    Write-Host "Checking if ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+                }
+                         
+                $ScopeResolverTriggerApp = Get-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+                $scopeIndex = 0;
+                if ($null -eq $ScopeResolverTriggerApp) {
+                    Write-Host "`n`rFailed to get ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerProcessorName)]." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                    return;
+                }
+                elseif (-not $ConsolidatedSetup){
+                    Write-Host "ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+                }
+                            
+                #setup the current app settings
+                $settings = @{}
+                ForEach ($setting in $ScopeResolverTriggerApp.SiteConfig.AppSettings) {
+                    $settings[$setting.Name] = $setting.Value
+                }
+    
+                $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression -afterHours 0 -afterMinutes $StartScopeResolverAfterMinutes -StartImmediatley $StartScopeResolverImmediatley
 
-            $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression(0, $StartAfterMinutes, $StartImmediatley)
-            # Update Scope resolver trigger procesor function app settings
-            $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
-
-            Write-Host "Successfully configured scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
-
+                # Update Scope resolver trigger procesor function app settings
+                $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+    
+                Write-Host "Successfully configured scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
+            }
+            
             # Grant User Identity Reader permission on target subscription(s).
             Write-Host "Configuring extension inventory scheduler trigger..." -ForegroundColor $([Constants]::MessageType.Info)    
 
@@ -831,8 +846,21 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
             ForEach ($setting in $workItemSchedulerApp.SiteConfig.AppSettings) {
                 $settings[$setting.Name] = $setting.Value
             }
+            
+            $startExtInvProcessingAfter = 0;
+            if ($StartExtensionDiscoveryImmediatley -eq $true)
+            {
+                $startExtInvProcessingAfter = 0;
+            }
+            elseif ($StartScopeResolverImmediatley -eq $true) {
+                $startExtInvProcessingAfter = 3 + $StartExtensionDiscoveryAfterMinutes;
+            }
+            else {
+                $startExtInvProcessingAfter = $StartScopeResolverAfterMinutes + $StartExtensionDiscoveryAfterMinutes;
+            }
 
-            $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-OneTimeCronExpression($StartAfterHours, $StartAfterMinutes, $StartImmediatley)
+            $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $startExtInvProcessingAfter -startImmediatley $StartExtensionDiscoveryImmediatley
+
             # Update Work Item Scheduler procesor function app settings
             $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
 
@@ -847,7 +875,6 @@ function Set-AzTSMMARemovalUtilityDiscoveryTrigger {
             else {
                 return $true;
             }
-            
             
         }
         catch {
@@ -1842,6 +1869,35 @@ function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [boo
     $dayOfWeek = $dateTime.DayOfWeek
 
     return "0 $minutes $hours $dayOfMonth $month $dayOfWeek";
+}
+
+function Get-RecurringCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$startImmediatley, [int]$runAfterEveryMinutes = 15, [int] $frequency = 8) {
+    $dateTime = [DateTime]::UtcNow
+
+    if ($StartImmediatley -eq $true)
+    {
+        $dateTime = $dateTime.AddMinutes(3);
+    }
+    else {
+        $dateTime = $dateTime.AddHours($afterHours).AddMinutes($afterMinutes);
+        $dateTime = $dateTime.AddMinutes(60-$dateTime.Minute)
+    }
+
+    $requiredMinuteGap = [math]::ceiling(($runAfterEveryMinutes * $frequency)/60);
+    $endDateTime = $dateTime.AddHours($requiredMinuteGap-1);
+
+    if ($dateTime.Date -ne $endDateTime.Date)
+    {
+        $dateTime= $endDateTime.Date
+        $endDateTime= $dateTime.AddHours($requiredMinuteGap-1);
+    }
+
+    $startHours = $dateTime.Hour
+    $startDayOfMonth = $dateTime.Day
+    $startMonth = $dateTime.Month
+    $startDayOfWeek = $dateTime.DayOfWeek
+    $endHours = $endDateTime.Hour
+    return "0 0/$runAfterEveryMinutes $startHours-$endHours $startDayOfMonth $startMonth $startDayOfWeek";
 }
 
 class ContextHelper {
