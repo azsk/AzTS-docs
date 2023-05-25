@@ -271,7 +271,8 @@
         "RollbackMetadata": {
           "RollbackCommand": "Enable-SQLServerPublicNetworkAccess",
           "Arguments": [ "SubscriptionId" ]
-        },
+        }
+      },
         {
             "ControlId": "Azure_KubernetesService_AuthN_Disable_Local_Accounts",
             "EnableRemediation": "true",
