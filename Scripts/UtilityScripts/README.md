@@ -81,58 +81,6 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 <br />
 
-### Network Utility
-
-`ConvertFrom-BinaryIpAddress()`
-<br />Purpose: Utility method used by other Network Utility functions
-<br />Parameters: IpAddress
-
-`ConvertTo-BinaryIpAddress()`
-<br />Purpose: Utility method used by other Network Utility functions
-<br />Parameters: IpAddress
-
-`Get-CidrRangeBetweenIps()`
-<br />Purpose: Gets the CIDR or a passed set  of IP addresses.
-<br />Parameters: IpAddresses
-
-`Get-CidrRanges()`
-<br />Purpose: Gets CIDRs for a set of start/end IPs.
-<br />Parameters: IpAddresses, MaxSizePrefix, AddCidrToSingleIPs
-
-`Get-CondensedCidrRanges()`
-<br />Purpose: Gets consolidated CIDRs for a set of CIDRs. Goal is to reduce the number of items in a list of CIDRs to a shorter number of bigger CIDRs that include all the passed CIDRs. This can help with Key Vault's limit of 1,000 network access rules for CIDRs.
-<br />Parameters: CidrRanges, MaxSizePrefix, AddCidrToSingleIPs
-
-`Get-EndIpForCidr()`
-<br />Purpose: Gets the end IP address for the specified CIDR.
-<br />Parameters: Cidr
-
-`Get-EndIp()`
-<br />Purpose: Gets the end IP address for the specified start IP and prefix.
-<br />Parameters: StartIp, Prefix
-
-`Get-MyPublicIpAddress()`
-<br />Purpose: gets my public IP address as Azure/internet would see me. Uses a third-party web site.
-<br />Parameters: None.
-
-`Get-AzurePublicIpRanges()`
-<br />Purpose: gets the weekly updated Microsoft Azure public IPs file and returns the IP ranges therein. Goal is to make automation scenarios (e.g. update Key Vault network access rules) much easier.
-<br />Parameters: None.
-
-`Get-AzurePublicIpv4RangesForServiceTags()`
-<br />Purpose: given an array of service tags (e.g. AzureCloud.westus), returns the IPv4 CIDRs in the service tags.
-<br />Parameters: ServiceTags
-
-`Test-IsIpInCidr()`
-<br />Purpose: checks if the specified IP address is in the specified CIDR.
-<br />Parameters: IpAddress, Cidr
-
-`Get-ServiceTagsForAzurePublicIp()`
-<br />Purpose: gets the Azure service tags which include the specified Azure public IP address.
-<br />Parameters: IpAddress
-
-<br />
-
 ### Azure_AppService_DP_Use_Secure_FTP_Deployment
 
 `Get-AppServiceFtpState()`
@@ -182,13 +130,13 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 ### Azure_KeyVault_NetSec_Disable_Public_Network_Access
 
-`Get-AppServiceAllPossibleOutboundPublicIps()`
-<br />Purpose: Show the App Service's possible outbound public IPs, which can be used to create Azure Key Vault network access rules. **This is not reliable for Consumption or Premium Plan App Services!**
-<br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
+`Set-KeyVaultNetworkRulesFromServiceTags()`
+<br />Purpose: Sets Key Vault network access rules for the CIDRs in the specified Azure Service Tags. Supports merge with or replacement of existing network access rules. Supports CIDR consolidation if the CIDRs exceed Key Vault's limit of 1,000 network access rules.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, ServiceTags, Action, ConsolidateCidrsIfNeeded
 
-`Get-AppServiceAllCurrentOutboundPublicIps()`
-<br />Purpose: Show the App Service's current outbound public IPs. These will be a subset of all _possible_ outbound public IPs, so `Get-AppServiceAllPossibleOutboundPublicIps()` is the better function to use, but this is included for reference and comparison. **This is not reliable for Consumption or Premium Plan App Services!**
-<br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
+`Set-KeyVaultNetworkRulesFromCidrs()`
+<br />Purpose: Sets Key Vault network access rules for the specified CIDRs. Supports merge with or replacement of existing network access rules. Supports CIDR consolidation if the CIDRs exceed Key Vault's limit of 1,000 network access rules.
+<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, Cidrs, Action, ConsolidateCidrsIfNeeded
 
 `Remove-KeyVaultNetworkAccessRuleForIpAddress()`
 <br />Purpose: Removes a network access rule for the provided public IP address from the Key Vault.
@@ -198,17 +146,69 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Purpose: Updates an existing Key Vault to enable public network access with default action Deny, and to allow trusted Azure services.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
 
-`Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()`
-<br />Purpose: Adds a network access rule to the Key Vault for the provided public IP address.
-<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddress
-
-`Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()`
-<br />Purpose: Adds a network access rule to the Key Vault for each provided public IP address.
-<br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName, PublicIpAddresses
-
 `Set-KeyVaultPublicNetworkAccessEnabledForMe()`
 <br />Purpose: Adds a network access rule to the Key Vault for the public IP address which you are currently using. Uses a third-party web site to get your egress public IP.
 <br />Parameters: SubscriptionId, ResourceGroupName, KeyVaultName
+
+`Get-AppServiceAllPossibleOutboundPublicIps()`
+<br />Purpose: Show the App Service's possible outbound public IPs, which can be used to create Azure Key Vault network access rules. **This is not reliable for Consumption or Premium Plan App Services!**
+<br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
+
+`Get-AppServiceAllCurrentOutboundPublicIps()`
+<br />Purpose: Show the App Service's current outbound public IPs. These will be a subset of all _possible_ outbound public IPs, so `Get-AppServiceAllPossibleOutboundPublicIps()` is the better function to use, but this is included for reference and comparison. **This is not reliable for Consumption or Premium Plan App Services!**
+<br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName
+
+`ConvertFrom-BinaryIpAddress()`
+<br />Purpose: Utility method used by other Network Utility functions
+<br />Parameters: IpAddressBinary
+
+`ConvertTo-BinaryIpAddress()`
+<br />Purpose: Utility method used by other Network Utility functions
+<br />Parameters: IpAddress
+
+`ConvertTo-Binary()`
+<br />Purpose: Utility method used by ConvertTo-BinaryIpAddress
+<br />Parameters: RawValue, Padding
+
+`Get-CidrRangeBetweenIps()`
+<br />Purpose: Gets the CIDR or a passed set  of IP addresses.
+<br />Parameters: IpAddresses
+
+`Get-CidrRanges()`
+<br />Purpose: Gets CIDRs for a set of start/end IPs.
+<br />Parameters: IpAddresses, MaxSizePrefix, AddCidrToSingleIPs
+
+`Get-CondensedCidrRanges()`
+<br />Purpose: Gets consolidated CIDRs for a set of CIDRs. Goal is to reduce the number of items in a list of CIDRs to a shorter number of bigger CIDRs that include all the passed CIDRs. This can help with Key Vault's limit of 1,000 network access rules for CIDRs.
+<br />Parameters: CidrRanges, MaxSizePrefix, AddCidrToSingleIPs
+
+`Get-EndIpForCidr()`
+<br />Purpose: Gets the end IP address for the specified CIDR.
+<br />Parameters: Cidr
+
+`Get-EndIp()`
+<br />Purpose: Gets the end IP address for the specified start IP and prefix.
+<br />Parameters: StartIp, Prefix
+
+`Get-MyPublicIpAddress()`
+<br />Purpose: gets my public IP address as Azure/internet would see me. Uses a third-party web site.
+<br />Parameters: None.
+
+`Get-AzurePublicIpRanges()`
+<br />Purpose: gets the weekly updated Microsoft Azure public IPs file and returns the IP ranges therein. Goal is to make automation scenarios (e.g. update Key Vault network access rules) much easier.
+<br />Parameters: None.
+
+`Get-AzurePublicIpv4RangesForServiceTags()`
+<br />Purpose: given an array of service tags (e.g. AzureCloud.westus), returns the IPv4 CIDRs in the service tags.
+<br />Parameters: ServiceTags
+
+`Test-IsIpInCidr()`
+<br />Purpose: checks if the specified IP address is in the specified CIDR.
+<br />Parameters: IpAddress, Cidr
+
+`Get-ServiceTagsForAzurePublicIp()`
+<br />Purpose: gets the Azure service tags which include the specified Azure public IP address.
+<br />Parameters: IpAddress
 
 <br />
 
