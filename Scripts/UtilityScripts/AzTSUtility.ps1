@@ -115,717 +115,6 @@ function Write-InformationFormatted()
 # ####################################################################################################
 
 # ####################################################################################################
-# Network Utility functions (mostly used by the Key Vault control functions)
-
-function Get-MyPublicIpAddress()
-{
-    <#
-    .SYNOPSIS
-    This function reaches out to a third-party web site and gets "my" public IP address, typically the egress address from my local network
-    .DESCRIPTION
-    This function reaches out to a third-party web site and gets "my" public IP address, typically the egress address from my local network
-    .INPUTS
-    None
-    .OUTPUTS
-    None
-    .EXAMPLE
-    PS> $myPublicIpAddress = Get-MyPublicIpAddress
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  $ipUrl = "https://api.ipify.org"
-
-  $myPublicIpAddress = ""
-
-  # Test whether I can use a public site to get my public IP address
-  $statusCode = (Invoke-WebRequest "$ipUrl").StatusCode
-
-  if ("200" -eq "$statusCode")
-  {
-    # Get my public IP address
-    $myPublicIpAddress = Invoke-RestMethod "$ipUrl"
-    $myPublicIpAddress += "/32"
-
-    Write-InformationFormatted -MessageData "Got my public IP address: $myPublicIpAddress."
-  }
-  else
-  {
-    Write-InformationFormatted -MessageData "Error! Could not get my public IP address." -ForegroundColor Red
-  }
-
-  return $myPublicIpAddress
-}
-
-function Get-AzurePublicIpRanges()
-{
-  <#
-    .SYNOPSIS
-    This command retrieves the Service Tags from the current Microsoft public IPs file download.
-    .DESCRIPTION
-    This command retrieves the Service Tags from the current Microsoft public IPs file download.
-    .INPUTS
-    None
-    .OUTPUTS
-    Service Tags
-    .EXAMPLE
-    PS> Get-AzurePublicIpRanges
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param()
-
-  $fileMatch = "ServiceTags_Public"
-  $ipRanges = @()
-
-  $uri = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
-
-  $response = Invoke-WebRequest -Uri $uri
-
-  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
-
-  if ($links -and $links.Count -gt 0)
-  {
-    $link = $links[0]
-
-    if ($link)
-    {
-      $jsonUri = $link.href
-
-      $response = Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json
-
-      if ($response -and $response.values)
-      {
-        $ipRanges = $response.values
-      }
-    }
-  }
-
-  return $ipRanges
-}
-
-function Get-AzurePublicIpv4RangesForServiceTags()
-{
-  <#
-    .SYNOPSIS
-    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
-    .DESCRIPTION
-    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
-    .PARAMETER ServiceTags
-    An array of one or more Service Tags from the Microsoft Public IP file at https://www.microsoft.com/en-us/download/details.aspx?id=53602.
-    .INPUTS
-    None
-    .OUTPUTS
-    Array of IPv4 CIDRs for the specified Service tags
-    .EXAMPLE
-    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-      [Parameter(Mandatory=$true)]
-      [string[]]
-      $ServiceTags
-  )
-
-  $ips = @()
-
-  $ipRanges = Get-AzurePublicIpRanges
-
-  if ($ipRanges)
-  {
-    foreach($serviceTag in $ServiceTags)
-    {
-      $ipsForServiceTag = ($ipRanges | Where-Object {$_.name -eq $serviceTag})
-
-      #Filter out IPV4 Only
-      $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
-    }
-  }
-
-  $ips = $ips | Sort-Object
-
-  return $ips
-}
-
-function Test-IsIpInCidr()
-{
-  <#
-    .SYNOPSIS
-    This function checks if the specified IP address is contained in the specified CIDR.
-    .DESCRIPTION
-    This function checks if the specified IP address is contained in the specified CIDR.
-    .PARAMETER IpAddress
-    An IP address like 13.82.13.23 or 13.82.13.23/32
-    .PARAMETER Cidr
-    A CIDR, i.e. a network address range like 13.82.0.0/16
-    .INPUTS
-    None
-    .OUTPUTS
-    A bool indicating whether or not the IP address is contained in the CIDR
-    .EXAMPLE
-    PS> Test-IsIpInCidr -IpAddress "13.82.13.23/32" -Cidr "13.82.0.0/16"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-      [Parameter(Mandatory=$true)]
-      [string]
-      $IpAddress,
-      [Parameter(Mandatory=$true)]
-      [string]
-      $Cidr
-  )
-
-  $ip = $IpAddress.Split('/')[0]
-  $cidrIp = $Cidr.Split('/')[0]
-  $cidrBitsToMask = $Cidr.Split('/')[1]
-
-  #Write-InformationFormatted -MessageData "ip = $ip"
-  #Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
-  #Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
-
-  [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
-  [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
-  [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl ( 32 - $cidrBitsToMask))
-
-  #Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
-  #Write-InformationFormatted -MessageData "Address = $Address"
-  #Write-InformationFormatted -MessageData "Mask = $Mask"
-
-  $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
-
-  return $result
-}
-
-function Get-ServiceTagsForAzurePublicIp()
-{
-  <#
-    .SYNOPSIS
-    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
-    .DESCRIPTION
-    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download. The output is a hashtable, so to use, set the output equal to a variable (see example) and work with that variable.
-    .PARAMETER IpAddress
-    An IP address like 13.82.13.23 or 13.82.13.23/32
-    .INPUTS
-    None
-    .OUTPUTS
-    Array of IPv4 CIDRs for the specified Service tags
-    .EXAMPLE
-    PS> $result = Get-ServiceTagsForAzurePublicIp -IpAddress "13.82.13.23"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $IpAddress
-  )
-
-  $ipRanges = Get-AzurePublicIpRanges
-
-  $result = @()
-
-  Write-InformationFormatted -MessageData "Processing - please wait... this will take a couple of minutes" -ForegroundColor Green
-
-  foreach ($ipRange in $ipRanges)
-  {
-    $isFound = $false
-
-    $ipRangeName = $ipRange.name
-    $region = $ipRange.properties.region
-    $cidrs = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
-
-    Write-InformationFormatted -MessageData "Checking ipRangeName = $ipRangeName" -ForegroundColor Green
-
-    if (!$region) { $region = "(N/A)"}
-
-    foreach ($cidr in $cidrs)
-    {
-      $ipIsInCidr = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $cidr
-
-      if ($ipIsInCidr)
-      {
-        $result +=
-        @{
-          Name = $ipRangeName;
-          Region = $region;
-          Cidr = $cidr;
-        }
-
-        $isFound = $true
-      }
-
-      if ($isFound -eq $true)
-      {
-        break
-      }
-    }
-  }
-
-  if($isFound -eq $false)
-  {
-    Write-InformationFormatted -MessageData "$IpAddress"": Not found in any range" -ForegroundColor Red
-  }
-
-  Write-InformationFormatted -MessageData "Done!" -ForegroundColor Green
-
-  ,($result | Sort-Object -Property "Name")
-}
-
-# ##########
-# Following utility methods include code from Chris Grumbles/Microsoft
-# Updated for style conformance to AzTS-Docs, and some logic updates
-# ##########
-
-function ConvertTo-BinaryIpAddress()
-{
-  <#
-    .SYNOPSIS
-    This function converts a passed IP Address to binary
-    .DESCRIPTION
-    This function converts a passed IP Address to binary
-    .PARAMETER IpAddress
-    An IP address like 13.82.13.23 or 13.82.13.23/32
-    .INPUTS
-    None
-    .OUTPUTS
-    Binary IP address string
-    .EXAMPLE
-    PS> ConvertTo-BinaryIpAddress -IpAddress "13.82.13.23"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $IpAddress
-  )
-
-  $address = $IpAddress.Split("/")[0]
-  return -join ($address.Split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
-}
-
-function ConvertFrom-BinaryIpAddress()
-{
-  <#
-    .SYNOPSIS
-    This function converts a passed binary IP Address to normal CIDR-notation IP Address
-    .DESCRIPTION
-    This function converts a passed binary IP Address to normal CIDR-notation IP Address
-    .PARAMETER IpAddress
-    A binary IP address like 00001101010100100000110100010111
-    .INPUTS
-    None
-    .OUTPUTS
-    Binary IP address string
-    .EXAMPLE
-    PS> ConvertFrom-BinaryIpAddress -IpAddress "00001101010100100000110100010111"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $IpAddress
-  )
-
-  $ipArray = @()
-
-  for ($i = 0; $i -lt 4; $i++)
-  {
-    #Write-InformationFormatted -MessageData $ipAddress.Substring(($i)*8, 8) -ForegroundColor Blue
-    $ipArray += $ipAddress.Substring(($i)*8, 8)
-  }
-
-  $ip = $ipArray | ForEach-Object {[System.Convert]::ToByte($_,2)}
-  $ip = $ip -join "."
-  return $ip
-}
-
-function Get-EndIpForCidr()
-{
-  <#
-    .SYNOPSIS
-    This function gets the end IP for a passed CIDR
-    .DESCRIPTION
-    This function gets the end IP for a passed CIDR
-    .PARAMETER Cidr
-    A CIDR like 13.23.0.0/16
-    .INPUTS
-    None
-    .OUTPUTS
-    An IP address like 13.23.254.254/32
-    .EXAMPLE
-    PS> Get-EndIpForCidr -Cidr "13.23.0.0/16"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $Cidr
-  )
-
-  $startIp = $cidr.Split('/')[0]
-  $prefix = [Convert]::ToInt32($cidr.Split('/')[1])
-
-  return Get-EndIp -StartIp $startIp -Prefix $prefix
-}
-
-function Get-EndIp()
-{
-  <#
-    .SYNOPSIS
-    This function gets the end IP for a passed start IP and prefix
-    .DESCRIPTION
-    This function gets the end IP for a passed start IP and prefix
-    .PARAMETER StartIp
-    An IP address in the CIDR like 13.23.0.0
-    .PARAMETER Prefix
-    A prefix like 16
-    .INPUTS
-    None
-    .OUTPUTS
-    IP Address
-    .EXAMPLE
-    PS> Get-EndIp -IpAddress "13.23.0.0" -Prefix "16"
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string]
-    $StartIp,
-    [Parameter(Mandatory=$true)]
-    [string]
-    $Prefix
-  )
-
-  try
-  {
-    $ipCount = ([System.Math]::Pow(2, 32-$Prefix)) -1
-
-    $startIpAdd = ([System.Net.IPAddress]$StartIp).GetAddressBytes()
-
-    # reverse bits & recreate IP
-    [Array]::Reverse($startIpAdd)
-    $startIpAdd = ([System.Net.IPAddress]($startIpAdd -join ".")).Address
-
-    $endIp = [Convert]::ToDouble($startIpAdd + $ipCount)
-    $endIp = [System.Net.IPAddress]$endIP
-
-    return $endIp.ToString()
-  }
-  catch
-  {
-    Write-InformationFormatted -MessageData "Could not find end IP for $($StartIp)/$($Prefix)" -ForegroundColor Red
-
-    throw
-  }
-}
-
-function Get-CidrRangeBetweenIps()
-{
-  <#
-    .SYNOPSIS
-    This function gets CIDR range for a passed set  of IP addresses
-    .DESCRIPTION
-    This function gets CIDR range for a passed set  of IP addresses
-    .PARAMETER IpAddresses
-    An array of IP addresses
-    .INPUTS
-    None
-    .OUTPUTS
-    A CIDR lrange as a hashtable with keys startAddress, endAddress, prefix
-    .EXAMPLE
-    PS> Get-CidrRangeBetweenIps -IpAddresses @("13.23.13.0", "13.23.14.0")
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string[]]
-    $IpAddresses
-  )
-
-  $binaryIps = [System.Collections.ArrayList]@()
-
-  foreach ($ipAddress in $IpAddresses)
-  {
-    $binaryIp = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
-    $binaryIps.Add($binaryIp) | Out-Null
-  }
-
-  $binaryIps = $binaryIps | Sort-Object
-
-  $smallestIp = $binaryIps[0]
-  #Write-InformationFormatted -MessageData "smallestIp = $smallestIp" -ForegroundColor Blue
-  $biggestIp = $binaryIps[$binaryIps.Count - 1]
-  #Write-InformationFormatted -MessageData "biggestIp = $biggestIp" -ForegroundColor Blue
-
-  for($i = 0; $i -lt $smallestIp.Length; $i++)
-  {
-    if($smallestIp[$i] -ne $biggestIp[$i])
-    {
-      break
-    }
-  }
-
-  # deal with /31 as a special case
-  if($i -eq 31) { $i = 30 }
-
-  $baseIp = $smallestIp.Substring(0, $i) + "".PadRight(32 - $i, "0")
-  $baseIp2 = (ConvertFrom-BinaryIpAddress -IpAddress $baseIp)
-
-  $result = @{startAddress = $baseIp2; prefix = $i; endAddress = ""}
-
-  return $result
-}
-
-function Get-CidrRanges()
-{
-  <#
-    .SYNOPSIS
-    This function gets CIDRs for a set of start/end IPs
-    .DESCRIPTION
-    This function gets CIDRs for a set of start/end IPs
-    .PARAMETER IpAddresses
-    An array of IP addresses
-    .PARAMETER MaxSizePrefix
-    Maximum CIDR prefix
-    .PARAMETER AddCidrToSingleIPs
-    Whether to append /32 to single IP addresses
-    .INPUTS
-    None
-    .OUTPUTS
-    An array of CIDRs
-    .EXAMPLE
-    PS> Get-CidrRanges -IpAddresses @("13.23.13.13", "13.23.13.244") -MaxSizePrefix 32 -AddCidrToSingleIPs $true
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string[]]
-    $IpAddresses,
-    [Parameter(Mandatory=$false)]
-    [int]
-    $MaxSizePrefix = 32,
-    [Parameter(Mandatory=$false)]
-    [bool]
-    $AddCidrToSingleIPs = $true
-  )
-
-  $ipAddressesBinary = [System.Collections.ArrayList]@()
-  $ipAddressesSorted = [System.Collections.ArrayList]@()
-  [string[]]$cidrRanges = @()
-
-  # Convert each IP address to binary and add to array list
-  foreach ($ipAddress in $IpAddresses)
-  {
-    $ipAddressBinary = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
-    $ipAddressesBinary.Add($ipAddressBinary) | Out-Null
-  }
-
-  # Sort the binary IP addresses
-  $ipAddressesBinary = $ipAddressesBinary | Sort-Object
-
-  # Convert the now-sorted binary IP addresses back into regular and add to array list
-  foreach ($ipAddressBinary in $ipAddressesBinary)
-  {
-    $ipAddress = ConvertFrom-BinaryIpAddress -IpAddress $ipAddressBinary
-    $ipAddressesSorted.Add($ipAddress) | Out-Null
-  }
-
-  $curRange = @{ startAddress = $ipAddressesSorted[0]; prefix=32 }
-
-  for($i = 0; $i -le $ipAddressesSorted.Count; $i++)
-  {
-      if($i -lt $ipAddressesSorted.Count)
-      {
-        $testRange = Get-CidrRangeBetweenIps @($curRange.startAddress, $ipAddressesSorted[$i])
-      }
-
-      if(($testRange.prefix -lt $MaxSizePrefix) -or ($i -eq $ipAddressesSorted.Count))
-      {
-        # Too big. Apply the existing range & set the current IP to the start                
-        $ipToAdd = $curRange.startAddress
-
-        if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
-        {
-          $ipToAdd += "/" + $curRange.prefix
-        }
-
-        $cidrRanges += $ipToAdd
-
-        # reset the range to the current IP
-        if($i -lt $ipAddressesSorted.Count)
-        {
-          $curRange = @{ startAddress=$ipAddressesSorted[$i]; prefix=32 }
-        }
-      }
-      else
-      {
-        $curRange = $testRange
-      }
-  }
-
-  return $cidrRanges
-}
-
-function Get-CondensedCidrRanges()
-{
-  <#
-    .SYNOPSIS
-    This function gets condensed CIDRs for a set of initial CIDRs
-    .DESCRIPTION
-    This function gets condensed CIDRs for a set of initial CIDRs
-    .PARAMETER CidrRanges
-    An array of CIDRs
-    .PARAMETER MaxSizePrefix
-    Maximum prefix for condensed CIDRs. This means that the prefix for a result CIDR will be no lower
-    than this (bigger network), but can be higher if that is the smallest the CIDR can be.
-    .PARAMETER AddCidrToSingleIPs
-    Whether to append /32 to single IP addresses
-    .INPUTS
-    None
-    .OUTPUTS
-    An array of CIDRs - may be the original ones or consolidated if possible
-    .EXAMPLE
-    PS> Get-CondensedCidrRanges -CidrRanges @("13.23.13.0/16", "13.23.14.0/16", "13.24.4.0/16") -MaxSizePrefix 8 -AddCidrToSingleIPs $true
-    .LINK
-    None
-  #>
-
-  [CmdletBinding()]
-  param
-  (
-    [Parameter(Mandatory=$true)]
-    [string[]]
-    $CidrRanges,
-    [Parameter(Mandatory=$false)]
-    [int]
-    $MaxSizePrefix = 32,
-    [Parameter(Mandatory=$false)]
-    [bool]
-    $AddCidrToSingleIPs = $true
-  )
-
-  [string[]]$finalCidrRanges = @()
-  $cidrObjs = @()
-
-  # 1. Convert CIDR to Start/End/Count
-  foreach($cidr in $cidrRanges)
-  {
-    $startIp = $cidr.Split('/')[0]
-    $prefix = $cidrBitsToMask = [Convert]::ToInt32($cidr.Split('/')[1])
-    $ipCount = [Math]::Pow(2, 32-$cidrBitsToMask)
-    $endIp = Get-EndIp -StartIp $startIp -Prefix $prefix
-
-    $cidrObj = @{ startAddress = $startIp; endAddress = $endIp; prefix = $prefix; ipCount = $ipCount }
-    $cidrObjs += $cidrObj
-  }
-
-  # 2. Sort by CIDR start, number desc
-  $cidrObjs = $cidrObjs | Sort-Object @{Expression = {$_.startAddress}; Ascending = $true} , @{Expression = {$_.ipCount}; Ascending = $false}
-
-  #foreach ($cidrObj in $cidrObjs)
-  #{
-  #  Write-InformationFormatted -MessageData $cidrObj.startAddress -ForegroundColor Blue
-  #  Write-InformationFormatted -MessageData $cidrObj.endAddress -ForegroundColor Blue
-  #  Write-InformationFormatted -MessageData $cidrObj.prefix -ForegroundColor Blue
-  #  Write-InformationFormatted -MessageData $cidrObj.ipCount -ForegroundColor Blue
-  #}
-
-  # 3. Try to merge
-  $curRange = $cidrObjs[0]
-
-  for($i = 0; $i -le $cidrObjs.Count; $i++)
-  {
-    if($i -lt $cidrObjs.Count)
-    {
-      $testRange = (Get-CidrRangeBetweenIps @($curRange.startAddress, $cidrObjs[$i].endAddress))
-      #Write-InformationFormatted -MessageData $testRange.startAddress -ForegroundColor Blue
-      #Write-InformationFormatted -MessageData $testRange.endAddress -ForegroundColor Blue
-      #Write-InformationFormatted -MessageData $testRange.prefix -ForegroundColor Blue
-
-      $testRange.endAddress = Get-EndIp -StartIp $testRange.startAddress -Prefix $testRange.prefix
-
-      $isSameRange = ($testRange.startAddress -eq $curRange.startAddress) -and ($testRange.endAddress -eq $curRange.endAddress)
-
-      if(($testRange.prefix -lt $MaxSizePrefix) -and ($isSameRange -eq $false))
-      {
-        # This range is too big. Apply the existing range & set the current IP to the start
-        $cidrToAdd = $curRange.startAddress
-
-        if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
-        {
-          $cidrToAdd += "/" + $curRange.prefix
-        }
-
-        $finalCidrRanges += $cidrToAdd
-
-        # We added one, so reset the range to the current IP range
-        if($i -lt $cidrObjs.Count)
-        {
-          $curRange = $cidrObjs[$i]
-        }
-      }
-      else
-      {
-        $curRange = $testRange
-      }
-    }
-    else
-    { 
-      $cidrToAdd = $curRange.startAddress
-
-      if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
-      {
-        $cidrToAdd += "/" + $curRange.prefix
-      }
-
-      $finalCidrRanges += $cidrToAdd
-    }
-  }
-
-  return $finalCidrRanges | Get-Unique
-}
-
-# ####################################################################################################
-
-# ####################################################################################################
 # Azure_AppService_DP_Use_Secure_FTP_Deployment
 
 function Get-AppServiceFtpState()
@@ -1586,6 +875,99 @@ function Set-SqlManagedInstanceMinimumTlsVersion()
 # ####################################################################################################
 # Azure_KeyVault_NetSec_Disable_Public_Network_Access
 
+function Set-KeyVaultNetworkRulesFromCidrs()
+{
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $SubscriptionId,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceGroupName,
+    [Parameter(Mandatory = $true)]
+    [string]
+    $KeyVaultName,
+    [Parameter(Mandatory = $true)]
+    [string[]]
+    $Cidrs,
+    [Parameter(Mandatory = $false)]
+    [string]
+    [ValidateSet("Merge", "Replace")]
+    $Action = "Merge",
+    [Parameter(Mandatory = $false)]
+    [bool]
+    $ConsolidateCidrsIfNeeded = $false
+  )
+
+  $profile = Set-AzContext -Subscription $SubscriptionId
+
+  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
+
+  $cidrsInitial = [System.Collections.ArrayList]@()
+
+  $cidrsInitial.AddRange($Cidrs)
+
+  if (($Action -eq "Merge") -and ($keyVault.NetworkAcls.IpAddressRanges))
+  {
+    $cidrsInitial.AddRange($keyVault.NetworkAcls.IpAddressRanges)
+  }
+
+
+  $cidrsBinary = [System.Collections.ArrayList]@()
+
+  foreach ($cidr in $cidrsInitial)
+  {
+    $cidrBinary = ConvertTo-BinaryIpAddress -IpAddress $cidr
+    $cidrsBinary += $cidrBinary
+  }
+
+  $cidrsBinary | Sort-Object| Get-Unique -OutVariable cidrsBinary
+
+
+  $cidrsSortedUnique = [System.Collections.ArrayList]@()
+
+  foreach ($cidrBinary in $cidrsBinary)
+  {
+    $cidr = ConvertFrom-BinaryIpAddress -IpAddress $cidrBinary
+    $cidrsSortedUnique += $cidr
+  }
+
+
+  if ($cidrsSortedUnique.Count -gt 1000 -and $ConsolidateCidrsIfNeeded)
+  {
+    $cidrsSortedUnique = Get-CondensedCidrRanges -CidrRanges $cidrsSortedUnique -MaxSizePrefix 8 -AddCidrToSingleIPs $true
+  }
+
+
+  if ($cidrsSortedUnique.Count -gt 1000)
+  {
+    Write-InformationFormatted -MessageData "List of CIDRs exceeds 1,000. Key Vault has a maximum of 1,000 network access rules. Please try again with fewer CIDrs. No changes were made to Key Vault." -ForegroundColor Red
+  }
+  else
+  {
+    If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
+    {
+      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs network access rules."
+      Update-AzKeyVaultNetworkRuleSet `
+        -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -VaultName $KeyVaultName `
+        -IpAddressRange $cidrsSortedUnique
+    }
+    else
+    {
+      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules."
+      Update-AzKeyVaultNetworkRuleSet `
+        -SubscriptionId $SubscriptionId `
+        -ResourceGroupName $ResourceGroupName `
+        -VaultName $KeyVaultName `
+        -IpAddressRange $cidrsSortedUnique `
+        -VirtualNetworkResourceId $keyVault.NetworkAcls.VirtualNetworkResourceIds
+    }
+  }
+}
+
 function Get-AppServiceAllPossibleOutboundPublicIps()
 {
   <#
@@ -1883,7 +1265,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
         -SubscriptionId $SubscriptionId `
         -ResourceGroupName $ResourceGroupName `
         -VaultName $KeyVaultName `
-        -IpAddressRange $ipAddressRange
+        -IpAddressRange $ipAddressRanges
     }
     else
     {
@@ -1892,7 +1274,7 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses()
         -SubscriptionId $SubscriptionId `
         -ResourceGroupName $ResourceGroupName `
         -VaultName $KeyVaultName `
-        -IpAddressRange $ipAddressRange `
+        -IpAddressRange $ipAddressRanges `
         -VirtualNetworkResourceId $keyVault.NetworkAcls.VirtualNetworkResourceIds
     }
   }
@@ -1939,65 +1321,13 @@ function Set-KeyVaultPublicNetworkAccessEnabledForIpAddress()
     $PublicIpAddress
   )
 
-  # IP Address range: What is currently on the Key Vault PLUS (if not already) the current public IP address
-  # VNet rules: Maintain what is currently on the Key Vault - the context here is public network access, no op on VNet rules
+  $ipAddresses = @($PublicIpAddress)
 
-  $profile = Set-AzContext -Subscription $SubscriptionId
-
-  $keyVault = Get-AzKeyVault -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName
-
-  if ($keyVault.NetworkAcls.IpAddressRanges)
-  {
-    $ipAddressRange = $keyVault.NetworkAcls.IpAddressRanges
-  }
-  else
-  {
-    $ipAddressRange = @()
-  }
-  # This does not work in Windows Powershell 5.1, only in 7.x
-  # $ipAddressRange = $keyVault.NetworkAcls.IpAddressRanges ?? @()
-
-  # Assume we need to update the KV to get to our final state - i.e. we assume worst case here
-  $needToUpdateIps = $true
-
-  # Check if the Key Vault network ACLs already contain my public IP address
-  If ($ipAddressRange.Count -gt 0 -and $ipAddressRange.Contains($PublicIpAddress))
-  {
-    $needToUpdateIps = $false
-    Write-InformationFormatted -MessageData "Current Key Vault public IP address range already contains $PublicIpAddress, no change will be made to source IP network ACLs."
-  }
-  Else
-  {
-    $needToUpdateIps = $true  # Yes, this is redundant to start condition above. Regardless, set explicitly here in case someone changes the start condition later.
-    $ipAddressRange += $PublicIpAddress
-    Write-InformationFormatted -MessageData "Added my public IP address $PublicIpAddress for new complete source IP address range: $ipAddressRange."
-  }
-
-  # If the source IPs need to be updated, do that here
-  If ($needToUpdateIps)
-  {
-    Write-InformationFormatted -MessageData "Update Key Vault network access rules."
-
-    If ($keyVault.NetworkAcls.VirtualNetworkResourceIds.Count -eq 0)
-    {
-      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs network access rules."
-      Update-AzKeyVaultNetworkRuleSet `
-        -SubscriptionId $SubscriptionId `
-        -ResourceGroupName $ResourceGroupName `
-        -VaultName $KeyVaultName `
-        -IpAddressRange $ipAddressRange
-    }
-    else
-    {
-      Write-InformationFormatted -MessageData "Update Key Vault network access rules for specified source IPs and existing VNet network access rules."
-      Update-AzKeyVaultNetworkRuleSet `
-        -SubscriptionId $SubscriptionId `
-        -ResourceGroupName $ResourceGroupName `
-        -VaultName $KeyVaultName `
-        -IpAddressRange $ipAddressRange `
-        -VirtualNetworkResourceId $keyVault.NetworkAcls.VirtualNetworkResourceIds
-    }
-  }
+  Set-KeyVaultPublicNetworkAccessEnabledForIpAddresses `
+    -SubscriptionId $SubscriptionId `
+    -ResourceGroupName $ResourceGroupName `
+    -KeyVaultName $KeyVaultName `
+    -PublicIpAddresses $ipAddresses
 }
 
 function Remove-KeyVaultNetworkAccessRuleForIpAddress()
@@ -2051,6 +1381,712 @@ param
     -ResourceGroupName $ResourceGroupName `
     -VaultName $KeyVaultName `
     -IpAddressRange $PublicIpAddress
+}
+
+function Get-MyPublicIpAddress()
+{
+    <#
+    .SYNOPSIS
+    This function reaches out to a third-party web site and gets "my" public IP address, typically the egress address from my local network
+    .DESCRIPTION
+    This function reaches out to a third-party web site and gets "my" public IP address, typically the egress address from my local network
+    .INPUTS
+    None
+    .OUTPUTS
+    None
+    .EXAMPLE
+    PS> $myPublicIpAddress = Get-MyPublicIpAddress
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  $ipUrl = "https://api.ipify.org"
+
+  $myPublicIpAddress = ""
+
+  # Test whether I can use a public site to get my public IP address
+  $statusCode = (Invoke-WebRequest "$ipUrl").StatusCode
+
+  if ("200" -eq "$statusCode")
+  {
+    # Get my public IP address
+    $myPublicIpAddress = Invoke-RestMethod "$ipUrl"
+    $myPublicIpAddress += "/32"
+
+    Write-InformationFormatted -MessageData "Got my public IP address: $myPublicIpAddress."
+  }
+  else
+  {
+    Write-InformationFormatted -MessageData "Error! Could not get my public IP address." -ForegroundColor Red
+  }
+
+  return $myPublicIpAddress
+}
+
+function Get-AzurePublicIpRanges()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tags from the current Microsoft public IPs file download.
+    .INPUTS
+    None
+    .OUTPUTS
+    Service Tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpRanges
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param()
+
+  $fileMatch = "ServiceTags_Public"
+  $ipRanges = @()
+
+  $uri = "https://www.microsoft.com/en-us/download/confirmation.aspx?id=56519"
+
+  $response = Invoke-WebRequest -Uri $uri
+
+  $links = $response.Links | Where-Object {$_.href -match $fileMatch}
+
+  if ($links -and $links.Count -gt 0)
+  {
+    $link = $links[0]
+
+    if ($link)
+    {
+      $jsonUri = $link.href
+
+      $response = Invoke-WebRequest -Uri $jsonUri | ConvertFrom-Json
+
+      if ($response -and $response.values)
+      {
+        $ipRanges = $response.values
+      }
+    }
+  }
+
+  return $ipRanges
+}
+
+function Get-AzurePublicIpv4RangesForServiceTags()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the IPv4 CIDRs for the specified Service Tags from the current Microsoft public IPs file download.
+    .PARAMETER ServiceTags
+    An array of one or more Service Tags from the Microsoft Public IP file at https://www.microsoft.com/en-us/download/details.aspx?id=53602.
+    .INPUTS
+    None
+    .OUTPUTS
+    Array of IPv4 CIDRs for the specified Service tags
+    .EXAMPLE
+    PS> Get-AzurePublicIpv4RangesForServiceTags -ServiceTags @("DataFactory.EastUS", "DataFactory.WestUS")
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string[]]
+      $ServiceTags
+  )
+
+  $ips = @()
+
+  $ipRanges = Get-AzurePublicIpRanges
+
+  if ($ipRanges)
+  {
+    foreach($serviceTag in $ServiceTags)
+    {
+      $ipsForServiceTag = ($ipRanges | Where-Object {$_.name -eq $serviceTag})
+
+      #Filter out IPV4 Only
+      $ips += $ipsForServiceTag.Properties.AddressPrefixes | Where-Object {$_ -like "*.*.*.*/*"}
+    }
+  }
+
+  $ips = $ips | Sort-Object
+
+  return $ips
+}
+
+function Test-IsIpInCidr()
+{
+  <#
+    .SYNOPSIS
+    This function checks if the specified IP address is contained in the specified CIDR.
+    .DESCRIPTION
+    This function checks if the specified IP address is contained in the specified CIDR.
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .PARAMETER Cidr
+    A CIDR, i.e. a network address range like 13.82.0.0/16
+    .INPUTS
+    None
+    .OUTPUTS
+    A bool indicating whether or not the IP address is contained in the CIDR
+    .EXAMPLE
+    PS> Test-IsIpInCidr -IpAddress "13.82.13.23/32" -Cidr "13.82.0.0/16"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+      [Parameter(Mandatory=$true)]
+      [string]
+      $IpAddress,
+      [Parameter(Mandatory=$true)]
+      [string]
+      $Cidr
+  )
+
+  $ip = $IpAddress.Split('/')[0]
+  $cidrIp = $Cidr.Split('/')[0]
+  $cidrBitsToMask = $Cidr.Split('/')[1]
+
+  #Write-InformationFormatted -MessageData "ip = $ip"
+  #Write-InformationFormatted -MessageData "cidrIp = $cidrIp"
+  #Write-InformationFormatted -MessageData "cidrBitsToMask = $cidrBitsToMask"
+
+  [int]$BaseAddress = [System.BitConverter]::ToInt32((([System.Net.IPAddress]::Parse($cidrIp)).GetAddressBytes()), 0)
+  [int]$Address = [System.BitConverter]::ToInt32(([System.Net.IPAddress]::Parse($ip).GetAddressBytes()), 0)
+  [int]$Mask = [System.Net.IPAddress]::HostToNetworkOrder(-1 -shl ( 32 - $cidrBitsToMask))
+
+  #Write-InformationFormatted -MessageData "BaseAddress = $BaseAddress"
+  #Write-InformationFormatted -MessageData "Address = $Address"
+  #Write-InformationFormatted -MessageData "Mask = $Mask"
+
+  $result = (($BaseAddress -band $Mask) -eq ($Address -band $Mask))
+
+  return $result
+}
+
+function Get-ServiceTagsForAzurePublicIp()
+{
+  <#
+    .SYNOPSIS
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download.
+    .DESCRIPTION
+    This command retrieves the Service Tag(s) for the specified public IP address from the current Microsoft public IPs file download. The output is a hashtable, so to use, set the output equal to a variable (see example) and work with that variable.
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .INPUTS
+    None
+    .OUTPUTS
+    Array of IPv4 CIDRs for the specified Service tags
+    .EXAMPLE
+    PS> $result = Get-ServiceTagsForAzurePublicIp -IpAddress "13.82.13.23"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress
+  )
+
+  $ipRanges = Get-AzurePublicIpRanges
+
+  $result = @()
+
+  Write-InformationFormatted -MessageData "Processing - please wait... this will take a couple of minutes" -ForegroundColor Green
+
+  foreach ($ipRange in $ipRanges)
+  {
+    $isFound = $false
+
+    $ipRangeName = $ipRange.name
+    $region = $ipRange.properties.region
+    $cidrs = $ipRange.properties.addressPrefixes | Where-Object {$_ -like "*.*.*.*/*"} # filter to only IPv4
+
+    Write-InformationFormatted -MessageData "Checking ipRangeName = $ipRangeName" -ForegroundColor Green
+
+    if (!$region) { $region = "(N/A)"}
+
+    foreach ($cidr in $cidrs)
+    {
+      $ipIsInCidr = Test-IsIpInCidr -IpAddress $IpAddress -Cidr $cidr
+
+      if ($ipIsInCidr)
+      {
+        $result +=
+        @{
+          Name = $ipRangeName;
+          Region = $region;
+          Cidr = $cidr;
+        }
+
+        $isFound = $true
+      }
+
+      if ($isFound -eq $true)
+      {
+        break
+      }
+    }
+  }
+
+  if($isFound -eq $false)
+  {
+    Write-InformationFormatted -MessageData "$IpAddress"": Not found in any range" -ForegroundColor Red
+  }
+
+  Write-InformationFormatted -MessageData "Done!" -ForegroundColor Green
+
+  ,($result | Sort-Object -Property "Name")
+}
+
+# ##########
+# Following utility methods include code from Chris Grumbles/Microsoft
+# Updated for style conformance and logic
+# ##########
+
+function ConvertTo-BinaryIpAddress()
+{
+  <#
+    .SYNOPSIS
+    This function converts a passed IP Address to binary
+    .DESCRIPTION
+    This function converts a passed IP Address to binary
+    .PARAMETER IpAddress
+    An IP address like 13.82.13.23 or 13.82.13.23/32
+    .INPUTS
+    None
+    .OUTPUTS
+    Binary IP address string
+    .EXAMPLE
+    PS> ConvertTo-BinaryIpAddress -IpAddress "13.82.13.23"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress
+  )
+
+  $address = $IpAddress.Split("/")[0]
+  return -join ($address.Split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
+}
+
+function ConvertFrom-BinaryIpAddress()
+{
+  <#
+    .SYNOPSIS
+    This function converts a passed binary IP Address to normal CIDR-notation IP Address
+    .DESCRIPTION
+    This function converts a passed binary IP Address to normal CIDR-notation IP Address
+    .PARAMETER IpAddress
+    A binary IP address like 00001101010100100000110100010111
+    .INPUTS
+    None
+    .OUTPUTS
+    Binary IP address string
+    .EXAMPLE
+    PS> ConvertFrom-BinaryIpAddress -IpAddress "00001101010100100000110100010111"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $IpAddress
+  )
+
+  $ipArray = @()
+
+  for ($i = 0; $i -lt 4; $i++)
+  {
+    #Write-InformationFormatted -MessageData $ipAddress.Substring(($i)*8, 8) -ForegroundColor Blue
+    $ipArray += $ipAddress.Substring(($i)*8, 8)
+  }
+
+  $ip = $ipArray | ForEach-Object {[System.Convert]::ToByte($_,2)}
+  $ip = $ip -join "."
+  return $ip
+}
+
+function Get-EndIpForCidr()
+{
+  <#
+    .SYNOPSIS
+    This function gets the end IP for a passed CIDR
+    .DESCRIPTION
+    This function gets the end IP for a passed CIDR
+    .PARAMETER Cidr
+    A CIDR like 13.23.0.0/16
+    .INPUTS
+    None
+    .OUTPUTS
+    An IP address like 13.23.254.254/32
+    .EXAMPLE
+    PS> Get-EndIpForCidr -Cidr "13.23.0.0/16"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $Cidr
+  )
+
+  $startIp = $cidr.Split('/')[0]
+  $prefix = [Convert]::ToInt32($cidr.Split('/')[1])
+
+  return Get-EndIp -StartIp $startIp -Prefix $prefix
+}
+
+function Get-EndIp()
+{
+  <#
+    .SYNOPSIS
+    This function gets the end IP for a passed start IP and prefix
+    .DESCRIPTION
+    This function gets the end IP for a passed start IP and prefix
+    .PARAMETER StartIp
+    An IP address in the CIDR like 13.23.0.0
+    .PARAMETER Prefix
+    A prefix like 16
+    .INPUTS
+    None
+    .OUTPUTS
+    IP Address
+    .EXAMPLE
+    PS> Get-EndIp -IpAddress "13.23.0.0" -Prefix "16"
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string]
+    $StartIp,
+    [Parameter(Mandatory=$true)]
+    [string]
+    $Prefix
+  )
+
+  try
+  {
+    $ipCount = ([System.Math]::Pow(2, 32-$Prefix)) -1
+
+    $startIpAdd = ([System.Net.IPAddress]$StartIp).GetAddressBytes()
+
+    # reverse bits & recreate IP
+    [Array]::Reverse($startIpAdd)
+    $startIpAdd = ([System.Net.IPAddress]($startIpAdd -join ".")).Address
+
+    $endIp = [Convert]::ToDouble($startIpAdd + $ipCount)
+    $endIp = [System.Net.IPAddress]$endIP
+
+    return $endIp.ToString()
+  }
+  catch
+  {
+    Write-InformationFormatted -MessageData "Could not find end IP for $($StartIp)/$($Prefix)" -ForegroundColor Red
+
+    throw
+  }
+}
+
+function Get-CidrRangeBetweenIps()
+{
+  <#
+    .SYNOPSIS
+    This function gets CIDR range for a passed set  of IP addresses
+    .DESCRIPTION
+    This function gets CIDR range for a passed set  of IP addresses
+    .PARAMETER IpAddresses
+    An array of IP addresses
+    .INPUTS
+    None
+    .OUTPUTS
+    A CIDR lrange as a hashtable with keys startAddress, endAddress, prefix
+    .EXAMPLE
+    PS> Get-CidrRangeBetweenIps -IpAddresses @("13.23.13.0", "13.23.14.0")
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string[]]
+    $IpAddresses
+  )
+
+  $binaryIps = [System.Collections.ArrayList]@()
+
+  foreach ($ipAddress in $IpAddresses)
+  {
+    $binaryIp = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
+    $binaryIps.Add($binaryIp) | Out-Null
+  }
+
+  $binaryIps = $binaryIps | Sort-Object
+
+  $smallestIp = $binaryIps[0]
+  #Write-InformationFormatted -MessageData "smallestIp = $smallestIp" -ForegroundColor Blue
+  $biggestIp = $binaryIps[$binaryIps.Count - 1]
+  #Write-InformationFormatted -MessageData "biggestIp = $biggestIp" -ForegroundColor Blue
+
+  for($i = 0; $i -lt $smallestIp.Length; $i++)
+  {
+    if($smallestIp[$i] -ne $biggestIp[$i])
+    {
+      break
+    }
+  }
+
+  # deal with /31 as a special case
+  if($i -eq 31) { $i = 30 }
+
+  $baseIp = $smallestIp.Substring(0, $i) + "".PadRight(32 - $i, "0")
+  $baseIp2 = (ConvertFrom-BinaryIpAddress -IpAddress $baseIp)
+
+  $result = @{startAddress = $baseIp2; prefix = $i; endAddress = ""}
+
+  return $result
+}
+
+function Get-CidrRanges()
+{
+  <#
+    .SYNOPSIS
+    This function gets CIDRs for a set of start/end IPs
+    .DESCRIPTION
+    This function gets CIDRs for a set of start/end IPs
+    .PARAMETER IpAddresses
+    An array of IP addresses
+    .PARAMETER MaxSizePrefix
+    Maximum CIDR prefix
+    .PARAMETER AddCidrToSingleIPs
+    Whether to append /32 to single IP addresses
+    .INPUTS
+    None
+    .OUTPUTS
+    An array of CIDRs
+    .EXAMPLE
+    PS> Get-CidrRanges -IpAddresses @("13.23.13.13", "13.23.13.244") -MaxSizePrefix 32 -AddCidrToSingleIPs $true
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string[]]
+    $IpAddresses,
+    [Parameter(Mandatory=$false)]
+    [int]
+    $MaxSizePrefix = 32,
+    [Parameter(Mandatory=$false)]
+    [bool]
+    $AddCidrToSingleIPs = $true
+  )
+
+  $ipAddressesBinary = [System.Collections.ArrayList]@()
+  $ipAddressesSorted = [System.Collections.ArrayList]@()
+  [string[]]$cidrRanges = @()
+
+  # Convert each IP address to binary and add to array list
+  foreach ($ipAddress in $IpAddresses)
+  {
+    $ipAddressBinary = ConvertTo-BinaryIpAddress -IpAddress $ipAddress
+    $ipAddressesBinary.Add($ipAddressBinary) | Out-Null
+  }
+
+  # Sort the binary IP addresses
+  $ipAddressesBinary = $ipAddressesBinary | Sort-Object
+
+  # Convert the now-sorted binary IP addresses back into regular and add to array list
+  foreach ($ipAddressBinary in $ipAddressesBinary)
+  {
+    $ipAddress = ConvertFrom-BinaryIpAddress -IpAddress $ipAddressBinary
+    $ipAddressesSorted.Add($ipAddress) | Out-Null
+  }
+
+  $curRange = @{ startAddress = $ipAddressesSorted[0]; prefix=32 }
+
+  for($i = 0; $i -le $ipAddressesSorted.Count; $i++)
+  {
+      if($i -lt $ipAddressesSorted.Count)
+      {
+        $testRange = Get-CidrRangeBetweenIps @($curRange.startAddress, $ipAddressesSorted[$i])
+      }
+
+      if(($testRange.prefix -lt $MaxSizePrefix) -or ($i -eq $ipAddressesSorted.Count))
+      {
+        # Too big. Apply the existing range & set the current IP to the start                
+        $ipToAdd = $curRange.startAddress
+
+        if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
+        {
+          $ipToAdd += "/" + $curRange.prefix
+        }
+
+        $cidrRanges += $ipToAdd
+
+        # reset the range to the current IP
+        if($i -lt $ipAddressesSorted.Count)
+        {
+          $curRange = @{ startAddress=$ipAddressesSorted[$i]; prefix=32 }
+        }
+      }
+      else
+      {
+        $curRange = $testRange
+      }
+  }
+
+  return $cidrRanges
+}
+
+function Get-CondensedCidrRanges()
+{
+  <#
+    .SYNOPSIS
+    This function gets condensed CIDRs for a set of initial CIDRs
+    .DESCRIPTION
+    This function gets condensed CIDRs for a set of initial CIDRs
+    .PARAMETER CidrRanges
+    An array of CIDRs
+    .PARAMETER MaxSizePrefix
+    Maximum prefix for condensed CIDRs. This means that the prefix for a result CIDR will be no lower
+    than this (bigger network), but can be higher if that is the smallest the CIDR can be.
+    .PARAMETER AddCidrToSingleIPs
+    Whether to append /32 to single IP addresses
+    .INPUTS
+    None
+    .OUTPUTS
+    An array of CIDRs - may be the original ones or consolidated if possible
+    .EXAMPLE
+    PS> Get-CondensedCidrRanges -CidrRanges @("13.23.13.0/16", "13.23.14.0/16", "13.24.4.0/16") -MaxSizePrefix 8 -AddCidrToSingleIPs $true
+    .LINK
+    None
+  #>
+
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory=$true)]
+    [string[]]
+    $CidrRanges,
+    [Parameter(Mandatory=$false)]
+    [int]
+    $MaxSizePrefix = 32,
+    [Parameter(Mandatory=$false)]
+    [bool]
+    $AddCidrToSingleIPs = $true
+  )
+
+  [string[]]$finalCidrRanges = @()
+  $cidrObjs = @()
+
+  # 1. Convert CIDR to Start/End/Count
+  foreach($cidr in $cidrRanges)
+  {
+    $startIp = $cidr.Split('/')[0]
+    $prefix = $cidrBitsToMask = [Convert]::ToInt32($cidr.Split('/')[1])
+    $ipCount = [Math]::Pow(2, 32-$cidrBitsToMask)
+    $endIp = Get-EndIp -StartIp $startIp -Prefix $prefix
+
+    $cidrObj = @{ startAddress = $startIp; endAddress = $endIp; prefix = $prefix; ipCount = $ipCount }
+    $cidrObjs += $cidrObj
+  }
+
+  # 2. Sort by CIDR start, number desc
+  $cidrObjs = $cidrObjs | Sort-Object @{Expression = {$_.startAddress}; Ascending = $true} , @{Expression = {$_.ipCount}; Ascending = $false}
+
+  #foreach ($cidrObj in $cidrObjs)
+  #{
+  #  Write-InformationFormatted -MessageData $cidrObj.startAddress -ForegroundColor Blue
+  #  Write-InformationFormatted -MessageData $cidrObj.endAddress -ForegroundColor Blue
+  #  Write-InformationFormatted -MessageData $cidrObj.prefix -ForegroundColor Blue
+  #  Write-InformationFormatted -MessageData $cidrObj.ipCount -ForegroundColor Blue
+  #}
+
+  # 3. Try to merge
+  $curRange = $cidrObjs[0]
+
+  for($i = 0; $i -le $cidrObjs.Count; $i++)
+  {
+    if($i -lt $cidrObjs.Count)
+    {
+      $testRange = (Get-CidrRangeBetweenIps @($curRange.startAddress, $cidrObjs[$i].endAddress))
+      #Write-InformationFormatted -MessageData $testRange.startAddress -ForegroundColor Blue
+      #Write-InformationFormatted -MessageData $testRange.endAddress -ForegroundColor Blue
+      #Write-InformationFormatted -MessageData $testRange.prefix -ForegroundColor Blue
+
+      $testRange.endAddress = Get-EndIp -StartIp $testRange.startAddress -Prefix $testRange.prefix
+
+      $isSameRange = ($testRange.startAddress -eq $curRange.startAddress) -and ($testRange.endAddress -eq $curRange.endAddress)
+
+      if(($testRange.prefix -lt $MaxSizePrefix) -and ($isSameRange -eq $false))
+      {
+        # This range is too big. Apply the existing range & set the current IP to the start
+        $cidrToAdd = $curRange.startAddress
+
+        if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
+        {
+          $cidrToAdd += "/" + $curRange.prefix
+        }
+
+        $finalCidrRanges += $cidrToAdd
+
+        # We added one, so reset the range to the current IP range
+        if($i -lt $cidrObjs.Count)
+        {
+          $curRange = $cidrObjs[$i]
+        }
+      }
+      else
+      {
+        $curRange = $testRange
+      }
+    }
+    else
+    { 
+      $cidrToAdd = $curRange.startAddress
+
+      if(($AddCidrToSingleIPs -eq $true) -or ($curRange.prefix -lt 32))
+      {
+        $cidrToAdd += "/" + $curRange.prefix
+      }
+
+      $finalCidrRanges += $cidrToAdd
+    }
+  }
+
+  return $finalCidrRanges | Get-Unique
 }
 
 # ####################################################################################################
