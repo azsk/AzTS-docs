@@ -960,7 +960,7 @@ function Set-KeyVaultNetworkRulesFromCidrs()
     $cidrsBinary += $cidrBinary
   }
 
-  $cidrsBinary = $cidrsBinary | Sort-Object | Get-Unique # -OutVariable cidrsBinary
+  $cidrsBinary = $cidrsBinary | Sort-Object | Get-Unique
 
 
   $cidrsSortedUnique = [System.Collections.ArrayList]@()
@@ -987,8 +987,8 @@ function Set-KeyVaultNetworkRulesFromCidrs()
     # Remove all current KV network access rules
     # This is needed because no Azure KV Powershell cmdlet supports ADDING a range
     # Update-AzKeyVaultNetworkRuleSet REPLACES what's there - no option to add
-    # Update-AzKeyVaultNetworkRuleSet also has a limit of 127 rules, whereas KV supports 1,000... WHY???????????
-    # Update-AzKeyVault does NOT accept a network rule object and does not allow for network rule updating
+    # Update-AzKeyVaultNetworkRuleSet also has a limit of 127 rules, whereas KV supports 1,000...
+    # Update-AzKeyVault does not accept a network rule object and does not allow for network rule updating
     # There is no way to manage Key Vault network access rules with Powershell except wipe existing and then
     # write new rules, whether we merge them as above or just replace with new ones
 
@@ -1738,8 +1738,24 @@ function ConvertTo-BinaryIpAddress()
     $IpAddress
   )
 
-  $address = $IpAddress.Split("/")[0]
-  return -join ($address.Split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
+  $ipAddressArray = $IpAddress.Split("/")
+  $address = $ipAddressArray[0]
+
+  if ($ipAddressArray.Count -gt 1)
+  {
+    $mask = $ipAddressArray[1]
+  }
+  else
+  {
+    $mask = "32"
+  }
+
+  $addressBinary = -Join ($address.Split(".") | ForEach-Object {[System.Convert]::ToString($_, 2).PadLeft(8, "0")})
+  $maskBinary = [System.Convert]::ToString($mask, 2).PadLeft(8, "1")
+
+  $result = $addressBinary + "/" + $maskBinary
+
+  return $result
 }
 
 function ConvertFrom-BinaryIpAddress()
