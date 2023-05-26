@@ -245,7 +245,7 @@ function Set-RedisCacheMinReqTLSVersion
     
     if(-not($AutoRemediation))
     {
-        Write-Host "Current context has been set to below details:" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Current context has been set to below details: " -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host "Subscription Name: [$($context.Subscription.Name)]"
         Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
         Write-Host "Account Name: [$($context.Account.Id)]"
@@ -559,7 +559,7 @@ function Set-RedisCacheMinReqTLSVersion
                                   @{Expression={$_.isMinTLSVersionSetPostRemediation};Label="isMinTLSVersionSetPostRemediation";Width=10;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
         if ($($RedisCacheRemediated | Measure-Object).Count -gt 0)
         {
@@ -578,7 +578,7 @@ function Set-RedisCacheMinReqTLSVersion
 
         if ($($RedisCacheSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error configuring Minimum required TLS Version on the following Redis Cache(s)in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error configuring Minimum required TLS Version on the following Redis Cache(s)in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $RedisCacheSkipped | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
             $RedisCacheSkippedFile = "$($backupFolderPath)\SkippedRedisCache.csv"
@@ -840,11 +840,11 @@ function Reset-RedisCacheMinReqTLSVersion
     if ($($RedisCacheRolledBack | Measure-Object).Count -gt 0 -or $($RedisCacheSkipped | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($RedisCacheRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "TLS Version is rolled back successfully on following Redis Cache(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "TLS Version is rolled back successfully on following Redis Cache(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $RedisCacheRolledBack | Format-Table -Property $colsPropertyRollBack -Wrap
 
             # Write this to a file.
@@ -857,7 +857,7 @@ function Reset-RedisCacheMinReqTLSVersion
 
         if ($($RedisCacheSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error configuring TLS Version on following Redis Cache(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Error configuring TLS Version on following Redis Cache(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $RedisCacheSkipped | Format-Table -Property $colsProperty -Wrap
             
