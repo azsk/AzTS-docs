@@ -294,7 +294,7 @@
             "RollbackMetadata":
                 {
                     "RollbackCommand": "Reset-RedisCacheMinReqTLSVersion",
-                    "Arguments":["SubscriptionId"]
+                    "Arguments": ["SubscriptionId"]
                 }
         }
     ]
