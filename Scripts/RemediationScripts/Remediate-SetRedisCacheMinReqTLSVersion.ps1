@@ -474,7 +474,7 @@ function Set-RedisCacheMinReqTLSVersion
         {
             if (-not $Force)
             {
-                Write-Host "Found total [$($TLSwithDefaultValue.count)] Redis cache(s) with default version. TLS version for these resources can not be reverted back to default value after remediation." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Found total [$($TLSwithDefaultValue.count)] Redis cache(s) with default TLS version. TLS version for these resources can not be reverted back to default value after remediation." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "This step will configure TLS version [$($requiredMinTLSVersion)] for all non-complaint [$($NonCompliantTLSRedisCache.count)] Redis cache(s)." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
@@ -791,9 +791,10 @@ function Reset-RedisCacheMinReqTLSVersion
         $RedisCache | Add-Member -NotePropertyName isMinTLSVersionRolledback -NotePropertyValue $false
         try
         {
+            
+            Write-Host "Rolling back TLS Versions on Redis Cache(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
             if($_.PreviousMinimumTlsVersion)
             {
-                Write-Host "Rolling back TLS Versions on Redis Cache(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
                 $RedisCacheResource = Set-AzRedisCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -MinimumTlsVersion $_.PreviousMinimumTlsVersion
         
                 if($RedisCacheResource.MinimumTlsVersion -eq $_.PreviousMinimumTlsVersion)
@@ -815,9 +816,10 @@ function Reset-RedisCacheMinReqTLSVersion
             else
             {
                 $RedisCacheWithDefaultValue += $RedisCache
-                Write-Host "Roll back failed for [$($_.ResourceName)] as 'PreviousMinimumTlsVersion' found to be empty. Skipping this resource." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Roll back TLS Version failed for [$($_.ResourceName)] as 'PreviousMinimumTlsVersion' found to be empty. Skipping this resource." -ForegroundColor $([Constants]::MessageType.Error)
                 $RedisCache.isMinTLSVersionRolledback = $false
                 $RedisCacheSkipped += $RedisCache
+                Write-Host $([Constants]::SingleDashLine)
             }
         }
         catch
@@ -855,9 +857,7 @@ function Reset-RedisCacheMinReqTLSVersion
 
         if ($($RedisCacheSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Found [$($RedisCacheWithDefaultValue.count)] redis cache(s) of total count [$($validRedisCacheDetails.count)] where previous TLS Version was set to default." -ForegroundColor $([Constants]::MessageType.Error)
-            Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Error configuring TLS Version on following Redis Cache(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error configuring TLS Version on following Redis Cache(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Warning)
             
             $RedisCacheSkipped | Format-Table -Property $colsProperty -Wrap
             
@@ -866,6 +866,10 @@ function Reset-RedisCacheMinReqTLSVersion
             $RedisCacheSkipped | Export-CSV -Path $RedisCacheSkippedFile -NoTypeInformation
             Write-Host "This information has been saved to" -NoNewline
             Write-Host " [$($RedisCacheSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
+            Write-Host $([Constants]::SingleDashLine)
+
+            Write-Host "Note: TLS settings for [$($RedisCacheWithDefaultValue.count)] out of total count [$($validRedisCacheDetails.count)] is not configured for Redis cache resource(s) because TLS Version was previously set to default." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
         }
     }
 }
