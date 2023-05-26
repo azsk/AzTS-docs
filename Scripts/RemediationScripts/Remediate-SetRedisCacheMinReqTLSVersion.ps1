@@ -815,7 +815,7 @@ function Reset-RedisCacheMinReqTLSVersion
             else
             {
                 $RedisCacheWithDefaultValue += $RedisCache
-                Write-Host "Roll back failed for [$($_.ResourceName)] as 'PreviousMinimumTlsVersion' found to be empty. Skipping this resource." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Roll back failed for [$($_.ResourceName)] as 'PreviousMinimumTlsVersion' found to be empty. Skipping this resource." -ForegroundColor $([Constants]::MessageType.Warning)
                 $RedisCache.isMinTLSVersionRolledback = $false
                 $RedisCacheSkipped += $RedisCache
             }
