@@ -809,6 +809,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
                 }
     
                 $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression -afterHours 0 -afterMinutes $StartScopeResolverAfterMinutes -StartImmediatley $StartScopeResolverImmediatley
+                $settings["ScopeResolverTriggerConfigurations__ProcessEnabled"] = $true
 
                 # Update Scope resolver trigger procesor function app settings
                 $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
@@ -909,7 +910,7 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
 
         [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
         [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
-        [ValidateSet("CheckAMAPresence", "SkipAMAPresenceCheck")]
+        [ValidateSet("CheckForAMAPresence", "SkipAMAPresenceCheck")]
         $RemovalCondition,
 
         [switch]
@@ -984,8 +985,8 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
             if ($EnableRemovalPhase.IsPresent)
             {
                 $message = "MMA 'Removal' phase has been enabled."
-                $settings["RemovalCondition"] = $RemovalCondition
-                $settings["RemovalPhaseEnabled"] = $true
+                $settings["SchedulerConfigurations__ExtensionRemovalCondition"] = $RemovalCondition
+                $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = $true
                 $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartExtensionRemovalImmediatley
             }
             else {
