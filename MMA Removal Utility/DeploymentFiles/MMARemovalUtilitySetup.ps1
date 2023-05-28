@@ -731,6 +731,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
 
         [int]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
         $StartExtensionDiscoveryAfterMinutes,
 
         [switch]
@@ -809,7 +810,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
                 }
     
                 $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression -afterHours 0 -afterMinutes $StartScopeResolverAfterMinutes -StartImmediatley $StartScopeResolverImmediatley
-                $settings["ScopeResolverTriggerConfigurations__ProcessEnabled"] = $true
+                $settings["ScopeResolverTriggerConfigurations__ProcessEnabled"] = "true"
 
                 # Update Scope resolver trigger procesor function app settings
                 $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
@@ -824,7 +825,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
 
             if (-not $ConsolidatedSetup)
             {
-                Write-Host "Checking if WorkItemScheduler function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+                Write-Host "Checking if WorkItemScheduler function app [$($workItemSchedulerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
             }
                      
             $workItemSchedulerApp = Get-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
@@ -834,7 +835,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
                 return;
             }
             elseif (-not $ConsolidatedSetup){
-                Write-Host "WorkItemScheduler function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+                Write-Host "WorkItemScheduler function app [$($workItemSchedulerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
             }
                         
             #setup the current app settings
@@ -863,6 +864,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
             Write-Host "Successfully configured extension inventory scheduler trigger." -ForegroundColor $([Constants]::MessageType.Update)    
 
             if (-not $ConsolidatedSetup) {
+                Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Completed MMA Removal utility discovery phase trigger setup." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)    
                 Write-Host $([Constants]::DoubleDashLine)
@@ -986,12 +988,12 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
             {
                 $message = "MMA 'Removal' phase has been enabled."
                 $settings["SchedulerConfigurations__ExtensionRemovalCondition"] = $RemovalCondition
-                $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = $true
+                $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = "true"
                 $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartImmediately
             }
             else {
                 $message = "MMA 'Removal' phase has been disabled."
-                $settings["RemovalPhaseEnabled"] = $false
+                $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = "false"
             }
 
             Write-Host $message -ForegroundColor $([Constants]::MessageType.Warning) 
@@ -2024,8 +2026,10 @@ function Get-RecurringCronExpression ([int] $afterHours, [int] $afterMinutes, [b
     }
     else {
         $dateTime = $dateTime.AddHours($afterHours).AddMinutes($afterMinutes);
-        $dateTime = $dateTime.AddMinutes(60-$dateTime.Minute)
+        
     }
+
+    $dateTime = $dateTime.AddMinutes(60-$dateTime.Minute)
 
     $requiredMinuteGap = [math]::ceiling(($runAfterEveryMinutes * $frequency)/60);
     $endDateTime = $dateTime.AddHours($requiredMinuteGap-1);
