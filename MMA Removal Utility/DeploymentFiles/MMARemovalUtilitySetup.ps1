@@ -64,11 +64,6 @@ function Install-AzTSMMARemovalUtilitySolution {
         [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup")]
         $TemplateParameters = @{},
 
-        [switch]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage = "Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
-        $DisableUsageTelemetry = $false,
-
         [string]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
         [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
@@ -84,6 +79,7 @@ function Install-AzTSMMARemovalUtilitySolution {
         $ConsolidatedSetup = $false
     )
     Begin {
+        $DisableUsageTelemetry = $true
         $currentContext = $null
         $contextHelper = [ContextHelper]::new()
         $currentContext = $contextHelper.SetContext($SubscriptionId)
@@ -404,9 +400,9 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
             Write-Host "Granting user-assigned identity 'Reader' and 'Virtual Machine Contributor' permission on target scope(s)..." -ForegroundColor $([Constants]::MessageType.Info)         
             $targetSubscriptionCount = ($TargetSubscriptionIds | Measure-Object).Count
             $targetMgtGroupCount = ($TargetManagementGroupNames | Measure-Object).Count
+            $assignmentError = $false
             if ($targetSubscriptionCount -gt 0) {
                 $TargetSubscriptionIds | ForEach-Object {
-                    
                     try {
                         Write-Host "Assigning 'Reader' access to user-assigned managed identity on target subscription [$($_)]" -ForegroundColor $([Constants]::MessageType.Info)                        
                         $roleAssignment = New-AzRoleAssignment -ApplicationId $UserAssignedIdentity.ClientId -Scope "/subscriptions/$_" -RoleDefinitionName "Reader" -ErrorAction Stop
@@ -414,11 +410,10 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                     catch {
                         if ($_.Exception.Body.Code -eq "RoleAssignmentExists") {
                             Write-Host "$($_.Exception.Message)" -ForegroundColor $([Constants]::MessageType.Warning)
-                            
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                               
+                            $assignmentError = true
                         }
                     }
 
@@ -429,11 +424,10 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                     catch {
                         if ($_.Exception.Body.Code -eq "RoleAssignmentExists") {
                             Write-Host "$($_.Exception.Message)" -ForegroundColor $([Constants]::MessageType.Warning)
-                            
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                               
+                            $assignmentError = true
                         }
                     }
                 }
@@ -458,7 +452,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                               
+                            $assignmentError = true
                         }
                     }
 
@@ -473,10 +467,15 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                               
+                            $assignmentError = true
                         }
                     }
                 }
+            }
+            
+            if($assignmentError -eq $false)
+            {
+                Write-Host "Granted user-assigned identity 'Reader' and 'Virtual Machine Contributor' permission on target scope(s) successfully" -ForegroundColor $([Constants]::MessageType.Update)
             }
             
             if (-not(($targetSubscriptionCount -gt 0) -or ($targetMgtGroupCount -gt 0))) {
@@ -753,12 +752,14 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
             }
 
             # Step 2: Setting up monitoring dashboard.
+            $Timespan = "7d"
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName;
             $ResourceGroupIdHash = get-hash($ResourceId)
             $ResourceGroupIdHash = $ResourceGroupIdHash.Substring(0, 16).ToString().ToLower()
             $DashboardTemplatePath = ".\MMARemovalUtilityMonitoringDashboardTemplate.json"
             $DashboardTemplateReplacedPath = ".\MMARemovalUtilityMonitoringDashboardReplacedTemplate.json"
             $Content = Get-Content -Path $DashboardTemplatePath -Raw
+            $Content = $Content -replace '<timespanValue>', $Timespan
             $Content = $Content -replace '<laResourceId>', $laResourceId
             $Content = $Content -replace '<location>', $location
             $Content = $Content -replace '<dashboardName>', $dashboardName
@@ -779,6 +780,8 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
                 Write-Host "Monitoring Dashboard [$($DashboardName)] successfully created." -ForegroundColor $([Constants]::MessageType.Update)  
                 Write-Host $([Constants]::DoubleDashLine)
             }
+
+            $DeletedFile = Remove-Item -Path $DashboardTemplateReplacedPath
         }
         catch {
             Write-Host "Error occurred while setting up MMA Removal Utility monitoring dashboard. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
@@ -854,6 +857,12 @@ function Set-AzTSMMARemovalUtilitySolutionSecretStorage
 
             # Step 3: Deploy KV
             # Check if Key Vault already exist.
+
+            $ResourceId='/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId,$ResourceGroupName;
+            $ResourceIdHash = get-hash($ResourceId)
+            $ResourceHash = $ResourceIdHash.Substring(0,5).ToString().ToLower()
+            $KeyVaultName = "{0}-{1}" -f $KeyVaultName, $ResourceHash
+
             $keyVault = Get-AzKeyVault -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName -ErrorAction SilentlyContinue
             
             if ($null -ne $keyVault)
@@ -870,10 +879,6 @@ function Set-AzTSMMARemovalUtilitySolutionSecretStorage
             
             $secretName = "AzTSMMARemovalUtilityIdentityCredentials"
             $credentialSecureString = $AADAppPasswordCredential | ConvertTo-SecureString -AsPlainText -Force
-
-            $ResourceId='/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId,$ResourceGroupName;
-            $ResourceIdHash = get-hash($ResourceId)
-            $ResourceHash = $ResourceIdHash.Substring(0,5).ToString().ToLower()
 
             $validationResult = Test-AzResourceGroupDeployment -Mode Incremental `
                     -ResourceGroupName $ResourceGroupName  `
@@ -1528,6 +1533,7 @@ function Set-AzTSMMARemovalUtilityRunbook {
             $runbook = Import-AzAutomationRunbook -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $RunbookName -Path $UpdateDynamicIPAddressesScriptModifiedFilePath -Published -Type PowerShell -Force
             Start-Sleep -Seconds 10
             Write-Host "Runbook [$($RunbookName)] has been successfully created in the automation account [$($AutomationAccountName)]." -ForegroundColor $([Constants]::MessageType.Update)
+            $DeletedFile = Remove-Item -Path $UpdateDynamicIPAddressesScriptModifiedFilePath
             Write-Host $([Constants]::SingleDashLine)
 
             # Step 5: Triggering runbook.

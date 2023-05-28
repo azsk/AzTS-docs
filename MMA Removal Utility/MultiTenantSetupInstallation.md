@@ -2,7 +2,7 @@
 
 In this section, we will walk you through the steps for setting up multi-tenant AzTS MMA Removal Utility. This setup may take up to 30 minutes.
 
-Before initiating the setup please validate the prerequisites, download and extract deployment package using [Prerequisites](./Prerequisites.md).
+Before initiating the setup please validate the prerequisites, download and extract deployment package using the link [here](./Prerequisites.md).
 
 This setup is divided into nine steps:
 
@@ -18,21 +18,21 @@ This setup is divided into nine steps:
 
 Let's start!
 
-> _**Note:** Please validate the prerequisites [here](./Prerequisites.md). You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) and before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button. Extract the zip file and use **MMARemovalUtilitySetup.ps1** present in this package to run the commands mentioned in below steps_
+> _**Note: ** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
 
 <br/>
 
 ### **Step 1 of 9. Load setup script**
  
- 1. Point current path to deployment folder and load AzTS MMA Removal Utility setup script <br/>
+ 1. Point the current path to the folder containing the extracted deployment package and load the setup script for AzTS MMA Removal Utility <br/>
 
 
   ``` PowerShell
-  # Point current path to extracted folder location and load setup script from the deployment folder 
+  # Point current path to extracted folder location and then load the setup script from the deployment folder 
   CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
   # Load AzTS MMA Removal Utility Setup script in session
   . ".\MMARemovalUtilitySetup.ps1"
-  # Note: Make sure you copy  '.' present at the start of the line.
+  # Note: Make sure you copy '.' present at the start of the line.
   ```
 [Back to top…](#steps-to-install-multi-tenant-azts-mma-removal-utility)
 
@@ -43,7 +43,7 @@ Let's start!
 Az modules contain cmdlet to deploy Azure resources. These cmdlets are used to create AzTS MMA Removal Utility resources with the help of templates. Install the required Az PowerShell Modules using the below commands. 
 For more details of Az Modules refer [link](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps).
 
-Please make sure you point current path to extracted folder location and load setup script. <br/>
+Please make sure you point current path to extracted folder location and then load the setup script. <br/>
 
 ``` PowerShell
 # Install required modules
@@ -54,7 +54,7 @@ Set-Prerequisites
 <br/>
 
 ### **Step 3 of 9. Setup multi-tenant remediation identity**  
-In multi-tenant setup identity used is the Azure Acitve Directory (AAD) Application and authentication is driven across tenants via service principal associated to the AAD Application created.
+In multi-tenant setup identity used is the Azure Active Directory (AAD) Application and authentication is driven across tenants via service principal associated to the AAD Application created.
 
 As part of this step, AAD application is setup for the multi-tenant setup using the command AzTSMMARemovalUtilitySolutionMultiTenantRemediationIdentity.
 
@@ -85,22 +85,21 @@ $Identity = Set-AzTSMMARemovalUtilitySolutionMultiTenantRemediationIdentity `
          -DisplayName <AADAppDisplayName> `
          -ObjectId <PreExistingAADAppId> `
          -AdditionalOwnerUPNs @("<OwnerUPN1>","<OwnerUPN2>")
-# -----------------------------------------------------------------#
-# Identity applicationId, objectId, secret will be used in the following steps 
-# -----------------------------------------------------------------#
 
-# Identity properties
+# -----------------------------------------------------------------#
+# Identity applicationId, objectId, secret properties will be accessed in the execution of next steps 
+# -----------------------------------------------------------------#
 $Identity.ApplicationId
 $Identity.ObjectId
 $Identity.Secret
 ```
 
-**Parameter details:**
+**Parameter details: **
 |Param Name|Description|Required?
 |----|----|----|
 |DisplayName| Display Name of the Remediation Identity.| Yes|
 |ObjectId| Object Id of the Remediation Identity| No|
-|AdditionalOwnerUPNs| UserPrinicipalNames of the additional owners for the App to be created.| No|
+|AdditionalOwnerUPNs| User Prinicipal Names (UPNs) of the additional owners for the App to be created.| No|
 
 [Back to top…](#steps-to-install-multi-tenant-azts-mma-removal-utility)
 
@@ -129,23 +128,25 @@ $KeyVault = Set-AzTSMMARemovalUtilitySolutionSecretStorage `
          -Location <Location> `
          -KeyVaultName <KeyVaultName> `
          -AADAppPasswordCredential $Identity.Secret
+
 # -----------------------------------------------------------------#
-# Keyvault resourceId, secret uri, log analytics resourceId will be used in the following steps
+# Keyvault resourceId, secret uri, log analytics resourceId will be accessed in the execution of next steps 
+# -----------------------------------------------------------------#
+
 $KeyVault.Outputs.keyVaultResourceId.Value
 $KeyVault.Outputs.secretURI.Value
 $KeyVault.Outputs.logAnalyticsResourceId.Value
-# -----------------------------------------------------------------#
 
 ```
 
-**Parameter details:**
+**Parameter details: **
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which keyvault needs to be created.| Yes|
 |ResourceGroupName| Resource group name in which keyvault needs to be created (preferably in a RG different from where setup is going to be created).| Yes|
 |Location| Location in which keyvault needs to be created. For better performance, we recommend creating all the resources related setup in one location. Default value is 'EastUS2'| No|
 |KeyVaultName| Name of the Key Vault to be created.| Yes|
-|AADAppPasswordCredential| AzTS MMA Removal Utility Solution AAD Application's Password credentials..| Yes|
+|AADAppPasswordCredential| AzTS MMA Removal Utility solution AAD application's password credentials.| Yes|
 
 [Back to top…](#steps-to-install-multi-tenant-azts-mma-removal-utility)
 
@@ -176,16 +177,15 @@ $Solution = Install-AzTSMMARemovalUtilitySolution `
          -Location <Location> `
          -SupportMultipleTenant `
          -IdentityApplicationId $Identity.ApplicationId `
-         -IdentitySecretUri ('@Microsoft.KeyVault(SecretUri={0})' -f $KeyVault.Outputs.secretURI.Value) `
-         -DisableUsageTelemetry
+         -IdentitySecretUri ('@Microsoft.KeyVault(SecretUri={0})' -f $KeyVault.Outputs.secretURI.Value)
 
 # -----------------------------------------------------------------#
-# Internal MI object id will be used in the following steps
-$Solution.Outputs.internalMIObjectId.Value
+# Internal MI object id will be accessed in the execution of next steps
 # -----------------------------------------------------------------#
+$Solution.Outputs.internalMIObjectId.Value
 ```
 
-**Parameter details:**
+**Parameter details: **
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup needs to be created.| Yes|
@@ -194,7 +194,6 @@ $Solution.Outputs.internalMIObjectId.Value
 |SupportMultiTenant| Switch to support multi-tenant setup. Please note to use this switch in case of multi-tenant setup. | No|
 |IdentityApplicationId| AAD application Id.| Yes|
 |IdentitySecretUri| AAD application secret uri.| No|
-|DisableUsageTelemetry| DisableUsageTelemetry switch will not prompt for user preferences that captures usage data (stored in Microsoft servers). Avoiding this switch will help in improving the product quality and prioritize meaningfully on the highly used features.| No|
 
 [Back to top…](#steps-to-install-multi-tenant-azts-mma-removal-utility)
 
@@ -231,11 +230,11 @@ Grant-AzTSMMARemediationIdentityAccessOnKeyVault `
 
 ```
 
-**Parameter details:**
+**Parameter details: **
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup needs to be created.| Yes|
-|ResourceId| Resource Id of existing Key Vault.| Yes|
+|ResourceId| Resource Id of existing key vault.| Yes|
 |UserAssignedIdentityObjectId| Object id of user managed identity.| Yes|
 |SendAlertsToEmailIds| User email Ids to whom monitoring alert mails should be sent.| No, Yes if DeployMonitoringAlert switch is enabled.|
 |SecretUri| Key Vault SecretUri of the MMA Removal Utility solution App's credentials.| No, Yes if DeployMonitoringAlert switch is enabled.|
@@ -274,7 +273,7 @@ Set-AzTSMMARemovalUtilityRunbook `
 
 ```
 
-**Parameter details:**
+**Parameter details: **
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which automation account and key vault are present.| Yes|
@@ -295,7 +294,7 @@ The AzTS MMA Removal Utility solution works in 2 phases:
 2. Removes MMA Extensions from the eligible VMs for which setup requires ***Virtual Machine Contributor*** access on the scopes being configured. Scopes Configured can be a Tenant/ManagementGroup(s)/Subscription(s) or both ManagementGroup(s) and Subscription(s).
 
 > _Note:_
-> 1. _For granting SPN with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configurged scopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the SPN with the required permissions._
+> 1. _For granting SPN with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configured scopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the SPN with the required permissions._
 >
 
 For each tenant, perform the below steps and make sure you have enough permissions on the other tenant for creating SPNs.
@@ -317,7 +316,7 @@ Grant-AzSKAzureRoleToMultiTenantIdentitySPN -AADIdentityObjectId $SPN.ObjectId `
 
 ```
 
-**Parameter details:**
+**Parameter details: **
 For Set-AzSKTenantSecuritySolutionMultiTenantIdentitySPN,
 
 |Param Name|Description|Required?
@@ -350,7 +349,7 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -ScopesFilePath <ScopesFilePath>
 ```
 
-**Parameter details:**
+**Parameter details: **
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup is installed.| Yes|

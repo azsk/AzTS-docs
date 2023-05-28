@@ -20,9 +20,7 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         Azure ARM template path used to deploy MMA Removal Utility Solution.
     .PARAMETER TemplateParameters
         Azure ARM template parameters used to deploy MMA Removal Utility Solution.
-    .PARAMETER DisableUsageTelemetry
-        When DisableUsageTelemetry switch is not used, usage telemetry captures usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.
-	.LINK
+   .LINK
 	    https://aka.ms/azts-mmaremovalutility
 	#>
     Param(
@@ -78,11 +76,6 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         [Parameter(Mandatory = $false, ParameterSetName = "TenantScope")]
         $TemplateParameters = @{},
 
-        [switch]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "TenantScope", HelpMessage = "Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.")]
-        $DisableUsageTelemetry = $false,
-
         [string]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
         [Parameter(Mandatory = $false, ParameterSetName = "TenantScope", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
@@ -96,6 +89,7 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
 
     )
     Begin {
+        $DisableUsageTelemetry = $true
         $currentContext = $null
         $contextHelper = [ContextHelper]::new()
         $currentContext = $contextHelper.SetContext($RemediationIdentityHostSubId)

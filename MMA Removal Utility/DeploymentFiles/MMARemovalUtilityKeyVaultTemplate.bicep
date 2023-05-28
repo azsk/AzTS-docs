@@ -42,7 +42,7 @@ var laWorkspaceName = 'MMARemovalUtility-LAWSForAuditing-${resourceHash}'
 var diagnosticSettingsName = 'MMARemovalUtility-AuditSetting-${resourceHash}'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
-  name: '${keyVaultName}-${resourceHash}'
+  name: keyVaultName
   location: location
   tags: {
     AzTSMMARemovalUtilityIdentifier: resourceHash
