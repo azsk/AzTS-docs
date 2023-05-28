@@ -894,7 +894,7 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         $ResourceGroupName,
 
         [int]
@@ -964,17 +964,17 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
 
             if (-not $ConsolidatedSetup)
             {
-                Write-Host "Checking if WorkItemScheduler function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+                Write-Host "Checking if WorkItemScheduler function app [$($workItemSchedulerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
             }
                      
             $workItemSchedulerApp = Get-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
             if ($null -eq $workItemSchedulerApp) {
-                Write-Host "`n`rFailed to get WorkItemScheduler function app [$($ScopeResolverTriggerProcessorName)]." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`n`rFailed to get WorkItemScheduler function app [$($workItemSchedulerAppName)]." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
                 return;
             }
             elseif (-not $ConsolidatedSetup){
-                Write-Host "WorkItemScheduler function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+                Write-Host "WorkItemScheduler function app [$($workItemSchedulerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
             }
                         
             #setup the current app settings
@@ -989,7 +989,7 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
                 $message = "MMA 'Removal' phase has been enabled."
                 $settings["SchedulerConfigurations__ExtensionRemovalCondition"] = $RemovalCondition
                 $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = "true"
-                $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartImmediately
+                $settings["ExtensionRemovalSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartImmediately
             }
             else {
                 $message = "MMA 'Removal' phase has been disabled."

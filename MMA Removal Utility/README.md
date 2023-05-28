@@ -110,7 +110,7 @@ Removal phase is disabled by default. Users need to enable/schedule it after val
 # Enable and Schedule Removal phase
 # -----------------------------------------------------------------#
 
-Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
     -StartAfterMinutes 60 `
@@ -148,7 +148,7 @@ Update-AzTSMMARemovalUtilityRemovalTrigger `
 Update-AzTSMMARemovalUtilityRemovalTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
-    -StartAfterMinutes 30`
+    -StartAfterMinutes 30 `
     -EnableRemovalPhase
 
 # -----------------------------------------------------------------#
