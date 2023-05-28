@@ -90,7 +90,7 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
     -StartExtensionDiscoveryAfterMinutes 60 
 
 # -----------------------------------------------------------------#
-# Example #3: Trigger second step of discovery as soon as possible. (Recommneded only when first step of discovery phase is completed.) 
+# Example #3: Trigger second step of discovery as soon as possible. (Recommended only when first step of discovery phase is completed.) 
 # -----------------------------------------------------------------#
 
 Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
@@ -163,7 +163,7 @@ Update-AzTSMMARemovalUtilityRemovalTrigger `
     -RemovalCondition 'SkipAMAPresenceCheck'
 
 # -----------------------------------------------------------------#
-# Example #4: Disbale removal phase.  
+# Example #4: Disable removal phase.  
 # -----------------------------------------------------------------#
 
 Update-AzTSMMARemovalUtilityRemovalTrigger ` 
