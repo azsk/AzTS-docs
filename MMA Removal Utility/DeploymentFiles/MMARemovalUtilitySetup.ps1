@@ -901,17 +901,17 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
 
         [switch]
         [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Start MMA extension removal process immediately.")]
-        $StartExtensionRemovalImmediatley,
+        $StartImmediately,
 
         [switch]
         [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Switch to enable removal phase.")]
         [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Switch to enable removal phase.")]
         $EnableRemovalPhase,
 
-        [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Enabled", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
         [ValidateSet("CheckForAMAPresence", "SkipAMAPresenceCheck")]
-        $RemovalCondition,
+        $RemovalCondition = 'CheckForAMAPresence',
 
         [switch]
         [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Switch to disable removal phase.")]
@@ -987,7 +987,7 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
                 $message = "MMA 'Removal' phase has been enabled."
                 $settings["SchedulerConfigurations__ExtensionRemovalCondition"] = $RemovalCondition
                 $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = $true
-                $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartExtensionRemovalImmediatley
+                $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartImmediately
             }
             else {
                 $message = "MMA 'Removal' phase has been disabled."

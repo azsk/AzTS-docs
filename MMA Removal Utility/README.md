@@ -99,6 +99,79 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
     -StartExtensionDiscoveryImmediatley 
 
 ```
+### Schedule or Trigger Removal phase
+Removal phase is disabled by default. Users need to enable/schedule it after validating the inventory of VMs list prepared in the Discovery phase. Command **Update-AzTSMMARemovalUtilityRemovalTrigger** can be used to:
+
+1. Enable/disable removal phase
+2. Trigger/Schedule removal phase
+
+``` PowerShell
+# -----------------------------------------------------------------#
+# Enable and Schedule Removal phase
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartAfterMinutes 60 `
+    -EnableRemovalPhase `
+    -RemovalCondition 'CheckForAMAPresence'
+
+```
+**Parameter details:**
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId| Subscription id where AzTS MMA Removal Utility solution is installed. | Yes|
+|ResourceGroupName| Name of ResourceGroup where AzTS MMA Removal Utility solution is installed.| Yes|
+|StartAfterMinutes| Time interval in minutes after which removal phase should be triggered.| Yes (Mutually exclusive with param '-StartImmediately')|
+|StartImmediately| Switch to trigger removal phase immediately. Removal phase will get started as soon as possible.| Yes (Mutually exclusive with param '-StartAfterMinutes')|
+|EnableRemovalPhase| Switch to 'Enable' removal phase.| Yes (Mutually exclusive with param '-DisableRemovalPhase')|
+|RemovalCondition | Configure when MMA extension should be removed. Possible values, </br>ChgeckForAMAPresence (Remove MMA extension when AMA extension already present) </br> SkipAMAPresenceCheck (Remove MMA extension irrespective of whether AMA extension is present or not) | No |
+|DisableRemovalPhase | Switch to 'Disable' removal phase.| Yes (Mutually exclusive with param '-EnableRemovalPhase')|
+
+**Examples:**
+``` PowerShell
+# -----------------------------------------------------------------#
+# Example #1: Enable and trigger removal phase as soon as possible.
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartImmediately `
+    -EnableRemovalPhase
+
+# -----------------------------------------------------------------#
+# Example #2: Enable and schedule removal phase trigger. 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartAfterMinutes 30`
+    -EnableRemovalPhase
+
+# -----------------------------------------------------------------#
+# Example #3: Enable and specify removal condition to remove MMA extension irrespective of whether AMA extension is present or not.  
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartImmediately `
+    -EnableRemovalPhase `
+    -RemovalCondition 'SkipAMAPresenceCheck'
+
+# -----------------------------------------------------------------#
+# Example #4: Disbale removal phase.  
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -DisableRemovalPhase 
+
+```
 
 ## FAQs
 
