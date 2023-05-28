@@ -33,6 +33,73 @@ Users also have the option to run this phase on VMs which have just MMA agents (
 
 Please follow the steps provided [here](./SingleTenantSetupInstallation.md), to install and configure AzTS MMA Discovery and Removal utility.
 
+## Schedule or Trigger
+
+Once the installation is completed, users can choose to either run the 'Discovery phase' immediately or schedule it to run after specific time interval.
+
+Similarly once 'Discovery phase' is completed, users can choose to either trigger 'Removal phase' immediately or schedule it to run after specific time interval.
+
+### Schedule or Trigger Discovery phase
+Discovery phase is disabled by default, users need to enable and schedule it using the command **Update-AzTSMMARemovalUtilityDiscoveryTrigger**.
+
+
+> **Note:** Please validate the prerequisites [here](./Prerequisites.md). You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) and before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button. Extract the zip file and use **MMARemovalUtilityDeletionScript.ps1** present in this package to run the commands mentioned in below section.
+
+``` PowerShell
+# -----------------------------------------------------------------#
+# Schedule Discovery phase
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartScopeResolverAfterMinutes 60 `
+    -StartExtensionDiscoveryAfterMinutes 30 
+
+```
+**Parameter details:**
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId| Subscription id where AzTS MMA Removal Utility solution is installed. | Yes|
+|ResourceGroupName| Name of ResourceGroup where AzTS MMA Removal Utility solution is installed.| Yes|
+|StartScopeResolverAfterMinutes| Time interval in minutes after which discovery phase should be triggered.| Yes (Mutually exclusive with param '-StartScopeResolverImmediatley')|
+|StartScopeResolverImmediatley| Switch to trigger discovery phase immediately. Discovery phase will get started in next 2-3 minutes.| Yes (Mutually exclusive with param '-StartScopeResolverAfterMinutes')|
+|StartExtensionDiscoveryAfterMinutes| Time interval in minutes after which second step (extensions discovery) of discovery phase should be triggered post first step is triggered.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryImmediatley')|
+|StartExtensionDiscoveryImmediatley | Switch to trigger second step (extensions discovery) of discovery phase immediately.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryAfterMinutes')|
+
+**Examples:**
+``` PowerShell
+# -----------------------------------------------------------------#
+# Example #1: Trigger discovery phase (first step) immediately and second step after 30 minutes. 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartScopeResolverImmediatley `
+    -StartExtensionDiscoveryAfterMinutes 30 
+
+# -----------------------------------------------------------------#
+# Example #2: Schedule discovery phase (first step) for after 30 mins and second step after 60 minutes. 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartScopeResolverAfterMinutes 30 `
+    -StartExtensionDiscoveryAfterMinutes 60 
+
+# -----------------------------------------------------------------#
+# Example #3: Trigger second step of discovery as soon as possible. (Recommneded only when first step of discovery phase is completed.) 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartExtensionDiscoveryImmediatley 
+
+```
+
 ## FAQs
 
 ### **1. At what scope(s) can the AzTS MMA Discovery and Removal utility run?** 
