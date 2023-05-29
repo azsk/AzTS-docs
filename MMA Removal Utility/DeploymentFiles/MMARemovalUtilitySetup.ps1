@@ -184,12 +184,14 @@ function Install-AzTSMMARemovalUtilitySolution {
         Write-Host "Checking if user-assigned identity [$($InternalUserAssignedIdentityName)] for internal operations exists..." -ForegroundColor $([Constants]::MessageType.Info)            
         $UserAssignedIdentity = Get-AzUserAssignedIdentity -ResourceGroupName $HostRGName -Name $InternalUserAssignedIdentityName -ErrorAction SilentlyContinue
         if ($null -eq $UserAssignedIdentity) {
-            Write-Host "Creating a new user-assigned identity [$($InternalUserAssignedIdentityName)]." -ForegroundColor $([Constants]::MessageType.Info)                
+            Write-Host "User-assigned identity [$($InternalUserAssignedIdentityName)] does not exist." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Creating a new user-assigned identity [$($InternalUserAssignedIdentityName)]..." -ForegroundColor $([Constants]::MessageType.Info)                
             $UserAssignedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $HostRGName -Name $InternalUserAssignedIdentityName -Location $Location
             Start-Sleep -Seconds 60
+            Write-Host "Successfully created the user-assigned identity [$($InternalUserAssignedIdentityName)]." -ForegroundColor $([Constants]::MessageType.Update) 
         }
         else {
-            Write-Host "User-assigned identity [$($InternalUserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)                            
+            Write-Host "User-assigned identity [$($InternalUserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Update)                            
         }
 
 
@@ -293,15 +295,17 @@ function Install-AzTSMMARemovalUtilitySolution {
                 Write-Host "Skipped monitoring dashboard installation as Log Analytics workspace not deployed." -ForegroundColor $([Constants]::MessageType.Warning)
             }
             
+            Write-Host "$([Constants]::SingleDashLine)"
+
             if ($ConsolidatedSetup -ne $true) {
                 Write-Host "`rCompleted installation for MMA Removal Utility Solution." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host "$([Constants]::DoubleDashLine)" #-ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host "$([Constants]::NextSteps -f $UIUrl)" -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "$([Constants]::DoubleDashLine)"
+                Write-Host "$([Constants]::NextSteps)" -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host "$([Constants]::DoubleDashLine)"
             }
             else {
                 Write-Host "`rCompleted installation for MMA Removal Utility Solution." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host "$([Constants]::SingleDashLine)"
+                Write-Host "$([Constants]::DoubleDashLine)"
             }
         }
         catch {
@@ -389,12 +393,14 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
             Write-Host "Checking if user-assigned identity [$($UserAssignedIdentityName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)            
             $UserAssignedIdentity = Get-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $UserAssignedIdentityName -ErrorAction SilentlyContinue
             if ($null -eq $UserAssignedIdentity) {
+                Write-Host "User-assigned identity [$($UserAssignedIdentityName)] does not exist." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "Creating a new user-assigned identity [$($UserAssignedIdentityName)]." -ForegroundColor $([Constants]::MessageType.Info)                
                 $UserAssignedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $UserAssignedIdentityName -Location $Location
                 Start-Sleep -Seconds 60
+                Write-Host "Successfully created the user-assigned identity [$($UserAssignedIdentityName)]." -ForegroundColor $([Constants]::MessageType.Update) 
             }
             else {
-                Write-Host "User-assigned identity [$($UserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)                            
+                Write-Host "User-assigned identity [$($UserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Update)                            
             }
             
             # Grant User Identity Reader permission on target subscription(s).
@@ -476,16 +482,15 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
             
             if($assignmentError -eq $false)
             {
-                Write-Host "Granted user-assigned identity 'Reader' and 'Virtual Machine Contributor' permission on target scope(s) successfully" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Granted user-assigned identity 'Reader' and 'Virtual Machine Contributor' permission on target scope(s) successfully." -ForegroundColor $([Constants]::MessageType.Update)
             }
             
             if (-not(($targetSubscriptionCount -gt 0) -or ($targetMgtGroupCount -gt 0))) {
                 Write-Host "No target subscription or management group or tenant scope specified." -ForegroundColor $([Constants]::MessageType.Warning)            
             }       
 
-            Write-Host "Completed MMA Removal utility identity setup." -ForegroundColor $([Constants]::MessageType.Update)
-
-            Write-Host $([Constants]::SingleDashLine)    
+            Write-Host $([Constants]::SingleDashLine)
+            Write-Host "Completed MMA Removal utility identity setup." -ForegroundColor $([Constants]::MessageType.Update)    
             Write-Host $([Constants]::DoubleDashLine)
 
             return $UserAssignedIdentity;
@@ -583,6 +588,7 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
                 return;
             }
             else {
+                Write-Host "ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] is available." -ForegroundColor $([Constants]::MessageType.Update) 
                 $configuredScopes = $ScopeResolverTriggerApp.SiteConfig.AppSettings | Where-Object { $_.Name -like 'ScopeResolverTriggerConfigurations__DiscoveryScopes__*' } 
                 if (($configuredScopes | Measure-Object).Count -gt 0) {
                     $configuredScopeIds = $configuredScopes | Where-Object { $_.Name -like 'ScopeResolverTriggerConfigurations__DiscoveryScopes__*__ScopeId' } | Select-Object "Value"
@@ -682,14 +688,17 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
             # Update Scope resolver trigger procesor function app settings
             if ($anyUniqueScopes) {
                 $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+                Write-Host "Target scope(s) configured successfully." -ForegroundColor $([Constants]::MessageType.Update) 
             }
             else {
                 Write-Host "`r`nAll provided scope(s) as input are already present, no new scope(s) will be added.`r`n" -ForegroundColor $([Constants]::MessageType.Warning) 
             }
 
             if (-not $ConsolidatedSetup) {
+                Write-Host $([Constants]::SingleDashLine)  
                 Write-Host "Completed MMA Removal utility scope(s) configuration." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)    
+                Write-Host $([Constants]::DoubleDashLine)
+                $logger.PublishCustomMessage("$([Constants]::NextSteps)", $([Constants]::MessageType.Info))
                 Write-Host $([Constants]::DoubleDashLine)
                 return; 
             }
@@ -815,7 +824,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
                 # Update Scope resolver trigger procesor function app settings
                 $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
     
-                Write-Host "Successfully configured scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
+                Write-Host "Successfully scheduled scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
             }
             
             # Grant User Identity Reader permission on target subscription(s).
@@ -861,12 +870,11 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
             # Update Work Item Scheduler procesor function app settings
             $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
 
-            Write-Host "Successfully configured extension inventory scheduler trigger." -ForegroundColor $([Constants]::MessageType.Update)    
+            Write-Host "Successfully scheduled extension inventory scheduler trigger." -ForegroundColor $([Constants]::MessageType.Update)    
 
             if (-not $ConsolidatedSetup) {
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Completed MMA Removal utility discovery phase trigger setup." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)    
                 Write-Host $([Constants]::DoubleDashLine)
                 return; 
             }
@@ -1006,7 +1014,6 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
             if (-not $ConsolidatedSetup) {
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Completed MMA Removal utility removal phase trigger." -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)    
                 Write-Host $([Constants]::DoubleDashLine)
                 return; 
             }
@@ -1093,12 +1100,10 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
             Write-Host "Setting up monitoring dashboard [$($DashboardName)]..." -ForegroundColor $([Constants]::MessageType.Info)   
 
             $MonitoringDashboard = Set-AzPortalDashboard @DashboardParams   
-            if (-not $ConsolidatedSetup) {
-                Write-Host "Monitoring Dashboard [$($DashboardName)] successfully created." -ForegroundColor $([Constants]::MessageType.Update)  
-                Write-Host $([Constants]::DoubleDashLine)
-            }
-
             $DeletedFile = Remove-Item -Path $DashboardTemplateReplacedPath
+
+            Write-Host "Completed setting up the monitoring dashboard [$($DashboardName)] successfully." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine)
         }
         catch {
             Write-Host "Error occurred while setting up MMA Removal Utility monitoring dashboard. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
@@ -1225,7 +1230,7 @@ function Set-AzTSMMARemovalUtilitySolutionSecretStorage
                                                                 -ResourceHash $ResourceHash `
                                                                 -location $Location `
 
-                Write-Host "Completed AzTS MMA Removal Utility Solution secret storage setup." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Completed AzTS MMA Removal Utility Solution secret storage setup." -ForegroundColor $([Constants]::MessageType.Green)
 
                 Write-Host $([Constants]::SingleDashLine)    
                 Write-Host ([constants]::KeyVaultSecretStoreSetupNextSteps) -ForegroundColor $([Constants]::MessageType.Info)
@@ -1272,7 +1277,7 @@ function Set-AzTSMMARemovalUtilitySolutionMultiTenantRemediationIdentity
             Write-Host "Checking if Azure AD application [$($displayName)] already exist..." -ForegroundColor $([Constants]::MessageType.Info)
             $aadApp = Get-AzureADApplication -SearchString $displayName
             if (!$aadApp) {
-
+                Write-Host "Azure AD application [$($displayName)] does not exist." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host "Creating new AD application [$($displayName)]..." -ForegroundColor $([Constants]::MessageType.Info)
                 # create new application
                 $aadApp = New-AzureADApplication -DisplayName $displayName -AvailableToOtherTenants $true
@@ -1280,12 +1285,12 @@ function Set-AzTSMMARemovalUtilitySolutionMultiTenantRemediationIdentity
             }
             elseif(($aadApp | Measure-Object).Count -gt 1)
             {
-                Write-Host "Multiple AD application with display name [$($displayName)] exists in AAD.`n Either choose different name to create new AAD app or provide Object Id of App as input to use existing App." -ForegroundColor $([Constants]::MessageType.error)
+                Write-Host "Multiple Azure AD application with display name [$($displayName)] exists in AAD.`n Either choose different name to create new AAD app or provide Object Id of App as input to use existing App." -ForegroundColor $([Constants]::MessageType.error)
                 return;
             }
             else
             {
-                Write-Host "AD application [$($displayName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Azure AD application [$($displayName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)
             }
 
         }
@@ -2119,26 +2124,23 @@ class Constants {
     static [string] $InstallSolutionInstructionMsg = "This command will perform following important operations. It will:`r`n`n" + 
     "   [1] Create resources needed to support AzTS MMA Removal Utility `r`n" +
     "   [2] Deploy packages to azure function app `r`n" +
-    "   [3] Schedule daily discovery and removal schedules `r`n" +
-    "   [4] Deploy monitoring dashboard to view progress `r`n" +
+    "   [3] Deploy monitoring dashboard to view progress `r`n" +
     "More details about resources created can be found in the link: http://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $QuickInstallSolutionInstructionMsg = "This command will perform following major steps. It will:`r`n`n" + 
     "   [0] Validate and install required Az modules (Optional) `r`n" +
     "   [1] Setup central remediation managed identity `r`n" +
     "   [2] Create resources needed to support AzTS MMA Removal Utility `r`n" +
-    "   [3] Deploy packages to azure function app `r`n" +
-    "   [4] Schedule daily discovery and removal schedules `r`n" +
-    "   [5] Deploy monitoring dashboard to view progress `r`n" +
+    "   [3] Schedule daily discovery and removal schedules `r`n" +
+    "   [4] Deploy monitoring dashboard to view progress `r`n" +
     "More details about resources created can be found in the link: http://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $DoubleDashLine = "================================================================================"
     static [string] $SingleDashLine = "--------------------------------------------------------------------------------"
     
     static [string] $NextSteps = "** Next steps **`r`n" + 
-    "        a) AzTS MMA Removal Utility discovery phase will start on scheduled time (UTC 01:00).`r`n" +
-    "        b) After scan completion, all Subscriptions/Virtual Machines/VM Extensions inventory will be available in LA workspace.`r`n" +
-    "        c) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
+    "        a) AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned at http://aka.ms/AzTS/ScheduleMMARemovalUtility.`r`n" +
+    "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
     "`r`nFor any feedback contact us at: azsksup@microsoft.com.`r`n"
 
     static [string] $KeyVaultSecretStoreSetupNextSteps = "** Next steps **`r`n" + 

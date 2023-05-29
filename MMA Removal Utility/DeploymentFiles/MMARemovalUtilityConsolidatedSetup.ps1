@@ -107,7 +107,7 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         $logger = [Logger]::new($SubscriptionId)
         $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Install-MMARemovalUtilitySolutionConsolidated  `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
         $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-        $logger.PublishCustomMessage("Starting AzTS MMA Removal Utility Solution installation. This may take 5-10 mins...", $([Constants]::MessageType.Info))
+        $logger.PublishCustomMessage("Starting AzTS MMA Removal Utility solution installation. This may take 5-10 mins...", $([Constants]::MessageType.Info))
         $logger.PublishCustomMessage($($([Constants]::QuickInstallSolutionInstructionMsg)), $([Constants]::MessageType.Info))
         $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
         
@@ -230,14 +230,17 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
 
         if ($response)
         {
-            $logger.PublishCustomMessage("Completed MMA Removal utility scope(s) configuration.", $([Constants]::MessageType.Info))
-            $logger.PublishCustomMessage("$([Constants]::NextSteps -f $UIUrl)", $([Constants]::MessageType.Info))
+            $logger.PublishCustomMessage("Completed MMA Removal utility scope(s) configuration.", $([Constants]::MessageType.Update))
+            $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
+            $logger.PublishCustomMessage("Completed AzTS MMA Removal Utility solution installation successfully.", $([Constants]::MessageType.Update))
+            $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
+            $logger.PublishCustomMessage("$([Constants]::NextSteps)", $([Constants]::MessageType.Info))
         }
         else {
             $logger.PublishLogMessage("Error occurred while configuring MMA Removal utility scope(s).")
         }
 
-        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
+        $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
 
         $logger.PublishLogFilePath()
 

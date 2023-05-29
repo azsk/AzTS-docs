@@ -33,7 +33,7 @@
 
   4. Bicep installation:  
 
-      To run bicep-based deployment scripts as part of infra setup, a bicep installation is required. Verify if bicep is installed by running below and install if not already available:
+      To run bicep-based deployment scripts as part of infra setup, a bicep installation is required. Verify if bicep is installed by running **bicep --version** and install if not already available:
 
       ![Bicep Version](../Images/00_PS_Bicep_Version.png)
 

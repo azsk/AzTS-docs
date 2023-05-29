@@ -96,7 +96,7 @@ $Identity = Set-AzTSMMARemovalUtilitySolutionRemediationIdentity `
          -Location <Location> `
          -TargetSubscriptionIds @("<SubId1>","<SubId2>","<SubId3>") `
          -TargetManagementGroupNames @("<MGName1>","<MGName2>","<MGName3>") `
-         -TenantScope
+        [-TenantScope]
 
 # -----------------------------------------------------------------#
 # Identity resource id will be accessed in the execution of next steps 
@@ -172,7 +172,7 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -ResourceGroupName <HostingRGName> `
          -TargetSubscriptionIds @("<SubId1>","<SubId2>","<SubId3>") `
          -TargetManagementGroupNames @("<MGName1>","<MGName2>","<MGName3>") `
-         -TenantScope
+         [-TenantScope]
 ```
 
 **Parameter details:**
@@ -188,6 +188,9 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
 
 <br/>
 
+> _**Note:** AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned [here](./README.md#schedule-or-trigger)._
+
+<br/>
 ___________________________________________________________________
 
 ## **Method B:**
@@ -289,5 +292,9 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolutionConsolidated `
 |AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud. Default value is 'AzureCloud'| No|
 
 [Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
+
+<br/>
+
+> _**Note:** AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned [here](./README.md#schedule-or-trigger)._
 
 <br/>

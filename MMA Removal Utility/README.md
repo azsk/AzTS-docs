@@ -31,7 +31,7 @@ Users also have the option to run this phase on VMs which have just MMA agents (
 
 ## Installation
 
-Please follow the steps provided [here](./SingleTenantSetupInstallation.md), to install and configure AzTS MMA Discovery and Removal utility.
+For the single-tenant setup, please refer [here](./SingleTenantSetupInstallation.md) and for the multi-tenant setup, please refer [here](./MultiTenantSetupInstallation.md), to install and configure AzTS MMA Discovery and Removal utility.
 
 ## Schedule or Trigger
 

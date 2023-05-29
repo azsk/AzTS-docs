@@ -358,3 +358,7 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
 [Back to top…](#steps-to-install-multi-tenant-azts-mma-removal-utility)
 
 <br/>
+
+> _**Note:** AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned [here](./README.md#schedule-or-trigger)._
+
+<br/>
