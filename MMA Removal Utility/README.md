@@ -33,6 +33,146 @@ Users also have the option to run this phase on VMs which have just MMA agents (
 
 Please follow the steps provided [here](./SingleTenantSetupInstallation.md), to install and configure AzTS MMA Discovery and Removal utility.
 
+## Schedule or Trigger
+
+Once the installation is completed, users can choose to either run the 'Discovery phase' immediately or schedule it to run after specific time interval.
+
+Similarly once 'Discovery phase' is completed, users can choose to either trigger 'Removal phase' immediately or schedule it to run after specific time interval.
+
+### Schedule or Trigger Discovery phase
+Discovery phase is disabled by default, users need to enable and schedule it using the command **Update-AzTSMMARemovalUtilityDiscoveryTrigger**.
+
+
+> **Note:** Please validate the prerequisites [here](./Prerequisites.md). You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) and before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button. Extract the zip file and use **MMARemovalUtilityDeletionScript.ps1** present in this package to run the commands mentioned in below section.
+
+``` PowerShell
+# -----------------------------------------------------------------#
+# Schedule Discovery phase
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartScopeResolverAfterMinutes 60 `
+    -StartExtensionDiscoveryAfterMinutes 30 
+
+```
+**Parameter details:**
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId| Subscription id where AzTS MMA Removal Utility solution is installed. | Yes|
+|ResourceGroupName| Name of ResourceGroup where AzTS MMA Removal Utility solution is installed.| Yes|
+|StartScopeResolverAfterMinutes| Time interval in minutes after which discovery phase should be triggered.| Yes (Mutually exclusive with param '-StartScopeResolverImmediatley')|
+|StartScopeResolverImmediatley| Switch to trigger discovery phase immediately. Discovery phase will get started in next 2-3 minutes.| Yes (Mutually exclusive with param '-StartScopeResolverAfterMinutes')|
+|StartExtensionDiscoveryAfterMinutes| Time interval in minutes after which second step (extensions discovery) of discovery phase should be triggered post first step is triggered.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryImmediatley')|
+|StartExtensionDiscoveryImmediatley | Switch to trigger second step (extensions discovery) of discovery phase immediately.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryAfterMinutes')|
+
+**Examples:**
+``` PowerShell
+# -----------------------------------------------------------------#
+# Example #1: Trigger discovery phase (first step) immediately and second step after 30 minutes. 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartScopeResolverImmediatley `
+    -StartExtensionDiscoveryAfterMinutes 30 
+
+# -----------------------------------------------------------------#
+# Example #2: Schedule discovery phase (first step) for after 30 mins and second step after 60 minutes. 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartScopeResolverAfterMinutes 30 `
+    -StartExtensionDiscoveryAfterMinutes 60 
+
+# -----------------------------------------------------------------#
+# Example #3: Trigger second step of discovery as soon as possible. (Recommended only when first step of discovery phase is completed.) 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartExtensionDiscoveryImmediatley 
+
+```
+### Schedule or Trigger Removal phase
+Removal phase is disabled by default. Users need to enable/schedule it after validating the inventory of VMs list prepared in the Discovery phase. Command **Update-AzTSMMARemovalUtilityRemovalTrigger** can be used to:
+
+1. Enable/disable removal phase
+2. Trigger/Schedule removal phase
+
+``` PowerShell
+# -----------------------------------------------------------------#
+# Enable and Schedule Removal phase
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartAfterMinutes 60 `
+    -EnableRemovalPhase `
+    -RemovalCondition 'CheckForAMAPresence'
+
+```
+**Parameter details:**
+|Param Name|Description|Required?
+|----|----|----|
+|SubscriptionId| Subscription id where AzTS MMA Removal Utility solution is installed. | Yes|
+|ResourceGroupName| Name of ResourceGroup where AzTS MMA Removal Utility solution is installed.| Yes|
+|StartAfterMinutes| Time interval in minutes after which removal phase should be triggered.| Yes (Mutually exclusive with param '-StartImmediately')|
+|StartImmediately| Switch to trigger removal phase immediately. Removal phase will get started as soon as possible.| Yes (Mutually exclusive with param '-StartAfterMinutes')|
+|EnableRemovalPhase| Switch to 'Enable' removal phase.| Yes (Mutually exclusive with param '-DisableRemovalPhase')|
+|RemovalCondition | Configure when MMA extension should be removed. Possible values, </br>ChgeckForAMAPresence (Remove MMA extension when AMA extension already present) </br> SkipAMAPresenceCheck (Remove MMA extension irrespective of whether AMA extension is present or not) | No |
+|DisableRemovalPhase | Switch to 'Disable' removal phase.| Yes (Mutually exclusive with param '-EnableRemovalPhase')|
+
+**Examples:**
+``` PowerShell
+# -----------------------------------------------------------------#
+# Example #1: Enable and trigger removal phase as soon as possible.
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartImmediately `
+    -EnableRemovalPhase
+
+# -----------------------------------------------------------------#
+# Example #2: Enable and schedule removal phase trigger. 
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartAfterMinutes 30 `
+    -EnableRemovalPhase
+
+# -----------------------------------------------------------------#
+# Example #3: Enable and specify removal condition to remove MMA extension irrespective of whether AMA extension is present or not.  
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -StartImmediately `
+    -EnableRemovalPhase `
+    -RemovalCondition 'SkipAMAPresenceCheck'
+
+# -----------------------------------------------------------------#
+# Example #4: Disable removal phase.  
+# -----------------------------------------------------------------#
+
+Update-AzTSMMARemovalUtilityRemovalTrigger ` 
+    -SubscriptionId <HostingSubId> `
+    -ResourceGroupName <HostingRGName> `
+    -DisableRemovalPhase 
+
+```
+
 ## FAQs
 
 ### **1. At what scope(s) can the AzTS MMA Discovery and Removal utility run?** 
