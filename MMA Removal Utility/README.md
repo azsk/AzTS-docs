@@ -227,7 +227,7 @@ let virtualMachinesWithBothExtensions = virtualMachines
 virtualMachinesWithBothExtensions
 ```
 
-### **7. How I can get list of all the VMs which MMA agent present?**
+### **8. How I can get list of all the VMs which MMA agent present?**
 VMs and Extensions inventory is collected in Log Analytics workspace. To list all the VMs which have both MMA agent present, go to Log Analytics workspace created during setup --> Select Logs and run following query: 
 
 ``` KQL
@@ -251,6 +251,10 @@ let virtualMachinesWithMMAExtensions = virtualMachines
 | project VMResourceID, OSType, ExtensionResourceId, ExtensionType;
 virtualMachinesWithMMAExtensions
 ```
+### **9. Installation command is failing with error message, 'The deployment MMARemovalenvironmentsetup-20233029T103026 failed with error(s). Showing 1 out of 1 error(s). Status Message:  (Code:BadRequest). What should I do now?**
+
+We have observed this intermittent issue with App service deployment, please re-run the installation command with same parameter values. Command should proceed without any error in next attempt. If this doesn't help, please reach out to support team or log an issue.
+
 
 
 
