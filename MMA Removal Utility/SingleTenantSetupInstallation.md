@@ -6,14 +6,14 @@ Before initiating the setup please validate the prerequisites, download and extr
 
 There are two methods to setup AzTS MMA Removal Utility solution: 
 
-- [**Method A: **](#method-a) This method provides granular level details of the different steps involved in setting up AzTS MMA Removal Utility. Setup process is divided into five steps and a separate command is provided for each step.
+- [**Method A:**](#method-a) This method provides granular level details of the different steps involved in setting up AzTS MMA Removal Utility. Setup process is divided into five steps and a separate command is provided for each step.
 
-- [**Method B: **](#method-b) Provides a faster way to install AzTS MMA Removal Utility solution by wrapping up multiple steps into a single (consolidated) command. 
+- [**Method B:**](#method-b) Provides a faster way to install AzTS MMA Removal Utility solution by wrapping up multiple steps into a single (consolidated) command. 
 ____________________________________________________________________
 
-## **Method A: **
+## **Method A:**
 
-> _**Note: ** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
+> _**Note:** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
 
 This setup is divided into five steps: 
 
@@ -32,7 +32,6 @@ Let's start!
 
 
   ``` PowerShell
-
   CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
 
   # Load AzTS MMA Removal Utility Setup script in session
@@ -66,7 +65,7 @@ The AzTS MMA Removal Utility solution works in 2 phases:
 
 For executing the above phases, setup requires a [User-Assigned Managed Identity (MI)](https: //docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (identity part of the setup) which has 'Reader and Virtual Machine Contributor' access on target scopes configured.
 
-> _Note: _
+> _Note:_
 > 1. _For creation of remediation user-assigned MI setup (preferably in a separate new RG), user running this script should have **Owner** access on the subscription in which MI is being created. If the MI is being created in an existing RG, user should have **Contributor** access on the RG._
 > 
 > 2. _For granting remediation user-assigned MI with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configuredscopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the remediation user-assigned MI with the required permissions._
@@ -105,7 +104,7 @@ $Identity = Set-AzTSMMARemovalUtilitySolutionRemediationIdentity `
 $Identity.Id
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which remediation MI needs to be created.| Yes|
@@ -123,7 +122,7 @@ $Identity.Id
 ### **Step 4 of 5. Setup installation**  
 Setup installation can be done using Install-AzTSMMARemovalUtilitySolution. This command will install the MMA Removal Utility which helps to discover and remove MMA agent installed on Virtual Machines.
 
-> _Note: _
+> _Note:_
 > _For creation of the setup in a new RG, user running this script should have **Owner** access on the subscription in which setup is being created. If the setup is being installed in an existing RG, user should have **Owner** access on the RG._
 > 
 
@@ -147,7 +146,7 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolution `
          -AzureEnvironmentName <AzureEnvironmentName>
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup needs to be created.| Yes|
@@ -176,7 +175,7 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -TenantScope
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup is installed.| Yes|
@@ -191,9 +190,9 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
 
 ___________________________________________________________________
 
-## **Method B: **
+## **Method B:**
 
-> _**Note: ** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
+> _**Note:** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
 
 This setup is divided into two steps: 
 
@@ -230,7 +229,7 @@ The AzTS MMA Removal Utility solution works in 2 phases:
 
 For executing the above phases, setup requires a [User-Assigned Managed Identity (MI)](https: //docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (identity part of the setup) which has 'Reader and Virtual Machine Contributor' access on target scopes configured.
 
-> _Note: _
+> _Note:_
 > 1. _For creation of remediation user-assigned MI and the setup (preferably in separate new RGs), user running this script should have **Owner** access on the subscription in which MI is being created. If the setup is being done in an existing RG, user should have **Owner** access on the RG._
 > 
 > 2. _For granting remediation user-assigned MI with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configured scopes. For example, the setup is being configured for a subscription 'x', user should be having UAA role assignment on the subscription 'x' to be able to grant the remediated user-assigned MI with the required permissions._
@@ -275,7 +274,7 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolutionConsolidated `
          -AzureEnvironmentName <AzureEnvironmentName>
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |RemediationIdentityHostSubId| Subscription id in which remediation MI needs to be created.| Yes|

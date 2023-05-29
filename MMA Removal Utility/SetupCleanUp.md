@@ -11,7 +11,7 @@ As part of cleanup execute the following steps:
 
 Let's start!
 
-> _**Note: ** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
+> _**Note:** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
 
 <br/>
 

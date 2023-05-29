@@ -120,7 +120,7 @@ param ContactEmailAddressList string = 'NA'
 param HashedTenantId string = ''
 
 @description('Hashed setup host Resource Group Id.')
-param HashedResourceGroupId string = ''
+param HashedResourceGroupId string = 'NA'
 
 @description('Hashed setup host Resource Group Id.')
 param location string = resourceGroup().location

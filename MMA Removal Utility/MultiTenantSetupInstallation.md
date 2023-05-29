@@ -18,7 +18,7 @@ This setup is divided into nine steps:
 
 Let's start!
 
-> _**Note: ** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
+> _**Note:** Please validate the prerequisites [here](./Prerequisites.md) and then proceed with the below steps_
 
 <br/>
 
@@ -28,7 +28,6 @@ Let's start!
 
 
   ``` PowerShell
-  # Point current path to extracted folder location and then load the setup script from the deployment folder 
   CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
   # Load AzTS MMA Removal Utility Setup script in session
   . ".\MMARemovalUtilitySetup.ps1"
@@ -94,7 +93,7 @@ $Identity.ObjectId
 $Identity.Secret
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |DisplayName| Display Name of the Remediation Identity.| Yes|
@@ -139,7 +138,7 @@ $KeyVault.Outputs.logAnalyticsResourceId.Value
 
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which keyvault needs to be created.| Yes|
@@ -185,7 +184,7 @@ $Solution = Install-AzTSMMARemovalUtilitySolution `
 $Solution.Outputs.internalMIObjectId.Value
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup needs to be created.| Yes|
@@ -230,7 +229,7 @@ Grant-AzTSMMARemediationIdentityAccessOnKeyVault `
 
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup needs to be created.| Yes|
@@ -273,7 +272,7 @@ Set-AzTSMMARemovalUtilityRunbook `
 
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which automation account and key vault are present.| Yes|
@@ -316,7 +315,7 @@ Grant-AzSKAzureRoleToMultiTenantIdentitySPN -AADIdentityObjectId $SPN.ObjectId `
 
 ```
 
-**Parameter details: **
+**Parameter details:**
 For Set-AzSKTenantSecuritySolutionMultiTenantIdentitySPN,
 
 |Param Name|Description|Required?
@@ -349,7 +348,7 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -ScopesFilePath <ScopesFilePath>
 ```
 
-**Parameter details: **
+**Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
 |SubscriptionId| Subscription id in which setup is installed.| Yes|

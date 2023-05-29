@@ -20,14 +20,14 @@
       
       ![PowerShell Version](../Images/00_PS_Version.png)
 
-    <br/>
+  <br/>
 
   3. PowerShell language mode FullLanguage:  
 
       To run AzTS MMA Removal Utility setup script, PowerShell language mode for the session must be FullLanguage.
       Ensure that you are using FullLanguage mode by typing **$ExecutionContext.SessionState.LanguageMode** in the PowerShell ISE console window. More details about PowerShell language mode can be found [here](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_language_modes?source=recommendations&view=powershell-7.3).  
 
-      ![PowerShell Version](../Images/00_PS_Language_Mode.png)  
+      ![PowerShell Language Mode](../Images/00_PS_Language_Mode.png)  
     
   <br/>
 

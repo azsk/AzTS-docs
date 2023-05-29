@@ -125,12 +125,12 @@
             else
             {
                 $rgHash = get-hash('/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName)
-                $rgHashId = $rgHash.Substring(0, 16).ToString().ToLower()
+                $tagHashValue = $rgHash.Substring(0, 16).ToString().ToLower()
                 
                 try
                 {
                     Write-Verbose "Getting resources from the resource group [$($ResourceGroupName)]..."
-                    $resources = Get-AzResource -ResourceGroupName $ResourceGroupName -Tag @{"AzTSMMARemovalUtilityIdentifier" = $rgHashId}
+                    $resources = Get-AzResource -ResourceGroupName $ResourceGroupName -Tag @{"AzTSMMARemovalUtilityIdentifier" = $tagHashValue}
                 }
                 catch
                 {  

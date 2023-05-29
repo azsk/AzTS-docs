@@ -91,11 +91,12 @@ function Install-AzTSMMARemovalUtilitySolution {
     Process {
 
         if ($ConsolidatedSetup -ne $true) {
-            Write-Host $([Constants]::DoubleDashLine)
-            Write-Host "Running MMA Removal Utility Solution setup..." -ForegroundColor $([Constants]::MessageType.Info)
-            Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Started setting up MMA Removal Utility Solution. This may take 5 mins..." -ForegroundColor $([Constants]::MessageType.Info)
-            Write-Host $([Constants]::SingleDashLine)
+            $inputParams = $PSBoundParameters
+            $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Install-AzTSMMARemovalUtilitySolution `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
+            $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+            $logger.PublishCustomMessage("Starting AzTS MMA Removal Utility Solution installation. This may take 5-10 mins...", $([Constants]::MessageType.Info))
+            $logger.PublishCustomMessage($($([Constants]::InstallSolutionInstructionMsg)), $([Constants]::MessageType.Info))
+            $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
         }
 
         $deploymentResult = $null;
@@ -107,7 +108,7 @@ function Install-AzTSMMARemovalUtilitySolution {
            
         try {
             [string] $OnboardingTenant = get-hash($context.Tenant.Id)
-            [string] $OnboardingResourceGroupId = $ResourceIdHash.Substring(0, 16).ToString().ToLower()
+            [string] $TagHashValue = $ResourceIdHash.Substring(0, 16).ToString().ToLower()
             [string] $OnboardingOrg = [String]::Empty;
             [string] $OnboardingDiv = [String]::Empty;
             [string] $OnboardingContactEmail = [String]::Empty;
@@ -150,7 +151,7 @@ function Install-AzTSMMARemovalUtilitySolution {
                 $TemplateParameters.Add("DivisionName", $OnboardingDiv)
                 $TemplateParameters.Add("ContactEmailAddressList", $OnboardingContactEmail)
                 $TemplateParameters.Add("HashedTenantId", $OnboardingTenant)
-                $TemplateParameters.Add("HashedResourceGroupId", $OnboardingResourceGroupId)
+                $TemplateParameters.Add("HashedResourceGroupId", $TagHashValue)
                 
                 Write-Host "`n`rThank you for your choices. To make changes to these preferences refer the FAQs by visiting https://aka.ms/azts-mmaremovalutility/UpdateTelemetryPreference." -ForegroundColor $([Constants]::MessageType.Update)
             }
@@ -755,7 +756,7 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
             $Timespan = "7d"
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName;
             $ResourceGroupIdHash = get-hash($ResourceId)
-            $ResourceGroupIdHash = $ResourceGroupIdHash.Substring(0, 16).ToString().ToLower()
+            $TagHashValue = $ResourceGroupIdHash.Substring(0, 16).ToString().ToLower()
             $DashboardTemplatePath = ".\MMARemovalUtilityMonitoringDashboardTemplate.json"
             $DashboardTemplateReplacedPath = ".\MMARemovalUtilityMonitoringDashboardReplacedTemplate.json"
             $Content = Get-Content -Path $DashboardTemplatePath -Raw
@@ -763,7 +764,7 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
             $Content = $Content -replace '<laResourceId>', $laResourceId
             $Content = $Content -replace '<location>', $location
             $Content = $Content -replace '<dashboardName>', $dashboardName
-            $Content = $Content -replace '<azTSMMARemovalUtilityIdentifier>', $ResourceGroupIdHash
+            $Content = $Content -replace '<azTSMMARemovalUtilityIdentifier>', $TagHashValue
             $Content | Out-File -FilePath $DashboardTemplateReplacedPath -Force
 
             $DashboardParams = @{
@@ -1477,6 +1478,7 @@ function Set-AzTSMMARemovalUtilityRunbook {
             $AutomationAccountName = "MMARemovalUtility-AutomationAccount-{0}"
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName
             $ResourceIdHash = get-hash($ResourceId)
+            $TagHashValue = $ResourceIdHash.Substring(0, 16).ToString().ToLower()
             $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
             $AutomationAccountName = $AutomationAccountName -f $ResourceHash 
 
@@ -1530,7 +1532,8 @@ function Set-AzTSMMARemovalUtilityRunbook {
             $Content = $Content -replace '<RemoveExistingIPRanges>', $RemoveExistingIPRanges
             $Content | Out-File -FilePath $UpdateDynamicIPAddressesScriptModifiedFilePath -Force
 
-            $runbook = Import-AzAutomationRunbook -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $RunbookName -Path $UpdateDynamicIPAddressesScriptModifiedFilePath -Published -Type PowerShell -Force
+            $Tags = @{"AzTSMMARemovalUtilityIdentifier"=$TagHashValue}
+            $runbook = Import-AzAutomationRunbook -ResourceGroupName $ResourceGroupName -AutomationAccountName $AutomationAccountName -Name $RunbookName -Path $UpdateDynamicIPAddressesScriptModifiedFilePath -Tags $Tags -Published -Type PowerShell -Force
             Start-Sleep -Seconds 10
             Write-Host "Runbook [$($RunbookName)] has been successfully created in the automation account [$($AutomationAccountName)]." -ForegroundColor $([Constants]::MessageType.Update)
             $DeletedFile = Remove-Item -Path $UpdateDynamicIPAddressesScriptModifiedFilePath
