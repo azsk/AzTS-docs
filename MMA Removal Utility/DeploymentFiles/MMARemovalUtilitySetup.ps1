@@ -92,6 +92,7 @@ function Install-AzTSMMARemovalUtilitySolution {
 
         if ($ConsolidatedSetup -ne $true) {
             $inputParams = $PSBoundParameters
+            $logger = [Logger]::new($SubscriptionId)
             $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Install-AzTSMMARemovalUtilitySolution `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
             $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
             $logger.PublishCustomMessage("Starting AzTS MMA Removal Utility Solution installation. This may take 5-10 mins...", $([Constants]::MessageType.Info))
@@ -105,16 +106,17 @@ function Install-AzTSMMARemovalUtilitySolution {
         $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $HostRGName;
         $ResourceIdHash = get-hash($ResourceId)
         $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
+        [string] $TagHashValue = $ResourceIdHash.Substring(0, 16).ToString().ToLower()
+        $TemplateParameters.Add("HashedResourceGroupId", $TagHashValue)
            
         try {
-            [string] $OnboardingTenant = get-hash($context.Tenant.Id)
-            [string] $TagHashValue = $ResourceIdHash.Substring(0, 16).ToString().ToLower()
-            [string] $OnboardingOrg = [String]::Empty;
-            [string] $OnboardingDiv = [String]::Empty;
-            [string] $OnboardingContactEmail = [String]::Empty;
-            [string] $AnonymousUsageTelemetryLogLevel = [String]::Empty;
+            if ($DisableUsageTelemetry -eq $false) {     
+                [string] $OnboardingTenant = get-hash($context.Tenant.Id)
+                [string] $OnboardingOrg = [String]::Empty;
+                [string] $OnboardingDiv = [String]::Empty;
+                [string] $OnboardingContactEmail = [String]::Empty;
+                [string] $AnonymousUsageTelemetryLogLevel = [String]::Empty;
 
-            if ($DisableUsageTelemetry -eq $false) {               
                 # Take acceptance from the user for the telemetry to be collected
                 [string] $TelemetryAcceptanceMsg = "For the purpose of improving quality of AzTS MMA Removal solution and better customer service, the AzTS MMA Removal solution needs to collect the below mentioned data:`r`n`n" + 
                 "   [1] Anonymized usage data -> this helps us improve product quality`r`n" +
@@ -151,7 +153,6 @@ function Install-AzTSMMARemovalUtilitySolution {
                 $TemplateParameters.Add("DivisionName", $OnboardingDiv)
                 $TemplateParameters.Add("ContactEmailAddressList", $OnboardingContactEmail)
                 $TemplateParameters.Add("HashedTenantId", $OnboardingTenant)
-                $TemplateParameters.Add("HashedResourceGroupId", $TagHashValue)
                 
                 Write-Host "`n`rThank you for your choices. To make changes to these preferences refer the FAQs by visiting https://aka.ms/azts-mmaremovalutility/UpdateTelemetryPreference." -ForegroundColor $([Constants]::MessageType.Update)
             }
@@ -189,7 +190,7 @@ function Install-AzTSMMARemovalUtilitySolution {
             Start-Sleep -Seconds 60
         }
         else {
-            Write-Host "User-assigned identity [$($InternalUserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)                            
+            Write-Host "User-assigned identity [$($InternalUserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Update)                            
         }
 
 
@@ -414,7 +415,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                            $assignmentError = true
+                            $assignmentError = $true
                         }
                     }
 
@@ -428,7 +429,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                            $assignmentError = true
+                            $assignmentError = $true
                         }
                     }
                 }
@@ -453,7 +454,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                            $assignmentError = true
+                            $assignmentError = $true
                         }
                     }
 
@@ -468,7 +469,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
                         }
                         else {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                            $assignmentError = true
+                            $assignmentError = $true
                         }
                     }
                 }
@@ -1180,6 +1181,7 @@ function Set-AzTSMMARemovalUtilitySolutionSecretStorage
             $ResourceIdHash = get-hash($ResourceId)
             $ResourceHash = $ResourceIdHash.Substring(0,5).ToString().ToLower()
             $KeyVaultName = "{0}-{1}" -f $KeyVaultName, $ResourceHash
+            [string] $TagHashValue = $ResourceIdHash.Substring(0, 16).ToString().ToLower()
 
             $keyVault = Get-AzKeyVault -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName -ErrorAction SilentlyContinue
             
@@ -1205,6 +1207,7 @@ function Set-AzTSMMARemovalUtilitySolutionSecretStorage
                     -secretName $secretName `
                     -secretValue $credentialSecureString `
                     -resourceHash $ResourceHash `
+                    -hashedResourceGroupId $TagHashValue `
                     -location $Location
             if($validationResult)
             {
@@ -1804,8 +1807,8 @@ function Set-AzTSMMARemovalUtilityRunbook {
                 -Mode Incremental `
                 -ResourceGroupName $ResourceGroupName  `
                 -TemplateFile ".\MMARemovalUtilityAutomationAccountTemplate.bicep" `
-                -resourceHash $ResourceHash `
                 -automationAccountName $AutomationAccountName `
+                -hashedResourceGroupId $TagHashValue `
                 -location $Location
 
             Write-Host "Automation account [$($AutomationAccountName)] has been successfully created in the resource group [$($ResourceGroupName)]." -ForegroundColor $([Constants]::MessageType.Update)
@@ -1978,7 +1981,7 @@ function Set-Prerequisites {
         $allPrerequisiteMet = $false
     }
     
-    return $allPrerequisiteMet;
+    return;
 }
 
 

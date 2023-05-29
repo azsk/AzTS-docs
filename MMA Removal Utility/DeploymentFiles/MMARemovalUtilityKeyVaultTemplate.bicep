@@ -1,5 +1,7 @@
 param resourceHash string
 
+param hashedResourceGroupId string
+
 @description('Specifies the name of the key vault.')
 param keyVaultName string
 
@@ -45,7 +47,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: keyVaultName
   location: location
   tags: {
-    AzTSMMARemovalUtilityIdentifier: resourceHash
+    AzTSMMARemovalUtilityIdentifier: hashedResourceGroupId
   }
   properties: {
     enabledForDeployment: false
@@ -75,7 +77,7 @@ resource keyVaultName_secret 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
 resource laWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' = {
   name: '${laWorkspaceName}-${resourceHash}'
   tags: {
-    AzTSMMARemovalUtilityIdentifier: resourceHash
+    AzTSMMARemovalUtilityIdentifier: hashedResourceGroupId
   }
   location: location
   properties: {

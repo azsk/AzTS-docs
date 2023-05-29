@@ -1,4 +1,4 @@
-param resourceHash string
+param hashedResourceGroupId string
 
 @description('Specify the name of automation account to be created.\r\nUse only alphanumerics and hyphens.\r\nThe name must not start or end with alphanumeric and must be 6 - 50 characters in length.\r\n')
 param automationAccountName string
@@ -9,7 +9,7 @@ param location string = resourceGroup().location
 resource automationAccount 'Microsoft.Automation/automationAccounts@2022-08-08' = {
   name: automationAccountName
   tags: {
-    AzTSMMARemovalUtilityIdentifier: resourceHash
+    AzTSMMARemovalUtilityIdentifier: hashedResourceGroupId
   }
   location: location
   identity: {
