@@ -706,6 +706,322 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
     }
 }
 
+function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
+    Param(
+        
+        [string]
+        [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        $SubscriptionId,
+
+        [string]
+        [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        $ResourceGroupName,
+
+        [int]
+        [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start.")]
+        $StartScopeResolverAfterMinutes,
+
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Start MMA extension discovery process immediately.")]
+        $StartScopeResolverImmediatley,
+
+        [int]
+        [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
+        $StartExtensionDiscoveryAfterMinutes,
+
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Start extension inventory collection step of discovery phase immediately.")]
+        $StartExtensionDiscoveryImmediatley,
+
+        [switch]
+        [Parameter(Mandatory = $false, ParameterSetName = "RunAfterSchedule", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        $ConsolidatedSetup = $false
+    )
+
+    Begin {
+        # Step 1: Set context to subscription where MMA Removal Utility Solution is present.
+        $currentContext = $null
+
+        $contextHelper = [ContextHelper]::new()
+        $currentContext = $contextHelper.SetContext($SubscriptionId)
+        if (-not $currentContext) {
+            return;
+        }
+
+    }
+
+    Process {
+        try {
+
+            if (-not $ConsolidatedSetup) {
+                Write-Host $([Constants]::DoubleDashLine)
+                Write-Host "Configuring MMA Removal utility discovery phase trigger..." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            # Step 2: Get resource group where MMA Removal Utility Solution is present.
+            try {
+                $rg = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+                if (-not $rg) {
+                    Write-Host "`n`rFailed to get resource group where MMA Removal Utility Solution is present." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                    return;
+                }
+            }
+            catch {  
+                Write-Host "`n`rFailed to get resource group where MMA Removal Utility Solution is present." -ForegroundColor $([Constants]::MessageType.Error)
+                return;
+            }
+
+            $ResourceGroupHash = Get-ResourceGroupIdHash -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName;
+
+            if ($StartExtensionDiscoveryImmediatley -eq $false)
+            {
+                Write-Host "Configuring scope resolver trigger..." -ForegroundColor $([Constants]::MessageType.Info)  
+                # Step 3:  Get Scope resolver trigger processor function app.
+                $ScopeResolverTriggerAppName = "MMARemovalUtility-ScopeResolverTrigger-" + $ResourceGroupHash
+    
+                if (-not $ConsolidatedSetup)
+                {
+                    Write-Host "Checking if ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+                }
+                         
+                $ScopeResolverTriggerApp = Get-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+                if ($null -eq $ScopeResolverTriggerApp) {
+                    Write-Host "`n`rFailed to get ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerProcessorName)]." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                    return;
+                }
+                elseif (-not $ConsolidatedSetup){
+                    Write-Host "ScopeResolverTriggerProcessor function app [$($ScopeResolverTriggerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+                }
+                            
+                #setup the current app settings
+                $settings = @{}
+                ForEach ($setting in $ScopeResolverTriggerApp.SiteConfig.AppSettings) {
+                    $settings[$setting.Name] = $setting.Value
+                }
+    
+                $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression -afterHours 0 -afterMinutes $StartScopeResolverAfterMinutes -StartImmediatley $StartScopeResolverImmediatley
+                $settings["ScopeResolverTriggerConfigurations__ProcessEnabled"] = "true"
+
+                # Update Scope resolver trigger procesor function app settings
+                $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+    
+                Write-Host "Successfully configured scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
+            }
+            
+            # Grant User Identity Reader permission on target subscription(s).
+            Write-Host "Configuring extension inventory scheduler trigger..." -ForegroundColor $([Constants]::MessageType.Info)    
+
+            $workItemSchedulerAppName = "MMARemovalUtility-WorkItemScheduler-" + $ResourceGroupHash
+
+            if (-not $ConsolidatedSetup)
+            {
+                Write-Host "Checking if WorkItemScheduler function app [$($workItemSchedulerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+            }
+                     
+            $workItemSchedulerApp = Get-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+            if ($null -eq $workItemSchedulerApp) {
+                Write-Host "`n`rFailed to get WorkItemScheduler function app [$($ScopeResolverTriggerProcessorName)]." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                return;
+            }
+            elseif (-not $ConsolidatedSetup){
+                Write-Host "WorkItemScheduler function app [$($workItemSchedulerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+            }
+                        
+            #setup the current app settings
+            $settings = @{}
+            ForEach ($setting in $workItemSchedulerApp.SiteConfig.AppSettings) {
+                $settings[$setting.Name] = $setting.Value
+            }
+            
+            $startExtInvProcessingAfter = 0;
+            if ($StartExtensionDiscoveryImmediatley -eq $true)
+            {
+                $startExtInvProcessingAfter = 0;
+            }
+            elseif ($StartScopeResolverImmediatley -eq $true) {
+                $startExtInvProcessingAfter = 3 + $StartExtensionDiscoveryAfterMinutes;
+            }
+            else {
+                $startExtInvProcessingAfter = $StartScopeResolverAfterMinutes + $StartExtensionDiscoveryAfterMinutes;
+            }
+
+            $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $startExtInvProcessingAfter -startImmediatley $StartExtensionDiscoveryImmediatley
+
+            # Update Work Item Scheduler procesor function app settings
+            $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+
+            Write-Host "Successfully configured extension inventory scheduler trigger." -ForegroundColor $([Constants]::MessageType.Update)    
+
+            if (-not $ConsolidatedSetup) {
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Completed MMA Removal utility discovery phase trigger setup." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)    
+                Write-Host $([Constants]::DoubleDashLine)
+                return; 
+            }
+            else {
+                return $true;
+            }
+            
+        }
+        catch {
+            Write-Host "Error occurred while configuring discovery phase trigger for MMA Removal utility. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return;    
+        }
+    }
+}
+
+function Update-AzTSMMARemovalUtilityRemovalTrigger {
+    Param(
+        
+        [string]
+        [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        $SubscriptionId,
+
+        [string]
+        [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        $ResourceGroupName,
+
+        [int]
+        [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Define the interval in minutes after which MMA extension removal process should start.")]
+        $StartAfterMinutes,
+
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Start MMA extension removal process immediately.")]
+        $StartImmediately,
+
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Switch to enable removal phase.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Switch to enable removal phase.")]
+        $EnableRemovalPhase,
+
+        [Parameter(Mandatory = $false, ParameterSetName = "Enabled", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
+        [ValidateSet("CheckForAMAPresence", "SkipAMAPresenceCheck")]
+        $RemovalCondition = 'CheckForAMAPresence',
+
+        [switch]
+        [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Switch to disable removal phase.")]
+        $DisableRemovalPhase
+    )
+
+    Begin {
+        # Step 1: Set context to subscription where MMA Removal Utility Solution is present.
+        $currentContext = $null
+
+        $contextHelper = [ContextHelper]::new()
+        $currentContext = $contextHelper.SetContext($SubscriptionId)
+        if (-not $currentContext) {
+            return;
+        }
+
+    }
+
+    Process {
+        try {
+
+            if (-not $ConsolidatedSetup) {
+                Write-Host $([Constants]::DoubleDashLine)
+                Write-Host "Configuring MMA Removal utility removal phase trigger..." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            # Step 2: Get resource group where MMA Removal Utility Solution is present.
+            try {
+                $rg = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
+                if (-not $rg) {
+                    Write-Host "`n`rFailed to get resource group where MMA Removal Utility Solution is present." -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                    return;
+                }
+            }
+            catch {  
+                Write-Host "`n`rFailed to get resource group where MMA Removal Utility Solution is present." -ForegroundColor $([Constants]::MessageType.Error)
+                return;
+            }
+
+            $ResourceGroupHash = Get-ResourceGroupIdHash -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName;
+
+            # Grant User Identity Reader permission on target subscription(s).
+            Write-Host "Updating extension removal scheduler configurations..." -ForegroundColor $([Constants]::MessageType.Info)
+
+            $workItemSchedulerAppName = "MMARemovalUtility-WorkItemScheduler-" + $ResourceGroupHash
+
+            if (-not $ConsolidatedSetup)
+            {
+                Write-Host "Checking if WorkItemScheduler function app [$($workItemSchedulerAppName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)   
+            }
+                     
+            $workItemSchedulerApp = Get-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
+            if ($null -eq $workItemSchedulerApp) {
+                Write-Host "`n`rFailed to get WorkItemScheduler function app [$($workItemSchedulerAppName)]." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`n`rPlease re-check Subscription Id and Resource Group Name where MMA Removal Utility Solution is hosted." -ForegroundColor $([Constants]::MessageType.Error)
+                return;
+            }
+            elseif (-not $ConsolidatedSetup){
+                Write-Host "WorkItemScheduler function app [$($workItemSchedulerAppName)] exists." -ForegroundColor $([Constants]::MessageType.Update)   
+            }
+                        
+            #setup the current app settings
+            $settings = @{}
+            ForEach ($setting in $workItemSchedulerApp.SiteConfig.AppSettings) {
+                $settings[$setting.Name] = $setting.Value
+            }
+            
+            $message = [string]::Empty
+            if ($EnableRemovalPhase.IsPresent)
+            {
+                $message = "MMA 'Removal' phase has been enabled."
+                $settings["SchedulerConfigurations__ExtensionRemovalCondition"] = $RemovalCondition
+                $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = "true"
+                $settings["ExtensionRemovalSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartImmediately
+            }
+            else {
+                $message = "MMA 'Removal' phase has been disabled."
+                $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = "false"
+            }
+
+            Write-Host $message -ForegroundColor $([Constants]::MessageType.Warning) 
+
+            # Update Work Item Scheduler procesor function app settings
+            $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
+
+            Write-Host "Successfully Updated extension removal scheduler configurations." -ForegroundColor $([Constants]::MessageType.Update)    
+
+            if (-not $ConsolidatedSetup) {
+                Write-Host $([Constants]::SingleDashLine)
+                Write-Host "Completed MMA Removal utility removal phase trigger." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)    
+                Write-Host $([Constants]::DoubleDashLine)
+                return; 
+            }
+            else {
+                return $true;
+            }
+            
+        }
+        catch {
+            Write-Host "Error occurred while configuring removal phase trigger for MMA Removal utility. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            return;    
+        }
+    }
+}
+
 function Set-AzTSMMARemovalUtilityMonitoringDashboard {
     Param(
         
@@ -790,6 +1106,7 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
         }
     }
 }
+
 function Set-AzTSMMARemovalUtilitySolutionSecretStorage
 {
     Param(
@@ -1677,8 +1994,67 @@ function get-hash([string]$textToHash) {
     return $result;
 }
 
+function Get-ResourceGroupIdHash([string]$SubscriptionId, [string]$ResourceGroupName)
+{
+    $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName;
+    $ResourceIdHash = get-hash($ResourceId)
+    $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
+    return $ResourceHash;
+}
+
 function Get-TimeStamp {
     return "{0:h:m:ss tt} - " -f (Get-Date -UFormat %T)
+}
+
+function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$StartImmediatley) {
+    $dateTime = [DateTime]::UtcNow
+
+    if ($StartImmediatley -eq $true)
+    {
+        $dateTime = $dateTime.AddMinutes(3);
+    }
+    else {
+        $dateTime = $dateTime.AddHours($afterHours).AddMinutes($afterMinutes);
+    }
+
+    $minutes = $dateTime.Minute
+    $hours = $dateTime.Hour
+    $dayOfMonth = $dateTime.Day
+    $month = $dateTime.Month
+    $dayOfWeek = $dateTime.DayOfWeek
+
+    return "0 $minutes $hours $dayOfMonth $month $dayOfWeek";
+}
+
+function Get-RecurringCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$startImmediatley, [int]$runAfterEveryMinutes = 15, [int] $frequency = 8) {
+    $dateTime = [DateTime]::UtcNow
+
+    if ($StartImmediatley -eq $true)
+    {
+        $dateTime = $dateTime.AddMinutes(3);
+    }
+    else {
+        $dateTime = $dateTime.AddHours($afterHours).AddMinutes($afterMinutes);
+        
+    }
+
+    $dateTime = $dateTime.AddMinutes(60-$dateTime.Minute)
+
+    $requiredMinuteGap = [math]::ceiling(($runAfterEveryMinutes * $frequency)/60);
+    $endDateTime = $dateTime.AddHours($requiredMinuteGap-1);
+
+    if ($dateTime.Date -ne $endDateTime.Date)
+    {
+        $dateTime= $endDateTime.Date
+        $endDateTime= $dateTime.AddHours($requiredMinuteGap-1);
+    }
+
+    $startHours = $dateTime.Hour
+    $startDayOfMonth = $dateTime.Day
+    $startMonth = $dateTime.Month
+    $startDayOfWeek = $dateTime.DayOfWeek
+    $endHours = $endDateTime.Hour
+    return "0 0/$runAfterEveryMinutes $startHours-$endHours $startDayOfMonth $startMonth $startDayOfWeek";
 }
 
 class ContextHelper {
