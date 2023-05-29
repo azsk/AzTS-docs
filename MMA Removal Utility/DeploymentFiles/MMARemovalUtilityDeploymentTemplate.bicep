@@ -87,22 +87,22 @@ param ExtensionRemovalProcessorQueueName string = 'extensionremovalqueue'
 param ExtensionRemovalStatucCheckProcessorQueueName string = 'extensionremovalstatuscheckqueue'
 
 @description('Zip package url for Scope Resolver Trigger Processor.')
-param ScopeResolverTriggerProcessorPackageUrl string = 'https://mmatoama.blob.core.windows.net/packages/AzTS_01_ScopeResolverTriggerProcessor.zip'
+param ScopeResolverTriggerProcessorPackageUrl string = ''
 
 @description('Zip package url for Scope Resolver Processor.')
-param ScopeResolverProcessorPackageUrl string = 'https://mmatoama.blob.core.windows.net/packages/AzTS_02-03_ScopeResolverPoisonQueueProcessor.zip'
+param ScopeResolverProcessorPackageUrl string = ''
 
 @description('Zip package url for Scope Resolver Processor.')
-param ExtensionInventoryProcessorPackageUrl string = 'https://mmatoama.blob.core.windows.net/packages/VMExtensionInventoryProcessor.zip'
+param ExtensionInventoryProcessorPackageUrl string = ''
 
 @description('Zip package url for Scope Resolver Processor.')
-param WorkItemSchedulerProcessorPackageUrl string = 'https://mmatoama.blob.core.windows.net/packages/WIS.zip'
+param WorkItemSchedulerProcessorPackageUrl string = ''
 
 @description('Zip package url for Extension Removal Processor.')
-param ExtensionRemovalProcessorPackageUrl string = 'https://mmatoama.blob.core.windows.net/packages/ExtensionRemovalProcessor.zip'
+param ExtensionRemovalProcessorPackageUrl string = ''
 
 @description('Zip package url for Extension Removal Processor.')
-param ExtensionRemovalStatusCheckProcessorPackageUrl string = 'https://mmatoama.blob.core.windows.net/packages/AzTS_08_ExtensionRemovalStatusCheckProcessor.zip'
+param ExtensionRemovalStatusCheckProcessorPackageUrl string = ''
 
 @description('Anonymous usage telemetry level as per user\'s choice.')
 param AnonymousUsageTelemetryLogLevel string = 'None'
@@ -122,7 +122,7 @@ param HashedTenantId string = ''
 @description('Hashed setup host Resource Group Id.')
 param HashedResourceGroupId string = 'NA'
 
-@description('Hashed setup host Resource Group Id.')
+@description('Host Resource Group Id.')
 param location string = resourceGroup().location
 
 var SolutionInitialName = 'MMARemovalUtility'
@@ -157,9 +157,8 @@ var userAssignedIdentities = {
     '${internalMI.id}': {}
   }
 }
-var storageQueueBaseUrl = ((AzureEnvironmentName == 'AzureCloud') ? 'https://{0}.queue.core.windows.net/{1}' : 'https://{0}.queue.core.usgovcloudapi.net/{1}')
 var ConnectionName = 'MMA-AgentRemoval-Restart-LogicApp-Connection-${ResourceHash}'
-var ConnectionAPI = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${resourceGroup().location}/managedApis/azureappservice'
+var ConnectionAPI = '/subscriptions/${subscription().subscriptionId}/providers/Microsoft.Web/locations/${location}/managedApis/azureappservice'
 var ResourceGroupName = resourceGroup().name
 var SubscriptionId = subscription().subscriptionId
 
@@ -227,7 +226,9 @@ resource WorkerHostingPlan1 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   kind: 'functionapp'
   properties: {
+    #disable-next-line BCP037
     name: WorkerHostingPlan1Name
+    #disable-next-line BCP037
     computeMode: skuTier
   }
 }
@@ -246,7 +247,9 @@ resource WorkerHostingPlan2 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   kind: 'functionapp'
   properties: {
+    #disable-next-line BCP037
     name: WorkerHostingPlan2Name
+    #disable-next-line BCP037
     computeMode: skuTier
   }
 }
@@ -265,7 +268,9 @@ resource WorkerHostingPlan3 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   kind: 'functionapp'
   properties: {
+    #disable-next-line BCP037
     name: WorkerHostingPlan3Name
+    #disable-next-line BCP037
     computeMode: skuTier
   }
 }
@@ -284,7 +289,9 @@ resource WorkerHostingPlan4 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   kind: 'functionapp'
   properties: {
+    #disable-next-line BCP037
     name: WorkerHostingPlan4Name
+    #disable-next-line BCP037
     computeMode: skuTier
   }
 }
@@ -303,7 +310,9 @@ resource WorkerHostingPlan5 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   kind: 'functionapp'
   properties: {
+    #disable-next-line BCP037
     name: WorkerHostingPlan5Name
+    #disable-next-line BCP037
     computeMode: skuTier
   }
 }
@@ -322,7 +331,9 @@ resource SchedulerHostingPlan1 'Microsoft.Web/serverfarms@2021-03-01' = {
   }
   kind: 'functionapp'
   properties: {
+    #disable-next-line BCP037
     name: SchedulerHostingPlanName
+    #disable-next-line BCP037
     computeMode: skuTier
   }
 }
@@ -341,9 +352,11 @@ resource ScopeResolverTriggerProcessor 'Microsoft.Web/sites@2018-11-01' = {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP037
     name: ScopeResolverTriggerProcessorName
     httpsOnly: true
     serverFarmId: WorkerHostingPlan1.id
+    #disable-next-line BCP037
     keyVaultReferenceIdentity: (IsClientSecretAuthMode ? internalMI.id : 'SystemAssigned')
     siteConfig: {
       remoteDebuggingEnabled: false
@@ -385,7 +398,7 @@ resource ScopeResolverTriggerProcessor 'Microsoft.Web/sites@2018-11-01' = {
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__ClientSecret'
-          value: (IsClientSecretAuthMode ? ClientSecretUri : json('null'))
+          value: (IsClientSecretAuthMode ? ClientSecretUri : null)
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__HostTenantId'
@@ -417,7 +430,7 @@ resource ScopeResolverTriggerProcessor 'Microsoft.Web/sites@2018-11-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.queue.core.windows.net/${ScopeResolverProcessorQueueName}'
+          value: 'https://${storageName}.${environment().suffixes.storage}/${ScopeResolverProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -479,20 +492,22 @@ resource ScopeResolverTriggerProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@
 resource ScopeResolverTriggerProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ScopeResolverTriggerProcessor
   name: 'ftp'
+  #disable-next-line BCP187
   location: location
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource ScopeResolverTriggerProcessor_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ScopeResolverTriggerProcessor
+  #disable-next-line BCP187
   location: location
   name: 'scm'
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
@@ -510,6 +525,7 @@ resource ScopeResolverProcessor 'Microsoft.Web/sites@2021-03-01' = {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP037
     name: ScopeResolverProcessorName
     httpsOnly: true
     serverFarmId: WorkerHostingPlan2.id
@@ -558,7 +574,7 @@ resource ScopeResolverProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__ClientSecret'
-          value: (IsClientSecretAuthMode ? ClientSecretUri : json('null'))
+          value: (IsClientSecretAuthMode ? ClientSecretUri : null)
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__HostTenantId'
@@ -590,7 +606,7 @@ resource ScopeResolverProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.queue.core.windows.net/${ScopeResolverProcessorQueueName}'
+          value: 'https://${storageName}.${environment().suffixes.storage}/${ScopeResolverProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -652,20 +668,22 @@ resource ScopeResolverProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11
 resource ScopeResolverProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ScopeResolverProcessor
   name: 'ftp'
+  #disable-next-line BCP187
   location: location
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource ScopeResolverProcessor_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ScopeResolverProcessor
+  #disable-next-line BCP187
   location: location
   name: 'scm'
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
@@ -683,6 +701,7 @@ resource ExtensionInventoryProcessor 'Microsoft.Web/sites@2021-03-01' = {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP037
     name: ExtensionInventoryProcessorName
     httpsOnly: true
     serverFarmId: WorkerHostingPlan3.id
@@ -727,7 +746,7 @@ resource ExtensionInventoryProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__ClientSecret'
-          value: (IsClientSecretAuthMode ? ClientSecretUri : json('null'))
+          value: (IsClientSecretAuthMode ? ClientSecretUri : null)
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__HostTenantId'
@@ -759,7 +778,7 @@ resource ExtensionInventoryProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.queue.core.windows.net/${ExtensionInventoryProcessorQueueName}'
+          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionInventoryProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -821,20 +840,22 @@ resource ExtensionInventoryProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@20
 resource ExtensionInventoryProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionInventoryProcessor
   name: 'ftp'
+  #disable-next-line BCP187
   location: location
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource ExtensionInventoryProcessor_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionInventoryProcessor
+  #disable-next-line BCP187
   location: location
   name: 'scm'
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
@@ -852,6 +873,7 @@ resource WorkItemSchedulerProcessor 'Microsoft.Web/sites@2021-03-01' = {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP037
     name: WorkItemSchedulerProcessorName
     httpsOnly: true
     serverFarmId: SchedulerHostingPlan1.id
@@ -900,7 +922,7 @@ resource WorkItemSchedulerProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__ClientSecret'
-          value: (IsClientSecretAuthMode ? ClientSecretUri : json('null'))
+          value: (IsClientSecretAuthMode ? ClientSecretUri : null)
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__HostTenantId'
@@ -932,11 +954,11 @@ resource WorkItemSchedulerProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.queue.core.windows.net/${ExtensionInventoryProcessorQueueName}'
+          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionInventoryProcessorQueueName}'
         }
         {
           name: 'StorageQueueConfiguration__AdditionalQueues__0__QueueUri'
-          value: 'https://${storageName}.queue.core.windows.net/${ExtensionRemovalProcessorQueueName}'
+          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionRemovalProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -998,20 +1020,22 @@ resource WorkItemSchedulerProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@201
 resource WorkItemSchedulerProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: WorkItemSchedulerProcessor
   name: 'ftp'
+  #disable-next-line BCP187
   location: location
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource WorkItemSchedulerProcessor_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: WorkItemSchedulerProcessor
+  #disable-next-line BCP187
   location: location
   name: 'scm'
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
@@ -1029,6 +1053,7 @@ resource ExtensionRemovalProcessor 'Microsoft.Web/sites@2021-03-01' = {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP037
     name: ExtensionRemovalProcessorName
     httpsOnly: true
     serverFarmId: WorkerHostingPlan4.id
@@ -1105,7 +1130,7 @@ resource ExtensionRemovalProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.queue.core.windows.net/${ExtensionRemovalStatucCheckProcessorQueueName}'
+          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionRemovalStatucCheckProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -1167,20 +1192,22 @@ resource ExtensionRemovalProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018
 resource ExtensionRemovalProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionRemovalProcessor
   name: 'ftp'
+  #disable-next-line BCP187
   location: location
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource ExtensionRemovalProcessor_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionRemovalProcessor
+  #disable-next-line BCP187
   location: location
   name: 'scm'
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
@@ -1198,6 +1225,7 @@ resource ExtensionRemovalStatusCheckProcessor 'Microsoft.Web/sites@2021-03-01' =
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP037
     name: ExtensionRemovalStatusCheckProcessorName
     httpsOnly: true
     serverFarmId: WorkerHostingPlan5.id
@@ -1242,7 +1270,7 @@ resource ExtensionRemovalStatusCheckProcessor 'Microsoft.Web/sites@2021-03-01' =
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__ClientSecret'
-          value: (IsClientSecretAuthMode ? ClientSecretUri : json('null'))
+          value: (IsClientSecretAuthMode ? ClientSecretUri : null)
         }
         {
           name: 'AADAuthProviderConfiguration__ScannerIdentityConfigurations__HostTenantId'
@@ -1332,28 +1360,32 @@ resource ExtensionRemovalStatusCheckProcessor_MSDeploy 'Microsoft.Web/sites/Exte
 resource ExtensionRemovalStatusCheckProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionRemovalStatusCheckProcessor
   name: 'ftp'
+  #disable-next-line BCP187
   location: location
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource ExtensionRemovalStatusCheckProcessor_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionRemovalStatusCheckProcessor
+  #disable-next-line BCP187
   location: location
   name: 'scm'
   kind: 'basicPublishingCredentialsPolicies'
   properties: {
-    allow: 'false'
+    allow: false
   }
 }
 
 resource rgRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: rgRoleAssignmentName
   properties: {
+    #disable-next-line use-resource-id-functions
     roleDefinitionId: contributorRoleId
     principalId: reference('Microsoft.ManagedIdentity/userAssignedIdentities/${internalMINameVar}', '2018-11-30').principalId
+    #disable-next-line BCP073
     scope: resourceGroup().id
   }
   dependsOn: [
@@ -1364,8 +1396,10 @@ resource rgRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' =
 resource Microsoft_Storage_storageAccounts_storage 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storage.id)
   properties: {
+    #disable-next-line use-resource-id-functions
     roleDefinitionId: queueDataContributorRoleId
     principalId: reference('Microsoft.ManagedIdentity/userAssignedIdentities/${internalMINameVar}', '2018-11-30').principalId
+    #disable-next-line BCP073
     scope: resourceGroup().id
   }
   dependsOn: [
@@ -1383,6 +1417,7 @@ resource applicationInsights 'microsoft.insights/components@2020-02-02' = {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
   }
   properties: {
+    #disable-next-line BCP073 use-resource-id-functions
     ApplicationId: applicationInsightsNameVar
     Application_Type: 'web'
     Request_Source: 'rest'
@@ -1392,6 +1427,7 @@ resource applicationInsights 'microsoft.insights/components@2020-02-02' = {
 resource Connection 'Microsoft.Web/connections@2016-06-01' = {
   name: ConnectionName
   location: location
+  #disable-next-line BCP187
   kind: 'V1'
   tags: {
     AzTSMMARemovalUtilityIdentifier: HashedResourceGroupId
@@ -1400,8 +1436,10 @@ resource Connection 'Microsoft.Web/connections@2016-06-01' = {
     displayName: ConnectionName
     customParameterValues: {}
     api: {
+      #disable-next-line use-resource-id-functions
       id: ConnectionAPI
     }
+    #disable-next-line BCP037
     parameterValueType: 'Alternative'
   }
 }

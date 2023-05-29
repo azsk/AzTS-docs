@@ -183,7 +183,6 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
             AzureEnvironmentName = $AzureEnvironmentName
             TemplateFilePath = $TemplateFilePath
             TemplateParameters = $TemplateParameters
-            DisableUsageTelemetry = $DisableUsageTelemetry
             ConsolidatedSetup = $true
         }
 
