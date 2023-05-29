@@ -1358,19 +1358,19 @@ function Set-AzSKTenantSecuritySolutionMultiTenantIdentitySPN
         $spn = Get-AzureADServicePrincipal -Filter "AppId eq '$($AppId)'"
         if (!$spn) {
 
+            Write-Host "Azure AD service principal for App [$($AppId)] does not exist." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host "Creating new Azure AD service principal for App [$($AppId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             # create new spn
             $spn = New-AzureADServicePrincipal -AppId $AppId -AppRoleAssignmentRequired $false 
             
-            Write-Host $([Constants]::SingleDashLine)    
             Write-Host "Successfully created service principal." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host $([Constants]::SingleDashLine) 
             Write-Host $([Constants]::DoubleDashLine)
-            
         }
         else
         {
-            Write-Host $([Constants]::SingleDashLine)    
             Write-Host "AD service principal for App [$($AppId)] already exists." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             Write-Host $([Constants]::DoubleDashLine)
         }
 
@@ -1795,6 +1795,7 @@ function Set-AzTSMMARemovalUtilityRunbook {
             Write-Host $([Constants]::SingleDashLine)
 
             # Step 2: Create Automation Account.
+            Write-Host "Checking if Automation account [$($AutomationAccountName)] exist..." -ForegroundColor $([Constants]::MessageType.Update)
             $AutomationAccountName = "MMARemovalUtility-AutomationAccount-{0}"
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName
             $ResourceIdHash = get-hash($ResourceId)
@@ -1815,8 +1816,9 @@ function Set-AzTSMMARemovalUtilityRunbook {
             Write-Host $([Constants]::SingleDashLine)
 
             # Step 3: Grant access for Automation Account System assigned managed identity on KeyVault.
-            Write-Host "Assigning the identity on KeyVault..." -ForegroundColor $([Constants]::MessageType.Info)    
             $identity = $DeploymentOutput.Outputs.automationAccountManagedIdentity.Value
+            Write-Host "Assigning Automation account managed identity [Object Id: $($identity)] access on KeyVault..." -ForegroundColor $([Constants]::MessageType.Info)    
+            
             Write-Host $([Constants]::SingleDashLine) 
             $identity
             Write-Host $([Constants]::SingleDashLine) 
@@ -1834,7 +1836,7 @@ function Set-AzTSMMARemovalUtilityRunbook {
                 }
             }
            
-            Write-Host "Assigned the identity on KeyVault successfully." -ForegroundColor $([Constants]::MessageType.Update)    
+            Write-Host "Assigned Automation account managed identity access on KeyVault successfully." -ForegroundColor $([Constants]::MessageType.Update)    
             Write-Host $([Constants]::SingleDashLine)
 
             # Step 4: Setup runbook.
