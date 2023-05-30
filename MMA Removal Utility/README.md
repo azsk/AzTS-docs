@@ -22,7 +22,7 @@ AzTS MMA Discovery and Removal Utility works in two phases:
 
 In this phase, it will prepare the inventory of all Virtual Machines and their extensions to identify, which VMs have both MMA and AMA or only MMA agents installed. In next phase (i.e., 'Removal Phase'), users can choose to remove MMA extension from VMs having either both MMA and AMA agents or just MMA agent. 
 
-It is recommended to avoid creating new VMs with MMA extension or installing MMA extension on existing VMs after AzTS MMA Discovery and Removal utility starts processing. For this you can assign Azure policy with 'Deny' effect on your subscriptions before running this utility. Guidance for same is available [here](link).
+It is recommended to avoid creating new VMs with MMA extension or installing MMA extension on existing VMs after AzTS MMA Discovery and Removal utility starts processing. For this you can assign Azure policy with 'Deny' effect on your subscriptions before running this utility. Guidance for same is available [here](./MMAAgentDenyPolicyInstructions.md).
 
 **2- Removal Phase**
 
