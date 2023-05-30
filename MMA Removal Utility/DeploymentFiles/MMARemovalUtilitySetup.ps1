@@ -19,7 +19,7 @@ function Install-AzTSMMARemovalUtilitySolution {
     .PARAMETER SendUsageTelemetry
         Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.
 	.LINK
-	    https://aka.ms/azts-mmaremovalutility
+	    https://aka.ms/azts/mmaremovalutility
 
 	#>
     Param(
@@ -2130,7 +2130,7 @@ class Constants {
     "   [1] Create resources needed to support AzTS MMA Removal Utility `r`n" +
     "   [2] Deploy packages to azure function app `r`n" +
     "   [3] Deploy monitoring dashboard to view progress `r`n" +
-    "More details about resources created can be found in the link: http://aka.ms/AzTS/MMARemovalUtility `r`n"
+    "More details about resources created can be found in the link: https://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $QuickInstallSolutionInstructionMsg = "This command will perform following major steps. It will:`r`n`n" + 
     "   [0] Validate and install required Az modules (Optional) `r`n" +
@@ -2138,7 +2138,7 @@ class Constants {
     "   [2] Create resources needed to support AzTS MMA Removal Utility `r`n" +
     "   [3] Schedule daily discovery and removal schedules `r`n" +
     "   [4] Deploy monitoring dashboard to view progress `r`n" +
-    "More details about resources created can be found in the link: http://aka.ms/AzTS/MMARemovalUtility `r`n"
+    "More details about resources created can be found in the link: https://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $DoubleDashLine = "================================================================================"
     static [string] $SingleDashLine = "--------------------------------------------------------------------------------"
