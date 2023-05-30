@@ -347,6 +347,9 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -ResourceGroupName <HostingRGName> `
          -ScopesFilePath <ScopesFilePath>
 ```
+**Sample output snapshot:**
+
+![Multi-Tenant Setup](../Images/MultiTenant-Setup.png)
 
 **Parameter details:**
 |Param Name|Description|Required?

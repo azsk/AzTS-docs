@@ -57,6 +57,11 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
     -StartExtensionDiscoveryAfterMinutes 30 
 
 ```
+
+**Sample output snapshot:**
+
+![Schedule Discovery Phase](../Images/Schedule-DiscoveryPhase.png)
+
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
@@ -118,6 +123,12 @@ Update-AzTSMMARemovalUtilityRemovalTrigger `
     -RemovalCondition 'CheckForAMAPresence'
 
 ```
+
+**Sample output snapshot:**
+
+![Schedule Removal Phase](../Images/Schedule-RemovalPhase.png)
+
+
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|

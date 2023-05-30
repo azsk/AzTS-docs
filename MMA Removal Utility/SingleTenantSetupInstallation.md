@@ -104,6 +104,10 @@ $Identity = Set-AzTSMMARemovalUtilitySolutionRemediationIdentity `
 $Identity.Id
 ```
 
+**Sample output snapshot:**
+
+![Single-Tenant Identity Setup](../Images/SingleTenant-IdentitySetup.png)
+
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
@@ -146,6 +150,10 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolution `
          -AzureEnvironmentName <AzureEnvironmentName>
 ```
 
+**Sample output snapshot:**
+
+![Single-Tenant Setup Installation](../Images/SingleTenant-Installation.png)
+
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
@@ -174,6 +182,10 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -TargetManagementGroupNames @("<MGName1>","<MGName2>","<MGName3>") `
          [-TenantScope]
 ```
+
+**Sample output snapshot:**
+
+![Single-Tenant Scope Configuration](../Images/SingleTenant-ConfiguringScopes.png)
 
 **Parameter details:**
 |Param Name|Description|Required?

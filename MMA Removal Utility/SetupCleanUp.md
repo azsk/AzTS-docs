@@ -41,7 +41,7 @@ MMA Utility setup can be cleaned up using Remove-AzTSMMARemovalUtilitySolutionRe
 Remove-AzTSMMARemovalUtilitySolutionResources ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
-    -DeleteResourceGroup `
+    [-DeleteResourceGroup `]
     -KeepInventoryAndProcessLogs
 
 ```
