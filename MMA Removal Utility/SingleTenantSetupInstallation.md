@@ -179,7 +179,6 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
          -SubscriptionId <HostingSubId> `
          -ResourceGroupName <HostingRGName> `
          -TargetSubscriptionIds @("<SubId1>","<SubId2>","<SubId3>") `
-         -TargetManagementGroupNames @("<MGName1>","<MGName2>","<MGName3>") `
          [-TenantScope]
 ```
 
@@ -193,8 +192,9 @@ $ConfiguredTargetScopes = Set-AzTSMMARemovalUtilitySolutionScopes `
 |SubscriptionId| Subscription id in which setup is installed.| Yes|
 |ResourceGroupName| Resource group name in which setup is installed.| Yes|
 |TargetSubscriptionIds| List of target subscription id(s) to be configured as part of target scopes.| No|
-|TargetManagementGroupNames| List of target management group name(s) to be configued as part of target scopes.| No|
 |TenantScope| Switch for tenant scope in case you want to scope the run at tenant level, configures scope at tenant level using tenant id from the context of user.| No|
+
+> _**Note:** If **-TenantScope** flag is passed then solution will fetch VM and extension inventory for all the subscriptions in tenant on which 'Remediation Identity' has access._
 
 [Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
