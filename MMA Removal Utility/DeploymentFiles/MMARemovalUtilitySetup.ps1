@@ -19,7 +19,7 @@ function Install-AzTSMMARemovalUtilitySolution {
     .PARAMETER SendUsageTelemetry
         Usage telemetry captures anonymous usage data and sends it to Microsoft servers. This will help in improving the product quality and prioritize meaningfully on the highly used features.
 	.LINK
-	    https://aka.ms/azts-mmaremovalutility
+	    https://aka.ms/azts/mmaremovalutility
 
 	#>
     Param(
@@ -394,7 +394,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
             Write-Host "Checking if user-assigned identity [$($UserAssignedIdentityName)] exists..." -ForegroundColor $([Constants]::MessageType.Info)            
             $UserAssignedIdentity = Get-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $UserAssignedIdentityName -ErrorAction SilentlyContinue
             if ($null -eq $UserAssignedIdentity) {
-                Write-Host "User-assigned identity [$($UserAssignedIdentityName)] does not exist." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "User-assigned identity [$($UserAssignedIdentityName)] does not exist." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host "Creating a new user-assigned identity [$($UserAssignedIdentityName)]." -ForegroundColor $([Constants]::MessageType.Info)                
                 $UserAssignedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $UserAssignedIdentityName -Location $Location
                 Start-Sleep -Seconds 60
@@ -2130,20 +2130,21 @@ class Constants {
     "   [1] Create resources needed to support AzTS MMA Removal Utility `r`n" +
     "   [2] Deploy packages to azure function app `r`n" +
     "   [3] Deploy monitoring dashboard to view progress `r`n" +
-    "More details about resources created can be found in the link: http://aka.ms/AzTS/MMARemovalUtility `r`n"
+    "More details about resources created can be found in the link: https://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $QuickInstallSolutionInstructionMsg = "This command will perform following major steps. It will:`r`n`n" + 
     "   [0] Validate and install required Az modules (Optional) `r`n" +
     "   [1] Setup central remediation managed identity `r`n" +
     "   [2] Create resources needed to support AzTS MMA Removal Utility `r`n" +
     "   [3] Deploy monitoring dashboard to view progress `r`n" +
-    "More details about resources created can be found in the link: http://aka.ms/AzTS/MMARemovalUtility `r`n"
+    "More details about resources created can be found in the link: https://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $DoubleDashLine = "================================================================================"
     static [string] $SingleDashLine = "--------------------------------------------------------------------------------"
     
     static [string] $NextSteps = "** Next steps **`r`n" + 
     "        a) AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned at http://aka.ms/AzTS/ScheduleMMARemovalUtility.`r`n" +
+    "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (By default VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
     "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (By default VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
     "`r`nFor any feedback contact us at: azsksup@microsoft.com.`r`n"
 
