@@ -699,7 +699,7 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
                 Write-Host $([Constants]::SingleDashLine)  
                 Write-Host "Completed MMA Removal utility scope(s) configuration." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::DoubleDashLine)
-                $logger.PublishCustomMessage("$([Constants]::NextSteps)", $([Constants]::MessageType.Info))
+                Write-Host $([Constants]::NextSteps) -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::DoubleDashLine)
                 return; 
             }
@@ -2136,8 +2136,7 @@ class Constants {
     "   [0] Validate and install required Az modules (Optional) `r`n" +
     "   [1] Setup central remediation managed identity `r`n" +
     "   [2] Create resources needed to support AzTS MMA Removal Utility `r`n" +
-    "   [3] Schedule daily discovery and removal schedules `r`n" +
-    "   [4] Deploy monitoring dashboard to view progress `r`n" +
+    "   [3] Deploy monitoring dashboard to view progress `r`n" +
     "More details about resources created can be found in the link: https://aka.ms/AzTS/MMARemovalUtility `r`n"
 
     static [string] $DoubleDashLine = "================================================================================"
@@ -2145,6 +2144,7 @@ class Constants {
     
     static [string] $NextSteps = "** Next steps **`r`n" + 
     "        a) AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned at http://aka.ms/AzTS/ScheduleMMARemovalUtility.`r`n" +
+    "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (By default VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
     "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (By default VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
     "`r`nFor any feedback contact us at: azsksup@microsoft.com.`r`n"
 

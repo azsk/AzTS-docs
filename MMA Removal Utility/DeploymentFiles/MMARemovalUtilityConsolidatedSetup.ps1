@@ -89,6 +89,8 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
 
     )
     Begin {
+        # Load AzTS Setup script in session
+        . ".\MMARemovalUtilitySetup.ps1"
         $DisableUsageTelemetry = $true
         $currentContext = $null
         $contextHelper = [ContextHelper]::new()
@@ -101,8 +103,6 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
     Process {
 
         $inputParams = $PSBoundParameters
-        # Load AzTS Setup script in session
-        . ".\MMARemovalUtilitySetup.ps1"
         # Get logger instance
         $logger = [Logger]::new($SubscriptionId)
         $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Install-MMARemovalUtilitySolutionConsolidated  `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
