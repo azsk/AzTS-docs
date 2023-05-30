@@ -205,7 +205,7 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         $logger.PublishCustomMessage($([Constants]::SingleDashLine))
         $logger.PublishCustomMessage("Started setting up MMA Removal utility scope(s)..." ,$([Constants]::MessageType.Info))
 
-        if ($TenantScope -eq $true)
+        if (($TenantScope -eq $true) -or (($TargetManagementGroupNames | Measure-Object).Count -gt 0))
         {
             $CommandArguments = @{
                 SubscriptionId = $SubscriptionId
@@ -219,7 +219,6 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
                 SubscriptionId = $SubscriptionId
                 ResourceGroupName = $HostRGName
                 TargetSubscriptionIds = $TargetSubscriptionIds
-                TargetManagementGroupNames = $TargetManagementGroupNames
                 ConsolidatedSetup = $true
             }
         }

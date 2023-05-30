@@ -255,6 +255,23 @@ virtualMachinesWithMMAExtensions
 
 We have observed this intermittent issue with App service deployment, please re-run the installation command with same parameter values. Command should proceed without any error in next attempt. If this doesn't help, please reach out to support team or log an issue.
 
+### **10. Extension removal phase progress tile on Monitoring dashboards shows some failures, what should I do to fix those?**
 
+Progress tile groups failures by error code, some known error code, reason and next steps to resolve them are listed below: 
 
+|Error Code|Description/Reason|Next steps
+|----|----|----|
+|AuthorizationFailed| Remediation Identity don't have enough permission to perform 'Extension delete' operation on VM(s).| Grant 'VM Contributor' role to Remediation Identity on VM(s) and re-run removal phase.|
+|OperationNotAllowed| VM(s) are in deallocated state or Lock is applied on the VM(s).| Turn on failed VM(s)/Remove Lock and re-run removal phase.|
 
+Error details are collected in Log Analytics workspace. For more details on error, go to Log Analytics workspace created during setup --> Select Logs and run following query: 
+
+``` KQL
+let timeago = timespan(7d);
+InventoryProcessingStatus_CL
+| where TimeGenerated > ago(timeago)
+| where ResourceType =~ "VMExtension" and Source_s == "AzTS_07_ExtensionRemovalProcessor"
+| where ProcessingStatus_s !~ "Initiated"
+| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)
+| project ResourceId, ProcessingStatus_s, ProcessErrorDetails_s
+```

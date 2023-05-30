@@ -520,10 +520,6 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target subscription(s).")]
         $TargetSubscriptionIds = @(),
 
-        [string[]]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
-        $TargetManagementGroupNames = @(),
-
         [switch]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false,
@@ -574,7 +570,7 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
             }
 
             # Step 3:  Get Scope resolver trigger processor function app.
-
+            $TargetManagementGroupNames = @()
             $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ResourceGroupName;
             $ResourceIdHash = get-hash($ResourceId)
             $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
