@@ -430,7 +430,7 @@ resource ScopeResolverTriggerProcessor 'Microsoft.Web/sites@2018-11-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.${environment().suffixes.storage}/${ScopeResolverProcessorQueueName}'
+          value: 'https://${storageName}.queue.${environment().suffixes.storage}/${ScopeResolverProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -606,7 +606,7 @@ resource ScopeResolverProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.${environment().suffixes.storage}/${ScopeResolverProcessorQueueName}'
+          value: 'https://${storageName}.queue.${environment().suffixes.storage}/${ScopeResolverProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -778,7 +778,7 @@ resource ExtensionInventoryProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionInventoryProcessorQueueName}'
+          value: 'https://${storageName}.queue.${environment().suffixes.storage}/${ExtensionInventoryProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -954,11 +954,11 @@ resource WorkItemSchedulerProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionInventoryProcessorQueueName}'
+          value: 'https://${storageName}.queue.${environment().suffixes.storage}/${ExtensionInventoryProcessorQueueName}'
         }
         {
           name: 'StorageQueueConfiguration__AdditionalQueues__0__QueueUri'
-          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionRemovalProcessorQueueName}'
+          value: 'https://${storageName}.queue.${environment().suffixes.storage}/${ExtensionRemovalProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'
@@ -1130,7 +1130,7 @@ resource ExtensionRemovalProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'StorageQueueConfiguration__DefaultQueueUri'
-          value: 'https://${storageName}.${environment().suffixes.storage}/${ExtensionRemovalStatucCheckProcessorQueueName}'
+          value: 'https://${storageName}.queue.${environment().suffixes.storage}/${ExtensionRemovalStatucCheckProcessorQueueName}'
         }
         {
           name: 'LAConfigurations__ResourceId'

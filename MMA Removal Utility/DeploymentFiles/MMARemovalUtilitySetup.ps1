@@ -2141,7 +2141,6 @@ class Constants {
     static [string] $NextSteps = "** Next steps **`r`n" + 
     "        a) AzTS MMA Removal Utility discovery and removal phases will be disabled by default. Please schedule the discovery and removal phases by following the steps mentioned at http://aka.ms/AzTS/ScheduleMMARemovalUtility.`r`n" +
     "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (By default VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
-    "        b) Using the Monitoring dashboard, you can view the progress and numbers of VMs which are eligible for Removal phase (By default VMs having both MMA and AMA agent are considered for Removal phase).`r`n" +
     "`r`nFor any feedback contact us at: azsksup@microsoft.com.`r`n"
 
     static [string] $KeyVaultSecretStoreSetupNextSteps = "** Next steps **`r`n" + 
