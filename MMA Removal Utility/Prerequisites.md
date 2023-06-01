@@ -52,7 +52,7 @@
 
 Download and extract deployment package using the below steps.
 
-1. Download deployment package zip from [here](../TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip?raw=1) to your local machine. <br/>
+1. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) to your local machine. <br/>
 
 2. Extract zip to local folder location. <br/>
 
