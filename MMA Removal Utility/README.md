@@ -8,7 +8,7 @@
 -----------------------------------------------------------------
 ## Overview 
 
-AzTS MMA Discovery and Removal Utility can be used to remove MMA extension/agent from Azure Virtual Machine (VMs) across subscriptions. Microsoft Monitoring Agent (MMA) [will be retired on 31 August 2024](https://azure.microsoft.com/en-us/updates/were-retiring-the-log-analytics-agent-in-azure-monitor-on-31-august-2024/) and users need to migrate to Azure Monitor agent (AMA). If you have already migrated all of your Virtual Machines (VMs) to start using AMA for monitoring, it is recommended to remove MMA agent to avoid duplication of logs.
+AzTS MMA Discovery and Removal Utility can be used to remove MMA extension/agent from Azure Virtual Machine (VMs) across subscriptions. Microsoft Monitoring Agent (MMA) [will be retired on 31 August 2024](https://azure.microsoft.com/en-us/updates/were-retiring-the-log-analytics-agent-in-azure-monitor-on-31-august-2024/) and users need to migrate to Azure Monitor Agent (AMA). If you have already migrated all of your Virtual Machines (VMs) to start using AMA for monitoring, it is recommended to remove MMA agent to avoid duplication of logs.
 
 AzTS MMA Discovery and Removal Utility can help to remove MMA extension from VMs which already have AMA extension present, in bulk/at tenant scale in centralized manner instead of doing it per VM manually.
 
