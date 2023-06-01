@@ -264,7 +264,7 @@ virtualMachinesWithMMAExtensions
 ```
 ### **9. Installation command is failing with error message, 'The deployment MMARemovalenvironmentsetup-20233029T103026 failed with error(s). Showing 1 out of 1 error(s). Status Message:  (Code:BadRequest). What should I do now?**
 
-We have observed this intermittent issue with App service deployment, please re-run the installation command with same parameter values. Command should proceed without any error in next attempt. If this doesn't help, please reach out to support team or log an issue.
+We have observed this intermittent issue with App service deployment, please re-run the installation command with same parameter values. Command should proceed without any error in next attempt. If this doesn't help, please reach out to support team at aztssup@microsoft.com or log an issue.
 
 ### **10. Extension removal phase progress tile on Monitoring dashboards shows some failures, what should I do to fix those?**
 
