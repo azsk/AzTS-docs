@@ -41,5 +41,6 @@ resource redisCache 'Microsoft.Cache/Redis@2019-07-01' = {
       name: redisCacheSku
     }
     enableNonSslPort: false // Azure_RedisCache_DP_Use_SSL_Port - Disable non-SSL port.
+    minimumTlsVersion: '1.2' //Azure_RedisCache_DP_Use_Secure_TLS_Version - TLS version set to 1.2
   }
 }
