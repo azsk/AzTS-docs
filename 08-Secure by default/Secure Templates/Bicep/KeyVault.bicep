@@ -43,6 +43,7 @@ resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2015-06-01' = {
     enabledForVolumeEncryption: enableVaultForVolumeEncryption
     tenantId: tenantId
     accessPolicies: accessPolicies
+    publicNetworkAccess: 'Disabled'
     sku: {
       name: vaultSku
       family: 'A'
