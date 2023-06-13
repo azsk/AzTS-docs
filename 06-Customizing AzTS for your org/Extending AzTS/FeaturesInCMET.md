@@ -1,7 +1,7 @@
 ## Features in CMET
 - ### Bulk Edit
 
-With Bulk Edit feature, custom tags can be added to more than 1 controls at single time.
+With Bulk Edit feature, custom tags can be added to more than 1 controls at a time.
 
 ### **Enabling Bulk Edit feature in CMET**
 

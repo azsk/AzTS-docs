@@ -59,7 +59,7 @@ Below mentioned appsettings are required for enabling CMET:
   - Invoke the configuration cmdlet
     - Configure-CustomControlAdditionPrerequisites -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName"
 
------
+
 ## Access to CMET (Control metadata editor tool)
 
 Only the privileged users can access CMET to update control metadata or to add new control. To elevate any user to privileged role kindly follow the steps mentioned below:

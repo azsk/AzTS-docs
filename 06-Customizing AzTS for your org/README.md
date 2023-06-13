@@ -16,6 +16,8 @@ Once CMET is enabled, you can use below features:
    - [Add new control based on custom Azure policy](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForPolicy.md)
    - [Add new control based on MDC Assessment](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForAssessment.md) 
    - [Update control metadata for existing control](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/UpdateControlMetadata.md)
+
+If you are looking for updating multiple controls at once, please follow steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/FeaturesInCMET.md#bulk-edit)
    
 
 
