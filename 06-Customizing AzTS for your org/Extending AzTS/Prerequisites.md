@@ -1,13 +1,13 @@
 ## Prerequisite AzTS configurations to enable Control Medatadata Editor tool(CMET)
 
-Few application settings need to be configured for AzTS Function Apps/WebApps to enable Control Medatadata Editor tool(CMET).These can be configured either from Azure portal or using the helper script provided with AzTS solution.
+Few application settings need to be configured for AzTS Function Apps/WebApps to enable Control Medatadata Editor tool(CMET).These can be configured either from Azure portal or using the helper script. After these application settings are configured, please add users to Prvileged editor roles using steps mentioned [here](#access-to-cmet-control-metadata-editor-tool).
 
 - Using Azure Portal
   1. Open the [Azure portal](https://portal.azure.com/).
   2. Navigate to AzTS host subscription -> AzTS host resource group.
   3. Go to required app service(AzSK-AzTS-WebApi-xxxxx/AzSK-AzTS-MetadataAggregator-xxxxx/AzSK-AzTS-WorkItemProcessor-xxxxx).
   4. Go to Configuration under Settings.
-  5. Click on "New application setting" to add required application setting and its value.
+  5. Click on 'New application setting' to add required application setting and its value.
   6. Repeat step 5 for all settings required for Function App/Web App. Then click 'Save'.
 
 
@@ -62,7 +62,7 @@ Below mentioned appsettings are required for enabling CMET:
 -----
 ## Access to CMET (Control metadata editor tool)
 
-Any user can add new controls using the CMET (Control metadata editor tool) from the AzTS UI. Only the privileged users can access CMET. To elevate any user to privileged role kindly follow the steps mentioned below:
+Only the privileged users can access CMET to update control metadata or to add new control. To elevate any user to privileged role kindly follow the steps mentioned below:
 
 - Open the [Azure portal](https://portal.azure.com/).
 - Navigate to AzTS host subscription -> AzTS host resource group.
