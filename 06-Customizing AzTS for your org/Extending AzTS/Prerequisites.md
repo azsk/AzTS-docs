@@ -1,7 +1,20 @@
 ## Prerequisite AzTS configurations to enable Control Medatadata Editor tool(CMET)
+
+Few application settings need to be configured for AzTS Function Apps/WebApps to enable Control Medatadata Editor tool(CMET).These can be configured either from Azure portal or using the helper script provided with AzTS solution.
+
+- Using Azure Portal
+  1. Open the [Azure portal](https://portal.azure.com/).
+  2. Navigate to AzTS host subscription -> AzTS host resource group.
+  3. Go to required app service(AzSK-AzTS-WebApi-xxxxx/AzSK-AzTS-MetadataAggregator-xxxxx/AzSK-AzTS-WorkItemProcessor-xxxxx).
+  4. Go to Configuration under Settings.
+  5. Click on "New application setting" to add required application setting and its value.
+  6. Repeat step 5 for all settings required for Function App/Web App. Then click 'Save'.
+
+
 Below mentioned appsettings are required for enabling CMET:
 
-### AzTS API
+
+### AzTS API(AzSK-AzTS-WebApi-xxxxx)
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__AddNewControl -> true
@@ -14,28 +27,21 @@ Below mentioned appsettings are required for enabling CMET:
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 
-### AzTS MetaDataAggregator
+### AzTS MetaDataAggregator(AzSK-AzTS-MetadataAggregator-xxxxx)
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 
-### AzTS WorkItemProcessor
+### AzTS WorkItemProcessor(AzSK-AzTS-WorkItemProcessor-xxxxx)
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 -----
-Above mentioned appsettings can be configured either from Azure portal or using the helper script provided with AzTS solution.
 
-- Azure Portal
-  - Open the [Azure portal](https://portal.azure.com/).
-  - Navigate to AzTS host subscription -> AzTS host resource group.
-  - Go to required app service(AzSK-AzTS-WebApi-xxxxx/AzSK-AzTS-MetadataAggregator-xxxxx/AzSK-AzTS-WorkItemProcessor-xxxxx).
-  - Go to Configuration under Settings.
-  - Click on "New application setting" to add required appsettings.
 
 - Using helper script
   - Download the script from [here](./Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)

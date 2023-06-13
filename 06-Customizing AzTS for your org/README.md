@@ -3,13 +3,20 @@
 
 # Extending AzTS
 
-## Add new control for existing SVT
+## Customizing AzTS for your org
 
-Azure Tenant Security Solution (AzTS) provides capability to add new controls(for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
-Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Microsoft Defender for Cloud assessment.
+### Control Medatadata Editor tool
+CMET (Control Metadata Editor Tool) is a tool that can be used by privileged users (mostly by admins maintaining AzTS setup for organization)to customize AzTS for organization. It provides capabilities to update control metadata (Tags, Display Name, control settings(if applicable)), enable or disable control, etc.
+This feature is disabled by default. To enable this feature for your AzTS setup, please follow steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#prerequisite-azts-configurations-to-enable-control-medatadata-editor-tool).
+
+CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user.(This is only required once per user).
+
+Once CMET is enabled, you can use below features:
 
    - [Add new control based on custom Azure policy](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForPolicy.md)
    - [Add new control based on MDC Assessment](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForAssessment.md) 
+   - [Update control metadata for existing control](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/UpdateControlMetadata.md)
+   
 
 
 
