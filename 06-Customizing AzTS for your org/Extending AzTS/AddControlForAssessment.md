@@ -2,7 +2,7 @@
 Please follow the below mentioned steps to add new controls based on Microsoft Defender for Cloud (MDC) Assessment/Recommendation:
 
 **Step 0:** Following prerequisites are required to add new control.
-   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-medatadata-editor-toolcmet).
+   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet).
 
    2. CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user (This is only required once per user).
 
