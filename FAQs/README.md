@@ -357,13 +357,14 @@ If you are not able to see subscriptions in AzTS UI , please check below prerequ
 
 Please check if below required permissions are granted. These permissions require admin consent. Therefore, user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.
 
-1. 'User.Read' permission for AzTS UI AD application
+**1. 'User.Read' permission for AzTS UI AD application**
 
 This permission is used to read logged in user's details such as name, email, and photo.  
 
 > **Note:** If you do not have the permission to grant this permission, please contact your administrator to complete the setup using [this PowerShell script](../Scripts/ScriptToSetupAzureADApplicationForAzTSUI.ps1?raw=1). To run this script, you need to provide the subscription id and resource group name in which AzTS solution needs to be installed.
 
-2. MS Graph "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permissions for Scanner identity (MI) 
+
+**2. MS Graph "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permissions for Scanner identity (MI)** 
  
 This permission is used to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). 
 </br>If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file.
@@ -379,7 +380,8 @@ In case you are using Privileged Identity Management(PIM) for assigning access, 
 
 From next AzTS scan run onwards, you should be able to see subsccriptions for which you have PIM based access.
 
-3. MS Graph "User.Read.All" for AzTS Internal MI identity 
+
+**3. MS Graph "User.Read.All" for AzTS Internal MI identity** 
 
 AzTS Internal MI is used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. </br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file.
 
