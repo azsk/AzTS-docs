@@ -6,8 +6,9 @@
 ## Customizing AzTS for your org
 
 ### Control Metadata Editor tool
-CMET (Control Metadata Editor Tool) is a tool that can be used by privileged users (mostly by admins maintaining AzTS setup for organization)to customize AzTS for organization. It provides capabilities to update control metadata (Tags, Display Name, control settings(if applicable)), enable or disable control, etc.
-This feature is disabled by default. To enable this feature for your AzTS setup, please follow steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet).
+CMET (Control Metadata Editor Tool) is a tool designed for privileged users, typically administrators responsible for maintaining the AzTS setup for an organization. It allows customization of AzTS by providing features such as updating control metadata (tags, display name, control settings if applicable), enabling or disabling controls, and more.
+
+Please note that this feature is disabled by default. To enable CMET for your AzTS setup, kindly follow the steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet)to enable it.
 
 CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user.(This is only required once per user).
 

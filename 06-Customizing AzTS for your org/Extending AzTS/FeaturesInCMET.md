@@ -1,7 +1,7 @@
 ## Features in CMET
 - ### Bulk Edit
 
-With Bulk Edit feature, custom tags can be added to more than 1 controls at a time.
+The Bulk Edit feature allows you to add custom tags to multiple controls simultaneously.
 
 ### **Enabling Bulk Edit feature in CMET**
 
@@ -27,7 +27,7 @@ Please follow below steps to add these settings.
 Once Bulk Edit Feature is enabled, follow below steps to add custom tag(s) for set of controls.
 
 1. Open AzTS UI in new browser window.
-2. Open CMET editor (for this user will require editor permission over CMET, if you don’t have permission, please follow steps mentioned [here](../Extending%20AzTS/Prerequisites.md#access-to-cmet-control-metadata-editor-tool)).
+2. Open CMET editor (To open the CMET editor, you need to have editor permissions. If you don't have the required permission, please follow the steps mentioned [here](../Extending%20AzTS/Prerequisites.md#access-to-cmet-control-metadata-editor-tool)).
 
 ![Resources](../../Images/06_BulkEdit_OpenCMET.png)
 
@@ -48,11 +48,11 @@ Once Bulk Edit Feature is enabled, follow below steps to add custom tag(s) for s
 
 ![Resources](../../Images/06_BulkEdit_Update.png)
 
-7. Close the edit popup after bulk updates success message is displayed.
+7. After the success message for bulk updates is displayed, please close the edit popup.
 
 ![Resources](../../Images/06_BulkEdit_UpdateSuccess.png)
 
-8. Currently after adding the tags to required controls, Baseline control inventory needs to be triggered from Metadata Aggregator function list. 
+8. Currently, after adding the tags to the necessary controls, you need to trigger the Baseline control inventory from the Metadata Aggregator function list.
 
 - Go to AzTS Metadata Aggregator function app (AzSK-AzTS-MetadataAggregator-xxxxx) and update app settings 'WebJobConfigurations__ForceFetch' with value as true. Click 'OK'.
 ![Resources](../../Images/06_BulkEdit_MAUpdate_1.png)
@@ -76,15 +76,20 @@ Once Bulk Edit Feature is enabled, follow below steps to add custom tag(s) for s
 
 
 ### **Validating custom tags added using Bulk Edit:**
-Once custom tag has been added for set of controls, follow below validation steps:
+To search controls by a newly added tag value, such as 'LearningBaselineTest' in this example, follow these steps:
 
-1. Refresh CMET editor view.
+1. Open the CMET editor in new browser window (it might take approx 5 min to reflect newly added tag) 
 
-![Resources](../../Images/06_BulkEdit_Refresh.png)
+2. Look for the search textbox within the editor.
 
-2. Search controls by newly added tag value (like ‘LearningBaselineTest’ in example), this will list all the controls which have this tag. 
+3. Enter the tag value 'LearningBaselineTest' in the search field.
 
+4. The CMET editor will display a list of controls that have the specified tag value, allowing you to view and manage them accordingly.
 ![Resources](../../Images/06_BulkEdit_FilterControls.png)
+
+By following these steps, you can easily search for controls based on a specific tag value like 'LearningBaselineTest'.
+
+
 
 
 

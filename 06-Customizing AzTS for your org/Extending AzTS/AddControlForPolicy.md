@@ -1,8 +1,8 @@
 ## Add new control based on custom Azure policy
 Please follow the below mentioned steps to add new controls based on custom Azure Policy:
 
-**Step 0:** Following prerequisites are required to add new control.
-   1. This feature is not enabled by default. If you have not enabled this feature in your AzTS setup yet, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet).
+**Step 0:** Following prerequisites are required to add a new control.
+   1. By default, CMET(Control metadata editor tool) feature is not turned on. If you haven't enabled it in your AzTS setup yet, please follow the steps provided [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet) to enable it.
 
    2. CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user (This is only required once per user).
 
@@ -46,12 +46,12 @@ Please follow the below mentioned steps to add new controls based on custom Azur
 
 ![Open new control window](../../Images/06_ExtendingAzTS_Add_New_Control.png)
 
-**Step 6:** Select the **Service/Feature** for which you want to add new control.
+**Step 6:** Select the **Service/Feature** for which you want to add a new control.
 > **Note:** Currently addition of new controls is only supported for existing services evaluated by AzTS. 
 
 ![Select Feature Name](../../Images/06_ExtendingAzTS_NewControl_Feature.png)
 
-**Step 7:** Select either one of the existing **Security Domain** for the control or if you want to add new Security Domain, type required domain in text field.
+**Step 7:** Select either one of the existing **Security Domain** for the control or if you want to add a new Security Domain, type required domain in text field.
 
 ![Select Security Domain](../../Images/06_ExtendingAzTS_NewControl_Security_Domain.png)
 

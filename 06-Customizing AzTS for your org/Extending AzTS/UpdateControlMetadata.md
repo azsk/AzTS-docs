@@ -1,8 +1,8 @@
 ## Update existing control metadata
-Control metadata like Display Name, Category, Tags, Description, Recommendations can be updated using Control Metadata Editor Tool(CMET). Please follow the below mentioned steps to update control metadata:
+To update control metadata, including fields like Display Name, Category, Tags, Description, and Recommendations, you can utilize the Control Metadata Editor Tool (CMET). Follow the steps below to update control metadata:
 
 **Step 0:** Following prerequisites are required:
-   1. CMET(Control metadata editor tool) is not enabled in AzTS setup by default. To enable this feature, please follow steps mentioned [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet).
+   1. By default, CMET(Control metadata editor tool) feature is not turned on. If you haven't enabled it in your AzTS setup yet, please follow the steps provided [here](Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet) to enable it.
 
    2. CMET is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user (This is only required once per user).
 
