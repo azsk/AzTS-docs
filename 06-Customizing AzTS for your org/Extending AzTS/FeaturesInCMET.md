@@ -44,13 +44,36 @@ Once Bulk Edit Feature is enabled, follow below steps to add custom tag(s) for s
 ![Resources](../../Images/06_BulkEdit_ToggleEdit.png)
 
 6. Enter the value for custom tag and click on 'Update'.
-  >Note: The tag value should be without any spaces in between two words. It is recommended to use camel casing for better readability.
+  >Note: Tags must be PascalCase, starting with a letter and allowing alphanumeric characters, underscores, and hyphens. Length should be 3-50 characters.
 
 ![Resources](../../Images/06_BulkEdit_Update.png)
 
 7. Close the edit popup after bulk updates success message is displayed.
 
 ![Resources](../../Images/06_BulkEdit_UpdateSuccess.png)
+
+8. Currently after adding the tags to required controls, Baseline control inventory needs to be triggered from Metadata Aggregator function list. 
+
+- Go to AzTS Metadata Aggregator function app (AzSK-AzTS-MetadataAggregator-xxxxx) and update app settings 'WebJobConfigurations__ForceFetch' with value as true. Click 'OK'.
+![Resources](../../Images/06_BulkEdit_MAUpdate_1.png)
+ 
+- Click on Save.
+![Resources](../../Images/06_BulkEdit_MAUpdate_2.png)
+
+- Go to ‘Baseline control inventory processor’ in Metadata aggregator.
+![Resources](../../Images/06_BulkEdit_MAUpdate_3.png)
+
+- Click on 'Code + Test'. Click on 'Test/Run' and 'Run'.
+![Resources](../../Images/06_BulkEdit_MAUpdate_4.png)
+
+- Wait for the execution to complete.
+
+- Revert the app setting  'WebJobConfigurations__ForceFetch' to false. Click 'OK'.
+![Resources](../../Images/06_BulkEdit_MAUpdate_5.png)
+
+- Click on Save.
+![Resources](../../Images/06_BulkEdit_MAUpdate_6.png)
+
 
 ### **Validating custom tags added using Bulk Edit:**
 Once custom tag has been added for set of controls, follow below validation steps:
