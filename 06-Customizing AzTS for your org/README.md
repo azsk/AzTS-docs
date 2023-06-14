@@ -3,13 +3,23 @@
 
 # Extending AzTS
 
-## Add new control for existing SVT
+## Customizing AzTS for your org
 
-Azure Tenant Security Solution (AzTS) provides capability to add new controls(for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
-Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Microsoft Defender for Cloud assessment.
+### Control Metadata Editor tool
+CMET (Control Metadata Editor Tool) is a tool designed for privileged users, typically administrators responsible for maintaining the AzTS setup for an organization. It allows customization of AzTS by providing features such as updating control metadata (tags, display name, control settings if applicable), enabling or disabling controls, and more.
+
+By default, CMET(Control metadata editor tool) feature is not turned on. If you haven't enabled it in your AzTS setup yet, please follow the steps provided [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#prerequisite-azts-configurations-to-enable-control-metadata-editor-toolcmet).
+
+CMET (Control metadata editor tool) is only accessible to privileged users based on AzTS API configurations. Please follow the steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/Prerequisites.md#access-to-cmet-control-metadata-editor-tool) to add yourself as privileged user.(This is only required once per user).
+
+Once CMET is enabled, you can use below features:
 
    - [Add new control based on custom Azure policy](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForPolicy.md)
    - [Add new control based on MDC Assessment](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForAssessment.md) 
+   - [Update control metadata for existing control](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/UpdateControlMetadata.md)
+
+If you are looking for updating multiple controls at once, please follow steps mentioned [here](../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/FeaturesInCMET.md#bulk-edit).
+   
 
 
 
