@@ -296,6 +296,18 @@
                     "RollbackCommand": "Reset-RedisCacheMinReqTLSVersion",
                     "Arguments": ["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_Bastion_AuthZ_Disable_Shareable_Link",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableBastionShareableLink.ps1",
+            "LoadCommand": "Remediate-DisableBastionShareableLink.ps1",     
+            "InitCommand": "Disable-BastionShareableLink",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Enable-BastionShareableLink",
+                    "Arguments": ["SubscriptionId"]
+                }
         }
     ]
 }

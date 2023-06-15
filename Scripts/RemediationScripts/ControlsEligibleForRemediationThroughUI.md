@@ -49,6 +49,7 @@
 
 24. [Azure_RedisCache_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#24-Azure_RedisCache_DP_Use_Secure_TLS_Version)
 
+25. [Azure_Bastion_AuthZ_Disable_Shareable_Link](ControlsEligibleForRemediationThroughUI.md#25-Azure_Bastion_AuthZ_Disable_Shareable_Link)
 
 
 <br />
@@ -366,6 +367,19 @@ Use approved version of TLS for Azure RedisCache.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetRedisCacheMinReqTLSVersion](Remediate-SetRedisCacheMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 25. Azure_Bastion_AuthZ_Disable_Shareable_Link
+
+### Display Name
+Azure Bastion Shareable links must not be used.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBastionShareableLink](Remediate-DisableBastionShareableLink.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
