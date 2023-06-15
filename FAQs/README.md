@@ -23,7 +23,10 @@
  1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
  
 - ### Control Remediation
- 1. [I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?](#1-i-want-to-turn-off-public-access-on-key-vault-but-it-is-consumed-by-azure-function-apps-using-consumption-plan-how-do-i-add-the-ip-addresses-which-are-dynamically-changing)
+ 1. [How can I disable public access on my Key Vault when it is being used by Azure Function Apps on a consumption plan? How do I handle dynamically changing IP addresses?](#1-how-can-i-disable-public-access-on-my-key-vault-when-it-is-being-used-by-azure-function-apps-on-a-consumption-plan-how-do-i-handle-dynamically-changing-ip-addresses)
+
+ - ### UI
+ 1. [I can't see my subscriptions in the AzTS UI. What prerequisites or settings might I be missing?](#1-i-cant-see-my-subscriptions-in-the-azts-ui-what-prerequisites-or-settings-might-i-be-missing)
 
 --------------------------------------------------
 </br>
@@ -219,7 +222,7 @@ The above steps should stop this recurring alert, please validate after 24 hours
 
 - ### **Control Remediation**
 
-### **1. I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?** 
+### **1. How can I disable public access on my Key Vault when it is being used by Azure Function Apps on a consumption plan? How do I handle dynamically changing IP addresses?** 
 To remediate the control [Azure_KeyVault_NetSec_Disable_Public_Network_Access](https://github.com/azsk/AzTS-docs/blob/users/vinala/keyvaultiprangescript/Control%20coverage/Feature/KeyVault.md#azure_keyvault_netsec_disable_public_network_access), You need to [configure network settings](https://learn.microsoft.com/en-us/azure/key-vault/general/how-to-azure-key-vault-network-security?tabs=azure-portal) on key vault to allow access only from selected virtual networks and IP Addresses. However, If the key vault is being consumed from Azure Function Apps which is deployed using Consumption plan, the IP Addresses are bound to dynamically change. One way to allow access to Azure Functions Apps (Consumption Plan) is to whitelist all the Azure IP Addresses pertaining to 'App Service' service tag and the corresponding function app deployed region. 
 
 Azure publishes the information [here](https://www.microsoft.com/en-us/download/details.aspx?id=56519) every week. Per their installation instruction mentioned in the download center, New ranges appearing in the file will not be used in Azure for at least one week. Hence, users have atmost one week to update the IP ranges to have uninterrupted access to the key vault from the function apps. 
@@ -337,4 +340,59 @@ stages:
           }
         azurePowerShellVersion: 'LatestVersion'
 ```
+
+- ### **UI**
+
+### **1. I can't see my subscriptions in the AzTS UI. What prerequisites or settings might I be missing?**
+If you are not able to see subscriptions in AzTS UI, please check below prerequisites followed by troubleshooting steps:
+
+### Prerequisites:
+1. To access AzTS, the signed-in user must have one of the following permissions at the subscription or resource group level:
+
+- Owner
+- Contributor
+- Service Administrator
+- CoAdministrator
+- Account Administrator
+- Security Reader
+- Security Administrator
+
+Please ensure that your user account has one of these permissions set up at the appropriate scope to effectively use AzTS.
+
+2. To ensure the availability of data in AzTS, please ensure that the subscription scan has completed for the day. The automated AzTS scans are typically scheduled to start around 1:00 AM UTC. If you need to trigger a scan immediately after installing AzTS or at any other time, you can use the [On-Demand scan command](../01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) to initiate the scan process right away. 
+
+3. If access to resources has been recently granted, it may take up to 24 hours for the changes to be reflected in AzTS during the next automated scan. If you would like to see the newly added access reflected immediately, you can use the [On-Demand scan command](../01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) to trigger a scan outside of the regular schedule. This will ensure that the latest access information is updated in AzTS without waiting for the next automated scan.
+
+
+### **TroubleShooting Steps:**
+
+Please check if below required permissions are granted. These permissions require admin consent. Therefore, user must be a member of one of the following administrator roles: </br>Global Administrator or Privileged Role Administrator.
+
+**1. 'User.Read' permission for AzTS UI AD application**
+
+This permission is used to read logged in user's details such as name, email, and photo.  
+
+> **Note:** If you do not have the permission to grant this permission, please contact your administrator to complete the setup using [this PowerShell script](../Scripts/ScriptToSetupAzureADApplicationForAzTSUI.ps1?raw=1). To run this script, you need to provide the subscription id and resource group name in which AzTS solution needs to be installed.
+
+
+**2. MS Graph "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permissions for Scanner identity (MI)** 
+ 
+This permission is used to read data in your organization's directory, such as users, groups and apps and to validate Role-based access control (RBAC) using Azure AD Privileged Identity Management (PIM). 
+</br>If you do not have the required permission, please contact your administrator to get "PrivilegedAccess.Read.AzureResources" and "Directory.Read.All" permission for your scanner MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToScannerMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (scanner MI) which will be available in deployment log file.
+
+In case you are using Privileged Identity Management(PIM) for assigning access, please make sure that below settings are enabled:
+1. Go to Azure Portal.
+2. Navigate to AzTS host subscription -> AzTS host resource group.
+3. Go to AzTS Metadata Aggregator function app (AzSK-AzTS-MetadataAggregator-xxxxx).
+4. Go to Configurations under Settings.
+5. Check if setting AuthzSettings__IsPIMEnabled is available. If not, add new application setting 'AuthzSettings__IsPIMEnabled' with value as true. Click 'OK'. (This will enable AzTS to fetch role assignemnts using PIM API calls).
+6. Click 'Save'.
+7. Additionally, please verify if the necessary Microsoft Graph permissions have been granted to the Scanner Managed Identity (MI), as mentioned earlier. If these permissions are granted after the completion of AzTS setup, you will need to rerun the AzTS setup installation command (Install-AzSKTenantSecuritySolution) with the parameter -ScanIdentityHasGraphPermission set to $true. For more detailed information, you can refer [here](../01-Setup%20and%20getting%20started/README.md#step-6-of-6-run-setup-command).
+
+From next AzTS scan run onwards, you should be able to see subsccriptions for which you have PIM based access.
+
+**3. MS Graph "User.Read.All" for AzTS Internal MI identity** 
+The AzTS Internal Managed Identity (MI) is utilized by the AzTS UI to retrieve the list of security groups that the user belongs to. In order to perform this task, the internal MI requires the 'User.Read.All' permission. If you don't currently have this permission, kindly reach out to your administrator to request the 'User.Read.All' permission for the internal MI in Azure Active Directory. Your administrator can grant this permission by utilizing a provided [PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To execute the script, you will need to provide the object ID of the user-assigned managed identity (internal MI), which can be found in the deployment logs file.
+
+
 
