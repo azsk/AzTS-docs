@@ -23,7 +23,7 @@
  1. [I am getting alert mail "AzTS MONITORING ALERT: AzTS Auto-Updater Failure Alert". What does it mean? How to stop/resolve this alert?](#1-i-am-getting-alert-mail-azts-monitoring-alert-azts-auto-updater-failure-alert-what-does-it-mean-how-to-stopresolve-this-alert)
  
 - ### Control Remediation
- 1. [I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?](#1-i-want-to-turn-off-public-access-on-key-vault-but-it-is-consumed-by-azure-function-apps-using-consumption-plan-how-do-i-add-the-ip-addresses-which-are-dynamically-changing)
+ 1. [How can I disable public access on my Key Vault when it is being used by Azure Function Apps on a consumption plan? How do I handle dynamically changing IP addresses?](#1-how-can-i-disable-public-access-on-my-key-vault-when-it-is-being-used-by-azure-function-apps-on-a-consumption-plan-how-do-i-handle-dynamically-changing-ip-addresses)
 
  - ### UI
  1. [I can't see my subscriptions in the AzTS UI. What prerequisites or settings might I be missing?](#1-i-cant-see-my-subscriptions-in-the-azts-ui-what-prerequisites-or-settings-might-i-be-missing)
@@ -222,7 +222,7 @@ The above steps should stop this recurring alert, please validate after 24 hours
 
 - ### **Control Remediation**
 
-### **1. I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?** 
+### **1. How can I disable public access on my Key Vault when it is being used by Azure Function Apps on a consumption plan? How do I handle dynamically changing IP addresses?** 
 To remediate the control [Azure_KeyVault_NetSec_Disable_Public_Network_Access](https://github.com/azsk/AzTS-docs/blob/users/vinala/keyvaultiprangescript/Control%20coverage/Feature/KeyVault.md#azure_keyvault_netsec_disable_public_network_access), You need to [configure network settings](https://learn.microsoft.com/en-us/azure/key-vault/general/how-to-azure-key-vault-network-security?tabs=azure-portal) on key vault to allow access only from selected virtual networks and IP Addresses. However, If the key vault is being consumed from Azure Function Apps which is deployed using Consumption plan, the IP Addresses are bound to dynamically change. One way to allow access to Azure Functions Apps (Consumption Plan) is to whitelist all the Azure IP Addresses pertaining to 'App Service' service tag and the corresponding function app deployed region. 
 
 Azure publishes the information [here](https://www.microsoft.com/en-us/download/details.aspx?id=56519) every week. Per their installation instruction mentioned in the download center, New ranges appearing in the file will not be used in Azure for at least one week. Hence, users have atmost one week to update the IP ranges to have uninterrupted access to the key vault from the function apps. 
