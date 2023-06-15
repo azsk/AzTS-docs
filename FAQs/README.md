@@ -26,7 +26,7 @@
  1. [I want to turn OFF public access on key vault, but it is consumed by Azure Function Apps using consumption plan, How do I add the IP Addresses which are dynamically changing?](#1-i-want-to-turn-off-public-access-on-key-vault-but-it-is-consumed-by-azure-function-apps-using-consumption-plan-how-do-i-add-the-ip-addresses-which-are-dynamically-changing)
 
  - ### UI
- 1. [I am not able to see subscriptions in AzTS UI. Are there any prequisites or any settings that I am missing?](#1-i-am-not-able-to-see-subscriptions-in-azts-ui-are-there-any-prequisites-or-any-settings-that-i-am-missing)
+ 1. [I can't see my subscriptions in the AzTS UI. What prerequisites or settings might I be missing?](#1-i-cant-see-my-subscriptions-in-the-azts-ui-what-prerequisites-or-settings-might-i-be-missing)
 
 --------------------------------------------------
 </br>
@@ -343,15 +343,26 @@ stages:
 
 - ### **UI**
 
-### **1. I am not able to see subscriptions in AzTS UI. Are there any prequisites or any settings that I am missing?**
-If you are not able to see subscriptions in AzTS UI , please check below prerequisites followed by troubleshooting steps:
+### **1. I can't see my subscriptions in the AzTS UI. What prerequisites or settings might I be missing?**
+If you are not able to see subscriptions in AzTS UI, please check below prerequisites followed by troubleshooting steps:
 
 ### Prerequisites:
-1. Signed in user must have one of the following permissions at subscription or resource group scope: Owner, Contributor, ServiceAdministrator, CoAdministrator, AccountAdministrator, Security Reader, Security Admin.
+1. To access AzTS, the signed-in user must have one of the following permissions at the subscription or resource group level:
 
-2. Subscription scan should have completed for the day. Automated AzTS scans are configured to start at approximately 1:00 AM UTC. You can use the [On-Demand scan](../01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan immediately after the installation.
+- Owner
+- Contributor
+- Service Administrator
+- CoAdministrator
+- Account Administrator
+- Security Reader
+- Security Administrator
 
-3. In case access is recently granted, it will reflect in AzTS from next scan onwards. So in case of automated AzTS scan it would take next 24 hours to reflect latest access. You can use the [On-Demand scan](README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) command to trigger the scan in case you want to reflect newly added access immediately.
+Please ensure that your user account has one of these permissions set up at the appropriate scope to effectively use AzTS.
+
+2. To ensure the availability of data in AzTS, please ensure that the subscription scan has completed for the day. The automated AzTS scans are typically scheduled to start around 1:00 AM UTC. If you need to trigger a scan immediately after installing AzTS or at any other time, you can use the [On-Demand scan command](../01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) to initiate the scan process right away. 
+
+3. If access to resources has been recently granted, it may take up to 24 hours for the changes to be reflected in AzTS during the next automated scan. If you would like to see the newly added access reflected immediately, you can use the [On-Demand scan command](../01-Setup%20and%20getting%20started/README.md#2-manually-trigger-azts-on-demand-scan-for-entire-tenant) to trigger a scan outside of the regular schedule. This will ensure that the latest access information is updated in AzTS without waiting for the next automated scan.
+
 
 ### **TroubleShooting Steps:**
 
@@ -376,15 +387,12 @@ In case you are using Privileged Identity Management(PIM) for assigning access, 
 4. Go to Configurations under Settings.
 5. Check if setting AuthzSettings__IsPIMEnabled is available. If not, add new application setting 'AuthzSettings__IsPIMEnabled' with value as true. Click 'OK'. (This will enable AzTS to fetch role assignemnts using PIM API calls).
 6. Click 'Save'.
-7. Also check whether MS based graph access are granted to Scanner MI as mentioned above. If these permissions are granted post AzTS setup completion, then re-run AzTS setup installation command (Install-AzSKTenantSecuritySolution) with parameter -ScanIdentityHasGraphPermission:$true. More details can be found [here](../01-Setup%20and%20getting%20started/README.md#step-6-of-6-run-setup-command)
+7. Additionally, please verify if the necessary Microsoft Graph permissions have been granted to the Scanner Managed Identity (MI), as mentioned earlier. If these permissions are granted after the completion of AzTS setup, you will need to rerun the AzTS setup installation command (Install-AzSKTenantSecuritySolution) with the parameter -ScanIdentityHasGraphPermission set to $true. For more detailed information, you can refer [here](../01-Setup%20and%20getting%20started/README.md#step-6-of-6-run-setup-command).
 
 From next AzTS scan run onwards, you should be able to see subsccriptions for which you have PIM based access.
 
-
 **3. MS Graph "User.Read.All" for AzTS Internal MI identity** 
-
-AzTS Internal MI is used by AzTS UI to read the list of security groups that the user is a member of. For this purpose, internal MI requires 'User.Read.All' permission. </br>If you do not have the required permission, please contact your administrator to get 'User.Read.All' permission for the internal MI in Azure Active Directory using [this PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To run this script, you need to provide the object id of the user-assigned managed identity (internal MI) which will available in deployment logs file.
-
+The AzTS Internal Managed Identity (MI) is utilized by the AzTS UI to retrieve the list of security groups that the user belongs to. In order to perform this task, the internal MI requires the 'User.Read.All' permission. If you don't currently have this permission, kindly reach out to your administrator to request the 'User.Read.All' permission for the internal MI in Azure Active Directory. Your administrator can grant this permission by utilizing a provided [PowerShell script](../Scripts/ScriptToGrantGraphPermissionToInternalMI.ps1?raw=1). To execute the script, you will need to provide the object ID of the user-assigned managed identity (internal MI), which can be found in the deployment logs file.
 
 
 
