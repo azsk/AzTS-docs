@@ -295,7 +295,7 @@ function Set-VMGuestConfigExtAndMI {
     $NonCompliantVirtualMachineGustExt = @()
 
 
-    Write-Host "Separating Virtual Machine(s) for which Guest Configuration is not installed with System Assigned MI..."
+    Write-Host "Separating Virtual Machine(s) for which Guest Configuration is not installed on VM with System Assigned MI..."
 
     $VirtualMachineDetails | ForEach-Object {
         
@@ -422,11 +422,9 @@ function Set-VMGuestConfigExtAndMI {
             $VirtualMachine | Add-Member -NotePropertyName isGuestConfigurationInstalledByRemediation -NotePropertyValue $false
             $VirtualMachine | Add-Member -NotePropertyName isSystemManagedIdenityInstalledByRemediation -NotePropertyValue $false
 
-            try {
-                if ($_.ResourceName -ieq "v-rahkumaTestVM" -or $_.ResourceName -ieq "v-rahkumaTestVM2" ) {
+            try {                
                     #checking the System Assigned Managed Identity
-                    $VMResponse = @()
-                    
+                    $VMResponse = @()                    
                     if (![System.Convert]::ToBoolean($_.isSystemAssignedManagedIdentityPresent)) {
                         Write-Host "Installing System Assigned Managed Idenity on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
                         $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
@@ -458,7 +456,7 @@ function Set-VMGuestConfigExtAndMI {
                     else {
                         $isManagedIdentityInstallSuccessful = $true
                     }
-                }
+                
 
                 #to be reviewed
                 if ($isGuestConfigurationExtInstallSuccessful -and $isManagedIdentityInstallSuccessful) {
@@ -722,9 +720,8 @@ function Reset-VMGuestConfigExtAndMI {
         try {
             
             if ($_.isGuestConfigurationInstalledByRemediation -or $_.isSystemManagedIdenityInstalledByRemediation) {
-                if ($_.ResourceName -ieq "v-rahkumaTestVM" -or $_.ResourceName -ieq "v-rahkumaTestVM2" ) { 
-
-                    if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation)) {
+               
+                if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation)) {
                          Write-Host "Rolling back Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
 
                         if ($_.OsType -ieq "Windows") {
@@ -775,7 +772,7 @@ function Reset-VMGuestConfigExtAndMI {
                         $IsManagedIdentityRolledback = $true
                     }
 
-                }
+                
         
                 if ($IsGuestConfigurationExtensionRolledback -and $IsManagedIdentityRolledback) {
                     Write-Host "Succesfully rolled back Guest Configuration Extension and System Assigned MI on VirtualMachine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -877,15 +874,12 @@ function Validate-VMGuestConfigExtAndMI {
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
-        
-        .PARAMETER Force
-        Specifies a forceful roll back without any prompts.
-        
+         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
       
         .PARAMETER FilePath
-        Specifies the path to the file to be used as input for the roll back.
+        Specifies the path to the file to be used as input for the validate.
 
         .INPUTS
         None. You cannot pipe objects to ReSet-VMGuestConfigExtAndMI.
@@ -910,7 +904,7 @@ function Validate-VMGuestConfigExtAndMI {
         $PerformPreReqCheck,
 
         [String]
-        [Parameter(Mandatory = $true, HelpMessage = "Specifies the path to the file to be used as input for the roll back")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the path to the file to be used as input for the validate")]
         $FilePath
     )
 
@@ -989,7 +983,7 @@ function Validate-VMGuestConfigExtAndMI {
     $validVirtualMachineDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\Rollback"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\Validate"
 
     if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
@@ -1024,8 +1018,7 @@ function Validate-VMGuestConfigExtAndMI {
         try {
             
             if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation) -or [System.Convert]::ToBoolean($_.isSystemManagedIdenityInstalledByRemediation)) {
-                if ($_.ResourceName -ieq "v-rahkumaTestVM" -or $_.ResourceName -ieq "v-rahkumaTestVM2" ) { 
-
+                
                     if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation)) {
                  Write-Host "Validating Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
                        
@@ -1069,7 +1062,7 @@ function Validate-VMGuestConfigExtAndMI {
                         $IsManagedIdentityValidated = $true
                     }
 
-                }
+                
         
                 if ($IsGuestConfigurationExtensionValidated -and $IsManagedIdentityValidated) {
                     Write-Host "Succesfully validated Guest Configuration Extension and System Assigned MI on VirtualMachine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -1101,7 +1094,7 @@ function Validate-VMGuestConfigExtAndMI {
         }
     }
 
-    $colsPropertyRollBack = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    $colsPropertyValidate = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 50; Alignment = "left" },
     @{Expression = { $_.isGuestConfigurationInstalledByRemediation }; Label = "isGuestConfigurationInstalledByRemediation"; Width = 50; Alignment = "left" },
@@ -1117,7 +1110,7 @@ function Validate-VMGuestConfigExtAndMI {
         
         if ($($VirtualMachineValidated | Measure-Object).Count -gt 0) {
             Write-Host "Guest Configuration Extension and System Assigned MI is Validated successfully on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
-            $VirtualMachineValidated | Format-Table -Property $colsPropertyRollBack -Wrap
+            $VirtualMachineValidated | Format-Table -Property $colsPropertyValidate -Wrap
 
             # Write this to a file.
             $VirtualMachineValidatedFile = "$($backupFolderPath)\ValidatedVirtualMachine.csv"
