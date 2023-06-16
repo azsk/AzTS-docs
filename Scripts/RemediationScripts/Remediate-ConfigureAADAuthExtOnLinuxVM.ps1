@@ -557,14 +557,11 @@ function Validate-AADAuthExtensionforVMs
         Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
+        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
         [Trial] AAD extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
-        
-        .PARAMETER Force
-        Specifies a forceful roll back without any prompts.
         
         .Parameter PerformPreReqCheck
         Specifies validation of prerequisites for the command.
@@ -699,14 +696,10 @@ function Validate-AADAuthExtensionforVMs
     # List for storing skipped Virtual Machine(s)
     $VirtualMachinesSkipped = @()
 
-    $reqExtPublisher = "Microsoft.Azure.ActiveDirectory"
-    # $reqExtensionType = "AADSSHLoginForLinux"
-    # $reqExtensionName = "AADSSHLoginForLinux"
+    $reqExtensionType = "AADSSHLoginForLinux"
 
     Write-Host "Starting validation..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-
-    
 
     $validVirtualMachineDetails | ForEach-Object {
         $VirtualMachine = $_
@@ -714,7 +707,7 @@ function Validate-AADAuthExtensionforVMs
         try
         {
             
-            Write-Host "Validating Virtual Machine - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Validating Virtual Machine AAD extension- [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
             if($_.isExtInstalledPostRemediation)
             {
                 $VMExtensions= Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
@@ -723,30 +716,30 @@ function Validate-AADAuthExtensionforVMs
                         $VMExtension = $_
                         if(!$VirtualMachine.isExtProvStateValidated)
                         {
-                            if($VMExtension.Publisher -contains($reqExtPublisher))
+                            if($VMExtension.ExtensionType -eq($reqExtensionType))
                             {
                                 if($VMExtension.ProvisioningState -eq "Succeeded")
                                 {
-                                    Write-Host "Virtual Machine extension validated for - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
                                     $VirtualMachine.isExtProvStateValidated = $true
-                                    $VirtualMachinesValidated += $VirtualMachine
                                 }
-                            
-                            }
-                            else
-                            {
-                                Write-Host "Virtual Machine extension not present for - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
-                                $VirtualMachine.isExtInstalledPostRemediation = $false
-                                $VirtualMachine.isExtensionPresent = $false
-                                $VirtualMachinesSkipped += $VirtualMachine
                             }
                         }
                     }
+                if($VirtualMachine.isExtProvStateValidated)
+                {
+                    Write-Host "Virtual Machine AAD extension validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    $VirtualMachinesValidated += $VirtualMachine
+                }
+                else 
+                {
+                    Write-Host "Virtual Machine AAD extension is not validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                    $VirtualMachinesSkipped += $VirtualMachine
+                }
             }
         }
         catch
         {
-            $VirtualMachineSkipped += $VirtualMachine
+            $VirtualMachinesSkipped += $VirtualMachine
         }
     }
 
@@ -759,7 +752,7 @@ function Validate-AADAuthExtensionforVMs
     if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0 -or $($VirtualMachineSkipped | Measure-Object).Count -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Validation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0)
         {
@@ -774,18 +767,21 @@ function Validate-AADAuthExtensionforVMs
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0)
+        if ($($VirtualMachinesSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error validating AAD extension on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Following Virtual Machine(s) AAD extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             
-            $VirtualMachineSkipped | Format-Table -Property $colsPropertyValidation -Wrap
+            $VirtualMachinesSkipped | Format-Table -Property $colsPropertyValidation -Wrap
             
             # Write this to a file.
             $ValidationSkippedVirtualMachineFile = "$($backupFolderPath)\ValidationSkippedVirtualMachines.csv"
-            $VirtualMachineSkipped | Export-CSV -Path $ValidationSkippedVirtualMachineFile -NoTypeInformation
+            $VirtualMachinesSkipped | Export-CSV -Path $ValidationSkippedVirtualMachineFile -NoTypeInformation
             Write-Host "This information has been saved to" -NoNewline
             Write-Host " [$($ValidationSkippedVirtualMachineFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
             Write-Host $([Constants]::SingleDashLine)
+
+            Write-Host "For above VM(s), please manually install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
+
         }
     }
 }
