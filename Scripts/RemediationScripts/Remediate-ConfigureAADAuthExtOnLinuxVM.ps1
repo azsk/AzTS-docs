@@ -464,8 +464,6 @@ function Add-AADAuthExtensionforVMs
             Write-Host "Adding AAD Auth Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
             try
             {
-                if($_.ResourceName -eq "testvmForBRS5")
-                {
                     Set-AzVMExtension -Publisher $reqExtPublisher -ExtensionType $reqExtensionType -VMName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -Name $reqExtensionName -TypeHandlerVersion 1.0
                     
                     $VMExtension= Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
@@ -489,8 +487,6 @@ function Add-AADAuthExtensionforVMs
                         write-host "Skipping this Virtual Machine resource." -foregroundcolor $([constants]::messagetype.warning)
                         write-host $([constants]::singledashline)
                     }  
-                }
-           
             }
             catch
             {
