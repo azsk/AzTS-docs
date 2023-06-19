@@ -312,7 +312,7 @@ function Set-VMGuestConfigExtAndMI {
             $VMExtension | ForEach-Object {
                 if ($IsExtPresent) {           
                     if ($VMExtension.Publisher -contains ("Microsoft.GuestConfiguration")) {
-                       $IsExtPresent = $true;
+                        $IsExtPresent = $true;
                     }
                     else {
                         $NonCompliantVirtualMachineGustExt += $VirtualMachine
@@ -423,39 +423,39 @@ function Set-VMGuestConfigExtAndMI {
             $VirtualMachine | Add-Member -NotePropertyName isSystemManagedIdenityInstalledByRemediation -NotePropertyValue $false
 
             try {                
-                    #checking the System Assigned Managed Identity
-                    $VMResponse = @()                    
-                    if (![System.Convert]::ToBoolean($_.isSystemAssignedManagedIdentityPresent)) {
-                        Write-Host "Installing System Assigned Managed Idenity on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
-                        $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
-                        $VMResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType SystemAssigned
-                        if ($VMResponse.IsSuccessStatusCode) {
-                            $isGuestConfigurationExtInstallSuccessful = $true
-                        }
-
-                    }
-                    else {
+                #checking the System Assigned Managed Identity
+                $VMResponse = @()                    
+                if (![System.Convert]::ToBoolean($_.isSystemAssignedManagedIdentityPresent)) {
+                    Write-Host "Installing System Assigned Managed Idenity on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                    $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
+                    $VMResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType SystemAssigned
+                    if ($VMResponse.IsSuccessStatusCode) {
                         $isGuestConfigurationExtInstallSuccessful = $true
                     }
 
-                    if (![System.Convert]::ToBoolean($_.isGuestConfigurationExtensionPresent)) {
-                        Write-Host "Installing Guest Configuration on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                }
+                else {
+                    $isGuestConfigurationExtInstallSuccessful = $true
+                }
 
-                        #check os type before installing
-                        if ($_.OsType -ieq "Windows") {
-                            $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationforWindows' -TypeHandlerVersion 1.0 -Name 'AzurePolicyforWindows' -ResourceGroupName $_.ResourceGroupName  -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
-                        }
-                        else {
-                            $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationForLinux' -Name 'AzurePolicyforLinux' -TypeHandlerVersion 1.0 -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
-                        }
+                if (![System.Convert]::ToBoolean($_.isGuestConfigurationExtensionPresent)) {
+                    Write-Host "Installing Guest Configuration on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
 
-                        if ($VirtualMachineResources.IsSuccessStatusCode) {
-                            $isManagedIdentityInstallSuccessful = $true
-                        }
+                    #check os type before installing
+                    if ($_.OsType -ieq "Windows") {
+                        $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationforWindows' -TypeHandlerVersion 1.0 -Name 'AzurePolicyforWindows' -ResourceGroupName $_.ResourceGroupName  -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
                     }
                     else {
+                        $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationForLinux' -Name 'AzurePolicyforLinux' -TypeHandlerVersion 1.0 -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
+                    }
+
+                    if ($VirtualMachineResources.IsSuccessStatusCode) {
                         $isManagedIdentityInstallSuccessful = $true
                     }
+                }
+                else {
+                    $isManagedIdentityInstallSuccessful = $true
+                }
                 
 
                 #to be reviewed
@@ -722,55 +722,55 @@ function Reset-VMGuestConfigExtAndMI {
             if ($_.isGuestConfigurationInstalledByRemediation -or $_.isSystemManagedIdenityInstalledByRemediation) {
                
                 if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation)) {
-                         Write-Host "Rolling back Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Rolling back Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
 
-                        if ($_.OsType -ieq "Windows") {
-                            $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforWindows'
-                        }
-                        else {
-                            $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforLinux'
-                        }
-
-                        if ($VirtualMachineResource.IsSuccessStatusCode) {
-                            $IsGuestConfigurationExtensionRolledback = $true
-                        }
+                    if ($_.OsType -ieq "Windows") {
+                        $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforWindows'
                     }
                     else {
+                        $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforLinux'
+                    }
+
+                    if ($VirtualMachineResource.IsSuccessStatusCode) {
                         $IsGuestConfigurationExtensionRolledback = $true
                     }
-                    if ([System.Convert]::ToBoolean($_.isSystemManagedIdenityInstalledByRemediation)) {
-                        Write-Host "Rolling back System Assigned MI on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+                }
+                else {
+                    $IsGuestConfigurationExtensionRolledback = $true
+                }
+                if ([System.Convert]::ToBoolean($_.isSystemManagedIdenityInstalledByRemediation)) {
+                    Write-Host "Rolling back System Assigned MI on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
 
-                        $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
-                        $UserAssignedIdentityKey = $VMDetail.Identity.UserAssignedIdentities.Keys -split (' ')
-                        #key add in excel
-                        try {
-                            #removing all the identity 
-                            $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "None"
-                            $IsManagedIdentityRolledback = $VirtualMachineIdentityResponse.IsSuccessStatusCode                       
-                            if ($IsManagedIdentityRolledback) {
-                                #Reassigning all the User Managed Identity
-                                $UserAssignedIdentityKey | ForEach-Object {
-                                    Write-Host $UserAssignedIdentityKey
+                    $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
+                    $UserAssignedIdentityKey = $VMDetail.Identity.UserAssignedIdentities.Keys -split (' ')
+                    #key add in excel
+                    try {
+                        #removing all the identity 
+                        $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "None"
+                        $IsManagedIdentityRolledback = $VirtualMachineIdentityResponse.IsSuccessStatusCode                       
+                        if ($IsManagedIdentityRolledback) {
+                            #Reassigning all the User Managed Identity
+                            $UserAssignedIdentityKey | ForEach-Object {
+                                Write-Host $UserAssignedIdentityKey
                                   
-                                    $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "UserAssigned" -IdentityId $UserAssignedIdentityKey
-                                    if (!$VirtualMachineIdentityResponse.IsSuccessStatusCode) {
-                                        $IsManagedIdentityRolledback = $false;
-                                    }
-                                    else {
-                                        $SkippedUserAssignedIdentitiesKeys += " " + $UserAssignedIdentityKey
-                                    }
-                                   
+                                $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "UserAssigned" -IdentityId $UserAssignedIdentityKey
+                                if (!$VirtualMachineIdentityResponse.IsSuccessStatusCode) {
+                                    $IsManagedIdentityRolledback = $false;
                                 }
+                                else {
+                                    $SkippedUserAssignedIdentitiesKeys += " " + $UserAssignedIdentityKey
+                                }
+                                   
                             }
                         }
-                        catch {
-                            $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
-                        }
                     }
-                    else {
-                        $IsManagedIdentityRolledback = $true
+                    catch {
+                        $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
                     }
+                }
+                else {
+                    $IsManagedIdentityRolledback = $true
+                }
 
                 
         
@@ -1019,48 +1019,54 @@ function Validate-VMGuestConfigExtAndMI {
             
             if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation) -or [System.Convert]::ToBoolean($_.isSystemManagedIdenityInstalledByRemediation)) {
                 
-                    if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation)) {
-                 Write-Host "Validating Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+                if ([System.Convert]::ToBoolean($_.isGuestConfigurationInstalledByRemediation)) {
+                    Write-Host "Validating Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
                        
-                        $IsExtPresent = $true;
-                        #Getting list of extensions
-                            $VMExtension = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
-                            $VMExtension | ForEach-Object {
-                                if ($IsExtPresent) {           
-                                    if ($VMExtension.Publisher -contains ("Microsoft.GuestConfiguration")) {                                        
-                                        $logSkippedResources += $logResource
-                                        $IsExtPresent = $true;
-                                    }
-                                    else {
-                                        $NonCompliantVirtualMachineGustExt += $VirtualMachine
-                                        $IsExtPresent = $flase;
-                                    }
+                    $IsExtPresent = $true;
+                    #Getting list of extensions
+                    $VMExtension = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
+                    $VMExtension | ForEach-Object {
+                        if ($IsExtPresent) {           
+                            if ($VMExtension.Publisher -contains ("Microsoft.GuestConfiguration")) { 
+                                if ($VMExtension.ProvisioningState -eq "Succeeded") {                                       
+                                    $logSkippedResources += $logResource
+                                    $IsExtPresent = $true;
+                                    Write-Host "Virtual Machine extension validated for - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+
                                 }
                             }
-                        
-                        if ($IsExtPresent) {
-                           $IsGuestConfigurationExtensionValidated = $true
+                            else {
+                                $NonCompliantVirtualMachineGustExt += $VirtualMachine
+                                $IsExtPresent = $flase;
+                                Write-Host "Virtual Machine extension not present for - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+
+                            }
                         }
                     }
-                    else {
-
+                        
+                    if ($IsExtPresent) {
                         $IsGuestConfigurationExtensionValidated = $true
                     }
-                    if ([System.Convert]::ToBoolean($_.isSystemManagedIdenityInstalledByRemediation)) {
-            Write-Host "Validating System Assigned MI on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+                }
+                else {
 
-                        $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
-                        if ($VMDetail.Identity.Type -contains "SystemAssignedUserAssigned" -or $VMDetail.Identity.Type -contains "SystemAssigned") {
-                            $_.isSystemAssignedManagedIdentityPresent = $true
-                            $IsManagedIdentityValidated = $true
-                        }
-                        else {
-                            $NonCompliantVirtualMachineGustExt += $VirtualMachine
-                        }
-                    }
-                    else {
+                    $IsGuestConfigurationExtensionValidated = $true
+                }
+                if ([System.Convert]::ToBoolean($_.isSystemManagedIdenityInstalledByRemediation)) {
+                    Write-Host "Validating System Assigned MI on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+
+                    $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
+                    if ($VMDetail.Identity.Type -contains "SystemAssignedUserAssigned" -or $VMDetail.Identity.Type -contains "SystemAssigned") {
+                        $_.isSystemAssignedManagedIdentityPresent = $true
                         $IsManagedIdentityValidated = $true
                     }
+                    else {
+                        $NonCompliantVirtualMachineGustExt += $VirtualMachine
+                    }
+                }
+                else {
+                    $IsManagedIdentityValidated = $true
+                }
 
                 
         
@@ -1081,7 +1087,7 @@ function Validate-VMGuestConfigExtAndMI {
                     $VirtualMachineForGuestConfigExtensionSkipped += $VirtualMachine
 
                 }
-                if (!IsManagedIdentityRolledback) {
+                if (!$IsManagedIdentityValidated) {
                     $VirtualMachine.isSystemManagedIdenityValidated = $false
                     $VirtualMachine.skippedUserAssignedIdentitiesKeys = $SkippedUserAssignedIdentitiesKeys
                     $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
