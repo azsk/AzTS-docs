@@ -77,7 +77,7 @@ resource bastionHost 'Microsoft.Network/bastionHosts@2022-09-01' = {
   }
   location: location
   properties: {
-    enableShareableLink: false
+    enableShareableLink: false // [Azure_Bastion_AuthZ_Disable_Shareable_Link]
     ipConfigurations: [
       {
         name: 'IpConf'

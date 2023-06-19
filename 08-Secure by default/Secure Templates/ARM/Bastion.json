@@ -128,23 +128,23 @@
                 "[resourceId('Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
             ],
-            "properties": {
-                "enableShareableLink": false,
-                "ipConfigurations": [
-                    {
-                        "name": "IpConf",
-                        "properties": {
-                            "subnet": {
-                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'),'AzureBastionSubnet')]"
-                            },
-                            "publicIPAddress": {
-                                "id": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
-                            }
-                        }
-                    }
-                ],
-                "scaleUnits": 2
-            },
+          "properties": {
+            "enableShareableLink": false, // [Azure_Bastion_AuthZ_Disable_Shareable_Link]
+            "ipConfigurations": [
+              {
+                "name": "IpConf",
+                "properties": {
+                  "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'),'AzureBastionSubnet')]"
+                  },
+                  "publicIPAddress": {
+                    "id": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+                  }
+                }
+              }
+            ],
+            "scaleUnits": 2
+          },
             "tags": {}
         }
     ]
