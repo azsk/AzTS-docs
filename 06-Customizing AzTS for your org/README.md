@@ -2,14 +2,20 @@
 <br>AzTS is not an official Microsoft product – rather an attempt to share Microsoft CSEO's best practices with the community.
 
 # Extending AzTS
+Azure Tenant Security Solution (AzTS) provides capability to add new controls (for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
+Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Microsoft Defender for Cloud assessment using Control Metadata Editor Tool. 
+You can also update existing controls metadata like Display Name, Description, Tags etc.
 
-## Add new control for existing SVT
+## Enabling Control Medatadata Editor tool
+Control Medatadata Editor tool (CMET) is required to extend AzTS. This feature is not enabled by default. To enable this feature for your AzTS setup, please follow steps mentioned [here](Extending AzTS/Prerequisites.md#prerequisite-azts-configurations-to-enable-control-medatadata-editor-toolcmet).
 
-Azure Tenant Security Solution (AzTS) provides capability to add new controls(for existing services supported by AzTS) to customize the AzTS for your organization as per your need.
-Currently you can extend AzTS controls set by either adding a new control based on custom Azure Policy or based on Microsoft Defender for Cloud assessment.
+## Add new control for existing services
 
-   - [Add new control based on custom Azure policy](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForPolicy.md)
-   - [Add new control based on MDC Assessment](/06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/AddControlForAssessment.md) 
+   - [Add new control based on custom Azure policy](AddControlForPolicy.md)
+   - [Add new control based on MDC Assessment](AddControlForAssessment.md) 
+
+## Update existing control metadata
+   - [Update existing control metadata](UpdateControlMetadata.md)
 
 
 
