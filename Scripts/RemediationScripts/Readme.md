@@ -917,7 +917,7 @@ Yes
 Yes
 
 ___ 
-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension
+
 ## 44. Azure_RedisCache_DP_Use_Secure_TLS_Version
 
 ### Display Name
