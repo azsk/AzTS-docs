@@ -379,8 +379,18 @@ function Enable-SecureFTPDeploymentForAppServices
         {
             Write-Host "Fetching App Service configuration: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-            # Using GetAzWebApp to fetch site config for each of the App Service resource.
-            $isFTPStateAllAllowedForProdSlot = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).SiteConfig.FtpsState.Contains("AllAllowed")
+            # First check if FTP basic is enabled or disabled
+            # If Basic Auth is disabled then skip check for FTP state
+            $isFTPBaiscAuthEnabledForProdSlot =  Get-FTPAuthSetting -resourceId $resourceId
+            if ($false -ne $isFTPBaiscAuthEnabledForProdSlot )
+            {
+                # Using GetAzWebApp to fetch site config for each of the App Service resource.
+                $isProductionSlotCompliant = -not $(Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $appServiceResource.Name -ErrorAction SilentlyContinue).SiteConfig.FtpsState.Contains("AllAllowed")
+            }
+            else {
+                $isProductionSlotCompliant = $true
+            }
+
             Write-Host "App Service Configurations successfully fetched." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
@@ -395,15 +405,22 @@ function Enable-SecureFTPDeploymentForAppServices
             $isSecureFTPEnabledOnAllNonProdSlots = $true;
             foreach($slot in $nonProdSlots){
                 $slotName = $slot.name.Split('/')[1]
-                $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
-                if($resource.SiteConfig.FtpsState -eq $AllAllowed)
+                # First check if FTP basic is enabled or disabled
+                # If Basic Auth is disabled then skip check for FTP state
+                $slotResourceId = $slot.id
+                $isFTPBaiscAuthEnabledOnSlot =  Get-FTPAuthSetting -resourceId $slotResourceId
+                if ($false -ne $isFTPBaiscAuthEnabledOnSlot)
                 {
-                    $nonProdSlotsWithFTPStateAllAllowed += $slot
-                    $isSecureFTPEnabledOnAllNonProdSlots = $false
+                    $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
+                    if($resource.SiteConfig.FtpsState -eq $AllAllowed)
+                    {
+                        $nonProdSlotsWithFTPStateAllAllowed += $slot
+                        $isSecureFTPEnabledOnAllNonProdSlots = $false
+                    }
                 }
             }
             # No remediation required as both Prod and Non-Prod slots 
-            if ($isFTPStateAllAllowedForProdSlot -and $isSecureFTPEnabledOnAllNonProdSlots)
+            if ($isProductionSlotCompliant -and $isSecureFTPEnabledOnAllNonProdSlots)
             {
                 $appServicesWithSecureFTPDeployments += $appServiceResource
                 Write-Host "FTP State is either Disabled or FTPS Only for the production slot and all non-production slots in the App Service: Resource ID: [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -417,7 +434,7 @@ function Enable-SecureFTPDeploymentForAppServices
             }
             else 
             {
-                if (-not $isFTPStateAllAllowedForProdSlot)
+                if (-not $isProductionSlotCompliant)
                 {
                     Write-Host "FTP State $($AllAllowed) is configured for the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
@@ -1193,6 +1210,24 @@ function Disable-SecureFTPDeploymentForAppServices
         Write-Host "This information has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }   
+}
+
+# Define helper functions
+function Get-FTPAuthSetting([String] $resourceId)
+{
+    $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
+    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl
+    $header = "Bearer " + $accessToken.Token
+    $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+    [PSObject] $fTPAuthSetting = New-Object PSObject
+
+    $updateFTPAuthSettingsUri = "$($cloudEnvironmentResourceManagerUrl)$($resourceId)/basicPublishingCredentialsPolicies/ftp?api-version=2022-03-01"
+    $response = Invoke-WebRequest -Method Get -Uri $updateFTPAuthSettingsUri -Headers $headers -UseBasicParsing -ContentType "application/json" -ErrorAction Stop
+    $fTPAuthSetting = $response.Content | ConvertFrom-Json
+
+    $isFTPBasicAuthEnabled = $fTPAuthSetting.properties.allow
+
+    return $isFTPBasicAuthEnabled
 }
 
 # Defines commonly used constants.
