@@ -14,6 +14,7 @@
 - [Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches](#azure_virtualmachinescaleset_si_missing_os_patches)
 - [Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachinescaleset_si_remediate_security_vulnerabilities)
 - [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
+- [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial)
 
 <!-- /TOC -->
 <br/>
@@ -737,6 +738,67 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
   **Properties:** disks.statuses[*].code
   <br />
+ <br />
+
+___
+
+## Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial
+
+### Display Name
+[Trial] AAD extension must be deployed to the Linux VMSS
+
+### Rationale
+Installing AAD extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
+
+### Control Settings 
+```json 
+{
+    "Linux": {
+          "ExtensionType": "AADSSHLoginForLinux",
+          "ExtensionPublisher": "Microsoft.Azure.ActiveDirectory",
+          "ProvisioningState": "Succeeded"
+        }
+}
+ ``` 
+
+### Control Spec
+
+> **Passed:**
+> AAD Extension is present for Linux Virtual Machine Scale Set with provisioning state as succeeded.
+>
+> **Failed:**
+> AAD Extension is missing or provisioning state is not succeeded.
+>
+> **NotScanned:**
+> If Orchestration mode or OS is null or empty.
+>
+> **NotApplicable:**
+> If Orchestration mode is not uniform/ Operating System (OS) Windows type is not supported for the evaluation.
+>
+
+### Recommendation
+Using Azure Portal :
+- To install AAD Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
+
+
+### Azure Policy or ARM API used for evaluation:
+
+- ARM API to list Virtual Machine Scale Set at subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01";
+(https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)
+<br />
+
+  **Properties:** properties.storageProfile.osDisk.osType
+                  properties.orchestrationMode
+  <br />
+  <br />
+
+- ARM API to list Virtual Machine Scale Set Extensions at resource level:
+/subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01
+
+  **Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
+                  properties.virtualMachineProfile.extensionProfile.extensions.type
+
  <br />
 
 ___

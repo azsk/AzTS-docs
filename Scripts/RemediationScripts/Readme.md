@@ -54,6 +54,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 43. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](Readme.md#43-Readme.md#43-Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
+45. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial](Readme.md#45-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial)
 
 <br />
 
@@ -925,6 +926,25 @@ Use approved version of TLS for Azure RedisCache.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetRedisCacheMinReqTLSVersion](Remediate-SetRedisCacheMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___ 
+
+## 45. Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial
+
+### Display Name
+[Trial] AAD extension must be deployed to the Linux VMSS
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureAADAuthExtOnLinuxVMSS](Remediate-ConfigureAADAuthExtOnLinuxVMSS.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
