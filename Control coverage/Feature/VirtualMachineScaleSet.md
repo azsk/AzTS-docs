@@ -760,6 +760,17 @@ Installing AAD extension on VMSS allows you to login into VMSS instances using A
         }
 }
  ``` 
+### Note:
+This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration mode and following Linux distributions are currently supported for deployments in a supported region.
+
+> 1. Common Base Linux Mariner (CBL-Mariner) - CBL-Mariner 1, CBL-Mariner 2
+> 2. CentOS - CentOS 7, CentOS 8
+>3. Debian - Debian 9, Debian 10, Debian 11
+>4. openSUSE - openSUSE Leap 42.3, openSUSE Leap 15.1+
+>5. RedHat Enterprise Linux (RHEL) - RHEL 7.4 to RHEL 7.10, RHEL 8.3+
+>6. SUSE Linux Enterprise Server (SLES) - SLES 12, SLES 15.1+
+>7. Ubuntu Server - Ubuntu Server 16.04 to Ubuntu Server 22.04
+
 
 ### Control Spec
 
@@ -784,7 +795,7 @@ Using Azure Portal :
 ### Azure Policy or ARM API used for evaluation:
 
 - ARM API to list Virtual Machine Scale Set at subscription level:
-/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01";
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01"
 (https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)
 <br />
 
@@ -795,10 +806,11 @@ Using Azure Portal :
 
 - ARM API to list Virtual Machine Scale Set Extensions at resource level:
 /subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01
+(https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-set-extensions/list?tabs=HTTP)
 
   **Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
                   properties.virtualMachineProfile.extensionProfile.extensions.type
 
  <br />
-
+<br />
 ___
