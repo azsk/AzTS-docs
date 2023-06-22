@@ -16,7 +16,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 
 7. Add new application setting 'UIConfigurations__complianceInitiativeFeatureConfiguration__IsEnabled' with value as 'true'. Click 'OK'.
 
-![Resources](../../Images/06_MGCI_AddCOnfig_2.png)
+![Resources](../../Images/06_MGCI_AddConfig_2.png)
 
 8. Add new application setting 'ComplianceInitiativeActionItem__0__PrivilegedEditorIds__0' with value as 'user object id'. Click 'OK'. This step needs to be done per user who needs access to set/update Management Group driven Compliance Initiative.(PrivilegedEditorIds is an array so should be incremented sequentially for further users being added.)
 
@@ -72,7 +72,7 @@ Compliance initiative feature requires common tag on all controls which are part
 
 
 ### 4. Create new compliance initiative 
-Please make sure that [Step 1](#1-add-required-configuration-to-the-api-application-settings),[Step 2](#2-add-required-configuration-to-metadata-aggregator-to-enable-mgtreeprocessor-and-pim-api-support) and [Step 3](#3-add-custom-tags-to-controls-in-bulk-edit-mode-for-compliance-initiative) are completed as pre-requisite to create new compliance initiative. Please follow below steps post pre-requisites are completed:
+Please make sure that [Step 1](#1-add-required-configuration-to-the-api-application-settings), [Step 2](#2-add-required-configuration-to-metadata-aggregator-to-enable-mgtreeprocessor-and-pim-api-support) and [Step 3](#3-add-custom-tags-to-controls-in-bulk-edit-mode-for-compliance-initiative) are completed as pre-requisite to create new compliance initiative. Please follow below steps post pre-requisites are completed:
 
 1. Click on the CIMT(Compliance initiative metadata tool) Icon.
 ![Resources](../../Images/06_MGCI_CIMT_1.png)
@@ -96,7 +96,7 @@ Please make sure that [Step 1](#1-add-required-configuration-to-the-api-applicat
 
 4. Click on 'Save'.
 
-After completion of above steps, AzTS UI will have additional filter for Management Group. If Management group is selected in this filter and it has a compliance initiative configured for it, then configured compliance initiative would become the default compliance initiative and user would see the compliance summary for only those controls which are part of the configured compliance initiative. 
+After completion of above steps, AzTS UI will have additional filter for Management Group. If Management Group is selected in this filter and it has a compliance initiative configured for it, then configured compliance initiative would become the default compliance initiative and user would see the compliance summary for only those controls which are part of the configured compliance initiative. 
 
 
 
