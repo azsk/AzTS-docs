@@ -9,7 +9,8 @@
     Guest Configuration extension must be deployed to the VM using Azure Policy assignment.
 
 # Prerequisites:
-    Contributor or higher priviliged role on the Virtual Machine(s) is required for remediation.
+    1.Contributor or higher priviliged role on the Virtual Machine(s) is required for remediation.
+    2. VM should be in running state.
 
 # Steps performed by the script:
     To remediate:
