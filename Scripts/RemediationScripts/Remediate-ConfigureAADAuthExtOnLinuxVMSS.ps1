@@ -662,9 +662,9 @@ function Validate-AADAuthExtensionforVMSS
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=50;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=50;Alignment="left"}
+                    @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
+                    @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
+                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=30;Alignment="left"}
         
     $validVMSSDetails | Format-Table -Property $colsProperty -Wrap
     
@@ -695,7 +695,7 @@ function Validate-AADAuthExtensionforVMSS
     $validVMSSDetails | ForEach-Object{
     $vmssdetails = $_
     $VmssExtDetails = @()
-    $IsVmssValidated = $false
+    $vmssdetails | Add-Member -NotePropertyName IsVmssValidated -NotePropertyValue $false
     # Getting all classic role assignments.
     $VMSSExtList = [VMSSExtensionList]::new()
     $res = $VMSSExtList.GetVMSSExtensionList($subscriptionId,$vmssdetails.ResourceGroupName,$vmssdetails.ResourceName)
@@ -721,15 +721,28 @@ function Validate-AADAuthExtensionforVMSS
             {
                 if($_.provisioningState -eq "Succeeded")
                 {
-                    $IsVmssValidated = true
+                    $vmssdetails.IsVmssValidated = true
                 }
             }
         }
-
+        if($IsVmssValidated)
+        {
+            $VMSSValidated += $vmssdetails
+        }
+        else
+        {
+            $VMSSSkipped += $vmssdetails
+        }
     }
 
     }
 
+    $colsPropertyValidation = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
+                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
+                    @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
+                    @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
+                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=30;Alignment="left"},
+                    @{Expression={$_.IsVmssValidated};Label="IsRequiredExtensionProvisioningState";Width=30;Alignment="left"}
      
     if ($($VMSSValidated | Measure-Object).Count -gt 0 -or $($VMSSSkipped | Measure-Object).Count -gt 0)
     {
@@ -762,7 +775,7 @@ function Validate-AADAuthExtensionforVMSS
             Write-Host " [$($ValidationSkippedVirtualMachineFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
             Write-Host $([Constants]::SingleDashLine)
 
-            Write-Host "For above VMSS(s), please manually install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
+            Write-Host "For above VMSS(s), please manually re-install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
 
         }
     }
