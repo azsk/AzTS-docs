@@ -45,19 +45,19 @@
     To remediate:
         1. To review the Virtual Machine(s) in a Subscription that will be remediated:
     
-           Set-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+           Install-VMGuestConfigEnableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         2. Install Guest Configuration Extension on Virtual Machine(s) in the Subscription:
        
-           Set-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+           Install-VMGuestConfigEnableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. Install Guest Configuration Extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
        
-           Set-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
+           Install-VMGuestConfigEnableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
 
         To know more about the options supported by the remediation command, execute:
         
-        Get-Help Set-VMGuestConfigExtAndMI -Detailed
+        Get-Help Install-VMGuestConfigEnableMI -Detailed
 
     To validate:
         1. Validate Guest Configuration Extension and System Assigned MI on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
@@ -65,11 +65,11 @@
         
     To roll back:
         1. Revert back Guest Configuration Extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
-           Reset-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\VirtualMachineGuestConfigExtension\RemediatedVirtualMachine.csv
+           Uninstall-GuestConfigExtDisableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\VirtualMachineGuestConfigExtension\RemediatedVirtualMachine.csv
        
         To know more about the options supported by the roll back command, execute:
         
-        Get-Help ReSet-VMGuestConfigExtAndMI-Detailed        
+        Get-Help Uninstall-GuestConfigExtDisableMI-Detailed        
 ###>
 
 
@@ -118,14 +118,14 @@ function Setup-Prerequisites {
 }
 
 
-function Set-VMGuestConfigExtAndMI {
+function Install-VMGuestConfigEnableMI {
     <#
         .SYNOPSIS
         Remediates 'Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension' Control.
 
         .DESCRIPTION
         Remediates 'Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension' Control.
-        Install Guest Configuration Extension and System Assigned Managed Identity on Virtual Machine(s). 
+        Install Guest Configuration Extension and enable System Assigned Managed Identity on Virtual Machine(s). 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -149,19 +149,19 @@ function Set-VMGuestConfigExtAndMI {
         Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used. 
 
         .INPUTS
-        None. You cannot pipe objects to Set-VMGuestConfigExtAndMI.
+        None. You cannot pipe objects to Install-VMGuestConfigEnableMI.
 
         .OUTPUTS
-        None. Set-VMGuestConfigExtAndMI does not return anything that can be piped and used as an input to another command.
+        None. Install-VMGuestConfigEnableMI does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Set-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+        PS> Install-VMGuestConfigEnableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
         .EXAMPLE
-        PS> Set-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+        PS> Install-VMGuestConfigEnableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         .EXAMPLE
-        PS> Set-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
+        PS> Install-VMGuestConfigEnableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
 
         .LINK
         None
@@ -232,7 +232,7 @@ function Set-VMGuestConfigExtAndMI {
     Write-Host "Account Name: [$($context.Account.Id)]"
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "***To install Guest Configuration Extension and System Assigned Managed Identity on Virtual Machine(s) in a Subscription, Contributor or higher privileges  are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To install Guest Configuration Extension and enable System Assigned Managed Identity on Virtual Machine(s) in a Subscription, Contributor or higher privileges  are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Virtual Machine(s)..."
     Write-Host $([Constants]::SingleDashLine)
@@ -292,10 +292,10 @@ function Set-VMGuestConfigExtAndMI {
     Write-Host $([Constants]::SingleDashLine)
     
     # list for storing Virtual Machine(s) where required Guest Configuration is not installed
-    $NonCompliantVirtualMachineGustExt = @()
+    $NonCompliantVirtualMachineGuestExt = @()
 
 
-    Write-Host "Separating Virtual Machine(s) for which Guest Configuration is not installed on VM with System Assigned MI..."
+    Write-Host "Separating Virtual Machine(s) for which Guest Configuration is not installed on VM with disabled System Assigned MI..."
 
     $VirtualMachineDetails | ForEach-Object {
         
@@ -318,7 +318,7 @@ function Set-VMGuestConfigExtAndMI {
                         $IsExtPresent = $true;
                     }
                     else {
-                        $NonCompliantVirtualMachineGustExt += $VirtualMachine
+                        $NonCompliantVirtualMachineGuestExt += $VirtualMachine
                         $IsExtPresent = $false;
                     }
                 }
@@ -336,19 +336,19 @@ function Set-VMGuestConfigExtAndMI {
                 $_.isSystemAssignedManagedIdentityPresent = $true
             }
             else {
-                $NonCompliantVirtualMachineGustExt += $VirtualMachine
+                $NonCompliantVirtualMachineGuestExt += $VirtualMachine
             }
         }
     }
    
-    $totalNonCompliantVirtualMachineGustExt = ($NonCompliantVirtualMachineGustExt | Measure-Object).Count
+    $totalNonCompliantVirtualMachineGuestExt = ($NonCompliantVirtualMachineGuestExt | Measure-Object).Count
 
-    if ($totalNonCompliantVirtualMachineGustExt -eq 0) {
+    if ($totalNonCompliantVirtualMachineGuestExt -eq 0) {
         Write-Host "No VirtualMachine found without Guest Configuration Extension and System Assigned Managed Identity disabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
-    Write-Host "Found [$($totalNonCompliantVirtualMachineGustExt)] Virtual Machine(s) non compliant for Guest Configuration Extension or System Assigned Managed Identity not installed:" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantVirtualMachineGuestExt)] Virtual Machine(s) non compliant for Guest Configuration Extension or System Assigned Managed Identity not installed:" -ForegroundColor $([Constants]::MessageType.Update)
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
@@ -358,7 +358,7 @@ function Set-VMGuestConfigExtAndMI {
     @{Expression = { $_.isGuestConfigurationExtensionPresent }; Label = "isGuestConfigurationExtensionPresent"; Width = 10; Alignment = "left" ; }
 
         
-    $NonCompliantVirtualMachineGustExt | Format-Table -Property $colsProperty -Wrap
+    $NonCompliantVirtualMachineGuestExt | Format-Table -Property $colsProperty -Wrap
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\VirtualMachineGuestConfigExtension"
@@ -375,7 +375,7 @@ function Set-VMGuestConfigExtAndMI {
         # Backing up Virtual Machine(s) details.
         $backupFile = "$($backupFolderPath)\NonCompliantVMGuestConfigAndMI.csv"
 
-        $NonCompliantVirtualMachineGustExt | Export-CSV -Path $backupFile -NoTypeInformation
+        $NonCompliantVirtualMachineGuestExt | Export-CSV -Path $backupFile -NoTypeInformation
 
         Write-Host "Virtual Machine(s) details have been backed up to" -NoNewline
         Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -386,13 +386,13 @@ function Set-VMGuestConfigExtAndMI {
 
     if (-not $DryRun) {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Remediating non compliant Azure Virtual Machine..." 
+        Write-Host "[Step 4 of 4] Remediating non compliant Azure Virtual Machine(s)..." 
         Write-Host $([Constants]::SingleDashLine)
         
          
         if (-not $Force) {
-            Write-Host "Found total [$($totalNonCompliantVirtualMachineGustExt)] Virtual Machine(s) without Guest Configuration Extension. Guest Configuration Extension for these resources can not be reverted back after remediation." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "This step will install Guest Configuration Extension for all non-complaint [$($totalNonCompliantVirtualMachineGustExt)] Virtual Machine(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Found total [$($totalNonCompliantVirtualMachineGuestExt)] Virtual Machine(s) without Guest Configuration Extension. " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This step will install Guest Configuration Extension for all non-compliant [$($totalNonCompliantVirtualMachineGuestExt)] Virtual Machine(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $userInput = Read-Host -Prompt "(Y|N)"
@@ -417,7 +417,7 @@ function Set-VMGuestConfigExtAndMI {
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of VirtualMachine(s) which needs to be remediated.
-        $NonCompliantVirtualMachineGustExt | ForEach-Object {
+        $NonCompliantVirtualMachineGuestExt | ForEach-Object {
             $isGuestConfigurationExtInstallSuccessful = $false
             $isManagedIdentityInstallSuccessful = $false
 
@@ -427,77 +427,76 @@ function Set-VMGuestConfigExtAndMI {
             $_.isSystemAssignedManagedIdentityPresent = [System.Convert]::ToBoolean($_.isSystemAssignedManagedIdentityPresent)
             $_.isGuestConfigurationExtensionPresent = [System.Convert]::ToBoolean($_.isGuestConfigurationExtensionPresent)
 
-            try { 
-                if ($_.ResourceName -ieq "v-rahkumaVM01" -or $_.ResourceName -ieq "v-rahkumaVM02") {               
-                    #checking the System Assigned Managed Identity
-                    $VMResponse = @()                    
-                    if (!$_.isSystemAssignedManagedIdentityPresent) {
-                        Write-Host "Installing System Assigned Managed Idenity on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
-                        $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
-                        $VMResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType SystemAssigned
-                        if ($VMResponse.IsSuccessStatusCode) {
-                            $isGuestConfigurationExtInstallSuccessful = $true
-                        }
+            try {                
+                #checking the System Assigned Managed Identity
+                $VMResponse = @()                    
+                if (!$_.isSystemAssignedManagedIdentityPresent) {
+                    Write-Host "Installing System Assigned Managed Idenity on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+                    $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
+                    $VMResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType SystemAssigned
+                    if ($VMResponse.IsSuccessStatusCode) {
+                        $isManagedIdentityInstallSuccessful = $true
 
                     }
+
+                }
+                else {
+                    $isManagedIdentityInstallSuccessful = $true
+
+                }
+
+                if (!$_.isGuestConfigurationExtensionPresent) {
+                    Write-Host "Installing Guest Configuration on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+
+                    #check os type before installing
+                    if ($_.OsType -ieq "Windows") {
+                        $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationforWindows' -TypeHandlerVersion 1.0 -Name 'AzurePolicyforWindows' -ResourceGroupName $_.ResourceGroupName  -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
+                    }
                     else {
+                        $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationForLinux' -Name 'AzurePolicyforLinux' -TypeHandlerVersion 1.0 -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
+                    }
+
+                    if ($VirtualMachineResources.IsSuccessStatusCode) {
                         $isGuestConfigurationExtInstallSuccessful = $true
                     }
-
-                    if (!$_.isGuestConfigurationExtensionPresent) {
-                        Write-Host "Installing Guest Configuration on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
-
-                        #check os type before installing
-                        if ($_.OsType -ieq "Windows") {
-                            $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationforWindows' -TypeHandlerVersion 1.0 -Name 'AzurePolicyforWindows' -ResourceGroupName $_.ResourceGroupName  -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
-                        }
-                        else {
-                            $VirtualMachineResources = Set-AzVMExtension -Publisher 'Microsoft.GuestConfiguration' -ExtensionType 'ConfigurationForLinux' -Name 'AzurePolicyforLinux' -TypeHandlerVersion 1.0 -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -EnableAutomaticUpgrade $true;
-                        }
-
-                        if ($VirtualMachineResources.IsSuccessStatusCode) {
-                            $isManagedIdentityInstallSuccessful = $true
-                        }
-                    }
-                    else {
-                        $isManagedIdentityInstallSuccessful = $true
-                    }
-                
-
-                    #to be reviewed
-                    if ($isGuestConfigurationExtInstallSuccessful -and $isManagedIdentityInstallSuccessful) {
-
-                        if (!$_.isSystemAssignedManagedIdentityPresent) {
-                            $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $true
-                        }
-                        if (!$_.isGuestConfigurationExtensionPresent) {
-                            $VirtualMachine.isGuestConfigurationInstalledByRemediation = $true
-                        }
-                    
-                        $VirtualMachineRemediated += $VirtualMachine
-                        Write-Host "Successfully installed Guest Configuration Extension with System Assigned MI for the resource [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                    }
-                    else {
-                        if ($isGuestConfigurationExtInstallSuccessful) {
-                            $VirtualMachine.isGuestConfigurationInstalledByRemediation = $true
-                        }
-                        else {
-                            $VirtualMachine.isGuestConfigurationInstalledByRemediation = $false
-
-                        }
-                        if ($isManagedIdentityInstallSuccessful) {
-                            $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $true
-                        }
-                        else {
-                            $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $false
-                        }
-
-                        $VirtualMachineSkipped += $VirtualMachine                    
-                        Write-Host "Skipping this Virtual Machine resource." -ForegroundColor $([Constants]::MessageType.Warning)
-                        Write-Host $([Constants]::SingleDashLine)
-                    }  
                 }
+                else {
+                    $isGuestConfigurationExtInstallSuccessful = $true
+                } 
+
+                if ($isGuestConfigurationExtInstallSuccessful -and $isManagedIdentityInstallSuccessful) {
+
+                    if (!$_.isSystemAssignedManagedIdentityPresent) {
+                        $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $true
+                    }
+                    if (!$_.isGuestConfigurationExtensionPresent) {
+                        $VirtualMachine.isGuestConfigurationInstalledByRemediation = $true
+                    }
+                    
+                    $VirtualMachineRemediated += $VirtualMachine
+                    Write-Host "Successfully installed Guest Configuration Extension with System Assigned MI for the resource [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
+                else {
+                    if ($isGuestConfigurationExtInstallSuccessful) {
+                        $VirtualMachine.isGuestConfigurationInstalledByRemediation = $true
+                    }
+                    else {
+                        $VirtualMachine.isGuestConfigurationInstalledByRemediation = $false
+
+                    }
+                    if ($isManagedIdentityInstallSuccessful) {
+                        $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $true
+                    }
+                    else {
+                        $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $false
+                    }
+
+                    $VirtualMachineSkipped += $VirtualMachine                    
+                    Write-Host "Skipping this Virtual Machine resource." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }  
+                
             }
             catch {
                 $VirtualMachineSkipped += $VirtualMachine
@@ -519,7 +518,7 @@ function Set-VMGuestConfigExtAndMI {
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
         if ($($VirtualMachineRemediated | Measure-Object).Count -gt 0) {
-            Write-Host "Guest Configuration Extension installed on the following Virtual Machine(s) with System Assigned MI in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Guest Configuration Extension installed on the following Virtual Machine(s) with enabled System Assigned MI in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
            
             $VirtualMachineRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
 
@@ -530,6 +529,7 @@ function Set-VMGuestConfigExtAndMI {
             Write-Host "This information has been saved to" -NoNewline
             Write-Host " [$($VirtualMachineRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
             Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "To validate run the command Validate-VMGuestConfigExtAndMI with -FilePath $($VirtualMachineRemediatedFile) , after sometime to check the status of Guest Configuration Extension installation and System Assigned MI." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
         if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
@@ -554,7 +554,7 @@ function Set-VMGuestConfigExtAndMI {
     }
 }
 
-function Reset-VMGuestConfigExtAndMI {
+function Uninstall-GuestConfigExtDisableMI {
     <#
         .SYNOPSIS
         Rolls back remediation done for 'Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension' Control.
@@ -576,13 +576,13 @@ function Reset-VMGuestConfigExtAndMI {
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to ReSet-VMGuestConfigExtAndMI.
+        None. You cannot pipe objects to Uninstall-GuestConfigExtDisableMI.
 
         .OUTPUTS
-        None. ReSet-VMGuestConfigExtAndMI does not return anything that can be piped and used as an input to another command.
+        None. Uninstall-GuestConfigExtDisableMI does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> ReSet-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
+        PS> Uninstall-GuestConfigExtDisableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
 
         .LINK
         None
@@ -642,7 +642,7 @@ function Reset-VMGuestConfigExtAndMI {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To install Guest Configuration Extension on Virtual Machine with System Assigned MI in a Subscription, Contributor or higher privileges  are required***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To Uninstall Guest Configuration Extension on Virtual Machine and to disable System Assigned MI in a Subscription, Contributor or higher privileges  are required***" -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine(s)..."
@@ -702,7 +702,7 @@ function Reset-VMGuestConfigExtAndMI {
         }
     }
     else {
-        Write-Host "'Force' flag is provided. Guest Configuration Extension and System Assigned MIwill be rolled back for any Virtual Machine(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'Force' flag is provided. Guest Configuration Extension and System Assigned MI will be rolled back for any Virtual Machine(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     # List for storing rolled back Virtual Machine resource.
@@ -730,90 +730,90 @@ function Reset-VMGuestConfigExtAndMI {
 
 
         try {
-            if ($_.ResourceName -ieq "v-rahkumaVM01" -or $_.ResourceName -ieq "v-rahkumaVM02") { 
             
-                if ($_.isGuestConfigurationInstalledByRemediation -or $_.isSystemManagedIdenityInstalledByRemediation) {
+            
+            if ($_.isGuestConfigurationInstalledByRemediation -or $_.isSystemManagedIdenityInstalledByRemediation) {
                
-                    if ($_.isGuestConfigurationInstalledByRemediation) {
-                        Write-Host "Rolling back Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+                if ($_.isGuestConfigurationInstalledByRemediation) {
+                    Write-Host "Rolling back Guest Configuration Extension on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
 
-                        if ($_.OsType -ieq "Windows") {
-                            $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforWindows'
-                        }
-                        else {
-                            $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforLinux'
-                        }
-
-                        if ($VirtualMachineResource.IsSuccessStatusCode) {
-                            $IsGuestConfigurationExtensionRolledback = $true
-                        }
+                    if ($_.OsType -ieq "Windows") {
+                        $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforWindows'
                     }
                     else {
+                        $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName  $_.ResourceName -Name 'AzurePolicyforLinux'
+                    }
+
+                    if ($VirtualMachineResource.IsSuccessStatusCode) {
                         $IsGuestConfigurationExtensionRolledback = $true
                     }
-                    if ($_.isSystemManagedIdenityInstalledByRemediation) {
-                        Write-Host "Rolling back System Assigned MI on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+                }
+                else {
+                    $IsGuestConfigurationExtensionRolledback = $true
+                }
+                if ($_.isSystemManagedIdenityInstalledByRemediation) {
+                    Write-Host "Rolling back System Assigned MI on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
 
-                        $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
-                        $UserAssignedIdentityKey = $VMDetail.Identity.UserAssignedIdentities.Keys -split (' ')
-                        #key add in excel
-                        try {
-                            #removing all the identity 
-                            $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "None"
-                            $IsManagedIdentityRolledback = $VirtualMachineIdentityResponse.IsSuccessStatusCode                       
-                            if ($IsManagedIdentityRolledback) {
-                                #Reassigning all the User Managed Identity
-                                $UserAssignedIdentityKey | ForEach-Object {
-                                    Write-Host $UserAssignedIdentityKey
+                    $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
+                    $UserAssignedIdentityKey = $VMDetail.Identity.UserAssignedIdentities.Keys -split (' ')
+                    #key add in excel
+                    try {
+                        #removing all the identity 
+                        $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "None"
+                        $IsManagedIdentityRolledback = $VirtualMachineIdentityResponse.IsSuccessStatusCode                       
+                        if ($IsManagedIdentityRolledback) {
+                            #Reassigning all the User Managed Identity
+                            $UserAssignedIdentityKey | ForEach-Object {
+                                Write-Host $UserAssignedIdentityKey
                                   
-                                    $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "UserAssigned" -IdentityId $UserAssignedIdentityKey
-                                    if (!$VirtualMachineIdentityResponse.IsSuccessStatusCode) {
-                                        $IsManagedIdentityRolledback = $false;
-                                    }
-                                    else {
-                                        $SkippedUserAssignedIdentitiesKeys += " " + $UserAssignedIdentityKey
-                                    }
-                                   
+                                $VirtualMachineIdentityResponse = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $VMDetail  -IdentityType "UserAssigned" -IdentityId $UserAssignedIdentityKey
+                                if (!$VirtualMachineIdentityResponse.IsSuccessStatusCode) {
+                                    $IsManagedIdentityRolledback = $false;
                                 }
+                                else {
+                                    $SkippedUserAssignedIdentitiesKeys += " " + $UserAssignedIdentityKey
+                                }
+                                   
                             }
                         }
-                        catch {
-                            $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
-                        }
                     }
-                    else {
-                        $IsManagedIdentityRolledback = $true
+                    catch {
+                        $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
                     }
+                }
+                else {
+                    $IsManagedIdentityRolledback = $true
+                }
 
                 
         
-                    if ($IsGuestConfigurationExtensionRolledback -and $IsManagedIdentityRolledback) {
-                        Write-Host "Succesfully rolled back Guest Configuration Extension and System Assigned MI on VirtualMachine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine) 
-                        if ($_.isGuestConfigurationInstalledByRemediation) {
-                            $VirtualMachine.isGuestConfigurationInstalledByRemediation = $false
-                            $VirtualMachine.isGuestConfigExtensionRolledback = $true
-                        }
-                        if ($_.isSystemManagedIdenityInstalledByRemediation) {
-                            $VirtualMachine.isSystemManagedIdenityRolledback = $true;
-                            $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $false;
-                        }
-                        $VirtualMachineRolledBack += $VirtualMachine    
+                if ($IsGuestConfigurationExtensionRolledback -and $IsManagedIdentityRolledback) {
+                    Write-Host "Succesfully rolled back Guest Configuration Extension and System Assigned MI on VirtualMachine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine) 
+                    if ($_.isGuestConfigurationInstalledByRemediation) {
+                        $VirtualMachine.isGuestConfigurationInstalledByRemediation = $false
+                        $VirtualMachine.isGuestConfigExtensionRolledback = $true
                     }
-                    elseif (!$VirtualMachineResource.IsSuccessStatusCode) {
-                        $VirtualMachine.isGuestConfigExtensionRolledback = $false
-                        $VirtualMachineForGuestConfigExtensionSkipped += $VirtualMachine
-
+                    if ($_.isSystemManagedIdenityInstalledByRemediation) {
+                        $VirtualMachine.isSystemManagedIdenityRolledback = $true;
+                        $VirtualMachine.isSystemManagedIdenityInstalledByRemediation = $false;
                     }
-                    elseif (!IsManagedIdentityRolledback) {
-                        $VirtualMachine.isSystemManagedIdenityRolledback = $false
-                        $VirtualMachine.skippedUserAssignedIdentitiesKeys = $SkippedUserAssignedIdentitiesKeys
-
-                        $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
-                    }
-               
+                    $VirtualMachineRolledBack += $VirtualMachine    
                 }
+                elseif (!$VirtualMachineResource.IsSuccessStatusCode) {
+                    $VirtualMachine.isGuestConfigExtensionRolledback = $false
+                    $VirtualMachineForGuestConfigExtensionSkipped += $VirtualMachine
+
+                }
+                elseif (!IsManagedIdentityRolledback) {
+                    $VirtualMachine.isSystemManagedIdenityRolledback = $false
+                    $VirtualMachine.skippedUserAssignedIdentitiesKeys = $SkippedUserAssignedIdentitiesKeys
+
+                    $VirtualMachineForManagedIdentitySkipped += $VirtualMachine
+                }
+               
             }
+            
         }
         catch {
             $VirtualMachineForGuestConfigExtensionSkipped += $VirtualMachine
@@ -897,13 +897,13 @@ function Validate-VMGuestConfigExtAndMI {
         Specifies the path to the file to be used as input for the validate.
 
         .INPUTS
-        None. You cannot pipe objects to ReSet-VMGuestConfigExtAndMI.
+        None. You cannot pipe objects to Uninstall-GuestConfigExtDisableMI.
 
         .OUTPUTS
-        None. ReSet-VMGuestConfigExtAndMI does not return anything that can be piped and used as an input to another command.
+        None. Uninstall-GuestConfigExtDisableMI does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> ReSet-VMGuestConfigExtAndMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
+        PS> Uninstall-GuestConfigExtDisableMI -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\VirtualMachineGuestConfigExtension\NonCompliantVMGuestConfigAndMI.csv
 
         .LINK
         None
@@ -959,7 +959,7 @@ function Validate-VMGuestConfigExtAndMI {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To install Guest Configuration Extension on Virtual Machine with System Assigned MI in a Subscription, Contributor or higher privileges  are required***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To install Guest Configuration Extension on Virtual Machine and to enable System Assigned MI in a Subscription, Contributor or higher privileges  are required***" -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine(s)..."
@@ -1051,7 +1051,7 @@ function Validate-VMGuestConfigExtAndMI {
                                 }
                             }
                             else {
-                                $NonCompliantVirtualMachineGustExt += $VirtualMachine
+                                $NonCompliantVirtualMachineGuestExt += $VirtualMachine
                                 $IsExtPresent = $flase;
 
                             }
@@ -1075,7 +1075,7 @@ function Validate-VMGuestConfigExtAndMI {
                         $IsManagedIdentityValidated = $true
                     }
                     else {
-                        $NonCompliantVirtualMachineGustExt += $VirtualMachine
+                        $NonCompliantVirtualMachineGuestExt += $VirtualMachine
                     }
                 }
                 else {
