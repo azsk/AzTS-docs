@@ -6,7 +6,7 @@
 
 - [Azure_ApplicationGateway_NetSec_Enable_WAF_Configuration](#azure_applicationgateway_netsec_enable_waf_configuration)
 - [Azure_ApplicationGateway_NetSec_Enable_DDoS_Protection](#azure_applicationGateway_netsec_enable_ddos_protection)
-- [Azure_ApplicationGateway_DP_Enable_EndToEnd_Encryption_Trial](#Azure_ApplicationGateway_DP_Enable_EndToEnd_Encryption_Trial)
+- [Azure_ApplicationGateway_DP_Use_Secure_TLS_Version](#Azure_ApplicationGateway_DP_Use_Secure_TLS_Version)
 <!-- /TOC -->
 <br/>
 
@@ -47,7 +47,7 @@ Web application firewall configuration protects Application Gateway from interne
 
 	# Below commands will be useful to Configure WAF on Application Gateway
     Connect-AzAccount
-	Set-AzContext -SubscriptionId "<sub id>"`
+	Set-AzContext -SubscriptionId "<sub id>"
 	#Get Application Gateway and existing policy object
 	$appgw = Get-AzApplicationGateway -Name "applicationgatewayName" -ResourceGroupName   "RgName"
 	$policy = Get-AzApplicationGatewayFirewallPolicy -Name "WAFPolicyName" -ResourceGroupName "RgName"
@@ -72,7 +72,7 @@ Web application firewall configuration protects Application Gateway from interne
 
 	Below commands could be run to change the Policy Mode to Prevention mode:
 	Connect-AzAccount
-	Set-AzContext -SubscriptionId "<sub id>"`
+	Set-AzContext -SubscriptionId "<sub id>"
 	#Get Application Gateway Firewall policy
 	$policy = Get-azapplicationGatewayFirewallPolicy -Name "WAFPolicyName" -ResourceGroupName "RGName"
 	#Get the Policy Settings and Set the Mode to prevention
@@ -133,10 +133,10 @@ Enabling DDOS on Vnet of Application Gateway, provides protection and defense fo
 <br/>
  
 
-## Azure_ApplicationGateway_DP_Enable_EndToEnd_Encryption_Trial
+## Azure_ApplicationGateway_DP_Use_Secure_TLS_Version
 
 ### Display Name 
-[Trial] End to end encryption should be enabled on the Application Gateway.
+Use approved version of TLS for AppGateways.
 
 ### Rationale 
 Enabling HTTPS for Application Gateway ensures server/service authentication and protects data in transit from network layer eavesdropping attacks. TLS provides confidentiality and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
@@ -160,7 +160,9 @@ Enabling HTTPS for Application Gateway ensures server/service authentication and
 
 - **Azure Portal** 
 
-	 Use the Azure portal to configure end to end encryption on the Application Gateway.
+	 Use the Azure portal to enable HTTPs protocol for Listeners and Backend settings.Also configure SSL Policy to use TLSv1_2 as Min protocol version.Please refer below links for detailed steps:<br>
+	  https://learn.microsoft.com/en-us/azure/application-gateway/end-to-end-ssl-portal <br> 
+	  https://learn.microsoft.com/en-us/azure/application-gateway/application-gateway-configure-listener-specific-ssl-policy
 
 - **PowerShell** 
 
@@ -231,7 +233,7 @@ Enabling HTTPS for Application Gateway ensures server/service authentication and
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
-
+- ARM API to list all SSL Options predefined policies in Application Gateway: /subscriptions/{0}/providers/Microsoft.Network/applicationGatewayAvailableSslOptions/default/predefinedPolicies?api-version=2022-09-01
 <br />
 
 ___ 
