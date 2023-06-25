@@ -32,7 +32,7 @@ The Bastion Shareable link lets users with local credentials to bypass primary a
 
 > **Passed:** 
 One of the following conditions is met:
->   - Bastion sku is of type "basic".
+>   - Bastion sku is of type "Basic".
 >- Bastion sku is of type "Standard" and Bastion shareable link is disabled.
 > 
 > **Failed:** 
