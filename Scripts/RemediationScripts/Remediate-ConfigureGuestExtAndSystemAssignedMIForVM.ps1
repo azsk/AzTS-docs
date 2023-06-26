@@ -271,8 +271,7 @@ function Install-VMGuestConfigEnableMI {
 
 
             #Seperating VM with running state only
-            $VMDetails | ForEach-Object {
-                $VirtualMachineDetail = $_
+            $VMDetails | ForEach-Object {                
                 $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName                
                 $VMTags = $VMDetail.Tags
                 #fetching VM status
@@ -281,11 +280,9 @@ function Install-VMGuestConfigEnableMI {
                 if ($VMStatusDetails.Statuses.code.contains($vmPowerState)) {                        
                     #checking for tags
                     if (!(( $VMTags.ContainsKey($exclusionTagOneKey) -and $VMTags.ContainsValue($exclusionTagOneValue)) -or ( $VMTags.ContainsKey($exclusionTagTwoKey) -and $VMTags.ContainsValue($exclusionTagTwoValue)))) {
-                        $VirtualMachineDetails += $VirtualMachineDetail
+                        $VirtualMachineDetails += $_
                     }
                 }
-              
-
             }
 
         }
