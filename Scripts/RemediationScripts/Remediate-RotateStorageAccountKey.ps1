@@ -122,6 +122,9 @@ function Rotate-KeysForStorageAccount {
         .PARAMETER Path
         Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
 
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
         .PARAMETER TimeStamp
         Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
 
@@ -242,6 +245,48 @@ function Rotate-KeysForStorageAccount {
     #Control id for the control
     $controlIds = "Azure_Storage_SI_Rotate_Access_Keys"
 
+    if($AutoRemediation)
+    {
+        if(-not (Test-Path -Path $Path))
+        {
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
+        }
+        Write-Host "Fetching all Storage Account(s) failing for the [$($controlIds)] control from the[$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No Storage Account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
+        }
+        $validResources | ForEach-Object { 
+            try
+            {
+               $StorageAccountDetail =  Get-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -ErrorAction SilentlyContinue
+               $StorageAccountDetails += $StorageAccountDetail |  Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                                                                                @{N = 'ResourceName'; E = { $_.StorageAccountName } },
+                                                                                @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } }
+
+            }
+            catch
+            {
+                Write-Host "Valid resource information not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.StorageAccountName))
+                $logResource.Add("Reason","Valid Storage Account/ResourceGroupName not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+    }else{
       
     # No file path provided as input to the script. Fetch all Storage Account in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
@@ -316,6 +361,7 @@ function Rotate-KeysForStorageAccount {
             }
         }
     }
+    }
 
     $totalstorageaccount = ($StorageAccountDetails | Measure-Object).Count
 
@@ -343,6 +389,7 @@ function Rotate-KeysForStorageAccount {
         $value=$Storage.KeyDetails[$key]
         $date1=[DateTime]::ParseExact($value,"MM/dd/yyyy HH:mm:ss",$null)
         $time1 = Get-Date
+        #$creationTime=[DateTime]::ParseExact($key.CreationTime,"yyyy-MM-ddTHH:ssZ",$null)
         $days1 = (New-TimeSpan -Start $date1 -End $time1)
         if ($days1.Days -ge $requiredRetentionPeriod) {
            if($NonCompliantStorageAccounts.StorageAccountName -notcontains $Storage.StorageAccountName)
@@ -499,6 +546,19 @@ function Rotate-KeysForStorageAccount {
             Write-Host "This information has been saved to"  -NoNewline
             Write-Host " [$($StorageAccountKeyRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
+        if ($AutoRemediation) {
+            $logFile = "LogFiles\" + $($TimeStamp) + "\log_" + $($SubscriptionId) + ".json"
+            $log = Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach ($logControl in $log.ControlList) {
+                if ($logControl.ControlId -eq $controlIds) {
+                    $logControl.RemediatedResources = $logRemediatedResources
+                    $logControl.SkippedResources = $logSkippedResources
+                    $logControl.RollbackFile =  $StorageAccountKeyRemediatedFile
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
+
     }
     else {
         Write-Host $([Constants]::DoubleDashLine)

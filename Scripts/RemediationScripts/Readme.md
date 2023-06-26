@@ -939,6 +939,25 @@ Yes
 
 ___ 
 
+## 45. Azure_Storage_SI_Rotate_Access_Keys
+
+### Display Name
+Azure Storage Account access keys should rotate on periodic basis.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-RotateStorageAccountKey](Remediate-RotateStorageAccountKey.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___ 
+
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
