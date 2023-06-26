@@ -246,11 +246,11 @@ function Install-VMGuestConfigEnableMI {
     $logSkippedResources = @()
     $vmPowerState = "PowerState/running"
      
-    $exclusionTagOneKey = "vendor"
-    $exclusionTagOneValue = "Databricks"
+    $ADBTagKey = "vendor"
+    $ADBTagKeyValue = "Databricks"
      
-    $exclusionTagTwoKey = "orchestrator"
-    $exclusionTagTwoValue = "kubernetes"
+    $AKSTagKey = "orchestrator"
+    $AKSTagKeyValue = "kubernetes"
 
    
 
@@ -279,7 +279,7 @@ function Install-VMGuestConfigEnableMI {
                
                 if ($VMStatusDetails.Statuses.code.contains($vmPowerState)) {                        
                     #checking for tags
-                    if (!(( $VMTags.ContainsKey($exclusionTagOneKey) -and $VMTags.ContainsValue($exclusionTagOneValue)) -or ( $VMTags.ContainsKey($exclusionTagTwoKey) -and $VMTags.ContainsValue($exclusionTagTwoValue)))) {
+                    if (!(( $VMTags.ContainsKey($ADBTagKey) -and $VMTags.ContainsValue($ADBTagKeyValue)) -or ( $VMTags.ContainsKey($AKSTagKey) -and $VMTags.ContainsValue($AKSTagKeyValue)))) {
                         $VirtualMachineDetails += $_
                     }
                 }
