@@ -244,20 +244,50 @@ function Install-VMGuestConfigEnableMI {
     # To keep track of remediated and skipped resources
     $logRemediatedResources = @()
     $logSkippedResources = @()
+    $vmPowerState = "PowerState/running"
+     
+    $exclusionTagOneKey = "vendor"
+    $exclusionTagOneValue = "Databricks"
+     
+    $exclusionTagTwoKey = "orchestrator"
+    $exclusionTagTwoValue = "kubernetes"
+
+   
 
     # No file path provided as input to the script. Fetch all Virtual Machine(s) in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
         try {
             Write-Host "Fetching all Virtual Machine(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
-            # Get all Virtual Machine(s) in a Subscription
-            $VirtualMachineDetails = Get-AzVM -ErrorAction Stop
+            # Get all Virtual Machine(s) in a Subscription VirtualMachineDetails
+            $VMDetails = Get-AzVM -ErrorAction Stop
 
             # Seperating required properties
-            $VirtualMachineDetails = $VirtualMachineDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+            $VMDetails = $VMDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
             @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
             @{N = 'ResourceName'; E = { $_.Name } },
             @{N = 'OsType'; E = { $_.StorageProfile.OsDisk.OsType } }
+
+
+
+            #Seperating VM with running state only
+            $VMDetails | ForEach-Object {
+                $VirtualMachineDetail = $_
+                $VMDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName                
+                $VMTags = $VMDetail.Tags
+                #fetching VM status
+                $VMStatusDetails = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -Status
+               
+                if ($VMStatusDetails.Statuses.code.contains($vmPowerState)) {                        
+                    #checking for tags
+                    if (!(( $VMTags.ContainsKey($exclusionTagOneKey) -and $VMTags.ContainsValue($exclusionTagOneValue)) -or ( $VMTags.ContainsKey($exclusionTagTwoKey) -and $VMTags.ContainsValue($exclusionTagTwoValue)))) {
+                        $VirtualMachineDetails += $VirtualMachineDetail
+                    }
+                }
+              
+
+            }
+
         }
         catch {
             Write-Host "Error fetching Virtual Machine(s) from the subscription. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
