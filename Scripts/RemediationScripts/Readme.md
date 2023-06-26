@@ -54,6 +54,8 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 43. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](Readme.md#43-Readme.md#43-Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
+45. [Azure_Storage_SI_Rotate_Access_Keys](Readme.md#45-Azure_Storage_SI_Rotate_Access_Keys)
+
 
 <br />
 
