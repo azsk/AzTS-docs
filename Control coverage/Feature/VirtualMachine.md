@@ -1468,11 +1468,11 @@ Installing AAD extension on VM allows you to login into VM using Azure AD, makin
 ### Control Settings 
 ```json 
 {
-     "Linux": [
+     "Linux": {
             "ExtensionType" : "AADSSHLoginForLinux",
             "ExtensionPublisher" : "Microsoft.Azure.ActiveDirectory",
             "ProvisioningState" : "Succeeded"
-      ]
+     }
 }
  ```  
 
@@ -1505,12 +1505,16 @@ Installing AAD extension on VM allows you to login into VM using Azure AD, makin
 
 - ARM API to list Virtual Machine at
 subscription level:
-[/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list-all?tabs=HTTP)<br />
-**Properties:** properties.storageProfile.osDisk.osType
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01<br />
+**Properties:** [\*].properties.storageProfile.osDisk.osType,</br>
+                [\*].properties.orchestrationMode
 
 
-- ARM API to list extensions at Virtual Machine level: "/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupsName}/providers/Microsoft.Compute/virtualMachines/{VMName}/extensions?api-version=2019-07-01" (https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-extensions/list?tabs=HTTP)
-<br />
+- ARM API to list extensions at Virtual Machine level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupsName}/providers/Microsoft.Compute/virtualMachines/{VMName}/extensions?api-version=2019-07-01 <br />
+**Properties:** [\*].properties.publisher,</br>
+                [\*].properties.type,</br>
+                [\*].properties.provisioningState,
+
 <br />
 
 ___
