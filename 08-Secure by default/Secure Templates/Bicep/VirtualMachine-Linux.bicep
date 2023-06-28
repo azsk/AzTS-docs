@@ -255,7 +255,7 @@ resource vmExtension_AzureMonitorLinuxAgent 'Microsoft.Compute/virtualMachines/e
       }
     }
   }
-//[//[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial]]  
+//[//[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux]]  
 resource vmName_AADSSHLoginForLinux 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if (deployAzureAADAuthExtension) {
   parent: vm
   name: 'AADSSHLoginForLinux'

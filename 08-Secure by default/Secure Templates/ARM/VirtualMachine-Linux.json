@@ -377,7 +377,7 @@
       ]
     },
     {
-      //[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial]
+      //[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux]
       "condition": "[parameters('deployAzureAADAuthExtension')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2019-07-01",
