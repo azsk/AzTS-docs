@@ -14,7 +14,7 @@
 - [Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches](#azure_virtualmachinescaleset_si_missing_os_patches)
 - [Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachinescaleset_si_remediate_security_vulnerabilities)
 - [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
-- [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial)
+- [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 
 <!-- /TOC -->
 <br/>
