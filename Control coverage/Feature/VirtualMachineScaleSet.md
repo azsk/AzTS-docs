@@ -742,10 +742,10 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 ___
 
-## Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial
+## Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
 
 ### Display Name
-[Trial] AAD extension must be deployed to the Linux VMSS
+AAD extension must be deployed to the Linux VMSS
 
 ### Rationale
 Installing AAD extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
@@ -780,8 +780,9 @@ This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration
 > **Failed:**
 > AAD Extension is missing or provisioning state is not succeeded.
 >
-> **NotScanned:**
+> **Error:**
 > If Orchestration mode or OS is null or empty.
+> Required Extension details is not properly defined in control settings.
 >
 > **NotApplicable:**
 > If Orchestration mode is not uniform/ Operating System (OS) Windows type is not supported for the evaluation.
@@ -798,7 +799,6 @@ Using Azure Portal :
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
 (https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)
 <br />
-
   **Properties:** properties.storageProfile.osDisk.osType
                   properties.orchestrationMode
   <br />
@@ -807,7 +807,7 @@ Using Azure Portal :
 - ARM API to list Virtual Machine Scale Set Extensions at resource level:
 /subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01
 (https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-set-extensions/list?tabs=HTTP)
-
+</br>
   **Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
                   properties.virtualMachineProfile.extensionProfile.extensions.type
                   properties.virtualMachineProfile.extensionProfile.extensions.provisioningState

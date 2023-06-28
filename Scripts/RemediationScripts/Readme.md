@@ -938,10 +938,10 @@ Yes
 
 ___ 
 
-## 45. Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial
+## 45. Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
 
 ### Display Name
-[Trial] AAD extension must be deployed to the Linux VMSS
+AAD extension must be deployed to the Linux VMSS
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-ConfigureAADAuthExtOnLinuxVMSS](Remediate-ConfigureAADAuthExtOnLinuxVMSS.ps1)
