@@ -796,17 +796,14 @@ Using Azure Portal :
 ### Azure Policy or ARM API used for evaluation:
 
 - ARM API to list Virtual Machine Scale Set at subscription level:
-/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
-(https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)
-<br />
+[/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)<br />
   **Properties:** properties.storageProfile.osDisk.osType
                   properties.orchestrationMode
   <br />
   <br />
 
 - ARM API to list Virtual Machine Scale Set Extensions at resource level:
-/subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01
-(https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-set-extensions/list?tabs=HTTP)
+[/subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-set-extensions/list?tabs=HTTP)
 </br>
   **Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
                   properties.virtualMachineProfile.extensionProfile.extensions.type
