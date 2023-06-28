@@ -810,6 +810,7 @@ Using Azure Portal :
 
   **Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
                   properties.virtualMachineProfile.extensionProfile.extensions.type
+                  properties.virtualMachineProfile.extensionProfile.extensions.provisioningState
 
  <br />
 <br />

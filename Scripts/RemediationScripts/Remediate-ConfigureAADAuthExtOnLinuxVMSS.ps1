@@ -1,12 +1,12 @@
 <###
 # Overview:
-    This script is used to remediate AAD Auth Extension on Linux VMSS in a Subscription.
+    This script is used to remediate AAD Authentication Extension on Linux VMSS in a Subscription.
 
 # Control ID:
     Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial
 
 # Display Name:
-    [Trial] AAD extension must be deployed to the Linux VMSSSS
+    [Trial] AAD extension must be deployed to the Linux VMSS
 
 # Prerequisites:
     Contributor or higher priviliged role on the Virtual Machine Scale Set(s) is required for remediation.
@@ -16,7 +16,7 @@
         1. Validating and installing the modules required to run the script and validating the user.
         2. Get the list of Linux VMSS(s) in a Subscription with Uniform orchestration mode that doesn't have VM AAD Extension installed.
         3. Back up details of Linux VMSS(s) that are to be remediated.
-        4. Remediate AAD Auth Extension on Linux VMSS(s) in the Subscription.
+        4. Install AAD Authentication Extension on Linux VMSS(s) in the Subscription.
 
     To validate:
         1. Validate and install the modules required to run the script and validating the user.
@@ -71,8 +71,7 @@
 ###>
 
 
-function Setup-Prerequisites
-{
+function Setup-Prerequisites {
     <#
         .SYNOPSIS
         Checks if the prerequisites are met, else, sets them up.
@@ -95,7 +94,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Compute","AzureAD")
+    $requiredModules = @("Az.Accounts", "Az.Compute", "AzureAD")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
@@ -104,14 +103,12 @@ function Setup-Prerequisites
 
     # Check if the required modules are installed.
     $requiredModules | ForEach-Object {
-        if ($availableModules.Name -notcontains $_)
-        {
+        if ($availableModules.Name -notcontains $_) {
             Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
-             Write-Host "[$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "[$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
-        else
-        {
+        else {
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
@@ -120,8 +117,7 @@ function Setup-Prerequisites
 }
 
 
-function Add-AADAuthExtensionforVMSS
-{
+function Add-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
         Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
@@ -169,59 +165,54 @@ function Add-AADAuthExtensionforVMSS
 
     param (
         [String]
-        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
-        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription to be remediated")]
         $SubscriptionId,
 
         [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies a forceful remediation without any prompts")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies a forceful remediation without any prompts")]
         $Force,
 
         [Switch]
-        [Parameter(ParameterSetName = "DryRun", HelpMessage="Specifies validation of prerequisites for the command")]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(ParameterSetName = "DryRun", HelpMessage = "Specifies validation of prerequisites for the command")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [Switch]
-        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage = "Specifies a dry run of the actual remediation")]
         $DryRun,
 
         [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies no back up will be taken by the script before remediation")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies no back up will be taken by the script before remediation")]
         $SkipBackup,
 
         [String]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies the path to the file to be used as input for the remediation")]
         $FilePath
     )
 
     Write-Host $([Constants]::DoubleDashLine)
 
-    if ($PerformPreReqCheck)
-    {
-        try
-        {
+    if ($PerformPreReqCheck) {
+        try {
             Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
     }
-    else
-    {
+    else {
         Write-Host "[Step 1 of 4] Validating the user... "
     }
 
     # Connect to Azure account
     $context = Get-AzContext
 
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
+    if ([String]::IsNullOrWhiteSpace($context)) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Connecting to Azure account..."
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
@@ -238,7 +229,7 @@ function Add-AADAuthExtensionforVMSS
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
         
-    Write-Host "***To add AAD Auth extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To add AAD Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Virtual Machine Scale Set(s)..."
@@ -255,56 +246,52 @@ function Add-AADAuthExtensionforVMSS
     $reqExtensionName = "AADSSHLoginForLinux"
 
     # No file path provided as input to the script. Fetch all Virtual Machine Scale Set(s) in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        try
-        {
+    if ([String]::IsNullOrWhiteSpace($FilePath)) {
+        try {
             Write-Host "Fetching all Virtual Machine Scale Set(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
             # Get all Virtual Machine Scale Set(s) in a Subscription
-            $VMSSDetails =  Get-AzVmss -ErrorAction Stop
+            $VMSSDetails = Get-AzVmss -ErrorAction Stop
 
             # Seperating required properties
-            $VMSSDetails = $VMSSDetails | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                    @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                    @{N='ResourceName';E={$_.Name}},
-                                                                    @{N='OrchestrationMode';E={$_.OrchestrationMode}},
-                                                                    @{N='OsType';E={$_.VirtualMachineProfile.StorageProfile.OsDisk.OsType}},
-                                                                    @{N='Extensions';E={$_.VirtualMachineProfile.ExtensionProfile.Extensions}}
-                                 
-            Write-Host "Separating Virtual Machine Scale Set(s) for which OS Type is 'Windows' and Orchestration mode is 'Uniform' and AAD Extension is not added..."
+            $VMSSDetails = $VMSSDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+            @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+            @{N = 'ResourceName'; E = { $_.Name } },
+            @{N = 'OrchestrationMode'; E = { $_.OrchestrationMode } },
+            @{N = 'OsType'; E = { $_.VirtualMachineProfile.StorageProfile.OsDisk.OsType } },
+            @{N = 'Extensions'; E = { $_.VirtualMachineProfile.ExtensionProfile.Extensions } }
+
+            Write-Host "Found [$($VMSSDetails.count)] Virtual Machine Scale Set(s) in the subscription..."
+            Write-Host $([Constants]::SingleDashLine)                     
+            
+            Write-Host "Searching non-compliant Linux based Virtual Machine Scale Set(s) with 'Uniform' Orchestration mode..."
             Write-Host $([Constants]::SingleDashLine)
                                                 
-            # Get-AzVmss -ResourceGroupName V-HARARORATESTRG -VMScaleSetName testvmssForBRS1 -InstanceView: $false -UserData
-            $VMSSDetails | ForEach-Object{
+            $VMSSDetails | ForEach-Object {
                 $VMSS = $_
                 $VMSS | Add-Member -NotePropertyName isExtPresent -NotePropertyValue $false
-                if ($VMSS.OrchestrationMode -eq "Uniform" -and $VMSS.OsType -eq "Linux")
-                {
-                    $VMSS.Extensions | ForEach-Object{
-                        $VMSSExtension= $_
-                        if($VMSSExtension.Type -eq $reqExtensionType -and $VMSSExtension.Publisher -eq $reqExtPublisher)
-                        {
+                if ($VMSS.OrchestrationMode -eq "Uniform" -and $VMSS.OsType -eq "Linux") {
+                    $VMSS.Extensions | ForEach-Object {
+                        $VMSSExtension = $_
+                        if ($VMSSExtension.Type -eq $reqExtensionType -and $VMSSExtension.Publisher -eq $reqExtPublisher) {
                             $VMSS.isExtPresent = $true
+                            Write-Host "AAD Extension is present in Virtual Machine Scale Set [$($VMSS.ResourceName)]. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+                            Write-Host $([Constants]::SingleDashLine)
                         }
                     }
-                    if(!$VMSS.isExtPresent)
-                    {
+                    if (!$VMSS.isExtPresent) {
                         Write-Host "AAD Extension is not present in Virtual Machine Scale Set [$($VMSS.ResourceName)]. Adding..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                         $NonCompliantVMSSDetails += $VMSS
                     }
                     
                 }
-                else
-                {
-                    if($VMSS.OrchestrationMode -eq "Flexible")
-                    {
+                else {
+                    if ($VMSS.OrchestrationMode -eq "Flexible") {
                         Write-Host "Virtual Machine Scale Set [$($VMSS.ResourceName)] Orchestration type is Flexible. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                     }
-                    else
-                    {
+                    else {
                         Write-Host "Virtual Machine Scale Set [$($VMSS.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                     }
@@ -312,83 +299,78 @@ function Add-AADAuthExtensionforVMSS
             }
 
         }
-        catch
-        {
+        catch {
             Write-Host "Error fetching Virtual Machine Scale Set(s) from the subscription. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
         }    
     }
-    else
-    {
-        if (-not (Test-Path -Path $FilePath))
-        {
+    else {
+        if (-not (Test-Path -Path $FilePath)) {
             Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
         Write-Host "Fetching all Virtual Machine Scale Set(s) from [$($FilePath)]..." 
 
         $VirtualMachineResources = Import-Csv -LiteralPath $FilePath
-        $validVirtualMachineResources = $VirtualMachineResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        $validVirtualMachineResources = $VirtualMachineResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
       
-        $validVirtualMachineResources| ForEach-Object {
-        $resourceId = $_.ResourceId
-            try
-            {
-                $VirtualMachineResource =  Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+        $validVirtualMachineResources | ForEach-Object {
+            $resourceId = $_.ResourceId
+            try {
+                $VirtualMachineResource = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
             
-                $VMSSDetails += $VirtualMachineResource  | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                            @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                            @{N='ResourceName';E={$_.Name}},
-                                                                            @{N='OSType';E={$_.StorageProfile.OsDisk.OSType}} 
+                $VMSSDetails += $VirtualMachineResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                @{N = 'ResourceName'; E = { $_.Name } },
+                @{N = 'OSType'; E = { $_.StorageProfile.OsDisk.OSType } } 
             }                                                      
-            catch
-            {
+            catch {
                 Write-Host "Error fetching Virtual Machine Scale Set(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             }
         }
-        Write-Host "Validating and Filtering Linux Virtual Machine Scale Set(s):" -ForegroundColor $([Constants]::MessageType.Info)
+
+        Write-Host "Found [$($VMSSDetails.count)] Virtual Machine Scale Set(s) in the subscription..."
+        Write-Host $([Constants]::SingleDashLine)
+
+        Write-Host "Searching non-compliant Linux based Virtual Machine Scale Set(s):" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
                     
-        $VMSSDetails | ForEach-Object{
+        $VMSSDetails | ForEach-Object {
             $VMInstance = $_
-            if($VMInstance.OSType -eq "Linux")
-            {
+            if ($VMInstance.OSType -eq "Linux") {
                 $NonCompliantVMSSDetails += $VMInstance
                 Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
             }
-            else
-            {
+            else {
                 Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }  
     }
 
-    $totalVMSS = ($NonCompliantVMSSDetails| Measure-Object).Count
+    $totalVMSS = ($NonCompliantVMSSDetails | Measure-Object).Count
     
-    if ($totalVMSS -eq 0)
-    {
+    if ($totalVMSS -eq 0) {
         Write-Host "No Virtual machines Scale Set(s) found without AAD Extension present. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
   
-    Write-Host "Found [$($totalVMSS)] Virtual Machine Scale Set(s) without AAD Extension:" -ForegroundColor $([Constants]::MessageType.Update)                             
+    Write-Host "Found [$($totalVMSS)] Virtual Machine Scale Set(s) without AAD authentication extension:" -ForegroundColor $([Constants]::MessageType.Update)                             
     Write-Host $([Constants]::SingleDashLine)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
-                    @{Expression={$_.OrchestrationMode};Label="OrchestrationMode";Width=30;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
-                    @{Expression={$_.isExtPresent};Label="isExtensionPresent";Width=30;Alignment="left"}
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OrchestrationMode }; Label = "OrchestrationMode"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isExtPresent }; Label = "isExtensionPresent"; Width = 30; Alignment = "left" }
         
     $NonCompliantVMSSDetails | Format-Table -Property $colsProperty -Wrap
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\AADAuthExtForLinuxVMSS"
 
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
+    if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
@@ -396,8 +378,7 @@ function Add-AADAuthExtensionforVMSS
     Write-Host "[Step 3 of 4] Backing up Virtual Machine Scale Set(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
+    if ([String]::IsNullOrWhiteSpace($FilePath)) {
         # Backing up Virtual Machine Scale Set(s) details.
         $backupFile = "$($backupFolderPath)\NonCompliantVMSS.csv"
 
@@ -406,33 +387,28 @@ function Add-AADAuthExtensionforVMSS
         Write-Host "Virtual machines Scale Set(s) details have been backed up to" -NoNewline
         Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
     }
-    else
-    {
+    else {
         Write-Host "Skipped as -FilePath is provided" -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
-    if (-not $DryRun)
-    {
+    if (-not $DryRun) {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4] Remediating non compliant Linux Virtual Machine Scale Sets..." 
         Write-Host $([Constants]::SingleDashLine)
         
-        if (-not $Force)
-        {
+        if (-not $Force) {
             Write-Host "Found total [$($NonCompliantVMSSDetails.count)] Virtual machines Scale Set(s) where AAD Extension is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "This step will add AAD extension for all non-complaint Virtual Machine Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
-            if($userInput -ne "Y")
-            {
+            if ($userInput -ne "Y") {
                 Write-Host "AAD Extension will not be added  to the Virtual machines Scale Set(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
-        else
-        {
+        else {
             Write-Host "'Force' flag is provided. AAD extension will be added for Virtual Machine Scale Set(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
@@ -446,45 +422,38 @@ function Add-AADAuthExtensionforVMSS
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Virtual Machines Scale Set(s) which needs to be remediated.
-        $NonCompliantVMSSDetails | ForEach-Object{
+        $NonCompliantVMSSDetails | ForEach-Object {
             $VMSS = $_
             $VMSS | Add-Member -NotePropertyName isExtInstalledPostRemediation -NotePropertyValue $false
 
-            Write-Host "Adding AAD Auth Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
-            try
-            {
-                    # Remediation command starts from here
-                    $vmssInstance = Get-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -VMScaleSetName $VMSS.ResourceName
+            Write-Host "Adding AAD Authentication Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+            try {
+                # Remediation command starts from here
+                $vmssInstance = Get-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -VMScaleSetName $VMSS.ResourceName
 
-                    Add-AzVmssExtension -VirtualMachineScaleSet $vmssInstance -Name $reqExtensionName -Publisher $reqExtPublisher -Type $reqExtensionType -TypeHandlerVersion 1.0
+                Add-AzVmssExtension -VirtualMachineScaleSet $vmssInstance -Name $reqExtensionName -Publisher $reqExtPublisher -Type $reqExtensionType -TypeHandlerVersion 1.0
 
-                    $VMExtension = Update-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -Name $VMSS.ResourceName -VirtualMachineScaleSet $vmssInstance
+                $VMExtension = Update-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -Name $VMSS.ResourceName -VirtualMachineScaleSet $vmssInstance
 
-                    # $VMExtension= Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
-                    
-                    $VMExtension.VirtualMachineProfile.ExtensionProfile.Extensions | ForEach-Object{
-                        $VMExt = $_
-                        if($VMExt.Publisher -eq $reqExtPublisher)
-                        {
-                            $VMSS.isExtInstalledPostRemediation = $true
-                            $VMSS.isExtPresent = $true
-                        }
+                $VMExtension.VirtualMachineProfile.ExtensionProfile.Extensions | ForEach-Object {
+                    $VMExt = $_
+                    if ($VMExt.Publisher -eq $reqExtPublisher) {
+                        $VMSS.isExtInstalledPostRemediation = $true
+                        $VMSS.isExtPresent = $true
                     }
-                    if($VMSS.isExtInstalledPostRemediation = $true)
-                    {
-                        Write-Host "Successfully installed AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                        $VMSSRemediated += $VMSS
-                    }
-                    else
-                    {
-                        $VMSSSkipped += $VMSS
-                        write-host "Skipping this Virtual Machine Scale Set resource." -foregroundcolor $([constants]::messagetype.warning)
-                        write-host $([constants]::singledashline)
-                    }  
+                }
+                if ($VMSS.isExtInstalledPostRemediation = $true) {
+                    Write-Host "Successfully installed AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    $VMSSRemediated += $VMSS
+                }
+                else {
+                    $VMSSSkipped += $VMSS
+                    write-host "Skipping this Virtual Machine Scale Set resource." -foregroundcolor $([constants]::messagetype.warning)
+                    write-host $([constants]::singledashline)
+                }  
             }
-            catch
-            {
+            catch {
                 $VMSSSkipped += $VMSS
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Skipping this Virtual Machine Scale Set resource." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -492,19 +461,18 @@ function Add-AADAuthExtensionforVMSS
             }
         }
 
-        $colsPropertyRemediated = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                                  @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                                  @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
-                                  @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
-                                  @{Expression={$_.OrchestrationMode};Label="OrchestrationMode";Width=30;Alignment="left"},
-                                  @{Expression={$_.isExtPresent};Label="isExtensionPresent";Width=30;Alignment="left"},
-                                  @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=30;Alignment="left"}
+        $colsPropertyRemediated = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.OrchestrationMode }; Label = "OrchestrationMode"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.isExtPresent }; Label = "isExtensionPresent"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 30; Alignment = "left" }
        
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
-        if ($($VMSSRemediated | Measure-Object).Count -gt 0)
-        {
+        if ($($VMSSRemediated | Measure-Object).Count -gt 0) {
             Write-Host "AAD Extension have been installed on following Virtual Machine Scale Set(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
            
             $VMSSRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
@@ -518,8 +486,7 @@ function Add-AADAuthExtensionforVMSS
             Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
-        if ($($VMSSSkipped | Measure-Object).Count -gt 0)
-        {
+        if ($($VMSSSkipped | Measure-Object).Count -gt 0) {
             Write-Host "Error installing AAD Extension on the following Virtual Machine Scale Set(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $VMSSSkipped | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
@@ -529,8 +496,7 @@ function Add-AADAuthExtensionforVMSS
             Write-Host " [$($VMSSSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-    else
-    {
+    else {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4]  Remediating non compliant Virtual Machines Scale Set(s)..."
         Write-Host $([Constants]::SingleDashLine)
@@ -542,8 +508,7 @@ function Add-AADAuthExtensionforVMSS
     }
 }
 
-function Validate-AADAuthExtensionforVMSS
-{
+function Validate-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
         Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
@@ -576,47 +541,42 @@ function Validate-AADAuthExtensionforVMSS
 
     param (
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the ID of the Subscription that was previously remediated.")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription that was previously remediated.")]
         $SubscriptionId,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies a forceful roll back without any prompts")]
+        [Parameter(HelpMessage = "Specifies a forceful roll back without any prompts")]
         $Force,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(HelpMessage = "Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the roll back")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the path to the file to be used as input for the roll back")]
         $FilePath
     )
 
-    if ($PerformPreReqCheck)
-    {
-        try
-        {
+    if ($PerformPreReqCheck) {
+        try {
             Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
     }
-    else
-    {
+    else {
         Write-Host "[Step 1 of 3] Validating the user..." 
     }  
 
     # Connect to Azure account
     $context = Get-AzContext
 
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
+    if ([String]::IsNullOrWhiteSpace($context)) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Connecting to Azure account..."
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
@@ -633,14 +593,13 @@ function Validate-AADAuthExtensionforVMSS
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To validate AAD Auth extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To validate AAD Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine Scale Set(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
-    if (-not (Test-Path -Path $FilePath))
-    {
+    if (-not (Test-Path -Path $FilePath)) {
         Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
@@ -650,29 +609,27 @@ function Validate-AADAuthExtensionforVMSS
     $VMSSDetails = Import-Csv -LiteralPath $FilePath
     $validVMSSDetails = $VMSSDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
 
-    $totalVMSS = $(($validVMSSDetails|Measure-Object).Count)
+    $totalVMSS = $(($validVMSSDetails | Measure-Object).Count)
 
-    if ($totalVMSS -eq 0)
-    {
+    if ($totalVMSS -eq 0) {
         Write-Host "No Virtual Machine Scale Set(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
     Write-Host "Found [$(($validVMSSDetails|Measure-Object).Count)] Virtual Machine Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=30;Alignment="left"}
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 30; Alignment = "left" }
         
     $validVMSSDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\ValidateExtOnVMSS"
 
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
+    if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
@@ -692,65 +649,58 @@ function Validate-AADAuthExtensionforVMSS
     Write-Host "Starting validation..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
 
-    $validVMSSDetails | ForEach-Object{
-    $vmssdetails = $_
-    $VmssExtDetails = @()
-    $vmssdetails | Add-Member -NotePropertyName IsVmssValidated -NotePropertyValue $false
-    # Getting all classic role assignments.
-    $VMSSExtList = [VMSSExtensionList]::new()
-    $res = $VMSSExtList.GetVMSSExtensionList($subscriptionId,$vmssdetails.ResourceGroupName,$vmssdetails.ResourceName)
+    $validVMSSDetails | ForEach-Object {
+        $vmssdetails = $_
+        $VmssExtDetails = @()
+        $vmssdetails | Add-Member -NotePropertyName IsVmssValidated -NotePropertyValue $false
+        # Getting all classic role assignments.
+        $VMSSExtList = [VMSSExtensionList]::new()
+        $res = $VMSSExtList.GetVMSSExtensionList($subscriptionId, $vmssdetails.ResourceGroupName, $vmssdetails.ResourceName)
     
-    if($null -ne $res)
-    {
-        $res.value | ForEach-Object {
-                    $resourceId = $_.id
-                    $extName = $_.name
-                    $provisioningState = $_.properties.provisioningState
-                    $publisher = $_.properties.publisher
-                    $type = $_.properties.type 
-                    $VmssExtDetails += $_ | Select-Object   @{N='Id';E={$resourceId}},
-                                                                @{N='ExtName';E={$extName}},
-                                                                @{N='provisioningState';E={$provisioningState}},
-                                                                @{N='publisher';E={$publisher}},
-                                                                @{N='type';E={$type}}
+        if ($null -ne $res) {
+            $res.value | ForEach-Object {
+                $resourceId = $_.id
+                $extName = $_.name
+                $provisioningState = $_.properties.provisioningState
+                $publisher = $_.properties.publisher
+                $type = $_.properties.type 
+                $VmssExtDetails += $_ | Select-Object   @{N = 'Id'; E = { $resourceId } },
+                @{N = 'ExtName'; E = { $extName } },
+                @{N = 'provisioningState'; E = { $provisioningState } },
+                @{N = 'publisher'; E = { $publisher } },
+                @{N = 'type'; E = { $type } }
  
             }
-        $VmssExtDetails | ForEach-Object{
+            $VmssExtDetails | ForEach-Object {
         
-            if($_.type -eq $reqExtensionType)
-            {
-                if($_.provisioningState -eq "Succeeded")
-                {
-                    $vmssdetails.IsVmssValidated = true
+                if ($_.type -eq $reqExtensionType) {
+                    if ($_.provisioningState -eq "Succeeded") {
+                        $vmssdetails.IsVmssValidated = true
+                    }
                 }
             }
+            if ($IsVmssValidated) {
+                $VMSSValidated += $vmssdetails
+            }
+            else {
+                $VMSSSkipped += $vmssdetails
+            }
         }
-        if($IsVmssValidated)
-        {
-            $VMSSValidated += $vmssdetails
-        }
-        else
-        {
-            $VMSSSkipped += $vmssdetails
-        }
-    }
 
     }
 
-    $colsPropertyValidation = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=30;Alignment="left"},
-                    @{Expression={$_.IsVmssValidated};Label="IsRequiredExtensionProvisioningState";Width=30;Alignment="left"}
+    $colsPropertyValidation = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.IsVmssValidated }; Label = "IsRequiredExtensionProvisioningState"; Width = 30; Alignment = "left" }
      
-    if ($($VMSSValidated | Measure-Object).Count -gt 0 -or $($VMSSSkipped | Measure-Object).Count -gt 0)
-    {
+    if ($($VMSSValidated | Measure-Object).Count -gt 0 -or $($VMSSSkipped | Measure-Object).Count -gt 0) {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Validation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($VMSSValidated | Measure-Object).Count -gt 0)
-        {
+        if ($($VMSSValidated | Measure-Object).Count -gt 0) {
             Write-Host "AAD Extension has been successfully validated on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VMSSValidated | Format-Table -Property $colsPropertyValidation -Wrap
 
@@ -762,8 +712,7 @@ function Validate-AADAuthExtensionforVMSS
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($VMSSSkipped | Measure-Object).Count -gt 0)
-        {
+        if ($($VMSSSkipped | Measure-Object).Count -gt 0) {
             Write-Host "Following Virtual Machine Scale Set(s) AAD extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             
             $VMSSSkipped | Format-Table -Property $colsPropertyValidation -Wrap
@@ -782,8 +731,7 @@ function Validate-AADAuthExtensionforVMSS
 }
 
 
-function Remove-AADAuthExtensionforVMSS
-{
+function Remove-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
         Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
@@ -819,47 +767,42 @@ function Remove-AADAuthExtensionforVMSS
 
     param (
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the ID of the Subscription that was previously remediated.")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription that was previously remediated.")]
         $SubscriptionId,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies a forceful roll back without any prompts")]
+        [Parameter(HelpMessage = "Specifies a forceful roll back without any prompts")]
         $Force,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(HelpMessage = "Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the roll back")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the path to the file to be used as input for the roll back")]
         $FilePath
     )
 
-    if ($PerformPreReqCheck)
-    {
-        try
-        {
+    if ($PerformPreReqCheck) {
+        try {
             Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
     }
-    else
-    {
+    else {
         Write-Host "[Step 1 of 3] Validating the user..." 
     }  
 
     # Connect to Azure account
     $context = Get-AzContext
 
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
+    if ([String]::IsNullOrWhiteSpace($context)) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Connecting to Azure account..."
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
@@ -876,21 +819,18 @@ function Remove-AADAuthExtensionforVMSS
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To remove/uninstall AAD Auth extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To remove/uninstall AAD Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine Scale Set(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
-    if (-not (Test-Path -Path $FilePath))
-    {
+    if (-not (Test-Path -Path $FilePath)) {
         Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
 
     $reqExtPublisher = "Microsoft.Azure.ActiveDirectory"
-    # $reqExtensionType = "AADSSHLoginForLinux"
-    # $reqExtensionName = "AADSSHLoginForLinux"
 
     Write-Host "Fetching all Linux Virtual Machine Scale Set(s) from" -NoNewline
     Write-Host " [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Update)
@@ -898,30 +838,28 @@ function Remove-AADAuthExtensionforVMSS
 
     $validVMSSDetails = $VMSSDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
 
-    $totalVMSS = $(($validVMSSDetails|Measure-Object).Count)
+    $totalVMSS = $(($validVMSSDetails | Measure-Object).Count)
 
-    if ($totalVMSS -eq 0)
-    {
+    if ($totalVMSS -eq 0) {
         Write-Host "No Virtual Machine Scale Set(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
     Write-Host "Found [$(($validVMSSDetails|Measure-Object).Count)] Virtual Machine Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=30;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=30;Alignment="left"},
-                    @{Expression={$_.OrchestrationMode};Label="OrchestrationMode";Width=30;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=30;Alignment="left"}
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OrchestrationMode }; Label = "OrchestrationMode"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 30; Alignment = "left" }
         
     $validVMSSDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\RollbackExtOnVMSS"
 
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
+    if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
@@ -930,18 +868,15 @@ function Remove-AADAuthExtensionforVMSS
     Write-Host "[Step 3 of 3] Rolling back all remediated VMSS(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
-    if( -not $Force)
-    {
-        Write-Host "This will remove the AAD Auth Extension from the VMSS(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
+    if ( -not $Force) {
+        Write-Host "This will remove the AAD Authentication Extension from the VMSS(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
-            if($userInput -ne "Y")
-            {
-                Write-Host "AAD Auth Extension will not be rolled back for any VMSS(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-                break
-            }
+        if ($userInput -ne "Y") {
+            Write-Host "AAD Authentication Extension will not be rolled back for any VMSS(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            break
+        }
     }
-    else
-    {
+    else {
         Write-Host "'Force' flag is provided. AAD extension in VMSS(s) will be removed in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
@@ -957,65 +892,54 @@ function Remove-AADAuthExtensionforVMSS
     $validVMSSDetails | ForEach-Object {
         $VMSS = $_
         $VMSS | Add-Member -NotePropertyName isAADExtRolledback -NotePropertyValue $false
-        try
-        {
+        try {
             
-            Write-Host "Rolling back AAD Ext on Virtual Machine Scale Set(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
-            if($_.isExtInstalledPostRemediation)
-            {
+            Write-Host "Rolling back AAD Authentication Extension on Virtual Machine Scale Set(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            if ($_.isExtInstalledPostRemediation) {
                 $vmssInstance = Get-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -VMScaleSetName $VMSS.ResourceName 
-                                Remove-AzVmssExtension -VirtualMachineScaleSet $vmssInstance -Name 'AADSSHLoginForLinux'
+                Remove-AzVmssExtension -VirtualMachineScaleSet $vmssInstance -Name 'AADSSHLoginForLinux'
                 $VMSSResource = Update-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -Name $VMSS.ResourceName -VirtualMachineScaleSet $vmssInstance
-                #$VMSSResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -Name AADSSHLoginForLinux -Force
-        
-                 #$VMExtensions = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
                     
-                    $VMSSResource.VirtualMachineProfile.ExtensionProfile.Extensions | ForEach-Object{
-                        $VMExtension = $_
-                        if($VMExtension.Publisher -eq ($reqExtPublisher))
-                        {
-                            $VMSS.isAADExtRolledback = $false
-                            $VMSS.isExtPresent = $true
-                        }
+                $VMSSResource.VirtualMachineProfile.ExtensionProfile.Extensions | ForEach-Object {
+                    $VMExtension = $_
+                    if ($VMExtension.Publisher -eq ($reqExtPublisher)) {
+                        $VMSS.isAADExtRolledback = $false
+                        $VMSS.isExtPresent = $true
                     }
+                }
 
-                    if(!$VMSS.isAADExtRolledback)
-                    {
-                        $VMSS.isAADExtRolledback = $true
-                        $VMSS.isExtPresent = $false
-                        Write-Host "Successfully uninstalled AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                        $VMSSRolledBack += $VMSS
-                    }
-                    else
-                    {
-                        $VMSSSkipped += $VMSS
-                        write-host "Skipping this Virtual Machine Scale Set resource [$($_.ResourceName)]." -foregroundcolor $([constants]::messagetype.warning)
-                        write-host $([constants]::singledashline)
-                    }
+                if (!$VMSS.isAADExtRolledback) {
+                    $VMSS.isAADExtRolledback = $true
+                    $VMSS.isExtPresent = $false
+                    Write-Host "Successfully uninstalled AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    $VMSSRolledBack += $VMSS
+                }
+                else {
+                    $VMSSSkipped += $VMSS
+                    write-host "Skipping this Virtual Machine Scale Set resource [$($_.ResourceName)]." -foregroundcolor $([constants]::messagetype.warning)
+                    write-host $([constants]::singledashline)
+                }
             }
         }
-        catch
-        {
+        catch {
             $VMSSSkipped += $VMSS
         }
     }
 
-    $colsPropertyRollBack = @{Expression={$_.ResourceName};Label="ResourceName";Width=25;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=25;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=25;Alignment="left"},
-                    @{Expression={$_.OsType};Label="OsType";Width=25;Alignment="left"},
-                    @{Expression={$_.OrchestrationMode};Label="OrchestrationMode";Width=25;Alignment="left"},
-                    @{Expression={$_.isExtPresent};Label="isExtPresent";Width=25;Alignment="left"},
-                    @{Expression={$_.isAADExtRolledback};Label="isAADExtRolledback";Width=25;Alignment="left"}
+    $colsPropertyRollBack = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 25; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 25; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 25; Alignment = "left" },
+    @{Expression = { $_.OsType }; Label = "OsType"; Width = 25; Alignment = "left" },
+    @{Expression = { $_.OrchestrationMode }; Label = "OrchestrationMode"; Width = 25; Alignment = "left" },
+    @{Expression = { $_.isExtPresent }; Label = "isExtPresent"; Width = 25; Alignment = "left" },
+    @{Expression = { $_.isAADExtRolledback }; Label = "isAADExtRolledback"; Width = 25; Alignment = "left" }
      
-    if ($($VMSSRolledBack | Measure-Object).Count -gt 0 -or $($VMSSSkipped | Measure-Object).Count -gt 0)
-    {
+    if ($($VMSSRolledBack | Measure-Object).Count -gt 0 -or $($VMSSSkipped | Measure-Object).Count -gt 0) {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($VMSSRolledBack | Measure-Object).Count -gt 0)
-        {
+        if ($($VMSSRolledBack | Measure-Object).Count -gt 0) {
             Write-Host "AAD extension is rolled back successfully on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VMSSRolledBack | Format-Table -Property $colsPropertyRollBack -Wrap
 
@@ -1027,8 +951,7 @@ function Remove-AADAuthExtensionforVMSS
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($VMSSSkipped | Measure-Object).Count -gt 0)
-        {
+        if ($($VMSSSkipped | Measure-Object).Count -gt 0) {
             Write-Host "Error installing AAD Extension on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $VMSSSkipped | Format-Table -Property $colsProperty -Wrap
@@ -1043,63 +966,54 @@ function Remove-AADAuthExtensionforVMSS
     }
 }
 
-class VMSSExtensionList
-{
-[PSObject] GetVMSSExtensionList([string] $subscriptionId,[string] $ResourceGroupName,[string] $ResourceName)
-    {
+class VMSSExtensionList {
+    [PSObject] GetVMSSExtensionList([string] $subscriptionId, [string] $ResourceGroupName, [string] $ResourceName) {
         $content = $null
-        try
-        {
-            #GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions?api-version=2023-03-01
+        try {
             $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/resourceGroups/$($ResourceGroupName)/providers/Microsoft.Compute/virtualMachineScaleSets/$($ResourceName)/extensions?api-version=2023-03-01"
             $headers = $this.GetAuthHeader()
             # API to get classic role assignments
             $response = Invoke-WebRequest -Method Get -Uri $armUri -Headers $headers -UseBasicParsing
             $content = ConvertFrom-Json $response.Content
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         }
         
         return($content)
     }
 
-     [PSObject] GetAuthHeader()
-     {
-         [psobject] $headers = $null
-         try 
-         {
-             $resourceAppIdUri = "https://management.core.windows.net/"
-             $rmContext = Get-AzContext
-             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
-             $rmContext.Account,
-             $rmContext.Environment,
-             $rmContext.Tenant,
-             [System.Security.SecureString] $null,
-             "Never",
-             $null,
-             $resourceAppIdUri); 
-             $header = "Bearer " + $authResult.AccessToken
-             $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
-         }
-         catch 
-         {
-             Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)   
-         }
-         return($headers)
-     }
+    [PSObject] GetAuthHeader() {
+        [psobject] $headers = $null
+        try {
+            $resourceAppIdUri = "https://management.core.windows.net/"
+            $rmContext = Get-AzContext
+            $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
+                $rmContext.Account,
+                $rmContext.Environment,
+                $rmContext.Tenant,
+                [System.Security.SecureString] $null,
+                "Never",
+                $null,
+                $resourceAppIdUri); 
+            $header = "Bearer " + $authResult.AccessToken
+            $headers = @{"Authorization" = $header; "Content-Type" = "application/json"; }
+        }
+        catch {
+            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)   
+        }
+        return($headers)
+    }
 }
 
 # Defines commonly used constants.
-class Constants
-{
+class Constants {
     # Defines commonly used colour codes, corresponding to the severity of the log.
     static [Hashtable] $MessageType = @{
-        Error = [System.ConsoleColor]::Red
+        Error   = [System.ConsoleColor]::Red
         Warning = [System.ConsoleColor]::Yellow
-        Info = [System.ConsoleColor]::Cyan
-        Update = [System.ConsoleColor]::Green
+        Info    = [System.ConsoleColor]::Cyan
+        Update  = [System.ConsoleColor]::Green
         Default = [System.ConsoleColor]::White
     }
 
