@@ -3,10 +3,10 @@
     This script is used to remediate AAD Auth Extension on Linux VMs in a Subscription.
 
 # Control ID:
-    Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial
+    Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
 
 # Display Name:
-    [Trial] AAD extension must be deployed to the Linux VM
+    AAD extension must be deployed to the Linux VM
 
 # Prerequisites:
     Contributor or higher priviliged role on the Virtual Machine(s) is required for remediation.
@@ -71,8 +71,7 @@
 ###>
 
 
-function Setup-Prerequisites
-{
+function Setup-Prerequisites {
     <#
         .SYNOPSIS
         Checks if the prerequisites are met, else, sets them up.
@@ -104,14 +103,12 @@ function Setup-Prerequisites
 
     # Check if the required modules are installed.
     $requiredModules | ForEach-Object {
-        if ($availableModules.Name -notcontains $_)
-        {
+        if ($availableModules.Name -notcontains $_) {
             Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
-             Write-Host "[$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "[$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
-        else
-        {
+        else {
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
@@ -120,15 +117,14 @@ function Setup-Prerequisites
 }
 
 
-function Add-AADAuthExtensionforVMs
-{
+function Add-AADAuthExtensionforVMs {
     <#
         .SYNOPSIS
-        Remediates 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
+        Remediates 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
-        [Trial] AAD extension must be deployed to the Linux VM. 
+        Remediates 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
+        AAD extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -169,59 +165,54 @@ function Add-AADAuthExtensionforVMs
 
     param (
         [String]
-        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
-        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage="Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription to be remediated")]
+        [Parameter(ParameterSetName = "WetRun", Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription to be remediated")]
         $SubscriptionId,
 
         [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies a forceful remediation without any prompts")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies a forceful remediation without any prompts")]
         $Force,
 
         [Switch]
-        [Parameter(ParameterSetName = "DryRun", HelpMessage="Specifies validation of prerequisites for the command")]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(ParameterSetName = "DryRun", HelpMessage = "Specifies validation of prerequisites for the command")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [Switch]
-        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage="Specifies a dry run of the actual remediation")]
+        [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage = "Specifies a dry run of the actual remediation")]
         $DryRun,
 
         [Switch]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies no back up will be taken by the script before remediation")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies no back up will be taken by the script before remediation")]
         $SkipBackup,
 
         [String]
-        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies the path to the file to be used as input for the remediation")]
         $FilePath
     )
 
     Write-Host $([Constants]::DoubleDashLine)
 
-    if ($PerformPreReqCheck)
-    {
-        try
-        {
+    if ($PerformPreReqCheck) {
+        try {
             Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
     }
-    else
-    {
+    else {
         Write-Host "[Step 1 of 4] Validating the user... "
     }
 
     # Connect to Azure account
     $context = Get-AzContext
 
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
+    if ([String]::IsNullOrWhiteSpace($context)) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Connecting to Azure account..."
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
@@ -255,91 +246,79 @@ function Add-AADAuthExtensionforVMs
     $reqExtensionName = "AADSSHLoginForLinux"
 
     # No file path provided as input to the script. Fetch all Virtual Machine(s) in the Subscription.
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
-        try
-        {
+    if ([String]::IsNullOrWhiteSpace($FilePath)) {
+        try {
             Write-Host "Fetching all Virtual Machine(s) in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
             # Get all Virtual Machine(s) in a Subscription
-            $VirtualMachineDetails =  Get-AzVM -ErrorAction Stop
+            $VirtualMachineDetails = Get-AzVM -ErrorAction Stop
 
             # Seperating required properties
-            $VirtualMachineDetails = $VirtualMachineDetails | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                    @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                    @{N='ResourceName';E={$_.Name}},
-                                                                    @{N='OSType';E={$_.StorageProfile.OsDisk.OSType}}                                                   
-            $VirtualMachineDetails | ForEach-Object{
+            $VirtualMachineDetails = $VirtualMachineDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+            @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+            @{N = 'ResourceName'; E = { $_.Name } },
+            @{N = 'OSType'; E = { $_.StorageProfile.OsDisk.OSType } }                                                   
+            $VirtualMachineDetails | ForEach-Object {
                 $VMInstance = $_
-                if($VMInstance.OSType -eq "Linux")
-                {
+                if ($VMInstance.OSType -eq "Linux") {
                     $LinuxVMDetails += $VMInstance
                     Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                 }
-                else
-                {
+                else {
                     Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
         }
-        catch
-        {
+        catch {
             Write-Host "Error fetching Virtual Machine(s) from the subscription. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
         }    
     }
-    else
-    {
-        if (-not (Test-Path -Path $FilePath))
-        {
+    else {
+        if (-not (Test-Path -Path $FilePath)) {
             Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
         Write-Host "Fetching all Virtual Machine(s) from [$($FilePath)]..." 
 
         $VirtualMachineResources = Import-Csv -LiteralPath $FilePath
-        $validVirtualMachineResources = $VirtualMachineResources| Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        $validVirtualMachineResources = $VirtualMachineResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
       
-        $validVirtualMachineResources| ForEach-Object {
-        $resourceId = $_.ResourceId
-            try
-            {
-                $VirtualMachineResource =  Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
+        $validVirtualMachineResources | ForEach-Object {
+            $resourceId = $_.ResourceId
+            try {
+                $VirtualMachineResource = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
             
-                $VirtualMachineDetails += $VirtualMachineResource  | Select-Object @{N='ResourceId';E={$_.Id}},
-                                                                            @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-                                                                            @{N='ResourceName';E={$_.Name}},
-                                                                            @{N='OSType';E={$_.StorageProfile.OsDisk.OSType}} 
+                $VirtualMachineDetails += $VirtualMachineResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                @{N = 'ResourceName'; E = { $_.Name } },
+                @{N = 'OSType'; E = { $_.StorageProfile.OsDisk.OSType } } 
             }                                                      
-            catch
-            {
+            catch {
                 Write-Host "Error fetching Virtual Machine(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             }
         }
         Write-Host "Validating and Filtering Linux Virtual Machine(s):" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
                     
-        $VirtualMachineDetails | ForEach-Object{
+        $VirtualMachineDetails | ForEach-Object {
             $VMInstance = $_
-            if($VMInstance.OSType -eq "Linux")
-            {
+            if ($VMInstance.OSType -eq "Linux") {
                 $LinuxVMDetails += $VMInstance
                 Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
             }
-            else
-            {
+            else {
                 Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }  
     }
 
-    $totalVirtualMachines = ($LinuxVMDetails| Measure-Object).Count
+    $totalVirtualMachines = ($LinuxVMDetails | Measure-Object).Count
     
-    if ($totalVirtualMachines -eq 0)
-    {
+    if ($totalVirtualMachines -eq 0) {
         Write-Host "No Virtual Machine(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
@@ -353,53 +332,48 @@ function Add-AADAuthExtensionforVMs
 
     Write-Host "Separating Virtual machine(s) for which AAD Extension is not added..."
 
-    $LinuxVMDetails | ForEach-Object{
+    $LinuxVMDetails | ForEach-Object {
         $VirtualMachine = $_
         $VirtualMachine | Add-Member -NotePropertyName isExtPresent -NotePropertyValue $false
         $IsExtPresent = $false;
 
         #Getting list of extensions
         $VMExtensions = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
-        $VMExtensions | ForEach-Object{
-        $VMExtension =$_
-            if(!$IsExtPresent)
-            {
-                if($VMExtension.ExtensionType -eq ($reqExtensionType))
-                {
-                    $IsExtPresent =$true
+        $VMExtensions | ForEach-Object {
+            $VMExtension = $_
+            if (!$IsExtPresent) {
+                if ($VMExtension.ExtensionType -eq ($reqExtensionType)) {
+                    $IsExtPresent = $true
                 }
             }
         }
-        if(!$IsExtPresent)
-        {
+        if (!$IsExtPresent) {
             Write-Host "AAD extension is missing on Virtual Machine [$($VirtualMachine.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Warning)
             $NonCompliantVMs += $VirtualMachine
         }
     }
 
-    $totalNonCompliantVirtualMachines  = ($NonCompliantVMs | Measure-Object).Count
+    $totalNonCompliantVirtualMachines = ($NonCompliantVMs | Measure-Object).Count
 
-    if ($totalNonCompliantVirtualMachines  -eq 0)
-    {
+    if ($totalNonCompliantVirtualMachines -eq 0) {
         Write-Host "No Virtual machines(s) found without AAD Extension present. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
     Write-Host "Found [$($totalNonCompliantVirtualMachines)] Virtual machines(s) without AAD Extension:" -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=10;Alignment="left"},
-                    @{Expression={$_.isExtPresent};Label="isExtensionPresent";Width=10;Alignment="left"}
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 50; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 10; Alignment = "left" },
+    @{Expression = { $_.isExtPresent }; Label = "isExtensionPresent"; Width = 10; Alignment = "left" }
         
     $NonCompliantVMs | Format-Table -Property $colsProperty -Wrap
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\AADAuthExtForLinuxVm"
 
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
+    if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
@@ -407,8 +381,7 @@ function Add-AADAuthExtensionforVMs
     Write-Host "[Step 3 of 4] Backing up Virtual machine(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
-    if ([String]::IsNullOrWhiteSpace($FilePath))
-    {
+    if ([String]::IsNullOrWhiteSpace($FilePath)) {
         # Backing up Virtual Machine(s) details.
         $backupFile = "$($backupFolderPath)\NonCompliantVMs.csv"
 
@@ -417,33 +390,28 @@ function Add-AADAuthExtensionforVMs
         Write-Host "Virtual machines(s) details have been backed up to" -NoNewline
         Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
     }
-    else
-    {
+    else {
         Write-Host "Skipped as -FilePath is provided" -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
-    if (-not $DryRun)
-    {
+    if (-not $DryRun) {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4] Remediating non compliant Azure Linux Virtual machines..." 
         Write-Host $([Constants]::SingleDashLine)
         
-        if (-not $Force)
-        {
+        if (-not $Force) {
             Write-Host "Found total [$($NonCompliantVMs.count)] Virtual machines(s) where AAD Extension is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "This step will add AAD extension for all non-complaint Virtual machine(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
-            if($userInput -ne "Y")
-            {
+            if ($userInput -ne "Y") {
                 Write-Host "AAD Extension will not be added  to the Virtual machines(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
-        else
-        {
+        else {
             Write-Host "'Force' flag is provided. AAD extension will be added for Virtual machine(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
@@ -457,39 +425,34 @@ function Add-AADAuthExtensionforVMs
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Virtual Machines(s) which needs to be remediated.
-        $NonCompliantVMs | ForEach-Object{
+        $NonCompliantVMs | ForEach-Object {
             $VirtualMachine = $_
             $VirtualMachine | Add-Member -NotePropertyName isExtInstalledPostRemediation -NotePropertyValue $false
 
             Write-Host "Adding AAD Auth Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
-            try
-            {
-                    Set-AzVMExtension -Publisher $reqExtPublisher -ExtensionType $reqExtensionType -VMName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -Name $reqExtensionName -TypeHandlerVersion 1.0
+            try {
+                Set-AzVMExtension -Publisher $reqExtPublisher -ExtensionType $reqExtensionType -VMName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -Name $reqExtensionName -TypeHandlerVersion 1.0 -ErrorAction SilentlyContinue
                     
-                    $VMExtension= Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
+                $VMExtension = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
                     
-                    $VMExtension | ForEach-Object{
-                        if($VMExtension.Publisher -contains($reqExtPublisher))
-                        {
-                            $VirtualMachine.isExtInstalledPostRemediation = $true
-                            $VirtualMachine.isExtPresent = $true
-                        }
+                $VMExtension | ForEach-Object {
+                    if ($VMExtension.Publisher -contains ($reqExtPublisher)) {
+                        $VirtualMachine.isExtInstalledPostRemediation = $true
+                        $VirtualMachine.isExtPresent = $true
                     }
-                    if($VirtualMachine.isExtInstalledPostRemediation = $true)
-                    {
-                        Write-Host "Successfully installed AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                        $VirtualMachinesRemediated += $VirtualMachine
-                    }
-                    else
-                    {
-                        $virtualmachineskipped += $VirtualMachine
-                        write-host "Skipping this Virtual Machine resource." -foregroundcolor $([constants]::messagetype.warning)
-                        write-host $([constants]::singledashline)
-                    }  
+                }
+                if ($VirtualMachine.isExtInstalledPostRemediation = $true) {
+                    Write-Host "Successfully installed AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    $VirtualMachinesRemediated += $VirtualMachine
+                }
+                else {
+                    $virtualmachineskipped += $VirtualMachine
+                    write-host "Skipping this Virtual Machine resource." -foregroundcolor $([constants]::messagetype.warning)
+                    write-host $([constants]::singledashline)
+                }  
             }
-            catch
-            {
+            catch {
                 $VirtualMachineSkipped += $VirtualMachine
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Skipping this Virtual Machine resource." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -497,18 +460,17 @@ function Add-AADAuthExtensionforVMs
             }
         }
 
-        $colsPropertyRemediated = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                                  @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                                  @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                                  @{Expression={$_.OSType};Label="OSType";Width=60;Alignment="left"},
-                                  @{Expression={$_.isExtPresent};Label="isExtensionPresent";Width=70;Alignment="left"},
-                                  @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=80;Alignment="left"}
+        $colsPropertyRemediated = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.isExtPresent }; Label = "isExtensionPresent"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 30; Alignment = "left" }
        
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
-        if ($($VirtualMachinesRemediated | Measure-Object).Count -gt 0)
-        {
+        if ($($VirtualMachinesRemediated | Measure-Object).Count -gt 0) {
             Write-Host "AAD Extension have been installed on following Virtual Machine(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
            
             $VirtualMachinesRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
@@ -522,8 +484,7 @@ function Add-AADAuthExtensionforVMs
             Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
-        if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0)
-        {
+        if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
             Write-Host "Error installing AAD Extension on the following Virtual Machine(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $VirtualMachineSkipped | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
@@ -533,8 +494,7 @@ function Add-AADAuthExtensionforVMs
             Write-Host " [$($VirtualMachineSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-    else
-    {
+    else {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "[Step 4 of 4]  Remediating non compliant Virtual Machines..."
         Write-Host $([Constants]::SingleDashLine)
@@ -546,15 +506,14 @@ function Add-AADAuthExtensionforVMs
     }
 }
 
-function Validate-AADAuthExtensionforVMs
-{
+function Validate-AADAuthExtensionforVMs {
     <#
         .SYNOPSIS
-        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
+        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
 
         .DESCRIPTION
-        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
-        [Trial] AAD extension must be deployed to the Linux VM. 
+        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
+        AAD extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -580,47 +539,42 @@ function Validate-AADAuthExtensionforVMs
 
     param (
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the ID of the Subscription that was previously remediated.")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription that was previously remediated.")]
         $SubscriptionId,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies a forceful roll back without any prompts")]
+        [Parameter(HelpMessage = "Specifies a forceful roll back without any prompts")]
         $Force,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(HelpMessage = "Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the roll back")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the path to the file to be used as input for the roll back")]
         $FilePath
     )
 
-    if ($PerformPreReqCheck)
-    {
-        try
-        {
+    if ($PerformPreReqCheck) {
+        try {
             Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
     }
-    else
-    {
+    else {
         Write-Host "[Step 1 of 3] Validating the user..." 
     }  
 
     # Connect to Azure account
     $context = Get-AzContext
 
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
+    if ([String]::IsNullOrWhiteSpace($context)) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Connecting to Azure account..."
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
@@ -643,8 +597,7 @@ function Validate-AADAuthExtensionforVMs
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
-    if (-not (Test-Path -Path $FilePath))
-    {
+    if (-not (Test-Path -Path $FilePath)) {
         Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
@@ -655,35 +608,33 @@ function Validate-AADAuthExtensionforVMs
 
     $validVirtualMachineDetails = $VirtualMachineDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
 
-    $totalVirtualMachines = $(($validVirtualMachineDetails|Measure-Object).Count)
+    $totalVirtualMachines = $(($validVirtualMachineDetails | Measure-Object).Count)
 
-    if ($totalVirtualMachines -eq 0)
-    {
+    if ($totalVirtualMachines -eq 0) {
         Write-Host "No Virtual Machine(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
     Write-Host "Found [$(($validVirtualMachineDetails|Measure-Object).Count)] Virtual Machine(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=50;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=50;Alignment="left"}
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 50; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 50; Alignment = "left" },
+    @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 50; Alignment = "left" }
         
     $validVirtualMachineDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\ValidateExtOnVirtualMachines"
 
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
+    if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
   
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Validating all remediated VMs(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Validating Provisioning state of all remediated VMs(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
     # List for storing validated Virtual Machine(s)
@@ -700,59 +651,49 @@ function Validate-AADAuthExtensionforVMs
     $validVirtualMachineDetails | ForEach-Object {
         $VirtualMachine = $_
         $VirtualMachine | Add-Member -NotePropertyName isExtProvStateValidated -NotePropertyValue $false
-        try
-        {
+        try {
             
             Write-Host "Validating Virtual Machine AAD extension- [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
-            if($_.isExtInstalledPostRemediation)
-            {
-                $VMExtensions= Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
+            if ($_.isExtInstalledPostRemediation) {
+                $VMExtensions = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
                     
-                    $VMExtensions | ForEach-Object{
-                        $VMExtension = $_
-                        if(!$VirtualMachine.isExtProvStateValidated)
-                        {
-                            if($VMExtension.ExtensionType -eq($reqExtensionType))
-                            {
-                                if($VMExtension.ProvisioningState -eq "Succeeded")
-                                {
-                                    $VirtualMachine.isExtProvStateValidated = $true
-                                }
+                $VMExtensions | ForEach-Object {
+                    $VMExtension = $_
+                    if (!$VirtualMachine.isExtProvStateValidated) {
+                        if ($VMExtension.ExtensionType -eq ($reqExtensionType)) {
+                            if ($VMExtension.ProvisioningState -eq "Succeeded") {
+                                $VirtualMachine.isExtProvStateValidated = $true
                             }
                         }
                     }
-                if($VirtualMachine.isExtProvStateValidated)
-                {
-                    Write-Host "Virtual Machine AAD extension validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                }
+                if ($VirtualMachine.isExtProvStateValidated) {
+                    Write-Host "Virtual Machine AAD extension provisiong state validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
                     $VirtualMachinesValidated += $VirtualMachine
                 }
-                else 
-                {
-                    Write-Host "Virtual Machine AAD extension is not validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                else {
+                    Write-Host "Virtual Machine AAD extension provisiong state is not validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                     $VirtualMachinesSkipped += $VirtualMachine
                 }
             }
         }
-        catch
-        {
+        catch {
             $VirtualMachinesSkipped += $VirtualMachine
         }
     }
 
-    $colsPropertyValidation = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=50;Alignment="left"},
-                    @{Expression={$_.isExtProvStateValidated};Label="isExtProvStateValidated";Width=50;Alignment="left"}
+    $colsPropertyValidation = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 50; Alignment = "left" },
+    @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 50; Alignment = "left" },
+    @{Expression = { $_.isExtProvStateValidated }; Label = "isExtProvStateValidated"; Width = 50; Alignment = "left" }
      
-    if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0 -or $($VirtualMachineSkipped | Measure-Object).Count -gt 0)
-    {
+    if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0 -or $($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Validation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0)
-        {
-            Write-Host "AAD Extension has been successfully validated on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
+        if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0) {
+            Write-Host "AAD Extension provisiong state has been successfully validated on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VirtualMachinesValidated | Format-Table -Property $colsPropertyValidation -Wrap
 
             # Write this to a file.
@@ -763,8 +704,7 @@ function Validate-AADAuthExtensionforVMs
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($VirtualMachinesSkipped | Measure-Object).Count -gt 0)
-        {
+        if ($($VirtualMachinesSkipped | Measure-Object).Count -gt 0) {
             Write-Host "Following Virtual Machine(s) AAD extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             
             $VirtualMachinesSkipped | Format-Table -Property $colsPropertyValidation -Wrap
@@ -776,22 +716,21 @@ function Validate-AADAuthExtensionforVMs
             Write-Host " [$($ValidationSkippedVirtualMachineFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
             Write-Host $([Constants]::SingleDashLine)
 
-            Write-Host "For above VM(s), please manually install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
+            Write-Host "For above VM(s), please manually re-install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
 
         }
     }
 }
 
 
-function Remove-AADAuthExtensionforVMs
-{
+function Remove-AADAuthExtensionforVMs {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
+        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial' Control.
-        [Trial] AAD extension must be deployed to the Linux VM. 
+        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
+        AAD extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -820,47 +759,42 @@ function Remove-AADAuthExtensionforVMs
 
     param (
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the ID of the Subscription that was previously remediated.")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription that was previously remediated.")]
         $SubscriptionId,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies a forceful roll back without any prompts")]
+        [Parameter(HelpMessage = "Specifies a forceful roll back without any prompts")]
         $Force,
 
         [Switch]
-        [Parameter(HelpMessage="Specifies validation of prerequisites for the command")]
+        [Parameter(HelpMessage = "Specifies validation of prerequisites for the command")]
         $PerformPreReqCheck,
 
         [String]
-        [Parameter(Mandatory = $true, HelpMessage="Specifies the path to the file to be used as input for the roll back")]
+        [Parameter(Mandatory = $true, HelpMessage = "Specifies the path to the file to be used as input for the roll back")]
         $FilePath
     )
 
-    if ($PerformPreReqCheck)
-    {
-        try
-        {
+    if ($PerformPreReqCheck) {
+        try {
             Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script and validating the user..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
         }
-        catch
-        {
+        catch {
             Write-Host "Error occurred while setting up prerequisites. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             break
         }
     }
-    else
-    {
+    else {
         Write-Host "[Step 1 of 3] Validating the user..." 
     }  
 
     # Connect to Azure account
     $context = Get-AzContext
 
-    if ([String]::IsNullOrWhiteSpace($context))
-    {
+    if ([String]::IsNullOrWhiteSpace($context)) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Connecting to Azure account..."
         Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop | Out-Null
@@ -877,14 +811,13 @@ function Remove-AADAuthExtensionforVMs
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To add AAD Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To remove/uninstall AAD Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
-    if (-not (Test-Path -Path $FilePath))
-    {
+    if (-not (Test-Path -Path $FilePath)) {
         Write-Host "ERROR: Input file - [$($FilePath)] not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         break
     }
@@ -899,29 +832,27 @@ function Remove-AADAuthExtensionforVMs
 
     $validVirtualMachineDetails = $VirtualMachineDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) -and ![String]::IsNullOrWhiteSpace($_.ResourceGroupName) -and ![String]::IsNullOrWhiteSpace($_.ResourceName) }
 
-    $totalVirtualMachines = $(($validVirtualMachineDetails|Measure-Object).Count)
+    $totalVirtualMachines = $(($validVirtualMachineDetails | Measure-Object).Count)
 
-    if ($totalVirtualMachines -eq 0)
-    {
+    if ($totalVirtualMachines -eq 0) {
         Write-Host "No Virtual Machine(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
     Write-Host "Found [$(($validVirtualMachineDetails|Measure-Object).Count)] Virtual Machine(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.OSType};Label="OSType";Width=50;Alignment="left"},
-                    @{Expression={$_.isExtInstalledPostRemediation};Label="isExtInstalledPostRemediation";Width=50;Alignment="left"}
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OSType }; Label = "OSType"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isExtInstalledPostRemediation }; Label = "isExtInstalledPostRemediation"; Width = 30; Alignment = "left" }
         
     $validVirtualMachineDetails | Format-Table -Property $colsProperty -Wrap
     
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\RollbackExtOnVirtualMachines"
 
-    if (-not (Test-Path -Path $backupFolderPath))
-    {
+    if (-not (Test-Path -Path $backupFolderPath)) {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
@@ -930,18 +861,15 @@ function Remove-AADAuthExtensionforVMs
     Write-Host "[Step 3 of 3] Rolling back all remediated VMs(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
-    if( -not $Force)
-    {
+    if ( -not $Force) {
         Write-Host "This will remove the AAD Auth Extension from the VM(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
-            if($userInput -ne "Y")
-            {
-                Write-Host "AAD Auth Extension will not be rolled back for any VM(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-                break
-            }
+        if ($userInput -ne "Y") {
+            Write-Host "AAD Auth Extension will not be rolled back for any VM(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            break
+        }
     }
-    else
-    {
+    else {
         Write-Host "'Force' flag is provided. AAD extension in VM(s) will be removed in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
@@ -957,63 +885,53 @@ function Remove-AADAuthExtensionforVMs
     $validVirtualMachineDetails | ForEach-Object {
         $VirtualMachine = $_
         $VirtualMachine | Add-Member -NotePropertyName isAADExtRolledback -NotePropertyValue $false
-        try
-        {
+        try {
             
             Write-Host "Rolling back AAD Ext on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
-            if($_.isExtInstalledPostRemediation)
-            {
-                if($_.ResourceName -eq "testvmForBRS8"){
+            if ($_.isExtInstalledPostRemediation) {
                 $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -Name AADSSHLoginForLinux -Force
         
-                 $VMExtensions = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
+                $VMExtensions = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
                     
-                    $VMExtensions | ForEach-Object{
-                        $VMExtension = $_
-                        if($VMExtension.Publisher -contains($reqExtPublisher))
-                        {
-                            $VirtualMachine.isAADExtRolledback = $false
-                            $VirtualMachine.isExtPresent = $true
-                        }
+                $VMExtensions | ForEach-Object {
+                    $VMExtension = $_
+                    if ($VMExtension.Publisher -contains ($reqExtPublisher)) {
+                        $VirtualMachine.isAADExtRolledback = $false
+                        $VirtualMachine.isExtPresent = $true
                     }
+                }
 
-                    if(!$VirtualMachine.isAADExtRolledback)
-                    {
-                        $VirtualMachine.isAADExtRolledback = $true
-                        $VirtualMachine.isExtPresent = $false
-                        Write-Host "Successfully uninstalled AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
-                        Write-Host $([Constants]::SingleDashLine)
-                        $VirtualMachinesRolledBack += $VirtualMachine
-                    }
-                    else
-                    {
-                        $VirtualMachineSkipped += $VirtualMachine
-                        write-host "Skipping this Virtual Machine resource [$($_.ResourceName)]." -foregroundcolor $([constants]::messagetype.warning)
-                        write-host $([constants]::singledashline)
-                    }
-                    }
+                if (!$VirtualMachine.isAADExtRolledback) {
+                    $VirtualMachine.isAADExtRolledback = $true
+                    $VirtualMachine.isExtPresent = $false
+                    Write-Host "Successfully uninstalled AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host $([Constants]::SingleDashLine)
+                    $VirtualMachinesRolledBack += $VirtualMachine
+                }
+                else {
+                    $VirtualMachineSkipped += $VirtualMachine
+                    write-host "Skipping this Virtual Machine resource [$($_.ResourceName)]." -foregroundcolor $([constants]::messagetype.warning)
+                    write-host $([constants]::singledashline)
+                }
             }
         }
-        catch
-        {
+        catch {
             $VirtualMachineSkipped += $VirtualMachine
         }
     }
 
-    $colsPropertyRollBack = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.OsType};Label="OsType";Width=50;Alignment="left"},
-                    @{Expression={$_.isAADExtRolledback};Label="isAADExtRolledback";Width=50;Alignment="left"},
-                    @{Expression={$_.isExtPresent};Label="isExtPresent";Width=50;Alignment="left"}
+    $colsPropertyRollBack = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.OsType }; Label = "OsType"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isAADExtRolledback }; Label = "isAADExtRolledback"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.isExtPresent }; Label = "isExtPresent"; Width = 30; Alignment = "left" }
      
-    if ($($VirtualMachinesRolledBack | Measure-Object).Count -gt 0 -or $($VirtualMachineSkipped | Measure-Object).Count -gt 0)
-    {
+    if ($($VirtualMachinesRolledBack | Measure-Object).Count -gt 0 -or $($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
-        if ($($VirtualMachinesRolledBack | Measure-Object).Count -gt 0)
-        {
+        if ($($VirtualMachinesRolledBack | Measure-Object).Count -gt 0) {
             Write-Host "AAD extension is rolled back successfully on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VirtualMachinesRolledBack | Format-Table -Property $colsPropertyRollBack -Wrap
 
@@ -1025,8 +943,7 @@ function Remove-AADAuthExtensionforVMs
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0)
-        {
+        if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
             Write-Host "Error installing AAD Extension on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $VirtualMachineSkipped | Format-Table -Property $colsProperty -Wrap
@@ -1042,14 +959,13 @@ function Remove-AADAuthExtensionforVMs
 }
 
 # Defines commonly used constants.
-class Constants
-{
+class Constants {
     # Defines commonly used colour codes, corresponding to the severity of the log.
     static [Hashtable] $MessageType = @{
-        Error = [System.ConsoleColor]::Red
+        Error   = [System.ConsoleColor]::Red
         Warning = [System.ConsoleColor]::Yellow
-        Info = [System.ConsoleColor]::Cyan
-        Update = [System.ConsoleColor]::Green
+        Info    = [System.ConsoleColor]::Cyan
+        Update  = [System.ConsoleColor]::Green
         Default = [System.ConsoleColor]::White
     }
 

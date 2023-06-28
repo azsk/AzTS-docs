@@ -54,7 +54,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 43. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](Readme.md#43-Readme.md#43-Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
-45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial)
+45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
 
 <br />
 
@@ -938,10 +938,10 @@ Yes
 
 ___ 
 
-## 45. Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial
+## 45. Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
 
 ### Display Name
-[Trial] AAD extension must be deployed to the Linux VM.
+AAD extension must be deployed to the Linux VM.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-ConfigureAADAuthExtOnLinuxVM](Remediate-ConfigureAADAuthExtOnLinuxVM.ps1)

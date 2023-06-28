@@ -22,7 +22,7 @@
 - [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
 - [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
-- [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial](#azure_virtualmachine_authN_enable_aad_auth_linux_trial)
+- [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](#azure_virtualmachine_authN_enable_aad_auth_linux)
 
 <!-- /TOC -->
 <br/>
@@ -1457,10 +1457,10 @@ subscription level:
 <br />
 
 ___
-## Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux_Trial 
+## Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
 
 ### Display Name 
-[Trial] AAD extension must be deployed to the Linux VM
+AAD extension must be deployed to the Linux VM
 
 ### Rationale 
 Installing AAD extension on VM allows you to login into VM using Azure AD, making it possible to login user without password and improves authentication security.
