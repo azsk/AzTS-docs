@@ -795,7 +795,7 @@ Using Azure Portal :
 ### Azure Policy or ARM API used for evaluation:
 
 - ARM API to list Virtual Machine Scale Set at subscription level:
-/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01"
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
 (https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)
 <br />
 
