@@ -275,16 +275,18 @@ function Add-AADAuthExtensionforVMSS {
                         $VMSSExtension = $_
                         if ($VMSSExtension.Type -eq $reqExtensionType -and $VMSSExtension.Publisher -eq $reqExtPublisher) {
                             $VMSS.isExtPresent = $true
-                            Write-Host "AAD Extension is present in Virtual Machine Scale Set [$($VMSS.ResourceName)]. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
-                            Write-Host $([Constants]::SingleDashLine)
                         }
                     }
                     if (!$VMSS.isExtPresent) {
-                        Write-Host "AAD Extension is not present in Virtual Machine Scale Set [$($VMSS.ResourceName)]. Adding..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "AAD Extension is not present in Virtual Machine Scale Set [$($VMSS.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                         $NonCompliantVMSSDetails += $VMSS
                     }
-                    
+                    else
+                    {
+                        Write-Host "AAD Extension is present in Virtual Machine Scale Set [$($VMSS.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+                    } 
                 }
                 else {
                     if ($VMSS.OrchestrationMode -eq "Flexible") {
@@ -339,12 +341,6 @@ function Add-AADAuthExtensionforVMSS {
             $VMInstance = $_
             if ($VMInstance.OSType -eq "Linux") {
                 $NonCompliantVMSSDetails += $VMInstance
-                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::SingleDashLine)
-            }
-            else {
-                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
             }
         }  
     }
