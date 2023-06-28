@@ -310,18 +310,19 @@ function Add-AADAuthExtensionforVMSS {
         }
         Write-Host "Fetching all Virtual Machine Scale Set(s) from [$($FilePath)]..." 
 
-        $VirtualMachineResources = Import-Csv -LiteralPath $FilePath
-        $validVirtualMachineResources = $VirtualMachineResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
+        $VMSSResources = Import-Csv -LiteralPath $FilePath
+        $validVMSSResources = $VMSSResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
       
-        $validVirtualMachineResources | ForEach-Object {
-            $resourceId = $_.ResourceId
+        $validVMSSResources | ForEach-Object {
+            $VmssInfo = $_
             try {
-                $VirtualMachineResource = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-            
-                $VMSSDetails += $VirtualMachineResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                $VMSSResource = Get-AzVmss -ResourceGroupName $_.ResourceGroupName -VMScaleSetName $_.ResourceName -ErrorAction SilentlyContinue
+
+                $VMSSDetails += $VMSSResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                 @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
                 @{N = 'ResourceName'; E = { $_.Name } },
-                @{N = 'OSType'; E = { $_.StorageProfile.OsDisk.OSType } } 
+                @{N = 'OSType'; E = { $_.VirtualMachineProfile.StorageProfile.OsDisk.OsType } },
+                @{N = 'isExtPresent'; E = { $VmssInfo.isExtPresent } } 
             }                                                      
             catch {
                 Write-Host "Error fetching Virtual Machine Scale Set(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
