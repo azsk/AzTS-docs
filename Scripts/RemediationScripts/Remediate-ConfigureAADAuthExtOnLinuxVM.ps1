@@ -10,6 +10,7 @@
 
 # Prerequisites:
     Contributor or higher priviliged role on the Virtual Machine(s) is required for remediation.
+    Virtual Machine should be in running state.
 
 # Steps performed by the script:
     To remediate:
@@ -244,6 +245,9 @@ function Add-AADAuthExtensionforVMs {
     $reqExtPublisher = "Microsoft.Azure.ActiveDirectory"
     $reqExtensionType = "AADSSHLoginForLinux"
     $reqExtensionName = "AADSSHLoginForLinux"
+    
+    #PowerState Running
+    $vmPowerState = "PowerState/running"
 
     # No file path provided as input to the script. Fetch all Virtual Machine(s) in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
@@ -257,16 +261,19 @@ function Add-AADAuthExtensionforVMs {
             $VirtualMachineDetails = $VirtualMachineDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
             @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
             @{N = 'ResourceName'; E = { $_.Name } },
-            @{N = 'OSType'; E = { $_.StorageProfile.OsDisk.OSType } }                                                   
+            @{N = 'OSType'; E = { $_.StorageProfile.OsDisk.OSType } } 
+                                                              
             $VirtualMachineDetails | ForEach-Object {
                 $VMInstance = $_
-                if ($VMInstance.OSType -eq "Linux") {
+                $VMStatusDetails = Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName -Status
+
+                if ($VMInstance.OSType -eq "Linux" -and ($VMStatusDetails.Statuses.code.contains($vmPowerState))) {
                     $LinuxVMDetails += $VMInstance
-                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is running and OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                 }
                 else {
-                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is either stopped/Deallocated or OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
@@ -304,13 +311,15 @@ function Add-AADAuthExtensionforVMs {
                     
         $VirtualMachineDetails | ForEach-Object {
             $VMInstance = $_
-            if ($VMInstance.OSType -eq "Linux") {
+            $VMStatusDetails = Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName -Status
+
+            if ($VMInstance.OSType -eq "Linux" -and ($VMStatusDetails.Statuses.code.contains($vmPowerState))) {
                 $LinuxVMDetails += $VMInstance
-                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
+                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is running and OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
             }
             else {
-                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is either Stopped/Deallocated or OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }  
