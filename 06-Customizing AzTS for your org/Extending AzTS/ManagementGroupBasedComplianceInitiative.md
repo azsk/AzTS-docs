@@ -60,7 +60,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 
 >Note: Please follow steps 7 and 8 in case of Single tenant AzTS setup. These can be skipped for Multi-Tenant AzTS setup.
 7. Click on 'New application setting' to add required app settings.
-8. Add new application setting 'ManagementGroupConfigurations__ManagementGroupId' with value as parent Management Grroup Id. Click 'OK'. 
+8. Add new application setting 'ManagementGroupConfigurations__ManagementGroupId' with value as parent Management Group Id. Click 'OK'. 
 
 9. Add new application setting ‘AuthzSettings__IsPIMEnabled’ with value as true. Click ‘OK’. (This to enable PIM API calls to fetch RBAC details).
 
