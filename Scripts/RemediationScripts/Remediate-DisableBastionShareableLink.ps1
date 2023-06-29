@@ -9,7 +9,8 @@
     Azure Bastion Shareable links must not be used.
 
 # Prerequisites:
-    Contributor or higher priviliged role on the Bastion(s) is required for remediation.
+    1)Contributor or higher priviliged role on the Bastion(s) is required for remediation.
+    2)Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
     To remediate:
