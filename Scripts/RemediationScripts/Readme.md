@@ -56,7 +56,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
 45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
 46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
-
+47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#45-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
 <br />
 
 ___ 
@@ -978,6 +978,24 @@ Yes
 
 ___ 
 
+## 47. Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension
+
+### Display Name
+Guest Configuration extension must be deployed to the VM using Azure Policy assignment.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureGuestExtAndSystemAssignedMIForVM](Remediate-ConfigureGuestExtAndSystemAssignedMIForVM.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___ 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
