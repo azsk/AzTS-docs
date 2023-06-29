@@ -55,6 +55,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 43. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](Readme.md#43-Readme.md#43-Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
 45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
+46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 
 <br />
 
@@ -957,6 +958,25 @@ Yes
 
 ___ 
 
+
+## 46. Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+
+### Display Name
+AAD extension must be deployed to the Linux VMSS
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureAADAuthExtOnLinuxVMSS](Remediate-ConfigureAADAuthExtOnLinuxVMSS.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___ 
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.

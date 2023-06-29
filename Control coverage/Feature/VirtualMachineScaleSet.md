@@ -14,6 +14,7 @@
 - [Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches](#azure_virtualmachinescaleset_si_missing_os_patches)
 - [Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachinescaleset_si_remediate_security_vulnerabilities)
 - [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
+- [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 
 <!-- /TOC -->
 <br/>
@@ -739,4 +740,74 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
   <br />
  <br />
 
+___
+
+## Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+
+### Display Name
+AAD extension must be deployed to the Linux VMSS
+
+### Rationale
+Installing AAD extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
+
+### Control Settings 
+```json 
+{
+    "Linux": {
+          "ExtensionType": "AADSSHLoginForLinux",
+          "ExtensionPublisher": "Microsoft.Azure.ActiveDirectory",
+          "ProvisioningState": "Succeeded"
+        }
+}
+ ``` 
+### Note:
+This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration mode and following Linux distributions are currently supported for deployments in a supported region.
+
+> 1. Common Base Linux Mariner (CBL-Mariner) - CBL-Mariner 1, CBL-Mariner 2
+> 2. CentOS - CentOS 7, CentOS 8
+>3. Debian - Debian 9, Debian 10, Debian 11
+>4. openSUSE - openSUSE Leap 42.3, openSUSE Leap 15.1+
+>5. RedHat Enterprise Linux (RHEL) - RHEL 7.4 to RHEL 7.10, RHEL 8.3+
+>6. SUSE Linux Enterprise Server (SLES) - SLES 12, SLES 15.1+
+>7. Ubuntu Server - Ubuntu Server 16.04 to Ubuntu Server 22.04
+
+
+### Control Spec
+
+> **Passed:**
+> AAD Extension is present for Linux Virtual Machine Scale Set with provisioning state as succeeded.
+>
+> **Failed:**
+> AAD Extension is missing or provisioning state is not succeeded.
+>
+> **Error:**
+> If Orchestration mode or OS is null or empty.
+> Required Extension details is not properly defined in control settings.
+>
+> **NotApplicable:**
+> If Orchestration mode is not uniform/ Operating System (OS) Windows type is not supported for the evaluation.
+>
+
+### Recommendation
+Using Azure Portal :
+- To install AAD Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
+
+
+### Azure Policy or ARM API used for evaluation:
+
+- ARM API to list Virtual Machine Scale Set at subscription level:
+[/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)<br/>
+  **Properties:** properties.storageProfile.osDisk.osType
+                  properties.orchestrationMode
+  <br />
+  <br />
+
+- ARM API to list Virtual Machine Scale Set Extensions at resource level:
+[/subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-set-extensions/list?tabs=HTTP)
+</br>**Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
+                  properties.virtualMachineProfile.extensionProfile.extensions.type
+                  properties.virtualMachineProfile.extensionProfile.extensions.provisioningState
+
+ <br />
+<br />
 ___
