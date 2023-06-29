@@ -56,7 +56,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
 45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
 46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
-47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#45-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
+47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#47-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
 <br />
 
 ___ 
