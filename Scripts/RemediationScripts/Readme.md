@@ -54,10 +54,10 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 43. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](Readme.md#43-Readme.md#43-Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
-45. 
-[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
+45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
 46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#47-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
+48. [Azure_Bastion_AuthZ_Disable_Shareable_Link](Readme.md#45-Azure_Bastion_AuthZ_Disable_Shareable_Link)
 <br />
 
 ___ 
@@ -940,8 +940,7 @@ Yes
 
 ___ 
 
-## 45. 
-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
+## 45. Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
 
 ### Display Name
 AAD extension must be deployed to the Linux VM.
@@ -996,6 +995,26 @@ Yes
 
 ### Supports rollback?
 Yes
+___ 
+
+## 48. Azure_Bastion_AuthZ_Disable_Shareable_Link
+
+### Display Name
+Azure_Bastion_AuthZ_Disable_Shareable_Link
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBastionShareableLink](Remediate-DisableBastionShareableLink.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___ 
 
 ___ 
 ## Supports managed identity based remediations
