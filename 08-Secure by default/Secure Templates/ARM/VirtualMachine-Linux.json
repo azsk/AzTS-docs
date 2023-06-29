@@ -145,6 +145,12 @@
       "metadata": {
         "description": "If “Auto-provisioning” for AMA is turned on in Azure Defender configuration, you can skip installation of AMA agent during VM creation as MDC will auto deploy AMA agent with desired configuations."
       }
+    },
+    "deployAzureAADAuthExtension": {
+      "type": "bool",
+      "metadata": {
+        "description": "AAD SSH Extension would be required to login user with the help of Azure Active Directory."
+      }
     }
   },
   "functions": [],
@@ -358,6 +364,29 @@
         "typeHandlerVersion": "1.22",
         "autoUpgradeMinorVersion": true,
         "enableAutomaticUpgrade": true,
+        "settings": {
+          "authentication": {
+            "SystemAssigned":{
+              
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmName'))]"
+      ]
+    },
+    {
+      //[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux]
+      "condition": "[parameters('deployAzureAADAuthExtension')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2019-07-01",
+      "name": "[format('{0}/{1}', parameters('vmName'), 'AADSSHLoginForLinux')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Azure.ActiveDirectory",
+        "type": "AADSSHLoginForLinux",
+        "typeHandlerVersion": "1.00",
         "settings": {
           "authentication": {
             "SystemAssigned":{
