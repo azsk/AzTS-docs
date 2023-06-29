@@ -1,0 +1,151 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceGroupName": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().name]",
+            "metadata": {
+              "description": "Name of the Resource Group"
+            }
+        },
+        "bastionHostName": {
+            "type": "string",
+            "metadata": {
+              "description": "Name of the Bastion Host"
+            }
+        },
+        "bastionHostSku": {
+            "type": "string",
+            "defaultValue": "Standard",
+            "allowedValues": [
+                "Basic",
+                "Standard"
+            ],
+            "metadata": {
+              "description": "SKU of the Bastion Host"
+            }
+        },
+        "publicIpAddressName": {
+            "type": "string",
+            "defaultValue": "[format('{0}-vnet-ip', parameters('virtualNetworkName'))]",
+            "metadata": {
+              "description": "Name of the public IP Address"
+            }
+        },
+        "virtualNetworkName": {
+            "type": "string",
+            "metadata": {
+              "description": "Name of the Virtual Netwok"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "default",
+            "metadata": {
+                "description": "Name of the SubNet"
+            }
+        },
+        "addressPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/16",
+            "metadata": {
+                "description": "Address prefix in the format '10.3.0.0/29'"
+            }
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/24",
+            "metadata": {
+                "description": "Subnet prefix in the format '10.3.0.0/29'"
+            }
+        },
+        "BastionSubnetPrefix": {
+            "type": "string",
+            "defaultValue": "10.0.1.0/26",
+            "metadata": {
+                "description": "Bastion Subnet prefix in the format '10.3.0.0/29'"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2020-08-01",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIpAddressName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "Static"
+            },
+            "tags": {}
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2021-05-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                "addressPrefixes": [
+                    "[parameters('addressPrefix')]"
+                ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "AzureBastionSubnet",
+                        "properties": {
+                            "addressPrefix": "[parameters('BastionSubnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2022-09-01",
+            "type": "Microsoft.Network/bastionHosts",
+            "name": "[parameters('bastionHostName')]",
+            "sku": {
+                "name": "[parameters('bastionHostSku')]"
+            },
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]"
+            ],
+          "properties": {
+            "enableShareableLink": false, // [Azure_Bastion_AuthZ_Disable_Shareable_Link]
+            "ipConfigurations": [
+              {
+                "name": "IpConf",
+                "properties": {
+                  "subnet": {
+                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'),'AzureBastionSubnet')]"
+                  },
+                  "publicIPAddress": {
+                    "id": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Network/publicIpAddresses', parameters('publicIpAddressName'))]"
+                  }
+                }
+              }
+            ],
+            "scaleUnits": 2
+          },
+            "tags": {}
+        }
+    ]
+}
