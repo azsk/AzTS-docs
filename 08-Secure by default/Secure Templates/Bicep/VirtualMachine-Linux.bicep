@@ -66,6 +66,9 @@ param deployMicrosoftMonitoringAgent bool
 @description('If “Auto-provisioning” for AMA is turned on in Azure Defender configuration, you can skip installation of AMA agent during VM creation as MDC will auto deploy AMA agent with desired configuations.')
 param deployAzureMonitoringAgent bool
 
+@description('AAD SSH Extension would be required to login user with the help of Azure Active Directory.')
+param deployAzureAADAuthExtension bool
+
 var osDiskType = 'Standard_LRS'
 var subnetAddressPrefix = '10.1.0.0/24'
 var addressPrefix = '10.1.0.0/16'
@@ -248,8 +251,20 @@ resource vmExtension_AzureMonitorLinuxAgent 'Microsoft.Compute/virtualMachines/e
     enableAutomaticUpgrade: true
     autoUpgradeMinorVersion: true
     settings: {
-     authentication : 'SystemAssigned'
+      authentication : 'SystemAssigned'
+      }
     }
+  }
+//[//[Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux]]  
+resource vmName_AADSSHLoginForLinux 'Microsoft.Compute/virtualMachines/extensions@2019-07-01' = if (deployAzureAADAuthExtension) {
+  parent: vm
+  name: 'AADSSHLoginForLinux'
+  location: location
+  properties: {
+    publisher: 'Microsoft.Azure.ActiveDirectory'
+    type: 'AADSSHLoginForLinux'
+    typeHandlerVersion: '1.00'
+    settings: {}
   }
 }
 
