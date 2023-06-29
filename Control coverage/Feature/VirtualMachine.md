@@ -763,7 +763,7 @@ ___
 ## Azure_VirtualMachine_SI_Enable_Monitoring_Agent 
 
 ### Display Name 
-Ensure the MMA on your VM is healthy (running successfully) 
+Ensure MMA or AMA is running on your VM
 
 ### Rationale 
 One or more extensions may be required for maintaining data plane security hygiene and visibility for all Azure VMs in use at an Org. It is important to ensure all required extensions are installed and in healthy provisioning state. 
@@ -771,23 +771,31 @@ One or more extensions may be required for maintaining data plane security hygie
 ### Control Settings 
 ```json 
 {
-    "ExclusionTags": [
+    "ExtensionsForWindows": [
         {
-            "Desciption": "VM is part of ADB cluster.",
-            "TagName": "vendor",
-            "TagValue": "Databricks"
+            "ExtensionType": "MicrosoftMonitoringAgent",
+            "Publisher": "Microsoft.EnterpriseCloud.Monitoring"
+        },
+        {
+            "ExtensionType": "AzureMonitorWindowsAgent",
+            "Publisher": "Microsoft.Azure.Monitor"
         }
     ],
     "ExtensionsForLinux": [
         {
             "ExtensionType": "OmsAgentForLinux",
             "Publisher": "Microsoft.EnterpriseCloud.Monitoring"
+        },
+        {
+            "ExtensionType": "AzureMonitorLinuxAgent",
+            "Publisher": "Microsoft.Azure.Monitor"
         }
     ],
-    "ExtensionsForWindows": [
+    "ExclusionTags": [
         {
-            "ExtensionType": "MicrosoftMonitoringAgent",
-            "Publisher": "Microsoft.EnterpriseCloud.Monitoring"
+            "Description": "VM is part of ADB cluster.",
+            "TagName": "vendor",
+            "TagValue": "Databricks"
         }
     ]
 }
