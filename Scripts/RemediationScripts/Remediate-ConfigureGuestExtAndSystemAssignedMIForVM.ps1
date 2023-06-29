@@ -282,6 +282,12 @@ function Install-VMGuestConfigEnableMI {
                     if (!(( $VMTags.ContainsKey($ADBTagKey) -and $VMTags.ContainsValue($ADBTagKeyValue)) -or ( $VMTags.ContainsKey($AKSTagKey) -and $VMTags.ContainsValue($AKSTagKeyValue)))) {
                         $VirtualMachineDetails += $_
                     }
+                    else {
+                        $logSkippedResources += $logResource
+                    }
+                }
+                else {
+                    $logSkippedResources += $logResource
                 }
             }
 
