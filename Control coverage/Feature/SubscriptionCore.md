@@ -1076,7 +1076,7 @@ This Service depends mainly on 3rd party identity provider, and that can cause a
 ## Azure_Subscription_Identity_Rotate_SPN_Credentials 
 
 ### Display Name 
-Service Principal credentials must be regularly rotated.
+App Registrations and Service Principals credentials must be regularly rotated.
 
 ### Rationale 
 SPNs having access to subscription must have secrets within maximum approved expiry time.
@@ -1113,7 +1113,7 @@ SPNs having access to subscription must have secrets within maximum approved exp
 App Registrations and Service Principals must have at least two FTE Owners (SC-Alt/SAS-Alt only)
 
 ### Rationale 
-SPNs in a subscription with access at subscription or resource group level should not have access to any External Users..
+SPNs in a subscription with access at subscription or resource group level should not have access to any External Users.
 
 ### Control Spec 
 > **Passed:** 
