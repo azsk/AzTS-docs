@@ -178,6 +178,10 @@ function Rotate-KeysForStorageAccount {
         [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
         $Path,
 
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
         $TimeStamp
@@ -253,7 +257,7 @@ function Rotate-KeysForStorageAccount {
             Write-Host $([Constants]::SingleDashLine)
             return
         }
-        Write-Host "Fetching all Storage Account(s) failing for the [$($controlIds)] control from the[$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all Storage Account(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
         $controls = $controlForRemediation.ControlRemediationList
@@ -266,13 +270,23 @@ function Rotate-KeysForStorageAccount {
             return
         }
         $validResources | ForEach-Object { 
-            try
-            {
-               $StorageAccountDetail =  Get-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -ErrorAction SilentlyContinue
-               $StorageAccountDetails += $StorageAccountDetail |  Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                                                                                @{N = 'ResourceName'; E = { $_.StorageAccountName } },
-                                                                                @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } }
+             $StorageAccount = $_
+            try {
+                $StorageAccountResources = Get-AzStorageAccountKey -ResourceGroupName $StorageAccount.ResourceGroupName -Name $StorageAccount.StorageAccountName -ErrorAction Stop
+                $keyDetails = New-Object System.Collections.Generic.Dictionary"[String,String]"
+                $StorageAccountKey = Get-AzStorageAccountKey -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -ErrorAction Stop
+                $StorageAccountKey | ForEach-Object {
+                    $key = $_
+                    $keyDetails.Add($key.KeyName, $key.CreationTime)
 
+                    if($StorageAccountDetails.storageAccountName -notcontains $StorageAccount.StorageAccountName){
+                    $StorageAccountDetails += $StorageAccount | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    @{N = 'StorageAccountName'; E = { $_.StorageAccountName } },
+                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                    @{N = 'KeyDetails'; E = { $keyDetails } }
+                    }
+
+            }
             }
             catch
             {
@@ -334,13 +348,9 @@ function Rotate-KeysForStorageAccount {
         $validStorageAccountResources = $StorageAccountResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
         
         $validStorageAccountResources | ForEach-Object {
-            
+             $StorageAccount = $_
             try {
-                $StorageAccountResources = Get-AzStorageAccount -ResourceGroupName $_.ResourceGroupName -Name $_.StorageAccountName -ErrorAction SilentlyContinue
-            
-                $StorageAccountDetails += $StorageAccountResources | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-                @{N = 'ResourceName'; E = { $_.StorageAccountName } },
-                @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } }
+                $StorageAccountResources = Get-AzStorageAccountKey -ResourceGroupName $StorageAccount.ResourceGroupName -Name $StorageAccount.StorageAccountName -ErrorAction Stop
 
                 $keyDetails = New-Object System.Collections.Generic.Dictionary"[String,String]"
 
@@ -348,8 +358,14 @@ function Rotate-KeysForStorageAccount {
                 $StorageAccountKey | ForEach-Object {
                     $key = $_
                     $keyDetails.Add($key.KeyName, $key.CreationTime)
+
+                    if($StorageAccountDetails.storageAccountName -notcontains $StorageAccount.StorageAccountName){
+                    $StorageAccountDetails += $StorageAccount | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    @{N = 'StorageAccountName'; E = { $_.StorageAccountName } },
+                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                    @{N = 'KeyDetails'; E = { $keyDetails } }
+                    }
                 }
-                    
             }
             catch {
                 Write-Host "Error fetching Storage Account(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -389,9 +405,8 @@ function Rotate-KeysForStorageAccount {
         $value=$Storage.KeyDetails[$key]
         $date1=[DateTime]::ParseExact($value,"MM/dd/yyyy HH:mm:ss",$null)
         $time1 = Get-Date
-        #$creationTime=[DateTime]::ParseExact($key.CreationTime,"yyyy-MM-ddTHH:ssZ",$null)
         $days1 = (New-TimeSpan -Start $date1 -End $time1)
-        if ($days1.Days -ge $requiredRetentionPeriod) {
+        if ($days1.Days -gt $requiredRetentionPeriod) {
            if($NonCompliantStorageAccounts.StorageAccountName -notcontains $Storage.StorageAccountName)
            {
            $NonCompliantStorageAccounts += $Storage
@@ -489,7 +504,7 @@ function Rotate-KeysForStorageAccount {
                     $value= $StorageAccount.KeyDetails[$key]
                     $date1=[DateTime]::ParseExact($value,"MM/dd/yyyy HH:mm:ss",$null)
                     $days1 = (New-TimeSpan -Start $date1 -End $time1)
-                    if ($days1.Days -ge $requiredRetentionPeriod) {
+                    if ($days1.Days -gt $requiredRetentionPeriod) {
                         Write-Host "Rotating Access key [$($requiredRetentionPeriod)] on $key." -ForegroundColor $([Constants]::MessageType.Info)
                         New-AzStorageAccountKey -ResourceGroupName $StorageAccount.ResourceGroupName -Name $StorageAccount.StorageAccountName -KeyName $key
                     }
