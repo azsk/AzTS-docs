@@ -959,10 +959,6 @@ function Disable-SecureFTPDeploymentForAppServices {
                 Write-Host $([Constants]::SingleDashLine)
             }
 
-            # Reset the states further below, as appropriate.
-            #$appService | Add-Member -NotePropertyName IsAllAllowedEnableOnAnyNonProductionSlot -NotePropertyValue $false
-            #$appService | Add-Member -NotePropertyName nonProductionSlotsWithSecureFTPconfigured -NotePropertyValue ([String]::Empty)
-
             Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
