@@ -22,6 +22,7 @@
 - [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
 - [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
+- [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](#azure_virtualmachine_authN_enable_aad_auth_linux)
 
 <!-- /TOC -->
 <br/>
@@ -763,7 +764,7 @@ ___
 ## Azure_VirtualMachine_SI_Enable_Monitoring_Agent 
 
 ### Display Name 
-Ensure the MMA on your VM is healthy (running successfully) 
+Ensure MMA or AMA is running on your VM
 
 ### Rationale 
 One or more extensions may be required for maintaining data plane security hygiene and visibility for all Azure VMs in use at an Org. It is important to ensure all required extensions are installed and in healthy provisioning state. 
@@ -771,23 +772,31 @@ One or more extensions may be required for maintaining data plane security hygie
 ### Control Settings 
 ```json 
 {
-    "ExclusionTags": [
+    "ExtensionsForWindows": [
         {
-            "Desciption": "VM is part of ADB cluster.",
-            "TagName": "vendor",
-            "TagValue": "Databricks"
+            "ExtensionType": "MicrosoftMonitoringAgent",
+            "Publisher": "Microsoft.EnterpriseCloud.Monitoring"
+        },
+        {
+            "ExtensionType": "AzureMonitorWindowsAgent",
+            "Publisher": "Microsoft.Azure.Monitor"
         }
     ],
     "ExtensionsForLinux": [
         {
             "ExtensionType": "OmsAgentForLinux",
             "Publisher": "Microsoft.EnterpriseCloud.Monitoring"
+        },
+        {
+            "ExtensionType": "AzureMonitorLinuxAgent",
+            "Publisher": "Microsoft.Azure.Monitor"
         }
     ],
-    "ExtensionsForWindows": [
+    "ExclusionTags": [
         {
-            "ExtensionType": "MicrosoftMonitoringAgent",
-            "Publisher": "Microsoft.EnterpriseCloud.Monitoring"
+            "Description": "VM is part of ADB cluster.",
+            "TagName": "vendor",
+            "TagValue": "Databricks"
         }
     ]
 }
@@ -1453,6 +1462,67 @@ subscription level:
 
 - Azure Policy used for evaluation: [/providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d](https://portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F828ba269-bf7f-4082-83dd-633417bc391d)
 <br />
+<br />
+
+___
+## Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
+
+### Display Name 
+AAD extension must be deployed to the Linux VM
+
+### Rationale 
+Installing AAD extension on VM allows you to login into VM using Azure AD, making it possible to login user without password and improves authentication security.
+
+### Control Settings 
+```json 
+{
+     "Linux": {
+            "ExtensionType" : "AADSSHLoginForLinux",
+            "ExtensionPublisher" : "Microsoft.Azure.ActiveDirectory",
+            "ProvisioningState" : "Succeeded"
+     }
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> AAD extension present and provisioning state is succeeded.
+>
+> **Failed:** 
+>  AAD extension is not present or provisioning state is not succeeded.
+>
+> **NotApplicable:** 
+> Operating System (OS) Windows type is not supported for the evaluation.
+>
+
+### Recommendation
+
+- **Azure Portal** 
+
+	 To install AAD Extension in VM, Go to Azure Portal --> VM --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create. 
+
+-
+	Install the AAD Auth extension.
+	 
+	```powershell 
+	Set-AzVMExtension -Publisher 'Microsoft.Azure.ActiveDirectory' -Type 'AADSSHLoginForLinux' -Name 'AADSSHLoginForLinux' -TypeHandlerVersion 1.0 -ResourceGroupName 'myResourceGroup' -Location 'myLocation' -VMName 'myVM'
+	 ```
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list Virtual Machine at
+subscription level:
+[/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list?tabs=HTTP)<br />
+**Properties:** [\*].properties.storageProfile.osDisk.osType,</br>
+                [\*].properties.orchestrationMode
+
+
+- ARM API to list extensions at Virtual Machine level: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupsName}/providers/Microsoft.Compute/virtualMachines/{VMName}/extensions?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-extensions/list?tabs=HTTP)</br>
+**Properties:** [\*].properties.publisher,</br>
+                [\*].properties.type,</br>
+                [\*].properties.provisioningState,
+
 <br />
 
 ___
