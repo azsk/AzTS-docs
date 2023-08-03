@@ -249,6 +249,10 @@ function Add-AADAuthExtensionforVMs {
     #PowerState Running
     $vmPowerState = "PowerState/running"
 
+    #ExclusionTags for VM
+    $ADBTagKey = "Vendor"
+    $ADBTagKeyValue = "Databricks"
+
     # No file path provided as input to the script. Fetch all Virtual Machine(s) in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
         try {
@@ -265,15 +269,34 @@ function Add-AADAuthExtensionforVMs {
                                                               
             $VirtualMachineDetails | ForEach-Object {
                 $VMInstance = $_
-                $VMStatusDetails = Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName -Status
-
-                if ($VMInstance.OSType -eq "Linux" -and ($VMStatusDetails.Statuses.code.contains($vmPowerState))) {
-                    $LinuxVMDetails += $VMInstance
-                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is running and OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
-                    Write-Host $([Constants]::SingleDashLine)
+                $isVMExcluded = $false
+                $VMTagDetails = (Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName).Tags
+                
+                $VMTagDetails | ForEach-Object{
+                    $vmTag = $_
+                    if($vmTag.ContainsKey($ADBTagKey) -and $vmTag.ContainsValue($ADBTagKeyValue))
+                    {
+                        $isVMExcluded = $true
+                    }
                 }
-                else {
-                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is either stopped/Deallocated or OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+
+                if(-not $isVMExcluded)
+                {
+                    $VMStatusDetails = Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName -Status
+
+                    if ($VMInstance.OSType -eq "Linux" -and ($VMStatusDetails.Statuses.code.contains($vmPowerState))) {
+                        $LinuxVMDetails += $VMInstance
+                        Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is running and OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
+                        Write-Host $([Constants]::SingleDashLine)
+                    }
+                    else {
+                        Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is either stopped/Deallocated or OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host $([Constants]::SingleDashLine)
+                    }
+                }
+                else
+                {
+                    Write-Host "Databricks Virtual Machine [$($VMInstance.ResourceName)] is not applicable for this control. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
@@ -311,16 +334,35 @@ function Add-AADAuthExtensionforVMs {
                     
         $VirtualMachineDetails | ForEach-Object {
             $VMInstance = $_
-            $VMStatusDetails = Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName -Status
-
-            if ($VMInstance.OSType -eq "Linux" -and ($VMStatusDetails.Statuses.code.contains($vmPowerState))) {
-                $LinuxVMDetails += $VMInstance
-                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is running and OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::SingleDashLine)
+            $isVMExcluded = $false
+            $VMTagDetails = (Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName).Tags
+            
+            $VMTagDetails | ForEach-Object{
+                $vmTag = $_
+                if($vmTag.ContainsKey($ADBTagKey) -and $vmTag.ContainsValue($ADBTagKeyValue))
+                {
+                    $isVMExcluded = $true
+                }
             }
-            else {
-                Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is either Stopped/Deallocated or OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
-                Write-Host $([Constants]::SingleDashLine)
+            if(-not $isVMExcluded)
+            {
+                $VMStatusDetails = Get-AzVM -ResourceGroupName $VMInstance.ResourceGroupName -Name $VMInstance.ResourceName -Status
+
+                if ($VMInstance.OSType -eq "Linux" -and ($VMStatusDetails.Statuses.code.contains($vmPowerState))) {
+                    $LinuxVMDetails += $VMInstance
+                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is running and OS type is Linux. Adding..." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
+                else
+                {
+                    Write-Host "Virtual Machine [$($VMInstance.ResourceName)] is either Stopped/Deallocated or OS type is Windows. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
+                }
+            } 
+            else
+            {
+                    Write-Host "Databricks Virtual Machine [$($VMInstance.ResourceName)] is not applicable for this control. Skipping..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host $([Constants]::SingleDashLine)
             }
         }  
     }
