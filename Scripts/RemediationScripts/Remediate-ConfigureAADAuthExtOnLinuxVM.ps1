@@ -250,7 +250,7 @@ function Add-AADAuthExtensionforVMs {
     $vmPowerState = "PowerState/running"
 
     #ExclusionTags for VM
-    $ADBTagKey = "Vendor"
+    $ADBTagKey = "vendor"
     $ADBTagKeyValue = "Databricks"
 
     # No file path provided as input to the script. Fetch all Virtual Machine(s) in the Subscription.
