@@ -1479,7 +1479,7 @@ Installing AAD extension on VM allows you to login into VM using Azure AD, makin
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
-            "TagName": "Vendor",
+            "TagName": "vendor",
             "TagValue": "Databricks"
         }
     ],
