@@ -1476,6 +1476,13 @@ Installing AAD extension on VM allows you to login into VM using Azure AD, makin
 ### Control Settings 
 ```json 
 {
+    "ExclusionTags": [
+        {
+            "Description": "VM is part of ADB cluster.",
+            "TagName": "vendor",
+            "TagValue": "Databricks"
+        }
+    ],
      "Linux": {
             "ExtensionType" : "AADSSHLoginForLinux",
             "ExtensionPublisher" : "Microsoft.Azure.ActiveDirectory",
@@ -1494,6 +1501,7 @@ Installing AAD extension on VM allows you to login into VM using Azure AD, makin
 >
 > **NotApplicable:** 
 > Operating System (OS) Windows type is not supported for the evaluation.
+> VM is part of Azure Databricks cluster.
 >
 
 ### Recommendation
