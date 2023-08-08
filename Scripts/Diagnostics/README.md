@@ -1,10 +1,8 @@
 # Azure Tenant Scanner Powershell Utility Scripts
 
-This readme describes the functions available in the Powershell files in this repo.
+This readme describes the functions available in the PowerShell based diagnostic scripts files.
 
-The functions are provided to help with assessment and remediation of Azure Tenant Scanner control compliance issues. The Azure Tenant Scanner is a Microsoft CSEO-created tool provided for the community at https://github.com/azsk/AzTS-docs.
-
-The controls and provided functions are listed below. Each control's functions are in a .ps1 file named for that control ID, e.g. `Azure_KeyVault_NetSec_Disable_Public_Network_Access.ps1`.
+The functions are intended to help remediation of Azure Tenant Scanner controls. Controls and provided functions are listed below. Each control's diagnostics functions are in a .ps1 file named for that control ID, e.g. `Azure_KeyVault_NetSec_Disable_Public_Network_Access.ps1`.
 
 <br />
 
@@ -17,22 +15,17 @@ The controls and provided functions are listed below. Each control's functions a
   - [Utility](#utility)
   - [Azure\_AppService\_DP\_Use\_Secure\_FTP\_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
   - [Azure\_Bastion\_AuthZ\_Disable\_Shareable\_Link](#azure_bastion_authz_disable_shareable_link)
-  - [Azure\_DataFactory\_DP\_Avoid\_Plaintext\_Secrets](#azure_datafactory_dp_avoid_plaintext_secrets)
   - [Azure\_DBForMYSQLFlexibleServer\_DP\_Enable\_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
-  - [Azure\_DBForMySQLFlexibleServer\_TLS](#azure_dbformysqlflexibleserver_tls)
+  - [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](#azure_dbformysqlflexibleserver_dp_use_secure_tls_version)
   - [Azure\_KeyVault\_NetSec\_Disable\_Public\_Network\_Access](#azure_keyvault_netsec_disable_public_network_access)
   - [Azure\_SQLManagedInstance\_DP\_Use\_Secure\_TLS\_Version](#azure_sqlmanagedinstance_dp_use_secure_tls_version)
   - [Azure\_Subscription\_AuthZ\_Remove\_Deprecated\_Accounts](#azure_subscription_authz_remove_deprecated_accounts)
-  - [Azure\_Subscription\_DP\_Avoid\_Plaintext\_Secrets\_Deployments](#azure_subscription_dp_avoid_plaintext_secrets_deployments)
-  - [Azure\_Subscription\_SI\_Dont\_Use\_B2C\_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
-  - [Azure\_VirtualMachine\_SI\_Enable\_Antimalware](#azure_virtualmachine_si_enable_antimalware)
 
 <br />
 
 ## Pre-Requisites
 
 - [Powershell 7.x+](https://learn.microsoft.com/powershell/scripting/install/installing-powershell)
-  - Windows Powershell 5.1 _may_ work, but I recommend current Powershell 7.x, especially if you run into anything that doesn't work.
 - [Azure Powershell](https://learn.microsoft.com/powershell/azure/install-az-ps)
 
 Note that you can also use the [Azure Cloud Shell](https://shell.azure.com) (select Powershell, not Bash), which has all required pre-requisites already installed.
@@ -41,22 +34,22 @@ Note that you can also use the [Azure Cloud Shell](https://shell.azure.com) (sel
 
 ## How to use
 
-1. Ensure you meet the pre-requisites above
-1. Log into Azure with [Connect-AzAccount](https://learn.microsoft.com/powershell/module/az.accounts/connect-azaccount)
-1. Download the appropriate {control name}.ps1 file(s)
-1. Open a Powershell prompt in the folder where you downloaded AzTSUtility.ps1
-1. Dot-source the .ps1 file - example: `. ./Azure_KeyVault_NetSec_Disable_Public_Network_Access.ps1`
+1. Ensure you meet the pre-requisites above.
+2. Log into Azure with [Connect-AzAccount](https://learn.microsoft.com/powershell/module/az.accounts/connect-azaccount)
+3. Download the appropriate {control name}.ps1 file(s).
+4. Open a Powershell prompt in the folder where you downloaded AzTSUtility.ps1.
+5. Dot-source the .ps1 file - example: `. ./Azure_KeyVault_NetSec_Disable_Public_Network_Access.ps1`
     1. Note the leading period!
-    1. Dot-sourcing lets you run the functions in the file at the command line
-1. Now you can run the functions with their required parameters - see below
-1. You can also run `Get-Help` for any of the functions to see more information about it. Example: `Get-Help Get-AppServiceFtpState`
+    2. Dot-sourcing lets you run the functions in the file at the command line.
+6. Now you can run the functions with their required parameters - see below/
+7. You can also run `Get-Help` for any of the functions to see more information about it. Example: `Get-Help Get-AppServiceFtpState`
 
 ### Powershell Execution Policy
 
 To run this or other downloaded scripts, you may need to set your Powershell execution policy.
 Reference: https://learn.microsoft.com/powershell/module/microsoft.powershell.core/about/about_execution_policies
 
-Example so you can run script and functions in a downloaded file like AzTSUtility.ps1:
+Example to run script and functions in a downloaded file like AzTSUtility.ps1:
 <br />`Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser`
 
 Example to then reset the execution policy either to default (Restricted) or RemoteSigned:
@@ -103,30 +96,6 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 <br />
 
-### Azure_DataFactory_DP_Avoid_Plaintext_Secrets
-
-`Get-DataFactoryV2()`
-<br />Purpose: Show the Data Factory so that it can be inspected for control failures.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2DataFlows()`
-<br />Purpose: Show the Data Factory Data Flows with script lines including parameters so they can be inspected for control failures or issues such as plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2DataSets()`
-<br />Purpose: Show the Data Factory Datasets with parameters so they can be inspected for control failures or issues such as plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2LinkedServices()`
-<br />Purpose: Show the Data Factory Linked Services so they can be inspected for control failures or issues such as plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-`Get-DataFactoryV2Pipelines()`
-<br />Purpose: Show the Data Factory Pipelines so they can be inspected for control failures or issues such as plain-text secrets.
-<br />Parameters: SubscriptionId, ResourceGroupName, DataFactoryName
-
-<br />
-
 ### Azure_DBForMYSQLFlexibleServer_DP_Enable_SSL
 
 `Get-MySqlFlexServerSslState()`
@@ -139,7 +108,7 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 
 <br />
 
-### Azure_DBForMySQLFlexibleServer_TLS
+### Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 `Get-MySqlFlexServerTlsVersion()`
 <br />Purpose: Show the MySQL Flexible Server's current minimum TLS version configured via the `tls_version` server parameter.
@@ -255,51 +224,7 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Parameters: DeletedObjectId
 <br />NOTE: This command requires the Microsoft.Graph SDK. See installation instructions: https://learn.microsoft.com/powershell/microsoftgraph/installation?view=graph-powershell-1.0#installation
 
-<br />
-
-### Azure_Subscription_DP_Avoid_Plaintext_Secrets_Deployments
-
-`Get-ResourceGroupDeployment()`
-<br />Purpose: Show the specified Azure Resource Group deployment (or list all if no deployment is specified by name). Useful to check for control failures or issues such as plain-text secrets on Deployment parameters.
-<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
-
-`Get-ResourceGroupDeploymentOperations()`
-<br />Purpose: Show the Azure Resource Group deployment's detailed operations.
-<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
-
-`Get-ResourceGroupDeploymentsAndOperations()`
-<br />Purpose: Show the Azure Resource Group deployments and detailed operations.
-<br />Parameters: SubscriptionId, ResourceGroupName, DeploymentName
-
-`Get-SubscriptionDeployments()`
-<br />Purpose: Show Azure Subscription deployments. Useful to check for control failures or issues such as plain-text secrets on Deployment parameters.
-<br />Parameters: SubscriptionId
-
-`Get-SubscriptionDeploymentsAndOperations()`
-<br />Purpose: Show Azure Subscription deployments as well as detailed operations for each. Useful to check for control failures or issues such as plain-text secrets on Deployment parameters.
-<br />Parameters: SubscriptionId
-
-<br />
-
-### Azure_Subscription_SI_Dont_Use_B2C_Tenant
-
-`Get-AzureADB2CTenants()`
-<br />Purpose: List all Azure AD B2C tenants deployed in the subscription.
-<br />Parameters: SubscriptionId
-
-`Get-AzureADB2CResourceProvider()`
-<br />Purpose: Show the Azure AD B2C Resource Provider and its current registration state on the subscription.
-<br />Parameters: SubscriptionId
-
-`Get-RegisteredResourceProviders()`
-<br />Purpose: List all Azure Resource Providers registered in the subscription.
-<br />Parameters: SubscriptionId
-
-`Unregister-AzureADB2CResoureProvider()`
-<br />Purpose: Unregister the Azure AD B2C Resource Provider from the subscription.
-<br />Parameters: SubscriptionId
-
-<br />
+<br/>
 
 ### Azure_VirtualMachine_SI_Enable_Antimalware
 
@@ -316,4 +241,3 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Parameters: None
 
 <br />
-s

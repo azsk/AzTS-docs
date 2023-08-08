@@ -124,27 +124,3 @@ function Set-AppServiceFtpState()
   }
 }
 
-$SubscriptionId = "15d91b70-4875-4f81-a720-1f34be240eb5"
-$ResourceGroupName = "DataReadiness-Production"
-$AppServiceName = "pecodrapi"
-$SlotName = "pecodrapi-uat"
-
-Write-Debug -Debug:$debug -Message "Get current App Service FTP State for production and any non-production slots"
-Get-AppServiceFtpState `
-  -SubscriptionId $SubscriptionId `
-  -ResourceGroupName $ResourceGroupName `
-  -AppServiceName $AppServiceName
-
-Write-Debug -Debug:$debug -Message "Set FTP State for non-production slot to Disabled"
-Set-AppServiceFtpState `
-  -SubscriptionId $SubscriptionId `
-  -ResourceGroupName $ResourceGroupName `
-  -AppServiceName $AppServiceName `
-  -SlotName $SlotName `
-  -FtpState "Disabled"
-
-Write-Debug -Debug:$debug -Message "Get updated App Service FTP State for production and any non-production slots"
-Get-AppServiceFtpState `
-  -SubscriptionId $SubscriptionId `
-  -ResourceGroupName $ResourceGroupName `
-  -AppServiceName $AppServiceName

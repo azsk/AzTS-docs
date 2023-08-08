@@ -3,9 +3,9 @@ $debug = $true
 function Get-MySqlFlexServerTlsVersion() {
   <#
     .SYNOPSIS
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's "Tls_version" Server parameter value.
     .DESCRIPTION
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's "Tls_version" Server parameter value.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName

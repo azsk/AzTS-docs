@@ -3,9 +3,9 @@ $debug = $true
 function Get-MySqlFlexServerSslState() {
   <#
     .SYNOPSIS
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's "require_secure_transport" server parameter value.
     .DESCRIPTION
-    This command returns the current state of the specified Azure Database for MySQL Flexible Server's Require SSL setting.
+    This command returns the current state of the specified Azure Database for MySQL Flexible Server's "require_secure_transport" server parameter value.
     .PARAMETER SubscriptionId
     The Azure subscription ID containing the MySQL Flexible Server.
     .PARAMETER ResourceGroupName
@@ -97,5 +97,5 @@ function Set-MySqlFlexServerSslState() {
 
   Write-Debug -Debug:$debug -Message "Retrieve the Require SSL State value to ensure it was updated correctly:"
 
-  Get-MySqlFlexServerSslState -SubscriptionId "$SubscriptionId" -ResourceGroupName "$ResourceGroupName" -ServerName "$ServerName"
+  Get-MySqlFlexServerSslState -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName -ServerName $ServerName
 }
