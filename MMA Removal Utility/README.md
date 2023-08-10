@@ -293,20 +293,20 @@ Follow below steps to speed up the process for MMA removal :
 
 Step-1.	Run Update-AzTSMMARemovalUtilityDiscoveryTrigger command with – StartScopeResolverImmediatley switch.
 
-    ``` PowerShell
+   ``` PowerShell
     Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
         -SubscriptionId <HostingSubId> `
         -ResourceGroupName <HostingRGName> `
         -StartScopeResolverImmediatley 
-    ```
+   ```
 
 Step-2. Once Virtual Machine inventory is available in dashboard, repeat **step-1**.
 
 Step-3. One the Extension inventory is available in dashboard, run Update-AzTSMMARemovalUtilityRemovalTrigger command with – StartImmediately switch.
 
-    ``` PowerShell
+   ``` PowerShell
     Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
         -SubscriptionId <HostingSubId> `
         -ResourceGroupName <HostingRGName> `
         -StartImmediately
-    ```
+   ```
