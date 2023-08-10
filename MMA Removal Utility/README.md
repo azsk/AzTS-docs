@@ -300,7 +300,14 @@ Step-1.	Run Update-AzTSMMARemovalUtilityDiscoveryTrigger command with – StartS
         -StartScopeResolverImmediatley 
    ```
 
-Step-2. Once Virtual Machine inventory is available in dashboard, repeat **step-1**.
+Step-2. Once Virtual Machine inventory is available in dashboard, run Update-AzTSMMARemovalUtilityDiscoveryTrigger command with –StartExtensionDiscoveryImmediatley  switch.
+
+   ``` PowerShell
+    Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+        -SubscriptionId <HostingSubId> `
+        -ResourceGroupName <HostingRGName> `
+        -StartExtensionDiscoveryImmediatley 
+   ```
 
 Step-3. One the Extension inventory is available in dashboard, run Update-AzTSMMARemovalUtilityRemovalTrigger command with – StartImmediately switch.
 
