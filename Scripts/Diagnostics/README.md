@@ -4,6 +4,9 @@ This readme describes the functions available in the PowerShell based diagnostic
 
 The functions are intended to help remediation of Azure Tenant Scanner controls. Controls and provided functions are listed below. Each control's diagnostics functions are in a .ps1 file named for that control ID, e.g. `Azure_KeyVault_NetSec_Disable_Public_Network_Access.ps1`.
 
+- Note:These scripts are intended to be used by AzTS support team for diagnosis related to control failures. In case there are any queries from end user perspective, please reach out to support team at aztssup@microsoft.com or log an issue.
+Special thanks to Patrick and team for sharing these!!
+
 <br />
 
 ## Contents
@@ -14,12 +17,12 @@ The functions are intended to help remediation of Azure Tenant Scanner controls.
 - [Controls and Functions](#controls-and-functions)
   - [Utility](#utility)
   - [Azure\_AppService\_DP\_Use\_Secure\_FTP\_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
-  - [Azure\_Bastion\_AuthZ\_Disable\_Shareable\_Link](#azure_bastion_authz_disable_shareable_link)
   - [Azure\_DBForMYSQLFlexibleServer\_DP\_Enable\_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
   - [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](#azure_dbformysqlflexibleserver_dp_use_secure_tls_version)
   - [Azure\_KeyVault\_NetSec\_Disable\_Public\_Network\_Access](#azure_keyvault_netsec_disable_public_network_access)
   - [Azure\_SQLManagedInstance\_DP\_Use\_Secure\_TLS\_Version](#azure_sqlmanagedinstance_dp_use_secure_tls_version)
   - [Azure\_Subscription\_AuthZ\_Remove\_Deprecated\_Accounts](#azure_subscription_authz_remove_deprecated_accounts)
+  - [Azure_VirtualMachine_SI_Enable_Antimalware](#azure_virtualmachine_si_enable_antimalware)
 
 <br />
 
@@ -82,18 +85,9 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br />Purpose: Sets the specified App Service slot's FTP state.
 <br />Parameters: SubscriptionId, ResourceGroupName, AppServiceName, SlotName, FtpState
 
-<br />
-
-### Azure_Bastion_AuthZ_Disable_Shareable_Link
-
-`Update-BastionDisableShareableLink()`
-<br />Purpose: Enables or disables the Azure Bastion's Shareable Link feature. Default = disables.
-<br />Parameters: SubscriptionId, ResourceGroupName, BastionHostName, ShareableLinkEnabled
-
-`Remove-SharedLinksForVmsInRg()`
-<br />Purpose: Removes shared links for all the VMs in the specified Resource Group from the Bastion.
-<br />Parameters: SubscriptionId, ResourceGroupName, BastionHostName, VmResourceGroupName
-
+`Get-FTPAuthSetting`
+<br />Purpose: Gets FTP Basic Auth setting value for App Service.
+<br />Parameters: ResourceId
 <br />
 
 ### Azure_DBForMYSQLFlexibleServer_DP_Enable_SSL

@@ -40,6 +40,11 @@ function Uninstall-AzPowershell() {
 
   [CmdletBinding()]
   param ()
-
-  Get-Package | Where-Object { $_.Name -Like 'Az*' } | ForEach-Object { Uninstall-Package -Name $_.Name -AllVersions }
+  Write-Host "This command will uninstall all Az packages. Do you want to continue? " -ForegroundColor [System.ConsoleColor]::Yellow -NoNewline
+                
+  $userInput = Read-Host -Prompt "(Y|N)"
+  if($userInput -eq "Y")
+  {
+    Get-Package | Where-Object { $_.Name -Like 'Az*' } | ForEach-Object { Uninstall-Package -Name $_.Name -AllVersions }
+  }
 }

@@ -123,4 +123,44 @@ function Set-AppServiceFtpState()
     Set-AzWebAppSlot -ResourceGroupName $ResourceGroupName -Name $AppServiceName -Slot $SlotName -FtpsState $FtpState
   }
 }
+function Get-FTPAuthSetting()
+{
+  <#
+    .SYNOPSIS
+    This command shows whether FTP Basic Auth is Enabled for input resourceId
+    .DESCRIPTION
+    This command shows whether FTP Basic Auth is Enabled for input resourceId
+    .PARAMETER ResourceId
+    The Azure ResourceId for App Service
+    NOTE: For App service, non-production slots, corresponding ResourceId needs to be passed to this function
+    .INPUTS
+    The Azure ResourceId
+    .OUTPUTS
+    Boolean indicating whether FTP Basic Auth is Enabled for input resourceId
+    .EXAMPLE
+    PS> Get-FTPAuthSetting
+    .LINK
+    None
+  #>
+  [CmdletBinding()]
+  param
+  (
+    [Parameter(Mandatory = $true)]
+    [string]
+    $ResourceId
+  )
+    $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
+    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl
+    $header = "Bearer " + $accessToken.Token
+    $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+    [PSObject] $fTPAuthSetting = New-Object PSObject
+
+    $updateFTPAuthSettingsUri = "$($cloudEnvironmentResourceManagerUrl)$($ResourceId)/basicPublishingCredentialsPolicies/ftp?api-version=2022-03-01"
+    $response = Invoke-WebRequest -Method Get -Uri $updateFTPAuthSettingsUri -Headers $headers -UseBasicParsing -ContentType "application/json" -ErrorAction Stop
+    $fTPAuthSetting = $response.Content | ConvertFrom-Json
+
+    $isFTPBasicAuthEnabled = $fTPAuthSetting.properties.allow
+
+    return $isFTPBasicAuthEnabled
+}
 
