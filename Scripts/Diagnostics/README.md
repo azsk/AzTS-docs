@@ -221,6 +221,7 @@ Example to then reset the execution policy either to default (Restricted) or Rem
 <br/>
 
 ### Azure_VirtualMachine_SI_Enable_Antimalware
+- Note: Below functions can be used for Virtual Machines with 'Windows' OS type only.
 
 `Get-MDEPreferences()`
 <br />Purpose: While RDPed onto a VM, run this to show current configuration preferences for Microsoft Defender for Endpoint.
