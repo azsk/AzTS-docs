@@ -4,8 +4,9 @@ This readme describes the functions available in the PowerShell based diagnostic
 
 The functions are intended to help remediation of Azure Tenant Scanner controls. Controls and provided functions are listed below. Each control's diagnostics functions are in a .ps1 file named for that control ID, e.g. `Azure_KeyVault_NetSec_Disable_Public_Network_Access.ps1`.
 
-- Note:These scripts are intended to be used by AzTS support team for diagnosis related to control failures. In case there are any queries from end user perspective, please reach out to support team at aztssup@microsoft.com or log an issue.
-Special thanks to Patrick and team for sharing these!!
+- Important: These scripts have been developed for the purpose of aiding the AzTS support team in diagnosing control failures. If you have any inquiries from an end-user standpoint, please don't hesitate to contact our support team at aztssup@microsoft.com or open an issue.
+
+We extend our gratitude to [Patrick](https://github.com/plzm/azure-tenant-scanner) for generously sharing these resources!
 
 <br />
 
