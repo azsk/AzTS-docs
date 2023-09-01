@@ -590,6 +590,13 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
                 @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                 @{N='ListOfNonCompliantSessionHost';E={($_.ListOfNonCompliantSessionHost | Select-Object -ExpandProperty ResourceName) -join ','}},
                 @{N='ListOfRemediatedSessionHost';E={($listOfRemediatedSessionHost|Select-Object -ExpandProperty ResourceName) -join ','}}
+
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
+                $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
+                $logRemediatedResources += $logResource
+                Write-Host "Successfully enabled boot diagnostic with managed storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if(($listOfSkippedSessionHost|Measure-Object).Count -gt 0 )
@@ -604,6 +611,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
                 $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
                 $logResource.Add("Reason", "Error occured while disabling boot diagnostic with managed storage account on AVD Host pool.")
                 $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
             }               
         }
 
@@ -925,7 +933,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
                 $SessionHostDetail = Get-AzVM -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName
                 if(($SessionHostDetail|Measure-Object).Count -gt 0)
                 {
-                    $SessionHostDetail.DiagnosticsProfile.BootDiagnostics.Enabled = $true
+                    $SessionHostDetail.DiagnosticsProfile.BootDiagnostics.Enabled = $false
                     $SessionHostDetail.DiagnosticsProfile.BootDiagnostics.StorageUri = $null
                     
                     $result = Update-AzVM -ResourceGroupName $_.ResourceGroupName -VM $SessionHostDetail 

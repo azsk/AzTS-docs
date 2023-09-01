@@ -602,6 +602,13 @@ function Enable-AVDHostPoolSecureBootAndvTPM
                 @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                 @{N='ListOfNonCompliantSessionHost';E={($_.ListOfNonCompliantSessionHost | Select-Object -ExpandProperty ResourceName) -join ','}},
                 @{N='ListOfRemediatedSessionHost';E={($listOfRemediatedSessionHost|Select-Object -ExpandProperty ResourceName) -join ','}}
+
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
+                $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
+                $logRemediatedResources += $logResource
+                Write-Host "Successfully enabled secure boot and vTPM on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
             }
 
             if(($listOfSkippedSessionHost|Measure-Object).Count -gt 0 )
@@ -611,11 +618,13 @@ function Enable-AVDHostPoolSecureBootAndvTPM
                 @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                 @{N='ListOfNonCompliantSessionHost';E={($_.ListOfNonCompliantSessionHost| Select-Object -ExpandProperty ResourceName) -join ','}},
                 @{N='ListOfSkippedSessionHost';E={($listOfSkippedSessionHost| Select-Object -ExpandProperty ResourceName) -join ','}}
+                
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
                 $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
                 $logResource.Add("Reason", "Error occured while disabling secure boot and VTPM on AVD Host pool.")
                 $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
             }               
         }
 
