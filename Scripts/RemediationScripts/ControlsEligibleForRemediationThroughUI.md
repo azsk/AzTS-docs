@@ -51,6 +51,9 @@
 
 25. [Azure_Bastion_AuthZ_Disable_Shareable_Link](ControlsEligibleForRemediationThroughUI.md#25-Azure_Bastion_AuthZ_Disable_Shareable_Link)
 
+26. [Azure_AVD_Audit_Enable_HostPool_BootDiagnostics](ControlsEligibleForRemediationThroughUI.md#26-Azure_AVD_Audit_Enable_HostPool_BootDiagnostics)
+
+27. [Azure_AVD_SI_Configure_HostPool_SecureBoot](ControlsEligibleForRemediationThroughUI.md#27-Azure_AVD_SI_Configure_HostPool_SecureBoot)
 
 <br />
 ___
@@ -380,6 +383,32 @@ Azure Bastion Shareable links must not be used.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DisableBastionShareableLink](Remediate-DisableBastionShareableLink.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 26. Azure_AVD_Audit_Enable_HostPool_BootDiagnostics
+
+### Display Name
+Boot Diagnostic must be enabled with Managed Storage Account on Azure AVD Host pool VMs.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-BootDiagnosticsForAVDHotPool](Remediate-BootDiagnosticsForAVDHotPool.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 27. Azure_AVD_SI_Configure_HostPool_SecureBoot
+
+### Display Name
+Azure AVD Host pool VMs should be of security type Trusted launch with Secure boot and vTPM enabled.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-TrustedLaunchForAVDHotPool](Remediate-TrustedLaunchForAVDHotPool.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
