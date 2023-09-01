@@ -541,6 +541,8 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
             $AVDHostPool = $_
             $listOfRemediatedSessionHost = @()
             $listOfSkippedSessionHost = @()
+            Write-Host "Enabling boot diagnostic with managed storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
+                
             $AVDHostPool.ListOfNonCompliantSessionHost | ForEach-Object {
                 try {
                     $SessionHost = $_
@@ -915,6 +917,8 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         $AVDHostPool = $_
         $ListOfRolledBackSessionHost = @()
         $listOfSkippedSessionHost = @()
+        Write-Host "Disabling boot diagnostic with managed storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
+              
         $AVDHostPool.ListOfRemediatedSessionHost | ForEach-Object {
             try {
                 $SessionHost = $_

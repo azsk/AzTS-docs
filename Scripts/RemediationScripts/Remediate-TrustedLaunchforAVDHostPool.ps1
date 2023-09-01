@@ -549,6 +549,8 @@ function Enable-AVDHostPoolSecureBootAndvTPM
             $AVDHostPool = $_
             $listOfRemediatedSessionHost = @()
             $listOfSkippedSessionHost = @()
+            Write-Host "Enabling secure boot and vTPM on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
+              
             $AVDHostPool.ListOfNonCompliantSessionHost | ForEach-Object {
                 try {
                     $SessionHost = $_
@@ -932,6 +934,8 @@ function Disable-AVDHostPoolSecureBootAndvTPM
         $AVDHostPool = $_
         $ListOfRolledBackSessionHost = @()
         $listOfSkippedSessionHost = @()
+        Write-Host "Disabli secure boot and vTPM on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
+              
         $AVDHostPool.ListOfRemediatedSessionHost | ForEach-Object {
             try {
                 $SessionHost = $_
