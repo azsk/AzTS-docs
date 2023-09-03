@@ -21,6 +21,8 @@
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
 - [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
 - [Azure_Subscription_SI_Dont_Use_B2C_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
+- [Azure_Subscription_Identity_Rotate_SPN_Credentials](#Azure_Subscription_Identity_Rotate_SPN_Credentials)
+- [Azure_Subscription_AuthZ_SPN_Owners_Governance](#Azure_Subscription_AuthZ_SPN_Owners_Governance)
 
 <!-- /TOC -->
 <br/>
@@ -1066,6 +1068,74 @@ This Service depends mainly on 3rd party identity provider, and that can cause a
 
 -  ARM API to list providers at subscription level: - "/subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate<br />
 **Properties:** [\*].value.namespace , [\*].value.registrationState
+ <br />
+
+ <br />
+
+
+## Azure_Subscription_Identity_Rotate_SPN_Credentials 
+
+### Display Name 
+App Registrations and Service Principals credentials must be regularly rotated.
+
+### Rationale 
+SPNs having access to subscription must have secrets within maximum approved expiry time.
+
+### Control Spec 
+> **Passed:** 
+> The gap between the End date and Start date of a secret is within maximum approved expiry time 
+> 
+> **Failed:** 
+> The gap between the End date and Start date of a secret is not within maximum approved expiry time 
+
+
+### Recommendation 
+
+- **Azure Portal** 
+ <br/>Rotate/Delete expired SPN secrets.
+
+ ### Control Settings 
+```json 
+{
+    "ExpirationPeriodInDays":380,
+    "ServicePrincipalTypeFilter":["Application","Legacy"],
+    "AllowedObjectIds":[]
+}
+ ```  
+ <br />
+
+ <br />
+
+
+## Azure_Subscription_AuthZ_SPN_Owners_Governance 
+
+### Display Name 
+App Registrations and Service Principals must have at least two FTE Owners (SC-Alt/SAS-Alt only)
+
+### Rationale 
+SPNs in a subscription with access at subscription or resource group level should not have access to any External Users.
+
+### Control Spec 
+> **Passed:** 
+> A SPN have atleast two FTE Owners with (SC-Alt/SAS-Alt only)
+> 
+> **Failed:** 
+> A SPN does not have atleast two FTE Owners with (SC-Alt/SAS-Alt only) <b>OR</b>
+> A SPN have FTE Owners without (SC-Alt/SAS-Alt only) <b>OR</b>
+> A SPN have Non FTE Owners
+
+### Recommendation 
+
+- **Azure Portal** 
+ <br/>Add exactly two FTE owners or remove SPN's subscription/resource group level access.
+
+ ### Control Settings 
+```json 
+{
+    "ServicePrincipalTypeFilter":["Application","Legacy"],
+    "AllowedObjectIds":[]
+}
+ ```  
  <br />
 
 <br />
