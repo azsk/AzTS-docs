@@ -58,6 +58,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#47-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
 48. [Azure_Bastion_AuthZ_Disable_Shareable_Link](Readme.md#48-Azure_Bastion_AuthZ_Disable_Shareable_Link)
+49. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#49-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
 <br />
 
 ___ 
@@ -1015,6 +1016,23 @@ Yes
 Yes
 
 ___ 
+
+## 49. 	Azure_CosmosDB_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for the CosmosDB
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetCosmosDBAccountMinReqTLSVersion](Remediate-SetCosmosDBAccountMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
 
 ___ 
 ## Supports managed identity based remediations

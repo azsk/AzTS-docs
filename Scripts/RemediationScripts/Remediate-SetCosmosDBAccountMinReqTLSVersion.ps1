@@ -641,6 +641,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
             if ($($CosmosDBAccountsRemediated | Measure-Object).Count -gt 0)
             {
                 Write-Host "Successfully set the Minimum TLS version to required Minimum TLS version on the following CosmosDB Account(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Please note that it might take a while to update and reflect in the portal." -ForegroundColor $([Constants]::MessageType.Warning)
                 $CosmosDBAccountsRemediated | Format-Table -Property $colsProperty1 -Wrap
 
                 # Write this to a file.
@@ -935,6 +936,7 @@ function Reset-CosmosDBAccountRequiredTLSVersion
         if ($($CosmosDBAccountsRolledBack | Measure-Object).Count -gt 0)
         {
             Write-Host "Successfully rolled back minimum TLS version for following CosmosDB Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Please note that it might take a while to update and reflect in the portal." -ForegroundColor $([Constants]::MessageType.Warning)
             $CosmosDBAccountsRolledBack | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
             $CosmosDBAccountsRolledBackFile = "$($backupFolderPath)\RolledBackCosmosDBAccountForMinimumTls.csv"
