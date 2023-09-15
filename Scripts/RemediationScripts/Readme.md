@@ -1027,7 +1027,7 @@ ___
 Boot Diagnostic must be enabled with Managed Storage Account on Azure AVD Host pool VMs.
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-BootDiagnosticsForAVDHotPool](Remediate-BootDiagnosticsforAVDHostPool.ps1)
+[Remediate-BootDiagnosticsForAVDHostPool](Remediate-BootDiagnosticsforAVDHostPool.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
@@ -1048,7 +1048,7 @@ ___
 Azure AVD Host pool VMs should be of security type Trusted launch with Secure boot and vTPM enabled.
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-TrustedLaunchForAVDHotPool](Remediate-TrustedLaunchforAVDHostPool.ps1)
+[Remediate-TrustedLaunchForAVDHostPool](Remediate-TrustedLaunchforAVDHostPool.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level

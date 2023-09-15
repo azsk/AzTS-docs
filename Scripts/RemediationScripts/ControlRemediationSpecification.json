@@ -312,8 +312,8 @@
         {
             "ControlId": "Azure_AVD_SI_Configure_HostPool_SecureBoot",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-TrustedLaunchForAVDHotPool.ps1",
-            "LoadCommand": "Remediate-TrustedLaunchForAVDHotPool.ps1",     
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-TrustedLaunchforAVDHostPool.ps1",
+            "LoadCommand": "Remediate-TrustedLaunchforAVDHostPool.ps1",     
             "InitCommand": "Enable-AVDHostPoolSecureBootAndvTPM",
             "RollbackMetadata":
                 {
@@ -324,8 +324,8 @@
         {
             "ControlId": "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-BootDiagnosticsForAVDHotPool.ps1",
-            "LoadCommand": "Remediate-BootDiagnosticsForAVDHotPool.ps1",     
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-BootDiagnosticsforAVDHostPool.ps1",
+            "LoadCommand": "Remediate-BootDiagnosticsforAVDHostPool.ps1",     
             "InitCommand": "Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount",
             "RollbackMetadata":
                 {
