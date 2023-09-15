@@ -9,7 +9,7 @@
     Azure AVD Host pool(s) VMs should be of security type Trusted launch with secure boot and vTPM enabled.
 
 # Prerequisites:
-    1)Contributor or higher priviliged role on the AVD Host pool(s) VMs is required for remediation.
+    1)Contributor or higher privileged role on the AVD Host pool(s) VMs is required for remediation.
     2)Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
@@ -117,7 +117,7 @@ function Enable-AVDHostPoolSecureBootAndvTPM
 
         .DESCRIPTION
         Remediates 'Azure_AVD_SI_Configure_HostPool_SecureBoot' Control.
-        Enable secure boot and VTPM on AVD Host pool. 
+        Enable secure boot and VTPM on AVD Host pool(s). 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -255,7 +255,7 @@ function Enable-AVDHostPoolSecureBootAndvTPM
         Write-Host $([Constants]::SingleDashLine)
     } 
     
-    Write-Host "***To Enable secure boot and vTPM on AVD Host pool(s) in a Subscription, Contributor or higher privileges on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To Enable secure boot and vTPM on AVD Host pool(s) in a Subscription, Contributor or higher privileged role on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all AVD Host pool(s)..."
@@ -432,11 +432,11 @@ function Enable-AVDHostPoolSecureBootAndvTPM
 
         }                 
         catch {
-            Write-Host "Error fetching AVD Host pool configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching AVD Host pool(s) configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($resourceName))
             $logResource.Add("ResourceName",($resourceGroupName))
-            $logResource.Add("Reason","Encountered error while fetching AVD Host pool configuration")    
+            $logResource.Add("Reason","Encountered error while fetching AVD Host pool(s) configuration")    
             $logSkippedResources += $logResource
             Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)   
         }
@@ -453,7 +453,7 @@ function Enable-AVDHostPoolSecureBootAndvTPM
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
             $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
-            $logResource.Add("Reason","secure boot And vPTM is enabled on the AVD Host pool.")    
+            $logResource.Add("Reason","secure boot And vPTM is enabled on the AVD Host pool(s).")    
             $logSkippedResources += $logResource
         }
     }
@@ -622,7 +622,7 @@ function Enable-AVDHostPoolSecureBootAndvTPM
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
                 $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
-                $logResource.Add("Reason", "Error occured while disabling secure boot and VTPM on AVD Host pool.")
+                $logResource.Add("Reason", "Error occured while disabling secure boot and VTPM on AVD Host pool(s).")
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
             }               
@@ -653,13 +653,13 @@ function Enable-AVDHostPoolSecureBootAndvTPM
 
             Write-Host "This information has been saved to" -NoNewline
             Write-Host " [$($AVDHostPoolRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Use this file to roll back if required." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
         if ($($AVDHostPoolSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Error occured while enabling secure boot and vTPM on the following AVD Host poolin the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occured while enabling secure boot and vTPM on the following AVD Host pool(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $AVDHostPoolSkipped | Format-Table -Property $colsPropertySkipped -Wrap
 
             # Write this to a file.
@@ -686,7 +686,7 @@ function Enable-AVDHostPoolSecureBootAndvTPM
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4]  Remediating non compliant AVD Host pool(s)..."
+        Write-Host "[Step 4 of 4]  Remediating non-compliant AVD Host pool(s)..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
@@ -704,7 +704,7 @@ function Disable-AVDHostPoolSecureBootAndvTPM
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_AVD_SI_Configure_HostPool_SecureBoot' Control.
-        Disable secure boot and vTPM on Azure AVD Host pool. 
+        Disable secure boot and vTPM on Azure AVD Host pool(s). 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -793,7 +793,7 @@ function Disable-AVDHostPoolSecureBootAndvTPM
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To disable secure boot and vTPM on AVD Host pool(s) in a Subscription, Contributor or higher privileges on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To disable secure boot and vTPM on AVD Host pool(s) in a Subscription, Contributor or higher privileged role on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all AVD Host pool(s)..."
@@ -824,7 +824,7 @@ function Disable-AVDHostPoolSecureBootAndvTPM
         }
         else
         {
-            Write-Host "Error fetching AVD Host pool(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error while fetching AVD Host pool(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($avdHostPool.ResourceGroupName))
             $logResource.Add("ResourceName",($avdHostPool.ResourceName))
@@ -874,11 +874,11 @@ function Disable-AVDHostPoolSecureBootAndvTPM
 
         }                 
         catch {
-            Write-Host "Error fetching AVD Host pool configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching AVD Host pool(s) configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($resourceGroupName))
             $logResource.Add("ResourceName",($resourceName))
-            $logResource.Add("Reason","Encountered error while fetching AVD Host pool configuration")    
+            $logResource.Add("Reason","Encountered error while fetching AVD Host pool(s) configuration")    
             $logSkippedResources += $logResource
             Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning) 
         }
@@ -930,10 +930,10 @@ function Disable-AVDHostPoolSecureBootAndvTPM
         Write-Host "'Force' flag is provided. secure boot and vTPM will be disabled on AVD Host pool(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
-    # List for storing rolled back AVD Host pool resource.
+    # List for storing rolled back AVD Host pool(s) resource.
     $AVDHostPoolRolledBack = @()
 
-    # List for storing skipped rolled back AVD Host pool resource.
+    # List for storing skipped rolled back AVD Host pool(s) resource.
     $AVDHostPoolSkipped = @()
 
     Write-Host "Disabling secure boot and vTPM on all listed AVD Host pool(s)..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -1007,7 +1007,7 @@ function Disable-AVDHostPoolSecureBootAndvTPM
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.ResourceName))
-            $logResource.Add("Reason", "Error occured while disabling secure boot and vTPM  on AVD Host pool.")
+            $logResource.Add("Reason", "Error occured while disabling secure boot and on AVD Host pool(s).")
             $logSkippedResources += $logResource
         }
     }

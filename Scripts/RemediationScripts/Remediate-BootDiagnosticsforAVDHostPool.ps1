@@ -1,15 +1,15 @@
 <###
 # Overview:
-    This script is used to enable  boot diagnostic with managed storage account for AVD Host pool(s) VMs in a Subscription.
+    This script is used to enable  boot diagnostic with managed Storage account for AVD Host pool(s) VMs in a Subscription.
 
 # Control ID:
     Azure_AVD_Audit_Enable_HostPool_BootDiagnostics
 
 # Display Name:
-    Boot Diagnostic must be enabled with Managed Storage Account on Azure AVD Host pool VMs.
+    Boot Diagnostic must be enabled with managed Storage account on Azure AVD Host pool(s) VMs.
 
 # Prerequisites:
-    1)Contributor or higher priviliged role on the AVD Host pool(s) VMs is required for remediation.
+    1)Contributor or higher privileged role on the AVD Host pool(s) VMs is required for remediation.
     2)Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
@@ -41,11 +41,11 @@
     
            Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. Enable boot diagnostic with managed storage account on AVD Host pool(s) in the Subscription:
+        2. Enable boot diagnostic with managed Storage account on AVD Host pool(s) in the Subscription:
        
            Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. Enable boot diagnostic with managed storage account on AVD Host pool(s) in the Subscription, from a previously taken snapshot:
+        3. Enable boot diagnostic with managed Storage account on AVD Host pool(s) in the Subscription, from a previously taken snapshot:
        
            Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\BootDiagnosticsWithManagedStorageAccountForAVDHostPool\NonCompliantAVDHostPool.csv
 
@@ -54,7 +54,7 @@
         Get-Help Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount -Detailed
 
     To roll back:
-        1. Disable boot diagnostic with managed storage account on AVD Host pool(s) in the Subscription, from a previously taken snapshot:
+        1. Disable boot diagnostic with managed Storage account on AVD Host pool(s) in the Subscription, from a previously taken snapshot:
            Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\BootDiagnosticsWithManagedStorageAccountForAVDHostPool\RemediatedAVDHostPool.csv
        
         To know more about the options supported by the roll back command, execute:
@@ -117,7 +117,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
         .DESCRIPTION
         Remediates 'Azure_AVD_Audit_Enable_HostPool_BootDiagnostics' Control.
-        Enable boot diagnostic with managed storage account on AVD Host pool. 
+        Enable boot diagnostic with managed Storage account on AVD Host pool(s). 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -255,7 +255,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         Write-Host $([Constants]::SingleDashLine)
     } 
     
-    Write-Host "***To Enable boot diagnostic with managed storage account on AVD Host pool(s) in a Subscription, Contributor or higher privileges on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To Enable boot diagnostic with managed Storage account on AVD Host pool(s) in a Subscription, Contributor or higher privileged role on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all AVD Host pool(s)..."
@@ -385,12 +385,12 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
     Write-Host "Found [$($totalAVDHostPool)] AVD Host pool(s)." -ForegroundColor $([Constants]::MessageType.Update)                                                       
     Write-Host $([Constants]::SingleDashLine)
     
-    # list for storing AVD Host pool(s) where boot diagnostic with managed storage account is enabled
+    # list for storing AVD Host pool(s) where boot diagnostic with managed Storage account is enabled
     $NonCompliantAVDHostPool = @()
 
     $AVDHostPools = @()
 
-    Write-Host "Separating AVD Host pool(s) for which boot diagnostic with managed storage account is not enabled..."
+    Write-Host "Separating AVD Host pool(s) for which boot diagnostic with managed Storage account is not enabled..."
 
     $AVDHostPoolDetails | ForEach-Object {
         try {
@@ -425,11 +425,11 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
         }                 
         catch {
-            Write-Host "Error fetching AVD Host pool configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching AVD Host pool(s) configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($resourceName))
             $logResource.Add("ResourceName",($resourceGroupName))
-            $logResource.Add("Reason","Encountered error while fetching AVD Host pool configuration")    
+            $logResource.Add("Reason","Encountered error while fetching AVD Host pool(s) configuration")    
             $logSkippedResources += $logResource
             Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning)   
         }
@@ -446,7 +446,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
             $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
-            $logResource.Add("Reason","boot diagnostic with managed storage account is enabled on the AVD Host pool.")    
+            $logResource.Add("Reason","boot diagnostic with managed Storage account is enabled on the AVD Host pool(s).")    
             $logSkippedResources += $logResource
         }
     }
@@ -455,11 +455,11 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
     if ($totalNonCompliantAVDHostPool  -eq 0)
     {
-        Write-Host "No AVD Host pool(s) found with boot diagnostic with managed storage account is disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No AVD Host pool(s) found with boot diagnostic with managed Storage account is disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
-    Write-Host "Found [$($totalNonCompliantAVDHostPool)] AVD Host pool(s) with boot diagnostic with managed storage account is disabled:" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantAVDHostPool)] AVD Host pool(s) with boot diagnostic with managed Storage account is disabled:" -ForegroundColor $([Constants]::MessageType.Update)
     
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
@@ -482,13 +482,13 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        $ExportedHostPoolDetails = $NonCompliantAVDHostPool | Select-Object   @{N='ResourceId';E={$_.ResourceId}},
-            @{N='ResourceName';E={$_.ResourceName}},
-            @{N='ResourceGroupName';E={$_.ResourceGroupName}},
-            @{N='ListofSessionHost';E={($_.ListofSessionHost | Select-Object -ExpandProperty ResourceName) -join ','}},
-            @{N='ListOfNonCompliantSessionHost';E={($_.ListOfNonCompliantSessionHost | Select-Object -ExpandProperty ResourceName) -join ','}}
+        $ExportedHostPoolDetails = $NonCompliantAVDHostPool | Select-Object @{N='ResourceId';E={$_.ResourceId}},
+                                   @{N='ResourceName';E={$_.ResourceName}},
+                                   @{N='ResourceGroupName';E={$_.ResourceGroupName}},
+                                   @{N='ListofSessionHost';E={($_.ListofSessionHost | Select-Object -ExpandProperty ResourceName) -join ','}},
+                                   @{N='ListOfNonCompliantSessionHost';E={($_.ListOfNonCompliantSessionHost | Select-Object -ExpandProperty ResourceName) -join ','}}
         
-            # Backing up AVD Host pool(s) details.
+        # Backing up AVD Host pool(s) details.
         $backupFile = "$($backupFolderPath)\NonCompliantAVDHostPool.csv"
         $ExportedHostPoolDetails | Export-CSV -Path $backupFile -NoTypeInformation
 
@@ -510,20 +510,20 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         {
             if (-not $Force)
             {
-                Write-Host "This step will enable boot diagnostic with managed storage account for all non-complaint [$($NonCompliantAVDHostPool.count)] AVD Host pool(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "This step will enable boot diagnostic with managed Storage account for all non-complaint [$($NonCompliantAVDHostPool.count)] AVD Host pool(s)." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
                 $userInput = Read-Host -Prompt "(Y|N)"
 
                 if($userInput -ne "Y")
                 {
-                    Write-Host "Boot diagnostic with managed storage account will not be enabled on AVD Host pool(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Boot diagnostic with managed Storage account will not be enabled on AVD Host pool(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                     break
                 }
             }
             else
             {
-                Write-Host "'Force' flag is provided. boot diagnostic with managed storage account will be enabled on AVD Host pool(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "'Force' flag is provided. boot diagnostic with managed Storage account will be enabled on AVD Host pool(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
 
@@ -533,7 +533,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         # List for storing skipped AVD Host pool(s)
         $AVDHostPoolSkipped = @()
 
-        Write-Host "Enabling boot diagnostic with managed storage account on all listed AVD Host pool(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Enabling boot diagnostic with managed Storage account on all listed AVD Host pool(s)..." -ForegroundColor $([Constants]::MessageType.Info)
 
         # Loop through the list of AVD Host pool(s) which needs to be remediated.
         $NonCompliantAVDHostPool | ForEach-Object {
@@ -541,7 +541,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
             $AVDHostPool = $_
             $listOfRemediatedSessionHost = @()
             $listOfSkippedSessionHost = @()
-            Write-Host "Enabling boot diagnostic with managed storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
+            Write-Host "Enabling boot diagnostic with managed Storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
                 
             $AVDHostPool.ListOfNonCompliantSessionHost | ForEach-Object {
                 try {
@@ -595,7 +595,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
                 $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
                 $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
                 $logRemediatedResources += $logResource
-                Write-Host "Successfully enabled boot diagnostic with managed storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully enabled boot diagnostic with managed Storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -609,7 +609,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($AVDHostPool.ResourceGroupName))
                 $logResource.Add("ResourceName",($AVDHostPool.ResourceName))
-                $logResource.Add("Reason", "Error occured while disabling boot diagnostic with managed storage account on AVD Host pool.")
+                $logResource.Add("Reason", "Error occured while disabling boot diagnostic with managed Storage account on AVD Host pool(s).")
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
             }               
@@ -631,7 +631,7 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         if ($($AVDHostPoolRemediated | Measure-Object).Count -gt 0)
         {
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Successfully enabled boot diagnostic with managed storage account on the following AVD Host pool(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully enabled boot diagnostic with managed Storage account on the following AVD Host pool(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
             $AVDHostPoolRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
 
             # Write this to a file.
@@ -640,13 +640,13 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
             Write-Host "This information has been saved to" -NoNewline
             Write-Host " [$($AVDHostPoolRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
-            Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Use this file to roll back if required." -ForegroundColor $([Constants]::MessageType.Info)
         }
 
         if ($($AVDHostPoolSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Error occured while enabling boot diagnostic with managed storage account on the following AVD Host poolin the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occured while enabling boot diagnostic with managed Storage account on the following AVD Host pool(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $AVDHostPoolSkipped | Format-Table -Property $colsPropertySkipped -Wrap
 
             # Write this to a file.
@@ -673,13 +673,13 @@ function Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
     else
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4]  Remediating non compliant AVD Host pool(s)..."
+        Write-Host "[Step 4 of 4]  Remediating non-compliant AVD Host pool(s)..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to enable boot diagnostic with managed storage account on AVD Host pool(s) listed in the file."
+        Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to enable boot diagnostic with managed Storage account on AVD Host pool(s) listed in the file."
     }
 }
 
@@ -691,7 +691,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_AVD_Audit_Enable_HostPool_BootDiagnostics' Control.
-        Disable boot diagnostic with managed storage account on Azure AVD Host pool. 
+        Disable boot diagnostic with managed Storage account on Azure AVD Host pool(s). 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -780,7 +780,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To disable boot diagnostic with managed storage account on AVD Host pool(s) in a Subscription, Contributor or higher privileges on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To disable boot diagnostic with managed Storage account on AVD Host pool(s) in a Subscription, Contributor or higher privileged role on the AVD Host pool(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all AVD Host pool(s)..."
@@ -811,7 +811,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         }
         else
         {
-            Write-Host "Error fetching AVD Host pool(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error while fetching AVD Host pool(s) resource: Resource ID - $($resourceId). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($avdHostPool.ResourceGroupName))
             $logResource.Add("ResourceName",($avdHostPool.ResourceName))
@@ -856,11 +856,11 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
 
         }                 
         catch {
-            Write-Host "Error fetching AVD Host pool configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching AVD Host pool(s) configuration: Resource ID: [$($avdHostPool.ResourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($resourceGroupName))
             $logResource.Add("ResourceName",($resourceName))
-            $logResource.Add("Reason","Encountered error while fetching AVD Host pool configuration")    
+            $logResource.Add("Reason","Encountered error while fetching AVD Host pool(s) configuration")    
             $logSkippedResources += $logResource
             Write-Host "Skipping this resource..." -ForegroundColor $([Constants]::MessageType.Warning) 
         }
@@ -892,40 +892,40 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
     }
  
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Rolling back boot diagnostic with managed storage account for all AVD Host pool(s) in the Subscription..."
+    Write-Host "[Step 3 of 3] Rolling back boot diagnostic with managed Storage account for all AVD Host pool(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
     if( -not $Force)
     {
-        Write-Host "This step will disable boot diagnostic with managed storage account for all non-complaint [$($validAVDHostPoolDetails.count)] AVD Host pool(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "This step will disable boot diagnostic with managed Storage account for all non-complaint [$($validAVDHostPoolDetails.count)] AVD Host pool(s)." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Boot diagnostic with managed storage account will not be disabled for any AVD Host pool(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Boot diagnostic with managed Storage account will not be disabled for any AVD Host pool(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             break
         }
     }
     else
     {
-        Write-Host "'Force' flag is provided. boot diagnostic with managed storage account will be disabled on AVD Host pool(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'Force' flag is provided. boot diagnostic with managed Storage account will be disabled on AVD Host pool(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
-    # List for storing rolled back AVD Host pool resource.
+    # List for storing rolled back AVD Host pool(s) resource.
     $AVDHostPoolRolledBack = @()
 
-    # List for storing skipped rolled back AVD Host pool resource.
+    # List for storing skipped rolled back AVD Host pool(s) resource.
     $AVDHostPoolSkipped = @()
 
-    Write-Host "Disabling boot diagnostic with managed storage account on all listed AVD Host pool(s)..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Disabling boot diagnostic with managed Storage account on all listed AVD Host pool(s)..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $AVDHostPools | ForEach-Object {
 
         $AVDHostPool = $_
         $ListOfRolledBackSessionHost = @()
         $listOfSkippedSessionHost = @()
-        Write-Host "Disabling boot diagnostic with managed storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
+        Write-Host "Disabling boot diagnostic with managed Storage account on resource:  ResourceName - [$($AVDHostPool.ResourceName)], ResourceGroupName - [$($AVDHostPool.ResourceGroupName)]."
               
         $AVDHostPool.ListOfRemediatedSessionHost | ForEach-Object {
             try {
@@ -986,7 +986,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.ResourceName))
-            $logResource.Add("Reason", "Error occured while disabling boot diagnostic with managed storage account  on AVD Host pool.")
+            $logResource.Add("Reason", "Error occured while disabling boot diagnostic with managed Storage account on AVD Host pool(s).")
             $logSkippedResources += $logResource
         }
     }
@@ -1009,7 +1009,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         if ($($AVDHostPoolRolledBack | Measure-Object).Count -gt 0)
         {
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Successfully disabled boot diagnostic with managed storage account on following AVD Host pool(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully disabled boot diagnostic with managed Storage account on following AVD Host pool(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $AVDHostPoolRolledBack | Format-Table -Property $colsPropertyRollBack -Wrap
             
             # Write this to a file.
@@ -1023,7 +1023,7 @@ function Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount
         if ($($AVDHostPoolSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Error occured while disabling boot diagnostic with managed storage account on following AVD Host pool(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Error occured while disabling boot diagnostic with managed Storage account on following AVD Host pool(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
             $AVDHostPoolSkipped | Format-Table -Property $colsPropertySkipped -Wrap
             
             # Write this to a file.

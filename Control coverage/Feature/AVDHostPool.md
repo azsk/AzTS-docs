@@ -1,4 +1,4 @@
-# Bastion
+# AVD Host Pool
 
 **Resource Type:** Microsoft.DesktopVirtualization/hostpools
 
@@ -47,7 +47,8 @@ Logs should be retained for a long enough period so that activity trail can be r
 - ARM API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
-properties.diagnosticsProfile.bootDiagnostics.enabled, properties.diagnosticsProfile.bootDiagnostics.storageUri
+properties.diagnosticsProfile.bootDiagnostics.enabled,<br />
+properties.diagnosticsProfile.bootDiagnostics.storageUri
  <br />
 
 ___ 
@@ -97,7 +98,9 @@ Trusted launch protects against advanced and persistent attack techniques. It is
 - ARM API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
-properties.securityProfile.securityType, properties.securityProfile.uefiSettings.secureBootEnabled, properties.securityProfile.uefiSettings.vTpmEnabled
+properties.securityProfile.securityType,<br />
+properties.securityProfile.uefiSettings.secureBootEnabled, <br />
+properties.securityProfile.uefiSettings.vTpmEnabled 
  <br />
 
 ___ 
@@ -147,7 +150,8 @@ properties.ipConfigurations[\*].id<br />
 - ARM API used to list NSG and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:**
-id ,properties.securityRules<br />
+id ,<br />
+properties.securityRules<br />
 
 
 ___ 
