@@ -1107,7 +1107,6 @@ The purpose of the security control is to prevent the creation of Service Princi
 	
         #Provide the Key Id of the Password Credentials which you want to remove.
         $spn = Remove-AzureADServicePrincipalPasswordCredential -ObjectId "Enterprise Application Object Id" -KeyId "Key Id of the credential"	
-        #Save the Application Gateway
 	 ```  
 ### Azure Policy or ARM API used for evaluation 
 
