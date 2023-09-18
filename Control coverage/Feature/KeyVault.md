@@ -250,10 +250,10 @@ Malicious deletion of a key vault can lead to permanent data loss. A malicious i
 ### Control Spec
 
 > **Passed:**
-> if both Soft Delete and Purge Protections are enabled.
+> If both Soft Delete and Purge Protections are enabled.
 >
 > **Failed:**
-> if Soft Delete or Purge Protections is disabled.
+> If Soft Delete or Purge Protections is disabled.
 >
 ### Recommendation
 

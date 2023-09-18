@@ -106,10 +106,10 @@ Load balancer distributes inbound flows that arrive at the load balancer's front
 ### Control Spec 
 
 > **Passed:** 
-> if Backend pools are attached with the Load balancer.
+> If Backend pools are attached with the Load balancer.
 > 
 > **Failed:** 
-> if Backend pools are not attached with the Load balancer.
+> If Backend pools are not attached with the Load balancer.
 >
  
 ### Recommendation
