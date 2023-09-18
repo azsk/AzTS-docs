@@ -8,7 +8,7 @@
 - [Azure_KeyVault_SI_Enable_SoftDelete](#azure_keyvault_si_enable_softdelete)
 - [Azure_KeyVault_Audit_Enable_Diagnostics_Log](#azure_keyvault_audit_enable_diagnostics_log)
 - [Azure_KeyVault_NetSec_Disable_Public_Network_Access](#azure_keyvault_netsec_disable_public_network_access)
-- [Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection_Trial](#Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection_Trial)
+- [Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection](#Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection)
 
 <!-- /TOC -->
 <br/>

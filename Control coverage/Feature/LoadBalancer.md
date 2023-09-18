@@ -6,7 +6,7 @@
 
 - [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](#Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
 - [Azure_LoadBalancer_NetSec_Enable_DDoS_Protection](#azure_loadbalancer_netsec_enable_ddoS_protection)
-- [Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer_Trial](#Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer_Trial)
+- [Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer](#Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer)
 
 <!-- /TOC -->
 <br/>
