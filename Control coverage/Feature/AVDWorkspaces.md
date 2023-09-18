@@ -4,14 +4,14 @@
 
 <!-- TOC -->
 
-- [Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings_Trial](#Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings_Trial)
+- [Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings](#Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
 
-## Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings_Trial 
+## Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings 
 
 ### Display Name 
 Diagnostic settings must be enabled for Azure AVD Workspaces.

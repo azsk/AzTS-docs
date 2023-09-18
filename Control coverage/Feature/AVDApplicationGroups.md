@@ -4,14 +4,14 @@
 
 <!-- TOC -->
 
-- [Azure_AVDApplicationGroups_Audit_Enable_Diagnostic_Settings_Trial](#azure_AVDApplicationGroups_audit_enable_diagnostic_settings_trial)
+- [Azure_AVDApplicationGroups_Audit_Enable_Diagnostic_Settings](#azure_AVDApplicationGroups_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
 
-## Azure_AVDApplicationGroups_Audit_Enable_Diagnostic_Settings_Trial 
+## Azure_AVDApplicationGroups_Audit_Enable_Diagnostic_Settings 
 
 ### Display Name 
 Diagnostic settings must be enabled for Azure AVD Application Groups.
