@@ -258,7 +258,7 @@ Malicious deletion of a key vault can lead to permanent data loss. A malicious i
 ### Recommendation
 
 - **Azure Portal**
-	1. Go to the [Azure Portal](https://portal.azure.com/) and select your key vault. 
+	1. Go to the [Azure Portal](https://portal.azure.com/) and select your Key Vault. 
 	2. Click on the 'Properties' tab. 
 	3. Select the radio button corresponding to Enable purge protection. 
 	4. Select Save. Soft delete is a pre-requisite for purge protection, if you have not already enabled this option, please select the radio button corresponding to Enable soft delete first. Please visit https://aka.ms/keyvaultsoftdelete for detailed configuration steps.
