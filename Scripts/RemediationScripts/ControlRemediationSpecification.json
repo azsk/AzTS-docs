@@ -308,6 +308,30 @@
                     "RollbackCommand": "Enable-BastionShareableLink",
                     "Arguments": ["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_AVD_SI_Configure_HostPool_SecureBoot",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-TrustedLaunchforAVDHostPool.ps1",
+            "LoadCommand": "Remediate-TrustedLaunchforAVDHostPool.ps1",     
+            "InitCommand": "Enable-AVDHostPoolSecureBootAndvTPM",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-AVDHostPoolSecureBootAndvTPM",
+                    "Arguments": ["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-BootDiagnosticsforAVDHostPool.ps1",
+            "LoadCommand": "Remediate-BootDiagnosticsforAVDHostPool.ps1",     
+            "InitCommand": "Enable-AVDHostPoolBootDiagnosticWithManagedStorageAccount",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount",
+                    "Arguments": ["SubscriptionId"]
+                }
         }
     ]
 }
