@@ -1093,9 +1093,8 @@ The purpose of the security control is to prevent the creation of Service Princi
 ### Recommendation 
 
 - **MS Documentation** 
+  To read about removing the secret from SPN, Please visit https://learn.microsoft.com/en-us/graph/api/serviceprincipal-removepassword?view=graph-rest-1.0&tabs=http
 
-	 To read about removing the secret from SPN, Please visit https://learn.microsoft.com/en-us/graph/api/serviceprincipal-removepassword?view=graph-rest-1.0&tabs=http
-   - 
 - **PowerShell** 
 
 	 ```powershell	 
