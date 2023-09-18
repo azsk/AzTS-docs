@@ -23,11 +23,10 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 ```json 
 {
     "DiagnosticForeverRetentionValue": "0",
-    "DiagnosticLogs": 
-	[
-        "Checkpoint",
- 		"Management",
- 		"Error",
+    "DiagnosticLogs": [
+		"Checkpoint",
+		"Management",
+		"Error",
 		"Feed"
     ],
     "DiagnosticMinRetentionPeriod":

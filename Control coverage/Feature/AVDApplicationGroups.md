@@ -24,9 +24,9 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
-        "Checkpoint",
- 		"Management",
- 		"Error"
+		"Checkpoint",
+		"Management",
+		"Error"
     ],
     "DiagnosticMinRetentionPeriod":
 	"365"
