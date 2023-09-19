@@ -366,7 +366,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                 return
             }
 
-            Write-Host "Fetching all Cosmos DB Account(s)(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Cosmos DB Account(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $cosmosDBAccountResourcesFromFile = Import-Csv -LiteralPath $FilePath
             $validcosmosDBAccountResources = $cosmosDBAccountResourcesFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.CosmosDBAccountName) }
@@ -387,7 +387,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                     $cosmosDBAccount = Invoke-AzRestMethod @getParameters
                     $content = ConvertFrom-Json $cosmosDBAccount.Content
                     $cosmosDBAccountResources += [PSCustomObject]@{
-                        CosmosDBAccountName = $name
+                        CosmosDBAccountName = $cosmosDBAccountName
                         ResourceGroupName = $resourceGroupName
                         Kind = $content.kind
                         MinimumTlsVersion = $content.properties.minimalTlsVersion
@@ -470,7 +470,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
     if(-not($AutoRemediation))
     {
         Write-Host "Following Cosmos DB Account(s) are having minimum TLS version either not set or less than required Minimum TLS version:" -ForegroundColor $([Constants]::MessageType.Info)
-       $colsProperty =  @{Expression={$_.CosmosDBAccountName};Label="Cosmos DB Account Name";Width=30;Alignment="left"},
+        $colsProperty =  @{Expression={$_.CosmosDBAccountName};Label="Cosmos DB Account Name";Width=30;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=30;Alignment="left"},
                         @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
                         @{Expression={$_.MinimumTlsVersion};Label="Minimum TLS version";Width=30;Alignment="left"}
@@ -568,7 +568,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                     Method = 'PATCH'
                 }
                 $cosmosDBAccountResponse = Invoke-AzRestMethod @patchParameters
-                $cosmosDBAccountcontent = ConvertFrom-Json $cosmosDBAccountResponse.Content
+                $cosmosDBAccountContent = ConvertFrom-Json $cosmosDBAccountResponse.Content
                 if($cosmosDBAccountResponse.StatusCode -ne 200)
                 {
                     $CosmosDBAccountsSkipped += $CosmosDBAccount
