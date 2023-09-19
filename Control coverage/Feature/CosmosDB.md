@@ -273,24 +273,31 @@ ___
 ## Azure_CosmosDB_DP_Use_Secure_TLS_Version
 
 ### Display Name 
-Use approved version of TLS for the CosmosDB
+Use approved version of TLS for the Cosmos DB
 
 ### Rationale 
 TLS provides confidentiality and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ```  
 ### Control Spec 
 
 > **Passed:** 
-> MinTLSVersion is 1.2 for CosmosDB.
+> MinTLSVersion is 1.2 for Cosmos DB.
 > 
 > **Failed:** 
-> MinTLSVersion is lessthan 1.2 for CosmosDB.
+> MinTLSVersion is lessthan 1.2 for Cosmos DB.
 > 
 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 To set required TLS version: Go to Azure Portal --> your CosmosDB --> Settings --> Networking --> Connectivity --> Minimum Transport layer security protocol dropdown. Select the required TLS version from the dropdown.
+	 Go to Azure Portal --> your Cosmos DB --> Settings --> Networking --> Connectivity --> Minimum Transport layer security protocol dropdown. Select the required TLS version from the dropdown.
 
 <!--
 - **PowerShell** 
@@ -308,7 +315,7 @@ TLS provides confidentiality and data integrity between client and server. Using
 
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2022-11-15<br />
+- ARM API to get Cosmos DB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2022-11-15<br />
 **Properties:** properties.minimalTlsVersion
  <br />
 

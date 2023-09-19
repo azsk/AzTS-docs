@@ -1,62 +1,62 @@
 <###
 # Overview:
-    This script is used to set required minimum TLS version for CosmosDB Accounts in a Subscription.
+    This script is used to set required minimum TLS version for Cosmos DB Account(s) in a Subscription.
 
 # Control ID:
     Azure_CosmosDB_DP_Use_Secure_TLS_Version
 
 # Display Name:
-    Use approved version of TLS for Azure CosmosDB.
+    Use approved version of TLS for Azure Cosmos DB.
 
 # Prerequisites:
-    1. Contributor or higher privileges on the CosmosDB Accounts in a Subscription.
+    1. Contributor or higher privileged role on the Cosmos DB Account(s) in a Subscription.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script and validate the user.
-        2. Get the list of CosmosDB Accounts in a Subscription that do not use the required minimum TLS version.
-        3. Back up details of CosmosDB Accounts that are to be remediated.
-        4. Set the required minimum TLS version on the all CosmosDB Accounts in the Subscription.
+        2. Get the list of Cosmos DB Account(s) in a Subscription that do not use the required minimum TLS version.
+        3. Back up details of Cosmos DB Account(s) that are to be remediated.
+        4. Set the required minimum TLS version on the all Cosmos DB Account(s) in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script and validate the user.
-        2. Get the list of CosmosDB Accounts in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Set the previous minimum TLS versions on all CosmosDB Accounts in the Subscription.
+        2. Get the list of Cosmos DB Account(s) in a Subscription, the changes made to which previously, are to be rolled back.
+        3. Set the previous minimum TLS versions on all Cosmos DB Account(s) in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to set the required minimum TLS version in all CosmosDB Accounts in the Subscription. Refer `Examples`, below.
+        3. Execute the script to set the required minimum TLS version in all Cosmos DB Account(s) in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to set the previous minimum TLS versions in all CosmosDB Accounts in the Subscription. Refer `Examples`, below.
+        3. Execute the script to set the previous minimum TLS versions in all Cosmos DB Account(s) in the Subscription. Refer `Examples`, below.
         
 # Examples:
     To remediate:
-        1. To review the CosmosDB Accounts in a Subscription that will be remediated:
+        1. To review the Cosmos DB Account(s) in a Subscription that will be remediated:
            Set-CosmosDBAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. To set Minimum required TLS version  of all CosmosDB Accounts in a Subscription:
+        2. To set Minimum required TLS version  of all Cosmos DB Account(s) in a Subscription:
            Set-CosmosDBAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To set Minimum required TLS version on the of all CosmosDB Accounts in a Subscription, from a previously taken snapshot:
+        3. To set Minimum required TLS version on the of all Cosmos DB Account(s) in a Subscription, from a previously taken snapshot:
            Set-CosmosDBAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202309141030\SetMinTLSVersionForCosmosDBAccounts\CosmosDBAccountsWithoutMinReqTLSVersion.csv
 
-        4. To set Minimum required TLS version of all CosmosDB Accounts in a Subscription without taking back up before actual remediation:
+        4. To set Minimum required TLS version of all Cosmos DB Account(s) in a Subscription without taking back up before actual remediation:
            Set-CosmosDBAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -SkipBackup
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Set-CosmosDBAccountRequiredTLSVersion -Detailed
 
     To roll back:
-        1. To rollback Minimum required TLS version of all CosmosDB Accounts in a Subscription, from a previously taken snapshot:
+        1. To rollback Minimum required TLS version of all Cosmos DB Account(s) in a Subscription, from a previously taken snapshot:
            Reset-CosmosDBAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202309141030\SetMinTLSVersionForCosmosDBAccounts\RemediatedCosmosDBAccounts.csv
         
-        2. To rollback Minimum required TLS version of all CosmosDB Accounts in a Subscription, from a previously taken snapshot:
+        2. To rollback Minimum required TLS version of all Cosmos DB Account(s) in a Subscription, from a previously taken snapshot:
            Reset-CosmosDBAccountRequiredTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202309141030\SetMinTLSVersionForCosmosDBAccounts\RemediatedCosmosDBAccounts.csv
 
         To know more about the options supported by the roll back command, execute:
@@ -120,7 +120,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
 
         .DESCRIPTION
         Remediates 'Azure_CosmosDB_DP_Use_Secure_TLS_Version' Control.
-        Sets the required Minimum TLS version on the all CosmosDB Accounts in the Subscription. 
+        Sets the required Minimum TLS version on the all Cosmos DB Account(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -258,10 +258,10 @@ function Set-CosmosDBAccountRequiredTLSVersion
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "To Set Minimum TLS version for CosmosDB Accounts in a Subscription, Contributor or higher privileges on the CosmosDB Accounts are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To Set Minimum TLS version for Cosmos DB Account(s) in a Subscription, Contributor or higher privileged role on the Cosmos DB Account(s) are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 2 of 4] Fetch CosmosDB Accounts with Minimum TLS version less than required minimum TLS version..."
+    Write-Host "[Step 2 of 4] Fetch Cosmos DB Account(s) with Minimum TLS version less than required minimum TLS version..."
     Write-Host $([Constants]::SingleDashLine)
     
     $cosmosDBAccountResources = @()
@@ -283,7 +283,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
         Write-Host $([Constants]::DoubleDashLine)
         return
         }
-        Write-Host "Fetching all CosmosDB Accounts failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Fetching all Cosmos DB Account(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
         $controls = $controlForRemediation.ControlRemediationList
@@ -292,7 +292,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
 
         if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
         {
-            Write-Host "No CosmosDB Account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "No Cosmos DB Account(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::DoubleDashLine)
             return
         }  
@@ -334,14 +334,14 @@ function Set-CosmosDBAccountRequiredTLSVersion
     }
     else
     {
-        # No file path provided as input to the script. Fetch all CosmosDB Accounts in the Subscription.
+        # No file path provided as input to the script. Fetch all Cosmos DB Account(s) in the Subscription.
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
             
-            Write-Host "Fetching all CosmosDB Accounts in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Cosmos DB Account(s) in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
 
-            # Get all CosmosDB Accounts in the Subscription
+            # Get all Cosmos DB Account(s) in the Subscription
             $cosmosDBAccounts = Get-AzResource -ResourceType "Microsoft.DocumentDB/databaseAccounts" -ExpandProperties
             foreach ($cosmosDBAccount in $cosmosDBAccounts){
                 $uri = "https://management.azure.com$($cosmosDBAccount.ResourceId)?api-version=2022-11-15"
@@ -366,7 +366,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                 return
             }
 
-            Write-Host "Fetching all CosmosDB Accounts(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Cosmos DB Account(s)(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
             $cosmosDBAccountResourcesFromFile = Import-Csv -LiteralPath $FilePath
             $validcosmosDBAccountResources = $cosmosDBAccountResourcesFromFile | Where-Object { ![String]::IsNullOrWhiteSpace($_.CosmosDBAccountName) }
@@ -395,8 +395,8 @@ function Set-CosmosDBAccountRequiredTLSVersion
                 }
                 catch
                 {
-                    Write-Host "Error fetching CosmosDB Account : [$($CosmosDBAccountName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Skipping this CosmosDB Account..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Error fetching Cosmos DB Account : [$($CosmosDBAccountName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Skipping this Cosmos DB Account..." -ForegroundColor $([Constants]::MessageType.Warning)
                 }
             }
         }
@@ -406,22 +406,22 @@ function Set-CosmosDBAccountRequiredTLSVersion
 
     if ($totalcosmosDBAccountResources -eq 0)
     {
-        Write-Host "No CosmosDB Accounts found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "No Cosmos DB Account(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
         Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
-    Write-Host "Found [$($totalcosmosDBAccountResources)] CosmosDB Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalcosmosDBAccountResources)] Cosmos DB Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
  
      
-    # Includes CosmosDB Accounts where Minimum required TLS version is not set   
+    # Includes Cosmos DB Account(s) where Minimum required TLS version is not set   
     $CosmosDBAccountsWithoutReqMinTLSVersion = @()
 
-    # Includes CosmosDB Accounts that were skipped during remediation. There were errors remediating them.
+    # Includes Cosmos DB Account(s) that were skipped during remediation. There were errors remediating them.
     $CosmosDBAccountsSkipped = @()
 
-    Write-Host "Separating CosmosDB Account(s) for which minimum TLS is less than required minimum TLS version ..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Separating Cosmos DB Account(s) for which minimum TLS is less than required minimum TLS version ..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $cosmosDBAccountResources | ForEach-Object {
         $cosmosDBAccount = $_ 
@@ -435,7 +435,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason","CosmosDB Account Minimum TLS version is already set to required Minimum TLS version.")    
+                    $logResource.Add("Reason","Cosmos DB Account Minimum TLS version is already set to required Minimum TLS version.")    
                     $logSkippedResources += $logResource
                 }
         }
@@ -445,7 +445,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
      
     if ($totalCosmosDBAccountsWithoutReqMinTLSVersion  -eq 0)
     {
-        Write-Host "No CosmosDB Account(s) found where minimum TLS version is less than required minimum TLS version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Cosmos DB Account(s) found where minimum TLS version is less than required minimum TLS version.. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)	
         
         if($AutoRemediation -and ($cosmosDBAccountResources |Measure-Object).Count -gt 0) 
@@ -464,13 +464,13 @@ function Set-CosmosDBAccountRequiredTLSVersion
         return
     }
 
-    Write-Host "Found [$($totalCosmosDBAccountsWithoutReqMinTLSVersion)] CosmosDB Accounts where minimum TLS version is either not set or less than required Minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalCosmosDBAccountsWithoutReqMinTLSVersion)] Cosmos DB Account(s) where minimum TLS version is either not set or less than required Minimum TLS version." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
      
     if(-not($AutoRemediation))
     {
-        Write-Host "Following CosmosDB Accounts are having minimum TLS version either not set or less than required Minimum TLS version:" -ForegroundColor $([Constants]::MessageType.Info)
-       $colsProperty =  @{Expression={$_.CosmosDBAccountName};Label="CosmosDB Account Name";Width=30;Alignment="left"},
+        Write-Host "Following Cosmos DB Account(s) are having minimum TLS version either not set or less than required Minimum TLS version:" -ForegroundColor $([Constants]::MessageType.Info)
+       $colsProperty =  @{Expression={$_.CosmosDBAccountName};Label="Cosmos DB Account Name";Width=30;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=30;Alignment="left"},
                         @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
                         @{Expression={$_.MinimumTlsVersion};Label="Minimum TLS version";Width=30;Alignment="left"}
@@ -488,16 +488,16 @@ function Set-CosmosDBAccountRequiredTLSVersion
     }
 
     
-    Write-Host "[Step 3 of 4] Back up CosmosDB Account(s) details..."
+    Write-Host "[Step 3 of 4] Back up Cosmos DB Account(s) details..."
     Write-Host $([Constants]::SingleDashLine)
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {        
         if(-not $SkipBackup)
         {
-            # Backing up CosmosDB Account details.
+            # Backing up Cosmos DB Account details.
             $backupFile = "$($backupFolderPath)\CosmosDBAccountsWithoutReqMinTLSVersion.csv"
             $CosmosDBAccountsWithoutReqMinTLSVersion | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "CosmosDB Account(s) details have been successful backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Cosmos DB Account(s) details have been successful backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
@@ -514,30 +514,30 @@ function Set-CosmosDBAccountRequiredTLSVersion
         if(-not $AutoRemediation)
         {
 
-            Write-Host "[Step 4 of 4] Configure required minimum TLS version on the CosmosDB Accounts in the Subscription..."
+            Write-Host "[Step 4 of 4] Configure required minimum TLS version on the Cosmos DB Account(s) in the Subscription..."
             Write-Host $([Constants]::SingleDashLine)
 
             if (-not $Force)
             {
-                Write-Host "Do you want to set minimum TLS version to required minimum TLS version for all CosmosDB Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+                Write-Host "Do you want to set minimum TLS version to required minimum TLS version for all Cosmos DB Account(s)? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         
 
-                $userInput = Read-Host -Prompt "(Y|N)" #TODO: 
+                $userInput = Read-Host -Prompt "(Y|N)" 
                 Write-Host $([Constants]::SingleDashLine)
                 if($userInput -ne "Y")
                 {
-                    Write-Host "Minimum TLS version will not be changed for any CosmosDB Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Minimum TLS version will not be changed for any Cosmos DB Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::DoubleDashLine)
                     return
                 }
                 else
                 {
-                    Write-Host "Configuring required minimum TLS version for all CosmosDB Account(s)..." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Configuring required minimum TLS version for all Cosmos DB Account(s)..." -ForegroundColor $([Constants]::MessageType.Update)
                 }
             }
             else
             {
-                Write-Host "'Force' flag is provided. Setting required minimum TLS version for all CosmosDB Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "'Force' flag is provided. Setting required minimum TLS version for all Cosmos DB Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
 
@@ -551,7 +551,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
             $resourceGroupName = $_.ResourceGroupName; 
             $TLS = $_.MinimumTlsVersion;
 
-            # Holds the list of CosmosDB Accounts where minimum TLS version change is skipped
+            # Holds the list of Cosmos DB Account(s) where minimum TLS version change is skipped
             $CosmosDBAccountsSkipped = @()
              
             try
@@ -575,7 +575,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.CosmosDBAccountName))
-                    $logResource.Add("Reason", "Error while setting the minimum required TLS version for CosmosDB Account")
+                    $logResource.Add("Reason", "Error while setting the minimum required TLS version for Cosmos DB Account")
                        
                 }
                 else
@@ -600,11 +600,11 @@ function Set-CosmosDBAccountRequiredTLSVersion
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($resourceGroupName))
                 $logResource.Add("ResourceName",($cosmosDBAccountName))
-                $logResource.Add("Reason", "Error while setting the minimum required TLS version for CosmosDB Account")
+                $logResource.Add("Reason", "Error while setting the minimum required TLS version for Cosmos DB Account")
             }
         }
 
-        $colsProperty1 = @{Expression={$_.CosmosDBAccountName};Label="CosmosDB Account Name";Width=30;Alignment="left"},
+        $colsProperty1 = @{Expression={$_.CosmosDBAccountName};Label="Cosmos DB Account Name";Width=30;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=30;Alignment="left"},
                         @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
                         @{Expression={$_.MinimumTlsVersionAfter};Label="Minimum TLS version";Width=30;Alignment="left"}
@@ -619,7 +619,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                 # Write this to a file.
                 $CosmosDBAccountsRemediatedFile = "$($backupFolderPath)\RemediatedCosmosDBAccountsFileforMinTLS.csv"
                 $CosmosDBAccountsRemediated| Export-CSV -Path $CosmosDBAccountsRemediatedFile -NoTypeInformation
-                Write-Host "The information related to CosmosDB Account(s) where minimum required TLS version is successfully set has been saved to [$($CosmosDBAccountsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Cosmos DB Account(s) where minimum required TLS version is successfully set has been saved to [$($CosmosDBAccountsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -628,7 +628,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
                 # Write this to a file.
                 $CosmosDBAccountSkippedFile = "$($backupFolderPath)\SkippedCosmosDBAccountsFileforMinTLS.csv"
                 $CosmosDBAccountsSkipped | Export-CSV -Path $CosmosDBAccountSkippedFile -NoTypeInformation
-                Write-Host "The information related to CosmosDB Account(s) where minimum required TLS version is not set has been saved to [$($CosmosDBAccountsSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Cosmos DB Account(s) where minimum required TLS version is not set has been saved to [$($CosmosDBAccountsSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -640,7 +640,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
         
             if ($($CosmosDBAccountsRemediated | Measure-Object).Count -gt 0)
             {
-                Write-Host "Successfully set the Minimum TLS version to required Minimum TLS version on the following CosmosDB Account(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set the Minimum TLS version to required Minimum TLS version on the following Cosmos DB Account(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "Please note that it might take a while to update and reflect in the portal." -ForegroundColor $([Constants]::MessageType.Warning)
                 $CosmosDBAccountsRemediated | Format-Table -Property $colsProperty1 -Wrap
 
@@ -654,7 +654,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
 
             if ($($CosmosDBAccountsSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "Error changing Minimum TLS version for following CosmosDB Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error changing Minimum TLS version for following Cosmos DB Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $CosmosDBAccountsSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
             
@@ -683,13 +683,13 @@ function Set-CosmosDBAccountRequiredTLSVersion
     else
     {
        
-        Write-Host "[Step 4 of 4] Configure required minimum TLS version on the CosmosDB Accounts in the Subscription..."
+        Write-Host "[Step 4 of 4] Configure required minimum TLS version on the Cosmos DB Account(s) in the Subscription..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps: " -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to change the Minimum TLS version to required minimum TLS version for all CosmosDB Account(s) listed in the file."
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to change the Minimum TLS version to required minimum TLS version for all Cosmos DB Account(s) listed in the file."
         Write-Host $([Constants]::SingleDashLine)
     }   
 }
@@ -702,7 +702,7 @@ function Reset-CosmosDBAccountRequiredTLSVersion
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_CosmosDB_DP_Use_Secure_TLS_Version' Control.
-        Resets Minimum TLS version on all CosmosDB Accounts in the Subscription. 
+        Resets Minimum TLS version on all Cosmos DB Account(s) in the Subscription. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -799,9 +799,9 @@ function Reset-CosmosDBAccountRequiredTLSVersion
 
     # Note about the required access required for remediation
 
-    Write-Host "To rollback minimum TLS versions for CosmosDB Account(s) in a Subscription, Contributor or higher privileges on the CosmosDB Account(s) are required." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "To rollback minimum TLS versions for Cosmos DB Account(s) in a Subscription, Contributor or higher privileged role on the Cosmos DB Account(s) are required." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "[Step 2 of 3] Prepare to fetch all CosmosDB Account(s)..."
+    Write-Host "[Step 2 of 3] Prepare to fetch all Cosmos DB Account(s)..."
     Write-Host $([Constants]::SingleDashLine)
     if(-not (Test-Path -Path $FilePath))
     {
@@ -810,7 +810,7 @@ function Reset-CosmosDBAccountRequiredTLSVersion
         return
     }
 
-    Write-Host "Fetching all CosmosDB Account(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetching all Cosmos DB Account(s) from [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
        
     $cosmosDBAccountsFromFile = Import-Csv -LiteralPath $FilePath
@@ -820,15 +820,15 @@ function Reset-CosmosDBAccountRequiredTLSVersion
      
     if ($totalCosmosDBAccountsWithChangedTLS  -eq 0)
     {
-        Write-Host "No CosmosDB Accounts found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No Cosmos DB Account(s) found. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         return
     } 
 
-    Write-Host "Found [$($totalCosmosDBAccountsWithChangedTLS)] CosmosDB Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalCosmosDBAccountsWithChangedTLS)] Cosmos DB Account(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
-    $colsProperty = @{Expression={$_.CosmosDBAccountName};Label="CosmosDB Account Name";Width=30;Alignment="left"},
+    $colsProperty = @{Expression={$_.CosmosDBAccountName};Label="Cosmos DB Account Name";Width=30;Alignment="left"},
     @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=30;Alignment="left"},
     @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
     @{Expression={$_.MinimumTlsVersionAfter};Label="Minimum TLS version";Width=30;Alignment="left"}
@@ -843,32 +843,32 @@ function Reset-CosmosDBAccountRequiredTLSVersion
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     } 
     
-    Write-Host "[Step 3 of 3] Rollback the minimum TLS version for CosmosDB Account(s)..."
+    Write-Host "[Step 3 of 3] Rollback the minimum TLS version for Cosmos DB Account(s)..."
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $Force)
     {
-        Write-Host "Do you want to rollback minimum TLS version for all CosmosDB Account(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to rollback minimum TLS version for all Cosmos DB Account(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if($userInput -ne "Y")
         {
-            Write-Host "Minimum TLS version will not be rolledback for any of the CosmosDB Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Minimum TLS version will not be rolledback for any of the Cosmos DB Account(s). Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::DoubleDashLine)
             return
         }
-        Write-Host "Rolling back the minimum TLS version for CosmosDB Account(s)..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Rolling back the minimum TLS version for Cosmos DB Account(s)..." -ForegroundColor $([Constants]::MessageType.Update)
     }
     else
     {
-        Write-Host "'Force' flag is provided. Rolling back minimum TLS version for all of the CosmosDB Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "'Force' flag is provided. Rolling back minimum TLS version for all of the Cosmos DB Account(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
     }
 
-    # Includes CosmosDB Account(s), to which, previously made changes were successfully rolled back.
+    # Includes Cosmos DB Account(s), to which, previously made changes were successfully rolled back.
     $CosmosDBAccountsRolledBack = @()
 
-    # Includes CosmosDB Account(s) that were skipped during roll back. There were errors rolling back the changes made previously.
+    # Includes Cosmos DB Account(s) that were skipped during roll back. There were errors rolling back the changes made previously.
     $CosmosDBAccountsSkipped = @()
 
      # Roll back by resetting minimum TLS version
@@ -928,14 +928,14 @@ function Reset-CosmosDBAccountRequiredTLSVersion
         Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
         
-        $colsProperty = @{Expression={$_.CosmosDBAccountName};Label="CosmosDB Account Name";Width=30;Alignment="left"},
+        $colsProperty = @{Expression={$_.CosmosDBAccountName};Label="Cosmos DB Account Name";Width=30;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resrouce Group";Width=30;Alignment="left"},
                         @{Expression={$_.Kind};Label="Kind";Width=30;Alignment="left"},
                         @{Expression={$_.MinimumTlsVersion};Label="Minimum TLS version";Width=30;Alignment="left"}
                         
         if ($($CosmosDBAccountsRolledBack | Measure-Object).Count -gt 0)
         {
-            Write-Host "Successfully rolled back minimum TLS version for following CosmosDB Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully rolled back minimum TLS version for following Cosmos DB Account(s):" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host "Please note that it might take a while to update and reflect in the portal." -ForegroundColor $([Constants]::MessageType.Warning)
             $CosmosDBAccountsRolledBack | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
@@ -947,7 +947,7 @@ function Reset-CosmosDBAccountRequiredTLSVersion
 
         if ($($CosmosDBAccountsSkipped | Measure-Object).Count -gt 0)
         {
-            Write-Host "Error occured while rolling back minimum TLS version for following CosmosDB Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occured while rolling back minimum TLS version for following Cosmos DB Account(s):" -ForegroundColor $([Constants]::MessageType.Error)
             $CosmosDBAccountsSkipped | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
             $CosmosDBAccountsSkippedFile = "$($backupFolderPath)\RollbackSkippedCosmosDBAccountForMinimumTls.csv"
