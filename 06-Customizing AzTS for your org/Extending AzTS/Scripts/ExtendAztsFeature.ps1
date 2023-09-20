@@ -49,10 +49,6 @@ function Configure-CustomControlAdditionPrerequisites {
     $ResourceIdHash = get-hash($ResourceId)
     $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
 
-    #$APIName = "AzSK-AzTS-WebApi-" + $ResourceHash
-    #$MetaDataAggregatorName = "AzSK-AzTS-MetadataAggregator-" + $ResourceHash
-    #$WorkItemProcessorName = "AzSK-AzTS-WorkItemProcessor-" + $ResourceHash
-
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Loading input JSOn from file path: [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
@@ -74,7 +70,7 @@ function Configure-CustomControlAdditionPrerequisites {
                     foreach ($resource in $feature.DependentFeaturesForEnabling) { 
                         $DependentFeaturesForEnabling += $resource 
                     } 
-                    Write-Host "By enabling $FeatureName following feature needs to be enabled $DependentFeaturesForEnabling." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "For enabling feature $FeatureName following feature needs to be enabled $DependentFeaturesForEnabling." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
                      
                     $userInput = Read-Host -Prompt "(Y|N)"
@@ -115,13 +111,13 @@ function Configure-CustomControlAdditionPrerequisites {
                         }
 
                         #calling function to validate if keys exist
-                        $FeatureEnabled = Validate-AppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -FunctionalityName $featureName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
+                        $FeatureEnabled = Validate-AppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
 
                         #If FeatureEnabled = true means all the configuration keys & values are already present in Configuration, need to enable again
                         if ( -not $FeatureEnabled) {
                             try {
                                 # calling function to update the values
-                                Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -FunctionalityName $featureName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
+                                Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
                             }
                             catch {
                                 Write-Host "Error occurred while updating Configuration. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -157,7 +153,7 @@ function Configure-CustomControlAdditionPrerequisites {
 
                     try {
                         # calling function to update the values
-                        Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -FunctionalityName $featureName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
+                        Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
                     }
                     catch {
                         Write-Host "Error occurred while updating Configuration. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -173,7 +169,7 @@ function Configure-CustomControlAdditionPrerequisites {
                         $DependentFeaturesForDisabling += $resource 
                     }
 
-                    Write-Host "By disbaling $FeatureName following feature may get impacketed $DependentFeaturesForDisabling." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "By disbaling feature $FeatureName following feature may get impacketed $DependentFeaturesForDisabling." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
                      
                     $userInput = Read-Host -Prompt "(Y|N)"
@@ -196,7 +192,7 @@ function Configure-CustomControlAdditionPrerequisites {
                     try {
 
                         # calling function to update the values
-                        Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -FunctionalityName $featureName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType       
+                        Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType       
                     }
                     catch {
                         Write-Host "Error occurred while updating Configuration. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
