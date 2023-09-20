@@ -21,6 +21,7 @@
 - [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
 - [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
 - [Azure_Subscription_SI_Dont_Use_B2C_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
+- [Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password](#Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password)
 
 <!-- /TOC -->
 <br/>
@@ -1072,3 +1073,47 @@ This Service depends mainly on 3rd party identity provider, and that can cause a
 
 ___ 
 
+## Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password 
+
+### Display Name 
+ Do not use SPNs with password credentials to access subscriptions or resource groups in Azure 
+
+### Rationale 
+The purpose of the security control is to prevent the creation of Service Principal identities with secrets associated with them at the subscription or resource group level. This is because secrets, which are often simple string values, can be easily compromised and used by threat actors to gain access to the system.  
+
+### Control Spec 
+
+> **Passed:** 
+> No Password Credentials/secret has been added to Service Principal having access on Subscription or Resource Group.
+> 
+> **Failed:** 
+> Password Credentials/secret has been added to Service Principal having access on Subscription or Resource Group.
+>
+
+### Recommendation 
+
+- **MS Documentation** 
+  To read about removing the secret from SPN, Please visit https://learn.microsoft.com/en-us/graph/api/serviceprincipal-removepassword?view=graph-rest-1.0&tabs=http
+
+- **PowerShell** 
+
+	 ```powershell	 
+        # Below commands will be useful to Read and Remove Password Credentials from Service Principals
+        Connect-AzAccount
+        Connect-AzureAD
+
+        #To get the Service Principal/Enterprise Application's Password Credentials List. This list contains the Key Id and other details.
+        $passwordCredentials = Get-AzureADServicePrincipalPasswordCredential -ObjectId "Enterprise Application Object Id"
+	
+        #Provide the Key Id of the Password Credentials which you want to remove.
+        $spn = Remove-AzureADServicePrincipalPasswordCredential -ObjectId "Enterprise Application Object Id" -KeyId "Key Id of the credential"	
+	 ```  
+### Azure Policy or ARM API used for evaluation 
+
+- Graph API to fetch secret details: - /v1.0/servicePrincipals?$filter=id in ({ServicePrincipalObjectId})<br />
+**Properties:** [\*].passwordCredentials
+ <br />
+
+<br />
+
+___ 

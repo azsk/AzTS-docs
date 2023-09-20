@@ -5,8 +5,8 @@
 <!-- TOC depthfrom:2 depthto:2 -->
 
 - [Azure_LoadBalancer_NetSec_Restrict_Network_Traffic](#Azure_LoadBalancer_NetSec_Restrict_Network_Traffic)
-
-- [Azure_LoadBalancer_NetSec_Enable_DDoS_Protection](azure_loadbalancer_netsec_enable_ddoS_protection)
+- [Azure_LoadBalancer_NetSec_Enable_DDoS_Protection](#azure_loadbalancer_netsec_enable_ddoS_protection)
+- [Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer](#Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer)
 
 <!-- /TOC -->
 <br/>
@@ -54,6 +54,8 @@ Restricting traffic on the Load Balancer further strengthens the security postur
 
 <br />
 
+___ 
+
 
 ## Azure_LoadBalancer_NetSec_Enable_DDoS_Protection 
 
@@ -90,5 +92,36 @@ OR <br/>No Virtual Network found attached either with FrontEnd or Backend of Loa
 
 **Properties:** properties.enableDdosProtection
 <br />
+
+___ 
+
+## Azure_LoadBalancer_SI_Remove_Inactive_LoadBalancer
+
+### Display Name 
+Azure Load Balancer with no backend pools should be removed
+
+### Rationale 
+Load balancer distributes inbound flows that arrive at the load balancer's front end to backend pool instances. If there are no backend pool(s), Load balancer is simply unused. Cleaning up unused Load balancer is suggested as a good hygiene practice.
+
+### Control Spec 
+
+> **Passed:** 
+> If Backend pools are attached with the Load balancer.
+> 
+> **Failed:** 
+> If Backend pools are not attached with the Load balancer.
+>
+ 
+### Recommendation
+- **Azure Portal** 
+
+	Go to Azure portal -> Load Balancer -> Backend pools -> If there are no pools, either delete it or attach it to a relevant pool.
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{0}/providers/Microsoft.Network/loadBalancers?api-version=2022-07-01 <br />
+**Properties:** properties.backendAddressPools<br />
+<br />
+
 ___ 
 
