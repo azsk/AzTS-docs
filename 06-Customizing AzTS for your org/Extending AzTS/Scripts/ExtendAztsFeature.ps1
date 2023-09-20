@@ -49,10 +49,6 @@ function Configure-CustomControlAdditionPrerequisites {
     $ResourceIdHash = get-hash($ResourceId)
     $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
 
-    #$APIName = "AzSK-AzTS-WebApi-" + $ResourceHash
-    #$MetaDataAggregatorName = "AzSK-AzTS-MetadataAggregator-" + $ResourceHash
-    #$WorkItemProcessorName = "AzSK-AzTS-WorkItemProcessor-" + $ResourceHash
-
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Loading input JSOn from file path: [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
@@ -74,7 +70,7 @@ function Configure-CustomControlAdditionPrerequisites {
                     foreach ($resource in $feature.DependentFeaturesForEnabling) { 
                         $DependentFeaturesForEnabling += $resource 
                     } 
-                    Write-Host "By enabling $FeatureName following feature needs to be enabled $DependentFeaturesForEnabling." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "For enabling feature $FeatureName following feature needs to be enabled $DependentFeaturesForEnabling." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
                      
                     $userInput = Read-Host -Prompt "(Y|N)"
@@ -173,7 +169,7 @@ function Configure-CustomControlAdditionPrerequisites {
                         $DependentFeaturesForDisabling += $resource 
                     }
 
-                    Write-Host "By disbaling $FeatureName following feature may get impacketed $DependentFeaturesForDisabling." -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "By disbaling feature $FeatureName following feature may get impacketed $DependentFeaturesForDisabling." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
                      
                     $userInput = Read-Host -Prompt "(Y|N)"
