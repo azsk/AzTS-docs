@@ -15,7 +15,9 @@ Below resource types can be checked for validating the security controls:
 |[ApplicationGateway](Feature/ApplicationGateway.md)|Microsoft.Network/applicationGateways|
 |[AppService](Feature/AppService.md)|Microsoft.Web/sites|
 |[AutomationAccount](Feature/AutomationAccounts.md)|Microsoft.Automation/automationAccounts|
+|[AVDApplicationGroups](Feature/AVDApplicationGroups.md)|Microsoft.DesktopVirtualization/ApplicationGroups|
 |[AVDHostPool](Feature/AVDHostPool.md)|Microsoft.DesktopVirtualization/hostpools|
+|[AVDWorkspaces](Feature/AVDWorkspaces.md)|Microsoft.DesktopVirtualization/Workspaces|
 |[Bastion](Feature/Bastion.md)|Microsoft.Network/bastionHosts|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|

@@ -9,7 +9,7 @@
 - [Azure_Storage_NetSec_Restrict_Network_Access](#azure_storage_netsec_restrict_network_access)
 - [Azure_Storage_DP_Use_Secure_TLS_Version](#azure_storage_dp_use_secure_tls_version)
 - [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](#azure_storage_authz_set_sas_expiry_interval)
-- [Azure_Storage_SI_Rotate_Access_Keys](#azure_storage_si_rotate_access_keys)
+- [Azure_Storage_DP_Rotate_Access_Keys](#Azure_Storage_DP_Rotate_Access_Keys)
 
 <!-- /TOC -->
 <br/>
@@ -320,10 +320,10 @@ Shared Access Signature (SAS) is used to provide secure delegate access to resou
 
 ___
 
-## Azure_Storage_SI_Rotate_Access_Keys
+## Azure_Storage_DP_Rotate_Access_Keys
 
 ### Display Name
-Azure Storage Account access keys should rotate on periodic basis
+Azure Storage account access keys must be rotated on periodic basis.
 
 ### Rationale
 Rotating access keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used.
@@ -350,7 +350,7 @@ Rotating access keys will reduce the window of opportunity for an access key tha
 
 - **Azure Portal**
 
-  Refer https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal to rotate access keys in storage account.
+  To Rotate 'Keys' for Azure Storage, Go to Azure Portal --> Your Storage Account --> Access keys --> choose the key you want to rotate and press Rotate Key. Refer: https://learn.microsoft.com/en-us/azure/storage/common/storage-account-keys-manage?tabs=azure-portal.
 
 - **PowerShell**
 
