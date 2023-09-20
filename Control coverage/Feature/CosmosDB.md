@@ -287,11 +287,12 @@ TLS provides confidentiality and data integrity between client and server. Using
 ### Control Spec 
 
 > **Passed:** 
-> MinTLSVersion is 1.2 for Cosmos DB.
+> Minimum TLS version is set to 1.2 or higher for Cosmos DB.
 > 
 > **Failed:** 
-> MinTLSVersion is lessthan 1.2 for Cosmos DB.
-> 
+> Any of the following conditions is met.
+> * Minimum TLS version is not set (default 1.0).
+> * Minimum TLS version is less than 1.2 (configured min required TLS version) for Cosmos DB.
 
 ### Recommendation 
 
