@@ -8,6 +8,7 @@
 - [Azure_KeyVault_SI_Enable_SoftDelete](#azure_keyvault_si_enable_softdelete)
 - [Azure_KeyVault_Audit_Enable_Diagnostics_Log](#azure_keyvault_audit_enable_diagnostics_log)
 - [Azure_KeyVault_NetSec_Disable_Public_Network_Access](#azure_keyvault_netsec_disable_public_network_access)
+- [Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection](#Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection)
 
 <!-- /TOC -->
 <br/>
@@ -232,6 +233,42 @@ Key Vault firewall should be enabled so that the key vault is not accessible by 
 **Properties:**
 properties.publicNetworkAccess<br />
 properties.networkAcls<br />
+ <br />
+
+<br />
+
+___
+
+## Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection
+
+### Display Name
+Key Vaults must have Soft Delete and Purge Protection enabled
+
+### Rationale
+Malicious deletion of a key vault can lead to permanent data loss. A malicious insider in your organization can potentially delete and purge key vaults. Purge protection protects you from insider attacks by enforcing a mandatory retention period for soft deleted key vaults. No one inside your organization or Microsoft will be able to purge your key vaults during the soft delete retention period.
+
+### Control Spec
+
+> **Passed:**
+> If both Soft Delete and Purge Protections are enabled.
+>
+> **Failed:**
+> If Soft Delete or Purge Protections is disabled.
+>
+### Recommendation
+
+- **Azure Portal**
+	1. Go to the [Azure Portal](https://portal.azure.com/) and select your Key Vault. 
+	2. Click on the 'Properties' tab. 
+	3. Select the radio button corresponding to Enable purge protection. 
+	4. Select Save. Soft delete is a pre-requisite for purge protection, if you have not already enabled this option, please select the radio button corresponding to Enable soft delete first. Please visit https://aka.ms/keyvaultsoftdelete for detailed configuration steps.
+
+### Azure Policy or ARM API used for evaluation
+
+- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
+**Properties:**
+properties.enablePurgeProtection<br />
+properties.enableSoftDelete<br />
  <br />
 
 <br />

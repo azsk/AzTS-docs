@@ -497,7 +497,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
             # Backing up Cosmos DB Account details.
             $backupFile = "$($backupFolderPath)\CosmosDBAccountsWithoutReqMinTLSVersion.csv"
             $CosmosDBAccountsWithoutReqMinTLSVersion | Export-CSV -Path $backupFile -NoTypeInformation
-            Write-Host "Cosmos DB Account(s) details have been successful backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Cosmos DB Account(s) details have been successfully backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
@@ -641,7 +641,7 @@ function Set-CosmosDBAccountRequiredTLSVersion
             if ($($CosmosDBAccountsRemediated | Measure-Object).Count -gt 0)
             {
                 Write-Host "Successfully set the Minimum TLS version to required Minimum TLS version on the following Cosmos DB Account(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host "Please note that it might take a while to update and reflect in the portal." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Please note that it might take a while to update and reflect in the Azure portal." -ForegroundColor $([Constants]::MessageType.Warning)
                 $CosmosDBAccountsRemediated | Format-Table -Property $colsProperty1 -Wrap
 
                 # Write this to a file.

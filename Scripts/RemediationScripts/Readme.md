@@ -58,7 +58,9 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#47-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
 48. [Azure_Bastion_AuthZ_Disable_Shareable_Link](Readme.md#48-Azure_Bastion_AuthZ_Disable_Shareable_Link)
-49. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#49-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
+49. [Azure_AVD_Audit_Enable_HostPool_BootDiagnostics](Readme.md#49-Azure_AVD_Audit_Enable_HostPool_BootDiagnostics)
+50. [Azure_AVD_SI_Configure_HostPool_SecureBoot](Readme.md#50-Azure_AVD_SI_Configure_HostPool_SecureBoot)
+51. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#49-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
 <br />
 
 ___ 
@@ -1001,7 +1003,7 @@ ___
 ## 48. Azure_Bastion_AuthZ_Disable_Shareable_Link
 
 ### Display Name
-Azure_Bastion_AuthZ_Disable_Shareable_Link
+Azure Bastion Shareable links must not be used
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DisableBastionShareableLink](Remediate-DisableBastionShareableLink.ps1)
@@ -1017,10 +1019,51 @@ Yes
 
 ___ 
 
-## 49. 	Azure_CosmosDB_DP_Use_Secure_TLS_Version
+
+## 49. Azure_AVD_Audit_Enable_HostPool_BootDiagnostics
 
 ### Display Name
-Use approved version of TLS for the CosmosDB
+Boot Diagnostic must be enabled with Managed Storage Account on Azure AVD Host pool VMs.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-BootDiagnosticsForAVDHostPool](Remediate-BootDiagnosticsforAVDHostPool.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___ 
+
+
+## 50. Azure_AVD_SI_Configure_HostPool_SecureBoot
+
+### Display Name
+Azure AVD Host pool VMs should be of security type Trusted launch with Secure boot and vTPM enabled.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-TrustedLaunchForAVDHostPool](Remediate-TrustedLaunchforAVDHostPool.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___ 
+
+
+## 51. 	Azure_CosmosDB_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for the Cosmos DB
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-SetCosmosDBAccountMinReqTLSVersion](Remediate-SetCosmosDBAccountMinReqTLSVersion.ps1)

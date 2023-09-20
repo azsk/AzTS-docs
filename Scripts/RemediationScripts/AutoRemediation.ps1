@@ -169,7 +169,9 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access") -or
                 ($control.ControlId -eq "Azure_RedisCache_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_CosmosDB_DP_Use_Secure_TLS_Version") -or
-                ($control.ControlId -eq "Azure_Bastion_AuthZ_Disable_Shareable_Link")){
+                ($control.ControlId -eq "Azure_Bastion_AuthZ_Disable_Shareable_Link") -or
+                ($control.ControlId -eq "Azure_AVD_SI_Configure_HostPool_SecureBoot") -or
+                ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD" ) -or
                 ($control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts")) {
