@@ -60,7 +60,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 48. [Azure_Bastion_AuthZ_Disable_Shareable_Link](Readme.md#48-Azure_Bastion_AuthZ_Disable_Shareable_Link)
 49. [Azure_AVD_Audit_Enable_HostPool_BootDiagnostics](Readme.md#49-Azure_AVD_Audit_Enable_HostPool_BootDiagnostics)
 50. [Azure_AVD_SI_Configure_HostPool_SecureBoot](Readme.md#50-Azure_AVD_SI_Configure_HostPool_SecureBoot)
-51. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#49-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
+51. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#51-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
 <br />
 
 ___ 
