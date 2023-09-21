@@ -37,6 +37,7 @@ resource keyVaultName_resource 'Microsoft.KeyVault/vaults@2015-06-01' = {
   }
   properties: {
     enableSoftDelete: true
+    enablePurgeProtection: true
     enabledForDiskEncryption: enabledForDiskEncryption
     enabledForDeployment: enabledForDeployment
     enabledForTemplateDeployment: enabledForTemplateDeployment
