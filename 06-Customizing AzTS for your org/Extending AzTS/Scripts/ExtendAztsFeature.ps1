@@ -3,7 +3,6 @@
     This script is used to enable/disable features of AzTS in a Subscription. 
 
 # Instructions to execute the script:
-    To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to enable/disable features of AzTS in the Subscription. Refer `Examples`, below.
