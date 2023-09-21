@@ -202,7 +202,7 @@ function Configure-CustomControlAdditionPrerequisites {
         }
     }
 
-    Write-Host "Configuration completed. Ready to add new control now..." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Configuration completed." -ForegroundColor $([Constants]::MessageType.Update)
 }
 
 
