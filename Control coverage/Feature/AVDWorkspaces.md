@@ -86,7 +86,8 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 
 - ARM API to list diagnostic setting details of AVDWorkspaces resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{AVDWorkspacesName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
 <br/>
-**Properties:**<br/> 
+**Properties:**
+<br/>
 name<br />
 properties.logs.category<br />
 properties.logs.enabled<br />
