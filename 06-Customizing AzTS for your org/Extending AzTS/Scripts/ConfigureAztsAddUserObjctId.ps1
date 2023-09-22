@@ -9,7 +9,7 @@
 
 # Examples:
     To add user's object id into configuration of AzTS:
-           Configure-AddUserObjctIds -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForUserObjectAddition.json" -FeatureName "CMET"  -UserObjectIds "00000000,00000001,00000002"
+        Configure-AddUserObjctIds -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForUserObjectAddition.json" -FeatureName "CMET"  -UserObjectIds "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
 
 ###>
 
