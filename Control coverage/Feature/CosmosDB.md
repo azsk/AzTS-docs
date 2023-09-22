@@ -9,6 +9,7 @@
 - [Azure_CosmosDB_Deploy_Use_Replication](#azure_cosmosdb_deploy_use_replication)
 - [Azure_CosmosDB_Deploy_Use_Automatic_Failover](#azure_cosmosdb_deploy_use_automatic_failover)
 - [Azure_CosmosDB_Enable_Adv_Threat_Protection](#azure_cosmosdb_enable_adv_threat_protection)
+- [Azure_CosmosDB_DP_Use_Secure_TLS_Version](#azure_cosmosdb_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
@@ -269,3 +270,56 @@ Threat Protection for Azure Cosmos DB provides an additional layer of security i
 
 ___ 
 
+## Azure_CosmosDB_DP_Use_Secure_TLS_Version
+
+### Display Name 
+Use approved version of TLS for the Cosmos DB
+
+### Rationale 
+TLS provides confidentiality and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings 
+```json 
+{
+    "MinReqTLSVersion": "1.2"
+}
+ ```  
+### Control Spec 
+
+> **Passed:** 
+> Minimum TLS version is set to required or higher for Cosmos DB.
+> 
+> **Failed:** 
+> Any of the following conditions is met.
+> * Minimum TLS version is not set (default 1.0).
+> * Minimum TLS version is less than required (configured min required TLS version) for Cosmos DB.
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 Go to Azure Portal --> your Cosmos DB --> Settings --> Networking --> Connectivity --> Minimum Transport layer security protocol dropdown. Select the required TLS version from the dropdown.
+
+<!--
+- **PowerShell** 
+
+	 ```powershell 
+	 $variable = 'apple' 
+	 ```  
+
+- **Enforcement Policy** 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/View_Definition.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+
+	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
+-->
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get Cosmos DB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2022-11-15<br />
+**Properties:** properties.minimalTlsVersion
+ <br />
+
+<br />
+
+___ 

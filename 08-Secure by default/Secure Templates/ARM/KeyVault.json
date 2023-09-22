@@ -111,6 +111,7 @@
       },
       "properties": {
         "enableSoftDelete" : true,
+        "enablePurgeProtection": true,
         "enabledForDiskEncryption" : "[parameters('enabledForDiskEncryption')]",
         "enabledForDeployment": "[parameters('enabledForDeployment')]",
         "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]", //[Azure_KeyVault_AuthZ_Configure_Advanced_Access_Policies]
