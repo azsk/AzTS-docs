@@ -4,17 +4,17 @@
 
 <!-- TOC -->
 
-- [Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings](#Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings)
+- [Azure_AVD_Audit_Enable_Workspace_Diagnostics](#Azure_AVD_Audit_Enable_Workspace_Diagnostics)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
 
-## Azure_AVDWorkspaces_Audit_Enable_Diagnostic_Settings 
+## Azure_AVD_Audit_Enable_Workspace_Diagnostics_Trial 
 
 ### Display Name 
-Diagnostic settings must be enabled for Azure AVD Workspaces.
+Diagnostic settings must be enabled for AVD Workspaces.
 
 ### Rationale 
 Diagnostic logs are needed for creating activity trail while investigating an incident or a compromise.
@@ -85,8 +85,7 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 ### Azure Policy or ARM API used for evaluation 
 
 - ARM API to list diagnostic setting details of AVDWorkspaces resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{AVDWorkspacesName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
-<br/>
-**Properties:**<br/> 
+**Properties:**
 name<br />
 properties.logs.category<br />
 properties.logs.enabled<br />

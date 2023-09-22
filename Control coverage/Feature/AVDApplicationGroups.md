@@ -4,17 +4,17 @@
 
 <!-- TOC -->
 
-- [Azure_AVDApplicationGroups_Audit_Enable_Diagnostic_Settings](#azure_AVDApplicationGroups_audit_enable_diagnostic_settings)
+- [Azure_AVD_Audit_Enable_ApplicationGroup_Diagnostics](#Azure_AVD_Audit_Enable_ApplicationGroup_Diagnostics)
 
 <!-- /TOC -->
 <br/>
 
 ___ 
 
-## Azure_AVDApplicationGroups_Audit_Enable_Diagnostic_Settings 
+## Azure_AVD_Audit_Enable_ApplicationGroup_Diagnostics
 
 ### Display Name 
-Diagnostic settings must be enabled for Azure AVD Application Groups.
+Diagnostic settings must be enabled for AVD Application Groups.
 
 ### Rationale 
 Diagnostic logs are needed for creating activity trail while investigating an incident or a compromise.
@@ -83,9 +83,8 @@ Diagnostic logs are needed for creating activity trail while investigating an in
  	```  
 ### Azure Policy or ARM API used for evaluation 
 
-- ARM API to list diagnostic setting details of AVDApplicationGroups resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationgroups/{AVDApplicationGroupsName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
-<br/>
-**Properties:**<br/> 
+- ARM API to list diagnostic setting details of AVDApplicationGroups resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationgroups/{AVDApplicationGroupsName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview <br />
+**Properties:**
 name<br />
 properties.logs.category<br />
 properties.logs.enabled<br />
