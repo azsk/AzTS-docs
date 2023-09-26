@@ -654,10 +654,10 @@ Using the native enterprise directory for authentication ensures that there is a
 ### Recommendation 
 - **Azure Portal** 
 
-	 To make production slot compliant:
+	 To make production slot compliant:<br />
 	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Basic Authentication --> Off --> Save
 
-	 To make non-production slot compliant:
+	 To make non-production slot compliant:<br />
 	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings -->  Basic Authentication --> Off --> Save
 
 ### Azure Policy or ARM API used for evaluation 
