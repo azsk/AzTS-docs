@@ -17,6 +17,7 @@
 - [Azure_AppService_AuthZ_Configure_IP_Restrictions](#azure_appservice_authz_configure_ip_restrictions)
 - [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
 - [Azure_AppService_DP_Use_Secure_FTP_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
+- [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](#azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
 
 <!-- /TOC -->
 <br/>
@@ -631,3 +632,48 @@ FTPS is used to enhance security for your Azure Web Application as it adds an ex
 
 ___ 
 
+## Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+
+### Display Name 
+AppService must not use basic authentication for FTP and SCM access
+
+### Rationale 
+Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions.
+
+### Control Spec 
+
+>**Passed :**
+> - Basic Authentication is disabled for both FTP and SCM access for production and non-production slots.
+>
+> **Failed :**
+> - Basic Authentication is enabled for either FTP or SCM access (or both) for either production or non-production slots (or both).
+>
+> **Error :**
+> - AppService basic authentication configuration details could not be fetched.
+
+### Recommendation 
+- **Azure Portal** 
+
+	 To make production slot compliant:
+	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Basic Authentication --> Off --> Save
+
+	 To make non-production slot compliant:
+	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings -->  Basic Authentication --> Off --> Save
+
+### Azure Policy or ARM API used for evaluation 
+
+- ARM API to get SCM's basic authentication configuration of App Service: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{appServiceName}/basicPublishingCredentialsPolicies/scm?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/get-scm-allowed?tabs=HTTP)<br />
+**Properties:** properties.allow<br />
+
+- ARM API to get SCM's basic authentication configuration of an App Service slot: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{appServiceName}/slots/{slotName}/basicPublishingCredentialsPolicies/scm?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/get-scm-allowed-slot?tabs=HTTP)<br />
+**Properties:** properties.allow<br />
+
+- ARM API to get FTP's basic authentication configuration of App Service: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{appServiceName}/basicPublishingCredentialsPolicies/ftp?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/get-ftp-allowed?tabs=HTTP)<br />
+**Properties:** properties.allow<br />
+
+- ARM API to get FTP's basic authentication configuration of an App Service slot: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{appServiceName}/slots/{slotName}/basicPublishingCredentialsPolicies/ftp?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/get-ftp-allowed-slot?tabs=HTTP)<br />
+**Properties:** properties.allow<br />
+
+<br />
+
+___ 
