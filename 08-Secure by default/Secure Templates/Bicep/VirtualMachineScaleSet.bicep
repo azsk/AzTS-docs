@@ -55,6 +55,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@[variables(\'networkA
 resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApiVersion\')]' = {
   name: VMSSName
   location: location
+  identity: {
+    type: 'SystemAssigned'
+  }
   sku: {
     name: vmSize
     tier: 'Standard'

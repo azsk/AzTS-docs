@@ -76,6 +76,9 @@
               "type": "Microsoft.Compute/virtualMachineScaleSets",
               "name": "[parameters('VMSSName')]",
               "location": "[variables('location')]",
+              "identity": {
+                "type":"SystemAssigned"
+              },
               "apiVersion": "[variables('computeApiVersion')]",
               "dependsOn": [
                 "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
