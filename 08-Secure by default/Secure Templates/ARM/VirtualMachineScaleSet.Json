@@ -1,0 +1,154 @@
+        {
+            "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json",
+          "contentVersion": "1.0.0.0",
+            "parameters": {
+            "VMSSName": {
+              "type": "string",
+              "metadata": {
+                "description": "Scale Set name, also used in this template as a base for naming resources (hence limited to 9 characters or less)."
+              },
+              "maxLength": 20
+            },
+            "instanceCount": {
+              "type": "int",
+              "metadata": {
+                "description": "Number of VM instances"
+              },
+              "maxValue": 100
+            },
+            "adminUsername": {
+              "type": "string",
+              "metadata": {
+                "description": "Admin username on all VMs."
+              }
+            },
+            "publicKey": {
+              "type": "string",
+              "metadata": {
+                "description": "SSH rsa public key file as a string."
+              }
+            }
+          },
+          "variables": {
+            "vmSize": "Standard_D1_v2",
+            "virtualNetworkName": "[concat(parameters('VMSSName'), 'vnet')]",
+            "subnetName": "[concat(parameters('VMSSName'), 'subnet')]",
+            "nicName": "[concat(parameters('VMSSName'), 'nic')]",
+            "ipConfigName": "[concat(parameters('VMSSName'), 'ipconfig')]",
+            "addressPrefix": "10.0.0.0/16",
+            "subnetPrefix": "10.0.0.0/24",
+            "storageAccountType": "Standard_LRS",
+            "location": "[resourceGroup().location]",
+            "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
+            "osType": {
+              "publisher": "Canonical",
+              "offer": "UbuntuServer",
+              "sku": "16.04-LTS",
+              "version": "latest"
+            },
+            "imageReference": "[variables('osType')]",
+            "computeApiVersion": "2021-03-01",
+            "networkApiVersion": "2020-11-01"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "name": "[variables('virtualNetworkName')]",
+              "location": "[variables('location')]",
+              "apiVersion": "[variables('networkApiVersion')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[variables('addressPrefix')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[variables('subnetName')]",
+                    "properties": {
+                      "addressPrefix": "[variables('subnetPrefix')]"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Compute/virtualMachineScaleSets",
+              "name": "[parameters('VMSSName')]",
+              "location": "[variables('location')]",
+              "apiVersion": "[variables('computeApiVersion')]",
+              "dependsOn": [
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+              ],
+              "sku": {
+                "name": "[variables('vmSize')]",
+                "tier": "Standard",
+                "capacity": "[parameters('instanceCount')]"
+              },
+              "properties": {
+                "upgradePolicy": {
+                  "mode": "Manual"
+                },
+                "orchestrationMode":"Uniform",
+                "virtualMachineProfile": {
+                  "storageProfile": {
+                    "osDisk": {
+                      "caching": "ReadOnly",
+                      "createOption": "FromImage"
+                    },
+                    "imageReference": "[variables('imageReference')]"
+                  },
+                  "osProfile": {
+                    "computerNamePrefix": "[parameters('VMSSName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                  "linuxConfiguration": {
+                      "disablePasswordAuthentication": "true",
+                      "ssh": {
+                        "publi  cKeys": [
+                        {
+                          "path": "[variables('sshKeyPath')]",
+                          "keyData": "[parameters('publicKey')]"
+                        }
+                        ]
+                      }
+                    }
+                  },
+                  "extensionProfile":{
+                    "extensions":[
+                      {
+                        "name": "AADSSHLoginForLinux",
+                        "properties": {
+                          "publisher": "Microsoft.Azure.ActiveDirectory",
+                          "type": "AADSSHLoginForLinux",
+                          "typeHandlerVersion": "1.0",
+                          "settings":{}
+                        }
+                      }
+                    ]
+                  },
+                  "networkProfile": {
+                    "networkInterfaceConfigurations": [
+                      {
+                        "name": "[variables('nicName')]",
+                        "properties": {
+                          "primary": "true",
+                          "ipConfigurations": [
+                            {
+                              "name": "[variables('ipConfigName')]",
+                              "properties": {
+                                "subnet": {
+                                  "id": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'), '/subnets/', variables('subnetName'))]"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "overprovision": "true"
+              }
+            }
+          ]
+        }
