@@ -12,14 +12,14 @@
             "instanceCount": {
               "type": "int",
               "metadata": {
-                "description": "Number of VM instances"
+                "description": "Number of VMSS instances"
               },
               "maxValue": 100
             },
             "adminUsername": {
               "type": "string",
               "metadata": {
-                "description": "Admin username on all VMs."
+                "description": "Admin username on all VMSS Instances."
               }
             },
             "publicKey": {

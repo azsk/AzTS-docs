@@ -2,11 +2,11 @@
 @maxLength(20)
 param VMSSName string
 
-@description('Number of VM instances')
+@description('Number of VMSS instances')
 @maxValue(100)
 param instanceCount int
 
-@description('Admin username on all VMs.')
+@description('Admin username on all VMSS Instances.')
 param adminUsername string
 
 @description('SSH rsa public key file as a string.')
