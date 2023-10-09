@@ -104,7 +104,7 @@
                   "linuxConfiguration": {
                       "disablePasswordAuthentication": "true",
                       "ssh": {
-                        "publi  cKeys": [
+                        "publicKeys": [
                         {
                           "path": "[variables('sshKeyPath')]",
                           "keyData": "[parameters('publicKey')]"

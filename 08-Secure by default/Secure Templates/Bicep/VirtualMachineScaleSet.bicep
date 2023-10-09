@@ -79,7 +79,7 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
         linuxConfiguration: {
           disablePasswordAuthentication: 'true'
           ssh: {
-            'publi  cKeys': [
+            publicKeys: [
               {
                 path: sshKeyPath
                 keyData: publicKey
@@ -91,7 +91,7 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
       extensionProfile: {
         extensions: [
           {
-            name: 'AADSSHLoginForLinux' // Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+            name: 'AADSSHLoginForLinux'
             properties: {
               publisher: 'Microsoft.Azure.ActiveDirectory'
               type: 'AADSSHLoginForLinux'
