@@ -91,7 +91,7 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
       extensionProfile: {
         extensions: [
           {
-            name: 'AADSSHLoginForLinux'
+            name: 'AADSSHLoginForLinux' // Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
             properties: {
               publisher: 'Microsoft.Azure.ActiveDirectory'
               type: 'AADSSHLoginForLinux'
