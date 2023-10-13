@@ -79,10 +79,8 @@ function Configure-CustomControlAdditionPrerequisites {
                 
                 #Getting Unique Values
                 $dependentFeaturesForEnabling = $dependentFeaturesForEnabling | Sort-Object | Get-Unique 
-                $dependentFeaturesForEnablingText = ""
-                foreach ($DependentFeature in $dependentFeaturesForEnabling) {
-                    $dependentFeaturesForEnablingText += $DependentFeature + ","
-                } 
+                $dependentFeaturesForEnablingText = $dependentFeaturesForEnabling -join ","
+                 
                 $logger.PublishCustomMessage("For enabling feature $FeatureName following feature needs to be enabled $dependentFeaturesForEnablingText." , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage("Do you want to Continue? ", $([Constants]::MessageType.Warning))
                      
@@ -113,10 +111,7 @@ function Configure-CustomControlAdditionPrerequisites {
                 
                 #Getting Unique Values
                 $dependentFeaturesForDisabling = $dependentFeaturesForDisabling | Sort-Object | Get-Unique
-                $dependentFeaturesForDisablingText = ""
-                foreach ($DependentFeature in $dependentFeaturesForDisabling) { 
-                    $dependentFeaturesForDisablingText += $DependentFeature + ", " 
-                } 
+                $dependentFeaturesForDisablingText = $dependentFeaturesForDisabling -join ","                 
                 
                 $logger.PublishCustomMessage("By disabling feature $FeatureName following feature may get impacketed $dependentFeaturesForDisablingText." , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage("Do you want to Continue? " , $([Constants]::MessageType.Warning))
@@ -131,13 +126,11 @@ function Configure-CustomControlAdditionPrerequisites {
                 #Adding configuration for dependent features
                 foreach ($dependentFeature in $dependentFeaturesForDisabling) {               
                     $webAppConfigurationList = Get-Configuration -FeatureName $dependentFeature -JsonContent $JsonContent -ResourceHash $ResourceHash -FeatureActionType $FeatureActionType
-
                 }
             }
 
             #Adding Configuration for Feature
-            $webAppConfigurationList = Get-Configuration -FeatureName $FeatureName -JsonContent $JsonContent -ResourceHash $ResourceHash -FeatureActionType $FeatureActionType
-                        
+            $webAppConfigurationList = Get-Configuration -FeatureName $FeatureName -JsonContent $JsonContent -ResourceHash $ResourceHash -FeatureActionType $FeatureActionType                        
         }
 
         #Enabling/Disabling the feature
@@ -153,7 +146,8 @@ function Configure-CustomControlAdditionPrerequisites {
         }       
     }
     else {
-        $logger.PublishCustomMessage("FeatureName does not match. Expected values are 'CMET', 'CMET_Bulk_Edit', 'MG_Processor', 'PIM_API','MG_Compliance_Initiate_Editor'...." , $([Constants]::MessageType.Error))
+        $availableFeatureName = $JsonContent.FeatureName -join ","
+        $logger.PublishCustomMessage("FeatureName does not match. Expected values are $availableFeatureName...." , $([Constants]::MessageType.Error))
         break
     }
     
@@ -200,9 +194,7 @@ function Configure-ModifyAppSetting {
         if ($FeatureActionType -ieq "Enable") {
             ForEach ($appSetting in $ExistingAppSettings) {
                 $NewAppSettings[$appSetting.Name] = $appSetting.Value
-            }
-
-            
+            }            
         }
         elseif ($FeatureActionType -ieq "Disable") {
             ForEach ($appSetting in $ExistingAppSettings) {                
@@ -217,12 +209,10 @@ function Configure-ModifyAppSetting {
         }
 
         $logger.PublishCustomMessage($([Constants]::SingleDashLine))
-        $logger.PublishCustomMessage("Updating new configuration values for: [$($WebAppName)]...", $([Constants]::MessageType.Info))
-               
+        $logger.PublishCustomMessage("Updating new configuration values for: [$($WebAppName)]...", $([Constants]::MessageType.Info))               
        
         # Configuring new app settings
         $AzTSAppSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WebAppName -AppSettings $NewAppSettings -ErrorAction Stop
-
         $logger.PublishCustomMessage("Updated new configuration values for: [$($WebAppName)]." , $([Constants]::MessageType.Update))
         $logger.PublishCustomMessage($([Constants]::SingleDashLine))
     }
@@ -261,8 +251,6 @@ function Get-DependentFeature {
     }
     else { $DependentFeatures = $FilteredfeatureSetting.DependentFeaturesForDisabling }
 
-
-
     if (($null -ne $DependentFeatures) -and ($DependentFeatures -ne "")) {                  
         foreach ($DependentFeature in $DependentFeatures) {
             if ( $FeatureName -ine $DependentFeature) {
@@ -281,7 +269,6 @@ function Get-DependentFeature {
                     if ($IsDependentFeature) {
                         Get-DependentFeature -FeatureName $FeatureName -JsonContent $JsonContent -DependentFeatures $DependentFeatures -DepandentFeatureName $DependentFeature -FeatureActionType $FeatureActionType
                     }
-
                 }
             }
         }
@@ -313,15 +300,12 @@ function Validate-DependentFeature {
     }
     else { $DependentFeatures = $FilteredfeatureSetting.DependentFeaturesForDisabling }
 
-
-
     if (($null -ne $DependentFeatures) -and ($DependentFeatures -ne "")) {  
         return $true
     }
     else {
         return $false
     }
-
 }
 
 
@@ -387,14 +371,10 @@ function Get-Configuration {
                 $TempConfiguration = $webAppConfigurationList[$featureName]
                 $MergedConfiguration = $TempConfiguration + $ConfigurationHashtable
                 $webAppConfigurationList[$featureName] = $MergedConfiguration;
-
             }
-
-
         }
         else
         { $webAppConfigurationList[$featureName] = $ConfigurationHashtable; }
-
     }
     return $webAppConfigurationList;
 }
