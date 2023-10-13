@@ -54,7 +54,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to lists all Traffic Manager profiles within a subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/trafficmanagerprofiles?api-version=2018-04-01<br />

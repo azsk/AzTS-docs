@@ -44,7 +44,7 @@ Restricting traffic on the Load Balancer further strengthens the security postur
 	Get-Help Remove-NSGConfigurationOnSubnet -Detailed
 	Get-Help Add-NSGConfigurationOnSubnet -Detailed 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
 **Properties:** properties.SubnetIds <br />
@@ -80,7 +80,7 @@ OR <br/>No Virtual Network found attached either with FrontEnd or Backend of Loa
 
 	To Remediate, Enable DDOS on the Virtual Network of every frontend IP configuration of Load balancer or refer [link](https://learn.microsoft.com/en-us/azure/ddos-protection/manage-ddos-protection#enable-ddos-protection-for-an-existing-virtual-network).
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
 **Properties:** properties.SubnetIds <br />
@@ -117,7 +117,7 @@ Load balancer distributes inbound flows that arrive at the load balancer's front
 
 	Go to Azure portal -> Load Balancer -> Backend pools -> If there are no pools, either delete it or attach it to a relevant pool.
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{0}/providers/Microsoft.Network/loadBalancers?api-version=2022-07-01 <br />
 **Properties:** properties.backendAddressPools<br />

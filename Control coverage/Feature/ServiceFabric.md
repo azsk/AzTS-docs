@@ -54,7 +54,7 @@ A secure cluster prevents unauthorized access to management operations, which in
 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get certificate details of Service Fabric resource: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.certificate
@@ -101,7 +101,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get Azure Active Directory details and its related property: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** property.azureActiveDirectory.tenantId
@@ -150,7 +150,7 @@ With cluster protection level set to 'EncryptAndSign', all the node-to-node mess
 
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - Azure Policy (built-in): [Service Fabric clusters should have the ClusterProtectionLevel property set to EncryptAndSign](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F617c02be-7f02-4efd-8836-3180d47b6c68)
 
@@ -208,7 +208,7 @@ Use of appropriate NSG rules can limit exposure of Service Fabric cluster in mul
 
 --> 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Service Fabric cluster resources at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.nodeTypes[*].name
@@ -290,7 +290,7 @@ Publicly exposed ports must be monitored to detect suspicious and malicious acti
 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Load Balancer Rules at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01 <br />
 **Properties:** properties.loadBalancingRules.BackendPort
@@ -342,7 +342,7 @@ Configuring the reverse proxy's port in Load Balancer with public IP will expose
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get reverse proxy details at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.nodeTypes.reverseProxyEndpointPort
@@ -391,7 +391,7 @@ Clusters with unsupported fabric version can become targets for compromise from 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 --> 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get status of upgrade mode at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ServiceFabric/clusters?api-version=2018-02-01 <br />
 **Properties:** properties.UpgradeMode

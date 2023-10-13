@@ -55,7 +55,7 @@ One of the following conditions is met:
 	Refer: https://docs.microsoft.com/en-us/azure/cdn/cdn-standard-rules-engine to configure HTTP to HTTPs redirection rule in rules engine. 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API used to list existing CDN endpoints at subscription level: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourcegroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints?api-version=2019-12-31<br />
@@ -104,7 +104,7 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 	 You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
 	 [Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN](../../Scripts/RemediationScripts/Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN.ps1) <br/>
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get Front Door resources in a subscription: /subscriptions/{0}/
 /subscriptions/{0}/providers/Microsoft.Cdn/profiles?api-version=2021-06-01
@@ -161,7 +161,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
                     
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API used to list existing CDN Domain endpoints at subscription level: <br />
  /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Cdn/profiles/{FrontDoorName}/customDomains?api-version=2021-06-01<br />

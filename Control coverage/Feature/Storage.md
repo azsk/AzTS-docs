@@ -63,7 +63,7 @@ Data in containers that have anonymous access can be downloaded by anyone on the
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
@@ -128,7 +128,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - Azure Policy (built-in):
   [Secure transfer to storage accounts should be enabled](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F404c3081-a854-4457-ae30-26a93ef643f9)
@@ -187,7 +187,7 @@ Restricting access using firewall/virtual network config reduces network exposur
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
@@ -248,7 +248,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
@@ -309,7 +309,7 @@ Shared Access Signature (SAS) is used to provide secure delegate access to resou
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
@@ -359,7 +359,7 @@ Rotating access keys will reduce the window of opportunity for an access key tha
    ```
 
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01

@@ -68,7 +68,7 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
@@ -120,7 +120,7 @@ Using multiple NICs, one can route traffic between the ER-connected virtual netw
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
@@ -178,7 +178,7 @@ Using IP Forwarding one can change the routing of packets from an ER-connected v
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Network Interfaces at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
@@ -248,7 +248,7 @@ Using UDRs on any subnet of an ER-connected virtual network can lead to security
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
@@ -302,7 +302,7 @@ Using other gateway types on an ER-connected virtual network can lead to pathway
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Virtual Networks and their subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
@@ -390,7 +390,7 @@ A virtual network peering on an ER-connected circuit establishes a link to anoth
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) ---> 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Virtual Networks and their peering at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br /> 
@@ -449,7 +449,7 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all Virtual Networks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
@@ -508,7 +508,7 @@ The ERNetwork resource group is a critical component that facilitates provisioni
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 ---> 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all Virtual Networks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
@@ -565,7 +565,7 @@ Public IP addresses on an ER-connected virtual network can expose the corporate 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all Public IP addresses in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/publicIPAddresses?api-version=2019-11-01 <br />
@@ -628,7 +628,7 @@ Resources in the peered virtual networks can communicate with each other directl
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all Virtual Networks in a Subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
@@ -689,7 +689,7 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 	 Configure NSG rules to be as restrictive as possible via: (a) Azure Portal -> Network security groups -> <Your NSG> -> Inbound security rules -> Edit 'Allow' action rules. (b) Azure Portal -> Network security groups. -> <Your NSG> -> Outbound security rules -> Edit 'Allow' action rules 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Virtual Networks and their constituent Subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
@@ -726,7 +726,7 @@ Or, no Public IP is configured for any NIC on the vNet.
 	 Unutilized Public IP address must be removed from virtual network. For more information visit: https://docs.microsoft.com/en-us/powershell/module/az.network/remove-azpublicipaddress 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
@@ -766,7 +766,7 @@ Virtual network gateways enable network traffic between a virtual network and ot
 	 You can remove virtual network gateways using the Remove-AzVirtualNetworkGateway command (unless their presence has been approved by network security team). Run 'Get-Help Remove-AzVirtualNetworkGateway -full' for more help. 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Virtual Networks and their subnets at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br /> 
@@ -806,7 +806,7 @@ Or, there are no NICs with EnableIPForwarding turned on the vNet.
 
 	 Disable IP Forwarding unless it has been reviewed and approved by network security team. Go to Azure Portal --> Navigate to VM NIC (where IP Forwarding is enabled) --> IP Configurations --> IP Forwarding settings --> Click on 'Disabled'. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list Network Interfaces at subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br /> 

@@ -54,7 +54,7 @@ Use of custom domain protects a web application from common attacks such as phis
 Run command New-AzWebAppSSLBinding to enable the SSL binding for your custom domain. Run Get-Help New-AzWebAppSSLBinding -full for more help.  
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01 <br />
@@ -87,7 +87,7 @@ Remote debugging requires inbound ports to be opened on App Service. These ports
 
 	 To disable remote debugging on default 'Production' slot: Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Remote Debugging (Under Debugging) --> Click on 'OFF' --> Save. To disable remote debugging on any non-production slot: Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> Remote Debugging (Under Debugging) --> Click on 'OFF' --> Save.
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
@@ -142,7 +142,7 @@ Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName>
 <br/>
  Refer: https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/HTML5_Security_Cheat_Sheet.md#websockets 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
@@ -199,7 +199,7 @@ By default, websites are unloaded if they have been idle for some period of time
 
 	 Go to Azure Portal --> your App Service --> Settings --> Configuration --> General Settings --> Always On --> Click on 'ON'. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 - ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
  <br />
@@ -254,7 +254,7 @@ One of the below conditions is met:
 	 ```  
 	Run 'Get-Help Set-AzAppServicePlan -full' for more help. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list existing App Services at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
@@ -300,7 +300,7 @@ Auditing enables log collection of important system events pertinent to security
 	Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -DetailedErrorLoggingEnabled $true -HttpLoggingEnabled $true -RequestTracingEnabled $true
 	```
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
@@ -353,7 +353,7 @@ To enable only https traffic on any non-production slot, run command
 Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -HttpsOnly $true
 ```  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list existing App Services at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01<br />
@@ -399,7 +399,7 @@ CORS enables applications running under one domain to access a resource under an
 
 	 Go to Azure Portal --> your App Service --> API --> CORS --> Request Credentials --> Review if you need to enable 'Access-Control-Allow-Credentials'. Note: No action is needed if you are not using CORS for your app.
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get configuration of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.cors<br />
@@ -435,7 +435,7 @@ CORS enables applications running under one domain to access a resource under an
 
 	 Go to Azure Portal --> your App Service --> API --> CORS --> Provide the specific domain names that should be allowed to make cross-origin calls. Note: No action is needed if you are not using CORS for your app.
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get configuration of an App Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/web?api-version=2018-11-01 <br />
 **Properties:** properties.cors.allowedOrigins<br />
@@ -481,7 +481,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 	 To set required TLS version on default 'Production' slot: Go to Azure Portal --> your App Service --> Settings --> TLS/SSL --> Minimum TLS version --> set to org approved version (see status reason). To set required TLS version on any non-production slot: Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> TLS/SSL --> Minimum TLS version --> set to org approved version (see status reason). 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all App Services in a subscription: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
@@ -537,7 +537,7 @@ Using the IP/VNet subnet rules-based access restriction ensures that access to t
 	 Consider using IP-based access restrictions for App Service if feasible. Steps: Go to Azure Portal --> your App Service --> Networking --> Access Restrictions --> Configure Access Restrictions --> Add/Verify access restriction rule for app and scm site. For more information, refer: https://docs.microsoft.com/en-us/azure/app-service/app-service-ip-restrictions 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list existing App Services at subscription level: <br />
  /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2018-11-01
@@ -572,7 +572,7 @@ Managed Service Identity (MSI) allows your app to easily access other AAD-protec
 
 	 Go to Azure Portal --> your App Service --> Settings --> Identity --> System assigned --> ON
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list all the App Services in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?2018-11-01<br />
 **Properties:** properties.identity.type<br />
@@ -613,7 +613,7 @@ FTPS is used to enhance security for your Azure Web Application as it adds an ex
 	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings --> FTP state --> (Choose FTPS Only/Disabled based on the requirement) --> Save.
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - Azure Policy (built-in):
   [Function apps should require FTPS only](https://ms.portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F399b2637-a50f-4f95-96f8-3a145476eb15)
@@ -660,7 +660,7 @@ Using the native enterprise directory for authentication ensures that there is a
 	 To make non-production slot compliant:<br />
 	 Go to Azure Portal --> your App Service --> Deployment --> Deployment slots --> Select slot --> Settings --> Configuration --> General Settings -->  Basic Authentication --> Off --> Save
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to get SCM's basic authentication configuration of App Service: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroup}/providers/Microsoft.Web/sites/{appServiceName}/basicPublishingCredentialsPolicies/scm?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/appservice/web-apps/get-scm-allowed?tabs=HTTP)<br />
 **Properties:** properties.allow<br />

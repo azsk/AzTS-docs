@@ -89,7 +89,7 @@ Using the native enterprise directory for authentication ensures that there is a
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to get the list of Azure Active Directory administrators in a SQL server:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/administrators?api-version=2014-04-01
@@ -262,7 +262,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - Azure Policy (built-in):
   [Transparent Data Encryption on SQL databases should be enabled](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F17k78e20-9358-41c9-923c-fb736d382a12)
@@ -360,7 +360,7 @@ Enabling threat detection helps generate alerts about suspicious activity that m
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to get a SQL server's blob auditing policy:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/auditingSettings/default?api-version=2017-03-01-preview
@@ -426,7 +426,7 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to get the vulnerability assessment of a SQL server:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview
@@ -497,7 +497,7 @@ Using the firewall feature ensures that access to the data or the service is res
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to get the list of firewall rules in a SQL server:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/firewallRules?api-version=2014-04-01
@@ -572,7 +572,7 @@ Auditing enables log collection of important system events pertinent to security
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to get a SQL server's blob auditing policy:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/auditingSettings/default?api-version=2017-03-01-preview
@@ -635,7 +635,7 @@ The 'Allow access to Azure services' setting configures a very broad range of IP
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to get the list of firewall rules in a SQL server:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/firewallRules?api-version=2014-04-01
@@ -690,7 +690,7 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - Azure Policy (built-in):
   [SQL databases should have vulnerability findings resolved](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Ffeedbf84-6b99-488c-acc2-71c829aa5ffc)
@@ -750,7 +750,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to check a SQL server's TLS version:
   /subscriptions/{subscriptionId}/providers/Microsoft.Sql/servers?api-version=2019-06-01-preview
@@ -784,7 +784,7 @@ Public Network Access is configured as Enabled.
 
 	To remediate, disable public network access on your SQL server or refer link https://learn.microsoft.com/en-us/azure/azure-sql/database/connectivity-settings?view=azuresql&tabs=azure-portal
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to check a SQL server's public network access:
 subscriptions/{subscriptionId}/providers/Microsoft.Sql/servers?api-version=2021-11-01

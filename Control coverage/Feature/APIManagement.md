@@ -137,7 +137,7 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 
     Refer [How do I remediate failing control Azure_APIManagement_DP_Use_Secure_TLS_Version?](https://github.com/azsk/DevOpsKit-docs/blob/master/00c-Addressing-Control-Failures/Readme.md#how-do-i-remediate-failing-control-azure_apimanagement_dp_use_secure_tls_version) to disable the insecure protocols and ciphers using PowerShell.
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** properties.customProperties<br />
@@ -312,7 +312,7 @@ The credentials used to access API Management REST API provide admin-level acces
     Set-AzApiManagementTenantAccess -Context $ApiManagementContext -Enabled $false
     ```
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
@@ -587,7 +587,7 @@ Metric alert for occurrence of unauthorized gateway requests help the admin to i
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all alert rule definitions in a Subscription:
   /subscriptions/{0}/providers/Microsoft.Insights/metricAlerts?api-version=2018-03-01

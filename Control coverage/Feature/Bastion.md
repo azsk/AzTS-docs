@@ -46,7 +46,7 @@ One of the following conditions is met:
    - To disable shareable link flag: Select your Bastion --> Settings blade --> Configuration --> Uncheck 'Shareable Link' option --> Click 'Apply'.
       
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API used to list Bastion hosts and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/bastionHosts?api-version=2022-07-01<br />

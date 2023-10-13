@@ -61,7 +61,7 @@ Specifying the IP range ensures that the triggers can be invoked only from a res
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the logic apps under subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01
   <br />
@@ -117,7 +117,7 @@ Using the firewall feature ensures that access to the data or the service is res
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the logic apps under subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01
   <br />
@@ -184,7 +184,7 @@ Using the native enterprise directory for authentication ensures that there is a
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list Logic apps at subscription level: 
 /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01<br />
@@ -257,7 +257,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list Logic apps at subscription level: 
 /subscriptions/{subscriptionId}/providers/Microsoft.Logic/workflows?api-version=2016-06-01<br />

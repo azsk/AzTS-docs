@@ -68,7 +68,7 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
 
 	```
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list all the automation accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Automation/automationAccounts?api-version=2021-06-22
