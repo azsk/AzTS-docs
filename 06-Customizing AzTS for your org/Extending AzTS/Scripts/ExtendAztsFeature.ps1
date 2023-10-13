@@ -38,173 +38,127 @@ function Configure-CustomControlAdditionPrerequisites {
         $FeatureActionType
     )
 
+    $logger = [Logger]::new($SubscriptionId)
+    $webAppConfigurationList = [hashtable]@{}
+    $dependentFeaturesForEnabling = @{}
+    $dependentFeaturesForDisabling = @{}
+
     # Set the context to host subscription
-    Write-Host "Setting up az context to AzTS host subscription id." -ForegroundColor $([Constants]::MessageType.Info)
+    $logger.PublishCustomMessage("Setting up az context to AzTS host subscription id.", $([Constants]::MessageType.Info))
     Set-AzContext -SubscriptionId  $SubscriptionId
-    Write-Host $([Constants]::DoubleDashLine)
+    $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
     
     # AzTS resources name preparation
     $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ScanHostRGName;
     $ResourceIdHash = get-hash($ResourceId)
     $ResourceHash = $ResourceIdHash.Substring(0, 5).ToString().ToLower()
 
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Loading input JSOn from file path: [$($FilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
-    Write-Host $([Constants]::SingleDashLine)
+    $logger.PublishCustomMessage($([Constants]::SingleDashLine))
+    $logger.PublishCustomMessage("Loading input JSOn from file path: [$($FilePath)]...", $([Constants]::MessageType.Info))
+    $logger.PublishCustomMessage($([Constants]::SingleDashLine))
+
+    
+
 
     # Getting Control Configuration JSOn from file path
     if (-not (Test-Path -Path $FilePath)) {
-        Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        #Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
+        $logger.PublishCustomMessage("ERROR: Input file - $($FilePath) not found. Exiting...", $([Constants]::MessageType.Error))
         break
     }
+
     $JsonContent = Get-content -path $FilePath | ConvertFrom-Json
     $FilteredfeatureSetting = $JsonContent | Where-Object { ($_.FeatureName -ieq $FeatureName) }
     if ($null -ne $FilteredfeatureSetting) {
 
         #Checking if feature needs to be enabled
         if ($FeatureActionType -ieq "Enable") {   
-            if (($FilteredfeatureSetting.DependentFeaturesForEnabling -ne $null) -and ($FilteredfeatureSetting.DependentFeaturesForEnabling -ne "")) {
-                $DependentFeaturesForEnabling = @()
-                foreach ($resource in $FilteredfeatureSetting.DependentFeaturesForEnabling) { 
-                    $DependentFeaturesForEnabling += $resource 
+            if (($null -ne $FilteredfeatureSetting.DependentFeaturesForEnabling) -and ($FilteredfeatureSetting.DependentFeaturesForEnabling -ne "")) {
+                #Getting the list of dependent features
+                $dependentFeaturesForEnabling = Get-DependentFeature -FeatureName $FeatureName -JsonContent $JsonContent -DepandentFeatureName $FeatureName -FeatureActionType $FeatureActionType
+                
+                #Getting Unique Values
+                $dependentFeaturesForEnabling = $dependentFeaturesForEnabling | Sort-Object | Get-Unique 
+                $dependentFeaturesForEnablingText = ""
+                foreach ($DependentFeature in $dependentFeaturesForEnabling) {
+                    $dependentFeaturesForEnablingText += $DependentFeature + ","
                 } 
-                Write-Host "For enabling feature $FeatureName following feature needs to be enabled $DependentFeaturesForEnabling." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
+                $logger.PublishCustomMessage("For enabling feature $FeatureName following feature needs to be enabled $dependentFeaturesForEnablingText." , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage("Do you want to Continue? ", $([Constants]::MessageType.Warning))
                      
                 $userInput = Read-Host -Prompt "(Y|N)"
 
                 if ($userInput -ne "Y") {
-                    Write-Host  "Azts Feature $FeatureName will not be enabled in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    $logger.PublishCustomMessage( "Azts Feature $FeatureName will not be enabled in the Subscription. Exiting..." , $([Constants]::MessageType.Error))
                     break
+                }
+
+                #Adding configuration for dependent features
+                foreach ($dependentFeature in $dependentFeaturesForEnabling) {               
+                    $webAppConfigurationList = Get-Configuration -FeatureName $dependentFeature -JsonContent $JsonContent -ResourceHash $ResourceHash -FeatureActionType $FeatureActionType
+
                 }
             }
 
-            #Checking if any Dependent Features needs to be enabled
-            foreach ($DependentFeature in $FilteredfeatureSetting.DependentFeaturesForEnabling) {
-
-                #Filtering Dependent feature configuration
-                $FilteredDependentfeatureSetting = $JsonContent | Where-Object { ($_.FeatureName -ieq $DependentFeature) }
-
-                foreach ($resource in $FilteredDependentfeatureSetting.ConfigurationDependenciesForEnabling) {
-
-                    #Creating a hashtable for storing the configuration
-                    $ConfigurationHashtable = [hashtable]@{};
-                    $featureName = $resource.ComponentName + $ResourceHash;
-                    foreach ($Configuration in $resource.Configuration) {
-                                        
-                        #replace value for configuration
-                        if ( $Configuration.ConfigurationValue -ieq "##HostSubscriptionId##") {
-                            $Configuration.ConfigurationValue = $SubscriptionId;
-                        }
-
-                        if ( $Configuration.ConfigurationValue -ieq "##HostResourceGroupName##") {
-                            $Configuration.ConfigurationValue = $ScanHostRGName;
-                        }
-
-                        if ( $Configuration.ConfigurationValue -ieq "##AppName##") {
-                            $Configuration.ConfigurationValue = $featureName;
-                        }
-
-                        $ConfigurationHashtable[$Configuration.ConfigurationName] = $Configuration.ConfigurationValue
-                    }
-
-                    #calling function to validate if keys exist
-                    $FeatureEnabled = Validate-AppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
-
-                    #If FeatureEnabled = true means all the configuration keys & values are already present in Configuration, need to enable again
-                    if ( -not $FeatureEnabled) {
-                        try {
-                            # calling function to update the values
-                            Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
-                        }
-                        catch {
-                            Write-Host "Error occurred while updating Configuration. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                            break
-                        }
-                    }
-                                                                                            
-                }
-            }       
+            #Adding Configuration for Feature
+            $webAppConfigurationList = Get-Configuration -FeatureName $FeatureName -JsonContent $JsonContent -ResourceHash $ResourceHash  -FeatureActionType $FeatureActionType
                      
-            #Enabling the feature
-            foreach ($resource in $FilteredfeatureSetting.ConfigurationDependenciesForEnabling) {
-                                
-                $ConfigurationHashtable = [hashtable]@{};
-                $featureName = $resource.ComponentName + $ResourceHash;
-                foreach ($Configuration in $resource.Configuration) {
-                                        
-                    #replace value for configuration
-                    if ( $Configuration.ConfigurationValue -ieq "##HostSubscriptionId##") {
-                        $Configuration.ConfigurationValue = $SubscriptionId;
-                    }
-
-                    if ( $Configuration.ConfigurationValue -ieq "##HostResourceGroupName##") {
-                        $Configuration.ConfigurationValue = $ScanHostRGName;
-                    }
-
-                    if ( $Configuration.ConfigurationValue -ieq "##AppName##") {
-                        $Configuration.ConfigurationValue = $featureName;
-                    }
-
-                    $ConfigurationHashtable[$Configuration.ConfigurationName] = $Configuration.ConfigurationValue
-                }
-
-                try {
-                    # calling function to update the values
-                    Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType
-                }
-                catch {
-                    Write-Host "Error occurred while updating Configuration. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    break
-                }                                                                       
-            }
-                                          
+                                                                  
         }
-        elseif ($FeatureActionType -ieq "Disable") {         
-            if (($null -ne $FilteredfeatureSetting.DependentFeaturesForDisabling) -and ($FilteredfeatureSetting.DependentFeaturesForDisabling -ne "")) {                
-                $DependentFeaturesForDisabling = @()
-                foreach ($resource in $FilteredfeatureSetting.DependentFeaturesForDisabling) { 
-                    $DependentFeaturesForDisabling += $resource 
-                }
-
-                Write-Host "By disbaling feature $FeatureName following feature may get impacketed $DependentFeaturesForDisabling." -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
+        elseif ($FeatureActionType -ieq "Disable") {    
+            
+            if (($null -ne $FilteredfeatureSetting.DependentFeaturesForDisabling) -and ($FilteredfeatureSetting.DependentFeaturesForDisabling -ne "")) {
+                #Getting the list of dependent features
+                $dependentFeaturesForDisabling = Get-DependentFeature -FeatureName $FeatureName -JsonContent $JsonContent -DepandentFeatureName $FeatureName -FeatureActionType $FeatureActionType
+                
+                #Getting Unique Values
+                $dependentFeaturesForDisabling = $dependentFeaturesForDisabling | Sort-Object | Get-Unique
+                $dependentFeaturesForDisablingText = ""
+                foreach ($DependentFeature in $dependentFeaturesForDisabling) { 
+                    $dependentFeaturesForDisablingText += $DependentFeature + ", " 
+                } 
+                
+                $logger.PublishCustomMessage("By disabling feature $FeatureName following feature may get impacketed $dependentFeaturesForDisablingText." , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage("Do you want to Continue? " , $([Constants]::MessageType.Warning))
                      
                 $userInput = Read-Host -Prompt "(Y|N)"
 
                 if ($userInput -ne "Y") {
-                    Write-Host  "Azts Feature $FeatureName will not be enabled in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    $logger.PublishCustomMessage( "Azts Feature $FeatureName will not be disabled in the Subscription. Exiting..." , $([Constants]::MessageType.Error))
                     break
+                }
+
+                #Adding configuration for dependent features
+                foreach ($dependentFeature in $dependentFeaturesForDisabling) {               
+                    $webAppConfigurationList = Get-Configuration -FeatureName $dependentFeature -JsonContent $JsonContent -ResourceHash $ResourceHash -FeatureActionType $FeatureActionType
+
                 }
             }
-                    
 
-            #Need to add check for dependant feature
-            foreach ($resource in $FilteredfeatureSetting.ConfigurationDependenciesForDisabling) {
-                $ConfigurationHashtable = [hashtable]@{};
-                $featureName = $resource.ComponentName + $ResourceHash;
-                foreach ($Configuration in $resource.Configuration) {
-                    $ConfigurationHashtable[$Configuration.ConfigurationName] = $Configuration.ConfigurationValue
-                }
-
-                try {
-
-                    # calling function to update the values
-                    Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $featureName -AppSettings $ConfigurationHashtable -FeatureActionType $FeatureActionType       
-                }
-                catch {
-                    Write-Host "Error occurred while updating Configuration. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
-                    break
-                }                                                        
-            }                         
+            #Adding Configuration for Feature
+            $webAppConfigurationList = Get-Configuration -FeatureName $FeatureName -JsonContent $JsonContent -ResourceHash $ResourceHash -FeatureActionType $FeatureActionType
+                        
         }
+
+        #Enabling/Disabling the feature
+        $webAppConfigurationList.GetEnumerator() | ForEach-Object {
+            try {
+                # calling function to update the values
+                Configure-ModifyAppSetting -SubscriptionId $SubscriptionId -ScanHostRGName $ScanHostRGName -WebAppName $_.Name -AppSettings $_.Value -FeatureActionType $FeatureActionType
+            }
+            catch {
+                $logger.PublishCustomMessage("Error occurred while updating Configuration. Error: $($_)" , $([Constants]::MessageType.Error))
+                break
+            }      
+        }       
     }
     else {
-        Write-Host "FeatureName does not match. Expected values are 'CMET', 'CMET_Bulk_Edit', 'MG_Processor', 'PIM_API','MG_Compliance_Initiate_Editor'...." -ForegroundColor $([Constants]::MessageType.Error)
+        $logger.PublishCustomMessage("FeatureName does not match. Expected values are 'CMET', 'CMET_Bulk_Edit', 'MG_Processor', 'PIM_API','MG_Compliance_Initiate_Editor'...." , $([Constants]::MessageType.Error))
         break
-    }         
-
-    Write-Host "Configuration completed." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    
+    $logger.PublishLogFilePath()
+    $logger.PublishCustomMessage("Configuration completed." , $([Constants]::MessageType.Update))
 }
 
 
@@ -262,84 +216,188 @@ function Configure-ModifyAppSetting {
             $NewAppSettingsKeyOnly += $_.Value
         }
 
-        Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Updating new configuration values for: [$($WebAppName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
+        $logger.PublishCustomMessage("Updating new configuration values for: [$($WebAppName)]...", $([Constants]::MessageType.Info))
                
        
         # Configuring new app settings
         $AzTSAppSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WebAppName -AppSettings $NewAppSettings -ErrorAction Stop
 
-        Write-Host "Updated new configuration values for: [$($WebAppName)]..." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::SingleDashLine)
+        $logger.PublishCustomMessage("Updated new configuration values for: [$($WebAppName)]." , $([Constants]::MessageType.Update))
+        $logger.PublishCustomMessage($([Constants]::SingleDashLine))
     }
 }
 
-
-function Validate-AppSetting {
+function Get-DependentFeature {
     Param(
-        [Parameter(Mandatory = $true, HelpMessage = "Subscription id in which Azure Tenant Security Solution is installed.")]
-        $SubscriptionId,
-
-        [string]
-        [Parameter(Mandatory = $true, HelpMessage = "Name of ResourceGroup where Azure Tenant Security Solution is installed.")]
-        $ScanHostRGName,
-
+         
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Azts Feature Name to be Enabled/Disabled.")]
-        $WebAppName,
+        $FeatureName,
+
+        [string]
+        [Parameter(Mandatory = $false, HelpMessage = "Azts Feature Name to be Enabled/Disabled.")]
+        $DepandentFeatureName,
         
-        [hashtable]
+        [System.Object]
         [Parameter(Mandatory = $true, HelpMessage = "App Settings Keys which needs to be modified.")]
-        $AppSettings,
+        $JsonContent,
+
+        [System.Array]
+        [Parameter(Mandatory = $false, HelpMessage = "App Settings Keys which needs to be modified.")]
+        $DependentFeatures,
+
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage = "Action to be taken on Azts Feature, Pass Enabled for enabling the feature and Disable for disabling the feature.")]
+        $FeatureActionType
+        
+    )
+
+    $FilteredfeatureSetting = $JsonContent | Where-Object { ($_.FeatureName -ieq $DepandentFeatureName) }
+
+    $DependentFeatures = @()
+    if ($FeatureActionType -ieq "Enable") {
+        $DependentFeatures = $FilteredfeatureSetting.DependentFeaturesForEnabling
+    }
+    else { $DependentFeatures = $FilteredfeatureSetting.DependentFeaturesForDisabling }
+
+
+
+    if (($null -ne $DependentFeatures) -and ($DependentFeatures -ne "")) {                  
+        foreach ($DependentFeature in $DependentFeatures) {
+            if ( $FeatureName -ine $DependentFeature) {
+                 
+                if ($null -eq $DependentFeatures) {
+                    $DependentFeatures += $DependentFeature                    
+                    $IsDependentFeature = Validate-DependentFeature -FeatureName $DependentFeature -JsonContent $JsonContent -FeatureActionType $FeatureActionType 
+                    if ($IsDependentFeature) {
+                        Get-DependentFeature -FeatureName $FeatureName -JsonContent $JsonContent -DependentFeatures $DependentFeatures -DepandentFeatureName $DependentFeature -FeatureActionType $FeatureActionType
+                    }
+                }
+
+                if (!$DependentFeatures.Contains($DependentFeature)) {
+                    $DependentFeatures += $DependentFeature
+                    $IsDependentFeature = Validate-DependentFeature -FeatureName $DependentFeature -JsonContent $JsonContent -FeatureActionType $FeatureActionType
+                    if ($IsDependentFeature) {
+                        Get-DependentFeature -FeatureName $FeatureName -JsonContent $JsonContent -DependentFeatures $DependentFeatures -DepandentFeatureName $DependentFeature -FeatureActionType $FeatureActionType
+                    }
+
+                }
+            }
+        }
+    } 
+    return $DependentFeatures
+}
+
+function Validate-DependentFeature {
+    Param(
+         
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage = "Azts Feature Name to be Enabled/Disabled.")]
+        $FeatureName,
+
+        [System.Object]
+        [Parameter(Mandatory = $true, HelpMessage = "App Settings Keys which needs to be modified.")]
+        $JsonContent,
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Action to be taken on Azts Feature, Pass Enabled for enabling the feature and Disable for disabling the feature.")]
         $FeatureActionType
     )
 
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Validating new configuration values for: [$($WebAppName)]..." -ForegroundColor $([Constants]::MessageType.Info)               
-    
-    $IsFeatureEnabled = $false
+    $FilteredfeatureSetting = $JsonContent | Where-Object { ($_.FeatureName -ieq $FeatureName) }
 
-    $AzTSAppSettings = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WebAppName -ErrorAction Stop
-
-    if ($null -ne $AzTSAppSettings) {
-        # Existing app settings
-        $ExistingAppSettings = $AzTSAppSettings.SiteConfig.AppSettings
-
-        # Moving existing app settings in new app settings list to avoid being overridden
-        $NewAppSettings = @{}
-        $ConfigurationFoundCount = 0
-        $ConfigurationNotFoundCount = 0
-
-        # Adding new settings to new app settings list
-        $AppSettings.GetEnumerator() | ForEach-Object {
-           
-            $NewAppSettings[$_.Key] = $_.Value
-            $configurationName = $_.Key
-            $configurationValue = $_.Value
-
-            $SettingFound = $ExistingAppSettings | Where-Object { ($_.Name -ieq $configurationName) -and ($_.Value -ieq $configurationValue) }
-
-            if ( $null -eq $SettingFound) {
-                $ConfigurationNotFoundCount++
-            }
-            else {
-                $ConfigurationFoundCount++
-            }           
-        }
-
-        if ($ConfigurationNotFoundCount -ieq 0) {
-            $IsFeatureEnabled = $true
-        }
-
-        Write-Host "Validated new configuration values for: [$($WebAppName)]..." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::SingleDashLine)
-        return $IsFeatureEnabled;
+    $DependentFeatures = @()
+    if ($FeatureActionType -ieq "Enable") {
+        $DependentFeatures = $FilteredfeatureSetting.DependentFeaturesForEnabling
     }
+    else { $DependentFeatures = $FilteredfeatureSetting.DependentFeaturesForDisabling }
+
+
+
+    if (($null -ne $DependentFeatures) -and ($DependentFeatures -ne "")) {  
+        return $true
+    }
+    else {
+        return $false
+    }
+
 }
 
+
+function Get-Configuration {
+    Param(
+         
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage = "Azts Feature Name to be Enabled/Disabled.")]
+        $FeatureName,
+        [System.Object]
+        [Parameter(Mandatory = $true)]
+        $JsonContent,
+
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage = "Hash value of resource.")]
+        $ResourceHash,
+
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage = "Action to be taken on Azts Feature, Pass Enabled for enabling the feature and Disable for disabling the feature.")]
+        $FeatureActionType
+    )
+   
+    #Filtering Dependent feature configuration
+    $FilteredfeatureSetting = $JsonContent | Where-Object { ($_.FeatureName -ieq $FeatureName) }
+
+    $ConfigurationDependencies = @()
+    if ($FeatureActionType -ieq "Enable") {
+        $ConfigurationDependencies = $FilteredfeatureSetting.ConfigurationDependenciesForEnabling
+    }
+    else { $ConfigurationDependencies = $FilteredfeatureSetting.ConfigurationDependenciesForDisabling }
+
+
+    foreach ($ConfigurationDependency in $ConfigurationDependencies) {
+
+        #Creating a hashtable for storing the configuration
+        $ConfigurationHashtable = [hashtable]@{};
+        $featureName = $ConfigurationDependency.ComponentName + $ResourceHash;
+        foreach ($Configuration in $ConfigurationDependency.Configuration) {
+                                        
+            #replace value for configuration
+            if ( $Configuration.ConfigurationValue -ieq "##HostSubscriptionId##") {
+                $Configuration.ConfigurationValue = $SubscriptionId;
+            }
+
+            if ( $Configuration.ConfigurationValue -ieq "##HostResourceGroupName##") {
+                $Configuration.ConfigurationValue = $ScanHostRGName;
+            }
+
+            if ( $Configuration.ConfigurationValue -ieq "##AppName##") {
+                $Configuration.ConfigurationValue = $featureName;
+            }
+
+            $ConfigurationHashtable[$Configuration.ConfigurationName] = $Configuration.ConfigurationValue
+        }
+        #null check
+        if ($null -ne $webAppConfigurationList) {
+            #if key contains
+            if (!$webAppConfigurationList.ContainsKey($featureName)) {
+                $webAppConfigurationList[$featureName] = $ConfigurationHashtable;
+            }
+            else {
+                #key found
+                $TempConfiguration = $webAppConfigurationList[$featureName]
+                $MergedConfiguration = $TempConfiguration + $ConfigurationHashtable
+                $webAppConfigurationList[$featureName] = $MergedConfiguration;
+
+            }
+
+
+        }
+        else
+        { $webAppConfigurationList[$featureName] = $ConfigurationHashtable; }
+
+    }
+    return $webAppConfigurationList;
+}
 function get-hash([string]$textToHash) {
     $hasher = new-object System.Security.Cryptography.MD5CryptoServiceProvider
     $toHash = [System.Text.Encoding]::UTF8.GetBytes($textToHash)
@@ -362,4 +420,38 @@ class Constants {
 
     static [string] $DoubleDashLine = "================================================================================"
     static [string] $SingleDashLine = "--------------------------------------------------------------------------------"
+}
+
+class Logger {
+    [string] $logFilePath = "";
+
+    Logger([string] $HostSubscriptionId) {
+        $logFolerPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Setup\Subscriptions\$($HostSubscriptionId.replace('-','_'))";
+        $logFileName = "\$('DeploymentLogs_' + $(Get-Date).ToString('yyyyMMddhhmm') + '.txt')";
+        $this.logFilePath = $logFolerPath + $logFileName
+        # Create folder if not exist
+        if (-not (Test-Path -Path $logFolerPath)) {
+            New-Item -ItemType Directory -Path $logFolerPath | Out-Null
+        }
+        # Create log file
+        
+        New-Item -Path $this.logFilePath -ItemType File | Out-Null
+        
+    }
+
+    PublishCustomMessage ([string] $message, [string] $foregroundColor) {
+        $($message) | Add-Content $this.logFilePath -PassThru | Write-Host -ForegroundColor $foregroundColor
+    }
+
+    PublishCustomMessage ([string] $message) {
+        $($message) | Add-Content $this.logFilePath -PassThru | Write-Host -ForegroundColor White
+    }
+
+    PublishLogMessage ([string] $message) {
+        $($message) | Add-Content $this.logFilePath
+    }
+
+    PublishLogFilePath() {
+        Write-Host $([Constants]::DoubleDashLine)"`r`nLogs have been exported to: $($this.logFilePath)`r`n"$([Constants]::DoubleDashLine) -ForegroundColor Cyan
+    }
 }
