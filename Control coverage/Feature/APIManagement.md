@@ -54,7 +54,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
         # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
         ```
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** id<br />
@@ -184,7 +184,7 @@ By default, each API Management instance comes with two sample products: Starter
 
 	 To delete sample products, go to Azure Portal --> your API management instance --> Products --> Select 'Starter'/'Unlimited' Product --> Delete. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list a collection of products in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products?api-version=2019-01-01 <br />
 **Properties:** name<br />
@@ -222,7 +222,7 @@ Delegation allows you to use your existing website for handling developer sign-i
 
 	 To disable delegation, go to APIM service --> Developer portal --> Delegation --> Uncheck the two check boxes (a) Delegate sign-in & sign-up (b) Delegate product subscription. Read more about delegation here: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-setup-delegation
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
@@ -258,7 +258,7 @@ If 'validate-jwt' policy is not configured, client can call the API without the 
 
 	 For steps to add JWT Validate Token policy please refer: <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-access-restriction-policies#ValidateJWT <br>and <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad#configure-a-jwt-validation-policy-to-pre-authorize-requests 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** sku<br />
@@ -348,7 +348,7 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 
 	 To enable user authorization for an API, go to Azure Portal --> your API management instance --> APIs --> Select API --> Settings -> User Authorization -> Enable 'OAuth 2.0' or 'OpenID connect'. Please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-oauth2. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
@@ -401,7 +401,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 	 For steps to use Azure Active Directory (Azure AD) please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-aad. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
@@ -440,7 +440,7 @@ Use client certificates to secure access to the back-end service of an API and p
 
 	 To enable client certificate authentication from Azure portal please refer: <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-mutual-certificates <br>and <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-authentication-policies. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
@@ -486,7 +486,7 @@ When publishing APIs through Azure API Management (APIM), the easiest and most c
 
 	 To enable 'Requires Subscription' go to Azure Portal --> your API management instance --> Products --> Settings --> 'Requires Subscription'. Refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-subscriptions. <br>To create subscription for a user directly from Azure portal refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-create-subscriptions 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list a collection of products in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products?api-version=2019-01-01<br />
 **Properties:** properties.subscriptionRequired, properties.state<br />
@@ -529,7 +529,7 @@ Managed Service Identity (MSI) allows your API Management instance to easily acc
 
 	 Go to Azure Portal --> your API management instance --> Settings --> Managed Service Identity --> Register with AAD --> ON 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** sku, identity.type<br />
@@ -668,7 +668,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
 - ARM API to list diagnostic setting details of API Management resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:** 
