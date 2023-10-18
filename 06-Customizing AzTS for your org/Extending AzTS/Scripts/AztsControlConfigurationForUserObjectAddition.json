@@ -9,7 +9,7 @@
         ]       
     },    
     {
-        "FeatureName": "MG_Compliance_Initiate_Editor",      
+        "FeatureName": "MG Compliance Initiate Editor",      
         "ConfigurationDependencies": [
             {
                 "ComponentName": "AzSK-AzTS-WebApi-",
