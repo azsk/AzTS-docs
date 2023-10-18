@@ -432,7 +432,7 @@ class Logger {
 
     Logger([string] $HostSubscriptionId) {
         $logFolerPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\FeatureUpdate\Subscriptions\$($HostSubscriptionId.replace('-','_'))";
-        $logFileName = "\$('DeploymentLogs_' + $(Get-Date).ToString('yyyyMMddhhmm') + '.txt')";
+        $logFileName = "\$('FeatureUpdateLogs_' + $(Get-Date).ToString('yyyyMMddhhmm') + '.txt')";
         $this.logFilePath = $logFolerPath + $logFileName
         # Create folder if not exist
         if (-not (Test-Path -Path $logFolerPath)) {
