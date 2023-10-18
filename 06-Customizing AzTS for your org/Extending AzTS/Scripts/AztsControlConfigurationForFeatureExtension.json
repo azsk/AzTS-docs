@@ -2,7 +2,7 @@
     {
         "FeatureName": "CMET",
         "DependentFeaturesForEnabling": [],
-        "DependentFeaturesForDisabling": ["CMET_Bulk_Edit","MG_Compliance_Initiate_Editor"],
+        "DependentFeaturesForDisabling": ["CMET Bulk Edit","MG Compliance Initiate Editor"],
 
         "ConfigurationDependenciesForEnabling": [
             {
@@ -124,7 +124,7 @@
         ]
     },
     {
-        "FeatureName": "CMET_Bulk_Edit",
+        "FeatureName": "CMET Bulk Edit",
         "DependentFeaturesForEnabling": ["CMET"], 
         "DependentFeaturesForDisabling": [],
         "ConfigurationDependenciesForEnabling": [
@@ -159,9 +159,9 @@
         ]
     },
     {
-        "FeatureName": "MG_Processor",
+        "FeatureName": "MG Processor",
         "DependentFeaturesForEnabling": ["CMET"], 
-        "DependentFeaturesForDisabling": ["MG_Compliance_Initiate_Editor"],
+        "DependentFeaturesForDisabling": ["MG Compliance Initiate Editor"],
         "ConfigurationDependenciesForEnabling": [             
             {
                 "ComponentName": "AzSK-AzTS-MetaDataAggregator-",
@@ -186,9 +186,9 @@
         ]
     },
     {
-        "FeatureName": "PIM_API",
+        "FeatureName": "PIM API",
         "DependentFeaturesForEnabling": [], 
-        "DependentFeaturesForDisabling": ["MG_Compliance_Initiate_Editor"],
+        "DependentFeaturesForDisabling": ["MG Compliance Initiate Editor"],
         "ConfigurationDependenciesForEnabling": [             
             {
                 "ComponentName": "AzSK-AzTS-MetaDataAggregator-",
@@ -213,8 +213,8 @@
         ]
     },
     {
-        "FeatureName": "MG_Compliance_Initiate_Editor",
-        "DependentFeaturesForEnabling": ["CMET","MG_Processor","PIM_API"], 
+        "FeatureName": "MG Compliance Initiate Editor",
+        "DependentFeaturesForEnabling": ["CMET","MG Processor","PIM API"], 
         "DependentFeaturesForDisabling": [],
         "ConfigurationDependenciesForEnabling": [
             {
