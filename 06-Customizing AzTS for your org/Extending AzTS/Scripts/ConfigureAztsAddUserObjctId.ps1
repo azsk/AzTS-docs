@@ -45,7 +45,7 @@ function Update-AzTSConfigurationValues {
      
     #checking if ConfigurationValues enetered is having single or multiple values
     if ( !$ConfigurationValues.Contains(",")) {
-        $ConfigurationValues += ",";
+        $ConfigurationValues += ","; 
     }
 
     #Splitting the UserObjectIds from (,)
@@ -143,7 +143,11 @@ function Update-AzTSConfigurationValues {
                     $logger.PublishCustomMessage("Updating below configuration for: [$($FeatureName)]...", $([Constants]::MessageType.Info))
                     $logger.PublishLogMessage($NewConfigurationList)
                     #Write-Host  $(( $NewConfigurationList | Format-Table).TrimEnd()) -ForegroundColor $([Constants]::MessageType.Info) 
+<<<<<<< HEAD
                     $(( $NewConfigurationList | Out-String).TrimEnd()) | Write-Host -ForegroundColor $([Constants]::MessageType.Info)
+=======
+                   $(( $NewConfigurationList | Out-String).TrimEnd()) | Write-Host -ForegroundColor $([Constants]::MessageType.Info)
+>>>>>>> a10f09962743de7cf2b1b8b03be66428b4aa4667
                     #Updating the new configuration values
                     $AzTSAppConfigurationSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $FeatureName -AppSettings $NewAppSettings -ErrorAction Stop
 
