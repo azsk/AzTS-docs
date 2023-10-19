@@ -24,7 +24,7 @@ function Update-AzTSConfigurationValues {
         $ScanHostRGName,
 
         [string]
-        [Parameter(Mandatory = $false, HelpMessage = "File path for Azts COntrol Configuration JSON file AztsControlConfiguration.json .")]
+        [Parameter(Mandatory = $false, HelpMessage = "File path for Azts Control Configuration file AztsControlConfiguration.json.")]
         $FilePath = "./AztsControlConfigurationForUserObjectAddition.json",
 
         [string]
@@ -72,17 +72,17 @@ function Update-AzTSConfigurationValues {
      
 
         #Checking if any Dependent Features needs to be enabled
-        foreach ($resource in $FilteredfeatureSetting.ConfigurationDependencies) {
+        foreach ($dependentConfiguration in $FilteredfeatureSetting.ConfigurationDependencies) {
             $IntPrivilegedEditorIds = @()
             $NewAppSettings = @{}
             $NewConfigurationList = @{}
 
-            $featureName = $resource.ComponentName + $ResourceHash;
+            $featureName = $dependentConfiguration.ComponentName + $ResourceHash;
             
             #Getting Existing configuration value
             $AzTSAppConfigurationSettings = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $featureName -ErrorAction Stop
         
-            foreach ($Configuration in $resource.Configuration) {
+            foreach ($Configuration in $dependentConfiguration.Configuration) {
                 if ($null -ne $AzTSAppConfigurationSettings) {
 
                     #Splitting the UserObjectIds from (,)
@@ -129,10 +129,11 @@ function Update-AzTSConfigurationValues {
 
             try {
                 if ($UserObjectIdsArray.Count -gt 0) {
-                    $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
+                    $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
                     $logger.PublishCustomMessage("Updating below configuration for: [$($FeatureName)]...", $([Constants]::MessageType.Info))
                     $logger.PublishLogMessage($NewConfigurationList)
-
+                    #Write-Host  $(( $NewConfigurationList | Format-Table).TrimEnd()) -ForegroundColor $([Constants]::MessageType.Info) 
+                   $(( $NewConfigurationList | Out-String).TrimEnd()) | Write-Host -ForegroundColor $([Constants]::MessageType.Info)
                     #Updating the new configuration values
                     $AzTSAppConfigurationSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $FeatureName -AppSettings $NewAppSettings -ErrorAction Stop
 
@@ -144,18 +145,18 @@ function Update-AzTSConfigurationValues {
                 }
             }
             catch {
-                logger.PublishCustomMessage("Error occurred while updating Configuration. Error: $($_)", $([Constants]::MessageType.Error))
+                $logger.PublishCustomMessage("Error occurred while updating Configuration. Error: $($_)", $([Constants]::MessageType.Error))
                 break
             }         
         }        
 
-        $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
-        $logger.PublishCustomMessage("Configuration completed." , $([Constants]::MessageType.Update))
+        $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+        $logger.PublishCustomMessage("Configuration completed successfully." , $([Constants]::MessageType.Update))
         $logger.PublishLogFilePath()
     }
     else {
-        $availableFeatureName = $JsonContent.FeatureName -join ","
-        $logger.PublishCustomMessage("The value entered for FeatureName: $FeatureName is invalid. Valid values are $availableFeatureName. Exiting..." , $([Constants]::MessageType.Error))
+        $availableFeatureName = $JsonContent.FeatureName -join ", "
+        $logger.PublishCustomMessage("The value entered for FeatureName: $FeatureName is invalid. Valid values are [$availableFeatureName]. Exiting..." , $([Constants]::MessageType.Error))
         $logger.PublishLogFilePath()
     }
 }
