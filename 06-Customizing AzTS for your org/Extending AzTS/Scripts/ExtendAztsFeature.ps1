@@ -9,13 +9,13 @@
 
 # Examples:
     To Enable features of AzTS:
-           Configure-AzTSTenantSecurityAdditionalFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Enable"
+           Configure-AzTSAdditionalFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Enable"
 
     To Disable features of AzTS:
-           Configure-AzTSTenantSecurityAdditionalFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Disable"
+           Configure-AzTSAdditionalFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Disable"
 
 ###>
-function Configure-AzTSTenantSecurityAdditionalFeature {
+function Configure-AzTSAdditionalFeature {
     Param(
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Subscription id in which AzTS is installed.")]
@@ -42,7 +42,7 @@ function Configure-AzTSTenantSecurityAdditionalFeature {
     $FeatureName = $FeatureName.Trim()
 
     $logger = [Logger]::new($SubscriptionId)     
-    $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSTenantSecurityAdditionalFeature `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
+    $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSAdditionalFeature `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
     $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
     $logger.PublishCustomMessage("Starting AzTS $($FeatureActionType.ToLower()) feature for $FeatureName. This may take 5 mins...", $([Constants]::MessageType.Info))
 
@@ -90,8 +90,8 @@ function Configure-AzTSTenantSecurityAdditionalFeature {
                 #Enable below line for comma seperated dependent feature
                 #$logger.PublishCustomMessage("For enabling $FeatureName following dependent feature needs to be enabled: $dependentFeaturesForEnablingText" , $([Constants]::MessageType.Warning))
                 
-                $logger.PublishCustomMessage($([Constants]::DoubleDashLine)) 
-                $logger.PublishCustomMessage("For enabling $FeatureName following dependent feature needs to be enabled: " , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+                $logger.PublishCustomMessage("Enabling [$FeatureName] will also enable the following required feature i.e.: " , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage( $(( $dependentFeaturesForEnabling | Out-String).TrimEnd()) , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage("`r`nDo you want to Continue? ", $([Constants]::MessageType.Warning))
                      
@@ -124,10 +124,10 @@ function Configure-AzTSTenantSecurityAdditionalFeature {
                 $dependentFeaturesForDisabling = $dependentFeaturesForDisabling | Sort-Object | Get-Unique
                 $dependentFeaturesForDisablingText = $dependentFeaturesForDisabling -join ", " 
 
-                $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
-                $logger.PublishCustomMessage("By disabling $FeatureName following dependent feature will get disabled: " , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+                $logger.PublishCustomMessage("Disabling [$FeatureName] will also disable the following required features i.e.: " , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage( $(( $dependentFeaturesForDisabling | Out-String).TrimEnd()) , $([Constants]::MessageType.Warning)) 
-                $logger.PublishCustomMessage("Do you want to Continue? " , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage("`r`nDo you want to Continue? " , $([Constants]::MessageType.Warning))
                      
                 $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -162,12 +162,12 @@ function Configure-AzTSTenantSecurityAdditionalFeature {
     }
     else {
         $availableFeatureName = $JsonContent.FeatureName -join ","
-        $logger.PublishCustomMessage("The value entered for FeatureName: $FeatureName is invalid. Valid values are $availableFeatureName. Exiting..." , $([Constants]::MessageType.Error))
+        $logger.PublishCustomMessage("The value entered for FeatureName: $FeatureName is invalid. Valid values are [$availableFeatureName]. Exiting..." , $([Constants]::MessageType.Error))
         $logger.PublishLogFilePath()
         break
     }
-    $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
-    $logger.PublishCustomMessage("Configuration completed." , $([Constants]::MessageType.Update))
+    $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+    $logger.PublishCustomMessage("Configuration completed successfully." , $([Constants]::MessageType.Update))
     $logger.PublishLogFilePath()
 }
 
@@ -196,7 +196,7 @@ function Configure-ModifyAppSetting {
         $FeatureActionType
 
     )   
-    $logger.PublishCustomMessage($([Constants]::DoubleDashLine))
+   $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
     $logger.PublishCustomMessage("Updating below configuration for: [$($WebAppName)]...", $([Constants]::MessageType.Info))
     #$logger.PublishLogMessage($_.Value)
     #$logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSTenantSecurityAdditionalFeature `r`nInput Parameters: $(( $_.Value | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
