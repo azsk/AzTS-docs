@@ -9,13 +9,14 @@
 
 # Examples:
     To Enable features of AzTS:
-           Configure-AzTSAdditionalFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Enable"
+           Configure-AzTSFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Enable"
 
     To Disable features of AzTS:
-           Configure-AzTSAdditionalFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Disable"
+           Configure-AzTSFeature -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForFeatureExtension.json" -FeatureName "CMET"  -FeatureActionType "Disable"
 
 ###>
-function Configure-AzTSAdditionalFeature {
+
+function Configure-AzTSFeature {
     Param(
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Subscription id in which AzTS is installed.")]
@@ -27,14 +28,16 @@ function Configure-AzTSAdditionalFeature {
 
         [string]
         [Parameter(Mandatory = $false, HelpMessage = "File path for AzTS Control Configuration JSON file AztsControlConfigurationForFeatureExtension.json.")]
-        $FilePath = ".\AztsControlConfigurationForFeatureExtension.json",
+        $FilePath = ".\1-AztsTestJSOn.json",
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "AzTS Feature Name to be Enabled/Disabled. Values for this parameter are 'CMET', 'CMET Bulk Edit', 'MG Processor', 'PIM API','MG Compliance Initiate Editor'")]
+        [ValidateSet("CMET", "CMET Bulk Edit", "MG Processor", "PIM API", "MG Compliance Initiate Editor")]
         $FeatureName,
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Action to be taken on AzTS Feature, Pass Enabled for enabling the feature and Disable for disabling the feature.")]
+        [ValidateSet("Enable", "Disable")]
         $FeatureActionType
     )
 
@@ -42,9 +45,9 @@ function Configure-AzTSAdditionalFeature {
     $FeatureName = $FeatureName.Trim()
 
     $logger = [Logger]::new($SubscriptionId)     
-    $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSAdditionalFeature `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
+    $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSFeature `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
     $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-    $logger.PublishCustomMessage("Starting AzTS $($FeatureActionType.ToLower()) feature for $FeatureName. This may take 5 mins...", $([Constants]::MessageType.Info))
+    $logger.PublishCustomMessage("Starting process to $($FeatureActionType.ToLower()) $FeatureName feature. This may take 2-3 mins...", $([Constants]::MessageType.Info))
 
 
     $webAppConfigurationList = [hashtable]@{}
@@ -53,6 +56,9 @@ function Configure-AzTSAdditionalFeature {
 
     # Set the context to host subscription
     Set-AzContext -SubscriptionId  $SubscriptionId | Out-null
+    
+    #To set context for default subs
+    #Update-AzConfig -DefaultSubscriptionForLogin $SubscriptionId | Out-null
     
     # AzTS resources name preparation
     $ResourceId = '/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId, $ScanHostRGName;
@@ -91,7 +97,7 @@ function Configure-AzTSAdditionalFeature {
                 #$logger.PublishCustomMessage("For enabling $FeatureName following dependent feature needs to be enabled: $dependentFeaturesForEnablingText" , $([Constants]::MessageType.Warning))
                 
                 $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-                $logger.PublishCustomMessage("Enabling [$FeatureName] will also enable the following required feature i.e.: " , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage("Enabling [$FeatureName] will also enable dependent feature(s): " , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage( $(( $dependentFeaturesForEnabling | Out-String).TrimEnd()) , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage("`r`nDo you want to Continue? ", $([Constants]::MessageType.Warning))
                      
@@ -125,7 +131,7 @@ function Configure-AzTSAdditionalFeature {
                 $dependentFeaturesForDisablingText = $dependentFeaturesForDisabling -join ", " 
 
                 $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-                $logger.PublishCustomMessage("Disabling [$FeatureName] will also disable the following required features i.e.: " , $([Constants]::MessageType.Warning))
+                $logger.PublishCustomMessage("Disabling [$FeatureName] will also disable dependent feature(s): " , $([Constants]::MessageType.Warning))
                 $logger.PublishCustomMessage( $(( $dependentFeaturesForDisabling | Out-String).TrimEnd()) , $([Constants]::MessageType.Warning)) 
                 $logger.PublishCustomMessage("`r`nDo you want to Continue? " , $([Constants]::MessageType.Warning))
                      
@@ -167,7 +173,21 @@ function Configure-AzTSAdditionalFeature {
         break
     }
     $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-    $logger.PublishCustomMessage("Configuration completed successfully." , $([Constants]::MessageType.Update))
+   
+
+    $dependentFeatures = $dependentFeaturesForDisabling
+    if (!$dependentFeaturesForEnabling.Count -eq 0) {
+        $dependentFeatures = $dependentFeaturesForEnabling
+    }   
+
+    if ($dependentFeatures.Count -eq 0 ) {   
+        $logger.PublishCustomMessage( "Successfully $($FeatureActionType.ToLower()+"d") [$FeatureName] feature.", $([Constants]::MessageType.Info))
+    }
+    else {   
+        $logger.PublishCustomMessage( "The following feature(s) are $($FeatureActionType.ToLower()+"d") successfully:`r`n$FeatureName`r`n" + $(( $dependentFeatures | Out-String).TrimEnd()) , $([Constants]::MessageType.Info))    
+    }
+
+    $logger.PublishLogMessage($([Constants]::DoubleDashLine))
     $logger.PublishLogFilePath()
 }
 
@@ -196,15 +216,13 @@ function Configure-ModifyAppSetting {
         $FeatureActionType
 
     )   
-   $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+    $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
     $logger.PublishCustomMessage("Updating below configuration for: [$($WebAppName)]...", $([Constants]::MessageType.Info))
-    #$logger.PublishLogMessage($_.Value)
+
+    #Enable below line to see the config values in console output window
     #$logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSTenantSecurityAdditionalFeature `r`nInput Parameters: $(( $_.Value | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
-    $logger.PublishCustomMessage( $(( $_.Value | Out-String).TrimEnd()) , $([Constants]::MessageType.Info)) 
+    $logger.PublishLogMessage($_.Value )
 
-
-    #$_.Value | Format-Table 
-    #$logger.PublishCustomMessage($([Constants]::DoubleDashLine))
     $AzTSAppSettings = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WebAppName -ErrorAction Stop
 
     if ($null -ne $AzTSAppSettings) {
@@ -231,14 +249,10 @@ function Configure-ModifyAppSetting {
             $NewAppSettings[$_.Key] = $_.Value
             $NewAppSettingsKeyOnly += $_.Value
         }
-
-        # $logger.PublishCustomMessage($([Constants]::SingleDashLine))
-        # $logger.PublishCustomMessage("Updating new configuration values for: [$($WebAppName)]...", $([Constants]::MessageType.Info))               
-       
+        
         # Configuring new app settings
-        # $AzTSAppSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WebAppName -AppSettings $NewAppSettings -ErrorAction Stop
-        $logger.PublishCustomMessage("`r`nUpdated configuration for: [$($WebAppName)]." , $([Constants]::MessageType.Update))
-        #$logger.PublishCustomMessage($([Constants]::SingleDashLine))
+        $AzTSAppSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $WebAppName -AppSettings $NewAppSettings -ErrorAction Stop
+        $logger.PublishCustomMessage("Updated configuration for: [$($WebAppName)]." , $([Constants]::MessageType.Update))
     }
 }
 
