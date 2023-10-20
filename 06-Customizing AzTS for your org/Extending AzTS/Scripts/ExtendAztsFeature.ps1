@@ -28,7 +28,7 @@ function Configure-AzTSFeature {
 
         [string]
         [Parameter(Mandatory = $false, HelpMessage = "File path for AzTS Control Configuration JSON file AztsControlConfigurationForFeatureExtension.json.")]
-        $FilePath = ".\1-AztsTestJSOn.json",
+        $FilePath = ".\AztsToggleFeatureControlConfiguration.json",
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "AzTS Feature Name to be Enabled/Disabled. Values for this parameter are 'CMET', 'CMET Bulk Edit', 'MG Processor', 'PIM API','MG Compliance Initiate Editor'")]
