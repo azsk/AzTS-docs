@@ -1,0 +1,20 @@
+[
+    {
+        "FeatureName": "CMET",
+        "ConfigurationDependencies": [
+            {
+                "ComponentName": "AzSK-AzTS-WebApi-",
+                "Configuration": ["ControlActionItem__0__PrivilegedEditorIds__"]
+            }             
+        ]       
+    },    
+    {
+        "FeatureName": "MG Compliance Initiate Editor",      
+        "ConfigurationDependencies": [
+            {
+                "ComponentName": "AzSK-AzTS-WebApi-",
+                "Configuration": ["ControlActionItem__0__PrivilegedEditorIds__","ComplianceInitiativeActionItem__0__PrivilegedEditorIds__"]
+            }
+        ]         
+    }
+]

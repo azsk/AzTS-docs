@@ -67,6 +67,34 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 10. Click 'OK' and then click 'Save'.
 ![Resources](../../Images/06_MGCIEnableMGAndSave.png)
 
+-----
+
+- Using helper script
+  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
+  > **Note:** Script can be downloaded by clicking Alt+Raw button.
+  - Open a PowerShell session.
+  - Navigate to the download location of the script in PowerShell session.
+    - cd "Script download location" 
+
+  - Unblock the downloaded script.
+    - Unblock-File -Path ".\ConfigureAzTSFeature.ps1"
+  - Load the script in current PowerShell session.
+    - . ".\ConfigureAzTSFeature.ps1"
+    > **Note:** Do not miss the '.' at beginning of the above command.
+  - Connect to AzAccount
+    - Connect-AzAccount -Tenant "AzTSHostingTenantId"
+  - Invoke the configuration cmdlet
+    - Configure-AzTSFeature -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "MG Compliance Initiate Editor" -FeatureActionType "Enable"
+ - Load the script in current PowerShell session.
+    - . ".\Add-AztsFeatureConfigurationValues.ps1"
+    > **Note:** Do not miss the '.' at beginning of the above command.
+  - Invoke the configuration cmdlet
+    - Add-AztsFeatureConfigurationValues -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "user's object id"
+    > **Note:** user's object id can be referenced from Azure AD.<br />
+    For adding multiple user, pass the user's object id value seperated by comma(',').<br />
+    For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+
+
 ### 3.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
 Compliance initiative feature requires common tag on all controls which are part of an initiative. Common tag to a set of controls can be added by using CMET bulk edit mode. Please follow the steps mentioned [here](../../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/FeaturesInCMET.md) to add tags to controls.
 

@@ -45,7 +45,7 @@ Below mentioned appsettings are required for enabling CMET:
 
 
 - Using helper script
-  - Download the script from [here](../../TemplateFiles/AzTSToggleFeatureFiles.zip), skip this step if you have already downloaded the deployment package zip
+  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a PowerShell session.
   - Navigate to the download location of the script in PowerShell session.
@@ -77,7 +77,7 @@ Only privileged users have access to CMET for updating control metadata or addin
 
 
 - Using helper script
-  - Download the script from [here](../../TemplateFiles/AzTSToggleFeatureFiles.zip), skip this step if you have already downloaded the deployment package zip
+  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a PowerShell session.
   - Navigate to the download location of the script in PowerShell session.
