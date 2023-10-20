@@ -45,20 +45,20 @@ Below mentioned appsettings are required for enabling CMET:
 
 
 - Using helper script
-  - Download the script from [here](./Scripts/ConfigureCustomControlAdditionPrerequisites.ps1)
+  - Download the script from [here](../../TemplateFiles/AzTSToggleFeatureFiles.zip), skip this step if you have already downloaded the deployment package zip
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a PowerShell session.
   - Navigate to the download location of the script in PowerShell session.
     - cd "Script download location"
   - Unblock the downloaded script.
-    - Unblock-File -Path ".\ConfigureCustomControlAdditionPrerequisites.ps1"
+    - Unblock-File -Path ".\ConfigureAzTSFeature.ps1"
   - Load the script in current PowerShell session.
-    - . ".\ConfigureCustomControlAdditionPrerequisites.ps1"
+    - . ".\ConfigureAzTSFeature.ps1"
     > **Note:** Do not miss the '.' at beginning of the above command.
   - Connect to AzAccount
     - Connect-AzAccount -Tenant "AzTSHostingTenantId"
   - Invoke the configuration cmdlet
-    - Configure-CustomControlAdditionPrerequisites -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName"
+    - Configure-AzTSFeature -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "CMET"  -FeatureActionType "Enable"
 
 
 ## Access to CMET (Control metadata editor tool)
@@ -74,3 +74,23 @@ Only privileged users have access to CMET for updating control metadata or addin
 > **Note:** For first user being added **index** value should be 0, eg. **ControlActionItem__0__PrivilegedEditorIds__0** and incremented sequentially for further users being added.
 - Add the user's object id as the value of the appsetting.
 > **Note:** user's object id can be referenced from Azure AD.
+
+
+- Using helper script
+  - Download the script from [here](../../TemplateFiles/AzTSToggleFeatureFiles.zip), skip this step if you have already downloaded the deployment package zip
+  > **Note:** Script can be downloaded by clicking Alt+Raw button.
+  - Open a PowerShell session.
+  - Navigate to the download location of the script in PowerShell session.
+    - cd "Script download location"
+  - Unblock the downloaded script.
+    - Unblock-File -Path ".\Add-AztsFeatureConfigurationValues.ps1"
+  - Load the script in current PowerShell session.
+    - . ".\Add-AztsFeatureConfigurationValues.ps1"
+    > **Note:** Do not miss the '.' at beginning of the above command.
+  - Connect to AzAccount
+    - Connect-AzAccount -Tenant "AzTSHostingTenantId"
+  - Invoke the configuration cmdlet
+    - Add-AztsFeatureConfigurationValues -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "CMET"  -FeatureConfigValues "user's object id"
+    > **Note:** user's object id can be referenced from Azure AD.<br />
+    For adding multiple user, pass the user's object id value seperated by comma(',').<br />
+    For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "CMET"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
