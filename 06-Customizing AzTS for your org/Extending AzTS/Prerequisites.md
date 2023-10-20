@@ -74,7 +74,7 @@ Only privileged users have access to CMET for updating control metadata or addin
 > **Note:** For first user being added **index** value should be 0, eg. **ControlActionItem__0__PrivilegedEditorIds__0** and incremented sequentially for further users being added.
 - Add the user's object id as the value of the appsetting.
 > **Note:** user's object id can be referenced from Azure AD.
-
+-----
 
 - Using helper script
   - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
