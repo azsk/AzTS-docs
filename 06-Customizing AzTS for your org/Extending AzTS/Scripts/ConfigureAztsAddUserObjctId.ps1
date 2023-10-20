@@ -1,19 +1,19 @@
 ﻿<###
 # Overview:
-    This script is used to add user's object id into configuration for enable/disable features of AzTS in a Subscription. 
+    This script is used to add feature configuration value for AzTS in a Subscription. 
 
 # Instructions to execute the script:
-        1. Download the script and AztsControlConfigurationForUserObjectAddition json file.
+        1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to add user's object id into configuration for enable/disable features of AzTS in a Subscription. Refer `Examples`, below.
+        3. Execute the script to add feature configuration value for AzTS in a Subscription. Refer `Examples`, below.
 
 # Examples:
     To add user's object id into configuration of AzTS:
-        Update-AzTSConfigurationValues -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FilePath "D:\Working\AztsScript\AztsControlConfigurationForUserObjectAddition.json" -FeatureName "CMET"  -ConfigurationValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+        Update-AztsFeatureConfigurationValues -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ScanHostRGName AzTS-Solution-RG -FeatureName "CMET"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
 
 ###>
 
-function Update-AzTSConfigurationValues {
+function Add-AztsFeatureConfigurationValues {
     Param(
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Subscription id in which Azure Tenant Security Solution is installed.")]
@@ -25,31 +25,32 @@ function Update-AzTSConfigurationValues {
 
         [string]
         [Parameter(Mandatory = $false, HelpMessage = "File path for Azts Control Configuration file AztsControlConfiguration.json.")]
-        $FilePath = "./AztsControlConfigurationForUserObjectAddition.json",
+        $FilePath = "./AztsFeatureConfiguration.json",
 
         [string]
-        [Parameter(Mandatory = $true, HelpMessage = "Azts Feature Name to be Enabled/Disabled. Values for this parameter are 'CMET', 'MG Compliance Initiate Editor'")]
-        $FeatureName,
+        [Parameter(Mandatory = $true, HelpMessage = "Azts Feature Name to add Configuration values. Values for this parameter are 'CMET', 'MG Compliance Initiate Editor'")]
+        [ValidateSet("CMET", "MG Compliance Initiate Editor")]
+        $FeatureName,        
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage = "Pass multiple Configuration Value as comma seperated")]
-        $ConfigurationValues
+        $FeatureConfigValues
     )
 
     $inputParams = $PSBoundParameters
     $logger = [Logger]::new($SubscriptionId)     
-    $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Update-AzTSConfigurationValues `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
+    $logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Add-AztsFeatureConfigurationValues `r`nInput Parameters: $(($inputParams | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
     $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-    $logger.PublishCustomMessage("Starting AzTS Configuration update for $FeatureName. This may take 5 mins...", $([Constants]::MessageType.Info))
+    $logger.PublishCustomMessage("Starting process to add Configuration Values for $FeatureName feature. This may take 2-3 mins...", $([Constants]::MessageType.Info))
    
      
     #checking if ConfigurationValues enetered is having single or multiple values
-    if ( !$ConfigurationValues.Contains(",")) {
-        $ConfigurationValues += ","; 
+    if ( !$FeatureConfigValues.Contains(",")) {
+        $FeatureConfigValues += ","; 
     }
 
     #Splitting the UserObjectIds from (,)
-    [System.Collections.ArrayList] $UserObjectIdsArray = $ConfigurationValues.Split(',').Trim();
+    [System.Collections.ArrayList] $FeatureConfigValueArray = $FeatureConfigValues.Split(',').Trim();
 
     # Set the context to host subscription
     Set-AzContext -SubscriptionId  $SubscriptionId | Out-null
@@ -83,78 +84,76 @@ function Update-AzTSConfigurationValues {
             $IntPrivilegedEditorIds = @()
             $NewAppSettings = @{}
             $NewConfigurationList = @{}
-
-            $featureName = $dependentConfiguration.ComponentName + $ResourceHash;
+            $ComponentName = $dependentConfiguration.ComponentName + $ResourceHash;
             
             #Getting Existing configuration value
-            $AzTSAppConfigurationSettings = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $featureName -ErrorAction Stop
+            $AzTSAppConfigurationSettings = Get-AzWebApp -ResourceGroupName $ScanHostRGName -Name $ComponentName -ErrorAction Stop
         
             foreach ($Configuration in $dependentConfiguration.Configuration) {
                 if ($null -ne $AzTSAppConfigurationSettings) {
 
-                    #Splitting the UserObjectIds from (,)
-                    [System.Collections.ArrayList] $UserObjectIdsArray = $ConfigurationValues.Split(',').Trim();
-                    $IntPrivilegedEditorIds = @()
-                    # Existing app settings
-                    $AppSettings = $AzTSAppConfigurationSettings.SiteConfig.AppSettings
+                    if ($FeatureName -ieq "CMET" -or $FeatureName -ieq "MG Compliance Initiate Editor") {
 
-                    # Moving existing app settings in new app settings list to avoid being overridden                
-                    ForEach ($appSetting in $AppSettings) {
-                        $NewAppSettings[$appSetting.Name] = $appSetting.Value
+                        #Splitting the UserObjectIds from (,)
+                        [System.Collections.ArrayList] $FeatureConfigValueArray = $FeatureConfigValues.Split(',').Trim();
+                        $IntPrivilegedEditorIds = @()
+                        # Existing app settings
+                        $AppSettings = $AzTSAppConfigurationSettings.SiteConfig.AppSettings
 
-                        #Checking if Configuration Key exist to get the exisiting array value
-                        if ($appSetting.Name.Contains($Configuration)) {
+                        # Moving existing app settings in new app settings list to avoid being overridden                
+                        ForEach ($appSetting in $AppSettings) {
+                            $NewAppSettings[$appSetting.Name] = $appSetting.Value
 
-                            $appSettingNameArray = $appSetting.Name.Split('_');
-                            $IntPrivilegedEditorIds += $appSettingNameArray[6];   
+                            #Checking if Configuration Key exist to get the exisiting array value
+                            if ($appSetting.Name.Contains($Configuration)) {
 
-                            #checking if the Configuration value exist (Key and Value) to avoid duplication
-                            if ($UserObjectIdsArray.Contains($appSetting.Value)) {
-                                $UserObjectIdsArray.Remove($appSetting.Value);
-                            }            
+                                $appSettingNameArray = $appSetting.Name.Split('_');
+                                $IntPrivilegedEditorIds += $appSettingNameArray[6];   
+
+                                #checking if the Configuration value exist (Key and Value) to avoid duplication
+                                if ($FeatureConfigValueArray.Contains($appSetting.Value)) {
+                                    $FeatureConfigValueArray.Remove($appSetting.Value);
+                                }            
+                            }
                         }
-                    }
                     
-                    #If exisitng configuration values does not exist, then setting it to 0
-                    if ($IntPrivilegedEditorIds.Count -eq 0) {
-                        $IntPrivilegedEditorIds = 0
-                    }
-                    
-                    #Fetching max value
-                    $IntPrivilegedEditorIdsMaxValue = ($IntPrivilegedEditorIds | Measure-Object -Maximum).Maximum
-
-                    
-                    #Adding user object id into configuration
-                    foreach ($UserObjectId in $UserObjectIdsArray) { 
-                        if ($UserObjectId -ne "") {                       
-                            $NewAppSettings["$Configuration$IntPrivilegedEditorIdsMaxValue"] = $UserObjectId
-                            $NewConfigurationList["$Configuration$IntPrivilegedEditorIdsMaxValue"] = $UserObjectId
-                            $IntPrivilegedEditorIdsMaxValue++
+                        #If exisitng configuration values does not exist, then setting it to 0
+                        if ($IntPrivilegedEditorIds.Count -eq 0) {
+                            $IntPrivilegedEditorIds = 0
                         }
-                    }
                     
+                        #Fetching max value
+                        $IntPrivilegedEditorIdsMaxValue = ($IntPrivilegedEditorIds | Measure-Object -Maximum).Maximum
+                    
+                        #Adding configuration
+                        foreach ($FeatureConfig in $FeatureConfigValueArray) { 
+                            if ($FeatureConfig -ne "") {                       
+                                $NewAppSettings["$Configuration$IntPrivilegedEditorIdsMaxValue"] = $FeatureConfig
+                                $NewConfigurationList["$Configuration$IntPrivilegedEditorIdsMaxValue"] = $FeatureConfig
+                                $IntPrivilegedEditorIdsMaxValue++
+                            }
+                        }
+                    
+                    }
                 }
             }
 
-            try 
-            {
-                if ($UserObjectIdsArray.Count -gt 0) {
+            try {
+                if ($FeatureConfigValueArray.Count -gt 0) {
                     $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-                    $logger.PublishCustomMessage("Updating below configuration for: [$($FeatureName)]...", $([Constants]::MessageType.Info))
+                    $logger.PublishCustomMessage("Updating configuration for [$($ComponentName)]...", $([Constants]::MessageType.Info))
                     $logger.PublishLogMessage($NewConfigurationList)
-                    #Write-Host  $(( $NewConfigurationList | Format-Table).TrimEnd()) -ForegroundColor $([Constants]::MessageType.Info) 
-<<<<<<< HEAD
-                    $(( $NewConfigurationList | Out-String).TrimEnd()) | Write-Host -ForegroundColor $([Constants]::MessageType.Info)
-=======
-                   $(( $NewConfigurationList | Out-String).TrimEnd()) | Write-Host -ForegroundColor $([Constants]::MessageType.Info)
->>>>>>> a10f09962743de7cf2b1b8b03be66428b4aa4667
+                   
+                    #uncomment below line to see data in output console window
+                    #$(( $NewConfigurationList | Out-String).TrimEnd()) | Write-Host -ForegroundColor $([Constants]::MessageType.Info) 
+                  
                     #Updating the new configuration values
-                    $AzTSAppConfigurationSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $FeatureName -AppSettings $NewAppSettings -ErrorAction Stop
+                    $AzTSAppConfigurationSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $ComponentName -AppSettings $NewAppSettings -ErrorAction Stop
 
-                    $logger.PublishCustomMessage("`r`nUpdated configuration for: [$($FeatureName)]." , $([Constants]::MessageType.Update))
+                    $logger.PublishCustomMessage("Updated configuration for [$($ComponentName)]." , $([Constants]::MessageType.Update))
                 }
                 else {
-                    $logger.PublishCustomMessage("Entered configurations are already present in $FeatureName.", $([Constants]::MessageType.Update))
+                    $logger.PublishCustomMessage("Entered configuration values are already present in $ComponentName.", $([Constants]::MessageType.Error))
                     break
                 }
             }
@@ -163,9 +162,10 @@ function Update-AzTSConfigurationValues {
                 break
             }         
         }        
-
-        $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-        $logger.PublishCustomMessage("Configuration completed successfully." , $([Constants]::MessageType.Update))
+        if ($FeatureConfigValueArray.Count -gt 0) {
+            $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
+            $logger.PublishCustomMessage("Successfully added configuration(s) for [$FeatureName] feature." , $([Constants]::MessageType.Update))
+        }
         $logger.PublishLogFilePath()
     }
     else {

@@ -217,7 +217,7 @@ function Configure-ModifyAppSetting {
 
     )   
     $logger.PublishCustomMessage($([Constants]::DoubleDashLine), $([Constants]::MessageType.Info)) 
-    $logger.PublishCustomMessage("Updating below configuration for: [$($WebAppName)]...", $([Constants]::MessageType.Info))
+    $logger.PublishCustomMessage("Updating configuration for: [$($WebAppName)]...", $([Constants]::MessageType.Info))
 
     #Enable below line to see the config values in console output window
     #$logger.PublishCustomMessage($([Constants]::DoubleDashLine + "`r`nMethod Name: Configure-AzTSTenantSecurityAdditionalFeature `r`nInput Parameters: $(( $_.Value | Out-String).TrimEnd()) `r`n"), $([Constants]::MessageType.Info)) 
