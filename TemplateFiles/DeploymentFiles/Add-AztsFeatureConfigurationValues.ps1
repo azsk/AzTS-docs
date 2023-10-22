@@ -84,6 +84,8 @@ function Add-AztsFeatureConfigurationValues {
             $IntPrivilegedEditorIds = @()
             $NewAppSettings = @{}
             $NewConfigurationList = @{}
+            $ExistingConfigurationList = @{}
+
             $ComponentName = $dependentConfiguration.ComponentName + $ResourceHash;
             
             #Getting Existing configuration value
@@ -112,6 +114,7 @@ function Add-AztsFeatureConfigurationValues {
 
                                 #checking if the Configuration value exist (Key and Value) to avoid duplication
                                 if ($FeatureConfigValueArray.Contains($appSetting.Value)) {
+                                    $ExistingConfigurationList["$($appSetting.Name)"] =$appSetting.Value
                                     $FeatureConfigValueArray.Remove($appSetting.Value);
                                 }            
                             }
@@ -151,9 +154,21 @@ function Add-AztsFeatureConfigurationValues {
                     $AzTSAppConfigurationSettings = Set-AzWebApp -ResourceGroupName $ScanHostRGName -Name $ComponentName -AppSettings $NewAppSettings -ErrorAction Stop
 
                     $logger.PublishCustomMessage("Updated configuration for [$($ComponentName)]." , $([Constants]::MessageType.Update))
+                    
+                    if ($ExistingConfigurationList.Count -gt 0)
+                    {
+                        $logger.PublishLogMessage($([Constants]::SingleDashLine))
+                        $logger.PublishLogMessage("Existing Configuration found:")
+                        $logger.PublishLogMessage($ExistingConfigurationList)
+                        $logger.PublishLogMessage($([Constants]::SingleDashLine))
+                    }
                 }
                 else {
                     $logger.PublishCustomMessage("Entered configuration values are already present in $ComponentName.", $([Constants]::MessageType.Error))
+                    $logger.PublishLogMessage("Existing Configuration found:")
+                    $logger.PublishLogMessage($([Constants]::SingleDashLine))
+                    $logger.PublishLogMessage($ExistingConfigurationList)
+                    $logger.PublishLogMessage($([Constants]::SingleDashLine))
                     break
                 }
             }
