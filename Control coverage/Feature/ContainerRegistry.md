@@ -54,7 +54,7 @@ The Admin user account is designed for a single user to access the registry. Mul
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to lists all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
+- REST API to lists all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
 **Properties:** properties.adminUserEnabled
  <br />
 
@@ -115,11 +115,11 @@ Content trust gives the ability to verify both the integrity and the publisher o
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
+- REST API to list all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
 **Properties:** properties.sku
 <br />
 
-- ARM API to list the policies for a container registry: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{ResourceName}/listPolicies?api-version=2017-10-01<br />
+- REST API to list the policies for a container registry: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{ResourceName}/listPolicies?api-version=2017-10-01<br />
 **Properties:** trustPolicy.status
 <br />
 

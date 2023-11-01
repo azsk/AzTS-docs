@@ -47,14 +47,14 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get the Data Lake Store accounts associated with the Data Lake Analytics account: 
+- REST API to get the Data Lake Store accounts associated with the Data Lake Analytics account: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}?api-version=2016-11-01 
 <br />
  
 **Properties:** properties.dataLakeStoreAccounts[*].name
  <br />
 
-- ARM API to get encryption state of associated Data Lake Store accounts: 
+- REST API to get encryption state of associated Data Lake Store accounts: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeStore/accounts/{accountName}?api-version=2016-11-01 
 <br />
  

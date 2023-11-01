@@ -63,7 +63,7 @@ Get-Help Remove-AzServiceBusAuthorizationRule -full
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Authorization Rules for a ServiceBus namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/AuthorizationRules?api-version=2017-04-01<br />
+- REST API to list Authorization Rules for a ServiceBus namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/AuthorizationRules?api-version=2017-04-01<br />
 **Properties:** properties.value[*].id, properties.value[*].name<br />
 
 <br />
@@ -115,7 +115,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### ARM API used for evaluation
 
-- ARM API to list all service bus namespaces available under the subscription along with properties: https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.ServiceBus/namespaces?api-version=2022-01-01-preview
+- REST API to list all service bus namespaces available under the subscription along with properties: https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.ServiceBus/namespaces?api-version=2022-01-01-preview
 
   Refer [Azure Namespaces List API](https://learn.microsoft.com/en-us/rest/api/servicebus/preview/namespaces/list?tabs=HTTP)
   <br />

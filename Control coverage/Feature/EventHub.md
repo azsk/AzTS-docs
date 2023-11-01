@@ -66,7 +66,7 @@ A 'namespace' level access policy provides access to all Event Hubs in a namespa
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/authorizationRules?api-version=2017-04-01<br />
+- REST API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/authorizationRules?api-version=2017-04-01<br />
 **Properties:** properties.rights
  <br />
 
@@ -113,11 +113,11 @@ Granting minimum access ensures that users are granted just enough permissions t
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all Event Hubs Instances in an Event Hubs Namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs?api-version=2017-04-01 <br />
+- REST API to list all Event Hubs Instances in an Event Hubs Namespace: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs?api-version=2017-04-01 <br />
 **Properties:** properties.name
  <br />
 
-- ARM API to list all Authorization Rules for an Event Hubs Instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs/{eventHubsInstanceName}/authorizationRules?
+- REST API to list all Authorization Rules for an Event Hubs Instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{eventHubsNamespaceName}/eventhubs/{eventHubsInstanceName}/authorizationRules?
 api-version=2017-04-01<br />
 **Properties:** properties.rights
  <br />
@@ -168,7 +168,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{0}/providers/Microsoft.EventHub/namespaces?api-version=2022-01-01-preview<br />
+- REST API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{0}/providers/Microsoft.EventHub/namespaces?api-version=2022-01-01-preview<br />
 **Properties:** properties.minimumTlsVersion
  <br />
 

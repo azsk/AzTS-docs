@@ -89,9 +89,9 @@ Web application firewall configuration protects Application Gateway from interne
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
+- REST API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
 
-- ARM API to list all Web Application Firewall Policies of type Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?api-version=2022-01-01<br />
+- REST API to list all Web Application Firewall Policies of type Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies?api-version=2022-01-01<br />
 
 **Properties:** properties.rights
  <br />
@@ -123,9 +123,9 @@ Enabling DDOS on Vnet of Application Gateway, provides protection and defense fo
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
+- REST API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
 
-- ARM API to get propoerties of associated Virtual Network: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
+- REST API to get propoerties of associated Virtual Network: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 
 **Properties:** properties.enableDdosProtection
  <br />
@@ -232,8 +232,8 @@ Enabling HTTPS for Application Gateway ensures server/service authentication and
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
-- ARM API to list all SSL Options predefined policies in Application Gateway: /subscriptions/{0}/providers/Microsoft.Network/applicationGatewayAvailableSslOptions/default/predefinedPolicies?api-version=2022-09-01
+- REST API to list all Application Gateway: /subscriptions/{subscriptionId}/providers/Microsoft.Network/applicationGateways?api-version=2022-01-01<br />
+- REST API to list all SSL Options predefined policies in Application Gateway: /subscriptions/{0}/providers/Microsoft.Network/applicationGatewayAvailableSslOptions/default/predefinedPolicies?api-version=2022-09-01
 <br />
 
 ___ 

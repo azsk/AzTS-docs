@@ -46,10 +46,10 @@ Restricting traffic on the Load Balancer further strengthens the security postur
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
+- REST API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
 **Properties:** properties.SubnetIds <br />
 
-- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
+- REST API to list Backend Configuration of LoadBalancer: /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
 **Properties:** properties.BackendVnets<br />
 
 <br />
@@ -82,13 +82,13 @@ OR <br/>No Virtual Network found attached either with FrontEnd or Backend of Loa
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
+- REST API to list FrontendIP Configuration at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/loadBalancers?api-version=2019-12-01<br />
 **Properties:** properties.SubnetIds <br />
 
-- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
+- REST API to list Backend Configuration of LoadBalancer: /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Network/loadBalancers/{2}/backendAddressPools?api-version=2022-01-01 <br />
 **Properties:** properties.BackendVnets<br />
 
-- ARM API to get propoerties of associated Virtual Network: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
+- REST API to get propoerties of associated Virtual Network: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 
 **Properties:** properties.enableDdosProtection
 <br />
@@ -119,7 +119,7 @@ Load balancer distributes inbound flows that arrive at the load balancer's front
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Backend Configuration of LoadBalancer: /subscriptions/{0}/providers/Microsoft.Network/loadBalancers?api-version=2022-07-01 <br />
+- REST API to list Backend Configuration of LoadBalancer: /subscriptions/{0}/providers/Microsoft.Network/loadBalancers?api-version=2022-07-01 <br />
 **Properties:** properties.backendAddressPools<br />
 <br />
 

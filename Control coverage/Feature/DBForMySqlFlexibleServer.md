@@ -54,7 +54,7 @@ To configure secure transport for client communication, Go to Azure Portal --> A
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get server parameter values for a DBForMySQL Flexible server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}/configurations/{parameterName}?api-version=2021-05-01<br />
+- REST API to get server parameter values for a DBForMySQL Flexible server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}/configurations/{parameterName}?api-version=2021-05-01<br />
 **Properties:** value
  <br />
 
@@ -106,7 +106,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get server parameter values for a DBForMySQL Flexible server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}/configurations/{parameterName}?api-version=2021-05-01<br />
+- REST API to get server parameter values for a DBForMySQL Flexible server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}/configurations/{parameterName}?api-version=2021-05-01<br />
 **Properties:** value
  <br />
 

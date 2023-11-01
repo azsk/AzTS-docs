@@ -53,15 +53,15 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
+- REST API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
 **Properties:** properties.slotType, properties.name
  <br />
 
-- ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
+- REST API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
 **Properties:** properties.name
  <br />
 
-- ARM API to get Cloud Service roles details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}?api-version=2016-04-01<br />
+- REST API to get Cloud Service roles details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}?api-version=2016-04-01<br />
 **Properties:** properties.inputEndpoints.protocol
  <br />
 
@@ -107,11 +107,11 @@ Cloud services where automatic updates are disabled are likely to miss important
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
+- REST API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
 **Properties:** properties.slotType, properties.name
 <br />
 
-- ARM API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
+- REST API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
 **Properties:** properties.configuration.osVersion
 <br />
 
@@ -157,15 +157,15 @@ Antimalware provides real-time protection, scheduled scanning, malware remediati
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
+- REST API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
 **Properties:** properties.slotType
  <br />
 
-- ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
+- REST API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
 **Properties:** [\*].name
  <br />
 
-- ARM API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
+- REST API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
 **Properties:** name: 'PaaSAntimalware-****', [\*].properties.name, [\*].properties.state
  <br />
 
@@ -212,15 +212,15 @@ Remote desktop access requires inbound ports to be opened. These ports become ea
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
+- REST API to get the list of Deployment Slots in a Cloud Service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/deploymentSlots?api-version=2016-11-01<br />
 **Properties:** properties.slotType, properties.configuration
  <br />
 
-- ARM API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
+- REST API to get the list of Cloud Service Roles in a Deployment Slot: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles?api-version=2016-04-01<br />
 **Properties:** [\*].name
  <br />
 
-- ARM API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
+- REST API to get the list of Extensions in a Cloud Service Role: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}/slots/{slotName}/roles/{roleName}/extensionReferences?api-version=2015-06-01<br />
 **Properties:** [\*].properties.name, [\*].properties.state
  <br />
 

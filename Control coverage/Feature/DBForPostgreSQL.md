@@ -54,7 +54,7 @@ Enforcing SSL connections between your database server and your client applicati
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get resource details of a DBForPostgreSQL server: 
+- REST API to get resource details of a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/providers/Microsoft.DBforPostgreSQL/servers?api-version=2017-12-01 
 <br />
  
@@ -110,7 +110,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to fetch the firewall rules for a DBForPostgreSQL server: 
+- REST API to fetch the firewall rules for a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/firewallRules?api-version=2017-12-01 
 <br />
  
@@ -167,7 +167,7 @@ The 'Allow access to Azure services' setting configures a very broad range of IP
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to fetch the firewall rules for a DBForPostgreSQL server: 
+- REST API to fetch the firewall rules for a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/firewallRules?api-version=2017-12-01 <br />
 **Properties:** name
  <br />
@@ -221,7 +221,7 @@ Advanced Threat Protection for Azure Database for PostgreSQL provides a layer of
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get security alert policy of a DBForPostgreSQL server: 
+- REST API to get security alert policy of a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/securityAlertPolicies/Default?api-version=2017-12-01  
 <br />
  
@@ -268,7 +268,7 @@ PostgreSQL sever logging parameters enable log collection of important system ev
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list configurations for PostgreSQL servers: 
+- REST API to list configurations for PostgreSQL servers: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/configurations?api-version=2017-12-01 
 <br />
  
@@ -315,7 +315,7 @@ Connection throttling protects your server against password guessing and brute f
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list configurations for PostgreSQL servers: 
+- REST API to list configurations for PostgreSQL servers: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/configurations?api-version=2017-12-01 
 <br />
  
@@ -372,7 +372,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get resource details of a DBForPostgreSQL server: 
+- REST API to get resource details of a DBForPostgreSQL server: 
 /subscriptions/{subscriptionId}/providers/Microsoft.DBforPostgreSQL/servers?api-version=2017-12-01 
 <br />
  
@@ -448,7 +448,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list diagnostic setting details of DBForPostgreSQL server resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+- REST API to list diagnostic setting details of DBForPostgreSQL server resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/servers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:** 
 name<br />
 properties.logs.category<br />

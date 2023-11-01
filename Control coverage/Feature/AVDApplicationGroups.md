@@ -83,7 +83,7 @@ Diagnostic logs are needed for creating activity trail while investigating an in
  	```  
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list diagnostic setting details of AVDApplicationGroups resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationgroups/{AVDApplicationGroupsName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview <br />
+- REST API to list diagnostic setting details of AVDApplicationGroups resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/applicationgroups/{AVDApplicationGroupsName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview <br />
 **Properties:**
 name<br />
 properties.logs.category<br />

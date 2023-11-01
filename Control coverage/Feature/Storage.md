@@ -65,7 +65,7 @@ Data in containers that have anonymous access can be downloaded by anyone on the
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the storage accounts available under the subscription:
+- REST API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].kind, [*].properties.allowBlobPublicAccess
@@ -134,7 +134,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
   [Secure transfer to storage accounts should be enabled](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F404c3081-a854-4457-ae30-26a93ef643f9)
   <br />
 
-- ARM API to list all the storage accounts available under the subscription:
+- REST API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.supportsHttpsTrafficOnly
@@ -189,7 +189,7 @@ Restricting access using firewall/virtual network config reduces network exposur
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the storage accounts available under the subscription:
+- REST API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.networkAcls.defaultAction
@@ -250,7 +250,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the storage accounts available under the subscription:
+- REST API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.minimumTlsVersion
@@ -311,7 +311,7 @@ Shared Access Signature (SAS) is used to provide secure delegate access to resou
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the storage accounts available under the subscription:
+- REST API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.sasPolicy.sasExpirationPeriod
@@ -361,7 +361,7 @@ Rotating access keys will reduce the window of opportunity for an access key tha
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the storage accounts available under the subscription:
+- REST API to list all the storage accounts available under the subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
   <br />
   **Properties:** [*].properties.keyCreationTime

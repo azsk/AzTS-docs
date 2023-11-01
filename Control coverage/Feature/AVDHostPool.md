@@ -44,7 +44,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list virtual machine and its related properties at Subscription level: <br />
+- REST API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
 properties.diagnosticsProfile.bootDiagnostics.enabled,<br />
@@ -95,7 +95,7 @@ Trusted launch protects against advanced and persistent attack techniques. It is
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list virtual machine and its related properties at Subscription level: <br />
+- REST API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
 properties.securityProfile.securityType,<br />
@@ -137,17 +137,17 @@ By default, access to the virtual machine is restricted to sources in the same v
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list virtual machine and its related properties at Subscription level: <br />
+- REST API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
 properties.networkProfile.networkInterfaces[\*].id<br />
 
-- ARM API used to list NIC and its related properties at Subscription level: <br />
+- REST API used to list NIC and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
 **Properties:**
 properties.ipConfigurations[\*].id<br />
 
-- ARM API used to list NSG and its related properties at Subscription level: <br />
+- REST API used to list NSG and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:**
 id ,<br />

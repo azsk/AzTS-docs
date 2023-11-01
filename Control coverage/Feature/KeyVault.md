@@ -55,7 +55,7 @@ Advanced access policy allows Azure services (Azure Resource Manager, Virtual Ma
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br/>
+- REST API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br/>
 **Properties:** 
 properties/enabledForDeployment<br/>
 properties/enabledForDiskEncryption<br/>
@@ -104,7 +104,7 @@ Enabling soft delete feature on Key Vault acts as a safety measure to recover in
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
+- REST API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
 **Properties:** properties.enableSoftDelete
  <br />
 
@@ -179,7 +179,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list diagnostic setting details of Key Vault resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+- REST API to list diagnostic setting details of Key Vault resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:** 
 name<br />
 properties.logs.category<br />
@@ -229,7 +229,7 @@ Key Vault firewall should be enabled so that the key vault is not accessible by 
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
+- REST API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
 **Properties:**
 properties.publicNetworkAccess<br />
 properties.networkAcls<br />
@@ -265,7 +265,7 @@ Malicious deletion of a key vault can lead to permanent data loss. A malicious i
 
 ### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
+- REST API to list all the KeyVault configurations under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/vaults?api-version=2022-07-01<br />
 **Properties:**
 properties.enablePurgeProtection<br />
 properties.enableSoftDelete<br />

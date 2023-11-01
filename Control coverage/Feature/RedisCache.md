@@ -61,7 +61,7 @@ Enabling backup on Redis Cache ensures that there is always a previous snapshot 
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
+- REST API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.redisConfiguration, properties.Sku
 
 <br />
@@ -107,10 +107,10 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
+- REST API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.enableNonSslPort
 
-- ARM API to list all security assessments in a Subscription:
+- REST API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
 [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
@@ -222,7 +222,7 @@ Go to Azure Portal --> your Redis Cache instance --> Settings --> Advanced Setti
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
+- REST API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.minimumTlsVersion
 
 <br />

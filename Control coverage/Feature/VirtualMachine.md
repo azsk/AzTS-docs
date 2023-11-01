@@ -91,11 +91,11 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
+- REST API to list virtual machine extensions at specific level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
 **Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
-- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+- REST API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** [\*].properties.storageProfile.osDisk.osType
  <br />
 
@@ -166,11 +166,11 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list networkInterfaces at subscription level: 
+- REST API to list networkInterfaces at subscription level: 
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** publicIPAddress.id, networkSecurityGroup.id<br />
 
-- ARM API to list Virtual Networks at
+- REST API to list Virtual Networks at
 subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 **Properties:** networkSecurityGroup.id
@@ -234,12 +234,12 @@ No Public IP address is associated with VM.
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machines at subscription level:
+- REST API to list Virtual Machines at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** 
 properties.networkProfile.networkInterfaces[\*].id<br />
 
-- ARM API to list Network Interfaces at
+- REST API to list Network Interfaces at
 subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
 **Properties:**  publicIPAddress.id	
@@ -303,11 +303,11 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list security assessments at subscription level:
+- REST API to list security assessments at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
  **Properties:** [\*].id, [\*].name, [\*].resourceDetails.Id, [\*].displayName, [\*].status.code, [\*].status, [\*].additionalData <br />
 
-- ARM API to list Virtual Machines at subscription level:
+- REST API to list Virtual Machines at subscription level:
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01<br>
 **Properties:** [\*].properties.storageProfile.osDisk.caching, [\*].properties.storageProfile.diffDiskSettings.option
  <br />
@@ -375,7 +375,7 @@ Microsoft Defender for Cloud raises alerts (which are typically indicative of re
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription:
+- REST API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** 
 [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br />
@@ -501,7 +501,7 @@ Microsoft Defender for Cloud provide various security recommendations for resour
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription:
+- REST API to list all security assessments in a Subscription:
 /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br>
  **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData<br>
  **Assessments:**  
@@ -583,7 +583,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all extensions in a Virtual Machine:
+- REST API to list all extensions in a Virtual Machine:
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupId}/providers/Microsoft.Compute/virtualMachines/{virtualMachineName}/extensions?api-version=2019-07-01<br />
 **Properties:** properties.type, properties.publisher	
  <br />
@@ -664,7 +664,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machine Extensions at resource level:
+- REST API to list Virtual Machine Extensions at resource level:
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
 **Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
@@ -749,11 +749,11 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+- REST API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** [*].identity.type
  <br />
 
-- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
+- REST API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01<br />
 **Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
@@ -836,7 +836,7 @@ One or more extensions may be required for maintaining data plane security hygie
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
+- REST API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
 **Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
@@ -906,15 +906,15 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
+- REST API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** [\*].properties.networkSecurityGroup.Id, [\*].properties.ipConfigurations
 <br />
 
-- ARM API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
+- REST API to list Virtual Networks and route table associated with each subnet of VNet at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
 **Properties:** [\*].properties.subnets
 <br />
 
-- ARM API to list open ports in the NSG at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
+- REST API to list open ports in the NSG at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:** [\*].properties.securityRules.destinationPortRanges
 <br />
 
@@ -989,7 +989,7 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
+- REST API to list Virtual Machine Extensions at resource level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2019-07-01 <br />
 **Properties:** [\*].properties.type, [\*].properties.publisher
  <br />
 
@@ -1051,7 +1051,7 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- REST API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -1112,7 +1112,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- REST API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -1173,7 +1173,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- REST API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -1242,7 +1242,7 @@ For new deployments, require Just-In-Time network access control on virtual mach
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- REST API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -1308,7 +1308,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- REST API to list all security assessments in a Subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.id, [\*].properties.displayName, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -1374,19 +1374,19 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machines at subscription level: /subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+- REST API to list Virtual Machines at subscription level: /subscriptions/{0}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
 **Properties:** [\*].properties.networkProfile.networkInterfaces[\*].id
  <br />
 
-- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
+- REST API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01 <br />
 **Properties:** [\*].properties.networkSecurityGroup.id
  <br />
 
-- ARM API to list Virtual Networks (and associated subnets) at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
+- REST API to list Virtual Networks (and associated subnets) at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01 <br />
 **Properties:**  [\*].properties.subnets[\*].networkSecurityGroup.id
  <br />
 
-- ARM API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
+- REST API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01 <br />
 **Properties:** [\*].properties.securityRules.destinationPortRange, [\*].properties.securityRules.destinationPortRanges
 
  <br />
@@ -1454,7 +1454,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 ### Azure Policies or REST APIs used for evaluation 
 
 
-- ARM API to list Virtual Machine at
+- REST API to list Virtual Machine at
 subscription level:
 [/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list-all?tabs=HTTP)<br />
 **Properties:** properties.storageProfile.osDisk.osType
@@ -1519,14 +1519,14 @@ Installing AAD extension on VM allows you to login into VM using Azure AD, makin
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Virtual Machine at
+- REST API to list Virtual Machine at
 subscription level:
 [/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machines/list?tabs=HTTP)<br />
 **Properties:** [\*].properties.storageProfile.osDisk.osType,</br>
                 [\*].properties.orchestrationMode
 
 
-- ARM API to list extensions at Virtual Machine level: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupsName}/providers/Microsoft.Compute/virtualMachines/{VMName}/extensions?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-extensions/list?tabs=HTTP)</br>
+- REST API to list extensions at Virtual Machine level: [/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupsName}/providers/Microsoft.Compute/virtualMachines/{VMName}/extensions?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-extensions/list?tabs=HTTP)</br>
 **Properties:** [\*].properties.publisher,</br>
                 [\*].properties.type,</br>
                 [\*].properties.provisioningState,

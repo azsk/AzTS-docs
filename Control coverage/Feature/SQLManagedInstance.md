@@ -58,7 +58,7 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get Vulnerability Assessment of a SQLManagedInstance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{resourceName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview <br />
+- REST API to get Vulnerability Assessment of a SQLManagedInstance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{resourceName}/vulnerabilityAssessments/default?api-version=2018-06-01-preview <br />
 **Properties:** properties.VulnerabilityAssessmentSetting.IsEnabled, properties.EmailSubscriptionAdmins, properties.StorageContainerPath, properties.Emails
  <br />
 
@@ -221,7 +221,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to check SQL Managed Instance TLS version: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances?api-version=2021-11-01 <br />
+- REST API to check SQL Managed Instance TLS version: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances?api-version=2021-11-01 <br />
 **Properties:** properties.minimalTlsVersion
  <br />
 

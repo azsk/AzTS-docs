@@ -54,7 +54,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
 **Properties:** properties.ipRangeFilter
  <br />
 
@@ -108,7 +108,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
 **Properties:** properties.ipRangeFilter
  <br />
 
@@ -155,7 +155,7 @@ Replication ensures continuity and rapid recovery during disasters.
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
 **Properties:** properties.readLocations
 <br />
 
@@ -200,7 +200,7 @@ Automatic failover ensures continuity and auto recovery during disasters.
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
 **Properties:** properties.enableAutomaticFailover
  <br />
 
@@ -258,11 +258,11 @@ Threat Protection for Azure Cosmos DB provides an additional layer of security i
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
 **Properties:** properties.EnabledApiTypes
  <br />
 
-- ARM API to get advanced threat protection settings: /{ResourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/current?api-version=2017-08-01-preview<br />
+- REST API to get advanced threat protection settings: /{ResourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/current?api-version=2017-08-01-preview<br />
 **Properties:** properties.isEnabled
  <br />
 
@@ -316,7 +316,7 @@ TLS provides confidentiality and data integrity between client and server. Using
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get Cosmos DB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2022-11-15<br />
+- REST API to get Cosmos DB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2022-11-15<br />
 **Properties:** properties.minimalTlsVersion
  <br />
 

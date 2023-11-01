@@ -68,7 +68,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 -->
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list hybrid machines at
+- REST API to list hybrid machines at
 subscription level:
 [/subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines?api-version=2022-08-11-preview](https://learn.microsoft.com/en-us/rest/api/hybridcompute/machines/list-by-subscription?tabs=HTTP)<br />
 **Properties:** properties.osType

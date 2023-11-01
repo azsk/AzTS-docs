@@ -48,7 +48,7 @@ One of the following conditions is met:
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list Bastion hosts and its related properties at Subscription level: <br />
+- REST API used to list Bastion hosts and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/bastionHosts?api-version=2022-07-01<br />
 **Properties:** 
 sku.name , properties.enableShareableLink
