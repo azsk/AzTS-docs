@@ -70,8 +70,8 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 
 -----
 
-### Option 2: Using helper script
-#### Step (1 & 2) of 4 (consolidated):
+- Using helper script
+
   - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip.
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a PowerShell session.
