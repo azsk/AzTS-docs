@@ -70,11 +70,11 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 -----
 
 - Using helper script
-  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
+  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip.
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a PowerShell session.
   - Navigate to the download location of the script in PowerShell session.
-    - cd "Script download location" 
+    - CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
   - Unblock the downloaded script.
     - Unblock-File -Path ".\ConfigureAzTSFeature.ps1"
@@ -84,7 +84,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
   - Connect to AzAccount
     - Connect-AzAccount -Tenant "AzTSHostingTenantId"
   - Invoke the configuration cmdlet
-    - Configure-AzTSFeature -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "MG Compliance Initiate Editor" -FeatureActionType "Enable"
+    - Configure-AzTSFeature -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName "AzTSHostingRGName" -FeatureName "MG Compliance Initiate Editor" -FeatureActionType "Enable"
  - Load the script in current PowerShell session.
     - . ".\Add-AztsFeatureConfigurationValues.ps1"
     > **Note:** Do not miss the '.' at beginning of the above command.
