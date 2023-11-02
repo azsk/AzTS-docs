@@ -69,27 +69,34 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 ![Resources](../../Images/06_MGCIEnableMGAndSave.png)
 
 -----
+### Option2: Using helper script
+#### Step (1 & 2) of 4 (consolidated):
+If you have already downloaded the deployment package zip, directly go to step (d).
+  a. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
-- Using helper script
+b. Extract zip to local folder location. <br/>
 
-  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip.
-  > **Note:** Script can be downloaded by clicking Alt+Raw button.
-  - Open a PowerShell session.
-  - Navigate to the download location of the script in PowerShell session.
+c. Unblock the content. The below command will help to unblock files. <br/>
+
   ``` PowerShell
-    CD "<LocalExtractedFolderPath>\DeploymentFiles"
+  Get-ChildItem -Path "<Extracted folder path>" -Recurse |  Unblock-File 
   ```
 
-  - Unblock the downloaded script.
+d. Point current path to deployment folder and load AzTS setup script <br/>
+
+
   ``` PowerShell
-    - Unblock-File -Path ".\ConfigureAzTSFeature.ps1"
+  # Point current path to extracted folder location and load setup script from the deployment folder 
+
+  CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+  # Load AzTS Setup script in session
+  . ".\ConfigureAzTSFeature.ps1"
+
+  # Note: Make sure you copy  '.' present at the start of the line.
+
   ```
-  - Load the script in current PowerShell session.
-  ``` PowerShell
-    . ".\ConfigureAzTSFeature.ps1"
-  ```
-     **Note:** Do not miss the '.' at beginning of the above command.
-    
+
   - Connect to AzAccount
   ``` PowerShell
     Connect-AzAccount -Tenant <TenantId>
@@ -101,16 +108,16 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
   - Load the script in current PowerShell session.
   ``` PowerShell
     . ".\Add-AztsFeatureConfigurationValues.ps1"
-  ```
-    > **Note:** Do not miss the '.' at beginning of the above command.
+     # Note: Make sure you copy  '.' present at the start of the line.
+  ```     
  - Invoke the configuration cmdlet
   ``` PowerShell
     Add-AztsFeatureConfigurationValues -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName <AzTSHostingRGName> -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "user's object id"
-   ```
-   > **Note:** User's object id can be referenced from Azure AD.<br />
+   
+   #Note: User's object id can be referenced from Azure AD.<br />
     For adding multiple user, pass the user's object id value seperated by comma(',').<br />
     For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
-
+```
 
 #### Step 3 of 4.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
 Compliance initiative feature requires common tag on all controls which are part of an initiative. Common tag to a set of controls can be added by using CMET bulk edit mode. Please follow the steps mentioned [here](../../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/FeaturesInCMET.md) to add tags to controls.
