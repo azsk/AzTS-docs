@@ -43,7 +43,7 @@ Similarly once 'Discovery phase' is completed, users can choose to either trigge
 Discovery phase is disabled by default, users need to enable and schedule it using the command **Update-AzTSMMARemovalUtilityDiscoveryTrigger**.
 
 
-> **Note:** Please validate the prerequisites [here](./Prerequisites.md). You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) and before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button. Extract the zip file and use **MMARemovalUtilityDeletionScript.ps1** present in this package to run the commands mentioned in below section.
+> **Note:** Please validate the prerequisites [here](./Prerequisites.md). You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) and before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button. Extract the zip file and use **MMARemovalUtilitySetup.ps1** present in this package to run the commands mentioned in below section.
 
 ``` PowerShell
 # -----------------------------------------------------------------#
