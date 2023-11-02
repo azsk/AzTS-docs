@@ -71,7 +71,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 -----
 ### Option2: Using helper script
 #### Step (1 & 2) of 4 (consolidated):
-If you have already downloaded the deployment package zip, directly go to step (d).
+If you have already downloaded the deployment package zip, directly go to step (d).<br/>
   a. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 b. Extract zip to local folder location. <br/>
@@ -114,9 +114,10 @@ d. Point current path to deployment folder and load AzTS setup script <br/>
   ``` PowerShell
     Add-AztsFeatureConfigurationValues -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName <AzTSHostingRGName> -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "user's object id"
    
-   #Note: User's object id can be referenced from Azure AD.<br />
-    For adding multiple user, pass the user's object id value seperated by comma(',').<br />
+   <# Note: 1) User's object id can be referenced from Azure AD.
+    2) For adding multiple user, pass the user's object id value seperated by comma(',').
     For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+    
 ```
 
 #### Step 3 of 4.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
