@@ -70,27 +70,41 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 -----
 
 - Using helper script
+
   - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip.
   > **Note:** Script can be downloaded by clicking Alt+Raw button.
   - Open a PowerShell session.
   - Navigate to the download location of the script in PowerShell session.
-    - CD "<LocalExtractedFolderPath>\DeploymentFiles"
+  ``` PowerShell
+    CD "<LocalExtractedFolderPath>\DeploymentFiles"
+  ```
 
   - Unblock the downloaded script.
     - Unblock-File -Path ".\ConfigureAzTSFeature.ps1"
   - Load the script in current PowerShell session.
-    - . ".\ConfigureAzTSFeature.ps1"
+  ``` PowerShell
+    . ".\ConfigureAzTSFeature.ps1"
+  ```
     > **Note:** Do not miss the '.' at beginning of the above command.
+    
   - Connect to AzAccount
-    - Connect-AzAccount -Tenant "AzTSHostingTenantId"
+  ``` PowerShell
+    Connect-AzAccount -Tenant <TenantId>
+    ```
   - Invoke the configuration cmdlet
-    - Configure-AzTSFeature -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName "AzTSHostingRGName" -FeatureName "MG Compliance Initiate Editor" -FeatureActionType "Enable"
- - Load the script in current PowerShell session.
-    - . ".\Add-AztsFeatureConfigurationValues.ps1"
+  ``` PowerShell
+    Configure-AzTSFeature -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName <AzTSHostingRGName> -FeatureName "MG Compliance Initiate Editor" -FeatureActionType "Enable"
+    ```
+- Load the script in current PowerShell session.
+    ``` PowerShell
+    . ".\Add-AztsFeatureConfigurationValues.ps1"
+    ```
     > **Note:** Do not miss the '.' at beginning of the above command.
-  - Invoke the configuration cmdlet
-    - Add-AztsFeatureConfigurationValues -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "user's object id"
-    > **Note:** user's object id can be referenced from Azure AD.<br />
+ - Invoke the configuration cmdlet
+    ``` PowerShell
+    Add-AztsFeatureConfigurationValues -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName <AzTSHostingRGName> -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "user's object id"
+    ```
+   > **Note:** User's object id can be referenced from Azure AD.<br />
     For adding multiple user, pass the user's object id value seperated by comma(',').<br />
     For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
 
