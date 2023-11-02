@@ -97,11 +97,11 @@ d. Point current path to deployment folder and load AzTS setup script <br/>
 
   ```
 
-  - Connect to AzAccount
+  e. Connect to AzAccount
   ``` PowerShell
     Connect-AzAccount -Tenant <TenantId>
   ```
-  - Invoke the configuration cmdlet
+  f. Invoke the configuration cmdlet
   ``` PowerShell
     Configure-AzTSFeature 
     -SubscriptionId <AzTSHostingSubscriptionId> `
@@ -109,12 +109,12 @@ d. Point current path to deployment folder and load AzTS setup script <br/>
     -FeatureName "MG Compliance Initiate Editor" `
     -FeatureActionType "Enable"
   ```
-  - Load the script in current PowerShell session.
+  g. Load the script in current PowerShell session.
   ``` PowerShell
     . ".\Add-AztsFeatureConfigurationValues.ps1"
      # Note: Make sure you copy  '.' present at the start of the line.
   ```     
- - Invoke the configuration cmdlet
+ h. Invoke the configuration cmdlet
   ``` PowerShell
     Add-AztsFeatureConfigurationValues 
      -SubscriptionId <AzTSHostingSubscriptionId> `
