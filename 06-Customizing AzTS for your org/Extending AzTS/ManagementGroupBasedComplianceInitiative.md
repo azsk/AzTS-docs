@@ -103,7 +103,11 @@ d. Point current path to deployment folder and load AzTS setup script <br/>
   ```
   - Invoke the configuration cmdlet
   ``` PowerShell
-    Configure-AzTSFeature -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName <AzTSHostingRGName> -FeatureName "MG Compliance Initiate Editor" -FeatureActionType "Enable"
+    Configure-AzTSFeature 
+    -SubscriptionId <AzTSHostingSubscriptionId> `
+    -ScanHostRGName <AzTSHostingRGName> `
+    -FeatureName "MG Compliance Initiate Editor" `
+    -FeatureActionType "Enable"
   ```
   - Load the script in current PowerShell session.
   ``` PowerShell
@@ -112,7 +116,11 @@ d. Point current path to deployment folder and load AzTS setup script <br/>
   ```     
  - Invoke the configuration cmdlet
   ``` PowerShell
-    Add-AztsFeatureConfigurationValues -SubscriptionId <AzTSHostingSubscriptionId> -ScanHostRGName <AzTSHostingRGName> -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "user's object id"
+    Add-AztsFeatureConfigurationValues 
+     -SubscriptionId <AzTSHostingSubscriptionId> `
+     -ScanHostRGName <AzTSHostingRGName> `
+     -FeatureName "MG Compliance Initiate Editor" ` 
+     -FeatureConfigValues "user's object id"
    
    <# Note: 1) User's object id can be referenced from Azure AD.
     2) For adding multiple user, pass the user's object id value seperated by comma(',').
