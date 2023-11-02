@@ -289,8 +289,8 @@ Set-AzTSMMARemovalUtilityRunbook `
 This step involves creating SPN associated to identity for each tenant using Set-AzSKTenantSecuritySolutionMultiTenantIdentitySPN and helps in granting required role permissions to SPN on target scope(s) using Grant-AzSKAzureRoleToMultiTenantIdentitySPN.
 
 The AzTS MMA Removal Utility solution works in 2 phases:
-1. Discovers VMs and VM Extensions to identify the VMs from which MMA Agent will be removed for which setup requires ***Reader*** access on the scope being configured.
-2. Removes MMA Extensions from the eligible VMs for which setup requires ***Virtual Machine Contributor*** access on the scopes being configured. Scopes Configured can be a Tenant/ManagementGroup(s)/Subscription(s) or both ManagementGroup(s) and Subscription(s).
+1. Discovers VMs, VMSS and Azure Arc Servers and there Extensions to identify the services from which MMA Agent will be removed for which setup requires ***Reader*** access on the scope being configured.
+2. Removes MMA Extensions from the eligible VMs, VMSS and Azure Arc Servers for which setup requires ***Virtual Machine Contributor*** and ***Azure Arc ScVmm VM Contributor*** access on the scopes being configured. Scopes Configured can be a Tenant/ManagementGroup(s)/Subscription(s) or both ManagementGroup(s) and Subscription(s).
 
 > _Note:_
 > 1. _For granting SPN with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configured scopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the SPN with the required permissions._
