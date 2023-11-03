@@ -3,7 +3,7 @@
 
 To enable the Control Metadata Editor tool (CMET), you need to configure a few application settings in for AzTS Function Apps/WebApps. This can be done either through the Azure portal or by using the helper script. Once these application settings are configured, please follow the steps mentioned [here](#access-to-cmet-control-metadata-editor-tool) to add users to Privileged editor roles.
 
-- Using Azure Portal
+## Option1: Using Azure Portal
   1. Open the [Azure portal](https://portal.azure.com/).
   2. Navigate to AzTS host subscription -> AzTS host resource group.
   3. Go to required app service(AzSK-AzTS-WebApi-xxxxx/AzSK-AzTS-MetadataAggregator-xxxxx/AzSK-AzTS-WorkItemProcessor-xxxxx).
@@ -42,29 +42,51 @@ Below mentioned appsettings are required for enabling CMET:
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 -----
+## Option2: Using helper script
+If you have already downloaded the deployment package zip, directly go to step (4).<br/>
+- Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+
+- Extract zip to local folder location. <br/>
+
+-  Unblock the content. The below command will help to unblock files. <br/>
+
+    ``` PowerShell
+    Get-ChildItem -Path "<Extracted folder path>" -Recurse |    Unblock-File 
+    ```
+
+-  Point current path to deployment folder and load AzTS setup script <br/>
 
 
-- Using helper script
-  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
-  > **Note:** Script can be downloaded by clicking Alt+Raw button.
-  - Open a PowerShell session.
-  - Navigate to the download location of the script in PowerShell session.
-    - cd "Script download location"
-  - Unblock the downloaded script.
-    - Unblock-File -Path ".\ConfigureAzTSFeature.ps1"
-  - Load the script in current PowerShell session.
-    - . ".\ConfigureAzTSFeature.ps1"
-    > **Note:** Do not miss the '.' at beginning of the above command.
-  - Connect to AzAccount
-    - Connect-AzAccount -Tenant "AzTSHostingTenantId"
-  - Invoke the configuration cmdlet
-    - Configure-AzTSFeature -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "CMET"  -FeatureActionType "Enable"
+    ``` PowerShell
+    # Point current path to extracted folder location and load setup script from the deployment folder 
+
+    CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+    # Load AzTS Setup script in session
+    . ".\ConfigureAzTSFeature.ps1"
+
+    # Note: Make sure you copy  '.' present at the start of the line.  
+   ```
+
+-  Connect to AzAccount
+    ``` PowerShell
+      Connect-AzAccount -Tenant <TenantId>
+    ```
+-  Invoke the configuration cmdlet
+     ``` PowerShell
+      Configure-AzTSFeature 
+      -SubscriptionId <AzTSHostingSubscriptionId> `
+      -ScanHostRGName <AzTSHostingRGName> `
+      -FeatureName "CMET" `
+      -FeatureActionType "Enable"
+     ```
+
 
 
 ## Access to CMET (Control metadata editor tool)
 
-Only privileged users have access to CMET for updating control metadata or adding new controls. To elevate a user to a privileged role, please follow the steps outlined below:
-
+Only privileged users have access to CMET for updating control metadata or adding new controls. This can be done either through the Azure portal or by using the helper script. To elevate a user to a privileged role, please follow the steps outlined below:
+### Option1: Using Azure Portal
 - Open the [Azure portal](https://portal.azure.com/).
 - Navigate to AzTS host subscription -> AzTS host resource group.
 - Go to required AzTS API app service(AzSK-AzTS-WebApi-xxxxx).
@@ -76,21 +98,48 @@ Only privileged users have access to CMET for updating control metadata or addin
 > **Note:** user's object id can be referenced from Azure AD.
 -----
 
-- Using helper script
-  - Download the script from [here](../../TemplateFiles/DeploymentFiles.zip), skip this step if you have already downloaded the deployment package zip
-  > **Note:** Script can be downloaded by clicking Alt+Raw button.
-  - Open a PowerShell session.
-  - Navigate to the download location of the script in PowerShell session.
-    - cd "Script download location"
-  - Unblock the downloaded script.
-    - Unblock-File -Path ".\Add-AztsFeatureConfigurationValues.ps1"
-  - Load the script in current PowerShell session.
-    - . ".\Add-AztsFeatureConfigurationValues.ps1"
-    > **Note:** Do not miss the '.' at beginning of the above command.
-  - Connect to AzAccount
-    - Connect-AzAccount -Tenant "AzTSHostingTenantId"
-  - Invoke the configuration cmdlet
-    - Add-AztsFeatureConfigurationValues -SubscriptionId "AzTSHostingSubscriptionId" -ScanHostRGName "AzTSHostingRGName" -FeatureName "CMET"  -FeatureConfigValues "user's object id"
-    > **Note:** user's object id can be referenced from Azure AD.<br />
-    For adding multiple user, pass the user's object id value seperated by comma(',').<br />
-    For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "CMET"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+### Option2: Using Helper Script
+  If you have already downloaded the deployment package zip, directly go to step (4).<br/>
+- Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+
+- Extract zip to local folder location. <br/>
+
+-  Unblock the content. The below command will help to unblock files. <br/>
+
+    ``` PowerShell
+    Get-ChildItem -Path "<Extracted folder path>" -Recurse |    Unblock-File 
+    ```
+
+-  Point current path to deployment folder and load AzTS setup script <br/>
+
+
+    ``` PowerShell
+    # Point current path to extracted folder location and load setup script from the deployment folder 
+
+    CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+    # Load AzTS Setup script in session
+    . ".\ConfigureAzTSFeature.ps1"
+
+    # Note: Make sure you copy  '.' present at the start of the line.  
+   ```
+
+-  Connect to AzAccount
+    ``` PowerShell
+      Connect-AzAccount -Tenant <TenantId>
+    ```
+-  Invoke the configuration cmdlet
+     ``` PowerShell
+      Add-AztsFeatureConfigurationValues 
+      -SubscriptionId <AzTSHostingSubscriptionId> `
+      -ScanHostRGName <AzTSHostingRGName> `
+      -FeatureName "CMET" ` 
+      -FeatureConfigValues <User object id>
+      
+      <# Note: 1) User's object id can be referenced from Azure AD.
+      2) For adding multiple user, pass the user's object id value seperated by comma(',').
+      For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
+      -ScanHostRGName "AzTS-Solution-XX" `
+      -FeatureName "MG `Compliance Initiate Editor" `
+      -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+     ```

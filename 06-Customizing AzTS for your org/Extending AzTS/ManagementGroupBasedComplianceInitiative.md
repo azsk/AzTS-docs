@@ -69,7 +69,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 ![Resources](../../Images/06_MGCIEnableMGAndSave.png)
 
 -----
-### Option2: Using helper script
+### Option2: Using Helper Script
 #### Step (1 & 2) of 4 (consolidated):
 If you have already downloaded the deployment package zip, directly go to step (4).<br/>
 1. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
@@ -119,11 +119,14 @@ If you have already downloaded the deployment package zip, directly go to step (
       -SubscriptionId <AzTSHostingSubscriptionId> `
       -ScanHostRGName <AzTSHostingRGName> `
       -FeatureName "MG Compliance Initiate Editor" ` 
-      -FeatureConfigValues "user's object id"
+      -FeatureConfigValues <User object id>
     
     <# Note: 1) User's object id can be referenced from Azure AD.
       2) For adding multiple user, pass the user's object id value seperated by comma(',').
-      For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" -ScanHostRGName "AzTS-Solution-XX" -FeatureName "MG Compliance Initiate Editor"  -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+      For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
+      -ScanHostRGName "AzTS-Solution-XX" `
+      -FeatureName "MG `Compliance Initiate Editor" `
+      -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
     ```
 
 #### Step 3 of 4.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
