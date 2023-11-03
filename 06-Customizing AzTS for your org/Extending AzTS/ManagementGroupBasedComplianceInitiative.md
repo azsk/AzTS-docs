@@ -115,7 +115,7 @@ If you have already downloaded the deployment package zip, directly go to step (
       -SubscriptionId <AzTSHostingSubscriptionId> `
       -ScanHostRGName <AzTSHostingRGName> `
       -FeatureName "MG Compliance Initiate Editor" ` 
-      -FeatureConfigValues <User object id>
+      -FeatureConfigValues <User`s object id>
     
     <# Note: 1) User's object id can be referenced from Azure AD.
       2) For adding multiple user, pass the user's object id value seperated by comma(',').

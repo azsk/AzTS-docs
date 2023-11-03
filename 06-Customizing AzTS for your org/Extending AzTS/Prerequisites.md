@@ -54,7 +54,7 @@ If you have already downloaded the deployment package zip, directly go to step (
     Get-ChildItem -Path "<Extracted folder path>" -Recurse |    Unblock-File 
     ```
 
--  Point current path to deployment folder and load AzTS setup script <br/>
+-  Point current path to deployment folder and load AzTS setup script. <br/>
 
 
     ``` PowerShell
@@ -68,11 +68,11 @@ If you have already downloaded the deployment package zip, directly go to step (
     # Note: Make sure you copy  '.' present at the start of the line.  
    ```
 
--  Connect to AzAccount
+-  Connect to AzAccount.
     ``` PowerShell
       Connect-AzAccount -Tenant <TenantId>
     ```
--  Invoke the configuration cmdlet
+-  Invoke the configuration cmdlet.
      ``` PowerShell
       Configure-AzTSFeature 
       -SubscriptionId <AzTSHostingSubscriptionId> `
@@ -134,7 +134,7 @@ Only privileged users have access to CMET for updating control metadata or addin
       -SubscriptionId <AzTSHostingSubscriptionId> `
       -ScanHostRGName <AzTSHostingRGName> `
       -FeatureName "CMET" ` 
-      -FeatureConfigValues <User object id>
+      -FeatureConfigValues <User`s object id>
 
       <# Note: 1) User's object id can be referenced from Azure AD.
       2) For adding multiple user, pass the user's object id value seperated by comma(',').
