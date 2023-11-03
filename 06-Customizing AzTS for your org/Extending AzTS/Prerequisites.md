@@ -63,7 +63,7 @@ If you have already downloaded the deployment package zip, directly go to step (
     CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
     # Load AzTS Setup script in session
-    . ".\ConfigureAzTSFeature.ps1"
+    . ".\UpdateAzTSFeatures.ps1"
 
     # Note: Make sure you copy  '.' present at the start of the line.  
    ```
@@ -110,7 +110,7 @@ Only privileged users have access to CMET for updating control metadata or addin
     Get-ChildItem -Path "<Extracted folder path>" -Recurse |    Unblock-File 
     ```
 
--  Point current path to deployment folder and load AzTS setup script <br/>
+-  Point current path to deployment folder and load AzTS setup script. <br/>
 
 
     ``` PowerShell
@@ -119,16 +119,16 @@ Only privileged users have access to CMET for updating control metadata or addin
     CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
     # Load AzTS Setup script in session
-    . ".\ConfigureAzTSFeature.ps1"
+    . ".\UpdateAzTSFeatures.ps1"
 
     # Note: Make sure you copy  '.' present at the start of the line.  
    ```
 
--  Connect to AzAccount
+-  Connect to AzAccount.
     ``` PowerShell
       Connect-AzAccount -Tenant <TenantId>
     ```
--  Invoke the configuration cmdlet
+-  Invoke the configuration cmdlet.
      ``` PowerShell
       Add-AztsFeatureConfigurationValues 
       -SubscriptionId <AzTSHostingSubscriptionId> `

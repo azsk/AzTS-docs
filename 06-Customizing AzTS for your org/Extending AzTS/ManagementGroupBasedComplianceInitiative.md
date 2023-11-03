@@ -82,7 +82,7 @@ If you have already downloaded the deployment package zip, directly go to step (
     Get-ChildItem -Path "<Extracted folder path>" -Recurse |    Unblock-File 
     ```
 
-4. Point current path to deployment folder and load AzTS setup script <br/>
+4. Point current path to deployment folder and load AzTS setup script. <br/>
 
 
     ``` PowerShell
@@ -91,16 +91,16 @@ If you have already downloaded the deployment package zip, directly go to step (
     CD "<LocalExtractedFolderPath>\DeploymentFiles"
 
     # Load AzTS Setup script in session
-    . ".\ConfigureAzTSFeature.ps1"
+    . ".\UpdateAzTSFeatures.ps1"
 
     # Note: Make sure you copy  '.' present at the start of the line.  
    ```
 
-5. Connect to AzAccount
+5. Connect to AzAccount.
     ``` PowerShell
       Connect-AzAccount -Tenant <TenantId>
     ```
-  6. Invoke the configuration cmdlet
+  6. Invoke the configuration cmdlet.
      ``` PowerShell
       Configure-AzTSFeature 
       -SubscriptionId <AzTSHostingSubscriptionId> `
@@ -108,12 +108,8 @@ If you have already downloaded the deployment package zip, directly go to step (
       -FeatureName "MG Compliance Initiate Editor" `
       -FeatureActionType "Enable"
      ```
-  7. Load the script in current PowerShell session.
-     ``` PowerShell
-      . ".\Add-AztsFeatureConfigurationValues.ps1"
-      # Note: Make sure you copy  '.' present at the start of the line.
-     ```     
- 8. Invoke the configuration cmdlet
+    
+ 7. Invoke the configuration cmdlet.
     ``` PowerShell
       Add-AztsFeatureConfigurationValues 
       -SubscriptionId <AzTSHostingSubscriptionId> `
