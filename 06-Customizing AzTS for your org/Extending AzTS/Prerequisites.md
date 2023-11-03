@@ -3,7 +3,7 @@
 
 To enable the Control Metadata Editor tool (CMET), you need to configure a few application settings in for AzTS Function Apps/WebApps. This can be done either through the Azure portal or by using the helper script. Once these application settings are configured, please follow the steps mentioned [here](#access-to-cmet-control-metadata-editor-tool) to add users to Privileged editor roles.
 
-## Option1: Using Azure Portal
+### Option1: Using Azure Portal
   1. Open the [Azure portal](https://portal.azure.com/).
   2. Navigate to AzTS host subscription -> AzTS host resource group.
   3. Go to required app service(AzSK-AzTS-WebApi-xxxxx/AzSK-AzTS-MetadataAggregator-xxxxx/AzSK-AzTS-WorkItemProcessor-xxxxx).
@@ -42,7 +42,7 @@ Below mentioned appsettings are required for enabling CMET:
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 -----
-## Option2: Using helper script
+### Option2: Using helper script
 If you have already downloaded the deployment package zip, directly go to step (4).<br/>
 - Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
@@ -135,11 +135,13 @@ Only privileged users have access to CMET for updating control metadata or addin
       -ScanHostRGName <AzTSHostingRGName> `
       -FeatureName "CMET" ` 
       -FeatureConfigValues <User object id>
-      
+
       <# Note: 1) User's object id can be referenced from Azure AD.
       2) For adding multiple user, pass the user's object id value seperated by comma(',').
-      For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
-      -ScanHostRGName "AzTS-Solution-XX" `
-      -FeatureName "MG `Compliance Initiate Editor" `
-      -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+      For example:  
+        Add-AztsFeatureConfigurationValues 
+        -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
+        -ScanHostRGName "AzTS-Solution-XX" `
+        -FeatureName "MG `Compliance Initiate Editor" `
+        -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
      ```

@@ -123,10 +123,12 @@ If you have already downloaded the deployment package zip, directly go to step (
     
     <# Note: 1) User's object id can be referenced from Azure AD.
       2) For adding multiple user, pass the user's object id value seperated by comma(',').
-      For example:  Add-AztsFeatureConfigurationValues -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
-      -ScanHostRGName "AzTS-Solution-XX" `
-      -FeatureName "MG `Compliance Initiate Editor" `
-      -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+      For example:  
+        Add-AztsFeatureConfigurationValues 
+        -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
+        -ScanHostRGName "AzTS-Solution-XX" `
+        -FeatureName "MG `Compliance Initiate Editor" `
+        -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
     ```
 
 #### Step 3 of 4.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
