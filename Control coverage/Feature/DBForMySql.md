@@ -61,9 +61,9 @@ The 'Allow access to Azure services' setting configures a very broad range of IP
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get firewall rules of a DBForMySql server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/firewallRules/{firewallRuleName}?api-version=2017-12-01 <br />
+- REST API to get firewall rules of a DBForMySql server: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/firewallRules/{firewallRuleName}?api-version=2017-12-01 <br />
 **Properties:** name
  <br />
 
@@ -114,9 +114,9 @@ Using the firewall feature ensures that access to the data or the service is res
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get firewall rules of a DBForMySql server: 
+- REST API to get firewall rules of a DBForMySql server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/firewallRules/{firewallRuleName}?api-version=2017-12-01 
 <br />
  
@@ -161,9 +161,9 @@ Enforcing SSL connections between your database server and your client applicati
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get firewall rules of a DBForMySql server: 
+- REST API to get firewall rules of a DBForMySql server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/firewallRules/{firewallRuleName}?api-version=2017-12-01 
 <br />
  
@@ -217,9 +217,9 @@ Advanced Threat Protection for Azure Database for MySQL provides a layer of secu
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get security alert policy of a DBForMySql server: 
+- REST API to get security alert policy of a DBForMySql server: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/securityAlertPolicies/Default?api-version=2017-12-01 
 <br />
  
@@ -274,9 +274,9 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get resource details of a DBForMySql server: 
+- REST API to get resource details of a DBForMySql server: 
 /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/servers?api-version=2017-12-01 
 <br />
  
@@ -335,9 +335,9 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) --->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list diagnostic setting details of Azure Database for MySQL servers: 
+- REST API to list diagnostic setting details of Azure Database for MySQL servers: 
 /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview 
 <br />
  

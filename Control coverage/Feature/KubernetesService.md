@@ -52,9 +52,9 @@ Enabling RBAC in a cluster lets you finely control access to various operations 
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+- REST API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.enableRBAC
  <br />
 
@@ -96,9 +96,9 @@ Using the native enterprise directory for authentication ensures that there is a
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+- REST API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.aadProfile.clientAppID, properties.aadProfile.serverAppID, properties.aadProfile.tenantID, properties.aadProfile.managed
  <br />
 
@@ -147,9 +147,9 @@ Running on older versions could mean you are not using latest security classes. 
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+- REST API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.kubernetesVersion
  <br />
 
@@ -191,9 +191,9 @@ Auditing enables log collection of important system events pertinent to security
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+- REST API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.addonProfiles.omsagent
  <br />
 
@@ -242,17 +242,17 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
+- REST API to list Network Interfaces at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
 **Properties:** properties.ipConfigurations, properties.networksecuritygroup
  <br />
 
-- ARM API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
+- REST API to list Network Security Groups at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:** properties.destinationAddressPrefixes
  <br /> 
 
-- ARM API to list Virtual Networks at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
+- REST API to list Virtual Networks at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Network/virtualNetworks?api-version=2019-11-01<br />
 **Properties:** properties.subnets
  <br />
 
@@ -327,9 +327,9 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list diagnostic setting details of Kubernetes service resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+- REST API to list diagnostic setting details of Kubernetes service resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Kubernetes/connectedClusters/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:**<br /> name, <br />
 properties.logs.category, <br />
 properties.logs.enabled, <br />
@@ -378,9 +378,9 @@ Enabling HTTP application routing creates publicly accessible DNS names for appl
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+- REST API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:** properties.addonProfiles.httpApplicationRouting.enabled
  <br />
 
@@ -411,9 +411,9 @@ Disable local accounts with AAD authentication enabled on the kubernete cluster 
 
 	Go to Azure Portal --> Kubernetes Services --> Select Kubernetes Cluster --> Settings --> Cluster configuration --> Authentication and Authorization options -->  Authentication and Authorization option --> Select 'Azure AD Authentication with Kubernetes RBAC' --> Cluster admin ClusterRoleBinding option --> Click 'choose AAD Group' --> select group and click, Select --> Uncheck Kubernetes local accounts option --> Select Apply.
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
+- REST API to list Container Services at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/managedClusters?api-version=2020-09-01<br />
 **Properties:**
 properties.disableLocalAccounts<br />
  <br />

@@ -82,9 +82,9 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 	
 	Note: If Storage Accounts are used to store diagnostic logs, minimum retention period must be set to '365' or '0' (forever). 
  	```  
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list diagnostic setting details of AVDWorkspaces resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{AVDWorkspacesName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
+- REST API to list diagnostic setting details of AVDWorkspaces resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/workspaces/{AVDWorkspacesName}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
 **Properties:**
 name<br />
 properties.logs.category<br />

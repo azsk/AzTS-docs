@@ -42,9 +42,9 @@ Logs should be retained for a long enough period so that activity trail can be r
     - To remediate: Go to Azure Portal --> Search Virtual Machine --> 'Help'  --> 'Boot diagnostics' settings --> 'Settings' --> Select 'Enable with managed storage account (recommended)' --> Click 'Save'.
       
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list virtual machine and its related properties at Subscription level: <br />
+- REST API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
 properties.diagnosticsProfile.bootDiagnostics.enabled,<br />
@@ -93,9 +93,9 @@ Trusted launch protects against advanced and persistent attack techniques. It is
      - To remediate: Go to Azure Portal --> Search Virtual Machine --> 'settings'  --> 'Configuration' -->  Go to Security Type --> Mark the checkbox for 'Enable Secure boot'  and 'Enable vTPM'. --> select 'Save'. **NOTE**: Remediation is only possible if service type is 'Trusted Launch' otherwise create a new VM.
       
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list virtual machine and its related properties at Subscription level: <br />
+- REST API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
 properties.securityProfile.securityType,<br />
@@ -135,19 +135,19 @@ By default, access to the virtual machine is restricted to sources in the same v
      
       
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list virtual machine and its related properties at Subscription level: <br />
+- REST API used to list virtual machine and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2023-03-01<br />
 **Properties:**
 properties.networkProfile.networkInterfaces[\*].id<br />
 
-- ARM API used to list NIC and its related properties at Subscription level: <br />
+- REST API used to list NIC and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
 **Properties:**
 properties.ipConfigurations[\*].id<br />
 
-- ARM API used to list NSG and its related properties at Subscription level: <br />
+- REST API used to list NSG and its related properties at Subscription level: <br />
 /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01<br />
 **Properties:**
 id ,<br />

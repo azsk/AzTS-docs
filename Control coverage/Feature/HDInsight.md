@@ -57,9 +57,9 @@ Being on the latest/supported HDInsight version significantly reduces risks from
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
+- REST API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
 **Properties:** properties.clusterVersion
  <br />
 
@@ -104,9 +104,9 @@ Restricting cluster access with inbound and outbound traffic via NSGs limits the
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
+- REST API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
 **Properties:** properties.computeProfile
  <br />
 
@@ -159,9 +159,9 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
+- REST API to lists all the HDInsight clusters under the subscription: /subscriptions/{subscriptionId}/providers/Microsoft.HDInsight/clusters?api-version=2018-06-01-preview <br />
 **Properties:** properties.minSupportedTlsVersion
  <br />
 

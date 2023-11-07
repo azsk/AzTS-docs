@@ -55,9 +55,9 @@ One of the following conditions is met:
 	Refer: https://docs.microsoft.com/en-us/azure/cdn/cdn-standard-rules-engine to configure HTTP to HTTPs redirection rule in rules engine. 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list existing CDN endpoints at subscription level: <br />
+- REST API used to list existing CDN endpoints at subscription level: <br />
 /subscriptions/{subscriptionId}/resourceGroups/{resourcegroupName}/providers/Microsoft.Cdn/profiles/{profileName}/endpoints?api-version=2019-12-31<br />
 **Properties:** 
 properties.isHttpAllowed, properties.isHttpsAllowed, properties.deliveryPolicy.rules
@@ -104,22 +104,22 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 	 You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
 	 [Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN](../../Scripts/RemediationScripts/Remediate-SetWAFPolicyModeToPreventionForAzFrontDoorCDN.ps1) <br/>
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get Front Door resources in a subscription: /subscriptions/{0}/
+- REST API to get Front Door resources in a subscription: /subscriptions/{0}/
 /subscriptions/{0}/providers/Microsoft.Cdn/profiles?api-version=2021-06-01
 **Properties:** [*]	
  <br />
 
-- ARM API to get Front Door Endpoints resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Cdn/profiles/{2}/afdEndpoints?api-version=2021-06-01<br />
+- REST API to get Front Door Endpoints resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Cdn/profiles/{2}/afdEndpoints?api-version=2021-06-01<br />
 **Properties:** [*].properties.hostname, [*].properties.enabledState, 
  <br />
 
-- ARM API to get WAF Policies in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
+- REST API to get WAF Policies in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
 **Properties:** [*].properties.policySettings
  <br />
 
-- ARM API to get Security Policies in a subscription: 
+- REST API to get Security Policies in a subscription: 
  /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Cdn/profiles/{2}/securityPolicies?api-version=2021-06-01<br />
 **Properties:** [*].properties.parameters
 <br />
@@ -161,14 +161,14 @@ TLS provides privacy and data integrity between client and server. Using approve
 
                     
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list existing CDN Domain endpoints at subscription level: <br />
+- REST API used to list existing CDN Domain endpoints at subscription level: <br />
  /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Cdn/profiles/{FrontDoorName}/customDomains?api-version=2021-06-01<br />
  **Properties:**  properties.tlsSettings.minimumTlsVersion, 
  properties.tlsSettings.profileName
 
-- ARM API to get configuration of a particular custom domain: <br />
+- REST API to get configuration of a particular custom domain: <br />
 /subscriptions/{SubscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Cdn/profiles/{FrontDoorName}/customDomains/{CustomDomainName}?api-version=2021-06-01"<br />
 **Properties:**  properties.certificateType
  <br />

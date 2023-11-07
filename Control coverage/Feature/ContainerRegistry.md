@@ -52,9 +52,9 @@ The Admin user account is designed for a single user to access the registry. Mul
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to lists all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
+- REST API to lists all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
 **Properties:** properties.adminUserEnabled
  <br />
 
@@ -113,13 +113,13 @@ Content trust gives the ability to verify both the integrity and the publisher o
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
+- REST API to list all the container registries under the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.ContainerRegistry/registries?api-version=2019-05-01<br />
 **Properties:** properties.sku
 <br />
 
-- ARM API to list the policies for a container registry: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{ResourceName}/listPolicies?api-version=2017-10-01<br />
+- REST API to list the policies for a container registry: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{ResourceName}/listPolicies?api-version=2017-10-01<br />
 **Properties:** trustPolicy.status
 <br />
 
@@ -175,7 +175,7 @@ Images in a container registry need to be regularly scanned for vulnerabilities.
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>) 
 -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - ARM API to list role assignment at scope: /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview<br />
 **Properties:** UserName, RoleName, ResourceId

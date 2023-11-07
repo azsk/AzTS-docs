@@ -54,12 +54,12 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
         # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
         ```
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** id<br />
 
-- ARM API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01<br />
+- REST API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01<br />
 **Properties:** properties.protocols<br />
 
 <br />
@@ -137,9 +137,9 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 
     Refer [How do I remediate failing control Azure_APIManagement_DP_Use_Secure_TLS_Version?](https://github.com/azsk/DevOpsKit-docs/blob/master/00c-Addressing-Control-Failures/Readme.md#how-do-i-remediate-failing-control-azure_apimanagement_dp_use_secure_tls_version) to disable the insecure protocols and ciphers using PowerShell.
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** properties.customProperties<br />
 **Custom Properties:** <br />
   1. Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Ciphers.TripleDes168
@@ -184,9 +184,9 @@ By default, each API Management instance comes with two sample products: Starter
 
 	 To delete sample products, go to Azure Portal --> your API management instance --> Products --> Select 'Starter'/'Unlimited' Product --> Delete. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list a collection of products in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products?api-version=2019-01-01 <br />
+- REST API to list a collection of products in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products?api-version=2019-01-01 <br />
 **Properties:** name<br />
 
 <br />
@@ -222,12 +222,12 @@ Delegation allows you to use your existing website for handling developer sign-i
 
 	 To disable delegation, go to APIM service --> Developer portal --> Delegation --> Uncheck the two check boxes (a) Delegate sign-in & sign-up (b) Delegate product subscription. Read more about delegation here: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-setup-delegation
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
 
-- ARM API to list a collection of portalsettings defined within a service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings?api-version=2018-06-01-preview <br />
+- REST API to list a collection of portalsettings defined within a service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings?api-version=2018-06-01-preview <br />
 **Properties:** properties.subscriptions.enabled, properties.userRegistration.enabled<br />
 
 <br />
@@ -258,18 +258,18 @@ If 'validate-jwt' policy is not configured, client can call the API without the 
 
 	 For steps to add JWT Validate Token policy please refer: <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-access-restriction-policies#ValidateJWT <br>and <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-protect-backend-with-aad#configure-a-jwt-validation-policy-to-pre-authorize-requests 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** sku<br />
 
-- ARM API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01 <br />
+- REST API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01 <br />
 **Properties:** id<br />
 
-- ARM API to get the details of the API specified by its identifier: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}?api-version=2019-01-01<br />
+- REST API to get the details of the API specified by its identifier: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}?api-version=2019-01-01<br />
 **Properties:** properties.authenticationSettings.oAuth2, properties.authenticationSettings.openid<br />
 
-- ARM API to get policy configuration at the API level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies?api-version=2019-01-01<br />
+- REST API to get policy configuration at the API level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies?api-version=2019-01-01<br />
 **Properties:** properties.value<br />
 
 <br />
@@ -312,12 +312,12 @@ The credentials used to access API Management REST API provide admin-level acces
     Set-AzApiManagementTenantAccess -Context $ApiManagementContext -Enabled $false
     ```
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
 
-- ARM API to get tenant access information details without secrets: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/access?api-version=2019-12-01<br />
+- REST API to get tenant access information details without secrets: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/tenant/access?api-version=2019-12-01<br />
 **Properties:** enabled<br />
 
 <br />
@@ -348,15 +348,15 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 
 	 To enable user authorization for an API, go to Azure Portal --> your API management instance --> APIs --> Select API --> Settings -> User Authorization -> Enable 'OAuth 2.0' or 'OpenID connect'. Please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-oauth2. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
 
-- ARM API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01 <br />
+- REST API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01 <br />
 **Properties:** id<br />
 
-- ARM API to get the details of the API specified by its identifier: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}?api-version=2019-01-01<br />
+- REST API to get the details of the API specified by its identifier: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}?api-version=2019-01-01<br />
 **Properties:** properties.authenticationSettings.oAuth2, properties.authenticationSettings.openid<br />
 
 <br />
@@ -401,15 +401,15 @@ Using the native enterprise directory for authentication ensures that there is a
 
 	 For steps to use Azure Active Directory (Azure AD) please refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-aad. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
 
-- ARM API to list collection of portalsettings defined within a service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings?api-version=2018-06-01-preview<br />
+- REST API to list collection of portalsettings defined within a service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/portalsettings?api-version=2018-06-01-preview<br />
 **Properties:** name: "signup", properties.enabled<br />
 
-- ARM API to list collection of Identity Provider configured in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders?api-version=2019-12-01<br />
+- REST API to list collection of Identity Provider configured in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders?api-version=2019-12-01<br />
 **Properties:** properties.type<br />
 
 <br />
@@ -440,15 +440,15 @@ Use client certificates to secure access to the back-end service of an API and p
 
 	 To enable client certificate authentication from Azure portal please refer: <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-mutual-certificates <br>and <br>https://docs.microsoft.com/en-us/azure/api-management/api-management-authentication-policies. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
 **Properties:** sku<br />
 
-- ARM API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01<br />
+- REST API to list all APIs of the API Management service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis?api-version=2019-01-01<br />
 **Properties:** id<br />
 
-- ARM API to get policy configuration at the API level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies?api-version=2019-01-01<br />
+- REST API to get policy configuration at the API level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies?api-version=2019-01-01<br />
 **Properties:** properties.value<br />
 
 <br />
@@ -486,9 +486,9 @@ When publishing APIs through Azure API Management (APIM), the easiest and most c
 
 	 To enable 'Requires Subscription' go to Azure Portal --> your API management instance --> Products --> Settings --> 'Requires Subscription'. Refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-subscriptions. <br>To create subscription for a user directly from Azure portal refer: https://docs.microsoft.com/en-us/azure/api-management/api-management-howto-create-subscriptions 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list a collection of products in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products?api-version=2019-01-01<br />
+- REST API to list a collection of products in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/products?api-version=2019-01-01<br />
 **Properties:** properties.subscriptionRequired, properties.state<br />
 
 <br />
@@ -529,9 +529,9 @@ Managed Service Identity (MSI) allows your API Management instance to easily acc
 
 	 Go to Azure Portal --> your API management instance --> Settings --> Managed Service Identity --> Register with AAD --> ON 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list APIMs and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
+- REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
 **Properties:** sku, identity.type<br />
 
 <br />
@@ -587,15 +587,15 @@ Metric alert for occurrence of unauthorized gateway requests help the admin to i
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all alert rule definitions in a Subscription:
+- REST API to list all alert rule definitions in a Subscription:
   /subscriptions/{0}/providers/Microsoft.Insights/metricAlerts?api-version=2018-03-01
   <br />
   **Properties:** [\*].id, [\*].name, [\*].properties.enabled, [\*].properties.scopes, [\*].properties.windowSize, [\*].properties.criteria, [\*].properties.actions
   <br />
 
-- ARM API to list all action groups in a Subscription:
+- REST API to list all action groups in a Subscription:
   /subscriptions/{0}/providers/microsoft.insights/actionGroups?api-version=2019-06-01
   <br />
   **Properties:** [\*].id, [\*].name, [\*].properties.enabled, [\*].properties.emailReceivers
@@ -668,9 +668,9 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)  -->
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list diagnostic setting details of API Management resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+- REST API to list diagnostic setting details of API Management resources: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
 **Properties:** 
 name<br />
 properties.logs.category<br />

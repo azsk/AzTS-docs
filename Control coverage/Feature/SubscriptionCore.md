@@ -60,11 +60,11 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 
 	 Steps to remove role assignments of deprecated/invalid accounts are:  <br />a. To remove permanent role assignment use command 'Remove-AzRoleAssignment' or refer link, https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-remove#azure-portal <br />b. To remove classic role assignments, refer link: https://docs.microsoft.com/en-us/azure/role-based-access-control/classic-administrators#remove-a-co-administrator <br />c. To remove PIM role assignments, refer link https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/pim-how-to-add-role-to-user?tabs=new#update-or-remove-an-existing-role-assignment. <br />For bulk remediation of permanent and classic role assignments using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Remove_Deprecated_Accounts.
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - Microsoft Defender for Cloud Recommendation - [Deprecated accounts should be removed from subscriptions](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/00c6d40b-e990-6acf-d4f3-471e747a27c4)
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalId
  <br />
 
@@ -72,11 +72,11 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 **Properties:** [\*].subject.id
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.emailAddress
  <br />
 
-- ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
+- REST API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01<br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.Id, [\*].properties.displayName, [\*].properties.status.code, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -114,17 +114,17 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
      # For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
 	 ```  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** [\*].subject.id, [\*].subject.type
  <br />
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalId, [\*].properties.principalType
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.emailAddress
  <br />
 
@@ -176,17 +176,17 @@ Non-AD accounts (such as xyz@hotmail.com, pqr@outlook.com, etc.) present at any 
      # Run 'Get-Help Remove-AzRoleAssignment -full' for more help. 
 	 ```  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** [\*].subject.type, [\*].roleDefinition.displayName
  <br />
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.role
  <br />
 
@@ -235,9 +235,9 @@ The v1 (ASM-based) version of Azure resource access model did not have much in t
 
 	 Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to 'Access Control (IAM)' and select the 'Classic Administrators' tab. <br />(e) Select the co-administrator account that has to be removed and click on the 'Remove' button. <br />(f) Perform this operation for all the co-administrators that need to be removed from the subscription. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.role
  <br />
 
@@ -272,11 +272,11 @@ Just like classic admins, management certificates were used in the v1 model for 
 
 	 You need to remove any management certificates that are not required. Please follow these steps: <br />(a) Logon to https://portal.azure.com/ <br />(b) Navigate to Subscriptions <br />(c) Select the subscription <br />(d) Go to Settings tab  --> Management Certificates tab --> Delete unwanted management certificates. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - Microsoft Defender for Cloud Recommendation - [Service principals should be used to protect your subscriptions instead of Management Certificates](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/2acd365d-e8b5-4094-bce4-244b7c51d67c)
 
-- ARM API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
+- REST API to list security assessments at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01 <br />
 **Properties:** [\*].id, [\*].name, [\*].properties.resourceDetails.Id, [\*].properties.displayName, [\*].properties.status.code, [\*].properties.status, [\*].properties.additionalData
  <br />
 
@@ -317,9 +317,9 @@ Based on the policies that are enabled in the subscription, Microsoft Defender f
 
 	 You need to address all active alerts on Microsoft Defender for Cloud. Please follow these steps: (a) Logon to https://portal.azure.com/ <br />(b) Navigate to 'Microsoft Defender for Cloud'. <br />(c) Click on 'Security alerts'. <br />(d) Take appropriate action on all active alerts. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all the alerts that are associated with the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/alerts?api-version=2021-01-01 <br />
+- REST API to list all the alerts that are associated with the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/alerts?api-version=2021-01-01 <br />
 **Properties:** [\*].properties.status, [\*].properties.severity, [\*].properties.timeGeneratedUtc
  <br />
 
@@ -356,21 +356,21 @@ Custom RBAC role definitions are usually tricky to get right. A lot of threat mo
      # Run 'Get-Help Remove-AzRoleDefinition -full' for more help. 
 	 ```  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** [\*].subject.type, [\*].roleDefinition.displayName
  <br />
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId), [\*].properties.memberType
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.role
  <br />
 
-- ARM API to get custom role definitions: - /{scope}/providers/Microsoft.Authorization/roleDefinitions?$filter=type eq 'CustomRole'&api-version=2018-01-01-preview<br />
+- REST API to get custom role definitions: - /{scope}/providers/Microsoft.Authorization/roleDefinitions?$filter=type eq 'CustomRole'&api-version=2018-01-01-preview<br />
 **Properties:** [\*].properties.roleName
  <br />
 
@@ -416,9 +416,9 @@ You should use new ARM/v2 resources as the ARM model provides several security e
 
 	 Migrate each v1/ASM-based resource in your app to a corresponding v2/ARM-based resource. Refer: https://docs.microsoft.com/en-us/azure/virtual-machines/windows/migration-classic-resource-manager-overview 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all resources in a Subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
+- REST API to list all resources in a Subscription: - /subscriptions/{subscriptionId}/resources?$expand=provisioningState,createdTime,changedTime&api-version=2018-05-01 <br />
 **Properties:** [\*].type <br />The following Classic resource types are in scope for the evaluation: <br />1. Microsoft.ClassicCompute/virtualMachines <br />2. Microsoft.ClassicStorage/storageAccounts <br /> 3. Microsoft.ClassicCompute/domainNames <br />4. Microsoft.ClassicNetwork/virtualNetworks <br />5. Microsoft.ClassicNetwork/reservedIps <br />6. Microsoft.ClassicNetwork/networkSecurityGroups <br />7. Microsoft.MarketplaceApps/classicDevServices
  <br />
 
@@ -476,17 +476,17 @@ Permanent access increase the risk of a malicious user getting that access and i
      # Refer https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/azure-pim-resource-rbac#assign-roles
 	 ```  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** [\*].subject.type, [\*].roleDefinition.displayName, [\*].assignmentState, [\*].linkedEligibleRoleAssignmentId, [\*].memberType, [\*].subject.displayName
  <br />
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.role
  <br />
 
@@ -546,17 +546,17 @@ Permanent access increase the risk of a malicious user getting that access and i
      # Refer https://docs.microsoft.com/en-us/azure/active-directory/privileged-identity-management/azure-pim-resource-rbac#assign-roles
 	 ```  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** [\*].subject.type, [\*].roleDefinition.displayName, [\*].assignmentState, [\*].linkedEligibleRoleAssignmentId, [\*].memberType, [\*].subject.displayName
  <br />
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.role
  <br />
 
@@ -644,13 +644,13 @@ Certain tags are expected to be present in all resources to support enterprise w
 
 	 Refer: https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-using-tags#portal 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get the entire set of tags on a resource or subscription: - /{scope}/providers/Microsoft.Resources/tags/default?api-version=2019-10-01<br />
+- REST API to get the entire set of tags on a resource or subscription: - /{scope}/providers/Microsoft.Resources/tags/default?api-version=2019-10-01<br />
 **Properties:** properties.tags
  <br />
 
-- ARM API to get resource group tags: - /subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01 <br />
+- REST API to get resource group tags: - /subscriptions/{subscriptionId}/resourcegroups?api-version=2019-10-01 <br />
 **Properties:** [\*].tags
  <br />
 
@@ -726,9 +726,9 @@ Azure Defender enables advanced threat detection capabilities, which use built-i
 
 	 Refer: https://docs.microsoft.com/en-us/azure/security-center/security-center-pricing. For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_Config_MDC_Defender_Plans
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list Security Center pricing configurations in the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2018-06-01 <br />
+- REST API to list Security Center pricing configurations in the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2018-06-01 <br />
 **Properties:** [\*].properties.pricingTier, [\*].name
  <br />
 
@@ -779,17 +779,17 @@ The regular / day to day use accounts are subject to a lot of credential theft a
 
 	 Go to Azure portal -> Privileged Identity Management -> Azure Resources -> Select the scope -> Members-> Eligible roles and verify the non alternate accounts. Ensure that only alternate accounts are used as members of critical roles in the subscription. Do not use day to day user accounts. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get role assignments: - /beta/privilegedAccess/azureResources/resources/{uniquePIMIdentifier}/roleAssignments?$expand=subject,roleDefinition($expand=resource)&$filter=(memberType ne '{filterCondition}')<br />
 **Properties:** [\*].subject.type, [\*].roleDefinition.displayName
  <br />
 
-- ARM API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
+- REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalType, [\*].properties.roleDefinitionId (Role name resolved from roleDefinitionId)
  <br />
 
-- ARM API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
+- REST API to list classic role assignment at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/classicAdministrators?api-version=2015-06-01<br />
 **Properties:** [\*].properties.role
  <br />
 
@@ -827,9 +827,9 @@ MDC monitors various security parameters on a VM such as missing updates, OS sec
 
 	 For setting AutoProvisioning settings for your subscription, go to azure portal https://portal.azure.com. On the portal go to --> Security center --> Pricing & Settings --> Select your subscription --> Settings --> Data Collection
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list auto provisioning settings at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/autoProvisioningSettings/default?api-version=2017-08-01-preview <br />
+- REST API to list auto provisioning settings at subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/autoProvisioningSettings/default?api-version=2017-08-01-preview <br />
 **Properties:** properties.autoProvision
  <br />
 
@@ -885,9 +885,9 @@ Security contact information will be used by Microsoft to contact you if the Mic
 - **Azure Portal** 
     Go to Azure Portal -> Microsoft Defender for Cloud -> Environment settings -> Select your subscription -> Go to 'Email notifications' <br /> a. In the 'Email recipients', Select 'Owner' **and** 'Service Admin' as email recipients **and** specify at least one email recipient. <br /> b. In the 'Notification types', Select the check box to notify about alerts and select the alert severity to 'Medium' or 'Low' (**Medium** = Get alerts for _Medium_ + _High_ severity and **Low** = Get alerts for _Low_ + _Medium_ + _High_ severity) -> Save. 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to list all security contact configurations for the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview <br />
+- REST API to list all security contact configurations for the subscription: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts?api-version=2020-01-01-preview <br />
 **Properties:** properties.emails, properties.phone, properties.alertNotifications.state, properties.alertNotifications.minimalSeverity, properties.notificationsByRole.state, properties.notificationsByRole.roles
  <br />
 
@@ -972,7 +972,7 @@ By using Conditional Access policies for privileged roles, you can apply the rig
      To create Policy for your organization, refer https://docs.microsoft.com/en-us/azure/active-directory/authentication/tutorial-enable-azure-mfa?bc=/azure/active-directory/conditional-access/breadcrumb/toc.json&toc=/azure/active-directory/conditional-access/toc.json#create-a-conditional-access-policy.
 	  
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - PIM API to get Role Settings: - /beta/privilegedAccess/azureResources/roleSettings?$expand=resource,roleDefinition($expand=resource)&$filter=(resource/id+eq+'{uniquePimIdentifier}')+and+((roleDefinition/templateId+eq+'{ownerTemplateId}')+or+(roleDefinition/templateId+eq+'{userAccessAdminTemplateId}')+or+(roleDefinition/templateId+eq+'{contributorTemplateId}')) <br />
 **Properties:** [\*].roleDefinitionId, [\*].userMemberSettings, [\*].roleDefinition.displayName
@@ -1032,7 +1032,7 @@ Note : Approved central team accounts don't count against your limit
      # For bulk remediation using PowerShell, refer https://aka.ms/azts-docs/rscript/Azure_Subscription_AuthZ_Dont_Use_NonAD_Identities
 	 `
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 -  ARM API to list role assignment at subscription level: - /subscriptions/{subscriptionId}}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-07-01<br />
 **Properties:** [\*].properties.scope , [\*].name
@@ -1063,7 +1063,7 @@ This Service depends mainly on 3rd party identity provider, and that can cause a
  <br/>Refer: https://github.com/MicrosoftDocs/azure-docs/blob/main/articles/active-directory-b2c/tutorial-delete-tenant.md to delete the Azure B2C tenant and unregister the 'Microsoft.AzureActiveDirectory' resource provider in the subscription.<br/>Refer to https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-providers-and-types for more information on resource providers.
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 -  ARM API to list providers at subscription level: - "/subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate<br />
 **Properties:** [\*].value.namespace , [\*].value.registrationState
@@ -1108,7 +1108,7 @@ The purpose of the security control is to prevent the creation of Service Princi
         #Provide the Key Id of the Password Credentials which you want to remove.
         $spn = Remove-AzureADServicePrincipalPasswordCredential -ObjectId "Enterprise Application Object Id" -KeyId "Key Id of the credential"	
 	 ```  
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
 - Graph API to fetch secret details: - /v1.0/servicePrincipals?$filter=id in ({ServicePrincipalObjectId})<br />
 **Properties:** [\*].passwordCredentials

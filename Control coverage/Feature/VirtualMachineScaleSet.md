@@ -71,9 +71,9 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
   
@@ -122,9 +122,9 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to get all the public IPs for the specified VMSS:
+- REST API to get all the public IPs for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/publicipaddresses?api-version=2019-07-01
   <br />
 
@@ -132,7 +132,7 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
   <br />
   <br />
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -198,9 +198,9 @@ Installing the Log Analytics extension for Windows and Linux allows Azure Monito
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -263,9 +263,9 @@ Open remote management ports expose a VMSS instance/compute node to a high level
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -273,7 +273,7 @@ Open remote management ports expose a VMSS instance/compute node to a high level
   <br />
  <br />
  
-- ARM API to list all the NSG configurations under the specified subscription:
+- REST API to list all the NSG configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Network/networkSecurityGroups?api-version=2019-04-01
   <br />
 
@@ -326,9 +326,9 @@ Public IPs provide direct access over the internet exposing the VMSS instance to
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -336,7 +336,7 @@ Public IPs provide direct access over the internet exposing the VMSS instance to
   <br />
  <br />
 
-- ARM API to get all the public IPs for the specified VMSS:
+- REST API to get all the public IPs for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/publicipaddresses?api-version=2019-07-01
   <br />
 
@@ -416,9 +416,9 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br/>
   
@@ -426,7 +426,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
   <br />
  <br />
  
-- ARM API to get all the VM instances for the specified VMSS:
+- REST API to get all the VM instances for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/virtualMachines?api-version=2019-07-01
   <br />
 
@@ -479,9 +479,9 @@ Being on the latest OS version significantly reduces risks from security design 
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -534,9 +534,9 @@ All the security configurations applied on VM Scale Set will be effective only i
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list all the VMSS configurations under the specified subscription:
+- REST API to list all the VMSS configurations under the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -544,7 +544,7 @@ All the security configurations applied on VM Scale Set will be effective only i
   <br />
  <br />
  
-- ARM API to get all the VM instances for the specified VMSS:
+- REST API to get all the VM instances for the specified VMSS:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{resourceName}/virtualMachines?api-version=2019-07-01
   <br />
 
@@ -597,9 +597,9 @@ Un-patched VMSSs are easy targets for compromise from various malware/trojan att
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to fetch all the security assessment for the specified subscription:
+- REST API to fetch all the security assessment for the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01
   <br />
 
@@ -654,9 +654,9 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to fetch all the security assessment for the specified subscription:
+- REST API to fetch all the security assessment for the specified subscription:
   /subscriptions/{subscriptionId}/providers/Microsoft.Security/assessments?api-version=2020-01-01
   <br />
 
@@ -722,9 +722,9 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 	 [![Link to Azure Policy](https://raw.githubusercontent.com/MSFT-Chirag/AzTS-docs/main/Assets/Deploy_To_Azure.jpg)](https://portal.azure.com/#blade/Microsoft_Azure_Policy/CreatePolicyDefinitionBlade/uri/<policy-raw-link>)
 -->
 
-### Azure Policy or ARM API used for evaluation
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to get configuration of a Virtual Machine Scale Set:
+- REST API to get configuration of a Virtual Machine Scale Set:
   /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
   <br />
 
@@ -732,7 +732,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
   <br />
  <br />
  
-- ARM API to get instance view of Virtual Machines in a Virtual Machine Scale Set:
+- REST API to get instance view of Virtual Machines in a Virtual Machine Scale Set:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/virtualmachines/{instanceId}/instanceView?api-version=2021-03-01
   <br />
 
@@ -793,16 +793,16 @@ Using Azure Portal :
 - To install AAD Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
 
 
-### Azure Policy or ARM API used for evaluation:
+### Azure Policies or REST APIs used for evaluation
 
-- ARM API to list Virtual Machine Scale Set at subscription level:
+- REST API to list Virtual Machine Scale Set at subscription level:
 [/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-sets/list-all?tabs=HTTP)<br/>
   **Properties:** properties.storageProfile.osDisk.osType
                   properties.orchestrationMode
   <br />
   <br />
 
-- ARM API to list Virtual Machine Scale Set Extensions at resource level:
+- REST API to list Virtual Machine Scale Set Extensions at resource level:
 [/subscriptions/{subscriptionId}/resourceGroups/{ResourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{VMScaleSetName}/extensions?api-version=2022-03-01](https://learn.microsoft.com/en-us/rest/api/compute/virtual-machine-scale-set-extensions/list?tabs=HTTP)
 </br>**Properties:** properties.virtualMachineProfile.extensionProfile.extensions.publisher
                   properties.virtualMachineProfile.extensionProfile.extensions.type

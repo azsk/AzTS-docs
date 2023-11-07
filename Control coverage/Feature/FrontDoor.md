@@ -55,13 +55,13 @@ Azure Web Application Firewall (WAF) on Azure Front Door provides centralized pr
 	 You can enable Prevention Mode on WAF Policy configured on Front Door using below BRS:  <br/>
 	 [Remediate-EnableWAFPolicyPreventionModeForFrontDoor](../../Scripts/RemediationScripts/Remediate-EnableWAFPolicyPreventionModeForFrontDoor.ps1) <br/>
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API to get Front Door resources in a subscription: /subscriptions/{0}/providers/Microsoft.Network/frontDoors?api-version=2019-05-01<br />
+- REST API to get Front Door resources in a subscription: /subscriptions/{0}/providers/Microsoft.Network/frontDoors?api-version=2019-05-01<br />
 **Properties:** [*].properties.frontendEndpoints
  <br />
 
-- ARM API to get WAF Policy resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
+- REST API to get WAF Policy resources in a subscription: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoorWebApplicationFirewallPolicies?api-version=2020-11-01<br />
 **Properties:** [*].properties.frontendEndpointLinks, [\*].properties.policySettings
  <br />
 
@@ -101,9 +101,9 @@ TLS provides privacy and data integrity between client and server. Using approve
 	Refer: https://learn.microsoft.com/en-us/powershell/module/az.frontdoor/enable-azfrontdoorcustomdomainhttps?view=azps-9.1.0 to configure secured MinimumTLSVersion in custom domain. 
 
 
-### Azure Policy or ARM API used for evaluation 
+### Azure Policies or REST APIs used for evaluation 
 
-- ARM API used to list existing Front Door endpoints at subscription level: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoors/{2}/frontendEndpoints/{3}?api-version=2019-05-01<br />
+- REST API used to list existing Front Door endpoints at subscription level: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Network/frontDoors/{2}/frontendEndpoints/{3}?api-version=2019-05-01<br />
 **Properties:** properties.minimumTlsVersion
  <br />
 
