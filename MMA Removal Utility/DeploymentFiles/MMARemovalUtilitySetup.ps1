@@ -337,11 +337,11 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
         $UserAssignedIdentityName,
 
         [string[]]
-        [Parameter(Mandatory = $false, HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target subscription(s).")]
+        [Parameter(Mandatory = $false, HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' access on target subscription(s).")]
         $TargetSubscriptionIds = @(),
 
         [string[]]
-        [Parameter(Mandatory = $false, HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
+        [Parameter(Mandatory = $false, HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' access on target management group(s).")]
         $TargetManagementGroupNames = @(),
 
         [switch]
@@ -511,7 +511,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
             
             if($assignmentError -eq $false)
             {
-                Write-Host "Granted user-assigned identity 'Reader' and 'Virtual Machine Contributor' permission on target scope(s) successfully." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Granted user-assigned identity 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' permission on target scope(s) successfully." -ForegroundColor $([Constants]::MessageType.Update)
             }
             
             if (-not(($targetSubscriptionCount -gt 0) -or ($targetMgtGroupCount -gt 0))) {

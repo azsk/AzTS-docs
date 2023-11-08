@@ -40,11 +40,11 @@ function Install-AzTSMMARemovalUtilitySolutionConsolidated {
         $RemediationIdentityName,
 
         [string[]]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target subscription(s).")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "List of target subscription(s) from which MMA agent to be removed. Identity will be granted 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' access on target subscription(s).")]
         $TargetSubscriptionIds = @(),
 
         [string[]]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader' and 'Virtual Machine Contributor' access on target management group(s).")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "List of target management group(s) from which MMA agent to be removed. Identity will be granted 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' access on target management group(s).")]
         $TargetManagementGroupNames = @(),
 
         [switch]

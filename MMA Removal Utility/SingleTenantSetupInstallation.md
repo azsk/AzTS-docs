@@ -60,8 +60,8 @@ Set-Prerequisites
 
 ### **Step 3 of 5. Setup remediation user-assigned managed identity**  
 The AzTS MMA Removal Utility solution works in 2 phases: 
-1. Discovers VMs, VMSS and Azure Arc Servers and there Extensions to identify the services from which MMA Agent will be removed for which setup requires ***Reader*** access on the scope being configured.
-2. Removes MMA Extensions from the eligible Azure services for which setup requires ***Virtual Machine Contributor*** and ***Azure Arc ScVmm VM Contributor*** access on the scopes being configured. Scopes Configured can be a Tenant/ManagementGroup(s)/Subscription(s) or both ManagementGroup(s) and Subscription(s).
+1. Discovers VMs, VMSS, Azure Arc Servers and their Extensions to identify the resources from which MMA Agent will be removed for which setup requires ***Reader*** access on the scope being configured.
+2. Removes MMA Extensions from the eligible Azure resources for which setup requires ***Virtual Machine Contributor*** and ***Azure Arc ScVmm VM Contributor*** access on the scopes being configured. Scopes Configured can be a Tenant/ManagementGroup(s)/Subscription(s) or both ManagementGroup(s) and Subscription(s).
 
 For executing the above phases, setup requires a [User-Assigned Managed Identity (MI)](https: //docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (identity part of the setup) which has 'Reader and Virtual Machine Contributor' access on target scopes configured.
 
