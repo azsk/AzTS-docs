@@ -405,7 +405,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
             }
             
             # Grant User Identity Reader permission on target subscription(s).
-            Write-Host "Granting user-assigned identity 'Reader', 'Virtual Machine Contributor' and Azure Arc ScVmm VM Contributor permission on target scope(s)..." -ForegroundColor $([Constants]::MessageType.Info)         
+            Write-Host "Granting user-assigned identity 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' permission on target scope(s)..." -ForegroundColor $([Constants]::MessageType.Info)         
             $targetSubscriptionCount = ($TargetSubscriptionIds | Measure-Object).Count
             $targetMgtGroupCount = ($TargetManagementGroupNames | Measure-Object).Count
             $assignmentError = $false
