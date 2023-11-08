@@ -202,7 +202,7 @@ It is important to consider that if you choose to retain inventory or process lo
 ### **5. How much time AzTS MMA Discovery and Removal Utility will take to remove MMA agents?**
 Estimated average time required for a single run (both discovery and removal phase) of utility on a scope of approx. 100K VMs is around 30 Mins.
 
-### **6. How I can get list of all the Azure Virtual Machines, Virtual Machine scale sets and Azure Arc servers available in configured scope(s)?**
+### **6. How can I get list of all the Azure Virtual Machines, Virtual Machine scale sets and Azure Arc servers available in configured scope(s)?**
 Resources inventory (Virtual Machines, Virtual Machine scale sets and Azure Arc servers) is collected in Log Analytics workspace. To list all resources discovered by utility, go to Log Analytics workspace created during setup --> Select Logs and run following query: 
 
 ``` KQL
@@ -212,7 +212,7 @@ Inventory_CL
 | extend OSType = tostring(parse_json(Metadata_s).OSType)
 ```
 
-### **7. How I can get list of all the VM(s), VMSS(s) and Azure Arc Servers which have both MMA & AMA agent present and are eligible for removal phase?**
+### **7. How can I get list of all the VM(s), VMSS(s) and Azure Arc Servers which have both MMA & AMA agent present and are eligible for removal phase?**
 Azure resources and Extensions inventory is collected in Log Analytics workspace. To list all the resources which have both MMA & AMA agent present, go to Log Analytics workspace created during setup --> Select Logs and run following query: 
 
 For Virtual Machines (VM):
@@ -288,7 +288,7 @@ virtualMachinesWithBothExtensions
 ```
 
 
-### **8. How I can get list of all the VMs, VMSS and Azure Arc Servers which have MMA agent present?**
+### **8. How can I get list of all the VMs, VMSS and Azure Arc Servers which have MMA agent present?**
 Azure resource data and Extensions inventory is collected in Log Analytics workspace. To list all the resources which have both MMA agent present, go to Log Analytics workspace created during setup --> Select Logs and run following query: 
 
 For all resourcess having MMA agent present:
