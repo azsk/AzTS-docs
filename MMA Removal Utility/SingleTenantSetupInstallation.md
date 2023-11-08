@@ -82,7 +82,7 @@ $TenantId = "<TenantId>"
 Connect-AzAccount -Tenant $TenantId
 ```
 
-Setup the remediation user-assigned MI using Set-AzTSMMARemovalUtilitySolutionRemediationIdentity command. When this command is run successfully, the remediation user-assigned MI is created and the created identity is granted with 'Reader' and 'Virtual Machine Contributor' permissions on target scopes.
+Setup the remediation user-assigned MI using Set-AzTSMMARemovalUtilitySolutionRemediationIdentity command. When this command is run successfully, the remediation user-assigned MI is created and the created identity is granted with 'Reader', 'Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' permissions on target scopes.
 
 ``` PowerShell
 # -----------------------------------------------------------------#
@@ -242,7 +242,7 @@ The AzTS MMA Removal Utility solution works in 2 phases:
 1. Discovers VMs, VMSS and Azure Arc Servers and there Extensions to identify the services from which MMA Agent will be removed for which setup requires ***Reader*** access on the scope being configured.
 2. Removes MMA Extensions from the eligible VMs, VMSS and Azure Arc Servers for which setup requires ***Virtual Machine Contributor*** and ***Azure Arc ScVmm VM Contributor*** access on the scopes being configured. Scopes Configured can be a Tenant/ManagementGroup(s)/Subscription(s) or both ManagementGroup(s) and Subscription(s).
 
-For executing the above phases, setup requires a [User-Assigned Managed Identity (MI)](https: //docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (identity part of the setup) which has 'Reader and Virtual Machine Contributor' access on target scopes configured.
+For executing the above phases, setup requires a [User-Assigned Managed Identity (MI)](https: //docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) (identity part of the setup) which has 'Reader', Virtual Machine Contributor' and 'Azure Arc ScVmm VM Contributor' access on target scopes configured.
 
 > _Note:_
 > 1. _For creation of remediation user-assigned MI and the setup (preferably in separate new RGs), user running this script should have **Owner** access on the subscription in which MI is being created. If the setup is being done in an existing RG, user should have **Owner** access on the RG._
