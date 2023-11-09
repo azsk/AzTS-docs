@@ -245,7 +245,7 @@ For Virtual Machines Scale Set (VMSS):
 let timeago = timespan(7d);
 let virtualMachineScaleSets = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceId contains "microsoft.compute/virtualmachinescalesets"
+| where ResourceType =~ "VirtualMachineScaleSets"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
@@ -256,7 +256,7 @@ let vmssExtensions = Inventory_CL
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
 | project ResourceId, VMResourceID, ExtensionType;
-let vmssExtensions = virtualMachineScaleSets
+let vmssWithBothExtensions = virtualMachineScaleSets
 | join kind=leftouter (vmssExtensions) on VMResourceID
 | summarize Extensions = make_list(ExtensionType) by VMResourceID, OSType
 |where (Extensions contains "MicrosoftMonitoringAgent" or Extensions contains "OmsAgentForLinux") and (Extensions contains "AzureMonitorWindowsAgent" or Extensions contains "AzureMonitorLinuxAgent");
@@ -269,7 +269,7 @@ For Azure Arc Servers:
 let timeago = timespan(7d);
 let virtualMachines = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceId contains "microsoft.hybridcompute"
+| where ResourceType =~ "HybridCompute"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
