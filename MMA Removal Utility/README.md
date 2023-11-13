@@ -251,7 +251,7 @@ let virtualMachineScaleSets = Inventory_CL
 | project VMResourceID = ResourceId, OSType;
 let vmssExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceType =~ "VMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
+| where ResourceType =~ "VMSSExtension" Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
@@ -275,7 +275,7 @@ let virtualMachines = Inventory_CL
 | project VMResourceID = ResourceId, OSType;
 let VirtualMachinesExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceType =~ "VMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
+| where ResourceType =~ "HybridVMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
@@ -301,8 +301,7 @@ let virtualMachines = Inventory_CL
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
 let virtualMachinesMMAExtensions = Inventory_CL
-| where TimeGenerated > ago(timeago)
-| where ResourceType =~ "VMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
+| where TimeGenerated > ago(timeago) and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
@@ -344,13 +343,13 @@ For VMSS(s) having MMA agent present:
 let timeago = timespan(7d);
 let vmss = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceId contains "microsoft.compute/virtualmachinescalesets"
+| where ResourceType contains "VirtualMachineScaleSets"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
 let vmssMMAExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceType =~ "VMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
+| where ResourceType =~ "VMSSExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
@@ -368,13 +367,13 @@ For Azure Arc Server(s) having MMA agent present:
 let timeago = timespan(7d);
 let virtualMachines = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceId contains "microsoft.hybridcompute"
+| where ResourceType contains "HybridCompute"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
 let virtualMachinesMMAExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceType =~ "VMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
+| where ResourceType =~ "HybridVMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
@@ -405,8 +404,7 @@ Error details are collected in Log Analytics workspace. For more details on erro
 ``` KQL
 let timeago = timespan(7d);
 InventoryProcessingStatus_CL
-| where TimeGenerated > ago(timeago)
-| where ResourceType =~ "VMExtension" and Source_s == "AzTS_07_ExtensionRemovalProcessor"
+| where TimeGenerated > ago(timeago) and Source_s == "AzTS_07_ExtensionRemovalProcessor"
 | where ProcessingStatus_s !~ "Initiated"
 | summarize arg_max(TimeGenerated,*) by tolower(ResourceId)
 | project ResourceId, ProcessingStatus_s, ProcessErrorDetails_s
