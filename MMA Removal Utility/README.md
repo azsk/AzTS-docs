@@ -299,7 +299,7 @@ let virtualMachines = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
-| project VMResourceID = ResourceId, OSType;
+| project VMResourceID = ResourceId, OSType,ResourceType;
 let virtualMachinesMMAExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago) and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
@@ -309,7 +309,7 @@ let virtualMachinesMMAExtensions = Inventory_CL
 | project ResourceId, VMResourceID, ExtensionType, ExtensionResourceId = ResourceId;
 let virtualMachinesWithMMAExtensions = virtualMachines
 | join kind=inner  (virtualMachinesMMAExtensions) on VMResourceID
-| project VMResourceID, OSType, ExtensionResourceId, ExtensionType;
+| project VMResourceID, OSType, ExtensionResourceId, ExtensionType,ResourceType;
 virtualMachinesWithMMAExtensions
 ```
 
