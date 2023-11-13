@@ -267,24 +267,24 @@ For Azure Arc Servers:
 
 ``` KQL
 let timeago = timespan(7d);
-let virtualMachines = Inventory_CL
+let hybridVMs = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | where ResourceType =~ "HybridCompute"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
-let VirtualMachinesExtensions = Inventory_CL
+let hybridVMsExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | where ResourceType =~ "HybridVMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
 | project ResourceId, VMResourceID, ExtensionType;
-let virtualMachinesWithBothExtensions = virtualMachines
-| join kind=leftouter (VirtualMachinesExtensions) on VMResourceID
+let hybridVMsWithBothExtensions = hybridVMs
+| join kind=leftouter (hybridVMsExtensions) on VMResourceID
 | summarize Extensions = make_list(ExtensionType) by VMResourceID, OSType
 |where (Extensions contains "MicrosoftMonitoringAgent" or Extensions contains "OmsAgentForLinux") and (Extensions contains "AzureMonitorWindowsAgent" or Extensions contains "AzureMonitorLinuxAgent");
-virtualMachinesWithBothExtensions
+hybridVMsWithBothExtensions
 ```
 
 
@@ -295,22 +295,22 @@ For all resourcess having MMA agent present:
 
 ``` KQL
 let timeago = timespan(7d);
-let virtualMachines = Inventory_CL
+let resources = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType,ResourceType;
-let virtualMachinesMMAExtensions = Inventory_CL
+let resourcesMMAExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago) and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
 | where ExtensionType =~ "OmsAgentForLinux" or ExtensionType =~ "MicrosoftMonitoringAgent"
 | project ResourceId, VMResourceID, ExtensionType, ExtensionResourceId = ResourceId;
-let virtualMachinesWithMMAExtensions = virtualMachines
-| join kind=inner  (virtualMachinesMMAExtensions) on VMResourceID
+let resourcesWithMMAExtensions = resources
+| join kind=inner  (resourcesMMAExtensions) on VMResourceID
 | project VMResourceID, OSType, ExtensionResourceId, ExtensionType,ResourceType;
-virtualMachinesWithMMAExtensions
+resourcesWithMMAExtensions
 ```
 
 For VM(s) having MMA agent present:
@@ -365,13 +365,13 @@ For Azure Arc Server(s) having MMA agent present:
 
 ``` KQL
 let timeago = timespan(7d);
-let virtualMachines = Inventory_CL
+let hybridVirtualMachines = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | where ResourceType contains "HybridCompute"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
-let virtualMachinesMMAExtensions = Inventory_CL
+let hybridVmsWithMMAExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | where ResourceType =~ "HybridVMExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
@@ -379,10 +379,10 @@ let virtualMachinesMMAExtensions = Inventory_CL
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
 | where ExtensionType =~ "OmsAgentForLinux" or ExtensionType =~ "MicrosoftMonitoringAgent"
 | project ResourceId, VMResourceID, ExtensionType, ExtensionResourceId = ResourceId;
-let virtualMachinesWithMMAExtensions = virtualMachines
-| join kind=inner  (virtualMachinesMMAExtensions) on VMResourceID
+let vMsWithMMAExtensions = hybridVirtualMachines
+| join kind=inner  (hybridVmsWithMMAExtensions) on VMResourceID
 | project VMResourceID, OSType, ExtensionResourceId, ExtensionType;
-virtualMachinesWithMMAExtensions
+vMsWithMMAExtensions
 ```
 
 
