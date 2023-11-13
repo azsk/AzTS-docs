@@ -473,7 +473,7 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where Source_s contains \"AzTS_02_ScopeResolverProcessor\"\n//| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| extend  OSType = tostring(parse_json(Metadata_s).OSType)\n| summarize count() by (tolower(OSType))\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where Source_s contains \"AzTS_02_ScopeResolverProcessor\"\n//| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| extend  OSType = tostring(parse_json(Metadata_s).OSType)\n| summarize count() by tolower(OSType)\n\n",
                   "ControlType": "AnalyticsGrid",
                   "SpecificChart": "Pie",
                   "PartTitle": "Inventory: VM,VMSS,Azure Arc Servers",
