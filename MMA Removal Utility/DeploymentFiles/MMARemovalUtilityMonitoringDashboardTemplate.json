@@ -473,7 +473,7 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where Source_s contains \"AzTS_02_ScopeResolverProcessor\"\n//| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| extend  OSType = tostring(parse_json(Metadata_s).OSType)\n| | summarize count() by OSType = tolower( OSType)\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where Source_s contains \"AzTS_02_ScopeResolverProcessor\"\n//| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| extend  OSType = tostring(parse_json(Metadata_s).OSType)\n| summarize TotalCount = count() by OSType = tolower( OSType)\n\n",
                   "ControlType": "AnalyticsGrid",
                   "SpecificChart": "Pie",
                   "PartTitle": "Inventory: VM,VMSS,Azure Arc Servers",
@@ -587,7 +587,7 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachines = Inventory_CL\n| where TimeGenerated > ago(timeago)\n//| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend  OSType = tolower(tostring(parse_json(Metadata_s).OSType))\n| where (isnotempty(OSType)) \n| project VMResourceID = ResourceId, OSType;\nlet virtualMachinesExtensions = Inventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType;\nvirtualMachines\n| join kind=leftouter (virtualMachinesExtensions) on VMResourceID\n| summarize Extensions = make_list(ExtensionType) by VMResourceID, OSType\n|summarize TotalServices = count(), ServicesWithOnlyMMAAgent = countif((array_length(Extensions) == 1) and (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"\")),\nServicesWithOnlyAMAAgent = countif((array_length(Extensions) == 1) and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")),\nServicesWithBothAgents = countif((Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")) by OSType\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachines = Inventory_CL\n| where TimeGenerated > ago(timeago)\n//| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend  OSType = tolower(tostring(parse_json(Metadata_s).OSType))\n| where (isnotempty(OSType)) \n| project VMResourceID = ResourceId, OSType;\nlet virtualMachinesExtensions = Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType;\nvirtualMachines\n| join kind=leftouter (virtualMachinesExtensions) on VMResourceID\n| summarize Extensions = make_list(ExtensionType) by VMResourceID, OSType\n|summarize TotalServices = count(), ServicesWithOnlyMMAAgent = countif((array_length(Extensions) == 1) and (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"\")),\nServicesWithOnlyAMAAgent = countif((array_length(Extensions) == 1) and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")),\nServicesWithBothAgents = countif((Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")) by OSType\n\n",
                   "ControlType": "AnalyticsGrid",
                   "SpecificChart": "UnstackedColumn",
                   "PartTitle": "Inventory: MMA & AMA Agents",
@@ -763,7 +763,7 @@
                 },
                 {
                   "name": "PartId",
-                  "value": "11119599-143f-4f59-8a20-3ee34ba20f5f",
+                  "value": "83a5de2e-2242-4439-8d14-3c04f4214b95",
                   "isOptional": true
                 },
                 {
@@ -785,7 +785,7 @@
                 },
                 {
                   "name": "Query",
-                  "value": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s =~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize InitiatedCount = count() by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| join kind=leftouter (\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize \nSucceeded = countif(ProcessingStatus_s =~ \"Succeeded\"),\nFailed = countif(ProcessingStatus_s =~ \"Failed\") by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| order by OperationName, ResourceType \n) on OperationName, ResourceType\n| extend Dangling = iff(InitiatedCount == Failed + Succeeded, 0, InitiatedCount-Failed-Succeeded)\n| project OperationName, ResourceType, ResourceCount = virtualMachinesExtensions, InitiatedCount, Succeeded, Failed, Dangling\n\n",
+                  "value": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VirtualMachine\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| extend  OSType = tostring(parse_json(Metadata_s).OSType)\n| summarize count() by OSType\n",
                   "isOptional": true
                 },
                 {
@@ -822,35 +822,19 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s =~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize InitiatedCount = count() by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| join kind=leftouter (\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize \nSucceeded = countif(ProcessingStatus_s =~ \"Succeeded\"),\nFailed = countif(ProcessingStatus_s =~ \"Failed\") by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| order by OperationName, ResourceType \n) on OperationName, ResourceType\n| extend Dangling = iff(InitiatedCount == Failed + Succeeded, 0, InitiatedCount-Failed-Succeeded)\n| project OperationName, ResourceType, ResourceCount = virtualMachinesExtensions, InitiatedCount, Succeeded, Failed, Dangling\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where Source_s contains \"AzTS_02_ScopeResolverProcessor\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize TotalResources = count() by ResourceType\n\n",
                   "ControlType": "AnalyticsGrid",
-                  "SpecificChart": "UnstackedColumn",
-                  "PartTitle": "Progress: Removing MMA agent",
-                  "PartSubTitle": "This chart shows progress of MMA agents being removed.",
+                  "SpecificChart": "Pie",
+                  "PartTitle": "Inventory: Count of VM,VMSS,Azure Arc Servers",
+                  "PartSubTitle": "ResourceType-wise distribution of Azure services.",
                   "Dimensions": {
                     "xAxis": {
-                      "name": "OperationName",
+                      "name": "OSType",
                       "type": "string"
                     },
                     "yAxis": [
                       {
-                        "name": "Dangling",
-                        "type": "long"
-                      },
-                      {
-                        "name": "Failed",
-                        "type": "long"
-                      },
-                      {
-                        "name": "InitiatedCount",
-                        "type": "long"
-                      },
-                      {
-                        "name": "ResourceCount",
-                        "type": "long"
-                      },
-                      {
-                        "name": "Succeeded",
+                        "name": "count_",
                         "type": "long"
                       }
                     ],
@@ -1005,6 +989,139 @@
                 },
                 {
                   "name": "PartId",
+                  "value": "11119599-143f-4f59-8a20-3ee34ba20f5f",
+                  "isOptional": true
+                },
+                {
+                  "name": "Version",
+                  "value": "2.0",
+                  "isOptional": true
+                },
+                {
+                  "name": "TimeRange",
+                  "isOptional": true
+                },
+                {
+                  "name": "DashboardId",
+                  "isOptional": true
+                },
+                {
+                  "name": "DraftRequestParameters",
+                  "isOptional": true
+                },
+                {
+                  "name": "Query",
+                  "value": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s =~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize InitiatedCount = count() by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| join kind=leftouter (\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize \nSucceeded = countif(ProcessingStatus_s =~ \"Succeeded\"),\nFailed = countif(ProcessingStatus_s =~ \"Failed\") by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| order by OperationName, ResourceType \n) on OperationName, ResourceType\n| extend Dangling = iff(InitiatedCount == Failed + Succeeded, 0, InitiatedCount-Failed-Succeeded)\n| project OperationName, ResourceType, ResourceCount = virtualMachinesExtensions, InitiatedCount, Succeeded, Failed, Dangling\n\n",
+                  "isOptional": true
+                },
+                {
+                  "name": "ControlType",
+                  "value": "AnalyticsGrid",
+                  "isOptional": true
+                },
+                {
+                  "name": "SpecificChart",
+                  "isOptional": true
+                },
+                {
+                  "name": "Dimensions",
+                  "isOptional": true
+                },
+                {
+                  "name": "LegendOptions",
+                  "isOptional": true
+                },
+                {
+                  "name": "IsQueryContainTimeRange",
+                  "value": true,
+                  "isOptional": true
+                },
+                {
+                  "name": "PartTitle",
+                  "isOptional": true
+                },
+                {
+                  "name": "PartSubTitle",
+                  "isOptional": true
+                }
+              ],
+              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
+              "settings": {
+                "content": {
+                  "GridColumnsWidth": {
+                    "OperationName": "139.009px"
+                  },
+                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s =~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize InitiatedCount = count() by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| join kind=leftouter (\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize \nSucceeded = countif(ProcessingStatus_s =~ \"Succeeded\"),\nFailed = countif(ProcessingStatus_s =~ \"Failed\") by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| order by OperationName, ResourceType \n) on OperationName, ResourceType\n| extend Dangling = iff(InitiatedCount == Failed + Succeeded, 0, InitiatedCount-Failed-Succeeded)\n| project OperationName, ResourceType, ResourceCount = virtualMachinesExtensions, InitiatedCount, Succeeded, Failed, Dangling\n\n",
+                  "ControlType": "AnalyticsGrid",
+                  "SpecificChart": "UnstackedColumn",
+                  "PartTitle": "Progress: Removing MMA agent",
+                  "PartSubTitle": "This chart shows progress of MMA agents being removed.",
+                  "Dimensions": {
+                    "xAxis": {
+                      "name": "OperationName",
+                      "type": "string"
+                    },
+                    "yAxis": [
+                      {
+                        "name": "Dangling",
+                        "type": "long"
+                      },
+                      {
+                        "name": "Failed",
+                        "type": "long"
+                      },
+                      {
+                        "name": "InitiatedCount",
+                        "type": "long"
+                      },
+                      {
+                        "name": "ResourceCount",
+                        "type": "long"
+                      },
+                      {
+                        "name": "Succeeded",
+                        "type": "long"
+                      }
+                    ],
+                    "splitBy": [],
+                    "aggregation": "Sum"
+                  },
+                  "LegendOptions": {
+                    "isEnabled": true,
+                    "position": "Bottom"
+                  }
+                }
+              }
+            }
+          },
+          "9": {
+            "position": {
+              "x": 0,
+              "y": 12,
+              "colSpan": 6,
+              "rowSpan": 4
+            },
+            "metadata": {
+              "inputs": [
+                {
+                  "name": "resourceTypeMode",
+                  "isOptional": true
+                },
+                {
+                  "name": "ComponentId",
+                  "isOptional": true
+                },
+                {
+                  "name": "Scope",
+                  "value": {
+                    "resourceIds": [
+                      "<laResourceId>"
+                    ]
+                  },
+                  "isOptional": true
+                },
+                {
+                  "name": "PartId",
                   "value": "76483301-f08c-4e40-b135-8597a315f83a",
                   "isOptional": true
                 },
@@ -1064,6 +1181,9 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
+                  "GridColumnsWidth": {
+                    "OperationName": "192.9977px"
+                  },
                   "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensionsRemoved = toscalar(InventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_07_ExtensionRemovalProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s =~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize InitiatedCount = count() by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| join kind=leftouter (\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| summarize \nSucceeded = countif(ProcessingStatus_s =~ \"Succeeded\"),\nFailed = countif(ProcessingStatus_s =~ \"Failed\") by OperationName = tolower(OperationName), ResourceType = tolower(ResourceType)\n| order by OperationName, ResourceType \n) on OperationName, ResourceType\n| extend Dangling = iff(InitiatedCount == Failed + Succeeded, 0, InitiatedCount-Failed-Succeeded)\n| project OperationName, ResourceType, ResourceCount = virtualMachinesExtensionsRemoved, InitiatedCount, Succeeded, Failed, Dangling\n\n",
                   "PartTitle": "Progress: Validating MMA agent removal",
                   "PartSubTitle": "This chart shows status of MMA extension removal request status."
@@ -1071,9 +1191,9 @@
               }
             }
           },
-          "9": {
+          "10": {
             "position": {
-              "x": 0,
+              "x": 6,
               "y": 12,
               "colSpan": 6,
               "rowSpan": 4
@@ -1189,124 +1309,6 @@
               }
             }
           },
-          "10": {
-            "position": {
-              "x": 6,
-              "y": 12,
-              "colSpan": 6,
-              "rowSpan": 4
-            },
-            "metadata": {
-              "inputs": [
-                {
-                  "name": "resourceTypeMode",
-                  "isOptional": true
-                },
-                {
-                  "name": "ComponentId",
-                  "isOptional": true
-                },
-                {
-                  "name": "Scope",
-                  "value": {
-                    "resourceIds": [
-                      "<laResourceId>"
-                    ]
-                  },
-                  "isOptional": true
-                },
-                {
-                  "name": "PartId",
-                  "value": "85941a8e-1708-4209-81eb-f478811b5738",
-                  "isOptional": true
-                },
-                {
-                  "name": "Version",
-                  "value": "2.0",
-                  "isOptional": true
-                },
-                {
-                  "name": "TimeRange",
-                  "isOptional": true
-                },
-                {
-                  "name": "DashboardId",
-                  "isOptional": true
-                },
-                {
-                  "name": "DraftRequestParameters",
-                  "isOptional": true
-                },
-                {
-                  "name": "Query",
-                  "value": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| summarize  OpeartionName = \"ExtensionRemoval\", TotalVMs = virtualMachinesExtensions, MMAAgentRemovedFromVM = count() //by OperationName\n\n",
-                  "isOptional": true
-                },
-                {
-                  "name": "ControlType",
-                  "value": "FrameControlChart",
-                  "isOptional": true
-                },
-                {
-                  "name": "SpecificChart",
-                  "value": "UnstackedColumn",
-                  "isOptional": true
-                },
-                {
-                  "name": "Dimensions",
-                  "value": {
-                    "xAxis": {
-                      "name": "OpeartionName",
-                      "type": "string"
-                    },
-                    "yAxis": [
-                      {
-                        "name": "TotalVMs",
-                        "type": "long"
-                      },
-                      {
-                        "name": "MMAAgentRemovedFromVM",
-                        "type": "long"
-                      }
-                    ],
-                    "splitBy": [],
-                    "aggregation": "Sum"
-                  },
-                  "isOptional": true
-                },
-                {
-                  "name": "LegendOptions",
-                  "value": {
-                    "isEnabled": true,
-                    "position": "Bottom"
-                  },
-                  "isOptional": true
-                },
-                {
-                  "name": "IsQueryContainTimeRange",
-                  "value": true,
-                  "isOptional": true
-                },
-                {
-                  "name": "PartTitle",
-                  "isOptional": true
-                },
-                {
-                  "name": "PartSubTitle",
-                  "isOptional": true
-                }
-              ],
-              "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
-              "settings": {
-                "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago)and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| where ResourceId  contains \"microsoft.hybridcompute\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"HybridVMExtension\" and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| where ResourceId  contains \"microsoft.hybridcompute\"\n| summarize  OpeartionName = \"ExtensionRemoval\", TotalArcServerExtensions = virtualMachinesExtensions, ArcServersWithMMAAgentRemoved = count()\n\n",
-                  "ControlType": "AnalyticsGrid",
-                  "PartTitle": "Summary: Total MMA agents successfully removed  on Azure Arc Servers",
-                  "PartSubTitle": "This chart shows total count of Arc Servers from which MMA agent has been successfully removed."
-                }
-              }
-            }
-          },
           "11": {
             "position": {
               "x": 12,
@@ -1417,10 +1419,10 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| where ResourceId  contains \"microsoft.compute/virtualmachines/\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| where ResourceId  contains \"microsoft.compute/virtualmachines/\"\n| summarize  OpeartionName = \"ExtensionRemoval\", TotalVMExtensions = virtualMachinesExtensions, VMsWithMMAAgentRemoved = count()\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| where ResourceId  contains \"microsoft.compute/virtualmachinescalesets\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| where ResourceId  contains \"microsoft.compute/virtualmachinescalesets\"\n| summarize OperationName = \"ExtensionRemoval\", TotalVMSSExtensions = virtualMachinesExtensions, VMSSWithMMAAgentRemoved = count()\n\n",
                   "ControlType": "AnalyticsGrid",
-                  "PartTitle": "Summary: Total MMA agents successfully removed  on VMs",
-                  "PartSubTitle": "This chart shows total count of VMs from which MMA agent has been successfully removed."
+                  "PartTitle": "Summary: Total MMA agents successfully removed  on VMSS",
+                  "PartSubTitle": "This chart shows total count of VMSS from which MMA agent has been successfully removed."
                 }
               }
             }
@@ -1535,18 +1537,18 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| where ResourceId  contains \"microsoft.compute/virtualmachinescalesets\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| where ResourceId  contains \"microsoft.compute/virtualmachinescalesets\"\n| summarize  OpeartionName = \"ExtensionRemoval\", TotalVMSSExtensions = virtualMachinesExtensions, VMSSWithMMAAgentRemoved = count()\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago) and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| where ResourceId  contains \"microsoft.hybridcompute\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago) and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| where ResourceId  contains \"microsoft.hybridcompute\"\n| summarize  OpeartionName = \"ExtensionRemoval\", TotalArcServerExtensions = virtualMachinesExtensions, ArcServersWithMMAAgentRemoved = count()\n\n",
                   "ControlType": "AnalyticsGrid",
-                  "PartTitle": "Summary: Total MMA agents successfully removed  on VMSS",
-                  "PartSubTitle": "This chart shows total count of VMSS from which MMA agent has been successfully removed."
+                  "PartTitle": "Summary: Total MMA agents successfully removed  on Azure Arc Servers",
+                  "PartSubTitle": "This chart shows total count of Arc Servers from which MMA agent has been successfully removed."
                 }
               }
             }
           },
           "13": {
             "position": {
-              "x": 0,
-              "y": 20,
+              "x": 6,
+              "y": 16,
               "colSpan": 6,
               "rowSpan": 4
             },
@@ -1653,10 +1655,10 @@
               "type": "Extension/Microsoft_OperationsManagementSuite_Workspace/PartType/LogsDashboardPart",
               "settings": {
                 "content": {
-                  "Query": "let timeago = timespan(<timespanValue>);\nInventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType contains \"Extension\"\n| summarize count() by ResourceType\n\n",
+                  "Query": "let timeago = timespan(<timespanValue>);\nlet virtualMachinesExtensions = toscalar(Inventory_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s =~ \"AzTS_05_VMExtensionInventoryProcessor\"\n| where ResourceId  contains \"microsoft.compute/virtualmachines\"\n| summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)\n| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))\n| extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)\n| project ResourceId, VMResourceID, ExtensionType\n| summarize Extensions = make_list(ExtensionType) by VMResourceID\n| where (Extensions contains \"MicrosoftMonitoringAgent\" or Extensions contains \"OmsAgentForLinux\" or Extensions contains \"MSMonitoringAgent\") and (Extensions contains \"AzureMonitorWindowsAgent\" or Extensions contains \"AzureMonitorLinuxAgent\")\n| count);\nInventoryProcessingStatus_CL\n| where TimeGenerated > ago(timeago)\n| where ResourceType =~ \"VMExtension\" and Source_s == \"AzTS_08_ExtensionRemovalStatusCheckProcessor\"\n| where ProcessingStatus_s !~ \"Initiated\"\n| summarize arg_max(TimeGenerated,*) by tolower(ResourceId)\n| where ProcessingStatus_s =~ \"Succeeded\"\n| where ResourceId  contains \"microsoft.compute/virtualmachines/\"\n| summarize  OpeartionName = \"ExtensionRemoval\", TotalVMExtensions = virtualMachinesExtensions, VMsWithMMAAgentRemoved = count()\n\n",
                   "ControlType": "AnalyticsGrid",
-                  "PartTitle": "Summary: Total count of agents present in VM,VMSS and Azure Arc Servers",
-                  "PartSubTitle": "This chart shows total count of agents per resource"
+                  "PartTitle": "Summary: Total MMA agents successfully removed  on VMs",
+                  "PartSubTitle": "This chart shows total count of VMs from which MMA agent has been successfully removed."
                 }
               }
             }
@@ -1691,20 +1693,20 @@
                 "value": "Past 7 days"
               },
               "filteredPartIds": [
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962e0",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962e2",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962e4",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962e6",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962e8",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962ea",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962ec",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962ee",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962f0",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962f2",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962f4",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962f6",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962f8",
-                "StartboardPart-LogsDashboardPart-db836d6c-3271-45ab-82de-704071c962fa"
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b714e",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7150",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7152",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7154",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7156",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7158",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b715a",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b715c",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b715e",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7160",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7162",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7164",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7166",
+                "StartboardPart-LogsDashboardPart-8bf4d63f-0adb-42c6-95d0-4a40751b7168"
               ]
             }
           }
