@@ -45,6 +45,8 @@ Discovery phase is disabled by default, users need to enable and schedule it usi
 
 > **Note:** Please validate the prerequisites [here](./Prerequisites.md). You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/AzTSMMARemovalUtilityDeploymentFiles.zip) and before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button. Extract the zip file and use **MMARemovalUtilitySetup.ps1** present in this package to run the commands mentioned in below section.
 
+> **Note:** After removal of MMA agent in Virtual Machine Scale Set(VMSS) where orchestration mode is 'Uniform', if upgrade policy is set to 'Manual' it is recommended to manually upgrade the instances.
+
 ``` PowerShell
 # -----------------------------------------------------------------#
 # Schedule Discovery phase
@@ -105,7 +107,7 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
 
 ```
 ### Schedule or Trigger Removal phase
-Removal phase is disabled by default. Users need to enable/schedule it after validating the inventory of resource list prepared in the Discovery phase. Command **Update-AzTSMMARemovalUtilityRemovalTrigger** can be used to:
+Removal phase is disabled by default. Users need to enable/schedule it after validating the inventory of resources prepared in the Discovery phase. Command **Update-AzTSMMARemovalUtilityRemovalTrigger** can be used to:
 
 1. Enable/disable removal phase
 2. Trigger/Schedule removal phase
@@ -343,21 +345,21 @@ For VMSS(s) having MMA agent present:
 let timeago = timespan(7d);
 let vmss = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceType contains "VirtualMachineScaleSets"
+| where ResourceType =~ "VirtualMachineScaleSets"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
-| project VMResourceID = ResourceId, OSType;
+| project VMSSResourceID = ResourceId, OSType;
 let vmssMMAExtensions = Inventory_CL
 | where TimeGenerated > ago(timeago)
 | where ResourceType =~ "VMSSExtension" and Source_s =~ "AzTS_05_VMExtensionInventoryProcessor"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
-| extend VMResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
+| extend VMSSResourceID = tolower(substring(ResourceId,0,indexof(ResourceId, '/', 0, -1, 9 )))
 | extend ExtensionType = tostring(parse_json(Metadata_s).ExtensionType)
 | where ExtensionType =~ "OmsAgentForLinux" or ExtensionType =~ "MicrosoftMonitoringAgent"
-| project ResourceId, VMResourceID, ExtensionType, ExtensionResourceId = ResourceId;
+| project ResourceId, VMSSResourceID, ExtensionType, ExtensionResourceId = ResourceId;
 let vmssWithMMAExtensions = vmss
-| join kind=inner  (vmssMMAExtensions) on VMResourceID
-| project VMResourceID, OSType, ExtensionResourceId, ExtensionType;
+| join kind=inner  (vmssMMAExtensions) on VMSSResourceID
+| project VMSSResourceID, OSType, ExtensionResourceId, ExtensionType;
 vmssWithMMAExtensions
 ```
 
@@ -367,7 +369,7 @@ For Azure Arc Server(s) having MMA agent present:
 let timeago = timespan(7d);
 let hybridVirtualMachines = Inventory_CL
 | where TimeGenerated > ago(timeago)
-| where ResourceType contains "HybridCompute"
+| where ResourceType =~ "HybridCompute"
 | summarize arg_max(TimeGenerated,*) by ResourceId = tolower(ResourceId)
 | extend  OSType = tostring(parse_json(Metadata_s).OSType)
 | project VMResourceID = ResourceId, OSType;
