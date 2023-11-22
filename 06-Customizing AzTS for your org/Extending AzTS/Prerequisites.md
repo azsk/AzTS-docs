@@ -35,7 +35,7 @@ Below mentioned appsettings are required for enabling CMET:
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 
-### AzTS WorkItemProcessor(AzSK-AzTS-WorkItemProcessor-xxxxx)
+#### AzTS WorkItemProcessor(AzSK-AzTS-WorkItemProcessor-xxxxx)
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
