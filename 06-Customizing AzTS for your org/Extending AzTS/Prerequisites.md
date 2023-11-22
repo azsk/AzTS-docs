@@ -3,7 +3,7 @@
 
 To enable the Control Metadata Editor tool (CMET), you need to configure a few application settings in for AzTS Function Apps/WebApps. This can be done either through the Azure portal or by using the helper script. Once these application settings are configured, please follow the steps mentioned [here](#access-to-cmet-control-metadata-editor-tool) to add users to Privileged editor roles.
 
-### Option1: Using Azure Portal
+### Option 1: Using Azure Portal
   1. Open the [Azure portal](https://portal.azure.com/).
   2. Navigate to AzTS host subscription -> AzTS host resource group.
   3. Go to required app service(AzSK-AzTS-WebApi-xxxxx/AzSK-AzTS-MetadataAggregator-xxxxx/AzSK-AzTS-WorkItemProcessor-xxxxx).
@@ -15,7 +15,7 @@ To enable the Control Metadata Editor tool (CMET), you need to configure a few a
 Below mentioned appsettings are required for enabling CMET:
 
 
-### AzTS API(AzSK-AzTS-WebApi-xxxxx)
+#### AzTS API(AzSK-AzTS-WebApi-xxxxx)
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__AddNewControl -> true
@@ -28,7 +28,7 @@ Below mentioned appsettings are required for enabling CMET:
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 
-### AzTS MetaDataAggregator(AzSK-AzTS-MetadataAggregator-xxxxx)
+#### AzTS MetadataAggregator(AzSK-AzTS-MetadataAggregator-xxxxx)
 
 - FeatureManagement__OrgPolicy -> true
 - FeatureManagement__PolicyStates -> true
@@ -42,7 +42,7 @@ Below mentioned appsettings are required for enabling CMET:
 
 > **Note:** **FeatureManagement__PolicyStates** appsettings is required only for Azure custom policy-based control evaluation.
 -----
-### Option2: Using helper script
+### Option 2: Using Powershell
 If you have already downloaded the deployment package zip, directly go to step (4).<br/>
 - Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
@@ -86,7 +86,7 @@ If you have already downloaded the deployment package zip, directly go to step (
 ## Access to CMET (Control metadata editor tool)
 
 Only privileged users have access to CMET for updating control metadata or adding new controls. This can be done either through the Azure portal or by using the helper script. To elevate a user to a privileged role, please follow the steps outlined below:
-### Option1: Using Azure Portal
+### Option 1: Using Azure Portal
 - Open the [Azure portal](https://portal.azure.com/).
 - Navigate to AzTS host subscription -> AzTS host resource group.
 - Go to required AzTS API app service(AzSK-AzTS-WebApi-xxxxx).
@@ -98,7 +98,7 @@ Only privileged users have access to CMET for updating control metadata or addin
 > **Note:** user's object id can be referenced from Azure AD.
 -----
 
-### Option2: Using Helper Script
+### Option 2: Using Powershell
   If you have already downloaded the deployment package zip, directly go to step (4).<br/>
 - Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 

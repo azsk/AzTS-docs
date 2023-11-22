@@ -4,7 +4,7 @@ To drive compliance for specific set of controls driven on the basis of  Mangeme
 By default, this feature is not turned on. If you haven't enabled it in your AzTS setup yet, please follow the steps below:
 
 ## Steps to enable Management Group driven Compliance Initiative feature
-### Option1: Using Azure Portal
+### Option 1: Using Azure Portal
 #### **Step 1 of 4: Add Required configuration to the API application settings:**
 1. Go to Azure Portal.
 2. Navigate to AzTS host subscription -> AzTS host resource group.
@@ -69,7 +69,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 ![Resources](../../Images/06_MGCIEnableMGAndSave.png)
 
 -----
-### Option2: Using Helper Script
+### Option 2: Using Powershell
 #### Step (1 & 2) of 4 (consolidated):
 If you have already downloaded the deployment package zip, directly go to step (4).<br/>
 1. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
