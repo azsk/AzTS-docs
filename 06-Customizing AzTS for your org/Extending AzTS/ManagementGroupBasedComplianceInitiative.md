@@ -4,7 +4,8 @@ To drive compliance for specific set of controls driven on the basis of  Mangeme
 By default, this feature is not turned on. If you haven't enabled it in your AzTS setup yet, please follow the steps below:
 
 ## Steps to enable Management Group driven Compliance Initiative feature
-### **1. Add Required configuration to the API application settings:**
+### Option 1: Using Azure Portal
+#### **Step 1 of 4: Add Required configuration to the API application settings:**
 1. Go to Azure Portal.
 2. Navigate to AzTS host subscription -> AzTS host resource group.
 3. Go to AzTS App service AzSK-AzTS-WebApi-xxxxx.
@@ -46,7 +47,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 ![Resources](../../Images/06_MGCI_AddConfig_8.png)
 
 
-### 2.	Add Required configuration to Metadata Aggregator to enable MGTreeProcessor and PIM API support
+#### Step 2 of 4:	Add Required configuration to Metadata Aggregator to enable MGTreeProcessor and PIM API support
 
 
 1. Go to Azure Portal.
@@ -67,11 +68,70 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 10. Click 'OK' and then click 'Save'.
 ![Resources](../../Images/06_MGCIEnableMGAndSave.png)
 
-### 3.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
+-----
+### Option 2: Using Powershell
+#### Step (1 & 2) of 4 (consolidated):
+If you have already downloaded the deployment package zip, directly go to step (4).<br/>
+1. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+
+2. Extract zip to local folder location. <br/>
+
+3. Unblock the content. The below command will help to unblock files. <br/>
+
+    ``` PowerShell
+    Get-ChildItem -Path "<Extracted folder path>" -Recurse |    Unblock-File 
+    ```
+
+4. Point current path to deployment folder and load AzTS setup script. <br/>
+
+
+    ``` PowerShell
+    # Point current path to extracted folder location and load setup script from the deployment folder 
+
+    CD "<LocalExtractedFolderPath>\DeploymentFiles"
+
+    # Load AzTS Setup script in session
+    . ".\UpdateAzTSFeatures.ps1"
+
+    # Note: Make sure you copy  '.' present at the start of the line.  
+   ```
+
+5. Connect to AzAccount.
+    ``` PowerShell
+      Connect-AzAccount -Tenant <TenantId>
+    ```
+  6. Invoke the configuration cmdlet.
+     ``` PowerShell
+      Configure-AzTSFeature 
+      -SubscriptionId <AzTSHostingSubscriptionId> `
+      -ScanHostRGName <AzTSHostingRGName> `
+      -FeatureName "MG Compliance Initiate Editor" `
+      -FeatureActionType "Enable"
+     ```
+    
+ 7. Invoke the configuration cmdlet.
+    ``` PowerShell
+      Add-AztsFeatureConfigurationValues 
+      -SubscriptionId <AzTSHostingSubscriptionId> `
+      -ScanHostRGName <AzTSHostingRGName> `
+      -FeatureName "MG Compliance Initiate Editor" ` 
+      -FeatureConfigValues <User`s object id>
+    
+    <# Note: 1) User's object id can be referenced from Azure AD.
+      2) For adding multiple user, pass the user's object id value seperated by comma(',').
+      For example:  
+        Add-AztsFeatureConfigurationValues 
+        -SubscriptionId "00000000-xxxx-0000-xxxx-000000000000" `
+        -ScanHostRGName "AzTS-Solution-XX" `
+        -FeatureName "MG `Compliance Initiate Editor" `
+        -FeatureConfigValues "00000000-xxxx-0000-xxxx-000000000001,00000000-xxxx-0000-xxxx-000000000002,00000000-xxxx-0000-xxxx-000000000003"
+    ```
+
+#### Step 3 of 4.	Add Custom tags to controls (in bulk edit mode) for compliance initiative
 Compliance initiative feature requires common tag on all controls which are part of an initiative. Common tag to a set of controls can be added by using CMET bulk edit mode. Please follow the steps mentioned [here](../../06-Customizing%20AzTS%20for%20your%20org/Extending%20AzTS/FeaturesInCMET.md) to add tags to controls.
 
 
-### 4. Create new compliance initiative 
+#### Step 4 of 4. Create new compliance initiative 
 Please make sure that [Step 1](#1-add-required-configuration-to-the-api-application-settings), [Step 2](#2-add-required-configuration-to-metadata-aggregator-to-enable-mgtreeprocessor-and-pim-api-support) and [Step 3](#3-add-custom-tags-to-controls-in-bulk-edit-mode-for-compliance-initiative) are completed as pre-requisite to create new compliance initiative. Please follow below steps post pre-requisites are completed:
 
 1. Click on the CIMT(Compliance initiative metadata tool) Icon.
