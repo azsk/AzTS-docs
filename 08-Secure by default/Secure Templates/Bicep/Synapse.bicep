@@ -1,13 +1,13 @@
 @description('Synapse workspace name.')
 param synapseWorkspaceName string
 
-@description('url of the data lake storage account which we need to associate with synapse workspace.')
+@description('Url of the data lake storage account which we need to associate with synapse workspace.')
 param dataLakeStorageAccountUrl string
 
 @description('File system name to associate with data lake storage and synapse workspace.')
 param dataLakeStorageFileSystem string
 
-@description('sql admin user.')
+@description('Sql admin user.')
 param sqlAdminUser string
 
 @description('Password for sql admin user.')

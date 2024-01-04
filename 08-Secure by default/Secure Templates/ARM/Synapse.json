@@ -11,7 +11,7 @@
         "dataLakeStorageAccountUrl":{
             "type": "string",
             "metadata":{
-                "description": "url of the data lake storage account which we need to associate with synapse workspace."
+                "description": "Url of the data lake storage account which we need to associate with synapse workspace."
             }
         },
         "dataLakeStorageFileSystem":{
@@ -23,7 +23,7 @@
         "sqlAdminUser":{
             "type": "string",
             "metadata":{
-                "description": "sql admin user."
+                "description": "Sql admin user."
             }
         },
         "sqlAdminUserPassword":{
