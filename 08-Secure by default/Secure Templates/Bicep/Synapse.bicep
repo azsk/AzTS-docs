@@ -2,7 +2,7 @@
 param synapseWorkspaceName string
 
 @description('Url of the data lake storage account which we need to associate with synapse workspace.')
-param dataLakeStorageAccountUrl string
+param dataLakeStorageAccountName string
 
 @description('File system name to associate with data lake storage and synapse workspace.')
 param dataLakeStorageFileSystem string
@@ -24,7 +24,7 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2019-06-01-preview' = {
   }
   properties: {
     defaultDataLakeStorage: {
-      accountUrl: 'https://${dataLakeStorageAccountUrl}.dfs.core.windows.net'
+      accountUrl: 'https://${dataLakeStorageAccountName}.dfs.core.windows.net'
       filesystem: dataLakeStorageFileSystem
     }
     sqlAdministratorLogin: sqlAdminUser

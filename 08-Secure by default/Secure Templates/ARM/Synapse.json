@@ -8,7 +8,7 @@
                 "description": "Synapse workspace name."
             }
         },
-        "dataLakeStorageAccountUrl":{
+        "dataLakeStorageAccountName":{
             "type": "string",
             "metadata":{
                 "description": "Url of the data lake storage account which we need to associate with synapse workspace."
@@ -52,7 +52,7 @@
             },
             "properties": {
                 "defaultDataLakeStorage": {
-                    "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountUrl'), '.dfs.core.windows.net')]",
+                    "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountName'), '.dfs.core.windows.net')]",
                     "filesystem": "[parameters('dataLakeStorageFileSystem')]"
                 },
                 "sqlAdministratorLogin": "[parameters('sqlAdminUser')]",
