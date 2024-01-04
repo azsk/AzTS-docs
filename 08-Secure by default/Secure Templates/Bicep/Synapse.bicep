@@ -16,7 +16,7 @@ param sqlAdminUserPassword string
 @description('Storage account id to which the diagnostic logs and metrices will be sent.')
 param storageAccountId string
 
-resource synapseWorkspace 'Microsoft.Synapse/workspaces@2019-06-01-preview' = {
+resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-06-01' = {
   name: synapseWorkspaceName
   location: resourceGroup().location
   identity: {
