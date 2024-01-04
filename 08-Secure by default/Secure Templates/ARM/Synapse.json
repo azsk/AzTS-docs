@@ -5,25 +5,25 @@
         "synapseWorkspaceName":{
             "type": "string",
             "metadata": {
-                "description": "Synapse workspace name"
+                "description": "Synapse workspace name."
             }
         },
         "dataLakeStorageAccountUrl":{
             "type": "string",
             "metadata":{
-                "description": "url of the data lake storage account which we need to associate with synapse workspace"
+                "description": "url of the data lake storage account which we need to associate with synapse workspace."
             }
         },
         "dataLakeStorageFileSystem":{
             "type": "string",
             "metadata":{
-                "description": "File system name to associate with data lake storage and synapse workspace"
+                "description": "File system name to associate with data lake storage and synapse workspace."
             }
         },
         "sqlAdminUser":{
             "type": "string",
             "metadata":{
-                "description": "sql admin user "
+                "description": "sql admin user."
             }
         },
         "sqlAdminUserPassword":{
@@ -52,7 +52,7 @@
             },
             "properties": {
                 "defaultDataLakeStorage": {
-                    "accountUrl": "[parameters('dataLakeStorageAccountUrl')]",
+                    "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountUrl'), '.dfs.core.windows.net')]",
                     "filesystem": "[parameters('dataLakeStorageFileSystem')]"
                 },
                 "sqlAdministratorLogin": "[parameters('sqlAdminUser')]",
@@ -60,7 +60,7 @@
             }
         },
         {
-            // This one is required for diagnostic settings. (Azure_SynapseWorkspace_Audit_Enable_DiagnosticSettings_Trial)
+            // (Azure_SynapseWorkspace_Audit_Enable_DiagnosticSettings_Trial) - Diagnostic settings should be enabled.
             "scope":"[concat('Microsoft.Synapse/workspaces/', parameters('synapseWorkspaceName'))]",  
             "type":"Microsoft.Insights/diagnosticsettings",  
             "apiVersion":"2017-05-01-preview",  
@@ -73,31 +73,75 @@
                 "logs": [
                     {
                         "category": "SynapseRbacOperations",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     },
                     {
                         "category": "GatewayApiRequests",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     },
                     {
                         "category": "BuiltinSqlReqsEnded",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     },
                     {
                         "category": "IntegrationPipelineRuns",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     },
                     {
                         "category": "IntegrationActivityRuns",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     },
                     {
                         "category": "IntegrationTriggerRuns",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     },
                     {
                         "category": "SynapseLinkEvent",
-                        "enabled": true
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "SQLSecurityAuditEvents",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
                     }
                 ],
                 "metrics": [

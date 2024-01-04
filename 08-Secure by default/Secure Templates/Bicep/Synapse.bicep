@@ -1,13 +1,13 @@
-@description('Synapse workspace name')
+@description('Synapse workspace name.')
 param synapseWorkspaceName string
 
-@description('url of the data lake storage account which we need to associate with synapse workspace')
+@description('url of the data lake storage account which we need to associate with synapse workspace.')
 param dataLakeStorageAccountUrl string
 
-@description('File system name to associate with data lake storage and synapse workspace')
+@description('File system name to associate with data lake storage and synapse workspace.')
 param dataLakeStorageFileSystem string
 
-@description('sql admin user ')
+@description('sql admin user.')
 param sqlAdminUser string
 
 @description('Password for sql admin user.')
@@ -24,7 +24,7 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2019-06-01-preview' = {
   }
   properties: {
     defaultDataLakeStorage: {
-      accountUrl: dataLakeStorageAccountUrl
+      accountUrl: 'https://${dataLakeStorageAccountUrl}.dfs.core.windows.net'
       filesystem: dataLakeStorageFileSystem
     }
     sqlAdministratorLogin: sqlAdminUser
@@ -40,31 +40,75 @@ resource diag_synapseWorkspace 'Microsoft.Insights/diagnosticsettings@2017-05-01
     logs: [
       {
         category: 'SynapseRbacOperations'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
       {
         category: 'GatewayApiRequests'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
       {
         category: 'BuiltinSqlReqsEnded'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
       {
         category: 'IntegrationPipelineRuns'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
       {
         category: 'IntegrationActivityRuns'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
       {
         category: 'IntegrationTriggerRuns'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
       {
         category: 'SynapseLinkEvent'
+        categoryGroup: null
         enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
+      }
+      {
+        category: 'SQLSecurityAuditEvents'
+        categoryGroup: null
+        enabled: true
+        retentionPolicy: {
+          days: 90
+          enabled: false
+        }
       }
     ]
     metrics: [
