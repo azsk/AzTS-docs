@@ -56,7 +56,8 @@
                     "filesystem": "[parameters('dataLakeStorageFileSystem')]"
                 },
                 "sqlAdministratorLogin": "[parameters('sqlAdminUser')]",
-                "sqlAdministratorLoginPassword": "[parameters('sqlAdminUserPassword')]"
+                "sqlAdministratorLoginPassword": "[parameters('sqlAdminUserPassword')]",
+                "azureADOnlyAuthentication": true
             }
         },
         {

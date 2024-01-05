@@ -29,6 +29,7 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-06-01' = {
     }
     sqlAdministratorLogin: sqlAdminUser
     sqlAdministratorLoginPassword: sqlAdminUserPassword
+    azureADOnlyAuthentication: true
   }
 }
 
