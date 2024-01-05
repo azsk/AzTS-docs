@@ -7,12 +7,6 @@ param dataLakeStorageAccountName string
 @description('File system name to associate with data lake storage and synapse workspace.')
 param dataLakeStorageFileSystem string
 
-@description('Sql admin user.')
-param sqlAdminUser string
-
-@description('Password for sql admin user.')
-param sqlAdminUserPassword string
-
 @description('Storage account id to which the diagnostic logs and metrices will be sent.')
 param storageAccountId string
 
@@ -27,8 +21,6 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-06-01' = {
       accountUrl: 'https://${dataLakeStorageAccountName}.dfs.core.windows.net'
       filesystem: dataLakeStorageFileSystem
     }
-    sqlAdministratorLogin: sqlAdminUser
-    sqlAdministratorLoginPassword: sqlAdminUserPassword
     azureADOnlyAuthentication: true
   }
 }

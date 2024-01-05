@@ -20,18 +20,6 @@
                 "description": "File system name to associate with data lake storage and synapse workspace."
             }
         },
-        "sqlAdminUser":{
-            "type": "string",
-            "metadata":{
-                "description": "Sql admin user."
-            }
-        },
-        "sqlAdminUserPassword":{
-            "type": "string",
-            "metadata":{
-                "description": "Password for sql admin user."
-            }
-        },
         "storageAccountId":{
             "type": "string",
             "metadata":{
@@ -55,8 +43,6 @@
                     "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountName'), '.dfs.core.windows.net')]",
                     "filesystem": "[parameters('dataLakeStorageFileSystem')]"
                 },
-                "sqlAdministratorLogin": "[parameters('sqlAdminUser')]",
-                "sqlAdministratorLoginPassword": "[parameters('sqlAdminUserPassword')]",
                 "azureADOnlyAuthentication": true
             }
         },
