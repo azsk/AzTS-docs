@@ -43,12 +43,12 @@
                     "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountName'), '.dfs.core.windows.net')]",
                     "filesystem": "[parameters('dataLakeStorageFileSystem')]"
                 },
-                // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_AAD_Only) - Synapse workspace should use MS Entra Id Authentication.
+                // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only) - Synapse workspace should use MS Entra Id Authentication.
                 "azureADOnlyAuthentication": true
             }
         },
         {
-            // (Azure_SynapseWorkspace_Audit_Enable_DiagnosticSettings) - Diagnostic settings should be enabled.
+            // (Azure_SynapseWorkspace_Audit_Enable_Diagnostics_Log) - Diagnostic settings should be enabled.
             "scope":"[concat('Microsoft.Synapse/workspaces/', parameters('synapseWorkspaceName'))]",  
             "type":"Microsoft.Insights/diagnosticsettings",  
             "apiVersion":"2017-05-01-preview",  
