@@ -640,7 +640,7 @@ function Disable-AADOnlyAuthenticationForSynapseWorkspaces
     }
 
     $colsProperty1 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
-                         @{Expression={$_.WorkSpaceNameName};Label="Server Name";Width=20;Alignment="left"}
+                         @{Expression={$_.WorkSpaceNameName};Label="Workspace Name";Width=20;Alignment="left"}
 
     Write-Host $([Constants]::SingleDashLine)
 
