@@ -43,6 +43,7 @@
                     "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountName'), '.dfs.core.windows.net')]",
                     "filesystem": "[parameters('dataLakeStorageFileSystem')]"
                 },
+                // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_AAD_Only_Trial) - Synapse workspace should use MS Entra Id Authentication.
                 "azureADOnlyAuthentication": true
             }
         },

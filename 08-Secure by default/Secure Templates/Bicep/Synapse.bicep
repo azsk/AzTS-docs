@@ -21,10 +21,12 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-06-01' = {
       accountUrl: 'https://${dataLakeStorageAccountName}.dfs.core.windows.net'
       filesystem: dataLakeStorageFileSystem
     }
+    // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_AAD_Only_Trial) - Synapse workspace should use MS Entra Id Authentication.
     azureADOnlyAuthentication: true
   }
 }
 
+// (Azure_SynapseWorkspace_Audit_Enable_DiagnosticSettings_Trial) - Diagnostic settings should be enabled.
 resource diag_synapseWorkspace 'Microsoft.Insights/diagnosticsettings@2017-05-01-preview' = {
   scope: synapseWorkspace
   name: 'diag-${synapseWorkspaceName}'
