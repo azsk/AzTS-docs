@@ -838,9 +838,13 @@ function Reset-UpgradePolicyMode
     Write-Host $([Constants]::SingleDashLine)
     $vmss | ForEach-Object {
         $res = $_        
-            if($res.CurrentUpgradePolicyMode -ne $upgradePolicyModeBeforeRemediation)
+            if(($res.CurrentUpgradePolicyMode -ne $upgradePolicyModeBeforeRemediation) -and ($res.CurrentUpgradePolicyMode -ne "Rolling"))
             {
                 $vmssWithoutRequiredUpgradePolicyMode += $res
+            }
+            else
+            {
+                Write-Host "Skipping Virtual machine scale set $($res.Name)..." -ForegroundColor $([Constants]::MessageType.Warning)
             }
     }
 
@@ -866,7 +870,7 @@ function Reset-UpgradePolicyMode
     
     if (-not $Force)
     {
-        Write-Host "Do you want to rest upgrade policy mode for all Virtual machine scale set(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "Do you want to reset upgrade policy mode for all Virtual machine scale set(s)?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
