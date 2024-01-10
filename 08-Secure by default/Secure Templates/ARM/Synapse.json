@@ -1,0 +1,145 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "synapseWorkspaceName":{
+            "type": "string",
+            "metadata": {
+                "description": "Synapse workspace name."
+            }
+        },
+        "dataLakeStorageAccountName":{
+            "type": "string",
+            "metadata":{
+                "description": "Url of the data lake storage account which we need to associate with synapse workspace."
+            }
+        },
+        "dataLakeStorageFileSystem":{
+            "type": "string",
+            "metadata":{
+                "description": "File system name to associate with data lake storage and synapse workspace."
+            }
+        },
+        "storageAccountId":{
+            "type": "string",
+            "metadata":{
+                "description": "Storage account id to which the diagnostic logs and metrices will be sent."
+            }
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Synapse/workspaces",
+            "apiVersion": "2021-06-01",
+            "name": "[parameters('synapseWorkspaceName')]",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "defaultDataLakeStorage": {
+                    "accountUrl": "[concat('https://', parameters('dataLakeStorageAccountName'), '.dfs.core.windows.net')]",
+                    "filesystem": "[parameters('dataLakeStorageFileSystem')]"
+                },
+                // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only) - Synapse workspace should use MS Entra Id Authentication.
+                "azureADOnlyAuthentication": true
+            }
+        },
+        {
+            // (Azure_SynapseWorkspace_Audit_Enable_Diagnostics_Log) - Diagnostic settings should be enabled.
+            "scope":"[concat('Microsoft.Synapse/workspaces/', parameters('synapseWorkspaceName'))]",  
+            "type":"Microsoft.Insights/diagnosticsettings",  
+            "apiVersion":"2017-05-01-preview",  
+            "name":"[concat('diag-', parameters('synapseWorkspaceName'))]",
+            "dependsOn":[  
+                "[resourceId('Microsoft.Synapse/workspaces', parameters('synapseWorkspaceName'))]"  
+            ],  
+            "properties":{  
+                "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountId'))]",
+                "logs": [
+                    {
+                        "category": "SynapseRbacOperations",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "GatewayApiRequests",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "BuiltinSqlReqsEnded",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "IntegrationPipelineRuns",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "IntegrationActivityRuns",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "IntegrationTriggerRuns",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "SynapseLinkEvent",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    },
+                    {
+                        "category": "SQLSecurityAuditEvents",
+                        "categoryGroup": null,
+                        "enabled": true,
+                        "retentionPolicy": {
+                            "days": 90,
+                            "enabled": false
+                        }
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
