@@ -61,6 +61,9 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 49. [Azure_AVD_Audit_Enable_HostPool_BootDiagnostics](Readme.md#49-Azure_AVD_Audit_Enable_HostPool_BootDiagnostics)
 50. [Azure_AVD_SI_Configure_HostPool_SecureBoot](Readme.md#50-Azure_AVD_SI_Configure_HostPool_SecureBoot)
 51. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#51-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
+53. [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](Readme.md#53-azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
+54. [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](ReadMe.md#54-azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
+
 <br />
 
 ___ 
@@ -1077,6 +1080,41 @@ Yes
 ### Supports rollback?
 Yes
 
+
+## 53. 	Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
+
+### Display Name
+Enforce Automatic Upgrade policy in VMSS
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureUpgradePolicyModeForVMSS](Remediate-ConfigureUpgradePolicyModeForVMSS.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Partial
+
+## 54. 	Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+
+### Display Name
+ AppService must not use basic authentication for FTP and SCM access.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+___ 
 ___ 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
