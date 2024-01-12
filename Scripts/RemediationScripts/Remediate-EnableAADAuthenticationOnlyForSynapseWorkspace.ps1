@@ -507,7 +507,7 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
         }
 
         $colsProperty1 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
-                         @{Expression={$_.WorkSpaceNameName};Label="Server Name";Width=20;Alignment="left"}
+                         @{Expression={$_.WorkSpaceName};Label="WorkSpace Name";Width=20;Alignment="left"}
                
         Write-Host $([Constants]::SingleDashLine)
 
@@ -712,12 +712,10 @@ function Disable-AADOnlyAuthenticationForSynapseWorkspaces
     Write-Host "Found $($totalsynapseWorkspaces) Synapse workspace(s)." -ForegroundColor $([Constants]::MessageType.Update)
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableADAdminForsynapseWorkspaces"
 
-    $colsProperty3 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
-                         @{Expression={$_.ServerName};Label="Server Name";Width=20;Alignment="left"},
-                         @{Expression={$_.IsSynapseWorkspace};Label="Is Synapse Workspace?";Width=25;Alignment="left"}
-
+     $colsProperty1 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
+                         @{Expression={$_.WorkSpaceName};Label="WorkSpace Name";Width=20;Alignment="left"}
    
-    $validSynapseWorkspaceDetails | Format-Table -Property $colsProperty3 -Wrap
+    $validSynapseWorkspaceDetails | Format-Table -Property $colsProperty1 -Wrap
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -774,7 +772,7 @@ function Disable-AADOnlyAuthenticationForSynapseWorkspaces
     }
 
     $colsProperty1 = @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=25;Alignment="left"},
-                         @{Expression={$_.WorkSpaceNameName};Label="Workspace Name";Width=20;Alignment="left"}
+                         @{Expression={$_.WorkSpaceName};Label="Workspace Name";Width=20;Alignment="left"}
 
     Write-Host $([Constants]::SingleDashLine)
 
