@@ -145,6 +145,15 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
+        .PARAMETER Path
+        Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used.
+
+        .PARAMETER AutoRemediation
+        Specifies script is run as a subroutine of AutoRemediation Script.
+
+        .PARAMETER TimeStamp
+        Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used.
+
         .EXAMPLE
         PS> Enable-AADOnlyAuthenticationForSynapseWorkspace -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
@@ -175,7 +184,19 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation when AutoRemediation switch is used")]
+        $Path,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies script is run as a subroutine of AutoRemediation Script")]
+        $AutoRemediation,
+
+        [String]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the time of creation of file to be used for logging remediation details when AutoRemediation switch is used")]
+        $TimeStamp
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -214,12 +235,15 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
     # Setting up context for the current Subscription.
     $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
-    Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Subscription Name: [$($context.Subscription.Name)]"
-    Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
-    Write-Host "Account Name: [$($context.Account.Id)]"
-    Write-Host "Account Type: [$($context.Account.Type)]"
-    Write-Host $([Constants]::SingleDashLine)
+    if(-not($AutoRemediation))
+    {
+        Write-Host $([Constants]::SingleDashLine)
+        Write-Host "Subscription Name: [$($context.Subscription.Name)]"
+        Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
+        Write-Host "Account Name: [$($context.Account.Id)]"
+        Write-Host "Account Type: [$($context.Account.Type)]"
+        Write-Host $([Constants]::SingleDashLine)
+    }    
 
     Write-Host "Checking if [$($context.Account.Id)] is allowed to run this script..."
 
@@ -240,6 +264,54 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
     Write-Host "[Step 2 of 4] Preparing to fetch all Synapse workspace(s)..."
 
     $synapseWorkspaceResources = @()
+
+    # To keep track of remediated and skipped resources
+    $logRemediatedResources = @()
+    $logSkippedResources=@()
+
+    # Control Id
+    $controlIds = "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_AAD_Only_Trial"
+
+    if($AutoRemediation)
+    {
+        if(-not (Test-Path -Path $Path))
+        {
+            Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
+        }
+        Write-Host "Fetching all Synapse workspace(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host $([Constants]::SingleDashLine)
+        $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
+        $controls = $controlForRemediation.ControlRemediationList
+        $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
+        $validResources = $resourceDetails.FailedResourceList | Where-Object {![String]::IsNullOrWhiteSpace($_.ResourceId)}
+        if(($resourceDetails | Measure-Object).Count -eq 0 -or ($validResources | Measure-Object).Count -eq 0)
+        {
+            Write-Host "No Synapse workspace(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::SingleDashLine)
+            return
+        }
+        $validResources | ForEach-Object { 
+            try
+            {
+                $synapseWorkspaceResource = Get-AzResource -ResourceId $_.ResourceId -ErrorAction SilentlyContinue
+                $synapseWorkspaceResources += $synapseWorkspaceResource
+            }
+            catch
+            {
+                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Skipping the Resource: [$($_.ResourceName)]..."
+                $logResource = @{}
+                $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
+                $logResource.Add("ResourceName",($_.ResourceName))
+                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logSkippedResources += $logResource
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }
+    }
+    else{
 
     # No file path provided as input to the script. Fetch all Synapse workspaces in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
@@ -273,6 +345,7 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
 
         $synapseWorkspaceResources = $synapseWorkspaceDetails | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
     }
+}
 
     $totalsynapseWorkspace = ($synapseWorkspaceResources|Measure-Object).Count
 
@@ -338,6 +411,19 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
     if ($totalsynapseWorkspaceWithAADOnlyAuthDisabled -eq 0)
     {
         Write-Host "`nNo Synapse workspace found with Azure AD Only Authentication disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+       #cehck if the object used is correct 
+        if($AutoRemediation -and ($synapseWorkspaceWithAADOnlyAuthDisabled|Measure-Object).Count -gt 0) 
+        {
+            $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+            $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+            foreach($logControl in $log.ControlList){
+                if($logControl.ControlId -eq $controlIds){
+                    $logControl.RemediatedResources=$logRemediatedResources
+                    $logControl.SkippedResources=$synapseWorkspaceWithAADOnlyAuthEvaluationSkipped
+                }
+            }
+            $log | ConvertTo-json -depth 10  | Out-File $logFile
+        }
         break
     }
 
@@ -363,16 +449,31 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
 
     if (-not $DryRun)
     {
-        Write-Host "[Step 4 of 4] Enabling Azure AD Only Authentication for Synapse Workspace(s)..." 
-        Write-Host "Do you want to enable AAD Only Authentication for Synapse Workspace(s)?`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-
-        $userInput = Read-Host -Prompt "(Y|N)"
-
-        if ($userInput -ne "Y")
+        if(-not $AutoRemediation)
         {
-            Write-Host "Azure AD Only Authentication will not be enabled for any Synapse Workspace. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-            break
+            if (-not $Force)
+            {
+                Write-Host "Do you want to enable AAD Only Authentication for Synapse Workspace(s)?`n" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+ 
+                $userInput = Read-Host -Prompt "(Y|N)"
+                Write-Host $([Constants]::SingleDashLine)
+                if($userInput -ne "Y")
+                {
+                    Write-Host "Azure AD Only Authentication will not be enabled for any Synapse Workspace. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                    
+                     Write-Host $([Constants]::SingleDashLine)
+                    return
+                }
+                Write-Host "User has provided consent to enable Azure AD Only Authentication for all Synapse Workspace(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+            else
+            {
+                Write-Host "'Force' flag is provided. Azure AD Only Authentication will be enabled for all Synapse Workspace(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
         }
+        Write-Host "[Step 4 of 4] Enabling Azure AD Only Authentication for Synapse Workspace(s)..."
 
         # To hold results from the remediation.
         $remediatedSynapseWorkspaces = @()
@@ -410,6 +511,26 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
                
         Write-Host $([Constants]::SingleDashLine)
 
+
+        if($AutoRemediation){
+            if ($($remediatedSynapseWorkspaces | Measure-Object).Count -gt 0)
+            {
+                # Write this to a file.
+                $synapseWorkspacesRemediatedFile = "$($backupFolderPath)\RemediatedSynapseWorkSpaceForAADOnly.csv"
+                $remediatedSynapseWorkspaces | Export-CSV -Path $synapseWorkspacesRemediatedFile -NoTypeInformation
+                Write-Host "The information related to Synapse workspace(s) where Azure AD Only Authentication is successfully enabled has been saved to [$($appServicesRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+
+            if ($($skippedSynapseWorkspaces | Measure-Object).Count -gt 0)
+            {   
+                # Write this to a file.
+                $synapseWorkspacesSkippedFile = "$($backupFolderPath)\SkippedSynapseWorkSpaceForAADOnly.csv"
+                $skippedSynapseWorkspaces | Export-CSV -Path $synapseWorkspacesSkippedFile -NoTypeInformation
+                Write-Host "The information related to Synapse workspace(s) where Azure AD Only Authentication is not enabled has been saved to [$($appServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host $([Constants]::SingleDashLine)
+            }
+        }else{
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
 
         if ($($remediatedSynapseWorkspaces | Measure-Object).Count -gt 0)
@@ -434,6 +555,19 @@ function Enable-AADOnlyAuthenticationForSynapseWorkspace
             $skippedSynapseWorkspaces | Export-CSV -Path $skippedSynapseWorkspacesFile -NoTypeInformation
             Write-Host "This information has been saved to $($skippedSynapseWorkspacesFile)"
         }
+    }
+    if($AutoRemediation){
+        $logFile = "LogFiles\"+ $($TimeStamp) + "\log_" + $($SubscriptionId) +".json"
+        $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
+        foreach($logControl in $log.ControlList){
+            if($logControl.ControlId -eq $controlIds){
+                $logControl.RemediatedResources=$logRemediatedResources
+                $logControl.SkippedResources=$logSkippedResources
+                $logControl.RollbackFile = $synapseWorkspacesRemediatedFile
+            }
+        }
+        $log | ConvertTo-json -depth 10  | Out-File $logFile
+    }
         Write-Host $([Constants]::DoubleDashLine)
 
     }
