@@ -1,4 +1,4 @@
-﻿<###
+﻿<###﻿
 # Overview:
     This script is used to disable Basic Auth for App Services in a Subscription.
 
@@ -81,7 +81,7 @@ function Setup-Prerequisites
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.Resources", "Azure")
+    $requiredModules = @("Az.Accounts", "Az.Resources", "Az.Websites")
 
     Write-Host "Required modules: $($requiredModules -join ', ')"
     Write-Host $([Constants]::SingleDashLine)
@@ -392,9 +392,9 @@ function Disable-BasicAuthForAppServices
                 #$resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
                 #$isBasicAuthDisabled = Get-FTPAuthSetting -resourceId $slot.Id -or Get-SCMAuthSetting -resourceId $slot.Id 
                 $isFTPBasicAuthDisabled = -not (Get-FTPAuthSetting -resourceId $slot.Id)
-                $isSCMBasicAuthDisabled = -not (Get-FTPAuthSetting -resourceId $slot.Id)
+                $isSCMBasicAuthDisabled = -not (Get-SCMAuthSetting -resourceId $slot.Id)
 
-                $isbasicAuthDisabled = $isFTPBasicAuthDisabled -or $isSCMBasicAuthDisabled
+                $isbasicAuthDisabled = $isFTPBasicAuthDisabled -and $isSCMBasicAuthDisabled
                 if($isbasicAuthDisabled -eq $false)
                 {
                     $slot| Add-Member -NotePropertyName isFTPBasicAuthDisabled -NotePropertyValue $isFTPBasicAuthDisabled
@@ -418,7 +418,7 @@ function Disable-BasicAuthForAppServices
             {
                 $appServicesWithBasicAuthDisabled += $appServiceResource
                 Write-Host "Basic Auth is disabled on the production slot and all non-production slots in the App Service: Resource ID: [$($resourceId)]" -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host "Skipping this App Service..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Skipping App Service $($_.ResourceName)..." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
@@ -791,7 +791,7 @@ function Enable-BasicAuthForAppServices
 
         .DESCRIPTION
         Rolls back remediation done for 'Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth' Control.
-        Enables Basic Auth on the production slot and all non-production slots in all App Services in the Subscription. 
+        Enables Basic Auth on the production slot and all non-production slots in all App Services in the Subscription as per input file. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -946,6 +946,14 @@ function Enable-BasicAuthForAppServices
         $resourceName = $appService.ResourceName
         $nonProdSlots = $appService.NonProductionSlotsWithoutBasicAuthDisabled
         $isBasicAuthDisabled = $appService.IsBasicAuthDisabledOnProductionSlotPostRemediation
+        $isFTPBasicAuthDisabledOnProductionSlot = $appService.IsFTPBasicAuthDisabledOnProductionSlot	
+        $isSCMBasicAuthDisabledOnProductionSlot = $appService.IsSCMBasicAuthDisabledOnProductionSlot
+
+        $nonProductionSlotsWithoutBasicAuthDisabled = $appService.NonProductionSlotsWithoutBasicAuthDisabled
+        $nonProductionSlotsWithoutFTPBasicAuthDisabled = $appService.NonProductionSlotsWithoutFTPBasicAuthDisabled
+        $nonProductionSlotsWithoutSCMBasicAuthDisabled = $appService.NonProductionSlotsWithoutSCMBasicAuthDisabled
+
+
 
         try
         {
@@ -957,20 +965,27 @@ function Enable-BasicAuthForAppServices
                 Write-Host "Basic Auth is already enabled on the production slot." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Skipping this App Service. If required, manually enable Basic Auth on the production slots." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
-                return
+                #return
             }
 
             if ($isBasicAuthDisabled)
             {
                 $resource = Get-AzWebApp -ResourceGroupName $resourceGroupName -Name $resourceName
-                $resource.SiteConfig.BasicAuthEnabled = $true
-            
-                $updateFTPBasicAuth = -not (Update-FTPAuthSetting -resourceId $resource.Id -allow $true)
-                $updateSCMBasicAuth = -not (Update-SCMAuthSetting -resourceId $resource.Id -allow $true)
+                $updateFTPBasicAuth = $false
+                $updateSCMBasicAuth = $false
 
-                $isBasicAuthDisabledOnProductionSlot = $updateFTPBasicAuth -and $updateSCMBasicAuth
+                if($isFTPBasicAuthDisabledOnProductionSlot -eq "false")
+                {   
+                    $updateFTPBasicAuth = (Update-FTPAuthSetting -resourceId $resource.Id -allow $true)
+                }
+                if($isSCMBasicAuthDisabledOnProductionSlot -eq "false"){
+                    
+                    $updateSCMBasicAuth = (Update-SCMAuthSetting -resourceId $resource.Id -allow $true)
+                }
+
+                $isBasicAuthDisabledOnProductionSlot = $updateFTPBasicAuth -or $updateSCMBasicAuth
                 
-                if ($isBasicAuthDisabledOnProductionSlot)
+                if (-not $isBasicAuthDisabledOnProductionSlot)
                 {
                     $appServicesSkipped += $appService
                     Write-Host "Error enabling Basic Auth on the production slot." -ForegroundColor $([Constants]::MessageType.Error)
@@ -983,7 +998,7 @@ function Enable-BasicAuthForAppServices
             Write-Host $([Constants]::SingleDashLine)
 
             # Reset the states further below, as appropriate.
-            $appService | Add-Member -NotePropertyName IsBasicAuthDisabledOnAnyNonProductionSlot -NotePropertyValue $false
+            $appService | Add-Member -NotePropertyName IsBasicAuthDisabledOnAllNonProductionSlot -NotePropertyValue $false
             $appService | Add-Member -NotePropertyName NonProductionSlotsWithBasicAuthDisabled -NotePropertyValue ([String]::Empty)
 
             Write-Host "Fetching non-production slot configurations for App Service: Resource ID: [$($resourceId)]..." -ForegroundColor $([Constants]::MessageType.Info)
@@ -1005,16 +1020,18 @@ function Enable-BasicAuthForAppServices
                     $nonProductionSlotConfiguration = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slot.Split('/')[1]
                     $nonProductionSlotConfigurations += $nonProductionSlotConfiguration
                     $isFTPBasicAuthDisabled = Get-FTPAuthSetting -resourceId $nonProductionSlotConfiguration.Id
-                    $isSCMBasicAuthDisabled = Get-FTPAuthSetting -resourceId $nonProductionSlotConfiguration.Id
+                    $isSCMBasicAuthDisabled = Get-SCMAuthSetting -resourceId $nonProductionSlotConfiguration.Id
 
-                    $isbasicAuthDisabled = $isFTPBasicAuthDisabled -or $isSCMBasicAuthDisabled
+                    $isbasicAuthDisabled = $isFTPBasicAuthDisabled -and $isSCMBasicAuthDisabled
 
                     if($isBasicAuthDisabled){
                         $isBasicAuthEnabledOnAllNonProductionSlots = $false
                         $nonProductionSlotsWithBasicAuthDisabled += $nonProductionSlotConfiguration.Name
                     }else{
-                        $nonProductionSlotsWithoutBasicAuthDisabled += nonProductionSlotConfiguration.Name
+                        $nonProductionSlotsWithoutBasicAuthDisabled += $nonProductionSlotConfiguration.Name
                     }
+                    $isBasicAuthEnabledOnAllNonProductionSlots = $false
+                        $nonProductionSlotsWithBasicAuthDisabled += $nonProductionSlotConfiguration.Name
                 }
             }
 
@@ -1026,10 +1043,9 @@ function Enable-BasicAuthForAppServices
                 return
             }
 
-            $appService.IsBasicAuthDisabledOnAnyNonProductionSlot = $true
+            $appService.IsBasicAuthDisabledOnAllNonProductionSlot = $true
 
             # Holds the list of non-production slots with Basic Auth disabled.
-            # $nonProductionSlotsWithBasicAuthDisabled = $($nonProductionSlotConfigurations | Where-Object {-not($_.SiteConfig.BasicAuthEnabled -eq $true) }).Name
             $nonProductionSlotsWithBasicAuthDisabledStr = $($nonProductionSlotsWithBasicAuthDisabled -join ', ')
             $appService.NonProductionSlotsWithBasicAuthDisabled = $nonProductionSlotsWithBasicAuthDisabledStr
 
@@ -1052,11 +1068,14 @@ function Enable-BasicAuthForAppServices
                     Write-Host "Enabling Basic Auth on the non-production slot: [$($slot)]..." -ForegroundColor $([Constants]::MessageType.Info)
                     Write-Host $([Constants]::SingleDashLine)
                     $resource = Get-AzWebAppSlot -ResourceGroupName $resourceGroupName -Name $resourceName -Slot $slotName
-                  
-                    $updateFTPBasicAuth = Update-FTPAuthSetting -resourceId $resource.Id -allow $true
-                    $updateSCMBasicAuth = Update-SCMAuthSetting -resourceId $resource.Id -allow $true
+                    if($nonProductionSlotsWithoutFTPBasicAuthDisabled -contains $slot){
+                       $updateFTPBasicAuth = Update-FTPAuthSetting -resourceId $resource.Id -allow $true
+                    }
+                    if($nonProductionSlotsWithoutSCMBasicAuthDisabled -contains $slot){
+                        $updateSCMBasicAuth = Update-SCMAuthSetting -resourceId $resource.Id -allow $true
+                    }
 
-                    $isBasicAuthEnabledOnNonProductionSlot = $updateFTPBasicAuth -and $updateSCMBasicAuth
+                    $isBasicAuthEnabledOnNonProductionSlot = $updateFTPBasicAuth -or  $updateSCMBasicAuth
                    
                     if($isBasicAuthEnabledOnNonProductionSlot){
                         Write-Host "Successfully enabled Basic Auth on the non-production slot." -ForegroundColor $([Constants]::MessageType.Update)
@@ -1090,12 +1109,12 @@ function Enable-BasicAuthForAppServices
             # Rollback of the changes previously made to an App Service is successful only if Basic Auth is enabled on the production slot and all non-production slots.
             if ($($nonProductionSlotsSkipped | Measure-Object).Count -eq 0)
             {
-                $appService.IsBasicAuthDisabledOnAnyNonProductionSlot = $false
+                $appService.IsBasicAuthDisabledOnAllNonProductionSlot = $false
                 $appServicesRolledBack += $appService | Select-Object @{N='ResourceID';E={$_.ResourceId}},
                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                         @{N='IsBasicAuthDisabledOnProductionSlot';E={$_.IsBasicAuthDisabledOnProductionSlot}},
-                                                                        @{N='IsBasicAuthDisabledOnAnyNonProductionSlot';E={$_.IsBasicAuthDisabledOnAnyNonProductionSlot}},
+                                                                        @{N='IsBasicAuthDisabledOnAllNonProductionSlot';E={$_.IsBasicAuthDisabledOnAllNonProductionSlot}},
                                                                         @{N='NonProductionSlotsWithBasicAuthDisabled';E={$_.NonProductionSlotsWithBasicAuthDisabled}},
                                                                         @{N='NonProductionSlotsSkipped';E={$_.NonProductionSlotsSkipped}}
             }
@@ -1105,7 +1124,7 @@ function Enable-BasicAuthForAppServices
                                                                         @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                                         @{N='ResourceName';E={$_.ResourceName}},
                                                                         @{N='IsBasicAuthDisabledOnProductionSlot';E={$_.IsBasicAuthDisabledOnProductionSlot}},
-                                                                        @{N='IsBasicAuthDisabledOnAnyNonProductionSlot';E={$_.IsBasicAuthDisabledOnAnyNonProductionSlot}},
+                                                                        @{N='IsBasicAuthDisabledOnAllNonProductionSlot';E={$_.IsBasicAuthDisabledOnAllNonProductionSlot}},
                                                                         @{N='NonProductionSlotsWithBasicAuthDisabled';E={$_.NonProductionSlotsWithBasicAuthDisabled}},
                                                                         @{N='NonProductionSlotsSkipped';E={$_.NonProductionSlotsSkipped}}
             }
@@ -1116,7 +1135,7 @@ function Enable-BasicAuthForAppServices
                                                                 @{N='ResourceGroupName';E={$resourceGroupName}},
                                                                 @{N='ResourceName';E={$resourceName}},
                                                                 @{N='IsBasicAuthDisabledOnProductionSlot';E={$isBasicAuthDisabledOnProductionSlot}},
-                                                                @{N='IsBasicAuthDisabledOnAnyNonProductionSlot';E={$isBasicAuthDisabledOnAnyNonProductionSlot}},
+                                                                @{N='IsBasicAuthDisabledOnAllNonProductionSlot';E={$isBasicAuthDisabledOnAllNonProductionSlot}},
                                                                 @{N='NonProductionSlotsWithBasicAuthDisabled';E={$nonProductionSlotsWithBasicAuthDisabled}},
                                                                 @{N='NonProductionSlotsSkipped';E={$nonProductionSlotsSkipped}}
         }
@@ -1135,7 +1154,7 @@ function Enable-BasicAuthForAppServices
                     @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
                     @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
                     @{Expression={$_.IsBasicAuthDisabledOnProductionSlot};Label="Is Basic Auth disabled on the production slot?";Width=20;Alignment="left"},
-                    @{Expression={$_.IsBasicAuthDisabledOnAnyNonProductionSlot};Label="Is Basic Auth disabled on any non-production slot?";Width=20;Alignment="left"},
+                    @{Expression={$_.IsBasicAuthDisabledOnAllNonProductionSlot};Label="Is Basic Auth disabled on all non-production slot?";Width=20;Alignment="left"},
                     @{Expression={$_.NonProductionSlotsWithBasicAuthDisabled};Label="Non-production slots with Basic Auth disabled - Prior to rollback";Width=40;Alignment="left"},
                     @{Expression={$_.NonProductionSlotsSkipped};Label="Non-production slots with Basic Auth disabled - Post rollback";Width=40;Alignment="left"}
 

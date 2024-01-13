@@ -55,6 +55,9 @@
 
 27. [Azure_AVD_SI_Configure_HostPool_SecureBoot](ControlsEligibleForRemediationThroughUI.md#27-Azure_AVD_SI_Configure_HostPool_SecureBoot)
 
+28. [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](ControlsEligibleForRemediationThroughUI.md#28-azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
+
+29. [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](ControlsEligibleForRemediationThroughUI.md#29-azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
 <br />
 ___
 
@@ -409,6 +412,26 @@ Azure AVD Host pool VMs should be of security type Trusted launch with Secure bo
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-TrustedLaunchForAVDHostPool](Remediate-TrustedLaunchforAVDHostPool.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+## 28. Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
+
+### Display Name
+Enforce Automatic Upgrade policy in VMSS
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureUpgradePolicyModeForVMSS](Remediate-ConfigureUpgradePolicyModeForVMSS.ps1)
+
+
+## 29. 	Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+
+### Display Name
+ AppService must not use basic authentication for FTP and SCM access.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
