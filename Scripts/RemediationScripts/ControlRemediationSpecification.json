@@ -332,6 +332,18 @@
                     "RollbackCommand": "Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount",
                     "Arguments": ["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1",
+            "LoadCommand": "Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1",     
+            "InitCommand": "Enable-MSEntraIDOnlyAuthenticationForSynapseWorkspace",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-MSEntraIDOnlyAuthenticationForSynapseWorkspaces",
+                    "Arguments": ["SubscriptionId"]
+                }
         }
     ]
 }

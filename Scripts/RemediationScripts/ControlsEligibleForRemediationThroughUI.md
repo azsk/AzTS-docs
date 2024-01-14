@@ -55,6 +55,8 @@
 
 27. [Azure_AVD_SI_Configure_HostPool_SecureBoot](ControlsEligibleForRemediationThroughUI.md#27-Azure_AVD_SI_Configure_HostPool_SecureBoot)
 
+30. [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](ControlsEligibleForRemediationThroughUI.md#30-Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only)
+
 <br />
 ___
 
@@ -409,6 +411,19 @@ Azure AVD Host pool VMs should be of security type Trusted launch with Secure bo
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-TrustedLaunchForAVDHostPool](Remediate-TrustedLaunchforAVDHostPool.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 30. Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only
+
+### Display Name
+Use Microsoft Entra ID Only Authentication for Synapse workspace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace](Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
