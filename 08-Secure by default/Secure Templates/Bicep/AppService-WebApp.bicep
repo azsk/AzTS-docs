@@ -40,7 +40,7 @@ resource appServiceName_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolic
   name: 'ftp'
   location: location
   properties: {
-    allow: false
+    allow: false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
   }
 }
 
@@ -49,7 +49,7 @@ resource appServiceName_scm 'Microsoft.Web/sites/basicPublishingCredentialsPolic
   name: 'scm'
   location: location
   properties: {
-    allow: false
+    allow: false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
   }
 }
 
@@ -73,7 +73,7 @@ resource appServiceName_AdditionalSlot_ftp 'Microsoft.Web/sites/slots/basicPubli
   name: 'ftp'
   location: location
   properties: {
-    allow: false
+    allow: false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
   }
   dependsOn: [
 
@@ -86,7 +86,7 @@ resource appServiceName_AdditionalSlot_scm 'Microsoft.Web/sites/slots/basicPubli
   name: 'scm'
   location: location
   properties: {
-    allow: false
+    allow: false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
   }
   dependsOn: [
 
