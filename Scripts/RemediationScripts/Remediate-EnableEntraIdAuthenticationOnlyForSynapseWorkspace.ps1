@@ -450,12 +450,10 @@ function Enable-MSEntraIDOnlyAuthenticationForSynapseWorkspace {
         $synapseWorkspaceWithEntraIDOnlyAuthDisabled  | ForEach-Object {
             $SynapseWorkspacesInstance = $_
             try {
-                $entraIdOnlyAuth = @()
-                if ($_.WorkspaceName -ieq 'v-rahkuma') {
+                $entraIdOnlyAuth = @()               
                     # To enable Microsoft Entra ID Only, Microsoft Entra ID Admin should be set. We are first checking if it is previously set on the resource and proceeding for Microsoft Entra ID Only.                   
                     $entraIdOnlyAuth = Enable-AzSynapseActiveDirectoryOnlyAuthentication -ResourceGroupName  $_.ResourceGroupName -WorkspaceName $_.WorkspaceName
-                
-                }
+                               
                  
                 if (($entraIdOnlyAuth | Measure-Object).Count -ne 0) {
                     $remediatedSynapseWorkspaces += $SynapseWorkspacesInstance 
@@ -698,13 +696,10 @@ function Disable-MSEntraIDOnlyAuthenticationForSynapseWorkspaces {
     $validSynapseWorkspaceDetails | ForEach-Object {
         $SynapseWorkspacesInstance = $_
         try {
-            $entraIdOnlyAuth = @()
-            if ($_.WorkspaceName -ieq 'v-rahkuma') {
+            $entraIdOnlyAuth = @()           
                 # To enable Microsoft Entra ID Only, Microsoft Entra ID Admin should be set. We are first checking if it is previously set on the resource and proceeding for Microsoft Entra ID Only.                   
                 $entraIdOnlyAuth = Disable-AzSynapseActiveDirectoryOnlyAuthentication -ResourceGroupName  $_.ResourceGroupName -WorkspaceName $_.WorkspaceName
             
-            }
-             
             if (($entraIdOnlyAuth | Measure-Object).Count -ne 0) {
                 $rolledBackSynapseWorkspaces += $SynapseWorkspacesInstance 
             }
