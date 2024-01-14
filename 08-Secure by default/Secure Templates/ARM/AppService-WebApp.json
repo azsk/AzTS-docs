@@ -71,6 +71,30 @@
       ]
     },
     {
+      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+      "apiVersion": "2023-01-01",
+      "name": "[concat(parameters('appServiceName'), '/ftp')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+          "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+      ],
+      "properties": {
+          "allow": false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites/basicPublishingCredentialsPolicies",
+      "apiVersion": "2023-01-01",
+      "name": "[concat(parameters('appServiceName'), '/scm')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+          "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+      ],
+      "properties": {
+          "allow": false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+      }
+    },
+    {
       "condition": "[parameters('isAdditionalSlotRequired')]",
       "type": "Microsoft.Web/sites/slots",
       "apiVersion": "2015-08-01",
@@ -88,6 +112,34 @@
         "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]",
         "[resourceId('Microsoft.Web/serverfarms', parameters('servicePlanName'))]"
       ]
+    },
+    {
+      "condition": "[parameters('isAdditionalSlotRequired')]",
+        "type": "Microsoft.Web/sites/slots/basicPublishingCredentialsPolicies",
+        "apiVersion": "2023-01-01",
+        "name": "[concat(parameters('appServiceName'), '/AdditionalSlot/ftp')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/sites/slots', parameters('appServiceName'), 'AdditionalSlot')]",
+          "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+        ],
+        "properties": {
+          "allow": false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+        }
+      },
+      {
+        "condition": "[parameters('isAdditionalSlotRequired')]",
+        "type": "Microsoft.Web/sites/slots/basicPublishingCredentialsPolicies",
+        "apiVersion": "2023-01-01",
+        "name": "[concat(parameters('appServiceName'), '/AdditionalSlot/scm')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/sites/slots', parameters('appServiceName'), 'AdditionalSlot')]",
+          "[resourceId('Microsoft.Web/sites', parameters('appServiceName'))]"
+        ],
+        "properties": {
+          "allow": false //Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
+        }
     }
   ]
 }
