@@ -90,7 +90,7 @@
               },
               "properties": {
                 "upgradePolicy": {
-                  "mode": "Manual"
+                  "mode": "Automatic"
                 },
                 "orchestrationMode":"Uniform",
                 "virtualMachineProfile": {

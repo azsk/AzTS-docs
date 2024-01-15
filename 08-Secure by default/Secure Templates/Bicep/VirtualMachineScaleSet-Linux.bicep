@@ -65,7 +65,7 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
   }
   properties: {
     upgradePolicy: {
-      mode: 'Manual'
+      mode: 'Automatic'
     }
     orchestrationMode: 'Uniform'
     virtualMachineProfile: {
