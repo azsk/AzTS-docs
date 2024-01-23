@@ -9,8 +9,6 @@
 
 </br>
 
-> We have 
-
 # Setting up Azure Tenant Security (AzTS) Solution - Step by Step
  
 </br>
