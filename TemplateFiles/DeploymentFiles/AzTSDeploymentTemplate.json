@@ -1936,8 +1936,13 @@
       "properties": {
         "ApplicationId": "[variables('applicationInsightsName')]",
         "Request_Source": "WebAppCreate",
+        "WorkspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', variables('workspaceName'))]",
+        "IngestionMode": "LogAnalytics",
         "publicNetworkAccessForIngestion": "[if(parameters('EnableVnetIntegration'), 'Disabled', 'Enabled')]",
-        "publicNetworkAccessForQuery": "[if(parameters('EnableVnetIntegration'), 'Disabled', 'Enabled')]"
+        "publicNetworkAccessForQuery": "[if(parameters('EnableVnetIntegration'), 'Disabled', 'Enabled')]", 
+        "dependsOn" :[
+          "[resourceId('microsoft.operationalinsights/workspaces', variables('workspaceName'))]"
+        ]
       }
     },
     {
