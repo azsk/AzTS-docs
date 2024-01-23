@@ -130,9 +130,9 @@ It is recommended to migrate classic Application Insights to Workspace-based res
 
 You can use either Workspace in AzTS host Resource group (AzSK-AzTS-LAWorkspace-xxxxx) or any other Workspace (new or existing). This migration will not impact AzTS scan in any way.
 
-We have also updated our deployment package to have this change incorporated. Any new setups/ rerun of installtion script using latest deployment package will result in creation or updation of Application Insights to Workspace-based mode. 
+We have also updated our deployment package to have this change incorporated. Any new setups/ re-run of installtion script using latest deployment package will result in creation or updation of Application Insights to Workspace-based mode. 
 
-As per latest communication from Azure, for Application Insights not migrated to Workspace-based by retirement date, ingestion will continue until it is auto-migrated.AzTS scan will not be impacted due to this.  However, for reliable experience, it is recommended to switch to Workspace-based mode by 29th February, 2024.
+As per latest communication from Azure, for Application Insights not migrated to Workspace-based mode by retirement date, ingestion will continue until it is auto-migrated.AzTS scan will not be impacted due to this.  However, for reliable experience, it is recommended to switch to Workspace-based mode by 29th February, 2024.
 
 
 - ### **Scan**
