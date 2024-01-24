@@ -37,6 +37,7 @@ Below resource types can be checked for validating the security controls:
 |[LoadBalancer](Feature/LoadBalancer.md)|Microsoft.Network/loadBalancers |
 |[LogicApps](Feature/LogicApps.md)|Microsoft.Logic/workflows|
 |[NotificationHub](Feature/NotificationHub.md)|Microsoft.NotificationHubs/namespaces/notificationHubs|
+|[MachineLearningWorkspace](Feature/MachineLearningWorkspace.md)|Microsoft.MachineLearningServices/workspaces|
 |[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
 |[ServiceBus](Feature/ServiceBus.md)|Microsoft.ServiceBus/namespaces|
@@ -45,6 +46,7 @@ Below resource types can be checked for validating the security controls:
 |[SQLServer](Feature/SQLServer.md)|Microsoft.Sql/servers|
 |[Storage](Feature/Storage.md)|Microsoft.Storage/storageAccounts|
 |[Subscription](Feature/SubscriptionCore.md)|
+|[SynapseWorkspace](Feature/SynapseWorkspace.md)|
 |[TrafficManager](Feature/TrafficManager.md)|Microsoft.Network/trafficmanagerprofiles|
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
 |[VirtualMachineScaleSet](Feature/VirtualMachineScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|
