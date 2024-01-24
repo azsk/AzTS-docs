@@ -131,3 +131,4 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
     virtualNetwork
   ]
 }
+
