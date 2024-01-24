@@ -61,6 +61,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 49. [Azure_AVD_Audit_Enable_HostPool_BootDiagnostics](Readme.md#49-Azure_AVD_Audit_Enable_HostPool_BootDiagnostics)
 50. [Azure_AVD_SI_Configure_HostPool_SecureBoot](Readme.md#50-Azure_AVD_SI_Configure_HostPool_SecureBoot)
 51. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#51-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
+52. [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](Readme.md#52-Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only)
 <br />
 
 ___ 
@@ -1077,7 +1078,28 @@ Yes
 ### Supports rollback?
 Yes
 
+___
+
+
+## 52. Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only
+
+### Display Name
+Synapse workspace SQL pools must have only Entra ID based authentication enabled.
+
+### Link to Bulk Remediation Script (BRS)
+[Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only.ps1](Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
 ___ 
+
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
