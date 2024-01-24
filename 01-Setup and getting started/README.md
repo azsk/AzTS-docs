@@ -5,7 +5,7 @@
 
 > We have updated our auto update feature to use AAD Authentication for Function App deployment instead of basic auth or publishing profile. Please refer details [here](../FAQs/README.md/#6-what-are-the-recommended-authentication-settings-for-all-app-services-or-function-apps).
 
-> FAQ for guidance on migrating classic Application Insights to Workspace-based resource[here](../FAQs/README.md/#7-how-can-i-migrate-classic-application-insights-to-workspace-based-resource-if-i-migrate-application-insights-azsk-azts-appinsights-xxxxx-to-workspace-based-resource-will-there-be-any-impact-to-azts-scan).
+> FAQ for guidance on migrating classic Application Insights to Workspace-based resource [here](../FAQs/README.md/#7-how-can-i-migrate-classic-application-insights-to-workspace-based-resource-if-i-migrate-application-insights-azsk-azts-appinsights-xxxxx-to-workspace-based-resource-will-there-be-any-impact-to-azts-scan).
 
 </br>
 

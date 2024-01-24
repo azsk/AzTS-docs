@@ -120,11 +120,8 @@ Using the native enterprise directory for authentication ensures that there is a
 It is recommended to migrate classic Application Insights to Workspace-based resource before retirement date(29th February, 2024) to ensure most reliable experience. You can follow steps mentioned in detail [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource) for migration using any one of the below listed approaches.
 
 1. [Azure Portal](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#migrate-your-resource)
-<br/>
 2. [Azure CLI](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-cli)
-<br/>
 3. [Azure PowerShell](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-powershell)
-<br/>
 
 You can use either Workspace in AzTS host Resource group (AzSK-AzTS-LAWorkspace-xxxxx) or any other Workspace (new or existing). This migration will not impact AzTS scan in any way.
 
