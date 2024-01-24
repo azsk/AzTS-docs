@@ -121,10 +121,8 @@ It is recommended to migrate classic Application Insights to Workspace-based res
 
 1. [Azure Portal](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#migrate-your-resource)
 <br/>
-
 2. [Azure CLI](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-cli)
 <br/>
-
 3. [Azure PowerShell](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-powershell)
 <br/>
 
