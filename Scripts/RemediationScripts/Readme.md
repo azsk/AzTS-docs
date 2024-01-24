@@ -1089,7 +1089,7 @@ ___
 Synapse workspace SQL pools must have only Entra ID based authentication enabled.
 
 ### Link to Bulk Remediation Script (BRS)
-[Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only.ps1](Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only.ps1)
+[Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace](Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1)
 
 
 ### Minimum permissions required to run the script
@@ -1100,9 +1100,6 @@ Yes
 
 ### Supports rollback?
 Yes
-
-## Supports managed identity based remediations
-Both System assigned and User assigned managed identities are supported.
 
 
 ## 53. 	Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
@@ -1140,6 +1137,9 @@ Yes
 Yes
 ___
 
+
+## Supports managed identity based remediations
+Both System assigned and User assigned managed identities are supported.
 
 * To connect Azure Account using **System assigned managed identity**, use the following command:</br>
   Connect-AzAccount -Identity
