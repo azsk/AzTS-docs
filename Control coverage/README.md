@@ -46,7 +46,7 @@ Below resource types can be checked for validating the security controls:
 |[SQLServer](Feature/SQLServer.md)|Microsoft.Sql/servers|
 |[Storage](Feature/Storage.md)|Microsoft.Storage/storageAccounts|
 |[Subscription](Feature/SubscriptionCore.md)|
-|[SynapseWorkspace](Feature/SynapseWorkspace.md)|
+|[SynapseWorkspace](Feature/SynapseWorkspace.md)|Microsoft.Synapse/workspaces|
 |[TrafficManager](Feature/TrafficManager.md)|Microsoft.Network/trafficmanagerprofiles|
 |[VirtualMachine](Feature/VirtualMachine.md)|Microsoft.Compute/virtualMachines|
 |[VirtualMachineScaleSet](Feature/VirtualMachineScaleSet.md)|Microsoft.Compute/virtualMachineScaleSets|

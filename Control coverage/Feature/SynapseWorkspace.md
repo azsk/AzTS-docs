@@ -6,8 +6,8 @@
 
 - [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](#azure_synapseworkspace_authn_sql_pools_use_microsoft_entra_id_only)
 - [Azure_SynapseWorkspace_Audit_Enable_Diagnostics_Log](#azure_synapseworkspace_audit_enable_diagnostics_log)
-- [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](#azure_synapse_netsec_dont_allow_universal_ip_range)
--
+- [Azure_Synapse_NetSec_Dont_Allow_Universal_IP_Range](#azure_synapse_netsec_dont_allow_universal_ip_range)
+
 <!-- /TOC -->
 <br/>
 
@@ -133,44 +133,21 @@ Using the firewall feature ensures that access to the data or the service is res
 
 ### Control Settings 
 ```json 
-{
-"DiagnosticForeverRetentionValue": "0",
-"DiagnosticMinRetentionPeriod": "90",
-"DiagnosticLogs": [
-  "SynapseRbacOperations",
-  "GatewayApiRequests",
-  "SQLSecurityAuditEvents",
-  "BuiltinSqlReqsEnded",
-  "IntegrationPipelineRuns",
-  "IntegrationActivityRuns",
-  "IntegrationTriggerRuns",
-  "SynapseLinkEvent"
-]
-}
+  {
+    "IPRangeStartIP": "0.0.0.0",
+    "IPRangeEndIP": "255.255.255.255"
+  }
 ```
 
 ### Control Spec 
 
 > **Passed:**
-> 1. Required diagnostic logs are enabled.
-> 2. At least one of the below settings configured:
-> a. Log Analytics.
-> b. Storage account with min Retention period of 365 or forever(Retention period 0).
-> c. Event Hub.
->
-> **Failed:**
-> 1. Diagnostics setting is disabled for resource.
-> 
->       or
->
-> 2. Diagnostic settings meet the following conditions:
-> a. All diagnostic logs are not enabled.
-> b. None of the below settings is configured:
-> i. Log Analytics.
-> ii. Storage account with min Retention period of 365 or forever(Retention period 0).
-> iii. Event Hub.
-> 
+>Custom firewall rule (PublicNetworkAccess) is disabled.
+>Custom firewall rule with Any-to-Any IP range with Start IP address as 0.0.0.0 and End Ip address as 255.255.255.255 is NOT found.
+>Firewall rule that gets added from "Allow Azure resources to access this resource" is allowed.
 
+> **Failed:**
+> Custom firewall rule with Any-to-Any IP range with Start IP address as 0.0.0.0 and End Ip address as 255.255.255.255 is found.
 
 
 ### Recommendation 
