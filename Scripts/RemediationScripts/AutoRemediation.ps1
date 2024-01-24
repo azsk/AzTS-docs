@@ -152,6 +152,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") -or
                 ($control.ControlId -eq "Azure_AppService_DP_Dont_Allow_HTTP_Access") -or
                 ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth") -or
                 ($control.ControlId -eq "Azure_Storage_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL") -or                
                 ($control.ControlId -eq "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN") -or
@@ -171,6 +172,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_CosmosDB_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_Bastion_AuthZ_Disable_Shareable_Link") -or
                 ($control.ControlId -eq "Azure_AVD_SI_Configure_HostPool_SecureBoot") -or
+                ($control.ControlId -eq "Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy") -or 
                 ($control.ControlId -eq "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only") -or
                 ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
