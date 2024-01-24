@@ -37,8 +37,7 @@ The built in SQL pool of the Synapse workspace creates an admin login and passwo
  1. Navigate to the Synapse resource in Azure Portal. 
  2. Go to 'Microsoft Entra ID' under the settings tab. 
  3. Check the property 'Support only Microsoft Entra ID authentication for this workspace'. Make sure an Microsoft Entra admin is set. 
- 
- Refer to: https://learn.microsoft.com/en-us/azure/synapse-analytics/sql/active-directory-authentication#disable-local-authentication"
+ Refer to: https://learn.microsoft.com/en-us/azure/synapse-analytics/sql/active-directory-authentication#disable-local-authentication
       
 
 ### Azure Policies or REST APIs used for evaluation 
@@ -84,7 +83,7 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 > 1. Required diagnostic logs are enabled.
 > 2. At least one of the below settings configured:
 > a. Log Analytics.
-> b. Storage account with min Retention period of 365 or forever(Retention period 0).
+> b. Storage account with min Retention period of 90 or forever(Retention period 0).
 > c. Event Hub.
 >
 > **Failed:**
@@ -96,7 +95,7 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 > a. All diagnostic logs are not enabled.
 > b. None of the below settings is configured:
 > i. Log Analytics.
-> ii. Storage account with min Retention period of 365 or forever(Retention period 0).
+> ii. Storage account with min Retention period of 90 or forever(Retention period 0).
 > iii. Event Hub.
 > 
 
@@ -157,7 +156,7 @@ To remediate unmanaged Synapse Workspace remove Any to Any firewall IP address.
 1. Go to Azure Portal --> your Synapse Workspace  --> Settings --> Networking --> Firewall rules --> Select Any to Any firewall rule (allowAll rule) --> Delete --> Save. 
 For accessing Unmanaged Synapse Workspace add individual firewall IP address. 
 
-To remediate, Managed Synapse Workspace disable public network access. 
+To remediate managed Synapse Workspace disable public network access. 
 1. Go to Azure Portal --> your Synapse Workspace  --> Settings --> Networking --> Public network access to workspace endpoints --> Disabled --> Save. For accessing Managed Synapse Workspace, configure private endpoint connection. To configure private endpoint connection refer: https://learn.microsoft.com/en-us/azure/synapse-analytics/security/how-to-connect-to-workspace-with-private-links.
       
 

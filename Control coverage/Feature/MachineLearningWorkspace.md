@@ -27,7 +27,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
-		    "AmlComputeClusterEvent",
+        "AmlComputeClusterEvent",
         "AmlComputeClusterNodeEvent",
         "AmlComputeJobEvent",
         "AmlComputeCpuGpuUtilization",
@@ -63,8 +63,11 @@ Logs should be retained for a long enough period so that activity trail can be r
 > **Passed:**
 > 1. Required diagnostic logs are enabled.
 > 2. At least one of the below settings configured:
+
 > a. Log Analytics.
+
 > b. Storage account with min Retention period of 365 or forever(Retention period 0).
+
 > c. Event Hub.
 >
 > **Failed:**
@@ -87,10 +90,12 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 - **Azure Portal**
 
-    Create or update the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings?tabs=portal#create-diagnostic-settings.
+Create or update the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings?tabs=portal#create-diagnostic-settings.
 
 
 ### Azure Policies or REST APIs used for evaluation
+- REST API to list all the Machine Learning Workspaces under subscription: /subscriptions/{subscriptionId}/providers/Microsoft.MachineLearningServices/workspaces?api-version=2023-04-01
+  <br />
 
 - REST API to list diagnostic setting details of MachineLearningWorkspace resources: {resourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview <br />
 **Properties:**
@@ -289,7 +294,6 @@ Ensure Azure Machine Learning compute instances run on the latest available oper
   **Properties:** [\*].properties.computeType, [\*].properties.properties.osImageMetadata.isLatestOsImageVersion
   <br />
   <br />
-
 
 <br />
 <br />
