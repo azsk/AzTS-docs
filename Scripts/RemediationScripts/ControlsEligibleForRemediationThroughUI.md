@@ -58,6 +58,10 @@
 28. [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](ControlsEligibleForRemediationThroughUI.md#28-azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
 
 29. [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](ControlsEligibleForRemediationThroughUI.md#29-azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
+
+30. [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](ControlsEligibleForRemediationThroughUI.md#30-Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only)
+
+
 <br />
 ___
 
@@ -415,6 +419,7 @@ Azure AVD Host pool VMs should be of security type Trusted launch with Secure bo
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+___
 
 ## 28. Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
 
@@ -424,6 +429,11 @@ Enforce Automatic Upgrade policy in VMSS
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-ConfigureUpgradePolicyModeForVMSS](Remediate-ConfigureUpgradePolicyModeForVMSS.ps1)
 
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+
+___
 
 ## 29. 	Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
 
@@ -432,6 +442,20 @@ Enforce Automatic Upgrade policy in VMSS
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+___
+
+## 30. Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only
+
+### Display Name
+Use Microsoft Entra ID Only Authentication for Synapse workspace.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace](Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1)
+
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
