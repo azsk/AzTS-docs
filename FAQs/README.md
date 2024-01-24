@@ -12,7 +12,7 @@
  4. [While installing AzTS solution I have provided my preferences for telemetry collection i.e. anonymous AzTS usage data and organization/team contact details. How do I update my preferences now?](#4-while-installing-azts-solution-i-have-provided-my-preferences-for-telemetry-collection-ie-anonymous-azts-usage-data-and-organizationteam-contact-details-how-do-i-update-my-preferences-now)
 5. [On running the Autoupdater function I am encountering an error related to conflicts in function runtime version.](#5-on-running-the-autoupdater-function-i-am-encountering-an-error-related-to-conflicts-in-function-runtime-version)
 6. [What are the recommended authentication settings for all App services or Function Apps?](#6-what-are-the-recommended-authentication-settings-for-all-app-services-or-function-apps)
-7. [How can I migrate classic Application Insights to Workspace-based resource? If I migrate Application Insights AzSK-AzTS-AppInsights-xxxxx to Workspace-based resource, will there be any impact to AzTS scan](#7-how-can-i-migrate-classic-application-insights-to-workspace-based-resource-if-i-migrate-application-insights-azsk-azts-appinsights-xxxxx-to-workspace-based-resource-will-there-be-any-impact-to-azts-scan)
+7. [How can I migrate classic Application Insights to Workspace-based resource? If I migrate Application Insights AzSK-AzTS-AppInsights-xxxxx to Workspace-based resource, will there be any impact to AzTS scan?](#7-how-can-i-migrate-classic-application-insights-to-workspace-based-resource-if-i-migrate-application-insights-azsk-azts-appinsights-xxxxx-to-workspace-based-resource-will-there-be-any-impact-to-azts-scan)
 
 
  - ### Scan
@@ -117,22 +117,22 @@ Using the native enterprise directory for authentication ensures that there is a
 <br>
 
 ### **7. How can I migrate classic Application Insights to Workspace-based resource? If I migrate Application Insights AzSK-AzTS-AppInsights-xxxxx to Workspace-based resource, will there be any impact to AzTS scan?**
-It is recommended to migrate classic Application Insights to Workspace-based resource before retirement date(29th February, 2024) to ensure most reliable experience. You can follow steps mentioned in detail [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#migrate-your-resource) for migration using any one of the below listed approaches.
+It is recommended to migrate classic Application Insights to Workspace-based resource before retirement date(29th February, 2024) to ensure most reliable experience. You can follow steps mentioned in detail [here](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource) for migration using any one of the below listed approaches.
 
-> [Azure Portal](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#migrate-your-resource)
+1. [Azure Portal](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#migrate-your-resource)
 <br/>
 
-> [Azure CLI](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-cli)
+2. [Azure CLI](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-cli)
 <br/>
 
-> [Azure PowerShell](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-powershell)
+3. [Azure PowerShell](https://learn.microsoft.com/en-us/azure/azure-monitor/app/convert-classic-resource#azure-powershell)
 <br/>
 
 You can use either Workspace in AzTS host Resource group (AzSK-AzTS-LAWorkspace-xxxxx) or any other Workspace (new or existing). This migration will not impact AzTS scan in any way.
 
-We have also updated our deployment package to have this change incorporated. Any new setups/ re-run of installtion script using latest deployment package will result in creation or updation of Application Insights to Workspace-based mode. 
+We have also updated our deployment package to have this change incorporated. Any new setups/ re-run of installation script using latest deployment package will result in creation or updation of Application Insights to Workspace-based mode. 
 
-As per latest communication from Azure, for Application Insights not migrated to Workspace-based mode by retirement date, ingestion will continue until it is auto-migrated.AzTS scan will not be impacted due to this.  However, for reliable experience, it is recommended to switch to Workspace-based mode by 29th February, 2024.
+As per latest communication from Azure, for Application Insights not migrated to Workspace-based mode by retirement date, ingestion will continue until it is auto-migrated. AzTS scan will not be impacted due to this.  However, for reliable experience, it is recommended to switch to Workspace-based mode by 29th February, 2024.
 
 
 - ### **Scan**
