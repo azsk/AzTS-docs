@@ -34,6 +34,7 @@ The built in SQL pool of the Synapse workspace creates an admin login and passwo
 ### Recommendation 
 
 - **Azure Portal** 
+
  1. Navigate to the Synapse resource in Azure Portal. 
  2. Go to 'Microsoft Entra ID' under the settings tab. 
  3. Check the property 'Support only Microsoft Entra ID authentication for this workspace'. Make sure an Microsoft Entra admin is set. 
@@ -82,9 +83,9 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 > **Passed:**
 > 1. Required diagnostic logs are enabled.
 > 2. At least one of the below settings configured:
-> a. Log Analytics.
-> b. Storage account with min Retention period of 90 or forever(Retention period 0).
-> c. Event Hub.
+>   >- Log Analytics.
+>   >- Storage account with min Retention period of 90 or forever(Retention period 0).
+>   >- Event Hub.
 >
 > **Failed:**
 > 1. Diagnostics setting is disabled for resource.
@@ -94,17 +95,17 @@ Diagnostic logs are needed for creating activity trail while investigating an in
 > 2. Diagnostic settings meet the following conditions:
 > a. All diagnostic logs are not enabled.
 > b. None of the below settings is configured:
-> i. Log Analytics.
-> ii. Storage account with min Retention period of 90 or forever(Retention period 0).
-> iii. Event Hub.
-> 
+>   >- Log Analytics.
+>   >- Storage account with min Retention period of 90 or forever(Retention period 0).
+>   >- Event Hub.
 
 
 
 ### Recommendation 
 
 - **Azure Portal** 
- Create or update the diagnostic settings from the Azure Portal by following the steps given [here](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings?tabs=portal#create-diagnostic-settings)
+
+  Create or update the diagnostic settings from the Azure Portal by following the steps given [here](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings?tabs=portal#create-diagnostic-settings).
 
 ### Azure Policies or REST APIs used for evaluation 
 
@@ -152,12 +153,13 @@ Using the firewall feature ensures that access to the data or the service is res
 ### Recommendation 
 
 - **Azure Portal** 
-To remediate unmanaged Synapse Workspace remove Any to Any firewall IP address. 
-1. Go to Azure Portal --> your Synapse Workspace  --> Settings --> Networking --> Firewall rules --> Select Any to Any firewall rule (allowAll rule) --> Delete --> Save. 
-For accessing Unmanaged Synapse Workspace add individual firewall IP address. 
 
-To remediate managed Synapse Workspace disable public network access. 
-1. Go to Azure Portal --> your Synapse Workspace  --> Settings --> Networking --> Public network access to workspace endpoints --> Disabled --> Save. For accessing Managed Synapse Workspace, configure private endpoint connection. To configure private endpoint connection refer: https://learn.microsoft.com/en-us/azure/synapse-analytics/security/how-to-connect-to-workspace-with-private-links.
+  To remediate unmanaged Synapse Workspace remove Any to Any firewall IP address: 
+  1. Go to Azure Portal --> your Synapse Workspace  --> Settings --> Networking --> Firewall rules --> Select Any to Any firewall rule (allowAll rule) --> Delete --> Save. 
+  For accessing Unmanaged Synapse Workspace add individual firewall IP address. 
+
+  To remediate managed Synapse Workspace disable public network access:
+  1. Go to Azure Portal --> your Synapse Workspace  --> Settings --> Networking --> Public network access to workspace endpoints --> Disabled --> Save. For accessing Managed Synapse Workspace, configure private endpoint connection. To configure private endpoint connection refer: https://learn.microsoft.com/en-us/azure/synapse-analytics/security/how-to-connect-to-workspace-with-private-links.
       
 
 ### Azure Policies or REST APIs used for evaluation 
@@ -168,8 +170,8 @@ To remediate managed Synapse Workspace disable public network access.
 - REST API used to list Firewall rules for Synapse workspace:
 /subscriptions/{subscriptionId}/resourceGroups/{1}/providers/Microsoft.Synapse/workspaces/{synapseWorkspaceName}/firewallRules?api-version=2021-06-01
 
-**Properties:**
-name<br />
-properties.startIpAddress<br />
-properties.endIpAddress<br />
+  **Properties:**
+  name<br />
+  properties.startIpAddress<br />
+  properties.endIpAddress<br />
 <br />

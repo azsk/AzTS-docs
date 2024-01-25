@@ -64,11 +64,10 @@ Logs should be retained for a long enough period so that activity trail can be r
 > 1. Required diagnostic logs are enabled.
 > 2. At least one of the below settings configured:
 
-> a. Log Analytics.
-
-> b. Storage account with min Retention period of 365 or forever(Retention period 0).
-
-> c. Event Hub.
+>   >- Log Analytics.
+>   >- Storage account with min Retention period of 365 or forever(Retention period 0).
+>   >- Event Hub.
+> 
 >
 > **Failed:**
 > 1. Diagnostics setting is disabled for resource.
@@ -79,18 +78,16 @@ Logs should be retained for a long enough period so that activity trail can be r
 > a. All diagnostic logs are not enabled.
 > b. None of the below settings is configured:
 
-> i. Log Analytics.
-
-> ii. Storage account with min Retention period of 365 or forever(Retention period 0).
-
-> iii. Event Hub.
+>   >- Log Analytics.
+>   >- Storage account with min Retention period of 365 or forever(Retention period 0).
+>   >- Event Hub.
 > 
 
 ### Recommendation
 
 - **Azure Portal**
 
-Create or update the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings?tabs=portal#create-diagnostic-settings.
+  Create or update the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings?tabs=portal#create-diagnostic-settings.
 
 
 ### Azure Policies or REST APIs used for evaluation
@@ -98,15 +95,15 @@ Create or update the diagnostic settings from the Azure Portal by following the 
   <br />
 
 - REST API to list diagnostic setting details of MachineLearningWorkspace resources: {resourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview <br />
-**Properties:**
-name<br />
-properties.logs.category<br />
-properties.logs.enabled<br />
-properties.logs.retentionPolicy.enabled<br />
-properties.logs.retentionPolicy.days<br />
-properties.workspaceId<br />
-properties.storageAccountId<br />
-properties.eventHubName<br />
+  **Properties:**
+  name<br />
+  properties.logs.category<br />
+  properties.logs.enabled<br />
+  properties.logs.retentionPolicy.enabled<br />
+  properties.logs.retentionPolicy.days<br />
+  properties.workspaceId<br />
+  properties.storageAccountId<br />
+  properties.eventHubName<br />
 <br />
 <br />
 
@@ -136,7 +133,7 @@ Using the native enterprise directory for authentication ensures that there is a
 > **Passed:**
 > Local authentication is disabled on all Machine Learning Workspace compute(s).
 
-> Or
+>  Or
 
 > No compute instance is present for Machine Learning Workspace.
 
@@ -148,7 +145,7 @@ Using the native enterprise directory for authentication ensures that there is a
 
 - **Azure Portal**
 
-To disable SSH on Azure Machine Learning Compute resources, create a new compute instance having SSH disabled.
+  To disable SSH on Azure Machine Learning Compute resources, create a new compute instance having SSH disabled.
 
 
 ### Azure Policies or REST APIs used for evaluation
@@ -228,14 +225,14 @@ Machine Learning Workspace firewall should be enabled so that the Machine Learni
 > Public Network Access is configured as Disabled.
 > 
 > **Failed:**
-> Public Network Access is not configured as Enabled.
+> Public Network Access is not configured as Disabled.
 > 
 
 ### Recommendation
 
 - **Azure Portal**
 
- To remediate, disable public network access on your Machine Learning Workspace. Go to Azure Portal --> your Machine Learning workspace  --> Settings --> Networking --> Public access --> Public network access --> Select on 'Disabled' --> Save"
+  To remediate, disable public network access on your Machine Learning Workspace. Go to Azure Portal --> your Machine Learning workspace  --> Settings --> Networking --> Public access --> Public network access --> Select on 'Disabled' --> Save"
 
 ### Azure Policies or REST APIs used for evaluation
 
@@ -282,7 +279,7 @@ Ensure Azure Machine Learning compute instances run on the latest available oper
 
 - **Azure Portal**
 
- To update the OS image of an Azure Machine Learning Compute Instance, create a new compute instance. For more information, visit https://learn.microsoft.com/en-us/azure/machine-learning/concept-vulnerability-management?view=azureml-api-2#compute-instance.
+  To update the OS image of an Azure Machine Learning Compute Instance, create a new compute instance. For more information, visit https://learn.microsoft.com/en-us/azure/machine-learning/concept-vulnerability-management?view=azureml-api-2#compute-instance.
 
 
 ### Azure Policies or REST APIs used for evaluation
