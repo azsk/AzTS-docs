@@ -15,6 +15,7 @@
 - [Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachinescaleset_si_remediate_security_vulnerabilities)
 - [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
 - [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
+- [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](#azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
 
 <!-- /TOC -->
 <br/>
@@ -810,4 +811,52 @@ Using Azure Portal :
 
  <br />
 <br />
+___
+
+## Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
+
+### Display Name
+Enforce Automatic Upgrade policy in VMSS
+
+### Rationale
+All the security configurations applied on VM Scale Set will be effective only if all the individual VM instances in Scale Set are up-to-date with the latest overall Scale Set model. Automatic upgrade policy mode ensures individual VM instances are up-to-date with the latest overall Scale Set model.
+
+### Control Settings 
+```json 
+{
+    "AllowedUpgradePolicyModes": [
+      "Automatic"
+    ],
+    "ApplicableOrchestrationModes": [
+      "Uniform"
+    ]
+}
+ ``` 
+### Note:
+This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration mode.
+
+### Control Spec
+
+> **Passed:**
+>  VMSS upgrade policy is set as one of the allowed upgrade policy mode.
+>
+> **Failed:**
+> VMSS upgrade policy is not set as one of the allowed upgrade policy mode.
+>
+> **NotApplicable:**
+> Orchestration mode is not in applicable orchestration modes.
+>
+
+### Recommendation
+To set upgrade policy for VMSS, please refer: https://learn.microsoft.com/en-us/azure/virtual-machine-scale-sets/virtual-machine-scale-sets-upgrade-policy
+
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list Virtual Machine Scale Set at subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01<br/>
+  **Properties:** properties.orchestrationMode
+  properties.upgradePolicy.mode
+  <br />
+  <br />
 ___
