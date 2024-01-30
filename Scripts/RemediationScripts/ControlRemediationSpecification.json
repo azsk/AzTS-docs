@@ -332,6 +332,43 @@
                     "RollbackCommand": "Disable-AVDHostPoolBootDiagnosticWithManagedStorageAccount",
                     "Arguments": ["SubscriptionId"]
                 }
+        },
+        {
+            "ControlId": "Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureUpgradePolicyModeForVMSS.ps1",
+            "LoadCommand": "Remediate-ConfigureUpgradePolicyModeForVMSS.ps1",     
+            "InitCommand": "Configure-UpgradePolicyMode",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Reset-UpgradePolicyMode",
+                    "Arguments": ["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableBasicAuthForAppServices.ps1",
+            "LoadCommand": "Remediate-DisableBasicAuthForAppServices.ps1",     
+            "InitCommand": "Disable-BasicAuthForAppServices",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Enable-BasicAuthForAppServices",
+                    "Arguments": ["SubscriptionId"]
+                }
+        },
+        {
+            "ControlId": "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1",
+            "LoadCommand": "Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1",     
+            "InitCommand": "Enable-MSEntraIDOnlyAuthenticationForSynapseWorkspace",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Disable-MSEntraIDOnlyAuthenticationForSynapseWorkspaces",
+                    "Arguments": ["SubscriptionId"]
+                }
         }
+
     ]
 }
