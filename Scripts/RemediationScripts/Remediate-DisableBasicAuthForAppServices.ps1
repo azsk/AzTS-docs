@@ -1,4 +1,4 @@
-﻿<###﻿
+﻿<###
 # Overview:
     This script is used to disable Basic Auth for App Services in a Subscription.
 
