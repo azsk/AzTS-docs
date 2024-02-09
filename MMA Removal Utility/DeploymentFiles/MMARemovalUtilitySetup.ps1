@@ -65,9 +65,9 @@ function Install-AzTSMMARemovalUtilitySolution {
         $TemplateParameters = @{},
 
         [string]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
-        [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage = "Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
+        [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
         $AzureEnvironmentName = "AzureCloud",
 
         [switch]
