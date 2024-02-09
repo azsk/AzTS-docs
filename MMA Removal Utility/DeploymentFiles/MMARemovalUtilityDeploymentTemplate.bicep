@@ -63,7 +63,8 @@ param ResourceHash string
 
 @allowed([
   'AzureCloud'
-  'AzureGovernmentCloud'
+  'AzureGovernmentCloud',
+  'AzureChinaCloud'
 ])
 param AzureEnvironmentName string = 'AzureCloud'
 param IsClientSecretAuthMode bool = false

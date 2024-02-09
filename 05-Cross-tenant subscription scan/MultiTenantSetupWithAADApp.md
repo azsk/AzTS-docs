@@ -246,7 +246,7 @@ $HostSubscriptionId = <HostSubscriptionId>
 # Add resource group name in which Azure Tenant Security Solution needs to be installed.
 $HostResourceGroupName = <HostResourceGroupName>
 
-# Add Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+# Add Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud
 $AzureEnvironmentName = <AzureEnvironmentName>
 
 $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName -AzureEnvironmentName $AzureEnvironmentName

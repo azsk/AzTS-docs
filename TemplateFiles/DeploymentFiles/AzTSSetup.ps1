@@ -6,6 +6,8 @@
 $AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
+    "AzureChinaCloud" = "https://{0}.azurewebsites.cn";
+
 }
 
 function Install-AzSKTenantSecuritySolution
@@ -135,11 +137,11 @@ function Install-AzSKTenantSecuritySolution
         $SendAlertNotificationToEmailIds = @(),
 
         [string]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
         $AzureEnvironmentName = "AzureCloud",
 
         [switch]
@@ -397,6 +399,11 @@ function Install-AzSKTenantSecuritySolution
                  {
                      $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.us")
                      $TemplateParameters.Add("WebAppEndpointSuffix", ".azurewebsites.us")
+                 }
+                 elseif($AzureEnvironmentName -eq 'AzureChinaCloud')
+                 {
+                     $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.cn") #this need to be checked
+                     $TemplateParameters.Add("WebAppEndpointSuffix", ".azurewebsites.cn")
                  }
                  else 
                  {
@@ -1544,8 +1551,8 @@ function Set-AzSKTenantSecurityADApplication
         $UIAzureADAppName,
 
         [string]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
         $AzureEnvironmentName = "AzureCloud",
 	
         [switch]

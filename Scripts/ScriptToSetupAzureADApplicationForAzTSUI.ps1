@@ -28,7 +28,7 @@ $SubscriptionId = ""
 # Resource group name in which Azure Tenant Security Solution needs to be installed.
 $ScanHostRGName = ""
 
-# Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+# Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud
 $AzureEnvironmentName = ""
 
 # ************** End: Initialize required parameters ******************** #
@@ -37,6 +37,8 @@ $AzureEnvironmentName = ""
 $AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
+    "AzureChinaCloud" = "https://{0}.azurewebsites.cn";
+
 }
 
 # Load helper functions
