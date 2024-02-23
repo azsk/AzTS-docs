@@ -33,7 +33,7 @@ In this section, we will walk through the steps of setting up AzTS Solution. Thi
 
 ## **Method A:**
 
-> _**Note:** You can download the deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
+> _**Note:** You can download the deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) and use **ExecutionScript.ps1** present in this package to run the commands mentioned in below steps. Before extracting the zip file, right click on the zip file --> click on 'Properties' --> Under the General tab in the dialog box, select the 'Unblock' checkbox --> Click on 'OK' button._
 
 This setup is divided into six steps:
 
@@ -123,7 +123,7 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
 If you have already downloaded the deployment package zip, directly go to step (3.d).
 
-3.a. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+3.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 3.b. Extract zip to local folder location. <br/>
 
@@ -502,7 +502,7 @@ Deployment package mainly contains:<br/>
 
 If you have already downloaded the deployment package zip, directly go to step (2.d).
 
-2.a. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+2.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 2.b. Extract zip to local folder location. <br/>
 
