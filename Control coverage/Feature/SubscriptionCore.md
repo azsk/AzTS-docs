@@ -1143,11 +1143,11 @@ SPNs have a single credential and most scenarios that use them cannot support mu
 - **PowerShell** 
 
 	 ```powershell	 
-        # Below commands will be useful to remove Service Principals
+        # Below commands will be useful to remove privileged role assignments for SPNs
         Connect-AzAccount
         Connect-AzureAD
         
-        #Provide the objectId,scope and role definition name to remove.
+        #Provide the objectId, scope and role definition name to remove.
         $spn = Remove-AzRoleAssignment -ObjectId '{objectId}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
         # Run 'Get-Help Remove-AzRoleAssignment -full' for more help. 
 	 ```  
@@ -1185,11 +1185,11 @@ SPNs have a single credential and most scenarios that use them cannot support mu
 - **PowerShell** 
 
 	 ```powershell	 
-        # Below commands will be useful to remove Service Principals
+        # Below commands will be useful to remove privileged role assignments for SPNs
         Connect-AzAccount
         Connect-AzureAD
         
-        #Provide the objectId,scope and role definition name to remove.
+        #Provide the objectId, scope and role definition name to remove.
         $spn = Remove-AzRoleAssignment -ObjectId '{objectId}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
         # Run 'Get-Help Remove-AzRoleAssignment -full' for more help. 
 	 ```  
