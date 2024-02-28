@@ -1143,7 +1143,7 @@ SPNs have a single credential and most scenarios that use them cannot support mu
 - **PowerShell** 
 
 	 ```powershell	 
-        # Below commands will be useful to Read and Remove Password Credentials from Service Principals
+        # Below commands will be useful to remove Service Principals
         Connect-AzAccount
         Connect-AzureAD
         
@@ -1185,7 +1185,7 @@ SPNs have a single credential and most scenarios that use them cannot support mu
 - **PowerShell** 
 
 	 ```powershell	 
-        # Below commands will be useful to Read and Remove Password Credentials from Service Principals
+        # Below commands will be useful to remove Service Principals
         Connect-AzAccount
         Connect-AzureAD
         
