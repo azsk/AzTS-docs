@@ -22,7 +22,8 @@
 - [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
 - [Azure_Subscription_SI_Dont_Use_B2C_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
 - [Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password](#Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password)
-
+- [Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles](#Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles)
+- [Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles_RG](#Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles_RG)
 <!-- /TOC -->
 <br/>
 
@@ -1112,6 +1113,90 @@ The purpose of the security control is to prevent the creation of Service Princi
 
 - Graph API to fetch secret details: - /v1.0/servicePrincipals?$filter=id in ({ServicePrincipalObjectId})<br />
 **Properties:** [\*].passwordCredentials
+ <br />
+
+<br />
+
+___ 
+
+## Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles 
+
+### Display Name 
+ Service Principals must follow Least privilege principle for role assignments to Subscriptions 
+
+### Rationale 
+SPNs have a single credential and most scenarios that use them cannot support multi-factor authentication. Also, SPNs and Managed Identities can't be granted Just-In-Time access. As a result, adding SPNs to a Subscription with privileged roles is risky.  
+
+### Control Spec 
+
+> **Passed:** 
+> Critical roles (Owner, Contributor or User Access Administrator) are not assigned to SPNs at subscription level.
+> 
+> **Failed:** 
+> Critical roles (Owner, Contributor or User Access Administrator) are assigned to SPNs at subscription level.
+>
+
+### Recommendation 
+
+- If these SPNs need access to your subscription, make sure you add them at the specific permission scope and role required for your scenario. For example, sometimes 'Contributor' access at 'Resource Group' scope might be sufficient. In other scenarios you may need 'Reader' access at 'Subscription' scope. Exact permission will vary based on your use case.
+
+- **PowerShell** 
+
+	 ```powershell	 
+        # Below commands will be useful to remove privileged role assignments for SPNs
+        Connect-AzAccount
+        Connect-AzureAD
+        
+        #Provide the objectId, scope and role definition name to remove.
+        $spn = Remove-AzRoleAssignment -ObjectId '{objectId}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
+        # Run 'Get-Help Remove-AzRoleAssignment -full' for more help. 
+	 ```  
+### Azure Policies or REST APIs used for evaluation 
+
+-  ARM API to list role assignment at subscription level: - /subscriptions/{subscriptionId}}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-07-01<br />
+**Properties:** [\*].properties.scope , [\*].name
+ <br />
+
+<br />
+
+___ 
+
+## Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles_RG 
+
+### Display Name 
+ Service Principals must follow Least privilege principle for role assignments to Resource Groups
+
+### Rationale 
+SPNs have a single credential and most scenarios that use them cannot support multi-factor authentication. Also, SPNs and Managed Identities can't be granted Just-In-Time access. As a result, adding SPNs to a Resource group with privileged roles is risky. 
+
+### Control Spec 
+
+> **Passed:** 
+> Critical roles (Owner or User Access Administrator) are not assigned to SPNs at resource group level.
+> 
+> **Failed:** 
+> Critical roles (Owner or User Access Administrator) are assigned to SPNs at resource group level.
+>
+
+### Recommendation 
+
+- If these SPNs need access to your subscription, make sure you add them at the specific permission scope and role required for your scenario. For example, sometimes 'Contributor' access at 'Resource Group' scope might be sufficient. In other scenarios you may need 'Reader' access at 'Subscription' scope. Exact permission will vary based on your use case.
+
+- **PowerShell** 
+
+	 ```powershell	 
+        # Below commands will be useful to remove privileged role assignments for SPNs
+        Connect-AzAccount
+        Connect-AzureAD
+        
+        #Provide the objectId, scope and role definition name to remove.
+        $spn = Remove-AzRoleAssignment -ObjectId '{objectId}' -Scope '{scope}' -RoleDefinitionName '{role definition name}'
+        # Run 'Get-Help Remove-AzRoleAssignment -full' for more help. 
+	 ```  
+### Azure Policies or REST APIs used for evaluation 
+
+-  ARM API to list role assignment at subscription level: - /subscriptions/{subscriptionId}}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-07-01<br />
+**Properties:** [\*].properties.scope , [\*].name
  <br />
 
 <br />
