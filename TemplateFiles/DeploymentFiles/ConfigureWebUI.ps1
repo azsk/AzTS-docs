@@ -18,7 +18,8 @@ function GetAuthHeader {
         [psobject] $headers = $null
         try 
         {
-            $resourceAppIdUri = "https://management.azure.com/"
+
+            $resourceAppIdUri = (Get-AzContext).Environment.ResourceManagerUrl
             $rmContext = Get-AzContext
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
