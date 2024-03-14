@@ -227,7 +227,7 @@ Let's start!
   CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
 
   # Load AzTS MMA Removal Utility Setup script in session
-  . ".\MMARemovalUtilitySetupConsolidated.ps1"
+  . ".\MMARemovalUtilityConsolidatedSetup.ps1"
 
   # Note: Make sure you copy '.' present at the start of the line.
   ```
