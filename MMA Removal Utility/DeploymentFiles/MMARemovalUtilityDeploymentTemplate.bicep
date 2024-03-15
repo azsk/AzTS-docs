@@ -481,14 +481,6 @@ resource ScopeResolverTriggerProcessor 'Microsoft.Web/sites@2018-11-01' = {
   }
 }
 
-resource ScopeResolverTriggerProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11-01' = {
-  parent: ScopeResolverTriggerProcessor
-  name: 'MSDeploy'
-  properties: {
-    packageUri: ScopeResolverTriggerProcessorPackageUrl
-  }
-}
-
 resource ScopeResolverTriggerProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ScopeResolverTriggerProcessor
   name: 'ftp'
@@ -657,14 +649,6 @@ resource ScopeResolverProcessor 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource ScopeResolverProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11-01' = {
-  parent: ScopeResolverProcessor
-  name: 'MSDeploy'
-  properties: {
-    packageUri: ScopeResolverProcessorPackageUrl
-  }
-}
-
 resource ScopeResolverProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ScopeResolverProcessor
   name: 'ftp'
@@ -826,14 +810,6 @@ resource ExtensionInventoryProcessor 'Microsoft.Web/sites@2021-03-01' = {
         }
       ]
     }
-  }
-}
-
-resource ExtensionInventoryProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11-01' = {
-  parent: ExtensionInventoryProcessor
-  name: 'MSDeploy'
-  properties: {
-    packageUri: ExtensionInventoryProcessorPackageUrl
   }
 }
 
@@ -1009,14 +985,6 @@ resource WorkItemSchedulerProcessor 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource WorkItemSchedulerProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11-01' = {
-  parent: WorkItemSchedulerProcessor
-  name: 'MSDeploy'
-  properties: {
-    packageUri: WorkItemSchedulerProcessorPackageUrl
-  }
-}
-
 resource WorkItemSchedulerProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: WorkItemSchedulerProcessor
   name: 'ftp'
@@ -1181,14 +1149,6 @@ resource ExtensionRemovalProcessor 'Microsoft.Web/sites@2021-03-01' = {
   }
 }
 
-resource ExtensionRemovalProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11-01' = {
-  parent: ExtensionRemovalProcessor
-  name: 'MSDeploy'
-  properties: {
-    packageUri: ExtensionRemovalProcessorPackageUrl
-  }
-}
-
 resource ExtensionRemovalProcessor_ftp 'Microsoft.Web/sites/basicPublishingCredentialsPolicies@2022-03-01' = {
   parent: ExtensionRemovalProcessor
   name: 'ftp'
@@ -1346,14 +1306,6 @@ resource ExtensionRemovalStatusCheckProcessor 'Microsoft.Web/sites@2021-03-01' =
         }
       ]
     }
-  }
-}
-
-resource ExtensionRemovalStatusCheckProcessor_MSDeploy 'Microsoft.Web/sites/Extensions@2018-11-01' = {
-  parent: ExtensionRemovalStatusCheckProcessor
-  name: 'MSDeploy'
-  properties: {
-    packageUri: ExtensionRemovalStatusCheckProcessorPackageUrl
   }
 }
 
