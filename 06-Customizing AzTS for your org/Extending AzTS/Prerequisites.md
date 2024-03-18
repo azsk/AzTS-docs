@@ -44,7 +44,7 @@ Below mentioned appsettings are required for enabling CMET:
 -----
 ### Option 2: Using Powershell
 If you have already downloaded the deployment package zip, directly go to step (4).<br/>
-- Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+- Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 - Extract zip to local folder location. <br/>
 
@@ -100,7 +100,7 @@ Only privileged users have access to CMET for updating control metadata or addin
 
 ### Option 2: Using Powershell
   If you have already downloaded the deployment package zip, directly go to step (4).<br/>
-- Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+- Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 - Extract zip to local folder location. <br/>
 

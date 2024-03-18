@@ -177,7 +177,7 @@ $HostResourceGroupName = "<HostResourceGroupName>"
 # Note: For better performance, we recommend hosting the Central Scanner MI and resources setup using AzTS Soln installation command in one location.
 $Location = "<ResourceLocation>"  # e.g. EastUS2
 
-# Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+# Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud
 $AzureEnvironmentName = "<EnvironmentName>"
 
 # Specify if scanner MI has Graph permission. This is to exclude controls dependent on Graph API reponse from the scan result, if scanner identity does not have graph permission.
