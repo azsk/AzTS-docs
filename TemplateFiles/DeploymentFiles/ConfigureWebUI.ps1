@@ -10,7 +10,7 @@ $AzureEnvironmentToADAuthUrlMap = @{
 $AzureEnvironmentToKuduConsoleUrlMap = @{
     "AzureCloud" = "https://{0}.scm.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.scm.azurewebsites.us";
-    "AzureChinaCloud" = "https://{0}.scm.azurewebsites.cn/";
+    "AzureChinaCloud" = "https://{0}.scm.chinacloudsites.cn";
 
 }
 
