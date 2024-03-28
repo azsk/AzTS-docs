@@ -1,0 +1,164 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+              "description": "Specifies the location for workspace."
+            }
+          },
+          "resourceGroupName": {
+            "type": "string",
+            "metadata": {
+              "description": "Specifies the resource group name."
+            }
+          },
+          "storageAccountName": {
+            "type": "string",
+            "defaultValue": "[format('sa{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+            "metadata": {
+              "description": "Name of the storage account."
+            }
+          }, 
+          "keyVaultName": {
+            "type": "string",
+            "defaultValue": "[format('kv{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+            "metadata": {
+              "description": "Name of the key vault."
+            }
+          },
+          "applicationInsightsName": {
+            "type": "string",
+            "defaultValue": "[format('ai{0}', uniqueString(resourceGroup().id, parameters('workspaceName')))]",
+            "metadata": {
+              "description": "Name of ApplicationInsights."
+            }
+          }
+    },
+    "variables": {   
+      "tenantId": "[subscription().tenantId]",
+      "storageAccountId": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+      "keyVaultId": "[resourceId(parameters('resourceGroupName'), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+      "applicationInsightId": "[resourceId(parameters('resourceGroupName'), 'Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2022-05-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+              "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+              "encryption": {
+                "services": {
+                  "blob": {
+                    "enabled": true
+                  },
+                  "file": {
+                    "enabled": true
+                  }
+                },
+                "keySource": "Microsoft.Storage"
+              },
+              "supportsHttpsTrafficOnly": true,
+              "minimumTlsVersion": "TLS1_2",
+              "allowBlobPublicAccess": false
+             }
+          },
+          {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('keyVaultName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+              "tenantId": "[variables('tenantId')]",
+              "sku": {
+                "name": "standard",
+                "family": "A"
+              },
+              "accessPolicies": [],
+              "enableSoftDelete" : true,
+              "enablePurgeProtection": true
+             }
+          },
+          {
+            "type": "Microsoft.Insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('applicationInsightsName')]",
+            "location": "[parameters('location')]",
+            "kind": "web",
+            "properties": {
+              "Application_Type": "web"
+            }
+          },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2023-10-01",
+            "name": "[parameters('workspaceName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+            },
+            "kind": "Default",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "friendlyName": "[parameters('workspaceName')]",
+                "storageAccount": "[variables('storageAccountId')]",
+                "keyVault": "[variables('keyVaultId')]",
+                "applicationInsights": "[variables('applicationInsightId')]",
+                "hbiWorkspace": false,
+                "managedNetwork": {
+                    "isolationMode": "Disabled"
+                },
+                "v1LegacyMode": false,
+                "publicNetworkAccess": "Disabled" // Azure_MachineLearningWorkspace_NetSec_Dont_Allow_Public_Network_Access
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Insights/components', parameters('applicationInsightsName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('keyVaultName'))]"
+              ]
+        },
+        {
+            // Azure_MachineLearningWorkspace_Audit_Enable_Diagnostics_Log
+            "scope":"[concat('Microsoft.MachineLearningServices/workspaces/', parameters('workspaceName'))]",  
+            "type":"Microsoft.Insights/diagnosticsettings",  
+            "apiVersion":"2021-05-01-preview",  
+            "name":"[concat('diag-', parameters('workspaceName'))]",
+            "dependsOn":[  
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('workspaceName'))]"  
+            ],  
+            "properties":{  
+                "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+                "logs": [
+                    {
+                        "category": null,
+                        "categoryGroup": "allLogs",
+                        "enabled": true
+                    },
+                    {
+                        "category": null,
+                        "categoryGroup": "audit",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+    ]
+}
