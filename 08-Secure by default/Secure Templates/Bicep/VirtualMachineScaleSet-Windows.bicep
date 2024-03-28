@@ -6,33 +6,32 @@ param VMSSName string
 @maxValue(100)
 param instanceCount int
 
-@description('Admin username on all VMSS Instances.')
-param adminUsername string
+@description('Admin username on all VMs.')
+param adminUsername string = 'vmssadmin'
 
-@description('SSH rsa public key file as a string.')
-param publicKey string
+@description('Admin password on all VMs.')
+@secure()
+param adminPassword string
 
-var vmSize = 'Standard_D1_v2'
+@description('Location')
+param location string 
+
+var vmSize = 'Standard_D2s_v5'
 var virtualNetworkName = '${VMSSName}vnet'
 var subnetName = '${VMSSName}subnet'
 var nicName = '${VMSSName}nic'
 var ipConfigName = '${VMSSName}ipconfig'
 var addressPrefix = '10.0.0.0/16'
 var subnetPrefix = '10.0.0.0/24'
-var storageAccountType = 'Standard_LRS'
-var location = resourceGroup().location
-var sshKeyPath = '/home/${adminUsername}/.ssh/authorized_keys'
 var osType = {
-  publisher: 'Canonical'
-  offer: 'UbuntuServer'
-  sku: '16.04-LTS'
+  publisher: 'MicrosoftWindowsServer'
+  offer: 'WindowsServer'
+  sku: '2022-datacenter-azure-edition'
   version: 'latest'
 }
 var imageReference = osType
-var computeApiVersion = '2021-03-01'
-var networkApiVersion = '2020-11-01'
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@[variables(\'networkApiVersion\')]' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2020-11-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -52,7 +51,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@[variables(\'networkA
   }
 }
 
-resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApiVersion\')]' = {
+resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@2021-03-01' = {
   name: VMSSName
   location: location
   identity: {
@@ -79,37 +78,14 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
       osProfile: {
         computerNamePrefix: VMSSName
         adminUsername: adminUsername
-        linuxConfiguration: {
-          disablePasswordAuthentication: 'true'
-          ssh: {
-            publicKeys: [
-              {
-                path: sshKeyPath
-                keyData: publicKey
-              }
-            ]
-          }
-        }
-      }
-      extensionProfile: {
-        extensions: [
-          {
-            name: 'AADSSHLoginForLinux'
-            properties: {
-              publisher: 'Microsoft.Azure.ActiveDirectory'
-              type: 'AADSSHLoginForLinux'
-              typeHandlerVersion: '1.0'
-              settings: {}
-            }
-          }
-        ]
+        adminPassword: adminPassword
       }
       networkProfile: {
         networkInterfaceConfigurations: [
           {
             name: nicName
             properties: {
-              primary: 'true'
+              primary: true
               ipConfigurations: [
                 {
                   name: ipConfigName
@@ -125,7 +101,7 @@ resource VMSS 'Microsoft.Compute/virtualMachineScaleSets@[variables(\'computeApi
         ]
       }
     }
-    overprovision: 'true'
+    overprovision: true
   }
   dependsOn: [
     virtualNetwork
