@@ -67,7 +67,7 @@
 
 ########################################
 #>
-function Pre_requisites
+function Setup-Prerequisites
 {
     <#
     .SYNOPSIS
@@ -212,7 +212,7 @@ function Enable-AzureDefender
         $EnableKeyVault,
 
         [Switch]
-        [Parameter(ParameterSetName = "EnableAll", Mandatory = $true, Default = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
+        [Parameter(ParameterSetName = "EnableAll", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
         $EnableAllResourceType
     )
    
@@ -275,10 +275,6 @@ function Enable-AzureDefender
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
     }
-
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 4]: Checking [$($reqMDCTier)] pricing tier for required resource types..."
-    Write-Host $([Constants]::SingleDashLine)
     
     # Declaring required resource types and pricing tier
     $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs";
@@ -286,6 +282,11 @@ function Enable-AzureDefender
     $reqProviderName = "Microsoft.Security"
     $isProviderRegister = $true
     $previousProviderRegistrationState = $false
+
+    
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "[Step 2 of 4]: Checking [$($reqMDCTier)] pricing tier for required resource types..."
+    Write-Host $([Constants]::SingleDashLine)
 
     # Checking IsProviderRegister with 'Microsoft.Security' provider
     $registeredProvider =  Get-AzResourceProvider -ProviderNamespace $reqProviderName | Where-Object { $_.RegistrationState -eq "Registered" }
@@ -340,13 +341,15 @@ function Enable-AzureDefender
         return
     }
 
-    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)]"
+    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)] pricing tier."
 
-    $colsPropertyRemediated = @{Expression = { $_.Id }; Label = "Id"; Width = 60; Alignment = "left" },
-        @{Expression = { $_.Name }; Label = "Name"; Width = 30; Alignment = "left" },
-        @{Expression = { $_.PricingTier }; Label = "PricingTier"; Width = 30; Alignment = "left" }
+    $colsProperty =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
+            @{Expression =  @{Expression = { $_.PricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+            { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
+       
+       
 
-    $nonCompliantMDCTierResourcetype | Format-Table -Property $colsPropertyRemediated -Wrap
+    $nonCompliantMDCTierResourcetype | Format-Table -Property $colsProperty -Wrap
     
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 3 of 4] Backing up resource type details..."
@@ -355,9 +358,14 @@ function Enable-AzureDefender
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\AzureDefender"
 
+    if (-not (Test-Path -Path $backupFolderPath))
+    {
+        New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
+    }
+
     # Backing up resource type details.
     $backupFile = "$($backupFolderPath)\NonCompliantResourceTypes.csv"
-    $nonCompliantMDCResource | Export-CSV -Path $backupFile -NoTypeInformation
+    $nonCompliantMDCTierResourcetype | Export-CSV -Path $backupFile -NoTypeInformation
 
     Write-Host "Resource type details have been backed up to" -NoNewline
     Write-Host " [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -473,6 +481,17 @@ function Enable-AzureDefender
             }
         }
 
+        
+        $colsPropertyRemediated =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.CurrentPricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
+
+        $colsPropertySkipped =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.PreviousPricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
+       
+       
+
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -494,7 +513,7 @@ function Enable-AzureDefender
         if ($($skippedResources | Measure-Object).Count -gt 0) {
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Error occured while setting Pricing tier to $reqMDCTier for following resource types in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-            $skippedResources | Format-Table -Property $colsProperty -Wrap
+            $skippedResources | Format-Table -Property $colsPropertySkipped -Wrap
 
             # Write this to a file.
             $SkippedFile = "$($backupFolderPath)\SkippedResourceType.csv"
@@ -551,7 +570,7 @@ function Remove-ConfigAzureDefender
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage="File path which contain logs generated by remediation script to rollback remediation changes")]
-        $Path,
+        $FilePath,
 
         [Switch]
         [Parameter(HelpMessage = "Specifies a forceful roll back without any prompts")]
@@ -625,7 +644,7 @@ function Remove-ConfigAzureDefender
     Write-Host $([Constants]::SingleDashLine)
 
     # Array to store resource context
-    if (-not (Test-Path -Path $Path))
+    if (-not (Test-Path -Path $FilePath))
     {
         Write-Host "Warning: Rollback file is not found. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor $([Constants]::MessageType.Warning)
         break;        
@@ -637,7 +656,7 @@ function Remove-ConfigAzureDefender
     $providerErrorState = $false
     $initialRemediatedResources = Import-Csv -LiteralPath $FilePath
 
-    $remediatedResourceTypes = $initialRemediatedResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.Id) -and ![String]::IsNullOrWhiteSpace($_.Name) -and ![String]::IsNullOrWhiteSpace($_.PricingTier) }
+    $remediatedResourceTypes = $initialRemediatedResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.Id) -and ![String]::IsNullOrWhiteSpace($_.Name) -and ![String]::IsNullOrWhiteSpace($_.PreviousPricingTier) }
 
     $remediatedResourceTypeCount = ($remediatedResourceTypes | Measure-Object).Count
 
@@ -648,13 +667,20 @@ function Remove-ConfigAzureDefender
         return
     }
 
-    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types to be rolled back"
-    
-    $colsPropertyRemediated = @{Expression = { $_.Id }; Label = "Id"; Width = 60; Alignment = "left" },
-    @{Expression = { $_.Name }; Label = "Name"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.PricingTier }; Label = "PricingTier"; Width = 30; Alignment = "left" }
+    Write-Host "Found [$($remediatedResourceTypeCount)] resource types to be rolled back"
+   
+    $colsProperty =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.CurrentPricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
 
-    $remediatedResourceTypes | Format-Table -Property $colsPropertyRemediated -Wrap
+    $remediatedResourceTypes | Format-Table -Property $colsProperty -Wrap
+
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableBootDiagnosticWithManagedStorageAccountOnAVDHostPool"
+
+    if (-not (Test-Path -Path $backupFolderPath))
+    {
+        New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
+    }
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 3 of 3]: Performing rollback operation for mentioned resource type of the subscription [$($SubscriptionId)]..."
@@ -706,7 +732,7 @@ function Remove-ConfigAzureDefender
                     Write-Host "Error occurred while setting $reqMDCTier pricing tier on resource [$($_.Name)]. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error) 
                     $skippedResources += $resource | Select-Object  @{N = 'Id'; E = { $resource.Id } },
                     @{N = 'Name'; E = { $resource.Name } },
-                    @{N = 'CurrentPricingTier'; E = { $resource.PricingTier } },
+                    @{N = 'CurrentPricingTier'; E = { $resource.CurrentPricingTier } },
                     @{N = 'PreviousPricingTier'; E = { $resource.PreviousPricingTier } }
                     return
                 }
@@ -715,11 +741,18 @@ function Remove-ConfigAzureDefender
             Write-Host $([Constants]::DoubleDashLine)
             Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
+            $colsPropertyRolledback =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
+             @{Expression = { $_.PreviousPricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
+
+            $colsPropertySkipped =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
+            @{Expression = { $_.CurrentPricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+            @{Expression =  { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
 
             if ($($rolledBackResources | Measure-Object).Count -gt 0) {
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Successfully rolled back for following resource types in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                $rolledBackResources | Format-Table -Property $colsPropertyRemediated -Wrap
+                $rolledBackResources | Format-Table -Property $colsPropertyRolledback -Wrap
 
                 # Write this to a file.
                 $RolledBackFile = "$($backupFolderPath)\RolledBackResourceType.csv"
@@ -732,7 +765,7 @@ function Remove-ConfigAzureDefender
             if ($($skippedResources | Measure-Object).Count -gt 0) {
                 Write-Host $([Constants]::SingleDashLine)
                 Write-Host "Error occured while rolling back for following resource types in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
-                $skippedResources | Format-Table -Property $colsProperty -Wrap
+                $skippedResources | Format-Table -Property $colsPropertySkipped -Wrap
 
                 # Write this to a file.
                 $SkippedFile = "$($backupFolderPath)\SkippedResourceType.csv"
