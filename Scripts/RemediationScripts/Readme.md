@@ -70,7 +70,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 58. [Azure_Subscription_Config_Enable_MicrosoftDefender_Storage](Readme.md#58-Azure_Subscription_Config_Enable_MicrosoftDefender_Storage)
 59. [Azure_Subscription_Config_Enable_MicrosoftDefender_Container](Readme.md#59-Azure_Subscription_Config_Enable_MicrosoftDefender_Container)
 60. [Azure_Subscription_Config_Enable_MicrosoftDefender_Servers](Readme.md#60-Azure_Subscription_Config_Enable_MicrosoftDefender_Servers)
-61. [Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault](Readme.md#561-Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault)
+61. [Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault](Readme.md#61-Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault)
 <br />
 
 ___ 
