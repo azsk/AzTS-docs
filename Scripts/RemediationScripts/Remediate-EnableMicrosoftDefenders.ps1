@@ -204,11 +204,11 @@ function Enable-AzureDefender
         $EnableContainer,
 
         [Switch]
-        [Parameter(ParameterSetName = "EnableSelected", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
+        [Parameter(ParameterSetName = "EnableSelected", HelpMessage = "Specifies for all the resource provider to be enabled")]
         $EnableServers,
 
         [Switch]
-        [Parameter(ParameterSetName = "EnableSelected", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
+        [Parameter(ParameterSetName = "EnableSelected", HelpMessage = "Specifies for all the resource provider to be enabled")]
         $EnableKeyVault,
 
         [Switch]
@@ -329,8 +329,47 @@ function Enable-AzureDefender
     }
 
     $nonCompliantMDCTierResourcetype = @()
-    $nonCompliantMDCTierResourcetype = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
+    $nonComplaintResourceType = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
+    
+    if($EnableAllResourceType -eq $true)
+    {
+         $nonCompliantMDCTierResourcetype = $nonComplaintResourceType
 
+    }
+    else
+    {
+        $nonComplaintResourceType | ForEach-Object {
+                $resource = $_
+                    if ( $EnableDatabases -eq $true -and ($_.Name -eq "CosmosDbs" -or $_.Name -eq "OpenSourceRelationalDatabases" -or $_.Name -eq "SqlServers" -or $_.Name -eq "SqlServerVirtualMachines")) {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }
+
+                    if ($EnableResourceManager -eq $true -and $_.Name -eq "Arm") {
+                        $nonCompliantMDCTierResourcetype += $resource  
+                    }
+
+                    if ($EnableAppService -eq $true -and $_.Name -eq "AppServices") {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }
+
+                    if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts") {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }
+
+                    if ($EnableContainer -eq $true -and $_.Name -eq "Containers") {
+                        $nonCompliantMDCTierResourcetype += $resource  
+                    }
+
+                    if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }
+
+                    if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults") {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }
+        }
+    }
+   
     $nonCompliantMDCTypeCount = ($nonCompliantMDCTierResourcetype | Measure-Object).Count
 
     # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant resource types are found) then no need to execute below steps.
@@ -344,8 +383,8 @@ function Enable-AzureDefender
     Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)] pricing tier."
 
     $colsProperty =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
-            @{Expression =  @{Expression = { $_.PricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
-            { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
+            @{Expression = { $_.PricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
+             @{Expression = { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
        
        
 
@@ -394,6 +433,8 @@ function Enable-AzureDefender
         {
             Write-Host "'Force' flag is provided. Non compliant resource type in the Subscription will be remediated in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
+
+        Write-Host "Starting remediation of non compliant resource types."  -ForegroundColor $([Constants]::MessageType.Update)
         
         $remediatedResources = @()
         $skippedResources = @()
@@ -759,7 +800,7 @@ function Remove-ConfigAzureDefender
                 $rolledBackResources | Export-CSV -Path $RolledBackFile -NoTypeInformation
 
                 Write-Host "This information has been saved to" -NoNewline
-                Write-Host " [$($RemediatRolledBackFileedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
+                Write-Host " [$($RolledBackFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
             }
 
             if ($($skippedResources | Measure-Object).Count -gt 0) {
