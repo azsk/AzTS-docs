@@ -313,9 +313,9 @@ function Configure-ConditionalAccessPolicyForPIM
         else
         {
             # Validate if RoleName is a valid for the particular subscription (role name can be subscription specific for custom roles).
-            if (-not $criticalRoles.Contains($RoleName))
+            if (-not $roleDefinitions.Contains($RoleName))
             {
-                Write-Host "The role name ($($RoleName)) provided is invalid for the subsciption ($($SubscriptionId))"
+                Write-Host "The role ($($RoleName)) provided is invalid for the subsciption ($($SubscriptionId))"
                 return
             }
 
@@ -400,7 +400,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $skippedRoles = @()
             $remediationSummary = New-Object -TypeName PSObject
 
-            Write-Host "`nThis script will configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation (SAW) account and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "`nThis script will configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
             if($userInput -ne "Y")
@@ -629,7 +629,7 @@ function Disable-ConditionalAccessPolicyForPIM
         $skippedRoles = @()
         $rolledBackSummary = New-Object -TypeName PSObject
 
-        Write-Host "`nDo you want to disable Conditional Access (CA) policy for all the remediated role(s)? It would disable all the configured roles. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "`nDo you want to disable Conditional Access (CA) policy for all the previously remediated role(s)? It would disable all the configured roles. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
         if($userInput -ne "Y")
         {
