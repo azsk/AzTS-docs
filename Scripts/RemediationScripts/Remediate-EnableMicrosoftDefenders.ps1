@@ -4,13 +4,13 @@
     This script is used to configure Azure Defender on subscription.
 
 # ControlId: 
-    Azure_Subscription_Config_Enable_MicrosoftDefender_Databases_Trial
-    Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager_Trial
-    Azure_Subscription_Config_Enable_MicrosoftDefender_AppService_Trial
-    Azure_Subscription_Config_Enable_MicrosoftDefender_Storage_Trial
-    Azure_Subscription_Config_Enable_MicrosoftDefender_Container_Trial
-    Azure_Subscription_Config_Enable_MicrosoftDefender_Servers_Trial
-    Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault_Trial
+    Azure_Subscription_Config_Enable_MicrosoftDefender_Databases
+    Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager
+    Azure_Subscription_Config_Enable_MicrosoftDefender_AppService
+    Azure_Subscription_Config_Enable_MicrosoftDefender_Storage
+    Azure_Subscription_Config_Enable_MicrosoftDefender_Container
+    Azure_Subscription_Config_Enable_MicrosoftDefender_Servers
+    Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault
 
 # Pre-requisites:
     1. You will need Owner or Contributor role on subscription.
@@ -101,22 +101,22 @@ function Enable-AzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault_Trial' control.
+    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault' control.
     
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault_Trial'  control.
+    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault'  control.
     
     .PARAMETER SubscriptionId
     Enter subscription id on which remediation needs to be performed.
@@ -295,12 +295,13 @@ function Enable-AzureDefender
     {
         # capture provider registration state
         $isProviderRegister = $false
-        Write-Host "Found [$($reqProviderName)] provider is not registered."
-        Write-Host "$reqProviderName registering [It takes 2-3 min to get registered]..."
+        Write-Host "Found [$($reqProviderName)] provider is not registered."  -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "$reqProviderName registering [It takes 2-3 min to get registered]..." -ForegroundColor $([Constants]::MessageType.Info)
         # Registering provider with required provider name, it will take 1-2 min for registration
         try 
         {
-            Register-AzResourceProvider -ProviderNamespace $reqProviderName
+            $provider = Register-AzResourceProvider -ProviderNamespace $reqProviderName
+            Write-Host "[$reqProviderName] registering..." -ForegroundColor $([Constants]::MessageType.Info)
             while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Registered") | Measure-Object).Count -gt 0)
             {
                 # Checking threshold time limit to avoid getting into infinite loop
@@ -309,9 +310,9 @@ function Enable-AzureDefender
                     Write-Host "Error occurred while registering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor $([Constants]::MessageType.Error)
                     throw [System.ArgumentException] ($_)
                 }
+                
                 Start-Sleep -Seconds 30
-                Write-Host "$reqProviderName registering..." -ForegroundColor $([Constants]::MessageType.Warning)
-
+               
                 # Incrementing threshold time limit by 30 sec in every iteration
                 $thresholdTimeLimit = $thresholdTimeLimit + 30
             }
@@ -413,7 +414,7 @@ function Enable-AzureDefender
     if($nonCompliantMDCTypeCount -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4]  Remediating non compliant resource type..."
+        Write-Host "[Step 4 of 4]  Remediating non compliant resource type..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
         if (-not $Force)
@@ -434,7 +435,7 @@ function Enable-AzureDefender
             Write-Host "'Force' flag is provided. Non compliant resource type in the Subscription will be remediated in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
-        Write-Host "Starting remediation of non compliant resource types."  -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Starting remediation of non compliant resource types."
         
         $remediatedResources = @()
         $skippedResources = @()
@@ -571,22 +572,22 @@ function Remove-ConfigAzureDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault_Trial' control.
+    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault' control.
     
     .DESCRIPTION
-    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers_Trial',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault_Trial' control.
+    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault' control.
     
     .PARAMETER SubscriptionId
     Specifies the ID of the Subscription that was previously remediated.
@@ -626,7 +627,7 @@ function Remove-ConfigAzureDefender
 
     if ($PerformPreReqCheck) {
         try {
-            Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script..."
+            Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
@@ -637,7 +638,7 @@ function Remove-ConfigAzureDefender
         }
     }
     else {
-        Write-Host "[Step 1 of 4] Validating and installing the modules required to run the script..."
+        Write-Host "[Step 1 of 3] Validating and installing the modules required to run the script..."
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -PerformPreReqCheck switch is not provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
@@ -751,6 +752,14 @@ function Remove-ConfigAzureDefender
         $rolledBackResources = @()
         $skippedResources = @()
 
+        $remediatedResourceTypes | ForEach-Object {
+                if($_.IsPreviousProvisioningStateRegistered -eq "false")
+                {
+                    $providerPreviousProvisioningState = $false
+                }
+                return
+                }
+
         $isProviderRegister = (((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -eq "Registered") | Measure-Object).Count -gt 0
         if ($providerPreviousProvisioningState -eq $isProviderRegister)
         {
@@ -758,7 +767,6 @@ function Remove-ConfigAzureDefender
 
             $remediatedResourceTypes | ForEach-Object {
                 $resource = $_
-                $providerPreviousProvisioningState = [System.Convert]::ToBoolean($_.IsPreviousProvisioningStateRegistered)
                 try {
                     $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier
                 
@@ -820,11 +828,12 @@ function Remove-ConfigAzureDefender
         {
             # when current provider registration state and before executing remediation script is not same.
             # That means while doing remediation it got registered, to perform rollback we need to unregister it
-            Write-Host "$reqProviderName provider name was registered before executing remediation script, performing rollback."
-            Write-Host "$reqProviderName unregistering...[It takes 2-3 min to get unregistered]..."
+            Write-Host "$[reqProviderName] provider name was registered before executing remediation script, performing rollback." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "$[reqProviderName] unregistering.It takes 2-3 min to get unregistered" -ForegroundColor $([Constants]::MessageType.Info)
             try 
             {
-                Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
+                $provider = Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
+                Write-Host "$reqProviderName unregistering..." -ForegroundColor $([Constants]::MessageType.Warning)
                 while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Unregistered") | Measure-Object).Count -gt 0)
                 {
                     # Checking threshold time limit to avoid getting into infinite loop
@@ -834,18 +843,18 @@ function Remove-ConfigAzureDefender
                         throw [System.ArgumentException] ($_)
                     }
                     Start-Sleep -Seconds 30
-                    Write-Host "$reqProviderName unregistering..." -ForegroundColor $([Constants]::MessageType.Warning)
 
                     # Incrementing threshold time limit by 30 sec in every iteration
                     $thresholdTimeLimit = $thresholdTimeLimit + 30
                 }
 
                 if (-not $providerErrorState) {
-                    Write-Host "Successfully rolled back provisiong state of the provider [$($reqProviderName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Successfully rolled back provisiong state of the provider [$($reqProviderName)]" -ForegroundColor $([Constants]::MessageType.Update)
                 }
             }
             catch 
             {
+                Write-Host "Error occured while  rolling back provisiong state of the provider [$($reqProviderName)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 $providerErrorState = true
             }
