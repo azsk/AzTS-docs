@@ -10,7 +10,7 @@
     Azure_Subscription_Configure_Conditional_Access_for_PIM
 
 # Display Name:
-    Enable policy to require PIM elevation from SAW for critical roles (all built-in except a few and all custom roles) in Azure subscriptions.
+    Enable policy to require PIM elevation from SAW Device and SC-ALT account for critical roles (all built-in except a few mentioned above and all custom roles) in Azure subscriptions.
 
 # Prerequisites:
     'Owner' or 'User Access Administrator' role is required at Subscription level.
@@ -162,7 +162,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
         .DESCRIPTION
         Remediates 'Azure_Subscription_Configure_Conditional_Access_for_PIM' Control.
-        Configure Conditional Access (CA) policy for 'Owner', 'Contributor' and 'User Access Administrator' in the Subscription.
+        Configure Conditional Access (CA) policy for critical roles in the Subscription.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -177,19 +177,19 @@ function Configure-ConditionalAccessPolicyForPIM
         None. Configure-ConditionalAccessPolicyForPIM does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -DryRun.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Owner'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'Owner'.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Contributor'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'Contributor'.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'User Access Administrator'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'User Access Administrator'.
 
         .LINK
         None
@@ -315,14 +315,14 @@ function Configure-ConditionalAccessPolicyForPIM
             # Validate if RoleName is a valid for the particular subscription (role name can be subscription specific for custom roles).
             if (-not $roleDefinitions.Contains($RoleName))
             {
-                Write-Host "The role ($($RoleName)) provided is invalid for the subsciption ($($SubscriptionId))"
+                Write-Host "The role ($($RoleName)) provided does not exist for the subsciption ($($SubscriptionId)). Exiting..."
                 return
             }
 
             $criticalRoles = @($RoleName)
         }
 
-        # Fetch all the CA policies and check if for all the critical roles policy has been assigned.
+        # Fetch all the CA policies and check if for all the critical roles, policy has been assigned.
         $nonCompliantRoles = @()
         $configuredPolicyDetails = New-Object -TypeName PSObject
         $criticalRoles | ForEach-Object {
@@ -502,7 +502,7 @@ function Disable-ConditionalAccessPolicyForPIM
 
         .DESCRIPTION
         Remediates 'Azure_Subscription_Configure_Conditional_Access_for_PIM' Control.
-        Disable Conditional Access (CA) policy for 'Owner', 'Contributor' and 'User Access Administrator' in the Subscription.
+        Disable Conditional Access (CA) policy for previously remediated role(s) in the Subscription.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -517,7 +517,7 @@ function Disable-ConditionalAccessPolicyForPIM
         None. Disable-ConditionalAccessPolicyForPIM does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'.
+        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'.
 
         .LINK
         None
@@ -629,7 +629,7 @@ function Disable-ConditionalAccessPolicyForPIM
         $skippedRoles = @()
         $rolledBackSummary = New-Object -TypeName PSObject
 
-        Write-Host "`nDo you want to disable Conditional Access (CA) policy for all the previously remediated role(s)? It would disable all the configured roles. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        Write-Host "`nRunning this script will disable all the Conditional Access (CA) policies for the previously remediated role(s). Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
         if($userInput -ne "Y")
         {
