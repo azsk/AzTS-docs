@@ -1,6 +1,6 @@
 ﻿<###
 # Overview:
-    This script is used to configure Conditional Access (CA) policy to require PIM elevation from SAW for all built-in roles except a few and all custom roles in a Subscription.
+    This script is used to configure Conditional Access (CA) policy to require PIM elevation from SAW for all built-in roles and all custom roles except for a few built-in roles in a Subscription.
     Following is the list of excluded built-in role definitions:
     [ Azure Front Door Domain Contributor, Azure Front Door Domain Reader, Azure Front Door Profile Reader,
       Azure Front Door Secret Contributor, Azure Front Door Secret Reader, Defender for Storage Data Scanner,
@@ -10,7 +10,7 @@
     Azure_Subscription_Configure_Conditional_Access_for_PIM
 
 # Display Name:
-    Enable policy to require PIM elevation from SAW Device and SC-ALT account for critical roles (all built-in except a few mentioned above and all custom roles) in Azure subscriptions.
+    Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions
 
 # Prerequisites:
     'Owner' or 'User Access Administrator' role is required at Subscription level.
@@ -219,6 +219,20 @@ function Configure-ConditionalAccessPolicyForPIM
         $FilePath
     )
 
+    # These are the roles which are excluded by the control. If no parameter for role name is provided then all roles (built-in and custom)
+    # will be fetched and these roles will be excluded from the list.
+    $excludedRoles = @(
+        "Azure Front Door Domain Contributor",
+        "Azure Front Door Domain Reader",
+        "Azure Front Door Profile Reader",
+        "Azure Front Door Secret Contributor",
+        "Azure Front Door Secret Reader",
+        "Defender for Storage Data Scanner",
+        "AzureML Compute Operator",
+        "Cognitive Services Usages Reader",
+        "Key Vault Crypto Service Release User"
+    )
+
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n[Step 1 of 5] Preparing to configure Conditional Access (CA) policy in Subscription [$($SubscriptionId)]"
 
@@ -282,7 +296,7 @@ function Configure-ConditionalAccessPolicyForPIM
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 3 of 5] Fetching Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
+    Write-Host "`n[Step 3 of 5] Checking if for all critical roles Conditional Access (CA) policy has been configured for the subscription [$($SubscriptionId)]..."
 
     # No file path provided as input to the script. Fetch currently configured Conditional Access (CA) policy in the subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
@@ -294,19 +308,6 @@ function Configure-ConditionalAccessPolicyForPIM
         
         if (-not $RoleName)
         {   
-            # These are the roles which are excluded by the control.
-            $excludedRoles = @(
-                "Azure Front Door Domain Contributor",
-                "Azure Front Door Domain Reader",
-                "Azure Front Door Profile Reader",
-                "Azure Front Door Secret Contributor",
-                "Azure Front Door Secret Reader",
-                "Defender for Storage Data Scanner",
-                "AzureML Compute Operator",
-                "Cognitive Services Usages Reader",
-                "Key Vault Crypto Service Release User"
-            )
-
             # Remove excluded controls from all role definition.
             $criticalRoles = $roleDefinitions | Where-Object { $_ -notin $excludedRoles }
         }
@@ -324,6 +325,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
         # Fetch all the CA policies and check if for all the critical roles, policy has been assigned.
         $nonCompliantRoles = @()
+        $nonCompliantRolesCount = 0
         $configuredPolicyDetails = New-Object -TypeName PSObject
         $criticalRoles | ForEach-Object {
             $role = $_
@@ -336,6 +338,7 @@ function Configure-ConditionalAccessPolicyForPIM
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
                 $nonCompliantRoles += $role
+                $nonCompliantRolesCount += 1
                 $nonCompliantRolesStr = $nonCompliantRoles -join ','
             }
         }
@@ -344,11 +347,11 @@ function Configure-ConditionalAccessPolicyForPIM
         {
             $configuredPolicyDetails | Add-Member -NotePropertyName SubscriptionId -NotePropertyValue $SubscriptionId
             $configuredPolicyDetails | Add-Member -NotePropertyName NonCompliantRoles -NotePropertyValue $nonCompliantRolesStr
-            Write-Host "Conditional Access policy has not been correctly configured for [$($nonCompliantRolesStr)] role(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Conditional Access policy has not been correctly configured for [$($nonCompliantRolesCount)] role(s)." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "Conditional Access policy has been correctly configured for all [$($criticalRoles)] roles. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Conditional Access policy has been correctly configured for all critical roles. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             return
         }
     }
