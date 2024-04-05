@@ -1,7 +1,7 @@
 <##########################################
 
 # Overview:
-    This script is used to configure Azure Defender on subscription.
+    This script is used to configure Microsoft Defender on subscription.
 
 # ControlId: 
     Azure_Subscription_Config_Enable_MicrosoftDefender_Databases
@@ -13,15 +13,15 @@
     Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault
 
 # Pre-requisites:
-    1. You will need Owner or Contributor role on subscription.
+    1. You will need Owner role on subscription.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
     To remediate:
         1. Install and validate pre-requisites to run the script for subscription.
-        2. Get the list of resource types that do not have Azure Defender plan enabled, from subscription.
+        2. Get the list of resource types that do not have Microsoft Defender plan enabled, from subscription.
         3. Take a backup of these non-compliant resource types.
-        4. Register 'Microsoft.Security' provider and enable Azure Defender plan for all non-compliant resource types for subscription.
+        4. Register 'Microsoft.Security' provider and enable Microsoft Defender plan for all non-compliant resource types for subscription.
     
     To roll back:
         1. Validate and install the modules required to run the script.
@@ -32,38 +32,38 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remediate on AVD Host pool(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to remediate resource type in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to rollback on all AVD Host pool(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to rollback on all resource type in the Subscription. Refer `Examples`, below.
 
 # Command to execute:
     To remediate:
-        1. Run below command to configure Azure Defender for subscription with all the resource type. 
+        1. Run below command to configure Microsoft Defender for subscription with all the resource type. 
            
-            Enable-AzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAllResourceType
+            Enable-MicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAllRequiredResourceTypes
         
-        2. Run below command to configure Azure Defender for subscription with selected resource type (App service). 
+        2. Run below command to configure Microsoft Defender for subscription with selected resource type (App service). 
 
-            Enable-AzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService
+            Enable-MicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService
         
-        3. Run below command to configure Azure Defender for subscription with selected resource type (App service,Storage). 
+        3. Run below command to configure Microsoft Defender for subscription with selected resource type (App service,Storage). 
 
-            Enable-AzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService - EnableStorage
+            Enable-MicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService - EnableStorage
         
         To know more about parameter execute:
-            Get-Help Enable-AzureDefender -Detailed
+            Get-Help Enable-MicrosoftDefender -Detailed
             
         To roll back:
-        1. Run below command to roll back Azure Defender for subscription with all the resource type. 
+        1. Run below command to roll back Microsoft Defender for subscription with all the resource type. 
            
-            Remove-ConfigAzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\AzureDefender\RemediatedResourceType.csv
+            Remove-ConfigMicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\MicrosoftDefender\RemediatedResourceType.csv
         
         To know more about parameter execute:
    
-            Get-Help Remove-ConfigAzureDefender -Detailed
+            Get-Help Remove-ConfigMicrosoftDefender -Detailed
 
 ########################################
 #>
@@ -97,12 +97,11 @@ function Setup-Prerequisites
     Write-Host "All required modules are present." -ForegroundColor $([Constants]::MessageType.Update)
 }
 
-function Enable-AzureDefender
+function Enable-MicrosoftDefender
 {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager',
+    This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases', 'Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_AppService',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
@@ -137,7 +136,7 @@ function Enable-AzureDefender
     Specifies that app service resource type pricing tier is set to standard.
 
     .PARAMETER EnableStorage
-    Specifies that storage resource type pricing tier is set to standard.
+    Specifies that storage resource type pricing tier is set to standard and subplan set to DefenderForStorageV2 .
 
     .PARAMETER EnableContainer
     Specifies that container resource type pricing tier is set to standard.
@@ -148,23 +147,23 @@ function Enable-AzureDefender
     .PARAMETER EnableKeyVault
     Specifies that key vault resource type pricing tier is set to standard.
 
-    .PARAMETER EnableAllResourceType
-    Specifies that all resource type pricing tier is set to standard.
+    .PARAMETER EnableAllRequiredResourceTypes
+    Specifies that all resource type pricing tier is set to standard and for storage subplan is set to DefenderForStorageV2.
     
     .INPUTS
-    None. You cannot pipe objects to  Enable-AzureDefender.
+    None. You cannot pipe objects to  Enable-MicrosoftDefender.
 
     .OUTPUTS
-    None. Enable-AzureDefender does not return anything that can be piped and used as an input to another command.
+    None. Enable-MicrosoftDefender does not return anything that can be piped and used as an input to another command.
 
     .EXAMPLE
-    PS> Enable-AzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAllResourceType
+    PS> Enable-MicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAllRequiredResourceTypes
 
     .EXAMPLE
-    PS> Enable-AzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService
+    PS> Enable-MicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService
 
     .EXAMPLE
-    PS> Enable-AzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService - EnableStorage
+    PS> Enable-MicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -EnableAppService - EnableStorage
     #>
 
     param (
@@ -213,7 +212,7 @@ function Enable-AzureDefender
 
         [Switch]
         [Parameter(ParameterSetName = "EnableAll", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
-        $EnableAllResourceType
+        $EnableAllRequiredResourceTypes
     )
    
     Write-Host $([Constants]::DoubleDashLine)
@@ -267,12 +266,12 @@ function Enable-AzureDefender
         return;
     }
 
-    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
+    # Safe Check: Current user needs to be either or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
     {
-        Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Warning: This script can only be run by an Owner of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
     }
     
@@ -330,16 +329,27 @@ function Enable-AzureDefender
     }
 
     $nonCompliantMDCTierResourcetype = @()
-    $nonComplaintResourceType = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) } | select "Name", "PricingTier", "Id"
+    $nonCompliantResourceType = @()
     
-    if($EnableAllResourceType -eq $true)
+    $resourceType= Get-AzSecurityPricing  
+    
+    if($EnableAllRequiredResourceTypes -eq $true)
     {
-         $nonCompliantMDCTierResourcetype = $nonComplaintResourceType
+         $resourceType | ForEach-Object {
+        if ( $_.Name -eq "StorageAccounts" -and $_.PricingTier -ne $reqMDCTier -and $_.SubPlan -ne "DefenderForStorageV2" )
+        {
+            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id"
+        }
+        elseif( $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name))
+        {
+            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id"
+        }
+        } 
 
     }
     else
     {
-        $nonComplaintResourceType | ForEach-Object {
+        $resourceType | ForEach-Object {
                 $resource = $_
                     if ( $EnableDatabases -eq $true -and ($_.Name -eq "CosmosDbs" -or $_.Name -eq "OpenSourceRelationalDatabases" -or $_.Name -eq "SqlServers" -or $_.Name -eq "SqlServerVirtualMachines")) {
                         $nonCompliantMDCTierResourcetype += $resource 
@@ -396,7 +406,7 @@ function Enable-AzureDefender
     Write-Host $([Constants]::SingleDashLine)
    
     # Back up snapshots to `%LocalApplicationData%'.
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\AzureDefender"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\MicrosoftDefender"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -414,33 +424,33 @@ function Enable-AzureDefender
     if($nonCompliantMDCTypeCount -gt 0)
     {
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4]  Remediating non compliant resource type..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "[Step 4 of 4]  Remediating non-compliant resource type..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
         if (-not $Force)
         {
-            Write-Host "This step will remediate non compliant resource type for subscription [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This step will remediate non-compliant resource type for subscription [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning)
         
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
             {
-                Write-Host "Non compliant resource type in the Subscription will not be remediated. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Non-compliant resource type in the Subscription will not be remediated. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
         else
         {
-            Write-Host "'Force' flag is provided. Non compliant resource type in the Subscription will be remediated in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Non-compliant resource type in the Subscription will be remediated in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
-        Write-Host "Starting remediation of non compliant resource types."
+        Write-Host "Starting remediation of non-compliant resource types."
         
         $remediatedResources = @()
         $skippedResources = @()
 
-        if ($EnableAllResourceType -eq $true)
+        if ($EnableAllRequiredResourceTypes -eq $true)
         {        
             Write-Host "Setting [$($reqMDCTier)] pricing tier..."
             $nonCompliantMDCTierResourcetype | ForEach-Object {
@@ -568,7 +578,7 @@ function Enable-AzureDefender
 }
 
 
-function Remove-ConfigAzureDefender
+function Remove-ConfigMicrosoftDefender
 {
     <#
     .SYNOPSIS
@@ -602,7 +612,7 @@ function Remove-ConfigAzureDefender
     Specifies the path to the file to be used as input for the roll back.
 
     .EXAMPLE
-    PS> Remove-ConfigAzureDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\AzureDefender\RemediatedResourceType.csv
+    PS> Remove-ConfigMicrosoftDefender -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\MicrosoftDefender\RemediatedResourceType.csv
     #>
 
     param (
@@ -673,16 +683,16 @@ function Remove-ConfigAzureDefender
         return;
     }
 
-    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
+    # Safe Check: Current user needs to be either  or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0) {
-        Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
+    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0) {
+        Write-Host "Warning: This script can only be run by an Owner of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 3]: Fetching remediation log to perform rollback operation to configure Azure Defender for subscription [$($SubscriptionId)]..."
+    Write-Host "[Step 2 of 3]: Fetching remediation log to perform rollback operation to configure Microsoft Defender for subscription [$($SubscriptionId)]..."
     Write-Host $([Constants]::SingleDashLine)
 
     # Array to store resource context
@@ -717,7 +727,7 @@ function Remove-ConfigAzureDefender
 
     $remediatedResourceTypes | Format-Table -Property $colsProperty -Wrap
 
-    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableBootDiagnosticWithManagedStorageAccountOnAVDHostPool"
+    $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\MicrosoftDefender"
 
     if (-not (Test-Path -Path $backupFolderPath))
     {
@@ -829,17 +839,17 @@ function Remove-ConfigAzureDefender
             # when current provider registration state and before executing remediation script is not same.
             # That means while doing remediation it got registered, to perform rollback we need to unregister it
             Write-Host "$[reqProviderName] provider name was registered before executing remediation script, performing rollback." -ForegroundColor $([Constants]::MessageType.Info)
-            Write-Host "$[reqProviderName] unregistering.It takes 2-3 min to get unregistered" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "$[reqProviderName] un-registering.It takes 2-3 min to get unregistered" -ForegroundColor $([Constants]::MessageType.Info)
             try 
             {
                 $provider = Unregister-AzResourceProvider -ProviderNamespace $reqProviderName
-                Write-Host "$reqProviderName unregistering..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "$reqProviderName un-registering..." -ForegroundColor $([Constants]::MessageType.Warning)
                 while((((Get-AzResourceProvider -ProviderNamespace $reqProviderName).RegistrationState -ne "Unregistered") | Measure-Object).Count -gt 0)
                 {
                     # Checking threshold time limit to avoid getting into infinite loop
                     if($thresholdTimeLimit -ge 300)
                     {
-                        Write-Host "Error occurred while unregistering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Error occurred while un-registering [$($reqProviderName)] provider. It is taking more time than expected, Aborting process..." -ForegroundColor $([Constants]::MessageType.Error)
                         throw [System.ArgumentException] ($_)
                     }
                     Start-Sleep -Seconds 30

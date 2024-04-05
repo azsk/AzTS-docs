@@ -1128,7 +1128,7 @@ Partial
 ## 54. 	Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
 
 ### Display Name
- AppService must not use basic authentication for FTP and SCM access.
+AppService must not use basic authentication for FTP and SCM access.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
@@ -1145,13 +1145,13 @@ Yes
 ## 55. Azure_Subscription_Config_Enable_MicrosoftDefender_Databases
 
 ### Display Name
- Microsoft Defender for Databases should be enabled on subscriptions.
+Microsoft Defender for Databases should be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1163,13 +1163,13 @@ Yes
 ## 56. Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager
 
 ### Display Name
- Microsoft Defender for Resource Manager should be enabled on subscriptions.
+Microsoft Defender for Resource Manager should be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1177,16 +1177,16 @@ No
 ### Supports rollback?
 Yes
 
-## 57.Azure_Subscription_Config_Enable_MicrosoftDefender_AppService
+## 57. Azure_Subscription_Config_Enable_MicrosoftDefender_AppService
 
 ### Display Name
- Microsoft Defender for App Service should be enabled on subscriptions.
+Microsoft Defender for App Service should be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1197,13 +1197,13 @@ Yes
 ## 58. Azure_Subscription_Config_Enable_MicrosoftDefender_Storage
 
 ### Display Name
- Microsoft Defender for Storage should be enabled on subscriptions.
+Microsoft Defender for Storage should be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1215,13 +1215,13 @@ Yes
 ## 59. Azure_Subscription_Config_Enable_MicrosoftDefender_Container
 
 ### Display Name
- Microsoft Defender for Containers should be enabled on subscriptions.
+Microsoft Defender for Containers should be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1232,13 +1232,13 @@ Yes
 ## 60. Azure_Subscription_Config_Enable_MicrosoftDefender_Servers
 
 ### Display Name
- Microsoft Defender for Servers should be enabled on subscriptions.
+Microsoft Defender for Servers should be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1256,7 +1256,7 @@ Yes
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or owner role at resource level
+Owner role at resource level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
