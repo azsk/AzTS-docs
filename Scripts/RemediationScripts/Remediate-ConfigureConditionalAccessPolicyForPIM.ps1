@@ -302,7 +302,8 @@ function Configure-ConditionalAccessPolicyForPIM
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
         $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
-        
+        $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
+
         # Fetch all the role definitions (built-in and custom).
         $roleDefinitions = Get-AzRoleDefinition | Select-Object -ExpandProperty Name
         
@@ -335,7 +336,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
             $roleId = $policyId.PolicyId.Split('/')
         
-            $policyDetails = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)" -Name $roleId[-1]
+            $policyDetails = $policyDetailsCollection | Where-Object { $_.Name -eq $roleId[-1] }
             $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {($_.claimValue -eq "c1" -and $_.IsEnabled -eq $true) -or ($_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true)}
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
@@ -415,7 +416,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $skippedRoles = @()
             $remediationSummary = New-Object -TypeName PSObject
 
-            Write-Host "`nThis script will configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "`nThis script will disable Multi Factor Authentication (if applied for a role) and configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
             if($userInput -ne "Y")
@@ -440,6 +441,7 @@ function Configure-ConditionalAccessPolicyForPIM
                     # Remove MFA from the enabled rules and update the policy with the current rule.
                     $mfaRule.EnabledRule = $mfaRule.EnabledRule | Where-Object { $_ -ne "MultiFactorAuthentication" }
                     Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $mfaRule
+                    Write-Host "Successfully disabled MFA for [$($role)] role."
                 }
                 else
                 {
