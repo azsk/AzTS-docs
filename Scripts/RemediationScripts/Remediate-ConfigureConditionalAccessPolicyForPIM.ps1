@@ -327,6 +327,9 @@ function Configure-ConditionalAccessPolicyForPIM
         $nonCompliantRoles = @()
         $nonCompliantRolesCount = 0
         $configuredPolicyDetails = New-Object -TypeName PSObject
+
+        # The Hash Table below will contain key-value pair of the form (role Id, mfa Rule) if MFA is enabled for that role Id. 
+        $mfaEnabledRoles = @{}
         $criticalRoles | ForEach-Object {
             $role = $_
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
@@ -334,12 +337,21 @@ function Configure-ConditionalAccessPolicyForPIM
         
             $policyDetails = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)" -Name $roleId[-1]
             $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {($_.claimValue -eq "c1" -and $_.IsEnabled -eq $true) -or ($_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true)}
-
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
                 $nonCompliantRoles += $role
                 $nonCompliantRolesCount += 1
                 $nonCompliantRolesStr = $nonCompliantRoles -join ','
+            }
+
+            $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
+            if (![String]::IsNullOrWhiteSpace($targetRuleForMFA))
+            {
+                if ($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication')
+                {
+                    # MFA is enabled on this role.
+                    $mfaEnabledRoles[$roleId[-1]] = $targetRuleForMFA
+                }
             }
         }
     
@@ -416,6 +428,23 @@ function Configure-ConditionalAccessPolicyForPIM
             {
                 $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
                 $roleId = $policyId.PolicyId.Split('/')
+
+                # Before configuring CA Policy we need to check if Multi Factor Authentication is enabled for the current role
+                # MFA and CA Policies can't be enabled simultaneously
+                Write-Host "Checking if Multi Factor Authentication (MFA) is enabled for [$($role)] role..."
+                if ($mfaEnabledRoles.ContainsKey($roleId[-1]))
+                {
+                    Write-Host "MFA is enabled for [$($role)] role, disabling MFA..."
+                    $mfaRule = $mfaEnabledRoles[$roleId[-1]]
+
+                    # Remove MFA from the enabled rules and update the policy with the current rule.
+                    $mfaRule.EnabledRule = $mfaRule.EnabledRule | Where-Object { $_ -ne "MultiFactorAuthentication" }
+                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $mfaRule
+                }
+                else
+                {
+                    Write-Host "MFA is not enabled for [$($role)] role."
+                }
         
                 Write-Host "Updating Conditional Access Policy for [$($role)] role..."
                 $body = @'
