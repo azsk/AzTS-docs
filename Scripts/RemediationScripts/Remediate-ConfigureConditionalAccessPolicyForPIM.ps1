@@ -303,13 +303,11 @@ function Configure-ConditionalAccessPolicyForPIM
     {
         $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
         $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
-
-        # Fetch all the role definitions (built-in and custom).
-        $roleDefinitions = Get-AzRoleDefinition | Select-Object -ExpandProperty Name
+        $roleDefinitions = $policyAssignments | Select-Object -ExpandProperty RoleDefinitionDisplayName
         
         if (-not $RoleName)
         {   
-            # Remove excluded controls from all role definition.
+            # Remove excluded roles from the role definition collection.
             $criticalRoles = $roleDefinitions | Where-Object { $_ -notin $excludedRoles }
         }
         else
