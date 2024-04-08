@@ -1135,6 +1135,23 @@ Yes
 
 ### Supports rollback?
 Yes
+
+## 55. 	Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only
+
+### Display Name
+ Protect Azure AI Search Instances by only allowing RBAC API Access
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
 ___
 
 
