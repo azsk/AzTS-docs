@@ -1,13 +1,13 @@
 ﻿<###
 # Overview:
-    This script is used to configure Conditional Access (CA) policy to require PIM elevation from SAW for all built-in roles and all custom roles except for a few built-in roles in a Subscription.
+    This script is used to configure Conditional Access (CA) policy to restrict PIM elevation from SAW for all built-in roles and all custom roles except for a few built-in roles in a Subscription.
     Following is the list of excluded built-in role definitions:
     [ Azure Front Door Domain Contributor, Azure Front Door Domain Reader, Azure Front Door Profile Reader,
       Azure Front Door Secret Contributor, Azure Front Door Secret Reader, Defender for Storage Data Scanner,
       AzureML Compute Operator, Cognitive Services Usages Reader, Key Vault Crypto Service Release User ]
 
 # Control ID:
-    Azure_Subscription_Configure_Conditional_Access_for_PIM
+    Azure_Subscription_AuthZ_Configure_Conditional_Access_for_PIM
 
 # Display Name:
     Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions
@@ -41,7 +41,7 @@
         2. To configure Conditional Access (CA) policy in Subscription, from a previously taken snapshot:
                 Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'
                 
-        3. To configure Conditional Access (CA) policy for all the critical roles (all built-in except a few and all custom roles) in Subscription:
+        3. To configure Conditional Access (CA) policy for all the eligible roles (all built-in and custom roles except few built-in roles) in Subscription:
                 Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' 
         
         4. To configure Conditional Access (CA) policy only for 'Owner' role in Subscription:
@@ -162,7 +162,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
         .DESCRIPTION
         Remediates 'Azure_Subscription_Configure_Conditional_Access_for_PIM' Control.
-        Configure Conditional Access (CA) policy for critical roles in the Subscription.
+        Configure Conditional Access (CA) policy for eligible roles in the Subscription.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -296,19 +296,20 @@ function Configure-ConditionalAccessPolicyForPIM
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 3 of 5] Checking if for all critical roles Conditional Access (CA) policy has been configured for the subscription [$($SubscriptionId)]..."
+    Write-Host "`n[Step 3 of 5] Checking if for all eligible roles Conditional Access (CA) policy has been configured for the subscription [$($SubscriptionId)]..."
+
+    $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
 
     # No file path provided as input to the script. Fetch currently configured Conditional Access (CA) policy in the subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
         $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
         $roleDefinitions = $policyAssignments | Select-Object -ExpandProperty RoleDefinitionDisplayName
         
         if (-not $RoleName)
         {   
             # Remove excluded roles from the role definition collection.
-            $criticalRoles = $roleDefinitions | Where-Object { $_ -notin $excludedRoles }
+            $eligibleRoles = $roleDefinitions | Where-Object { $_ -notin $excludedRoles }
         }
         else
         {
@@ -319,17 +320,17 @@ function Configure-ConditionalAccessPolicyForPIM
                 return
             }
 
-            $criticalRoles = @($RoleName)
+            $eligibleRoles = @($RoleName)
         }
 
-        # Fetch all the CA policies and check if for all the critical roles, policy has been assigned.
+        # Fetch all the CA policies and check if for all the eligible roles, policy has been assigned.
         $nonCompliantRoles = @()
         $nonCompliantRolesCount = 0
         $configuredPolicyDetails = New-Object -TypeName PSObject
 
         # The Hash Table below will contain key-value pair of the form (role Id, mfa Rule) if MFA is enabled for that role Id. 
         $mfaEnabledRoles = @{}
-        $criticalRoles | ForEach-Object {
+        $eligibleRoles | ForEach-Object {
             $role = $_
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
             $roleId = $policyId.PolicyId.Split('/')
@@ -343,6 +344,7 @@ function Configure-ConditionalAccessPolicyForPIM
                 $nonCompliantRolesStr = $nonCompliantRoles -join ','
             }
 
+            # Need to check for MFA as MFA and Conditional Access Policy can't be enabled simultaneously.
             $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
             if (![String]::IsNullOrWhiteSpace($targetRuleForMFA))
             {
@@ -362,7 +364,7 @@ function Configure-ConditionalAccessPolicyForPIM
         }
         else
         {
-            Write-Host "Conditional Access policy has been correctly configured for all critical roles. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Conditional Access policy has been correctly configured for all eligible roles. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             return
         }
     }
@@ -408,8 +410,6 @@ function Configure-ConditionalAccessPolicyForPIM
         # It is a wet run, hence we need to create policy assignments for the roles for which CA policy is not there.
         try
         {
-            $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
-
             $remediatedRoles = @()
             $skippedRoles = @()
             $mfaConfiguredRoleNames = @()
