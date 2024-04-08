@@ -412,6 +412,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
             $remediatedRoles = @()
             $skippedRoles = @()
+            $mfaConfiguredRoleNames = @()
             $remediationSummary = New-Object -TypeName PSObject
 
             Write-Host "`nThis script will disable Multi Factor Authentication (if applied for a role) and configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
@@ -435,6 +436,7 @@ function Configure-ConditionalAccessPolicyForPIM
                 {
                     Write-Host "MFA is enabled for [$($role)] role, disabling MFA..."
                     $mfaRule = $mfaEnabledRoles[$roleId[-1]]
+                    $mfaConfiguredRoleNames += $role
 
                     # Remove MFA from the enabled rules and update the policy with the current rule.
                     $mfaRule.EnabledRule = $mfaRule.EnabledRule | Where-Object { $_ -ne "MultiFactorAuthentication" }
@@ -498,6 +500,13 @@ function Configure-ConditionalAccessPolicyForPIM
         if (![String]::IsNullOrWhiteSpace($skippedRolesStr))
         {
             $remediationSummary | Add-Member -NotePropertyName SkippedRoles -NotePropertyValue $skippedRolesStr
+        }
+
+        # Adding all the roles under the heading 'MFAEnabledRoles' which have MFA enabled, it would help while roll back.
+        $mfaConfiguredRoleNamesStr = $mfaConfiguredRoleNames -join ','
+        if (![String]::IsNullOrWhiteSpace($mfaConfiguredRoleNamesStr))
+        {
+            $remediationSummary | Add-Member -NotePropertyName MFAEnabledRoles -NotePropertyValue $mfaConfiguredRoleNamesStr
         }
 
         $colsProperty = @{Expression={$_.SubscriptionId};Label="Subscription ID";Width=40;Alignment="left"},
@@ -655,11 +664,13 @@ function Disable-ConditionalAccessPolicyForPIM
     Write-Host "`n[Step 4 of 4] Disabling Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
     try
     {
+        $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
         $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
 
         $rolledBackRoles = @()
         $skippedRoles = @()
         $rolledBackSummary = New-Object -TypeName PSObject
+        $mfaConfiguredRoleNames = $configuredPolicyDetails.MFAEnabledRoles.Split(',')
 
         Write-Host "`nRunning this script will disable all the Conditional Access (CA) policies for the previously remediated role(s). Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
@@ -692,6 +703,19 @@ function Disable-ConditionalAccessPolicyForPIM
 '@
 
             $updatedPolicyDetail = Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $body
+
+            # Also, we need to check if there was MFA enabled on the subscription before remediation, if it was then we need to configure while rolling back.
+            if ($mfaConfiguredRoleNames.Contains($role))
+            {
+                # Configure MFA here.
+                $policyDetails = $policyDetailsCollection | Where-Object { $_.Name -eq $roleId[-1] }
+                $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
+                if ($targetRuleForMFA -and !($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication'))
+                {
+                    $targetRuleForMFA.EnabledRule += 'MultiFactorAuthentication'
+                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $targetRuleForMFA
+                }
+            }
 
             $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $false}
 
