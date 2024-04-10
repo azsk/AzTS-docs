@@ -359,7 +359,7 @@ function Configure-RBACAPIAccessOnly
         }
     }
     
-    $totalAISearchServiceResources = ($AISearchServiceResources | Measure-Object).Count
+    $totalAISearchServiceResources = ($AISearchServices | Measure-Object).Count
 
     if ($totalAISearchServiceResources -eq 0)
     {
@@ -384,10 +384,8 @@ function Configure-RBACAPIAccessOnly
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Separating Azure AI Search services for which API access is not set as RBAC only ..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-    $AISearchServiceResources | ForEach-Object {  
-        $resource = $_  
-        #if($_.OrchestrationMode -eq $applicableOrchestrationMode)
-        #{
+    $AISearchServices | ForEach-Object {  
+            $resource = $_
             $_ = Get-AzSearchService -ResourceGroupName $_.ResourceGroupName -Name $_.Name
             $DisableLocalAuth = $_.DisableLocalAuth
 
@@ -411,10 +409,10 @@ function Configure-RBACAPIAccessOnly
             $AISearchServiceWithRBACOnlyAPIAccess += $resource | Select-Object @{N='Name';E={$_.Name}},
                                                     @{N='ResourceGroupName';E={$_.ResourceGroupName}},
                                                     @{N='DisableLocalAuth';E={$DisableLocalAuth}},
-                                                    @{N='AuthOption';E={$authOption}},
+                                                    @{N='AuthOption';E={$authOption}}
            
 
-            $logResource = @()
+            $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.Name))
             $logResource.Add("Reason","API access is already RBAC only in Azure AI Search service.")    
@@ -599,9 +597,9 @@ function Configure-RBACAPIAccessOnly
 
         $colsProperty = @{Expression={$_.Name};Label="Name";Width=20;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=20;Alignment="left"},
-                        @{Expression={$false};Label="API access (Before Remediation)";Width=20;Alignment="left"},
-                        @{Expression={$_.DisableLocalAuth};Label="API access (After Remediation)";Width=20;Alignment="left"},
-                        @{Expression={$_.AuthOption};Label="AuthOption";Width=20;Alignment="left"}
+                        @{Expression={$false};Label="DisableLocalAuth (Before Remediation)";Width=20;Alignment="left"},
+                        @{Expression={$_.DisableLocalAuth};Label="DisableLocalAuth (After Remediation)";Width=20;Alignment="left"},
+                        @{Expression={$_.AuthOption};Label="AuthOption(Before Remediation)";Width=20;Alignment="left"}
   
         if($AutoRemediation)
         {
