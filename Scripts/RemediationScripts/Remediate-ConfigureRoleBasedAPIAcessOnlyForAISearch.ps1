@@ -324,8 +324,8 @@ function Configure-RBACAPIAccessOnly
             Write-Host $([Constants]::SingleDashLine)
 
             # Get all Azure AI Search services in the Subscription
-            $AISearchServiceResources = Get-AzResource -ResourceType "Microsoft.Search/searchServices" -ErrorAction SilentlyContinue
-            $totalAISearchServiceResources = ($AISearchResources | Measure-Object).Count
+            $AISearchServices = Get-AzResource -ResourceType "Microsoft.Search/searchServices" -ErrorAction SilentlyContinue
+            $totalAISearchServiceResources = ($AISearchServices | Measure-Object).Count
         
         }
         else
@@ -866,7 +866,7 @@ function Reset-APIAccess
         return
     }
     
-    Write-Host "Found [$($totalAISearchservicesWithoutRBACOnlyAPIAccess)] Azure AI Search services" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalAISearchservicesWithRBACOnlyAPIAccess)] Azure AI Search services" -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
     
      # Back up snapshots to `%LocalApplicationData%'.
