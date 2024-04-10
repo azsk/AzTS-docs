@@ -375,7 +375,7 @@ function Configure-ConditionalAccessPolicyForPIM
         if (-not (Test-Path -Path $FilePath))
         {
             Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            return
         }
  
         $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
@@ -424,10 +424,13 @@ function Configure-ConditionalAccessPolicyForPIM
                 return
             }
 
+            $totalRolesCount = $configuredPolicyDetails.NonCompliantRoles.Split(',').Count;
+            $currentRoleIndex = 1
             foreach ($role in $configuredPolicyDetails.NonCompliantRoles.Split(','))
             {
                 $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
                 $roleId = $policyId.PolicyId.Split('/')
+                Write-Host "`n[$currentRoleIndex/$totalRolesCount]"
 
                 # Before configuring CA Policy we need to check if Multi Factor Authentication is enabled for the current role
                 # MFA and CA Policies can't be enabled simultaneously
@@ -440,7 +443,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
                     # Remove MFA from the enabled rules and update the policy with the current rule.
                     $mfaRule.EnabledRule = $mfaRule.EnabledRule | Where-Object { $_ -ne "MultiFactorAuthentication" }
-                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $mfaRule
+                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $mfaRule | Out-Null
                     Write-Host "Successfully disabled MFA for [$($role)] role."
                 }
                 else
@@ -481,6 +484,9 @@ function Configure-ConditionalAccessPolicyForPIM
                     $skippedRolesStr = $skippedRoles -join ','
                     Write-Host "Error while configuring Conditional Access Policy for [$($role)] role." -ForegroundColor $([Constants]::MessageType.Error)
                 }
+
+                $currentRoleIndex += 1
+                Write-Host "`n"
             }
         }
         catch
@@ -509,9 +515,11 @@ function Configure-ConditionalAccessPolicyForPIM
             $remediationSummary | Add-Member -NotePropertyName MFAEnabledRoles -NotePropertyValue $mfaConfiguredRoleNamesStr
         }
 
+        $remediatedRolesCount = $remediatedRoles.Count
+        $skippedRolesCount = $skippedRoles.Count
         $colsProperty = @{Expression={$_.SubscriptionId};Label="Subscription ID";Width=40;Alignment="left"},
-                        @{Expression={$_.RemediatedRoles};Label="Remediated Roles";Width=20;Alignment="left"},
-                        @{Expression={$_.SkippedRoles};Label="Skipped Roles";Width=20;Alignment="left"}
+                        @{Expression={$remediatedRolesCount};Label="Remediated Roles Count";Width=20;Alignment="center";},
+                        @{Expression={$skippedRolesCount};Label="Skipped Roles Count";Width=20;Alignment="center";}
 
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "`nRemediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -521,7 +529,7 @@ function Configure-ConditionalAccessPolicyForPIM
         # Write this to a file.
         $remediationSummaryFile = "$($backupFolderPath)\ConfiguredCAPolicy.csv"
         $remediationSummary | Export-CSV -Path $remediationSummaryFile -NoTypeInformation
-        Write-Host "This information has been saved to $($remediationSummaryFile)"
+        Write-Host "This information has been saved to $($remediationSummaryFile)" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
     }
     else
@@ -644,13 +652,15 @@ function Disable-ConditionalAccessPolicyForPIM
     if (-not (Test-Path -Path $FilePath))
     {
         Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        return
     }
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n[Step 3 of 4] Fetching currently configured Conditional Access (CA) policy for subscription [$($SubscriptionId)] from $($FilePath)"
 
     $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
+    $totalRolesCount = $configuredPolicyDetails.RemediatedRoles.Split(',').Count
+    Write-Host "Fetched $($totalRolesCount) roles which were remediated." -ForegroundColor $([Constants]::MessageType.Info)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\CA_Policy_Details"
@@ -660,8 +670,6 @@ function Disable-ConditionalAccessPolicyForPIM
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 4 of 4] Disabling Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
     try
     {
         $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
@@ -672,6 +680,8 @@ function Disable-ConditionalAccessPolicyForPIM
         $rolledBackSummary = New-Object -TypeName PSObject
         $mfaConfiguredRoleNames = $configuredPolicyDetails.MFAEnabledRoles.Split(',')
 
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "`n[Step 4 of 4] Disabling Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
         Write-Host "`nRunning this script will disable all the Conditional Access (CA) policies for the previously remediated role(s). Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $userInput = Read-Host -Prompt "(Y|N)"
         if($userInput -ne "Y")
@@ -679,12 +689,14 @@ function Disable-ConditionalAccessPolicyForPIM
             Write-Host "Conditional Access policy will not be disabled for any of the roles [User permission denied]. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             return
         }
-
+        
+        $currentRoleIndex = 1
         foreach ($role in $configuredPolicyDetails.RemediatedRoles.Split(','))
         {
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
             $roleId = $policyId.PolicyId.Split('/')
-        
+
+            Write-Host "`n[$currentRoleIndex/$totalRolesCount]"
             Write-Host "Disabling Conditional Access Policy for [$($role)] role..."
             $body = @'
 	        {
@@ -713,7 +725,7 @@ function Disable-ConditionalAccessPolicyForPIM
                 if ($targetRuleForMFA -and !($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication'))
                 {
                     $targetRuleForMFA.EnabledRule += 'MultiFactorAuthentication'
-                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $targetRuleForMFA
+                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $targetRuleForMFA | Out-Null
                 }
             }
 
@@ -731,6 +743,9 @@ function Disable-ConditionalAccessPolicyForPIM
                 $skippedRolesStr = $skippedRoles -join ','
                 Write-Host "Error while disabling Conditional Access Policy for [$($role)] role." -ForegroundColor $([Constants]::MessageType.Error)
             }
+
+            $currentRoleIndex += 1
+            Write-Host "`n"
         }
     }
     catch
@@ -752,9 +767,11 @@ function Disable-ConditionalAccessPolicyForPIM
         $rolledBackSummary | Add-Member -NotePropertyName SkippedRoles -NotePropertyValue $skippedRolesStr
     }
 
+    $rolledBackRolesCount = $rolledBackRoles.Count
+    $skippedRolesCount = $skippedRoles.Count
     $colsProperty = @{Expression={$_.SubscriptionId};Label="Subscription ID";Width=40;Alignment="left"},
-                    @{Expression={$_.RolledBackRoles};Label="Rolled Back Roles";Width=20;Alignment="left"},
-                    @{Expression={$_.SkippedRoles};Label="Skipped Roles";Width=20;Alignment="left"}
+                    @{Expression={$rolledBackRolesCount};Label="Rolled Back Roles Count";Width=20;Alignment="center"},
+                    @{Expression={$skippedRolesCount};Label="Skipped Roles Count";Width=20;Alignment="center"}
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`nRollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
@@ -764,7 +781,7 @@ function Disable-ConditionalAccessPolicyForPIM
     # Write this to a file.
     $rolledBackSummaryFile = "$($backupFolderPath)\RolledbackCAPolicy.csv"
     $rolledBackSummary | Export-CSV -Path $rolledBackSummaryFile -NoTypeInformation
-    Write-Host "This information has been saved to $($rolledBackSummaryFile)"
+    Write-Host "This information has been saved to $($rolledBackSummaryFile)" -ForegroundColor $([Constants]::MessageType.Info)
 }
 
 # Defines commonly used constants.
