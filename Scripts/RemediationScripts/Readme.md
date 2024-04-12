@@ -1151,7 +1151,7 @@ Microsoft Defender for Databases should be enabled on subscriptions
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1169,7 +1169,7 @@ Microsoft Defender for Resource Manager should be enabled on subscriptions
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1186,7 +1186,7 @@ Microsoft Defender for App Service should be enabled on subscriptions
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1203,7 +1203,7 @@ Microsoft Defender for Storage should be enabled on subscriptions
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1221,7 +1221,7 @@ Microsoft Defender for Containers should be enabled on subscriptions
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1238,7 +1238,7 @@ Microsoft Defender for Servers should be enabled on subscriptions
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
@@ -1256,7 +1256,7 @@ Yes
 [Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Owner role at resource level
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 No
