@@ -55,9 +55,6 @@
     To roll back:
         1. To reset API access for all Azure AI Search services in a Subscription, from a previously taken snapshot:
            Reset-RBACAPIAccessOnly -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202404080338\AISearchAPIAccess\RemediatedAISearchserviceAPIAccess.csv
-        
-        2. To reset API access for all Azure AI Search services in a Subscription, from a previously taken snapshot:
-        Reset-RBACAPIAccessOnly -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202404080338\AISearchAPIAccess\RemediatedAISearchserviceAPIAccess.csv
 
         To know more about the options supported by the roll back command, execute:
         Get-Help Reset-RBACAPIAccessOnly -Detailed        
@@ -559,7 +556,8 @@ function Configure-RBACAPIAccessOnly
                 {
                     $AISearchservicesRemediated += $resource | Select-Object @{N='Name';E={$name}},
                                                                         @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                                        @{N='DisableLocalAuth';E={$true}},
+                                                                        @{N='DisableLocalAuthBeforeRemediation';E={$false}},
+                                                                        @{N='DisableLocalAuthPostRemediation';E={$true}},
                                                                         @{N='AuthOption';E={$authOption}}
 
 
@@ -597,8 +595,8 @@ function Configure-RBACAPIAccessOnly
 
         $colsProperty = @{Expression={$_.Name};Label="Name";Width=20;Alignment="left"},
                         @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=20;Alignment="left"},
-                        @{Expression={$false};Label="DisableLocalAuth (Before Remediation)";Width=20;Alignment="left"},
-                        @{Expression={$_.DisableLocalAuth};Label="DisableLocalAuth (After Remediation)";Width=20;Alignment="left"},
+                        @{Expression={$_.DisableLocalAuthBeforeRemediation};Label="DisableLocalAuth (Before Remediation)";Width=20;Alignment="left"},
+                        @{Expression={$_.DisableLocalAuthPostRemediation};Label="DisableLocalAuth (After Remediation)";Width=20;Alignment="left"},
                         @{Expression={$_.AuthOption};Label="AuthOption(Before Remediation)";Width=20;Alignment="left"}
   
         if($AutoRemediation)
@@ -715,9 +713,6 @@ function Reset-APIAccess
         .EXAMPLE
         PS> Reset-APIAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202404080431\AISearchAPIAccess\AISearchServicesWithoutRBACOnlyAPIAccess.csv
 
-        .EXAMPLE
-        PS> Reset-APIAccess -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202404080431\AISearchAPIAccess\AISearchServicesWithoutRBACOnlyAPIAccess.csv
-
         .LINK
         None
     #>
@@ -814,25 +809,24 @@ function Reset-APIAccess
     $resourceList = @()
 
     $validAISearchServices | ForEach-Object {
-        $res = $_
         $name = $_.Name
         $resourceGroupName = $_.ResourceGroupName
-        $disableLocalAuthBeforeRemediation = $false
-        $disableLocalAuthAfterRemediation = $_.DisableLocalAuth
-        $authOption = $_.AuthOption
-
+        $DisableLocalAuthPostRemediation = $_.DisableLocalAuthPostRemediation
+        $DisableLocalAuthBeforeRemediation = $_.DisableLocalAuthBeforeRemediation
+        $AuthOption = $_.AuthOption
         try
         {
             $resource = (Get-AzSearchService -Name $name  -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue) 
             $resourceList += $resource | Select-Object @{N='Name';E={$name}},
                                                             @{N='ResourceGroupName';E={$resourceGroupName}},
-                                                            @{N='CurrentDisableLocalAuth';E={$true}},
-                                                            @{N='PreviousDisableLocalAuth';E={$false}}
+                                                            @{N='CurrentDisableLocalAuth';E={$DisableLocalAuthPostRemediation}},
+                                                            @{N='PreviousDisableLocalAuth';E={$DisableLocalAuthBeforeRemediation}},
+                                                            @{N='PreviousAuthOption';E={$AuthOption}}
                                                                 
         }
         catch
         {
-            Write-Host "Error fetching Azure AI Search service : [$($serverName)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching Azure AI Search service : [$($name)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host "Skipping this Azure AI Search service..." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
@@ -845,9 +839,9 @@ function Reset-APIAccess
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Separating Azure AI Search service where API access is RBAC only..." -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
-    $validAISearchServices | ForEach-Object {
+    $resourceList | ForEach-Object {
         $res = $_        
-            if(($res.CurrentDisableLocalAuth -ne $true))
+            if(($res.CurrentDisableLocalAuth -eq $true))
             {
                 $AISearchservicesWithRBACOnlyAPIAccess += $res
             }
@@ -910,7 +904,7 @@ function Reset-APIAccess
             $res = $_
             $Name = $_.Name
             $resourceGroupName = $_.ResourceGroupName
-            $authOption = $_.AuthOption
+            $authOption = $_.PreviousAuthOption
            
             try
             {  
@@ -948,7 +942,7 @@ function Reset-APIAccess
     }
     else
     {
-        Write-Host "API access reset for [$($totalAISearchservicesRolledBack)] out of [$($totalAISearchservicesWithoutRBACOnlyAPIAccess)] Azure AI Search services." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "API access reset for [$($totalAISearchservicesRolledBack)] out of [$($totalAISearchservicesWithRBACOnlyAPIAccess)] Azure AI Search services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
     
@@ -981,7 +975,7 @@ function Reset-APIAccess
         
         # Write this to a file.
         $AISearchservicesSkippedFile = "$($backupFolderPath)\RollbackSkippedAISearchServices.csv"
-        $AISearchservicesSkipped | Export-CSV -Path $AISearchservicesSkippedSkippedFile -NoTypeInformation
+        $AISearchservicesSkipped | Export-CSV -Path $AISearchservicesSkippedFile -NoTypeInformation
         Write-Host "This information has been saved to [$($AISearchservicesSkippedFile)]"
         Write-Host $([Constants]::SingleDashLine)
     }   

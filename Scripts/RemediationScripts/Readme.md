@@ -64,6 +64,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 52. [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](Readme.md#52-Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only)
 53. [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](Readme.md#53-azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
 54. [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](ReadMe.md#54-azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
+55. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](ReadMe.md#55-azure_aisearch_authz_enable_role_based_api_access_only)
 
 <br />
 
@@ -1142,7 +1143,7 @@ Yes
  Protect Azure AI Search Instances by only allowing RBAC API Access
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
+[Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch](Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
