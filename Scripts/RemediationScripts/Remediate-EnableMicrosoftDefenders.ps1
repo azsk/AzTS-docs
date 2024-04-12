@@ -268,8 +268,9 @@ function Enable-MicrosoftDefender
 
     # Safe Check: Current user needs to be either or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    $roles = $currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Security Admin" ) -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups")}
 
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0)
+    if(($currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Security Admin" ) -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups")} | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
@@ -699,7 +700,7 @@ function Remove-ConfigMicrosoftDefender
     # Safe Check: Current user needs to be either  or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
 
-    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0) {
+    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner"  -or $_.RoleDefinitionName -eq "Security Admin" -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups") } | Measure-Object).Count -le 0) {
         Write-Host "Warning: This script can only be run by an Owner of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
     }
