@@ -336,13 +336,13 @@ function Enable-MicrosoftDefender
     if($EnableAllRequiredResourceTypes -eq $true)
     {
          $resourceType | ForEach-Object {
-        if ( $_.Name -eq "StorageAccounts" -and $_.PricingTier -ne $reqMDCTier -and $_.SubPlan -ne "DefenderForStorageV2" )
+        if ( $_.Name -eq "StorageAccounts" -and $_.SubPlan -ne "DefenderForStorageV2" )
         {
-            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id"
+            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id", "SubPlan"
         }
-        elseif( $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name))
+        elseif( $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) -and  $_.Name -ne "StorageAccounts")
         {
-            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id"
+            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id","SubPlan"
         }
         } 
 
@@ -351,31 +351,31 @@ function Enable-MicrosoftDefender
     {
         $resourceType | ForEach-Object {
                 $resource = $_
-                    if ( $EnableDatabases -eq $true -and ($_.Name -eq "CosmosDbs" -or $_.Name -eq "OpenSourceRelationalDatabases" -or $_.Name -eq "SqlServers" -or $_.Name -eq "SqlServerVirtualMachines")) {
+                    if ( $EnableDatabases -eq $true -and  $_.PricingTier -ne $reqMDCTier -and ($_.Name -eq "CosmosDbs" -or $_.Name -eq "OpenSourceRelationalDatabases" -or $_.Name -eq "SqlServers" -or $_.Name -eq "SqlServerVirtualMachines")) {
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
 
-                    if ($EnableResourceManager -eq $true -and $_.Name -eq "Arm") {
+                    if ($EnableResourceManager -eq $true -and $_.Name -eq "Arm" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource  
                     }
 
-                    if ($EnableAppService -eq $true -and $_.Name -eq "AppServices") {
+                    if ($EnableAppService -eq $true -and $_.Name -eq "AppServices" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
 
-                    if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts") {
+                    if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
 
-                    if ($EnableContainer -eq $true -and $_.Name -eq "Containers") {
+                    if ($EnableContainer -eq $true -and $_.Name -eq "Containers" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource  
                     }
 
-                    if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
+                    if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
 
-                    if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults") {
+                    if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
         }
@@ -459,7 +459,7 @@ function Enable-MicrosoftDefender
                 try {
 
                     if ($_.Name -eq "StorageAccounts") {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 -Extension '[{"name":"OnUploadMalwareScanning","isEnabled":"false","additionalExtensionProperties": null},{"name":"SensitiveDataDiscovery","isEnabled":"false","additionalExtensionProperties":null}]'
                     }
                     else {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
@@ -471,7 +471,9 @@ function Enable-MicrosoftDefender
                         @{N = 'Name'; E = { $resource.Name } },
                         @{N = 'CurrentPricingTier'; E = { $reqMDCTier } },
                         @{N = 'PreviousPricingTier'; E = { $resource.PricingTier } },
-                        @{N = 'IsPreviousProvisioningStateRegistered'; E = { $previousProviderRegistrationState } }
+                        @{N = 'IsPreviousProvisioningStateRegistered'; E = { $previousProviderRegistrationState } },
+                        @{N = 'SubPlan'; E = { $resource.SubPlan } }
+
                     }
                 }
                 catch {
@@ -480,7 +482,8 @@ function Enable-MicrosoftDefender
                         @{N='Name';E={$resource.Name}},
                         @{N='CurrentPricingTier';E={$resource.PricingTier}},
                         @{N='PreviousPricingTier';E={$resource.PricingTier}},
-                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}}
+                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}},
+                         @{N = 'SubPlan'; E = { $resource.SubPlan } }
                     return
                 }
             }
@@ -504,7 +507,7 @@ function Enable-MicrosoftDefender
                     }
 
                     if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts") {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 '[{"name":"OnUploadMalwareScanning","isEnabled":"false","additionalExtensionProperties": null},{"name":"SensitiveDataDiscovery","isEnabled":"false","additionalExtensionProperties":null}]'
                     }
 
                     if ($EnableContainer -eq $true -and $_.Name -eq "Containers") {
@@ -525,7 +528,8 @@ function Enable-MicrosoftDefender
                         @{N='Name';E={$resource.Name}},
                         @{N='CurrentPricingTier';E={$reqMDCTier}},
                         @{N='PreviousPricingTier';E={$resource.PricingTier}},
-                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}}
+                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}},
+                        @{N = 'SubPlan'; E = { $resource.SubPlan } }
                     }
                     
                 }
@@ -535,7 +539,8 @@ function Enable-MicrosoftDefender
                         @{N='Name';E={$resource.Name}},
                         @{N='CurrentPricingTier';E={$resource.PricingTier}},
                         @{N='PreviousPricingTier';E={$resource.PricingTier}},
-                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}}
+                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}},
+                        @{N = 'SubPlan'; E = { $resource.SubPlan } }
                     return
                 }
             }
@@ -752,7 +757,6 @@ function Remove-ConfigMicrosoftDefender
         if (-not $Force)
         {
             Write-Host "This step will rollback following resource type for subscription [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "NOTE: Storage accounts resource type will be rolled back to the pricing tier but the sub plan will not be set. "
             Write-Host "Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning)
         
             $userInput = Read-Host -Prompt "(Y|N)"
@@ -787,13 +791,28 @@ function Remove-ConfigMicrosoftDefender
             $remediatedResourceTypes | ForEach-Object {
                 $resource = $_
                 try {
-                    $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier
+                if($resource.Name -eq "StorageAccounts")
+                {
+                    if($resource.PreviousPricingTier -eq "Free")
+                    {
+                        $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier 
+                    }
+                    elseif($resource.PreviousPricingTier -eq "Standard" -and $resource.SubPlan -ne "")
+                    {
+                        $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier -SubPlan $resource.SubPlan
+                    }
+                }
+                else
+                {
+
+                }
                 
                     if (($rolledBackResource | Measure-Object).Count -gt 0) {
                         $rolledBackResources += $rolledBackResource | Select-Object  @{N = 'Id'; E = { $resource.Id } },
                         @{N = 'Name'; E = { $resource.Name } },
                         @{N = 'CurrentPricingTier'; E = { $resource.PreviousPricingTier } },
-                        @{N = 'PreviousPricingTier'; E = { $resource.PreviousPricingTier } }
+                        @{N = 'PreviousPricingTier'; E = { $resource.PreviousPricingTier } },
+                         @{N = 'SubPlan'; E = { $resource.SubPlan } }
                     }
                 }
                 catch {
@@ -802,6 +821,7 @@ function Remove-ConfigMicrosoftDefender
                     @{N = 'Name'; E = { $resource.Name } },
                     @{N = 'CurrentPricingTier'; E = { $resource.CurrentPricingTier } },
                     @{N = 'PreviousPricingTier'; E = { $resource.PreviousPricingTier } }
+                    @{N = 'SubPlan'; E = { $resource.SubPlan } }
                     return
                 }
             }
