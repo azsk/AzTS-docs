@@ -660,7 +660,7 @@ function Disable-ConditionalAccessPolicyForPIM
 
     $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
     $totalRolesCount = $configuredPolicyDetails.RemediatedRoles.Split(',').Count
-    Write-Host "Fetched $($totalRolesCount) roles which were remediated." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Fetched $($totalRolesCount) roles which were remediated." -ForegroundColor $([Constants]::MessageType.Update)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\CA_Policy_Details"
