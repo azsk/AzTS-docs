@@ -3,7 +3,7 @@
 $AzureEnvironmentToADAuthUrlMap = @{
     "AzureCloud" = "https://login.microsoftonline.com";
     "AzureGovernmentCloud" = "https://login.microsoftonline.us";
-    "AzureChinaCloud" = "https://login.microsoftonline.cn"; #confirm
+    "AzureChinaCloud" = "https://login.microsoftonline.cn"; 
 
 }
 

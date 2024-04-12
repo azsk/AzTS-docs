@@ -6,8 +6,20 @@
 $AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
-    "AzureChinaCloud" = "https://{0}.azurewebsites.cn";
+    "AzureChinaCloud" = "https://{0}.chinacloudsites.cn";
 
+}
+
+$AzureEnvironmentToADAuthUrlMap = @{
+    "AzureCloud" = "https://login.microsoftonline.com";
+    "AzureGovernmentCloud" = "https://login.microsoftonline.us";
+    "AzureChinaCloud" = "https://login.microsoftonline.cn"; #confirm
+}
+
+$AzureEnvironmentPortalURI = @{
+    "AzureCloud" = "https://portal.azure.com/";
+    "AzureGovernmentCloud" = "https://portal.azure.us/";
+    "AzureChinaCloud" = "https://portal.azure.cn/"; #confirm
 }
 
 function Install-AzSKTenantSecuritySolution
@@ -510,6 +522,8 @@ function Install-AzSKTenantSecuritySolution
                 # Creating Azure AD application: Web API
                 $TemplateParameters.Add("WebApiClientId", $WebAPIAzureADAppId)
                 $TemplateParameters.Add("UIClientId", $UIAzureADAppId)
+                $TemplateParameters.Add("AADClientAppDetailsInstance", $AzureEnvironmentToADAuthUrlMap.$AzureEnvironmentName)
+                $TemplateParameters.Add("AzureEnvironmentPortalURI", $AzureEnvironmentPortalURI.$AzureEnvironmentName)
 
 
                 #updating UI app settings for already existing UI, this will require deletion of pre-existing UI and re-deploying it with updated settings.
