@@ -1,12 +1,16 @@
 ﻿<###
 # Overview:
-    This script is used to configure Conditional Access (CA) policy to require PIM elevation from SAW for admin roles (Owner, Contributor, UAA) in a Subscription.
+    This script is used to configure Conditional Access (CA) policy to restrict PIM elevation from SAW for all built-in roles and all custom roles except for a few built-in roles in a Subscription.
+    Following is the list of excluded built-in role definitions:
+    [ Azure Front Door Domain Contributor, Azure Front Door Domain Reader, Azure Front Door Profile Reader,
+      Azure Front Door Secret Contributor, Azure Front Door Secret Reader, Defender for Storage Data Scanner,
+      AzureML Compute Operator, Cognitive Services Usages Reader, Key Vault Crypto Service Release User ]
 
 # Control ID:
-    Azure_Subscription_Configure_Conditional_Access_for_PIM
+    Azure_Subscription_AuthZ_Configure_Conditional_Access_for_PIM
 
 # Display Name:
-    Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions.
+    Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions
 
 # Prerequisites:
     'Owner' or 'User Access Administrator' role is required at Subscription level.
@@ -14,30 +18,30 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
-        2. Get the critical roles 'Owner', 'Contributor', 'User Access Administrator' where the Conditional Access policy is not configured in a Subscription.
+        2. Get the roles where the Conditional Access policy is not configured in a Subscription.
         3. Back up details of currently configured Conditional Access policy that are to be remediated.
-        4. Configure Conditional Access (CA) policy for 'Owner', 'Contributor', 'User Access Administrator' roles in the Subscription.
+        4. Configure Conditional Access (CA) policy for eligible roles in the Subscription.
 
     To rollback:
         1. Validate and install the modules required to run the script.
         2. Get the roles where the Conditional Access policy was confiured and, are to be rolled back.
-        3. Disable Conditional Access (CA) policy for 'Owner', 'Contributor', 'User Access Administrator' roles in the Subscription.
+        3. Disable Conditional Access (CA) policy for eligible roles in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to configure conditional access policy for 'Owner', 'Contributor', 'User Access Administrator' roles in the Subscription. Refer `Examples`, below.
+        3. Execute the script to configure conditional access policy for eligible roles in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
         1. To review all the roles where Conditional Access policy is not configured:
                 Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -DryRun [-PerformPreReqCheck]
 
-        2. To configure Conditional Access (CA) policy in Subscription, from a previously taken snapshot::
+        2. To configure Conditional Access (CA) policy in Subscription, from a previously taken snapshot:
                 Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'
                 
-        3. To configure Conditional Access (CA) policy for All (Owner, Contributor, User Access Administrator) roles in Subscription:
+        3. To configure Conditional Access (CA) policy for all the eligible roles (all built-in and custom roles except few built-in roles) in Subscription:
                 Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' 
         
         4. To configure Conditional Access (CA) policy only for 'Owner' role in Subscription:
@@ -158,7 +162,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
         .DESCRIPTION
         Remediates 'Azure_Subscription_Configure_Conditional_Access_for_PIM' Control.
-        Configure Conditional Access (CA) policy for 'Owner', 'Contributor' and 'User Access Administrator' in the Subscription.
+        Configure Conditional Access (CA) policy for eligible roles in the Subscription.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -173,19 +177,19 @@ function Configure-ConditionalAccessPolicyForPIM
         None. Configure-ConditionalAccessPolicyForPIM does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -DryRun.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -DryRun.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\CA_Policy_Details.csv'.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Owner'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'Owner'.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'Contributor'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'Contributor'.
 
         .EXAMPLE
-        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -RoleName 'User Access Administrator'.
+        PS> Configure-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -RoleName 'User Access Administrator'.
 
         .LINK
         None
@@ -204,7 +208,6 @@ function Configure-ConditionalAccessPolicyForPIM
 
         [String]
         [Parameter(ParameterSetName = "WetRun", Mandatory = $false, HelpMessage="Specifies the role name on which CA policy needs to be configured")]
-        [ValidateSet("Owner", "Contributor", "User Access Administrator")]
         $RoleName,
         
         [Switch]
@@ -214,6 +217,20 @@ function Configure-ConditionalAccessPolicyForPIM
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage="Specifies the path to the file to be used as input for the remediation")]
         $FilePath
+    )
+
+    # These are the roles which are excluded by the control. If no parameter for role name is provided then all roles (built-in and custom)
+    # will be fetched and these roles will be excluded from the list.
+    $excludedRoles = @(
+        "Azure Front Door Domain Contributor",
+        "Azure Front Door Domain Reader",
+        "Azure Front Door Profile Reader",
+        "Azure Front Door Secret Contributor",
+        "Azure Front Door Secret Reader",
+        "Defender for Storage Data Scanner",
+        "AzureML Compute Operator",
+        "Cognitive Services Usages Reader",
+        "Key Vault Crypto Service Release User"
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -279,36 +296,63 @@ function Configure-ConditionalAccessPolicyForPIM
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 3 of 5] Fetching Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
+    Write-Host "`n[Step 3 of 5] Checking if for all eligible roles Conditional Access (CA) policy has been configured for the subscription [$($SubscriptionId)]..."
+
+    $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
 
     # No file path provided as input to the script. Fetch currently configured Conditional Access (CA) policy in the subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
-
+        $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
+        $roleDefinitions = $policyAssignments | Select-Object -ExpandProperty RoleDefinitionDisplayName
+        
         if (-not $RoleName)
-        {
-            $adminRoles = @("Owner", "Contributor", "User Access Administrator")
+        {   
+            # Remove excluded roles from the role definition collection.
+            $eligibleRoles = $roleDefinitions | Where-Object { $_ -notin $excludedRoles }
         }
         else
         {
-            $adminRoles = @($RoleName)
+            # Validate if RoleName is a valid for the particular subscription (role name can be subscription specific for custom roles).
+            if (-not $roleDefinitions.Contains($RoleName))
+            {
+                Write-Host "The role ($($RoleName)) provided does not exist for the subsciption ($($SubscriptionId)). Exiting..."
+                return
+            }
+
+            $eligibleRoles = @($RoleName)
         }
 
+        # Fetch all the CA policies and check if for all the eligible roles, policy has been assigned.
         $nonCompliantRoles = @()
+        $nonCompliantRolesCount = 0
         $configuredPolicyDetails = New-Object -TypeName PSObject
-        $adminRoles | ForEach-Object {
+
+        # The Hash Table below will contain key-value pair of the form (role Id, mfa Rule) if MFA is enabled for that role Id. 
+        $mfaEnabledRoles = @{}
+        $eligibleRoles | ForEach-Object {
             $role = $_
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
             $roleId = $policyId.PolicyId.Split('/')
         
-            $policyDetails = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)" -Name $roleId[-1]
+            $policyDetails = $policyDetailsCollection | Where-Object { $_.Name -eq $roleId[-1] }
             $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {($_.claimValue -eq "c1" -and $_.IsEnabled -eq $true) -or ($_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true)}
-
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
             {
                 $nonCompliantRoles += $role
+                $nonCompliantRolesCount += 1
                 $nonCompliantRolesStr = $nonCompliantRoles -join ','
+            }
+
+            # Need to check for MFA as MFA and Conditional Access Policy can't be enabled simultaneously.
+            $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
+            if (![String]::IsNullOrWhiteSpace($targetRuleForMFA))
+            {
+                if ($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication')
+                {
+                    # MFA is enabled on this role.
+                    $mfaEnabledRoles[$roleId[-1]] = $targetRuleForMFA
+                }
             }
         }
     
@@ -316,11 +360,11 @@ function Configure-ConditionalAccessPolicyForPIM
         {
             $configuredPolicyDetails | Add-Member -NotePropertyName SubscriptionId -NotePropertyValue $SubscriptionId
             $configuredPolicyDetails | Add-Member -NotePropertyName NonCompliantRoles -NotePropertyValue $nonCompliantRolesStr
-            Write-Host "Conditional Access policy has not been correctly configured for [$($nonCompliantRolesStr)] role(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Conditional Access policy has not been correctly configured for [$($nonCompliantRolesCount)] role(s)." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else
         {
-            Write-Host "Conditional Access policy has been correctly configured for all [$($adminRoles)] roles. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Conditional Access policy has been correctly configured for all eligible roles. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             return
         }
     }
@@ -331,7 +375,7 @@ function Configure-ConditionalAccessPolicyForPIM
         if (-not (Test-Path -Path $FilePath))
         {
             Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-            break
+            return
         }
  
         $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
@@ -363,27 +407,49 @@ function Configure-ConditionalAccessPolicyForPIM
 
     if (-not $DryRun)
     {
+        # It is a wet run, hence we need to create policy assignments for the roles for which CA policy is not there.
         try
         {
-            $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
-
             $remediatedRoles = @()
             $skippedRoles = @()
+            $mfaConfiguredRoleNames = @()
             $remediationSummary = New-Object -TypeName PSObject
 
+            Write-Host "`nThis script will disable Multi Factor Authentication (if applied for a role) and configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            
+            $userInput = Read-Host -Prompt "(Y|N)"
+            if($userInput -ne "Y")
+            {
+                Write-Host "Conditional Access policy will not be configured for non-compliant role(s) [User permission denied]. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                return
+            }
+
+            $totalRolesCount = $configuredPolicyDetails.NonCompliantRoles.Split(',').Count;
+            $currentRoleIndex = 1
             foreach ($role in $configuredPolicyDetails.NonCompliantRoles.Split(','))
             {
-                Write-Host "`nDo you want to configure Conditional Access (CA) policy for [$($role)] role? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-            
-                $userInput = Read-Host -Prompt "(Y|N)"
-                if($userInput -ne "Y")
-                {
-                    Write-Host "Conditional Access policy will not be configured for [$($role)] role. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                    break
-                }
-
                 $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
                 $roleId = $policyId.PolicyId.Split('/')
+                Write-Host "`n[$currentRoleIndex/$totalRolesCount]"
+
+                # Before configuring CA Policy we need to check if Multi Factor Authentication is enabled for the current role
+                # MFA and CA Policies can't be enabled simultaneously
+                Write-Host "Checking if Multi Factor Authentication (MFA) is enabled for [$($role)] role..."
+                if ($mfaEnabledRoles.ContainsKey($roleId[-1]))
+                {
+                    Write-Host "MFA is enabled for [$($role)] role, disabling MFA..."
+                    $mfaRule = $mfaEnabledRoles[$roleId[-1]]
+                    $mfaConfiguredRoleNames += $role
+
+                    # Remove MFA from the enabled rules and update the policy with the current rule.
+                    $mfaRule.EnabledRule = $mfaRule.EnabledRule | Where-Object { $_ -ne "MultiFactorAuthentication" }
+                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $mfaRule | Out-Null
+                    Write-Host "Successfully disabled MFA for [$($role)] role."
+                }
+                else
+                {
+                    Write-Host "MFA is not enabled for [$($role)] role."
+                }
         
                 Write-Host "Updating Conditional Access Policy for [$($role)] role..."
                 $body = @'
@@ -418,6 +484,9 @@ function Configure-ConditionalAccessPolicyForPIM
                     $skippedRolesStr = $skippedRoles -join ','
                     Write-Host "Error while configuring Conditional Access Policy for [$($role)] role." -ForegroundColor $([Constants]::MessageType.Error)
                 }
+
+                $currentRoleIndex += 1
+                Write-Host "`n"
             }
         }
         catch
@@ -439,9 +508,18 @@ function Configure-ConditionalAccessPolicyForPIM
             $remediationSummary | Add-Member -NotePropertyName SkippedRoles -NotePropertyValue $skippedRolesStr
         }
 
+        # Adding all the roles under the heading 'MFAEnabledRoles' which have MFA enabled, it would help while roll back.
+        $mfaConfiguredRoleNamesStr = $mfaConfiguredRoleNames -join ','
+        if (![String]::IsNullOrWhiteSpace($mfaConfiguredRoleNamesStr))
+        {
+            $remediationSummary | Add-Member -NotePropertyName MFAEnabledRoles -NotePropertyValue $mfaConfiguredRoleNamesStr
+        }
+
+        $remediatedRolesCount = $remediatedRoles.Count
+        $skippedRolesCount = $skippedRoles.Count
         $colsProperty = @{Expression={$_.SubscriptionId};Label="Subscription ID";Width=40;Alignment="left"},
-                        @{Expression={$_.RemediatedRoles};Label="Remediated Roles";Width=20;Alignment="left"},
-                        @{Expression={$_.SkippedRoles};Label="Skipped Roles";Width=20;Alignment="left"}
+                        @{Expression={$remediatedRolesCount};Label="Remediated Roles Count";Width=20;Alignment="center";},
+                        @{Expression={$skippedRolesCount};Label="Skipped Roles Count";Width=20;Alignment="center";}
 
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "`nRemediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
@@ -451,7 +529,7 @@ function Configure-ConditionalAccessPolicyForPIM
         # Write this to a file.
         $remediationSummaryFile = "$($backupFolderPath)\ConfiguredCAPolicy.csv"
         $remediationSummary | Export-CSV -Path $remediationSummaryFile -NoTypeInformation
-        Write-Host "This information has been saved to $($remediationSummaryFile)"
+        Write-Host "This information has been saved to $($remediationSummaryFile)" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
     }
     else
@@ -473,7 +551,7 @@ function Disable-ConditionalAccessPolicyForPIM
 
         .DESCRIPTION
         Remediates 'Azure_Subscription_Configure_Conditional_Access_for_PIM' Control.
-        Disable Conditional Access (CA) policy for 'Owner', 'Contributor' and 'User Access Administrator' in the Subscription.
+        Disable Conditional Access (CA) policy for previously remediated role(s) in the Subscription.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -488,7 +566,7 @@ function Disable-ConditionalAccessPolicyForPIM
         None. Disable-ConditionalAccessPolicyForPIM does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'.
+        PS> Disable-ConditionalAccessPolicyForPIM -SubscriptionId '00000000-xxxx-0000-xxxx-000000000000' -FilePath 'C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\2022010101121\CA_Policy_Details\ConfiguredCAPolicy.csv'.
 
         .LINK
         None
@@ -574,13 +652,15 @@ function Disable-ConditionalAccessPolicyForPIM
     if (-not (Test-Path -Path $FilePath))
     {
         Write-Host "ERROR: Input file - $($FilePath) not found. Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-        break
+        return
     }
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`n[Step 3 of 4] Fetching currently configured Conditional Access (CA) policy for subscription [$($SubscriptionId)] from $($FilePath)"
 
     $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
+    $totalRolesCount = $configuredPolicyDetails.RemediatedRoles.Split(',').Count
+    Write-Host "Fetched $($totalRolesCount) roles which were remediated." -ForegroundColor $([Constants]::MessageType.Update)
 
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\CA_Policy_Details"
@@ -590,30 +670,33 @@ function Disable-ConditionalAccessPolicyForPIM
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
 
-    Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "`n[Step 4 of 4] Disabling Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
     try
     {
+        $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
         $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
 
         $rolledBackRoles = @()
         $skippedRoles = @()
         $rolledBackSummary = New-Object -TypeName PSObject
+        $mfaConfiguredRoleNames = $configuredPolicyDetails.MFAEnabledRoles.Split(',')
 
+        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host "`n[Step 4 of 4] Disabling Conditional Access (CA) policy for subscription [$($SubscriptionId)]..."
+        Write-Host "`nRunning this script will disable all the Conditional Access (CA) policies for the previously remediated role(s). Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        $userInput = Read-Host -Prompt "(Y|N)"
+        if($userInput -ne "Y")
+        {
+            Write-Host "Conditional Access policy will not be disabled for any of the roles [User permission denied]. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            return
+        }
+        
+        $currentRoleIndex = 1
         foreach ($role in $configuredPolicyDetails.RemediatedRoles.Split(','))
         {
-            Write-Host "`nDo you want to disable Conditional Access (CA) policy for [$($role)] role?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
-            
-            $userInput = Read-Host -Prompt "(Y|N)"
-            if($userInput -ne "Y")
-            {
-                Write-Host "Conditional Access policy will not be disabled for [$($role)] role. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
-                continue
-            }
-
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
             $roleId = $policyId.PolicyId.Split('/')
-        
+
+            Write-Host "`n[$currentRoleIndex/$totalRolesCount]"
             Write-Host "Disabling Conditional Access Policy for [$($role)] role..."
             $body = @'
 	        {
@@ -633,6 +716,19 @@ function Disable-ConditionalAccessPolicyForPIM
 
             $updatedPolicyDetail = Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $body
 
+            # Also, we need to check if there was MFA enabled on the subscription before remediation, if it was then we need to configure while rolling back.
+            if ($mfaConfiguredRoleNames.Contains($role))
+            {
+                # Configure MFA here.
+                $policyDetails = $policyDetailsCollection | Where-Object { $_.Name -eq $roleId[-1] }
+                $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
+                if ($targetRuleForMFA -and !($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication'))
+                {
+                    $targetRuleForMFA.EnabledRule += 'MultiFactorAuthentication'
+                    Update-AzRoleManagementPolicy -Name $roleId[-1] -Scope "subscriptions/$($SubscriptionId)" -Rule $targetRuleForMFA | Out-Null
+                }
+            }
+
             $configuredPolicyDetail = $updatedPolicyDetail.EffectiveRule | Where-Object {$_.claimValue -eq "c1" -and $_.IsEnabled -eq $false}
 
             if (![String]::IsNullOrWhiteSpace($configuredPolicyDetail))
@@ -647,6 +743,9 @@ function Disable-ConditionalAccessPolicyForPIM
                 $skippedRolesStr = $skippedRoles -join ','
                 Write-Host "Error while disabling Conditional Access Policy for [$($role)] role." -ForegroundColor $([Constants]::MessageType.Error)
             }
+
+            $currentRoleIndex += 1
+            Write-Host "`n"
         }
     }
     catch
@@ -668,9 +767,11 @@ function Disable-ConditionalAccessPolicyForPIM
         $rolledBackSummary | Add-Member -NotePropertyName SkippedRoles -NotePropertyValue $skippedRolesStr
     }
 
+    $rolledBackRolesCount = $rolledBackRoles.Count
+    $skippedRolesCount = $skippedRoles.Count
     $colsProperty = @{Expression={$_.SubscriptionId};Label="Subscription ID";Width=40;Alignment="left"},
-                    @{Expression={$_.RolledBackRoles};Label="Rolled Back Roles";Width=20;Alignment="left"},
-                    @{Expression={$_.SkippedRoles};Label="Skipped Roles";Width=20;Alignment="left"}
+                    @{Expression={$rolledBackRolesCount};Label="Rolled Back Roles Count";Width=20;Alignment="center"},
+                    @{Expression={$skippedRolesCount};Label="Skipped Roles Count";Width=20;Alignment="center"}
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`nRollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
@@ -680,7 +781,7 @@ function Disable-ConditionalAccessPolicyForPIM
     # Write this to a file.
     $rolledBackSummaryFile = "$($backupFolderPath)\RolledbackCAPolicy.csv"
     $rolledBackSummary | Export-CSV -Path $rolledBackSummaryFile -NoTypeInformation
-    Write-Host "This information has been saved to $($rolledBackSummaryFile)"
+    Write-Host "This information has been saved to $($rolledBackSummaryFile)" -ForegroundColor $([Constants]::MessageType.Info)
 }
 
 # Defines commonly used constants.
