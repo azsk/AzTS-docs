@@ -804,7 +804,7 @@ function Remove-ConfigMicrosoftDefender
                 }
                 else
                 {
-
+                    $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier 
                 }
                 
                     if (($rolledBackResource | Measure-Object).Count -gt 0) {
