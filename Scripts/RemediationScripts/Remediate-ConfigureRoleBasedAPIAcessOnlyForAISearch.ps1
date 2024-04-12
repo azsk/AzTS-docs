@@ -590,7 +590,7 @@ function Configure-RBACAPIAccessOnly
         }
         else
         {
-            Write-Host "API access set as RBAC only for for [$($totalAISearchservicesRemediated)] out of [$($totalAISearchServiceWithoutRBACOnlyAPIAccess)] Azure AI Search services " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "API access set as RBAC only for [$($totalAISearchservicesRemediated)] out of [$($totalAISearchServiceWithoutRBACOnlyAPIAccess)] Azure AI Search services " -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -671,7 +671,7 @@ function Configure-RBACAPIAccessOnly
     }
     else
     {
-        Write-Host "[Step 5 of 5] Setting RBAC only API access for Azure AI Search services)"
+        Write-Host "[Step 5 of 5] Setting RBAC only API access for Azure AI Search services"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
