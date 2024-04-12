@@ -17,7 +17,7 @@
         1. Validate and install the modules required to run the script.
         2. Get the list of Azure AI Search services in a Subscription that doesn't have only RBAC(Role based access control) API Access.
         3. Back up details of Azure AI Search services that are to be remediated.
-        4. Set only RBAC(Role based access control) API Access on the non compliant Azure AI Search services in the Subscription.
+        4. Set only RBAC(Role based access control) API Access on the non-compliant Azure AI Search services in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script.
@@ -386,7 +386,7 @@ function Configure-RBACAPIAccessOnly
             $_ = Get-AzSearchService -ResourceGroupName $_.ResourceGroupName -Name $_.Name
             $DisableLocalAuth = $_.DisableLocalAuth
 
-            # AuthOptions need to be saved or rollback purpose
+            # AuthOptions need to be saved for rollback purpose
             # there are 3 modes available for API access control. If we need to rollback, we need to provide AuthOption as mandatory value
             $authOption= "ApiKeyOnly"
             if($_.AuthOptions.AadOrApiKey.AadAuthFailureMode -ne $null)
@@ -491,7 +491,7 @@ function Configure-RBACAPIAccessOnly
         if(-not $AutoRemediation)
         {
 
-            Write-Host "API access will be set as RBAC only on all Aure AI Search services listed for remediation." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "API access will be set as RBAC only on all Azure AI Search services listed for remediation." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
             if (-not $Force)
             {
@@ -522,6 +522,7 @@ function Configure-RBACAPIAccessOnly
         Write-Host $([Constants]::SingleDashLine)
         # To hold results from the remediation.
         $AISearchservicesRemediated = @()
+        $AISearchservicesSkipped = @()
     
         # Remediate AI search service by setting RBAC Only as API access 
         $AISearchServiceWithoutRBACOnlyAPIAccess | ForEach-Object {
@@ -530,7 +531,7 @@ function Configure-RBACAPIAccessOnly
             $resourceGroupName = $_.ResourceGroupName; 
 
             # Holds the list of Azure AI Search services where API access change is skipped
-            $AISearchservicesSkipped = @()
+            
             try
             {   
                 Write-Host "Setting RBAC only API access for Azure AI search services : [$name]." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -584,12 +585,12 @@ function Configure-RBACAPIAccessOnly
 
         if ($totalAISearchservicesRemediated -eq ($AISearchServiceWithoutRBACOnlyAPIAccess | Measure-Object).Count)
         {
-            Write-Host "API access set as RBAC only for all Aure AI Search services" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "API access set as RBAC only for all Azure AI Search services" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         else
         {
-            Write-Host "API access set as RBAC only for for [$($totalAISearchservicesRemediated)] out of [$($totalAISearchServiceWithoutRBACOnlyAPIAccess)] Azure AI Search serivces " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "API access set as RBAC only for for [$($totalAISearchservicesRemediated)] out of [$($totalAISearchServiceWithoutRBACOnlyAPIAccess)] Azure AI Search services " -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -615,7 +616,7 @@ function Configure-RBACAPIAccessOnly
                 # Write this to a file.
                 $AISearchServiceSkippedFile = "$($backupFolderPath)\SkippedAISearchserviceAPIAccess.csv"
                 $AISearchServiceSkipped | Export-CSV -Path $AISearchServiceSkippedFile -NoTypeInformation
-                Write-Host "The information related to Azure AI Seach service where APi access id not set as RBAC only has been saved to [$($AISearchServiceSkipped)]." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "The information related to Azure AI Search service where API access is not set as RBAC only has been saved to [$($AISearchServiceSkipped)]." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -625,7 +626,7 @@ function Configure-RBACAPIAccessOnly
         
             if ($($AISearchservicesRemediated | Measure-Object).Count -gt 0)
             {
-                Write-Host "Successfully set API access as RBAC only for following Azure AI Seach services in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set API access as RBAC only for following Azure AI Search services in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $AISearchservicesRemediated | Format-Table -Property $colsProperty -Wrap
 
@@ -641,10 +642,10 @@ function Configure-RBACAPIAccessOnly
 
             if ($($AISearchServiceSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "Error changing API access for following Azure AI Seach services:" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error changing API access for following Azure AI Search services:" -ForegroundColor $([Constants]::MessageType.Error)
                 $AISearchServiceSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
-                # AISearchServiceSkipped this to a file.
+                # Adding AISearchServiceSkipped to a file.
                 $AISearchServiceSkippedFile = "$($backupFolderPath)\SkippedAISearchserviceAPIAccess.csv"
                 $AISearchServiceSkipped | Export-CSV -Path $AISearchServiceSkippedFile -NoTypeInformation
                 Write-Host $([Constants]::SingleDashLine)
@@ -670,7 +671,7 @@ function Configure-RBACAPIAccessOnly
     }
     else
     {
-        Write-Host "[Step 5 of 5] Setting RBAc only API access for Azure AI Search services)"
+        Write-Host "[Step 5 of 5] Setting RBAC only API access for Azure AI Search services)"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
