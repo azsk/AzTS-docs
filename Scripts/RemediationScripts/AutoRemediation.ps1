@@ -172,6 +172,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_CosmosDB_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_Bastion_AuthZ_Disable_Shareable_Link") -or
                 ($control.ControlId -eq "Azure_AVD_SI_Configure_HostPool_SecureBoot") -or
+                ($control.ControlId -eq "Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only") -or
                 ($control.ControlId -eq "Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy") -or 
                 ($control.ControlId -eq "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only") -or
                 ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics")){

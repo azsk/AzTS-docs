@@ -61,6 +61,8 @@
 
 30. [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](ControlsEligibleForRemediationThroughUI.md#30-Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only)
 
+31. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](ControlsEligibleForRemediationThroughUI.md#31-azure_aisearch_authz_enable_role_based_api_access_only)
+
 
 <br />
 ___
@@ -455,6 +457,19 @@ Use Microsoft Entra ID Only Authentication for Synapse workspace.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace](Remediate-EnableEntraIdAuthenticationOnlyForSynapseWorkspace.ps1)
+
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+
+## 31. Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only
+
+### Display Name
+Protect Azure AI Search Instances by only allowing RBAC API Access
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch](Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch.ps1)
 
 
 ### Minimum permissions required to run the script
