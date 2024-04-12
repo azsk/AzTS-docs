@@ -296,17 +296,17 @@ function Configure-RBACAPIAccessOnly
             {
                 $name = $_.ResourceName
                 $resourceGroupName = $_.ResourceGroupName
-                $service = Get-AzSearchService -Name $name -ResourceGroupName $resourceGroupName -ErrorAction SilentlyContinue
+                $service = Get-AzSearchService -Name $name -ResourceGroupName $resourceGroupName 
                 $AISearchServices = $AISearchServices + $service
             }
             catch
             {
-                Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error while fetching Azure AI Search service from input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "Skipping the Resource: [$($_.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","Valid resource id(s) not found in input json file.")    
+                $logResource.Add("Reason","Error while fetching Azure AI Search service from input json file.")    
                 $logSkippedResources += $logResource
                 Write-Host $([Constants]::SingleDashLine)
             }
