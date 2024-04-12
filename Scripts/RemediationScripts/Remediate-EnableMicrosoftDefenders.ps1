@@ -430,6 +430,7 @@ function Enable-MicrosoftDefender
         if (-not $Force)
         {
             Write-Host "This step will remediate non-compliant resource type for subscription [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "NOTE: Pricing tier for storage accounts resource type will be set to [$($reqMDCTier)] with sub plan DefenderForStorageV2 " -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning)
         
             $userInput = Read-Host -Prompt "(Y|N)"
@@ -456,7 +457,14 @@ function Enable-MicrosoftDefender
             $nonCompliantMDCTierResourcetype | ForEach-Object {
                 $resource = $_
                 try {
-                    $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
+
+                    if ($_.Name -eq "StorageAccounts") {
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 
+                    }
+                    else {
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
+                    }
+                   
                    
                     if (($remediatedResource | Measure-Object).Count -gt 0) {
                         $remediatedResources += $remediatedResource | Select-Object  @{N = 'Id'; E = { $resource.Id } },
@@ -744,13 +752,14 @@ function Remove-ConfigMicrosoftDefender
         if (-not $Force)
         {
             Write-Host "This step will rollback following resource type for subscription [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "NOTE: Storage accounts resource type will be rolled back to the pricing tier but the sub plan will not be set. "
             Write-Host "Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning)
         
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if($userInput -ne "Y")
             {
-                Write-Host " compliant resource type in the Subscription will be rolled back. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Compliant resource type in the Subscription will be rolled back. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
