@@ -63,8 +63,14 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 51. [Azure_CosmosDB_DP_Use_Secure_TLS_Version](Readme.md#51-Azure_CosmosDB_DP_Use_Secure_TLS_Version)
 52. [Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only](Readme.md#52-Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only)
 53. [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](Readme.md#53-azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
-54. [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](ReadMe.md#54-azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
-
+54. [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](Readme.md#54-azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
+55. [Azure_Subscription_Config_Enable_MicrosoftDefender_Databases](Readme.md#55-Azure_Subscription_Config_Enable_MicrosoftDefender_Databases)
+56. [Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager](Readme.md#56-Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager)
+57. [Azure_Subscription_Config_Enable_MicrosoftDefender_AppService](Readme.md#57-azure_subscription_config_enable_microsoftdefender_appservice)
+58. [Azure_Subscription_Config_Enable_MicrosoftDefender_Storage](Readme.md#58-Azure_Subscription_Config_Enable_MicrosoftDefender_Storage)
+59. [Azure_Subscription_Config_Enable_MicrosoftDefender_Container](Readme.md#59-Azure_Subscription_Config_Enable_MicrosoftDefender_Container)
+60. [Azure_Subscription_Config_Enable_MicrosoftDefender_Servers](Readme.md#60-Azure_Subscription_Config_Enable_MicrosoftDefender_Servers)
+61. [Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault](Readme.md#61-Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault)
 <br />
 
 ___ 
@@ -1122,7 +1128,7 @@ Partial
 ## 54. 	Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
 
 ### Display Name
- AppService must not use basic authentication for FTP and SCM access.
+AppService must not use basic authentication for FTP and SCM access.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DisableBasicAuthForAppServices](Remediate-DisableBasicAuthForAppServices.ps1)
@@ -1135,8 +1141,129 @@ Yes
 
 ### Supports rollback?
 Yes
-___
 
+## 55. Azure_Subscription_Config_Enable_MicrosoftDefender_Databases
+
+### Display Name
+Microsoft Defender for Databases should be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+
+## 56. Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager
+
+### Display Name
+Microsoft Defender for Resource Manager should be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+## 57. Azure_Subscription_Config_Enable_MicrosoftDefender_AppService
+
+### Display Name
+Microsoft Defender for App Service should be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+## 58. Azure_Subscription_Config_Enable_MicrosoftDefender_Storage
+
+### Display Name
+Microsoft Defender for Storage should be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+
+## 59. Azure_Subscription_Config_Enable_MicrosoftDefender_Container
+
+### Display Name
+Microsoft Defender for Containers should be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+## 60. Azure_Subscription_Config_Enable_MicrosoftDefender_Servers
+
+### Display Name
+Microsoft Defender for Servers should be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+
+## 61. Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault
+
+### Display Name
+ Microsoft Defender for Key Vault should be enabled on subscriptions.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+___
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
