@@ -941,6 +941,10 @@
               "value": "parameters('AzureEnvironmentPortalURI')"
             },
             {
+              "name": "CorsPolicySettings__OriginUrl",
+              "value": "[concat('https://',toLower(variables('WebUI')), parameters('WebAppEndpointSuffix'))]"
+            },
+            {
               "name": "WorkItemProcessorSettings__AppName",
               "value": "[variables('WorkItemProcessor')]"
             },

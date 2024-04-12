@@ -13,13 +13,13 @@ $AzureEnvironmentAppServiceURI = @{
 $AzureEnvironmentToADAuthUrlMap = @{
     "AzureCloud" = "https://login.microsoftonline.com";
     "AzureGovernmentCloud" = "https://login.microsoftonline.us";
-    "AzureChinaCloud" = "https://login.microsoftonline.cn"; #confirm
+    "AzureChinaCloud" = "https://login.microsoftonline.cn";  
 }
 
 $AzureEnvironmentPortalURI = @{
     "AzureCloud" = "https://portal.azure.com/";
     "AzureGovernmentCloud" = "https://portal.azure.us/";
-    "AzureChinaCloud" = "https://portal.azure.cn/"; #confirm
+    "AzureChinaCloud" = "https://portal.azure.cn/"; 
 }
 
 function Install-AzSKTenantSecuritySolution
@@ -414,7 +414,7 @@ function Install-AzSKTenantSecuritySolution
                  }
                  elseif($AzureEnvironmentName -eq 'AzureChinaCloud')
                  {
-                     $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.cn") #this need to be checked
+                     $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.cn") 
                      $TemplateParameters.Add("WebAppEndpointSuffix", ".azurewebsites.cn")
                  }
                  else 
