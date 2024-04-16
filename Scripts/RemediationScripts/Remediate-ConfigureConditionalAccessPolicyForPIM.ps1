@@ -299,11 +299,15 @@ function Configure-ConditionalAccessPolicyForPIM
     Write-Host "`n[Step 3 of 5] Checking if for all eligible roles Conditional Access (CA) policy has been configured for the subscription [$($SubscriptionId)]..."
 
     $policyAssignments = Get-AzRoleManagementPolicyAssignment -Scope "subscriptions/$($SubscriptionId)"
+    $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
+
+    # The Hash Table below will contain key-value pair of the form (role Id, mfa Rule) if MFA is enabled for that role Id. 
+    $mfaEnabledRoles = @{}
+    $eligibleRoles
 
     # No file path provided as input to the script. Fetch currently configured Conditional Access (CA) policy in the subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath))
     {
-        $policyDetailsCollection = Get-AzRoleManagementPolicy -Scope "subscriptions/$($SubscriptionId)"
         $roleDefinitions = $policyAssignments | Select-Object -ExpandProperty RoleDefinitionDisplayName
         
         if (-not $RoleName)
@@ -328,13 +332,11 @@ function Configure-ConditionalAccessPolicyForPIM
         $nonCompliantRolesCount = 0
         $configuredPolicyDetails = New-Object -TypeName PSObject
 
-        # The Hash Table below will contain key-value pair of the form (role Id, mfa Rule) if MFA is enabled for that role Id. 
-        $mfaEnabledRoles = @{}
+        # Find for all roles if MFA has been enabled.
         $eligibleRoles | ForEach-Object {
             $role = $_
             $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
             $roleId = $policyId.PolicyId.Split('/')
-        
             $policyDetails = $policyDetailsCollection | Where-Object { $_.Name -eq $roleId[-1] }
             $configuredPolicyDetail = $policyDetails.EffectiveRule | Where-Object {($_.claimValue -eq "c1" -and $_.IsEnabled -eq $true) -or ($_.claimValue -eq "urn:microsoft:req1" -and $_.IsEnabled -eq $true)}
             if ([String]::IsNullOrWhiteSpace($configuredPolicyDetail))
@@ -342,17 +344,6 @@ function Configure-ConditionalAccessPolicyForPIM
                 $nonCompliantRoles += $role
                 $nonCompliantRolesCount += 1
                 $nonCompliantRolesStr = $nonCompliantRoles -join ','
-            }
-
-            # Need to check for MFA as MFA and Conditional Access Policy can't be enabled simultaneously.
-            $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
-            if (![String]::IsNullOrWhiteSpace($targetRuleForMFA))
-            {
-                if ($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication')
-                {
-                    # MFA is enabled on this role.
-                    $mfaEnabledRoles[$roleId[-1]] = $targetRuleForMFA
-                }
             }
         }
     
@@ -379,10 +370,30 @@ function Configure-ConditionalAccessPolicyForPIM
         }
  
         $configuredPolicyDetails = Import-Csv -LiteralPath $FilePath
+        $eligibleRoles = $configuredPolicyDetails.NonCompliantRoles.Split(',')
 
         if (($configuredPolicyDetails | Measure-Object).Count -gt 0)
         {
             Write-Host "Successfully fetched Conditional Access (CA) policy details for subscription [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Update)
+        }
+    }
+
+    # Check if MFA is enabled for this particular role
+    $eligibleRoles | ForEach-Object {
+        $role = $_
+        $policyId = $policyAssignments | Where-Object {$_.RoleDefinitionDisplayName -contains $role}
+        $roleId = $policyId.PolicyId.Split('/')
+        $policyDetails = $policyDetailsCollection | Where-Object { $_.Name -eq $roleId[-1] }
+
+        # Need to check for MFA as MFA and Conditional Access Policy can't be enabled simultaneously.
+        $targetRuleForMFA = $policyDetails.EffectiveRule | Where-Object { $_.Id -eq 'Enablement_EndUser_Assignment' -and $_.RuleType -eq 'RoleManagementPolicyEnablementRule' }
+        if (![String]::IsNullOrWhiteSpace($targetRuleForMFA))
+        {
+            if ($targetRuleForMFA.EnabledRule -match 'MultiFactorAuthentication')
+            {
+                # MFA is enabled on this role.
+                $mfaEnabledRoles[$roleId[-1]] = $targetRuleForMFA
+            }
         }
     }
 
@@ -415,7 +426,7 @@ function Configure-ConditionalAccessPolicyForPIM
             $mfaConfiguredRoleNames = @()
             $remediationSummary = New-Object -TypeName PSObject
 
-            Write-Host "`nThis script will disable Multi Factor Authentication (if applied for a role) and configure a Conditional Access (CA) policy for all non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "`nThis script will disable Multi Factor Authentication (if applied for a role) and configure a Conditional Access (CA) policy for all eligible and non-compliant role(s) in your Azure Subscription ($($SubscriptionId)). After running this script, you will be required to use both a Standard Azure Workstation and a Security-Compliant Access Level Token (SC-ALT) account to elevate your access for all the non-compliant roles. Please ensure that you have necessary permissions to access this subscription post run of this script. Do you want to continue? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             
             $userInput = Read-Host -Prompt "(Y|N)"
             if($userInput -ne "Y")
@@ -510,10 +521,7 @@ function Configure-ConditionalAccessPolicyForPIM
 
         # Adding all the roles under the heading 'MFAEnabledRoles' which have MFA enabled, it would help while roll back.
         $mfaConfiguredRoleNamesStr = $mfaConfiguredRoleNames -join ','
-        if (![String]::IsNullOrWhiteSpace($mfaConfiguredRoleNamesStr))
-        {
-            $remediationSummary | Add-Member -NotePropertyName MFAEnabledRoles -NotePropertyValue $mfaConfiguredRoleNamesStr
-        }
+        $remediationSummary | Add-Member -NotePropertyName MFAEnabledRoles -NotePropertyValue $mfaConfiguredRoleNamesStr
 
         $remediatedRolesCount = $remediatedRoles.Count
         $skippedRolesCount = $skippedRoles.Count
