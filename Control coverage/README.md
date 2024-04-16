@@ -19,12 +19,16 @@ Below resource types can be checked for validating the security controls:
 |[AVDHostPool](Feature/AVDHostPool.md)|Microsoft.DesktopVirtualization/hostpools|
 |[AVDWorkspaces](Feature/AVDWorkspaces.md)|Microsoft.DesktopVirtualization/Workspaces|
 |[Bastion](Feature/Bastion.md)|Microsoft.Network/bastionHosts|
+|[BatchAccounts](Feature/BatchAccounts.md)|Microsoft.Batch/batchAccounts|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
+|[CognitiveSearch](Feature/CognitiveSearch.md|Microsoft.Search/searchServices|
 |[ContainerRegistry](Feature/ContainerRegistry.md)|Microsoft.ContainerRegistry/registries|
 |[CosmosDB](Feature/CosmosDB.md)|Microsoft.DocumentDB/databaseAccounts|
+|[DataFactory](Feature/DataFactory.md)|Microsoft.DataFactory/factories|
 |[DataLakeAnalytics](Feature/DataLakeAnalytics.md)|Microsoft.DataLakeAnalytics/accounts|
 |[DataLakeStore](Feature/DataLakeStore.md)|Microsoft.DataLakeStore/accounts|
+|[DataShare](Feature/DataShare.md)|Microsoft.DataShare/accounts|
 |[DBForMySql](Feature/DBForMySql.md)|Microsoft.DBforMySQL/servers|
 |[DBForMySqlFlexibleServer](Feature/DBForMySqlFlexibleServer.md)|Microsoft.DBforMySQL/flexibleServers|
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
@@ -32,6 +36,7 @@ Below resource types can be checked for validating the security controls:
 |[FrontDoor](Feature/FrontDoor.md)|Microsoft.Network/frontDoor|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
 |[HybridCompute](Feature/HybridCompute.md)|Microsoft.HybridCompute/machines|
+|[IotHubs](Feature/IotHubs.md)|Microsoft.Devices/IotHubs|
 |[KeyVault](Feature/KeyVault.md)|Microsoft.KeyVault/vaults|
 |[KubernetesService](Feature/KubernetesService.md)|Microsoft.ContainerService/managedClusters|
 |[LoadBalancer](Feature/LoadBalancer.md)|Microsoft.Network/loadBalancers |
@@ -45,6 +50,7 @@ Below resource types can be checked for validating the security controls:
 |[SQLManagedInstance](Feature/SQLManagedInstance.md)|Microsoft.Sql/managedInstances|
 |[SQLServer](Feature/SQLServer.md)|Microsoft.Sql/servers|
 |[Storage](Feature/Storage.md)|Microsoft.Storage/storageAccounts|
+|[StreamAnalyticsJobs](Feature/StreamAnalyticsJobs.md)|Microsoft.StreamAnalytics/streamingJobs|
 |[Subscription](Feature/SubscriptionCore.md)|
 |[SynapseWorkspace](Feature/SynapseWorkspace.md)|Microsoft.Synapse/workspaces|
 |[TrafficManager](Feature/TrafficManager.md)|Microsoft.Network/trafficmanagerprofiles|
