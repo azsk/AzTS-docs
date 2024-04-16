@@ -23,6 +23,7 @@
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
 - [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
 - [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](#azure_virtualmachine_authN_enable_aad_auth_linux)
+- [Azure_VirtualMachine_Audit_Enable_Diagnostic_Settings](#azure_virtualmachine_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -1534,4 +1535,81 @@ subscription level:
 <br />
 
 ___
+
+## Azure_VirtualMachine_Audit_Enable_Diagnostic_Settings 
+
+### Display Name 
+"Enable Security Logging in Azure Virtual Machines
+
+### Rationale 
+Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats 
+
+
+### Control Settings 
+```json 
+{
+    "ExcludeBasedOnExtension": {
+        "Windows": {
+            "AllMandatory": false,
+            "Extensions": [
+            {
+                "Type": "Compute.AKS.Windows.Billing",
+                "Publisher": "Microsoft.AKS",
+                "ExclusionMessage": "VMSS is part of AKS cluster."
+            }
+            ]
+        }
+    },
+    "Windows": {
+        "ExtensionType": "IaaSDiagnostics",
+        "Publisher": "Microsoft.Azure.Diagnostics",
+        "ProvisioningState": "Succeeded",
+        "RequiredDiagnosticLogs": [ "Audit Failure", "Audit Success" ],
+        "RequiredAuditLogsValue": "13510798882111488",
+        "AuditLogsConfig": [
+            {
+            "Name": "Audit Failure",
+            "Value": "4503599627370496"
+            },
+            {
+            "Name": "Audit Success",
+            "Value": "9007199254740992"
+            }
+        ]
+    }
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Diagnostic extension present and 'Audit Success', 'Audit Failure' logs is enabled.
+> 
+> **Failed:** 
+>  If any of the below condition is not satisfied:
+> - Diagnostic extension is present
+> - Audit Success', 'Audit Failure' logs is enabled
+>
+> **NotScanned:**
+> VM OS kind is null or empty.
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	To change the diagnostic settings from the Azure Portaly follow the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-windows-install#install-with-azure-portal and while configuring or updating the diagnostic settings ['audit success','audit failure'] logs should be enabled.
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API to list virtual machine extensions at specific level: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/extensions?api-version=2019-07-01<br />
+**Properties:** properties.type, properties.publisher, name, properties.provisioningState, properties.settings.storageAccount, properties.settings.WadCfg.DiagnosticMonitorConfiguration.WindowsEventLog.DataSource
+ <br />
+
+- REST API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** properties.storageProfile.osDisk.osType
+ <br />
+
+<br />
+
+___ 
 

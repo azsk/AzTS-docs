@@ -9,6 +9,8 @@
 ](#azure_avd_audit_enable_hostpool_bootdiagnostics)
 - [Azure_AVD_SI_Configure_HostPool_SecureBoot](#azure_avd_si_configure_hostpool_secureboot)
 - [Azure_AVD_NetSec_Restrict_Public_InboundPort](#azure_avd_netsec_restrict_public_inboundport)
+- [Azure_AVD_Audit_Enable_HostPool_Diagnostic_Settings](#azure_avd_audit_enable_hostpool_diagnostic_settings)
+- [Azure_AVD_NetSec_Restrict_Public_IPs](#)
 
 <!-- /TOC -->
 <br/>
@@ -156,3 +158,113 @@ properties.securityRules<br />
 
 ___ 
 
+## Azure_AVD_Audit_Enable_HostPool_Diagnostic_Settings
+ 
+
+### Display Name 
+"Diagnostics logs must be enabled for AVD Host pool VMs.
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticMinRetentionPeriod": "365",
+    "DiagnosticLogs": [
+        "Checkpoint",
+        "Error",
+        "Management"
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Diagnostic setting meet the following conditions:
+>   1. Diagnostic logs are enabled.
+>   2. At least one of the below setting configured:
+>       a. Log Analytics.
+>       b. Storage account with min Retention period of 365 or forever(Retention period 0).
+>       c. Event Hub.
+> 
+> **Failed:** 
+> If any of the below conditions are meet:
+>   1. Diagnostic setting meet the following conditions:
+>       a. All diagnostic logs are not enabled.
+>       b. All below settings are not configured:
+>          i. Log Analytics.
+>          ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
+>          iii. Event Hub.
+>   2. Diagnostics setting is disabled for resource.
+
+ 
+### Recommendation 
+
+- **Azure Portal** 
+    - You can change the diagnostic settings from the Azure Portal by following the steps given here: https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings
+      
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API used to list diagnostics setting and its related properties at Resource level: <br />
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview"<br />
+**Properties:**
+properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days<br />
+properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
+ <br />
+
+- REST API used to list diagnostics category group mapping and its related properties at Resource level: <br />
+/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview
+**Properties:**
+properties.categoryGroups, name
+___ 
+
+
+
+
+## Azure_AVD_NetSec_Restrict_Public_IPs
+ 
+
+### Display Name 
+Public IPs must not be open on AVD Host pool VMs.
+
+### Rationale 
+Public IPs provide direct access over the internet exposing the VM to attacks over the public network. Hence AVD Host pool VMs must not be accessible to any public IPs.
+
+
+### Control Spec 
+
+> **Passed:** 
+>   Public IPs are disabled on Azure AVD host pool VMs.
+> 
+> **Failed:** 
+> Public IPs are enabled on Azure AVD host pool VMs.
+
+ 
+### Recommendation 
+
+- **Azure Portal** 
+    - To delete the Public IPs: Go to Azure Portal --> VM --> VM Settings --> Networking --> Network Interfaces --> <Select NIC> --> IP Configurations --> <Select IP Configs with Public IP> --> Click 'Disabled' --> Save. Refer: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-public-ip-address
+     
+      
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API to list Virtual Machines at subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** 
+properties.networkProfile.networkInterfaces[\*].id<br />
+
+- REST API to list Network Interfaces at
+subscription level:
+/subscriptions/{subscriptionId}/providers/Microsoft.Network/networkInterfaces?api-version=2019-04-01<br />
+**Properties:**  publicIPAddress.id	
+ <br />
+<br />
+
+
+___ 

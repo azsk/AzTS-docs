@@ -1,0 +1,91 @@
+# Data Factory
+**Resource Type:** Microsoft.DataFactory/factories
+
+
+<!-- TOC -->
+
+- [Azure_DataFactory_Audit_Enable_Diagnostic_Settings](#azure_datafactory_audit_enable_diagnostic_settings)
+
+<!-- /TOC -->
+<br/>
+
+___ 
+
+## Azure_DataFactory_Audit_Enable_Diagnostic_Settings
+ 
+
+### Display Name 
+Enable Security Logging in Azure Data Factories
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+### Control Settings 
+```json 
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticMinRetentionPeriod": "90",
+    "DiagnosticLogs": [
+        "ActivityRuns",
+        "PipelineRuns",
+        "TriggerRuns",
+        "SandboxPipelineRuns",
+        "SandboxActivityRuns",
+        "SSISPackageEventMessages",
+        "SSISPackageExecutableStatistics",
+        "SSISPackageEventMessageContext",
+        "SSISPackageExecutionComponentPhases",
+        "SSISPackageExecutionDataStatistics",
+        "SSISIntegrationRuntimeLogs",
+        "AirflowTaskLogs",
+        "AirflowWorkerLogs",
+        "AirflowDagProcessingLogs",
+        "AirflowSchedulerLogs",
+        "AirflowWebLogs"
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Diagnostic setting meet the following conditions:
+>   1. Diagnostic logs are enabled.
+>   2. At least one of the below setting configured:
+>       a. Log Analytics.
+>       b. Storage account with min Retention period of 90 or forever(Retention period 0).
+>       c. Event Hub.
+> 
+> **Failed:** 
+> If any of the below conditions are meet:
+>   1. Diagnostic setting meet the following conditions:
+>       a. All diagnostic logs are not enabled.
+>       b. All below settings are not configured:
+>          i. Log Analytics.
+>          ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
+>          iii. Event Hub.
+>   2. Diagnostics setting is disabled for resource.
+
+ 
+### Recommendation 
+
+- **Azure Portal** 
+    - You can change the diagnostic settings from the Azure Portal by following the steps given here: https://docs.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings.
+      
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API used to list diagnostics setting and its related properties at Resource level: <br />
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview"<br />
+**Properties:**
+properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days<br />
+properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
+ <br />
+
+- REST API used to list diagnostics category group mapping and its related properties at Resource level: <br />
+/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview
+**Properties:**
+properties.categoryGroups, name
+___ 
+
+

@@ -24,6 +24,14 @@
 - [Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password](#Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password)
 - [Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles](#Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles)
 - [Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles_RG](#Azure_Subscription_AuthZ_Dont_Grant_SPNs_Privileged_Roles_RG)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_Servers](#azure_subscription_config_enable_microsoftdefender_servers)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_Container](#azure_subscription_config_enable_microsoftdefender_container)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault](#azure_subscription_config_enable_microsoftdefender_keyvault)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_Databases](#azure_subscription_config_enable_microsoftdefender_databases)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager](#azure_subscription_config_enable_microsoftdefender_resourcemanager)
+- [Azure_Subscription_Identity_Rotate_SPN_Credentials](#azure_subscription_identity_rotate_spn_credentials)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_AppService](#azure_subscription_config_enable_microsoftdefender_appservice)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_Storage](#azure_subscription_config_enable_microsoftdefender_storage)
 <!-- /TOC -->
 <br/>
 
@@ -438,18 +446,39 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Control Settings 
 ```json 
 {
+    "AllowedPIMRoles": [
+        "Azure Front Door Domain Contributor",
+        "Azure Front Door Domain Reader",
+        "Azure Front Door Profile Reader",
+        "Azure Front Door Secret Contributor",
+        "Azure Front Door Secret Reader",
+        "Defender for Storage Data Scanner",
+        "AzureML Compute Operator",
+        "Cognitive Services Usages Reader",
+        "Key Vault Crypto Service Release User",
+        "ServiceAdministrator",
+        "CoAdministrator",
+        "AccountAdministrator",
+        "ServiceAdministrator;AccountAdministrator",
+        "ServiceAdministrator;CoAdministrator",
+        "CoAdministrator;AccountAdministrator",
+        "CoAdministrator;ServiceAdministrator",
+        "AccountAdministrator;ServiceAdministrator",
+        "AccountAdministrator;CoAdministrator"
+    ],
+    "AllowedPIMRoleIds": [
+        "0ab34830-df19-4f8c-b84e-aa85b8afa6e8",
+        "0f99d363-226e-4dca-9920-b807cf8e1a5f",
+        "662802e2-50f6-46b0-aed2-e834bacc6d12",
+        "3f2eb865-5811-4578-b90a-6fc6fa0df8e5",
+        "0db238c4-885e-4c4f-a933-aa2cef684fca",
+        "1e7ca9b1-60d1-4db8-a914-f2ca1ff27c40",
+        "e503ece1-11d0-4e8e-8e2c-7a6c3bf38815",
+        "bba48692-92b0-4667-a9ad-c31c7b334ac2",
+        "08bbd89e-9f13-488c-ac41-acfcb10c90ab"
+    ],
     "AllowedIdentityDisplayNames": [
         "MS-PIM"
-    ],
-    "CriticalPIMRoleIds": [
-        "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
-        "b24988ac-6180-42a0-ab88-20f7382dd24c",
-        "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9"
-    ],
-    "CriticalPIMRoles": [
-        "Owner",
-        "Contributor",
-        "User Access Administrator"
     ],
     "ExemptedPIMGroupsPattern": "JIT_(.)*_ElevatedAccess"
 }
@@ -458,10 +487,10 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Control Spec 
 
 > **Passed:** 
-> No critical permanent role (Owner, Contributor, UAA) assignments present at subscription level OR if no role assignment present in subscription
+> No permanent role assignments present at subscription level apart from explicitly allowed roles OR if no role assignment present in subscription.
 > 
 > **Failed:** 
-> Any critical permanent role (Owner, Contributor, UAA) assignments present at subscription level
+> Any critical permanent role assignments present at subscription level apart from explicitly allowed roles.
 > 
 > **Verify:** 
 > RBAC result not found (sufficient data is not available for evaluation).
@@ -510,16 +539,30 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Control Settings 
 ```json 
 {
+    "AllowedPIMRoles": [
+        "Azure Front Door Domain Contributor",
+        "Azure Front Door Domain Reader",
+        "Azure Front Door Profile Reader",
+        "Azure Front Door Secret Contributor",
+        "Azure Front Door Secret Reader",
+        "Defender for Storage Data Scanner",
+        "AzureML Compute Operator",
+        "Cognitive Services Usages Reader",
+        "Key Vault Crypto Service Release User"
+    ],
+    "AllowedPIMRoleIds": [
+        "0ab34830-df19-4f8c-b84e-aa85b8afa6e8",
+        "0f99d363-226e-4dca-9920-b807cf8e1a5f",
+        "662802e2-50f6-46b0-aed2-e834bacc6d12",
+        "3f2eb865-5811-4578-b90a-6fc6fa0df8e5",
+        "0db238c4-885e-4c4f-a933-aa2cef684fca",
+        "1e7ca9b1-60d1-4db8-a914-f2ca1ff27c40",
+        "e503ece1-11d0-4e8e-8e2c-7a6c3bf38815",
+        "bba48692-92b0-4667-a9ad-c31c7b334ac2",
+        "08bbd89e-9f13-488c-ac41-acfcb10c90ab"
+    ],
     "AllowedIdentityDisplayNames": [
         "MS-PIM"
-    ],
-    "CriticalPIMRoleIds": [
-        "8e3af657-a8ff-443c-a75c-2fe8c4bcb635",
-        "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9"
-    ],
-    "CriticalPIMRoles": [
-        "Owner",
-        "User Access Administrator"
     ],
     "ExemptedPIMGroupsPattern": "JIT_(.)*_ElevatedAccess"
 }
@@ -528,14 +571,16 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Control Spec 
 
 > **Passed:** 
-> No critical permanent role (Owner, Contributor, UAA) assignments present at resource group scope or if no role assignment present at resource group scope.
+> If any of the below condition is not satisfied:
+> - No permanent role assignments present at resource group scope apart from explicitly allowed roles.
+> - If no role assignment present at resource group scope.
 > 
 > **Failed:** 
-> Any critical permanent role (Owner, Contributor, UAA) assignments present at resource group scope.
+>  Any permanent role assignments present at resource group scope.
 > 
 > **Verify:** 
 > RBAC result not found (sufficient data is not available for evaluation).
-> 
+
 
 ### Recommendation 
 
@@ -1199,6 +1244,419 @@ SPNs have a single credential and most scenarios that use them cannot support mu
 **Properties:** [\*].properties.scope , [\*].name
  <br />
 
+<br />
+
+___ 
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_Servers
+
+### Display Name 
+Microsoft Defender for Servers should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for servers provides real-time threat protection for your server workloads and generates hardening recommendations as well as alerts about suspicious activities.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "VirtualMachines",
+            "DisplayName": "Servers"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+    To enable this plan on all servers in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription. In the 'Defender plans' page, set 'Servers' to 'On'."
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_Container
+
+### Display Name 
+Microsoft Defender for Containers should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for Containers provides hardening, vulnerability assessment and run-time protections for your Azure, hybrid, and multi-cloud Kubernetes environments. You can use this information to quickly remediate security issues and improve the security of your containers.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "Containers",
+            "DisplayName": "Containers"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+
+    To enable this plan on all containers in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Containers' to 'On'
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault
+
+### Display Name 
+Microsoft Defender for Key Vault should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for Cloud includes Microsoft Defender for Key Vault, providing an additional layer of security intelligence. Microsoft Defender for Key Vault detects unusual and potentially harmful attempts to access or exploit Key Vault accounts.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "KeyVaults",
+            "DisplayName": "Key Vault"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+    To enable this plan on all key vaults in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Key Vault' to 'On'
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_Databases
+
+### Display Name 
+Microsoft Defender for Databases should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for Databases allows you to protect your entire database estate with attack detection and threat response for the most popular database types in Azure. Defender for Cloud provides protection for the database engines and for data types, according to their attack surface and security risks.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "SqlServers",
+            "DisplayName": "Azure SQL Databases"
+        },
+        {
+            "Type": "SqlServerVirtualMachines",
+            "DisplayName": "SQL servers on machines"
+        },
+        {
+            "Type": "OpenSourceRelationalDatabases",
+            "DisplayName": "Open-source relational databases"
+        },
+        {
+            "Type": "CosmosDbs",
+            "DisplayName": "Azure Cosmos DB"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+    To enable this plan on all Databases in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Databases' to 'On'. This will enable this plan for 'Azure SQL Databases', 'SQL servers on machines', 'Open-source relational databases' and 'Azure Cosmos DB'.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager
+
+### Display Name 
+Microsoft Defender for Resource Manager should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for Resource Manager automatically monitors the resource management operations in your organization. Defender for Cloud detects threats and alerts you about suspicious activity.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "Arm",
+            "DisplayName": "Resource Manager"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+    To enable Microsoft Defender for Resource Manager on your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Resource Manager' to 'On'.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+
+## Azure_Subscription_Identity_Rotate_SPN_Credentials
+
+### Display Name 
+App Registrations and Service Principals credentials must be regularly rotated.
+
+### Rationale 
+SPNs having access to subscription must have secrets within maximum approved expiry time.
+
+### Control Settings 
+```json 
+{
+    "ExpirationPeriodInDays": 380,
+    "ServicePrincipalTypeFilter": [ "Application", "Legacy" ],
+    "AllowedObjectIds": []
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+>  No expired service principal secrets found.
+> 
+> **Failed:** 
+>  At least one expired service principal secret found.
+
+
+### Recommendation 
+
+- **Azure Portal** 
+    Rotate/Delete expired SPN secrets.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_AppService
+
+### Display Name 
+Microsoft Defender for App Service should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for App Service leverages the scale of the cloud, and the visibility that Azure has as a cloud provider, to monitor for common web app attacks.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "AppServices",
+            "DisplayName": "App Service"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+    To enable this plan on all App Services in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'App Service' to 'On'.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+<br />
+
+___ 
+
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_Storage
+
+### Display Name 
+Microsoft Defender for Storage should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender for storage detects unusual and potentially harmful attempts to access or exploit storage accounts.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+        {
+            "Type": "StorageAccounts",
+            "DisplayName": "Storage",
+            "ReqMDCSubPlan": "DefenderForStorageV2"
+        }
+    ]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier
+> 
+> **Failed:** 
+>  Any of resource types is not configured with MDC standard tier.
+>  MDC Tier is not enabled on the Subscription.
+>  Fail if security center provider is not registered.
+>  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+> 
+
+### Recommendation 
+
+- **Azure Portal** 
+    To enable this plan on all Azure Storage accounts in your subscription:From Defender for Cloud's 'Environment settings' page, select the relevant subscription. In the 'Defender plans' page, set 'Storage' to 'On'.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- API to get providers list with registration status for subscription : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
 <br />
 
 ___ 

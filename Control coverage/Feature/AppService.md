@@ -18,6 +18,7 @@
 - [Azure_AppService_AuthN_Use_Managed_Service_Identity](#azure_appservice_authn_use_managed_service_identity)
 - [Azure_AppService_DP_Use_Secure_FTP_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
 - [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](#azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
+- [Azure_FunctionApps_Audit_Enable_Diagnostic_Settings](#azure_functionapps_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -677,3 +678,80 @@ Using the native enterprise directory for authentication ensures that there is a
 <br />
 
 ___ 
+
+
+## Azure_FunctionApps_Audit_Enable_Diagnostic_Settings
+ 
+
+### Display Name 
+Enable Security Logging in Function Apps
+
+### Rationale 
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+### Control Settings 
+```json 
+{
+    "ApplicableAppServiceKinds": [
+  		"functionapp"
+	],
+	"DiagnosticForeverRetentionValue": "0",
+	"DiagnosticMinRetentionPeriod": "90",
+	"DiagnosticLogs": [
+  		"FunctionAppLogs"
+	]
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Diagnostic setting meet the following conditions:
+>   1. Diagnostic logs are enabled.
+>   2. At least one of the below setting configured:
+>       a. Log Analytics.
+>       b. Storage account with min Retention period of 90 or forever(Retention period 0).
+>       c. Event Hub.
+>	3. App service should be of type function app.
+> 
+> **Failed:** 
+> If any of the below conditions are meet:
+>   1. Diagnostic setting meet the following conditions:
+>       a. All diagnostic logs are not enabled.
+>       b. All below settings are not configured:
+>          i. Log Analytics.
+>          ii. Storage account (with min Retention period of 90 or forever(Retention period 0).
+>          iii. Event Hub.
+>   2. Diagnostics setting is disabled for resource.
+> 
+> **Not Applicable:**
+> If App service is not of type function app.
+
+ 
+### Recommendation 
+
+- **Azure Portal** 
+    You can change the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs.
+      
+
+### Azure Policies or REST APIs used for evaluation 
+
+-Rest API used to list app service and its related properties at subscription level: <br />
+ /subscriptions/{0}/providers/Microsoft.Web/sites?api-version=2022-03-01 <br>
+**Properties:**
+kind
+
+- REST API used to list diagnostics setting and its related properties at Resource level:  <br />
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview"<br />
+**Properties:**
+properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days<br />
+properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
+ <br />
+
+- REST API used to list diagnostics category group mapping and its related properties at Resource level: <br />
+/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview
+**Properties:**
+properties.categoryGroups, name
+___ 
+
+
