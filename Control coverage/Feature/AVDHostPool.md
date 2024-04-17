@@ -10,7 +10,7 @@
 - [Azure_AVD_SI_Configure_HostPool_SecureBoot](#azure_avd_si_configure_hostpool_secureboot)
 - [Azure_AVD_NetSec_Restrict_Public_InboundPort](#azure_avd_netsec_restrict_public_inboundport)
 - [Azure_AVD_Audit_Enable_HostPool_Diagnostic_Settings](#azure_avd_audit_enable_hostpool_diagnostic_settings)
-- [Azure_AVD_NetSec_Restrict_Public_IPs](#)
+- [Azure_AVD_NetSec_Restrict_Public_IPs](#azure_avd_netsec_restrict_public_ips)
 
 <!-- /TOC -->
 <br/>
