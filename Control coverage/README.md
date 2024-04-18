@@ -22,7 +22,7 @@ Below resource types can be checked for validating the security controls:
 |[BatchAccounts](Feature/BatchAccounts.md)|Microsoft.Batch/batchAccounts|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
-|[CognitiveSearch](Feature/CognitiveSearch.md|Microsoft.Search/searchServices|
+|[CognitiveSearch](Feature/CognitiveSearch.md)|Microsoft.Search/searchServices|
 |[ContainerRegistry](Feature/ContainerRegistry.md)|Microsoft.ContainerRegistry/registries|
 |[CosmosDB](Feature/CosmosDB.md)|Microsoft.DocumentDB/databaseAccounts|
 |[DataFactory](Feature/DataFactory.md)|Microsoft.DataFactory/factories|

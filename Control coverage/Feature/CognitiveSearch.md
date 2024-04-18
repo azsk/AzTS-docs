@@ -3,6 +3,7 @@
 
 <!-- TOC -->
 
+- [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](#azure_aisearch_authz_enable_role_based_api_access_only)
 - [Azure_IoTHubs_Audit_Enable_Diagnostic_Settings](#azure_iothubs_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
@@ -22,24 +23,32 @@ Disabling key-based API access control mitigates the risk of unauthorized access
 ### Control Spec 
 
 > **Passed:** 
-> Role based API access is enabled on Azure AI search.
+> Role based API access is enabled on Azure AI search (disableLocalAuth property is true).
 > 
 > **Failed:** 
-> Role based API access is disabled on Azure AI search.
+> Role based API access is disabled on Azure AI search (disableLocalAuth property is false).
 
  
 ### Recommendation 
 
 - **Azure Portal** 
-    Remediation Steps for failed Configurations: 1. In the Azure portal, navigate to your search service. 2. In the left-navigation pane, select Keys. 3. Select Role-based access control. For more information, please refer: https://learn.microsoft.com/en-us/azure/search/search-security-rbac?tabs=config-svc-portal%2Croles-portal%2Ctest-portal%2Ccustom-role-portal%2Cdisable-keys-portal.
+    Remediation Steps for failed Configurations: 
+    >   1. In the Azure portal, navigate to your search service. 
+    >   2. In the left-navigation pane, select Keys. 
+    >   3. Select Role-based access control. 
+    
+    For more information, please refer: https://learn.microsoft.com/en-us/azure/search/search-security-rbac?tabs=config-svc-portal%2Croles-portal%2Ctest-portal%2Ccustom-role-portal%2Cdisable-keys-portal.
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API used to list Azure AI search and its related properties at Subscription level: <br />
+- REST API used to list Azure AI search and its related properties at Subscription level:
 /subscriptions/{0}/providers/Microsoft.Search/searchServices?api-version=2023-11-01<br />
 **Properties:**
 properties.disableLocalAuth
-___ 
+
+<br />
+
+___
 
 
 
@@ -66,7 +75,7 @@ Auditing logs and metrics must be enabled as they provide details for investigat
 ### Control Spec 
 
 > **Passed:** 
-> Diagnostic setting meet the following conditions:
+> Diagnostic settings meet the following conditions:
 >   1. Diagnostic logs are enabled.
 >   2. At least one of the below setting configured:
 >       a. Log Analytics.
@@ -75,11 +84,11 @@ Auditing logs and metrics must be enabled as they provide details for investigat
 > 
 > **Failed:** 
 > If any of the below conditions are meet:
->   1. Diagnostic setting meet the following conditions:
+>   1. Diagnostic settings meet the following conditions:
 >       a. All diagnostic logs are not enabled.
->       b. All below settings are not configured:
+>       b. No logs destination is configured:
 >          i. Log Analytics.
->          ii. Storage account (with min Retention period of 90 or forever(Retention period 0).
+>          ii. Storage account with min Retention period of 90 or forever(Retention period 0).
 >          iii. Event Hub.
 >   2. Diagnostics setting is disabled for resource.
 
@@ -87,22 +96,23 @@ Auditing logs and metrics must be enabled as they provide details for investigat
 ### Recommendation 
 
 - **Azure Portal** 
-    You can change the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/monitoring#configure-diagnostic-settings and while updating the diagnostic settings ''Operation Logs' category of logs and minimum required retention period is of 90 days.
+    - You can change the diagnostic settings from the Azure Portal by following the steps given here: https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/monitoring#configure-diagnostic-settings and while updating the diagnostic settings 'Operation Logs' category of logs and minimum required retention period is of 90 days.
       
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API used to list diagnostics setting and its related properties at Resource level: <br />
-/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview"<br />
+- REST API used to list diagnostic settings and its related properties at Resource level:
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
 **Properties:**
-properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days<br />
+properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days
 properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
- <br />
 
-- REST API used to list diagnostics category group mapping and its related properties at Resource level: <br />
-/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview
+- REST API used to list diagnostic category group mapping and its related properties at Resource level:
+/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview <br />
 **Properties:**
 properties.categoryGroups, name
+<br />
+<br />
 ___ 
 
 

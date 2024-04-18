@@ -37,7 +37,7 @@ Diagnostic logs must be enabled as they provide details for investigation in cas
 ### Control Spec 
 
 > **Passed:** 
-> Diagnostic setting meet the following conditions:
+> Diagnostic settings meet the following conditions:
 >   1. Diagnostic logs are enabled.
 >   2. At least one of the below setting configured:
 >       a. Log Analytics.
@@ -46,11 +46,11 @@ Diagnostic logs must be enabled as they provide details for investigation in cas
 > 
 > **Failed:** 
 > If any of the below conditions are meet:
->   1. Diagnostic setting meet the following conditions:
+>   1. Diagnostic settings meet the following conditions:
 >       a. All diagnostic logs are not enabled.
->       b. All below settings are not configured:
+>       b. No logs destination is configured:
 >          i. Log Analytics.
->          ii. Storage account (with min Retention period of 90 or forever(Retention period 0).
+>          ii. Storage account with min Retention period of 90 or forever(Retention period 0).
 >          iii. Event Hub.
 >   2. Diagnostics setting is disabled for resource.
 
@@ -63,17 +63,17 @@ Diagnostic logs must be enabled as they provide details for investigation in cas
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API used to list diagnostics setting and its related properties at Resource level: <br />
-/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview"<br />
+- REST API used to list diagnostic settings and its related properties at Resource level: 
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
 **Properties:**
-properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days<br />
+properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days
 properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
- <br />
 
-- REST API used to list diagnostics category group mapping and its related properties at Resource level: <br />
-/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview
+- REST API used to list diagnostic category group mapping and its related properties at Resource level:
+/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview <br />
 **Properties:**
 properties.categoryGroups, name
+<br />
 ___ 
 
 

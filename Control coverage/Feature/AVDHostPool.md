@@ -41,7 +41,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 ### Recommendation 
 
 - **Azure Portal** 
-    - To remediate: Go to Azure Portal --> Search Virtual Machine --> 'Help'  --> 'Boot diagnostics' settings --> 'Settings' --> Select 'Enable with managed storage account (recommended)' --> Click 'Save'.
+    - To remediate: Go to Azure Portal --> Search Virtual Machine --> 'Help'  --> 'Boot diagnostic' settings --> 'Settings' --> Select 'Enable with managed storage account (recommended)' --> Click 'Save'.
       
 
 ### Azure Policies or REST APIs used for evaluation 
@@ -162,7 +162,7 @@ ___
  
 
 ### Display Name 
-"Diagnostics logs must be enabled for AVD Host pool VMs.
+Diagnostics logs must be enabled for AVD Host pool VMs.
 
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
@@ -184,22 +184,22 @@ Logs should be retained for a long enough period so that activity trail can be r
 ### Control Spec 
 
 > **Passed:** 
-> Diagnostic setting meet the following conditions:
+> Diagnostic settings meet the following conditions:
 >   1. Diagnostic logs are enabled.
->   2. At least one of the below setting configured:
+>   2. At least one of the below logs destination is configured:
 >       a. Log Analytics.
 >       b. Storage account with min Retention period of 365 or forever(Retention period 0).
 >       c. Event Hub.
 > 
 > **Failed:** 
 > If any of the below conditions are meet:
->   1. Diagnostic setting meet the following conditions:
+>   1. Diagnostic settings meet the following conditions:
 >       a. All diagnostic logs are not enabled.
->       b. All below settings are not configured:
+>       b. No logs destination is configured:
 >          i. Log Analytics.
 >          ii. Storage account (with min Retention period of 365 or forever(Retention period 0).
 >          iii. Event Hub.
->   2. Diagnostics setting is disabled for resource.
+>   2. Diagnostics settings is disabled for resource.
 
  
 ### Recommendation 
@@ -210,17 +210,17 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API used to list diagnostics setting and its related properties at Resource level: <br />
-/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview"<br />
+- REST API used to list diagnostic settings and its related properties at Resource level:
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
 **Properties:**
-properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days<br />
+properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days
 properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
- <br />
 
-- REST API used to list diagnostics category group mapping and its related properties at Resource level: <br />
-/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview
+- REST API used to list diagnostic category group mapping and its related properties at Resource level:
+/{ResourceId}/providers/Microsoft.Insights/diagnosticSettingsCategories?api-version=2021-05-01-preview <br />
 **Properties:**
 properties.categoryGroups, name
+<br />
 ___ 
 
 

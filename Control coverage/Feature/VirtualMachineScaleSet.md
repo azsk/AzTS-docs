@@ -46,10 +46,10 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 ### Control Spec
 
 > **Passed:**
-> Required diagnostics extension is present in VM Scale Set.
+> Required diagnostic extension is present in VM Scale Set.
 >
 > **Failed:**
-> Required diagnostics extension is missing in VM Scale Set.
+> Required diagnostic extension is missing in VM Scale Set.
 >
 > **Verify:**
 > Not Applicable.
@@ -63,7 +63,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 - **Azure Portal**
 -->
 
-- Refer: https://docs.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest
+- Refer: https://docs.microsoft.com/en-us/cli/azure/vmss/diagnostic?view=azure-cli-latest
 
 <!--
 - **Enforcement Policy**
@@ -869,7 +869,7 @@ ___
 Enable Security Logging in Azure Virtual Machine Scale Sets
 
 ### Rationale
-"Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats.
+Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats.
 
 ### Control Settings 
 ```json 
@@ -1297,22 +1297,17 @@ Enable Security Logging in Azure Virtual Machine Scale Sets
 ### Recommendation
 
 
-- Refer: https://learn.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest&WT.mc_id=Portal-Microsoft_Azure_Security and while configuring or updating the diagnostic extention, default Performance counters and event logs should be configured."
+- Refer: https://learn.microsoft.com/en-us/cli/azure/vmss/diagnostic?view=azure-cli-latest&WT.mc_id=Portal-Microsoft_Azure_Security and while configuring or updating the diagnostic extention, default Performance counters and event logs should be configured."
 
 ### Azure Policies or REST APIs used for evaluation
 
 - REST API to get all the extension related details:
-  /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachineScaleSets/{2}/extensions?api-version=2022-03-01
-  <br />
-
+  /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachineScaleSets/{2}/extensions?api-version=2022-03-01 <br />
   **Properties:** properties.type, properties.provisioningState, name, properties.publisher,
-  <br />
   <br />
 
 - REST API to list all the VMSS configurations under the specified subscription:
-  /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01
-  <br />
-
+  /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01 <br />
   **Properties:** properties.storageProfile.osDisk.osType
   <br />
   <br />

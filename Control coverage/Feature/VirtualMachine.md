@@ -219,7 +219,7 @@ No Public IP address is associated with VM.
 
 - **Azure Portal** 
 
-	 Go to Azure Portal --> VM Settings --> Networking --> Network Interfaces --> Select NIC --> IP Configurations --> Select IP Configs with Public IP --> Click 'Disabled' --> Save. Refer: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-public-ip-address  
+	Go to Azure Portal --> VM Settings --> Networking --> Network Interfaces --> Select NIC --> IP Configurations --> Select IP Configs with Public IP --> Click 'Disabled' --> Save. Refer: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-public-ip-address  
 <!--
 - **PowerShell** 
 
@@ -550,11 +550,11 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 ### Control Spec 
 
 > **Passed:** 
-> 1. All required diagnostics extension(s) are configured.
-> 2. No mandatory diagnostics extension(s) have been specified for the Operating System.
+> 1. All required diagnostic extension(s) are configured.
+> 2. No mandatory diagnostic extension(s) have been specified for the Operating System.
 > 
 > **Failed:** 
-> One or more diagnostics extension(s) are not configured on the Virtual Machine.
+> One or more diagnostic extension(s) are not configured on the Virtual Machine.
 <!--
 > **Verify:** 
 > Verify condition
@@ -567,7 +567,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 
 - **Azure Portal** 
 
-	 Go to Azure Portal --> VM Properties --> Diagnostics settings --> Enable guest-level-monitoring. Refer: https://docs.microsoft.com/en-us/azure/monitoring-and-diagnostics/azure-diagnostics 
+	 Go to Azure Portal --> VM Properties --> Diagnostics settings --> Enable guest-level-monitoring. Refer: https://docs.microsoft.com/en-us/azure/monitoring-and-diagnostic/azure-diagnostic 
 <!--
 - **PowerShell** 
 
@@ -974,7 +974,7 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 
 - **Azure Portal** 
 
-	 Please refer: https://docs.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-overview 
+	 Please refer: https://docs.microsoft.com/en-us/azure/azure-monitor/agents/diagnostic-extension-overview 
 <!-- 
 - **PowerShell** 
 
@@ -1539,7 +1539,7 @@ ___
 ## Azure_VirtualMachine_Audit_Enable_Diagnostic_Settings 
 
 ### Display Name 
-"Enable Security Logging in Azure Virtual Machines
+Enable Security Logging in Azure Virtual Machines
 
 ### Rationale 
 Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats 
@@ -1583,12 +1583,12 @@ Auditing logs must be enabled as they provide details for investigation in case 
 ### Control Spec 
 
 > **Passed:** 
-> Diagnostic extension present and 'Audit Success', 'Audit Failure' logs is enabled.
+> Diagnostic extension present and 'Audit Success', 'Audit Failure' logs are enabled.
 > 
 > **Failed:** 
 >  If any of the below condition is not satisfied:
 > - Diagnostic extension is present
-> - Audit Success', 'Audit Failure' logs is enabled
+> - Audit Success', 'Audit Failure' logs are enabled.
 >
 > **NotScanned:**
 > VM OS kind is null or empty.
@@ -1596,8 +1596,7 @@ Auditing logs must be enabled as they provide details for investigation in case 
 ### Recommendation 
 
 - **Azure Portal** 
-
-	To change the diagnostic settings from the Azure Portaly follow the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-windows-install#install-with-azure-portal and while configuring or updating the diagnostic settings ['audit success','audit failure'] logs should be enabled.
+    - To change the diagnostic settings from the Azure Portaly follow the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostic-extension-windows-install#install-with-azure-portal and while configuring or updating the diagnostic settings ['audit success','audit failure'] logs should be enabled.
 
 ### Azure Policies or REST APIs used for evaluation 
 
