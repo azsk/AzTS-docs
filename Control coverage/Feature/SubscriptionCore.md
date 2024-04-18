@@ -1275,16 +1275,17 @@ Microsoft Defender for servers provides real-time threat protection for your ser
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
 
 ### Recommendation 
 
 - **Azure Portal** 
-
+    
     To enable this plan on all servers in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription. In the 'Defender plans' page, set 'Servers' to 'On'."
 
 
@@ -1294,6 +1295,7 @@ Microsoft Defender for servers provides real-time threat protection for your ser
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
@@ -1330,11 +1332,12 @@ Microsoft Defender for Containers provides hardening, vulnerability assessment a
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
 
 ### Recommendation 
 
@@ -1349,6 +1352,7 @@ Microsoft Defender for Containers provides hardening, vulnerability assessment a
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
@@ -1385,15 +1389,17 @@ Microsoft Defender for Cloud includes Microsoft Defender for Key Vault, providin
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
 
 ### Recommendation 
 
 - **Azure Portal** 
+    
     To enable this plan on all key vaults in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Key Vault' to 'On'
 
 
@@ -1403,6 +1409,7 @@ Microsoft Defender for Cloud includes Microsoft Defender for Key Vault, providin
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
@@ -1452,15 +1459,17 @@ Microsoft Defender for Databases allows you to protect your entire database esta
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
 
 ### Recommendation 
 
 - **Azure Portal** 
+    
     To enable this plan on all Databases in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Databases' to 'On'. This will enable this plan for 'Azure SQL Databases', 'SQL servers on machines', 'Open-source relational databases' and 'Azure Cosmos DB'.
 
 
@@ -1470,6 +1479,7 @@ Microsoft Defender for Databases allows you to protect your entire database esta
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
@@ -1507,15 +1517,17 @@ Microsoft Defender for Resource Manager automatically monitors the resource mana
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+  - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
 
 ### Recommendation 
 
 - **Azure Portal** 
+    
     To enable Microsoft Defender for Resource Manager on your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Resource Manager' to 'On'.
 
 
@@ -1525,6 +1537,7 @@ Microsoft Defender for Resource Manager automatically monitors the resource mana
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
@@ -1564,8 +1577,17 @@ SPNs having access to subscription must have secrets within maximum approved exp
 ### Recommendation 
 
 - **Azure Portal** 
-    Rotate/Delete expired SPN secrets.
 
+    To remove credentials from app registration go to Azure Portal --> MicrosoftEntraId --> Under Manage select App registrations --> Under manage select 'Certificates and secrets' --> Select the certificate or secret --> Delete --> select Yes.
+
+- **PowerShell** 
+
+	 ```powershell 
+	 #To remove credentials from service principal execute the below command:
+        Remove-AzureADServicePrincipalKeyCredential -ObjectId <String> -KeyId <String>
+	 ```  
+
+    
 
 ### Azure Policies or REST APIs used for evaluation 
 
@@ -1615,15 +1637,17 @@ Microsoft Defender for App Service leverages the scale of the cloud, and the vis
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
 
 ### Recommendation 
 
 - **Azure Portal** 
+    
     To enable this plan on all App Services in your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'App Service' to 'On'.
 
 
@@ -1633,6 +1657,7 @@ Microsoft Defender for App Service leverages the scale of the cloud, and the vis
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
@@ -1669,15 +1694,17 @@ Microsoft Defender for storage detects unusual and potentially harmful attempts 
 > All required resource types are configured with MDC standard tier
 > 
 > **Failed:** 
->  Any of resource types is not configured with MDC standard tier.
->  MDC Tier is not enabled on the Subscription.
->  Fail if security center provider is not registered.
->  The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
-> 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
 
 ### Recommendation 
 
 - **Azure Portal** 
+
     To enable this plan on all Azure Storage accounts in your subscription:From Defender for Cloud's 'Environment settings' page, select the relevant subscription. In the 'Defender plans' page, set 'Storage' to 'On'.
 
 
@@ -1688,6 +1715,7 @@ Microsoft Defender for storage detects unusual and potentially harmful attempts 
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
+
 - Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
 **Properties:** 
 [\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
