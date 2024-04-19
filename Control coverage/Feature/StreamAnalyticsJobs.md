@@ -1,4 +1,4 @@
-# Iot Hubs
+# Stream Analytics Jobs
 **Resource Type:** Microsoft.StreamAnalytics/streamingJobs
 
 <!-- TOC -->

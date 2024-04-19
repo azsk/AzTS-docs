@@ -46,10 +46,10 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 ### Control Spec
 
 > **Passed:**
-> Required diagnostic extension is present in VM Scale Set.
+> Required diagnostics extension is present in VM Scale Set.
 >
 > **Failed:**
-> Required diagnostic extension is missing in VM Scale Set.
+> Required diagnostics extension is missing in VM Scale Set.
 >
 > **Verify:**
 > Not Applicable.
@@ -63,7 +63,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 - **Azure Portal**
 -->
 
-- Refer: https://docs.microsoft.com/en-us/cli/azure/vmss/diagnostic?view=azure-cli-latest
+- Refer: https://docs.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest
 
 <!--
 - **Enforcement Policy**
@@ -1296,8 +1296,7 @@ Auditing logs must be enabled as they provide details for investigation in case 
 
 ### Recommendation
 
-
-- Refer: https://learn.microsoft.com/en-us/cli/azure/vmss/diagnostic?view=azure-cli-latest&WT.mc_id=Portal-Microsoft_Azure_Security and while configuring or updating the diagnostic extention, default Performance counters and event logs should be configured."
+- Refer: https://learn.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest&WT.mc_id=Portal-Microsoft_Azure_Security and while configuring or updating the diagnostic extention, default Performance counters and event logs should be configured."
 
 ### Azure Policies or REST APIs used for evaluation
 

@@ -1,4 +1,5 @@
 # Cognitive Search
+
 **Resource Type:** Microsoft.Search/searchServices
 
 <!-- TOC -->

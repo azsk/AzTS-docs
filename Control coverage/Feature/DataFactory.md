@@ -1,4 +1,5 @@
 # Data Factory
+
 **Resource Type:** Microsoft.DataFactory/factories
 
 

@@ -567,7 +567,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 
 - **Azure Portal** 
 
-	 Go to Azure Portal --> VM Properties --> Diagnostics settings --> Enable guest-level-monitoring. Refer: https://docs.microsoft.com/en-us/azure/monitoring-and-diagnostic/azure-diagnostic 
+	 Go to Azure Portal --> VM Properties --> Diagnostics settings --> Enable guest-level-monitoring. Refer: https://docs.microsoft.com/en-us/azure/monitoring-and-diagnostics/azure-diagnostics 
 <!--
 - **PowerShell** 
 
@@ -974,7 +974,7 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
 
 - **Azure Portal** 
 
-	 Please refer: https://docs.microsoft.com/en-us/azure/azure-monitor/agents/diagnostic-extension-overview 
+	 Please refer: https://docs.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-overview 
 <!-- 
 - **PowerShell** 
 
@@ -1596,7 +1596,7 @@ Auditing logs must be enabled as they provide details for investigation in case 
 ### Recommendation 
 
 - **Azure Portal** 
-    - To change the diagnostic settings from the Azure Portaly follow the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostic-extension-windows-install#install-with-azure-portal and while configuring or updating the diagnostic settings ['audit success','audit failure'] logs should be enabled.
+    - To change the diagnostic settings from the Azure Portaly follow the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-windows-install#install-with-azure-portal and while configuring or updating the diagnostic settings ['audit success','audit failure'] logs should be enabled.
 
 ### Azure Policies or REST APIs used for evaluation 
 

@@ -1,4 +1,4 @@
-# Data Factory
+# Data Share
 **Resource Type:** Microsoft.DataShare/accounts
 
 
