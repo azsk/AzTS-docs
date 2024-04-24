@@ -61,15 +61,15 @@ The UI is fairly self-explanatory and also has a "Guided Tour" feature that shou
 
 To see a basic introduction about AzTS UI, how it works and what are the functionalities it is having, please refer to the video below:
 
-[![UI](../Images/04_UI_Overview.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Introduction_About_AzTS_UI.mp4)
+[![UI](../Images/04_UI_Overview.gif)](https://azts.microsoft.com/videosforpublicgithubdoc/Ext_Introduction_About_AzTS_UI.mp4)
 
 Here are some additional video tutorials explaining the features provided by AzTS UI.
 
 ### **How to scan subscription manually**
-[![UI](../Images/04_UI_SubmitForScan.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Scan_Subscription_Manually.mp4)
+[![UI](../Images/04_UI_SubmitForScan.gif)](https:/azts.microsoft.com/videosforpublicgithubdoc/Ext_Scan_Subscription_Manually.mp4)
 
 ### **How to export control scan logs to local machine**
-[![UI](../Images/04_UI_ExportToCSV.gif)](https://azsk-azts-cdn.azureedge.net/videosforpublicgithubdoc/Ext_Export_To_CSV.mp4)
+[![UI](../Images/04_UI_ExportToCSV.gif)](https://azts.microsoft.com/videosforpublicgithubdoc/Ext_Export_To_CSV.mp4)
 
 ## Miscellanoues UI features
 - ### **Scan In Progress:**
