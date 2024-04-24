@@ -33,7 +33,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 ### Control Spec 
 
 > **Passed:** 
-> Diagnostic settings meet the following conditions:
+> Diagnostic settings should meet the following conditions:
 >   1. Diagnostic logs are enabled.
 >   2. At least one of the below setting configured:
 >       a. Log Analytics.
@@ -42,7 +42,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 > 
 > **Failed:** 
 > If any of the below conditions are meet:
->   1. Diagnostic settings meet the following conditions:
+>   1. Diagnostic settings should meet the following conditions:
 >       a. All diagnostic logs are not enabled.
 >       b. No logs destination is configured:
 >          i. Log Analytics.
