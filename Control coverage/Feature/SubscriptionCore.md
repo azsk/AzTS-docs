@@ -438,7 +438,7 @@ ___
 ## Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access 
 
 ### Display Name 
-Do not grant permanent access for privileged subscription level roles 
+Do not grant permanent access for Subscription level roles 
 
 ### Rationale 
 Permanent access increase the risk of a malicious user getting that access and inadvertently impacting a sensitive resource. To minimize this risk ensure that critical resources present in subscription are accessed only by the legitimate users when required. PIM facilitates this by limiting users to only assume higher privileges in a just in time (JIT) manner (or by assigning privileges for a shortened duration after which privileges are revoked automatically). 
@@ -490,7 +490,7 @@ Permanent access increase the risk of a malicious user getting that access and i
 > No permanent role assignments present at subscription level apart from explicitly allowed roles OR if no role assignment present in subscription.
 > 
 > **Failed:** 
-> Any critical permanent role assignments present at subscription level apart from explicitly allowed roles.
+> Any permanent role assignments present at subscription level apart from explicitly allowed roles.
 > 
 > **Verify:** 
 > RBAC result not found (sufficient data is not available for evaluation).
@@ -531,7 +531,7 @@ ___
 ## Azure_Subscription_AuthZ_Dont_Grant_Persistent_Access_RG 
 
 ### Display Name 
-Do not grant permanent access for privileged roles at resource group level 
+Do not grant permanent access at Resource Group level
 
 ### Rationale 
 Permanent access increase the risk of a malicious user getting that access and inadvertently impacting a sensitive resource. To minimize this risk ensure that critical resources present in resource group are accessed only by the legitimate users when required. PIM facilitates this by limiting users to only assume higher privileges in a just in time (JIT) manner (or by assigning privileges for a shortened duration after which privileges are revoked automatically). 
@@ -1291,7 +1291,7 @@ Microsoft Defender for servers provides real-time threat protection for your ser
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
@@ -1348,7 +1348,7 @@ Microsoft Defender for Containers provides hardening, vulnerability assessment a
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
@@ -1405,7 +1405,7 @@ Microsoft Defender for Cloud includes Microsoft Defender for Key Vault, providin
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
@@ -1475,7 +1475,7 @@ Microsoft Defender for Databases allows you to protect your entire database esta
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
@@ -1533,7 +1533,7 @@ Microsoft Defender for Resource Manager automatically monitors the resource mana
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
@@ -1560,8 +1560,7 @@ SPNs having access to subscription must have secrets within maximum approved exp
 ```json 
 {
     "ExpirationPeriodInDays": 380,
-    "ServicePrincipalTypeFilter": [ "Application", "Legacy" ],
-    "AllowedObjectIds": []
+    "ServicePrincipalTypeFilter": [ "Application", "Legacy" ]
 }
  ```  
 
@@ -1653,7 +1652,7 @@ Microsoft Defender for App Service leverages the scale of the cloud, and the vis
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
@@ -1711,7 +1710,7 @@ Microsoft Defender for storage detects unusual and potentially harmful attempts 
 ### Azure Policies or REST APIs used for evaluation 
 
 
-- API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
 **Properties:** 
 [\*].namespace, [\*].registrationState
 <br />
