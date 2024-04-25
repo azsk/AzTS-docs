@@ -122,7 +122,7 @@ By default, access to the virtual machine is restricted to sources in the same v
 ### Control Spec 
 
 > **Passed:** 
->   Public Inbound ports are disabled on Azure AVD host pool VMs.
+> Public Inbound ports are disabled on Azure AVD host pool VMs.
 > 
 > **Failed:** 
 > One of the following conditions is met:
@@ -239,7 +239,7 @@ Public IPs provide direct access over the internet exposing the VM to attacks ov
 ### Control Spec 
 
 > **Passed:** 
->   Public IPs are disabled on Azure AVD host pool VMs.
+> Public IPs are disabled on Azure AVD host pool VMs.
 > 
 > **Failed:** 
 > Public IPs are enabled on Azure AVD host pool VMs.
