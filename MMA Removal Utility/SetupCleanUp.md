@@ -49,7 +49,7 @@ Remove-AzTSMMARemovalUtilitySolutionResources `
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
-|SubscriptionId| Subscription id from which AzTS MMA Removal Utility solution resoure group will be deleted.| Yes|
+|SubscriptionId| Subscription id from which AzTS MMA Removal Utility solution resource group will be deleted.| Yes|
 |ResourceGroupName| Name of ResourceGroup which will be deleted.| Yes|
 |DeleteResourceGroup| Boolean flag to delete entire resource group of AzTS MMA Removal Utility solution resources.| Yes|
 |KeepInventoryAndProcessLogs| Boolean flag to exclude log analytics workspace and application insights while cleanup of AzTS MMA Removal Utility solution resources. This switch cannot be used with DeleteResourceGroup.| No|

@@ -98,7 +98,7 @@ $Identity.Secret
 |----|----|----|
 |DisplayName| Display Name of the Remediation Identity.| Yes|
 |ObjectId| Object Id of the Remediation Identity| No|
-|AdditionalOwnerUPNs| User Prinicipal Names (UPNs) of the additional owners for the App to be created.| No|
+|AdditionalOwnerUPNs| User Principal Names (UPNs) of the additional owners for the App to be created.| No|
 
 [Back to top…](#steps-to-install-multi-tenant-azts-mma-removal-utility)
 
@@ -199,7 +199,7 @@ $Solution.Outputs.internalMIObjectId.Value
 <br/>
 
 ### **Step 6 of 9. Grant internal remediation identity with access on key vault**  
-As part of the above step, user-assigned managed identity is created within the setup to enable function apps created to read the keyvault secrets for authentication. In this step we grant the user-assigend MI with access on key vault secrets using Grant-AzTSMMARemediationIdentityAccessOnKeyVault.
+As part of the above step, user-assigned managed identity is created within the setup to enable function apps created to read the keyvault secrets for authentication. In this step we grant the user-assigned MI with access on key vault secrets using Grant-AzTSMMARemediationIdentityAccessOnKeyVault.
 
 > _Note:_
 > _For execution of this step, user running this script should have **Owner** access on the RG._

@@ -68,7 +68,7 @@ For executing the above phases, setup requires a [User-Assigned Managed Identity
 > _Note:_
 > 1. _For creation of remediation user-assigned MI setup (preferably in a separate new RG), user running this script should have **Owner** access on the subscription in which MI is being created. If the MI is being created in an existing RG, user should have **Contributor** access on the RG._
 > 
-> 2. _For granting remediation user-assigned MI with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configuredscopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the remediation user-assigned MI with the required permissions._
+> 2. _For granting remediation user-assigned MI with above mentioned roles on the target scopes, user running this script should have **User Access Administrator (UAA) or Owner** on the configured scopes. For example, the setup is being configured for a subscription 'X', user should be having UAA role assignment on the subscription 'X' to be able to grant the remediation user-assigned MI with the required permissions._
 >
 
 Before setting up the remediation user-assigned MI, please log in to Azure Account using the following PowerShell command.
