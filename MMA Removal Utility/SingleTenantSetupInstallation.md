@@ -32,7 +32,7 @@ Let's start!
 
 
   ``` PowerShell
-  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
+  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles\DeploymentFiles"
 
   # Load AzTS MMA Removal Utility Setup script in session
   . ".\MMARemovalUtilitySetup.ps1"
