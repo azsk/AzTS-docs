@@ -571,7 +571,7 @@ Permanent access increase the risk of a malicious user getting that access and i
 ### Control Spec 
 
 > **Passed:** 
-> If any of the below condition is not satisfied:
+> If any of the below condition is satisfied:
 > - No permanent role assignments present at resource group scope apart from explicitly allowed roles.
 > - If no role assignment present at resource group scope.
 > 
