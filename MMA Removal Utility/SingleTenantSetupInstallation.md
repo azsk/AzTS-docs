@@ -224,7 +224,7 @@ Let's start!
   ``` PowerShell
   # Point current path to extracted folder location and then load the setup script from the deployment folder 
 
-  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
+  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles\DeploymentFiles"
 
   # Load AzTS MMA Removal Utility Setup script in session
   . ".\MMARemovalUtilityConsolidatedSetup.ps1"

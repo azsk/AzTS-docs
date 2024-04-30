@@ -21,7 +21,7 @@ Let's start!
 
   ``` PowerShell
   # Point current path to extracted folder location and load cleanup script from the deployment folder 
-  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
+  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles\DeploymentFiles"
   # Load AzTS MMA Removal Utility delete script in session
   . ".\MMARemovalUtilityCleanUpScript.ps1"
   # Note: Make sure you copy '.' present at the start of the line.
