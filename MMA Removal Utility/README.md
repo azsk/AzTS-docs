@@ -51,6 +51,10 @@ Discovery phase is disabled by default, users need to enable and schedule it usi
 # Schedule Discovery phase
 # -----------------------------------------------------------------#
 
+# Load AzTS MMA Removal Utility Setup script in session
+. ".\MMARemovalUtilitySetup.ps1"
+
+# Schedule or Trigger Discovery phase
 Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
@@ -116,6 +120,10 @@ Removal phase is disabled by default. Users need to enable/schedule it after val
 # Enable and Schedule Removal phase
 # -----------------------------------------------------------------#
 
+# Load AzTS MMA Removal Utility Setup script in session
+. ".\MMARemovalUtilitySetup.ps1"
+
+# Schedule or Trigger Removal phase
 Update-AzTSMMARemovalUtilityRemovalTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
