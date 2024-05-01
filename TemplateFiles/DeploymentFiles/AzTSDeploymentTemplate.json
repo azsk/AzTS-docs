@@ -846,7 +846,7 @@
             },
             {
               "name": "AADClientAppDetails__Instance",
-              "value": "[parameters('AADClientAppDetailsInstance')]"
+              "value": "[concat(parameters('AADClientAppDetailsInstance'),'/')]"
             },
             {
               "name": "AADClientAppDetails__ClientId",
