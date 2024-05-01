@@ -846,7 +846,7 @@
             },
             {
               "name": "AADClientAppDetails__Instance",
-              "value": "parameters('AADClientAppDetailsInstance')"
+              "value": "[parameters('AADClientAppDetailsInstance')]"
             },
             {
               "name": "AADClientAppDetails__ClientId",
@@ -858,7 +858,7 @@
             },
             {
               "name": "AADClientAppDetails__Issuer",
-              "value": "[concat(parameters('AADClientAppDetailsInstance'),parameters('TenantId'),'/v2.0')]"
+              "value": "[concat(parameters('AADClientAppDetailsInstance'),'/',parameters('TenantId'),'/v2.0')]"
             },
             {
               "name": "AADClientAppDetails__ApplicationId",
@@ -938,7 +938,7 @@
             },
             {
               "name": "UIConfigurations__AzureAPI",
-              "value": "parameters('AzureEnvironmentPortalURI')"
+              "value": "[parameters('AzureEnvironmentPortalURI')]"
             },
             {
               "name": "CorsPolicySettings__OriginUrl",
