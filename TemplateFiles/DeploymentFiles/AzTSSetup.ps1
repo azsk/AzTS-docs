@@ -2,12 +2,10 @@
 . "$PSScriptRoot\OnDemandScan.ps1"
 
 # Standard configuration
-
 $AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
     "AzureChinaCloud" = "https://{0}.chinacloudsites.cn";
-
 }
 
 $AzureEnvironmentToADAuthUrlMap = @{
