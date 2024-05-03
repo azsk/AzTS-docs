@@ -1,13 +1,13 @@
 ﻿<###
 # Overview:
-    This script is used to delete all non-Azure Active Directory (AAD) identity providers from all API Management services in a Subscription.
+    This script is used to delete all non-Azure Active Directory (Entra Id) identity providers from all API Management services in a Subscription.
     Basic authentication - Username/Password - is also disabled.
-    Only Azure Active Directory (AAD) is allowed to be configured as the identity provider.
+    Only Azure Active Directory (Entra Id) is allowed to be configured as the identity provider.
 
     NOTE: Managed Identity (MI) based remediation is not supported for this script.
 
 # Control ID:
-    Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
+    Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN
 
 # Display Name:
     Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials.
@@ -19,9 +19,9 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
-        2. Identify the API Management services in a Subscription that have non-Azure Active Directory (AAD) identity providers (and basic authentication) configured.
+        2. Identify the API Management services in a Subscription that have non-Azure Active Directory (Entra Id) identity providers (and basic authentication) configured.
         3. Back up details of API Management services that are to be remediated.
-        4. Delete all non-Azure Active Directory (AAD) identity providers (and basic authentication) from the API Management services in the Subscription.
+        4. Delete all non-Azure Active Directory (Entra Id) identity providers (and basic authentication) from the API Management services in the Subscription.
 
     To roll back:
         Rollback is not supported as "secrets" of the various identity provider applications need to be available for the identity providers to be reconfigured in the API Management services.
@@ -31,7 +31,7 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to delete all non-Azure Active Directory (AAD) identity providers (and basic authentication) from the API Management services in the Subscription. Refer `Examples`, below.
+        3. Execute the script to delete all non-Azure Active Directory (Entra Id) identity providers (and basic authentication) from the API Management services in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -39,11 +39,11 @@
 
            Delete-NonAadIdentityProvidersInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. To delete all non-Azure Active Directory (AAD) identity providers (including basic authentication) in all API Management services in a Subscription:
+        2. To delete all non-Azure Active Directory (Entra Id) identity providers (including basic authentication) in all API Management services in a Subscription:
 
            Delete-NonAadIdentityProvidersInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To delete all non-Azure Active Directory (AAD) identity providers (including basic authentication) in all API Management services in a Subscription, from a previously taken snapshot:
+        3. To delete all non-Azure Active Directory (Entra Id) identity providers (including basic authentication) in all API Management services in a Subscription, from a previously taken snapshot:
 
            Delete-NonAadIdentityProvidersInApiManagementServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205180800\DeleteNonAADIdentityProvidersInAPIManagementServices\APIManagementServicesWithNonAADIdentityProviders.csv
 
@@ -108,11 +108,11 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN' Control.
+        Remediates 'Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN' Control.
-        Deletes all non-Azure Active Directory (AAD) identity providers (and basic authentication) from the API Management services in the Subscription.
+        Remediates 'Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN' Control.
+        Deletes all non-Azure Active Directory (Entra Id) identity providers (and basic authentication) from the API Management services in the Subscription.
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -193,7 +193,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     $nonApplicableSkus = @("Consumption")
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Prepare to delete all non-AAD identity providers (and basic authentication) from the API Management services in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Prepare to delete all non-AAD(Entra Id) identity providers (and basic authentication) from the API Management services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -256,7 +256,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     Write-Host "[Step 2 of 4] Fetch all API Management services"
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Notes:" -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host "1. To delete all non-AAD identity providers (and basic authentication) from the API Management services in a Subscription, Contributor and higher privileges on the API Management services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "1. To delete all non-AAD(Entra Id) identity providers (and basic authentication) from the API Management services in a Subscription, Contributor and higher privileges on the API Management services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "2. Following identity providers are ALLOWED to be configured for the API Management services: [$($allowedIdentityProviders -join ', ')]. These will NOT be deleted." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "3. API Management services of the following tiers / SKUs will NOT be considered for the remediation: [$($nonApplicableSkus -join ', ')]" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
@@ -266,7 +266,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     $logRemediatedResources = @()
     $logSkippedResources=@()
 
-    $controlIds = "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN"
+    $controlIds = "Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN"
 
     if($AutoRemediation)
     {
@@ -367,11 +367,11 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     Write-Host "Found [$($totalApiManagementServices)] API Management service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
-    # Includes API Management services where non-AAD identity providers (and/or basic authentication) are enabled.
+    # Includes API Management services where non-AAD(Entra Id) identity providers (and/or basic authentication) are enabled.
     $apiManagementServicesWithNonAadIdentityProvidersEnabled = @()
 
-    # Includes API Management services where no non-AAD identity providers (including basic authentication) are enabled.
-    # These API Management services may or may not have AAD identity provider enabled.
+    # Includes API Management services where no non-AAD(Entra Id) identity providers (including basic authentication) are enabled.
+    # These API Management services may or may not have AAD(Entra Id) identity provider enabled.
     $apiManagementServicesWithoutNonAadIdentityProvidersEnabled = @()
 
     # Includes API Management services that were skipped during remediation. There were errors remediating them.
