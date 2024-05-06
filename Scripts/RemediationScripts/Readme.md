@@ -10,7 +10,7 @@
 Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/subscription for a control. These scripts are limited to the controls that have relatively lower risk to bulk-remediate.
 
 ## **List of controls with Bulk Remediation Script (BRS) support**
-1. [Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN](Readme.md#1-azure_apimanagement_authn_use_microsoft_entra_id_for_client_authn)
+1. [Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN](Readme.md#1-Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN)
 2. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](Readme.md#2-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
 3. [Azure_AppService_Config_Disable_Remote_Debugging](Readme.md#3-Azure_AppService_Config_Disable_Remote_Debugging)
 4. [Azure_AppService_DP_Dont_Allow_HTTP_Access](Readme.md#4-Azure_AppService_DP_Dont_Allow_HTTP_Access)
