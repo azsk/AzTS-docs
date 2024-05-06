@@ -5,7 +5,7 @@
 <!-- TOC -->
 
 - [Azure_ServiceFabric_AuthZ_Security_Mode_Enabled](#azure_servicefabric_authz_security_mode_enabled)
-- [Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only](#azure_servicefabric_authn_client_authn_aad_only)
+- [Azure_ServiceFabric_AuthN_Client_AuthN_Microsoft_Entra_ID_Only](#azure_servicefabric_authn_client_microsoft_entra_id_aad_only)
 - [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](#azure_servicefabric_dp_set_property_clusterprotectionlevel)
 - [Azure_ServiceFabric_AuthN_NSG_Enabled](#azure_servicefabric_authn_nsg_enabled)
 - [Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports](#azure_servicefabric_audit_publicly_exposed_load_balancer_ports)
@@ -64,10 +64,10 @@ A secure cluster prevents unauthorized access to management operations, which in
 
 ___ 
 
-## Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only 
+## Azure_ServiceFabric_AuthN_Client_AuthN_Microsoft_Entra_ID_Only 
 
 ### Display Name 
-Use Azure Active directory for client authentication on Service Fabric clusters 
+Use Microsoft Entra Id (formerly AAD) for client authentication on Service Fabric clusters 
 
 ### Rationale 
 Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
@@ -75,17 +75,17 @@ Using the native enterprise directory for authentication ensures that there is a
 ### Control Spec 
 
 > **Passed:** 
-> AAD authentication is enabled.
+> Entra Id (formerly AAD) authentication is enabled.
 > 
 > **Failed:** 
-> AAD authentication is not enabled.
+> Entra Id (formerly AAD) authentication is not enabled.
 > 
 
 ### Recommendation 
 
 - **Azure Portal** 
 
-	 A Service Fabric cluster offers several entry points to its management functionality, including the web-based Service Fabric Explorer, Visual Studio and PowerShell. Access to the cluster must be controlled using AAD. Refer: https://docs.microsoft.com/en-in/azure/service-fabric/service-fabric-cluster-creation-setup-aad 
+	 A Service Fabric cluster offers several entry points to its management functionality, including the web-based Service Fabric Explorer, Visual Studio and PowerShell. Access to the cluster must be controlled using Microsoft Entra Id (formerly AAD). Refer: https://docs.microsoft.com/en-in/azure/service-fabric/service-fabric-cluster-creation-setup-aad 
 
 <!-- - **PowerShell** 
 

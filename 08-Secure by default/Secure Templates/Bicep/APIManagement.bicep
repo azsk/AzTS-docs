@@ -78,7 +78,7 @@ resource apiManagementService 'Microsoft.ApiManagement/service@2021-08-01' = {
   resource portalSettings 'portalsettings@2021-08-01' = if (!isConsumptionTier) {
     name: 'signup'
     properties: {
-      enabled: false // Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN - Disable basic authentication.
+      enabled: false // Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN - Disable basic authentication.
     }
   }
 }

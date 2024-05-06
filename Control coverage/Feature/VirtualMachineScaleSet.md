@@ -14,7 +14,7 @@
 - [Azure_VirtualMachineScaleSet_SI_Missing_OS_Patches](#azure_virtualmachinescaleset_si_missing_os_patches)
 - [Azure_VirtualMachineScaleSet_SI_Remediate_Security_Vulnerabilities](#azure_virtualmachinescaleset_si_remediate_security_vulnerabilities)
 - [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
-- [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
+- [Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux](#Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux)
 - [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](#azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
 
 <!-- /TOC -->
@@ -743,13 +743,13 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
 
 ___
 
-## Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+## Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 ### Display Name
-AAD extension must be deployed to the Linux VMSS
+Entra Id (formerly AAD) extension must be deployed to the Linux VMSS
 
 ### Rationale
-Installing AAD extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
+Installing Entra Id (formerly AAD) extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
 
 ### Control Settings 
 ```json 
@@ -776,10 +776,10 @@ This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration
 ### Control Spec
 
 > **Passed:**
-> AAD Extension is present for Linux Virtual Machine Scale Set with provisioning state as succeeded.
+> Entra Id (formerly AAD) Extension is present for Linux Virtual Machine Scale Set with provisioning state as succeeded.
 >
 > **Failed:**
-> AAD Extension is missing or provisioning state is not succeeded.
+> Entra Id (formerly AAD) Extension is missing or provisioning state is not succeeded.
 >
 > **Error:**
 > If Orchestration mode or OS is null or empty.
@@ -791,7 +791,7 @@ This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration
 
 ### Recommendation
 Using Azure Portal :
-- To install AAD Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
+- To install Entra Id (formerly AAD) Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
 
 
 ### Azure Policies or REST APIs used for evaluation

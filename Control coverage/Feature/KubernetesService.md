@@ -5,7 +5,7 @@
 <!-- TOC -->
 
 - [Azure_KubernetesService_Deploy_Enable_Cluster_RBAC - DEPRECATED!!!](#azure_kubernetesservice_deploy_enable_cluster_rbac)
-- [Azure_KubernetesService_AuthN_Enabled_AAD](#azure_kubernetesservice_authn_enabled_aad)
+- [Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID](#azure_kubernetesservice_authn_enabled_microsoft_entra_id)
 - [Azure_KubernetesService_Deploy_Use_Latest_Version](#azure_kubernetesservice_deploy_use_latest_version)
 - [Azure_KubernetesService_Audit_Enable_Monitoring](#azure_kubernetesservice_audit_enable_monitoring)
 - [Azure_KubernetesService_NetSec_Dont_Open_Management_Ports](#azure_kubernetesservice_netsec_dont_open_management_ports)
@@ -18,7 +18,7 @@
 ___ 
 
 ## Azure_KubernetesService_Deploy_Enable_Cluster_RBAC
-[<b>Deprecation Notice!!!</b> - As on 22nd June 2022, this Control has been suspended from getting evaluated in favour of [Azure_KubernetesService_AuthN_Enabled_AAD](#azure_kubernetesservice_authn_enabled_aad).]
+[<b>Deprecation Notice!!!</b> - As on 22nd June 2022, this Control has been suspended from getting evaluated in favour of [Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID](#azure_kubernetesservice_authn_enabled_microsoft_entra_id).]
 
 ### Display Name 
 Cluster RBAC must be enabled in Kubernetes Service 
@@ -62,7 +62,7 @@ Enabling RBAC in a cluster lets you finely control access to various operations 
 
 ___ 
 
-## Azure_KubernetesService_AuthN_Enabled_AAD
+## Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID
 
 ### Display Name
 AAD should be enabled in Kubernetes Service

@@ -119,7 +119,7 @@
                   "extensionProfile":{
                     "extensions":[
                       {
-                        "name": "AADSSHLoginForLinux", // Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+                        "name": "AADSSHLoginForLinux", // Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
                         "properties": {
                           "publisher": "Microsoft.Azure.ActiveDirectory",
                           "type": "AADSSHLoginForLinux",

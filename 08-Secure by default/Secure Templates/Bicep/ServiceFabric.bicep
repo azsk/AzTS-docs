@@ -431,7 +431,7 @@ resource serviceFabricCluster 'Microsoft.ServiceFabric/clusters@2021-06-01' = {
   name: serviceFabricClusterName
   location: serviceFabricClusterLocation
   properties: {
-    azureActiveDirectory: { // Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only - Enable AAD authentication on the Service Fabric cluster.
+    azureActiveDirectory: { // Azure_ServiceFabric_AuthN_Client_AuthN_Microsoft_Entra_ID_Only - Enable Entra Id (formerly AAD) authentication on the Service Fabric cluster.
       clientApplication: clientApplicationId
       clusterApplication: clusterApplicationId
       tenantId: tenant().tenantId

@@ -3,7 +3,7 @@
     This script is used to remediate AAD Authentication Extension on Linux VMSS in a Subscription.
 
 # Control ID:
-    Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+    Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 # Display Name:
     AAD extension must be deployed to the Linux VMSS
@@ -120,10 +120,10 @@ function Setup-Prerequisites {
 function Add-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
-        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
         AAD extension must be deployed to the Linux VMSS. 
         
         .PARAMETER SubscriptionId
@@ -508,10 +508,10 @@ function Add-AADAuthExtensionforVMSS {
 function Validate-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
-        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
         AAD extension must be deployed to the Linux VMSS. 
         
         .PARAMETER SubscriptionId
@@ -731,10 +731,10 @@ function Validate-AADAuthExtensionforVMSS {
 function Remove-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
         AAD extension must be deployed to the Linux VMSS. 
         
         .PARAMETER SubscriptionId

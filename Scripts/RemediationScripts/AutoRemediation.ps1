@@ -155,7 +155,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth") -or
                 ($control.ControlId -eq "Azure_Storage_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_DBForMySQLFlexibleServer_DP_Enable_SSL") -or                
-                ($control.ControlId -eq "Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN") -or
+                ($control.ControlId -eq "Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN") -or
                 ($control.ControlId -eq "Azure_APIManagement_DP_Use_HTTPS_URL_Scheme") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version") -or
@@ -177,7 +177,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only") -or
                 ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics")){
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_AAD" ) -or
+                }elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID" ) -or
                 ($control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts")) {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $proceedWithRemediation = Read-Host -Prompt "Do you want to proceed with remediation for the control [$($control.ControlId)]? (Y|N)"
