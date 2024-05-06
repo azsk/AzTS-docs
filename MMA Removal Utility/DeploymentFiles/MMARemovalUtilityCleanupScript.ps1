@@ -2,7 +2,7 @@
 {
     Param(
         [string]
-        [Parameter(ParameterSetName = "DeleteResourceGroup", Mandatory = $true, HelpMessage="Subscription id from which AzTS MMA Removal Utility solution resoure group will be deleted.")]
+        [Parameter(ParameterSetName = "DeleteResourceGroup", Mandatory = $true, HelpMessage="Subscription id from which AzTS MMA Removal Utility solution resource group will be deleted.")]
         [Parameter(ParameterSetName = "DeleteResources", Mandatory = $true, HelpMessage="Subscription id from which AzTS MMA Removal Utility solution resources will be deleted.")]
         $SubscriptionId,
 
@@ -51,7 +51,7 @@
                 return;
             }
 
-            # Installing requied modules.
+            # Installing required modules.
             Write-Host "Required module(s): Az.Resources" -ForegroundColor Cyan
             Write-Host "Checking for required module(s)..."
             $availableModules = $(Get-Module -ListAvailable Az.Resources)
@@ -175,7 +175,7 @@
                                 return
                             }
 
-                            # Skippig deletion of server farms explicitly, will be cleanup as part of the app deletion.
+                            # Skipping deletion of server farms explicitly, will be cleanup as part of the app deletion.
                             if ($resource.Type -eq "Microsoft.Web/serverfarms")
                             {
                                 return
@@ -187,7 +187,7 @@
                             {
                                 if ($resource.Type -eq "Microsoft.ManagedIdentity/userAssignedIdentities")
                                 {
-                                    # Deleting the role assignements associated with the managed identity before deletion of managed identity.
+                                    # Deleting the role assignments associated with the managed identity before deletion of managed identity.
                                     $roleAssignments = Get-AzRoleAssignment -ObjectId $resourceDetails.Properties.PrincipalId
                                     $roleAssignments | ForEach-Object {
                                         $roleAssignment = $_

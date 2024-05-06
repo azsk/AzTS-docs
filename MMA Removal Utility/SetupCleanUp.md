@@ -21,7 +21,7 @@ Let's start!
 
   ``` PowerShell
   # Point current path to extracted folder location and load cleanup script from the deployment folder 
-  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles"
+  CD "<LocalExtractedFolderPath>\AzTSMMARemovalUtilityDeploymentFiles\DeploymentFiles"
   # Load AzTS MMA Removal Utility delete script in session
   . ".\MMARemovalUtilityCleanUpScript.ps1"
   # Note: Make sure you copy '.' present at the start of the line.
@@ -49,7 +49,7 @@ Remove-AzTSMMARemovalUtilitySolutionResources `
 **Parameter details:**
 |Param Name|Description|Required?
 |----|----|----|
-|SubscriptionId| Subscription id from which AzTS MMA Removal Utility solution resoure group will be deleted.| Yes|
+|SubscriptionId| Subscription id from which AzTS MMA Removal Utility solution resource group will be deleted.| Yes|
 |ResourceGroupName| Name of ResourceGroup which will be deleted.| Yes|
 |DeleteResourceGroup| Boolean flag to delete entire resource group of AzTS MMA Removal Utility solution resources.| Yes|
 |KeepInventoryAndProcessLogs| Boolean flag to exclude log analytics workspace and application insights while cleanup of AzTS MMA Removal Utility solution resources. This switch cannot be used with DeleteResourceGroup.| No|

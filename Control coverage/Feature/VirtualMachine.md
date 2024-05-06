@@ -22,7 +22,8 @@
 - [Azure_VirtualMachine_SI_Remediate_Assessment_Soln_Vulnerabilities](#azure_virtualmachine_si_remediate_assessment_soln_vulnerabilities)
 - [Azure_VirtualMachine_NetSec_Open_Allowed_Ports_Only](#azure_virtualmachine_netsec_open_allowed_ports_only)
 - [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
-- [Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux](#azure_virtualmachine_authN_enable_microsoft_entra_id_auth_linux)
+- [Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_Id_Auth_Linux](#azure_virtualmachine_authN_enable_microsoft_entra_id_auth_linux)
+- [Azure_VirtualMachine_Audit_Enable_Diagnostic_Settings](#azure_virtualmachine_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -218,7 +219,7 @@ No Public IP address is associated with VM.
 
 - **Azure Portal** 
 
-	 Go to Azure Portal --> VM Settings --> Networking --> Network Interfaces --> Select NIC --> IP Configurations --> Select IP Configs with Public IP --> Click 'Disabled' --> Save. Refer: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-public-ip-address  
+	Go to Azure Portal --> VM Settings --> Networking --> Network Interfaces --> Select NIC --> IP Configurations --> Select IP Configs with Public IP --> Click 'Disabled' --> Save. Refer: https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-public-ip-address  
 <!--
 - **PowerShell** 
 
@@ -549,11 +550,11 @@ Diagnostics logs are needed for creating activity trail while investigating an i
 ### Control Spec 
 
 > **Passed:** 
-> 1. All required diagnostics extension(s) are configured.
-> 2. No mandatory diagnostics extension(s) have been specified for the Operating System.
+> 1. All required diagnostic extension(s) are configured.
+> 2. No mandatory diagnostic extension(s) have been specified for the Operating System.
 > 
 > **Failed:** 
-> One or more diagnostics extension(s) are not configured on the Virtual Machine.
+> One or more diagnostic extension(s) are not configured on the Virtual Machine.
 <!--
 > **Verify:** 
 > Verify condition
@@ -1534,4 +1535,80 @@ subscription level:
 <br />
 
 ___
+
+## Azure_VirtualMachine_Audit_Enable_Diagnostic_Settings 
+
+### Display Name 
+Enable Security Logging in Azure Virtual Machines
+
+### Rationale 
+Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats 
+
+
+### Control Settings 
+```json 
+{
+    "ExcludeBasedOnExtension": {
+        "Windows": {
+            "AllMandatory": false,
+            "Extensions": [
+            {
+                "Type": "Compute.AKS.Windows.Billing",
+                "Publisher": "Microsoft.AKS",
+                "ExclusionMessage": "VMSS is part of AKS cluster."
+            }
+            ]
+        }
+    },
+    "Windows": {
+        "ExtensionType": "IaaSDiagnostics",
+        "Publisher": "Microsoft.Azure.Diagnostics",
+        "ProvisioningState": "Succeeded",
+        "RequiredDiagnosticLogs": [ "Audit Failure", "Audit Success" ],
+        "RequiredAuditLogsValue": "13510798882111488",
+        "AuditLogsConfig": [
+            {
+            "Name": "Audit Failure",
+            "Value": "4503599627370496"
+            },
+            {
+            "Name": "Audit Success",
+            "Value": "9007199254740992"
+            }
+        ]
+    }
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> Diagnostic extension present and 'Audit Success', 'Audit Failure' logs are enabled.
+> 
+> **Failed:** 
+>  If any of the below condition is not satisfied:
+> - Diagnostic extension is present
+> - Audit Success', 'Audit Failure' logs are enabled.
+>
+> **NotScanned:**
+> VM OS kind is null or empty.
+
+### Recommendation 
+
+- **Azure Portal** 
+    - To change the diagnostic settings from the Azure Portaly follow the steps given here: https://learn.microsoft.com/en-us/azure/azure-monitor/agents/diagnostics-extension-windows-install#install-with-azure-portal and while configuring or updating the diagnostic settings ['audit success','audit failure'] logs should be enabled.
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API to list virtual machine extensions at specific level: /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachines/{2}/extensions?api-version=2019-07-01<br />
+**Properties:** properties.type, properties.publisher, name, properties.provisioningState, properties.settings.storageAccount, properties.settings.WadCfg.DiagnosticMonitorConfiguration.WindowsEventLog.DataSource
+ <br />
+
+- REST API to list Virtual Machines at subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachines?api-version=2019-07-01 <br />
+**Properties:** properties.storageProfile.osDisk.osType
+ <br />
+
+<br />
+
+___ 
 
