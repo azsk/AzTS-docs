@@ -193,7 +193,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     $nonApplicableSkus = @("Consumption")
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 1 of 4] Prepare to delete all non-AAD(Entra Id) identity providers (and basic authentication) from the API Management services in Subscription: [$($SubscriptionId)]"
+    Write-Host "[Step 1 of 4] Prepare to delete all non-AAD (Entra Id) identity providers (and basic authentication) from the API Management services in Subscription: [$($SubscriptionId)]"
     Write-Host $([Constants]::SingleDashLine)
 
     if ($PerformPreReqCheck)
@@ -256,7 +256,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     Write-Host "[Step 2 of 4] Fetch all API Management services"
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Notes:" -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host "1. To delete all non-AAD(Entra Id) identity providers (and basic authentication) from the API Management services in a Subscription, Contributor and higher privileges on the API Management services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "1. To delete all non-AAD (Entra Id) identity providers (and basic authentication) from the API Management services in a Subscription, Contributor and higher privileges on the API Management services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "2. Following identity providers are ALLOWED to be configured for the API Management services: [$($allowedIdentityProviders -join ', ')]. These will NOT be deleted." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host "3. API Management services of the following tiers / SKUs will NOT be considered for the remediation: [$($nonApplicableSkus -join ', ')]" -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
@@ -367,10 +367,10 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     Write-Host "Found [$($totalApiManagementServices)] API Management service(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
-    # Includes API Management services where non-AAD(Entra Id) identity providers (and/or basic authentication) are enabled.
+    # Includes API Management services where non-AAD (Entra Id) identity providers (and/or basic authentication) are enabled.
     $apiManagementServicesWithNonAadIdentityProvidersEnabled = @()
 
-    # Includes API Management services where no non-AAD(Entra Id) identity providers (including basic authentication) are enabled.
+    # Includes API Management services where no non-AAD (Entra Id) identity providers (including basic authentication) are enabled.
     # These API Management services may or may not have AAD(Entra Id) identity provider enabled.
     $apiManagementServicesWithoutNonAadIdentityProvidersEnabled = @()
 
@@ -441,7 +441,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                 return
             }
 
-            # Check if the API Management service contains one or more non-AAD identity providers.
+            # Check if the API Management service contains one or more non-AAD (Entra Id) identity providers.
             $nonAadIdentityProviders = $identityProviders | Where-Object { $_.Type -notin $allowedIdentityProviders }
             $isNonAadIdentityProviderEnabled = $nonAadIdentityProviders.Count -gt 0
 
@@ -451,7 +451,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.ResourceName))
-                $logResource.Add("Reason","API Management service does not have any non-AAD Identity Provider enabled.")    
+                $logResource.Add("Reason","API Management service does not have any non-AAD (Entra Id) Identity Provider enabled.")    
                 $logSkippedResources += $logResource
                 return
             }
@@ -483,7 +483,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
 
     if ($totalApiManagementServicesWithNonAadIdentityProvidersEnabled -eq 0)
     {
-        Write-Host "No API Management services found with non-AAD identity providers (including basic authentication) configured. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No API Management services found with non-AAD (Entra Id) identity providers (including basic authentication) configured. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
         if($AutoRemediation -and ($apiManagementServicesWithoutNonAadIdentityProvidersEnabled|Measure-Object).Count -gt 0)
         {
@@ -500,19 +500,19 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
         return
     }
 
-    Write-Host "Found [$($totalApiManagementServicesWithNonAadIdentityProvidersEnabled)] API Management service(s) with non-AAD identity providers (and basic authentication) configured." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalApiManagementServicesWithNonAadIdentityProvidersEnabled)] API Management service(s) with non-AAD (Entra Id) identity providers (and basic authentication) configured." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
     $colsProperty = @{Expression={$_.ResourceId};Label="Resource ID";Width=40;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
                     @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
                     @{Expression={$_.IsBasicAuthenticationEnabled};Label="Is basic authentication (Username/Password) enabled?";Width=20;Alignment="left"},
-                    @{Expression={$_.IsNonAADIdentityProviderEnabled};Label="Is any non-AAD identity provider enabled?";Width=20;Alignment="left"},
-                    @{Expression={$_.NonAADIdentityProviders};Label="Non-AAD Identity Providers";Width=40;Alignment="left"}
+                    @{Expression={$_.IsNonAADIdentityProviderEnabled};Label="Is any non-AAD (Entra Id) identity provider enabled?";Width=20;Alignment="left"},
+                    @{Expression={$_.NonAADIdentityProviders};Label="non-AAD (Entra Id) Identity Providers";Width=40;Alignment="left"}
 
     if (-not $AutoRemediation -and $($apiManagementServicesWithNonAadIdentityProvidersEnabled | Measure-Object).Count -gt 0)
     {
-        Write-Host "Summary of API Management services with one or more non-AAD identity providers (and/or basic authentication) configured:"
+        Write-Host "Summary of API Management services with one or more non-AAD (Entra Id) identity providers (and/or basic authentication) configured:"
         $apiManagementServicesWithNonAadIdentityProvidersEnabled | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
     }
@@ -536,31 +536,31 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     Write-Host "API Management services details have been backed up to [$($backupFile)]." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "[Step 4 of 4] Delete Non-AAD identity providers (and basic authentication) from API Management services"
+    Write-Host "[Step 4 of 4] Delete non-AAD (Entra Id) identity providers (and basic authentication) from API Management services"
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $DryRun)
     {
-        Write-Host "Since, DryRun switch is not specified, Non-AAD identity providers will be 'deleted' from all API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Since, DryRun switch is not specified, non-AAD (Entra Id) identity providers will be 'deleted' from all API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "CAUTION!!!" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "1. Deleting the identity providers can impact users accessing the API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "2. ALL non-Azure Active Directory (AAD) identity providers (and basic authentication) will be deleted from all eligible API Management services in the Subscription." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "3. This script does not support rolling back and reconfiguring the non-AAD identity providers and other authentication options once deleted. It is advised to use this file to reconfigure them manually." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "2. ALL non-Azure Active Directory (Entra Id) identity providers (and basic authentication) will be deleted from all eligible API Management services in the Subscription." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "3. This script does not support rolling back and reconfiguring the non-AAD (Entra Id) identity providers and other authentication options once deleted. It is advised to use this file to reconfigure them manually." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
 
         if(-not $AutoRemediation)
         {
-            Write-Host "Do you want to delete the non-AAD identity providers (and basic authentication) from all API Management services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+            Write-Host "Do you want to delete the non-AAD (Entra Id) identity providers (and basic authentication) from all API Management services? " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
             $userInput = Read-Host -Prompt "(Y|N)"
             Write-Host $([Constants]::SingleDashLine)
 
             if($userInput -ne "Y")
             {
-                Write-Host "Non-AAD identity providers (and basic authentication) will not be deleted from any API Management service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "non-AAD (Entra Id) identity providers (and basic authentication) will not be deleted from any API Management service. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 return
             }
-            Write-Host "User has provided consent to deleted Non-AAD identity providers (and basic authentication) from API Management service." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "User has provided consent to deleted non-AAD (Entra Id) identity providers (and basic authentication) from API Management service." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -594,7 +594,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                     {
                         $apiManagementServicesSkipped += $apiManagementService
                         Write-Host "Error disabling basic authentication on the API Management service: Resource ID: [$($resourceId)], Resource Group Name: [$($resourceGroupName)], Resource Name: [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Error)
-                        Write-Host "This API Management service will NOT be remediated. Non-AAD identity providers will not be deleted." -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "This API Management service will NOT be remediated. non-AAD (Entra Id) identity providers will not be deleted." -ForegroundColor $([Constants]::MessageType.Error)
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
@@ -630,18 +630,18 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                     try
                     {
                         # This method does not return any output.
-                        # Validate if the operation was successful for all non-AAD identity providers at the end in a single call.
+                        # Validate if the operation was successful for all non-AAD (Entra Id) identity providers at the end in a single call.
                         Remove-AzApiManagementIdentityProvider -Context $apiManagementServiceContext -Type $identityProvider
                     }
                     catch
                     {
                         $apiManagementServicesSkipped += $apiManagementService
                         $apiManagementService.NonAADIdentityProvidersSkipped = $nonAadIdentityProviders -join ", "
-                        Write-Host "Error deleting non-AAD identity provider: [$($identityProvider)]" -ForegroundColor $([Constants]::MessageType.Error)
+                        Write-Host "Error deleting non-AAD (Entra Id) identity provider: [$($identityProvider)]" -ForegroundColor $([Constants]::MessageType.Error)
                         $logResource = @{}
                         $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                         $logResource.Add("ResourceName",($_.ResourceName))
-                        $logResource.Add("Reason","Error deleting non-AAD identity provider: [$($identityProvider)]")    
+                        $logResource.Add("Reason","Error deleting non-AAD (Entra Id) identity provider: [$($identityProvider)]")    
                         $logSkippedResources += $logResource
                         Write-Host $([Constants]::SingleDashLine)
                         return
@@ -667,18 +667,18 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                     return
                 }
 
-                # Check if all the non-AAD identity providers identified previously have now been removed from the API Management service.
+                # Check if all the non-AAD (Entra Id) identity providers identified previously have now been removed from the API Management service.
                 $updatedNonAadIdentityProviders = $identityProviders.Type | Where-Object { $_ -notin $allowedIdentityProviders } | Where-Object { $_ -in $nonAadIdentityProviders }
 
                 if ($updatedNonAadIdentityProviders.Count -gt 0)
                 {
                     $apiManagementServicesSkipped += $apiManagementService
                     $apiManagementService.NonAADIdentityProvidersSkipped = $updatedNonAadIdentityProviders -join ", "
-                    Write-Host "Error deleting the following non-AAD identity provider(s): [$($updatedNonAadIdentityProviders -split ', ')]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error deleting the following non-AAD (Entra Id) identity provider(s): [$($updatedNonAadIdentityProviders -split ', ')]" -ForegroundColor $([Constants]::MessageType.Error)
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.ResourceName))
-                    $logResource.Add("Reason","Error deleting the following non-AAD identity provider(s): [$($updatedNonAadIdentityProviders -split ', ')]")    
+                    $logResource.Add("Reason","Error deleting the following non-AAD (Entra Id) identity provider(s): [$($updatedNonAadIdentityProviders -split ', ')]")    
                     $logSkippedResources += $logResource
                     Write-Host $([Constants]::SingleDashLine)
                     return
@@ -697,12 +697,12 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
 
         if (($apiManagementServicesRemediated | Measure-Object).Count -eq $totalApiManagementServicesWithNonAadIdentityProvidersEnabled)
         {
-            Write-Host "Non-AAD identity providers (including basic authentication) successfully deleted from all [$($totalApiManagementServicesWithNonAadIdentityProvidersEnabled)] API Management service(s)." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "non-AAD (Entra Id) identity providers (including basic authentication) successfully deleted from all [$($totalApiManagementServicesWithNonAadIdentityProvidersEnabled)] API Management service(s)." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         else
         {
-            Write-Host "Non-AAD identity providers (including basic authentication) deleted on [$($($apiManagementServicesRemediated | Measure-Object).Count)] out of [$($totalApiManagementServicesWithNonAadIdentityProvidersEnabled)] API Management service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "non-AAD (Entra Id) identity providers (including basic authentication) deleted on [$($($apiManagementServicesRemediated | Measure-Object).Count)] out of [$($totalApiManagementServicesWithNonAadIdentityProvidersEnabled)] API Management service(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -710,9 +710,9 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
                         @{Expression={$_.ResourceName};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.IsBasicAuthenticationEnabled};Label="Is basic authentication (Username/Password) enabled?";Width=20;Alignment="left"},
-                        @{Expression={$_.IsNonAADIdentityProviderEnabled};Label="Is any non-AAD identity provider enabled?";Width=20;Alignment="left"},
-                        @{Expression={$_.NonAADIdentityProviders};Label="Non-AAD Identity Providers (Originally enabled)";Width=40;Alignment="left"},
-                        @{Expression={$_.NonAADIdentityProvidersSkipped};Label="Non-AAD Identity Providers (Skipped)";Width=40;Alignment="left"}
+                        @{Expression={$_.IsNonAADIdentityProviderEnabled};Label="Is any non-AAD (Entra Id) identity provider enabled?";Width=20;Alignment="left"},
+                        @{Expression={$_.NonAADIdentityProviders};Label="non-AAD (Entra Id) Identity Providers (Originally enabled)";Width=40;Alignment="left"},
+                        @{Expression={$_.NonAADIdentityProvidersSkipped};Label="non-AAD (Entra Id) Identity Providers (Skipped)";Width=40;Alignment="left"}
 
         Write-Host $([Constants]::DoubleDashLine)
         if($AutoRemediation)
@@ -722,7 +722,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                 # Write this to a file.
                 $apiManagementServicesRemediatedFile = "$($backupFolderPath)\RemediatedAPIManagementServices.csv"
                 $apiManagementServicesRemediated | Export-CSV -Path $apiManagementServicesRemediatedFile -NoTypeInformation
-                Write-Host "The information related to API Management Services where Non-AAD identity providers (including basic authentication) successfully deleted, has been saved to [$($apiManagementServicesRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "The information related to API Management Services where non-AAD (Entra Id) identity providers (including basic authentication) successfully deleted, has been saved to [$($apiManagementServicesRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
 
@@ -731,7 +731,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
                  # Write this to a file.
                 $apiManagementServicesSkippedFile = "$($backupFolderPath)\SkippedAPIManagementServices.csv"
                 $apiManagementServicesSkipped | Export-CSV -Path $apiManagementServicesSkippedFile -NoTypeInformation
-                Write-Host "This information related to API Management Services where Non-AAD identity providers (including basic authentication) not deleted, has been saved to [$($apiManagementServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "This information related to API Management Services where non-AAD (Entra Id) identity providers (including basic authentication) not deleted, has been saved to [$($apiManagementServicesSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -741,7 +741,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
 
             if ($($apiManagementServicesRemediated | Measure-Object).Count -gt 0)
             {
-                Write-Host "Non-AAD identity providers (including basic authentication) successfully deleted from the following API Management service(s):" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "non-AAD (Entra Id) identity providers (including basic authentication) successfully deleted from the following API Management service(s):" -ForegroundColor $([Constants]::MessageType.Update)
                 $apiManagementServicesRemediated | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -753,7 +753,7 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
 
             if ($($apiManagementServicesSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "Error deleting non-AAD identity providers (including basic authentication) from the following API Management service(s):" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error deleting non-AAD (Entra Id) identity providers (including basic authentication) from the following API Management service(s):" -ForegroundColor $([Constants]::MessageType.Error)
                 $apiManagementServicesSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -780,10 +780,10 @@ function Delete-NonAadIdentityProvidersInApiManagementServices
     }
     else
     {
-        Write-Host "Since, DryRun switch specified. Non-AAD identity providers will not be deleted from any API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Since, DryRun switch specified. non-AAD (Entra Id) identity providers will not be deleted from any API Management services." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "1.Run the same command with: -FilePath $($backupFile) and without -DryRun, to delete all non-AAD identity providers (and basic authentication) for all API Management services listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "1.Run the same command with: -FilePath $($backupFile) and without -DryRun, to delete all non-AAD (Entra Id) identity providers (and basic authentication) for all API Management services listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "`nNotes:" -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host "1. Rollback is not supported. It is recommended to refer this file to manually reconfigure the identity providers, if required post the remediation." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
