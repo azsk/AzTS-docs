@@ -747,10 +747,10 @@ ___
 ## Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 ### Display Name
-Entra Id (formerly AAD) extension must be deployed to the Linux VMSS
+Entra ID (formerly AAD) extension must be deployed to the Linux VMSS
 
 ### Rationale
-Installing Entra Id (formerly AAD) extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
+Installing Entra ID (formerly AAD) extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
 
 ### Control Settings 
 ```json 
@@ -777,10 +777,10 @@ This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration
 ### Control Spec
 
 > **Passed:**
-> Entra Id (formerly AAD) Extension is present for Linux Virtual Machine Scale Set with provisioning state as succeeded.
+> Entra ID (formerly AAD) Extension is present for Linux Virtual Machine Scale Set with provisioning state as succeeded.
 >
 > **Failed:**
-> Entra Id (formerly AAD) Extension is missing or provisioning state is not succeeded.
+> Entra ID (formerly AAD) Extension is missing or provisioning state is not succeeded.
 >
 > **Error:**
 > If Orchestration mode or OS is null or empty.
@@ -792,7 +792,7 @@ This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration
 
 ### Recommendation
 Using Azure Portal :
-- To install Entra Id (formerly AAD) Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
+- To install Entra ID (formerly AAD) Extension in VMSS, Go to Azure Portal --> VMSS --> Settings --> Extensions+Applications --> Click Add --> Select AADSSHForLinuxVM --> Click Next --> Click Review+Create.
 
 
 ### Azure Policies or REST APIs used for evaluation

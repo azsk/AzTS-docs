@@ -1469,10 +1469,10 @@ ___
 ## Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 ### Display Name 
-Entra Id (formerly AAD) extension must be deployed to the Linux VM
+Entra ID (formerly AAD) extension must be deployed to the Linux VM
 
 ### Rationale 
-Installing Entra Id (formerly AAD) extension on VM allows you to login into VM using Azure AD, making it possible to login user without password and improves authentication security.
+Installing Entra ID (formerly AAD) extension on VM allows you to login into VM using Azure AD, making it possible to login user without password and improves authentication security.
 
 ### Control Settings 
 ```json 

@@ -148,7 +148,7 @@ ___
 ## 7. Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID
 
 ### Display Name
-Microsoft Entra Id (formerly AAD) should be enabled in Kubernetes Service
+Microsoft Entra ID (formerly AAD) should be enabled in Kubernetes Service
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)
@@ -161,7 +161,7 @@ ___
 ## 8. Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN
 
 ### Display Name
-Enterprise applications using APIM must authenticate developers/applications using Microsoft Entra Id (formerly AAD) backed credentials
+Enterprise applications using APIM must authenticate developers/applications using Microsoft Entra ID (formerly AAD) backed credentials
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)
