@@ -623,7 +623,9 @@ function Install-AzSKTenantSecuritySolution
                         # Load all other scripts that are required by this script.
                         . "$PSScriptRoot\ConfigureWebUI.ps1"
        
-                        Configure-WebUI -TenantId $context.Tenant.Id -ScanHostRGName $ScanHostRGName -UIAppName $azureUIAppName -ApiUrl $apiUri -UIClientId $UIAzureADAppId -WebApiClientId $WebAPIAzureADAppId -AzureEnvironmentName $AzureEnvironmentName
+                        $InstrumentationKey = $DeploymentResult.Outputs.applicationInsightsIKey.Value
+
+                        Configure-WebUI -TenantId $context.Tenant.Id -ScanHostRGName $ScanHostRGName -UIAppName $azureUIAppName -ApiUrl $apiUri -UIClientId $UIAzureADAppId -WebApiClientId $WebAPIAzureADAppId -AzureEnvironmentName $AzureEnvironmentName -InstrumentationKey $InstrumentationKey
                     }
 
                     # Custom event is required to Autoupdater setup event to application insight
