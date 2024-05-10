@@ -90,7 +90,8 @@
               },
               "properties": {
                 "upgradePolicy": {
-                  "mode": "Manual"
+                  "mode": "Automatic" 
+                  // Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
                 },
                 "orchestrationMode":"Uniform",
                 "virtualMachineProfile": {
