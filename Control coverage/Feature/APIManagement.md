@@ -363,7 +363,7 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 
 ___ 
 
-## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN 
+## Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN 
 
 ### Display Name 
 Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials 
@@ -383,10 +383,10 @@ Using the native enterprise directory for authentication ensures that there is a
 ### Control Spec 
 
 > **Passed:** 
-> AAD Identity provider is being used for authentication in developer portal or sign-up/sign-in option has been entirely disabled.
+> Entra ID (formerly AAD) Identity provider is being used for authentication in developer portal or sign-up/sign-in option has been entirely disabled.
 > 
 > **Failed:** 
-> Identity provider other than AAD is being used for authentication in developer portal.
+> Identity provider other than Entra ID (formerly AAD) is being used for authentication in developer portal.
 > 
 > **Verify:** 
 > Sign up option setting could not be verified as the API Management service is connected to a Virtual Network. As a result, control plane traffic on port 3443 is denied.
