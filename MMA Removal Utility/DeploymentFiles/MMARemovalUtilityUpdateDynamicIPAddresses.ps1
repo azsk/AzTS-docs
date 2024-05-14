@@ -29,7 +29,7 @@ function AddAzureFunctionAppRegionIPRangesOnKeyVault {
     # Remove existing IP Ranges if flag is set.
     if($RemoveExistingIPRanges -eq $true)
     {
-        Write-Output "Overridding the IP Address ranges with the Azure IP ranges for specified function app region: $FunctionAppUsageRegion"
+        Write-Output "Overriding the IP Address ranges with the Azure IP ranges for specified function app region: $FunctionAppUsageRegion"
         Update-AzKeyVaultNetworkRuleSet -ResourceId $KeyVaultResourceId -IpAddressRange $FilteredIPRanges
         Write-Output "Successfully overridden the IP Address ranges with the Azure IP ranges for specified function app region: $FunctionAppUsageRegion"
     }

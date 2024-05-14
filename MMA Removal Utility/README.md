@@ -51,6 +51,10 @@ Discovery phase is disabled by default, users need to enable and schedule it usi
 # Schedule Discovery phase
 # -----------------------------------------------------------------#
 
+# Load AzTS MMA Removal Utility Setup script in session
+. ".\MMARemovalUtilitySetup.ps1"
+
+# Schedule or Trigger Discovery phase
 Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
@@ -68,10 +72,10 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
 |----|----|----|
 |SubscriptionId| Subscription id where AzTS MMA Removal Utility solution is installed. | Yes|
 |ResourceGroupName| Name of ResourceGroup where AzTS MMA Removal Utility solution is installed.| Yes|
-|StartScopeResolverAfterMinutes| Time interval in minutes after which discovery phase should be triggered.| Yes (Mutually exclusive with param '-StartScopeResolverImmediatley')|
-|StartScopeResolverImmediatley| Switch to trigger discovery phase immediately. Discovery phase will get started in next 2-3 minutes.| Yes (Mutually exclusive with param '-StartScopeResolverAfterMinutes')|
-|StartExtensionDiscoveryAfterMinutes| Time interval in minutes after which second step (extensions discovery) of discovery phase should be triggered post first step is triggered.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryImmediatley')|
-|StartExtensionDiscoveryImmediatley | Switch to trigger second step (extensions discovery) of discovery phase immediately.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryAfterMinutes')|
+|StartScopeResolverAfterMinutes| Time interval in minutes after which discovery phase should be triggered.| Yes (Mutually exclusive with param '-StartScopeResolverImmediately')|
+|StartScopeResolverImmediately| Switch to trigger discovery phase immediately. Discovery phase will get started in next 2-3 minutes.| Yes (Mutually exclusive with param '-StartScopeResolverAfterMinutes')|
+|StartExtensionDiscoveryAfterMinutes| Time interval in minutes after which second step (extensions discovery) of discovery phase should be triggered post first step is triggered.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryImmediately')|
+|StartExtensionDiscoveryImmediately | Switch to trigger second step (extensions discovery) of discovery phase immediately.| Yes (Mutually exclusive with param '-StartExtensionDiscoveryAfterMinutes')|
 
 **Examples:**
 ``` PowerShell
@@ -82,7 +86,7 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
 Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
-    -StartScopeResolverImmediatley `
+    -StartScopeResolverImmediately `
     -StartExtensionDiscoveryAfterMinutes 30 
 
 # -----------------------------------------------------------------#
@@ -102,7 +106,7 @@ Update-AzTSMMARemovalUtilityDiscoveryTrigger `
 Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
-    -StartExtensionDiscoveryImmediatley 
+    -StartExtensionDiscoveryImmediately 
 
 ```
 ### Schedule or Trigger Removal phase
@@ -116,6 +120,10 @@ Removal phase is disabled by default. Users need to enable/schedule it after val
 # Enable and Schedule Removal phase
 # -----------------------------------------------------------------#
 
+# Load AzTS MMA Removal Utility Setup script in session
+. ".\MMARemovalUtilitySetup.ps1"
+
+# Schedule or Trigger Removal phase
 Update-AzTSMMARemovalUtilityRemovalTrigger ` 
     -SubscriptionId <HostingSubId> `
     -ResourceGroupName <HostingRGName> `
@@ -138,7 +146,7 @@ Update-AzTSMMARemovalUtilityRemovalTrigger `
 |StartAfterMinutes| Time interval in minutes after which removal phase should be triggered.| Yes (Mutually exclusive with param '-StartImmediately')|
 |StartImmediately| Switch to trigger removal phase immediately. Removal phase will get started as soon as possible.| Yes (Mutually exclusive with param '-StartAfterMinutes')|
 |EnableRemovalPhase| Switch to 'Enable' removal phase.| Yes (Mutually exclusive with param '-DisableRemovalPhase')|
-|RemovalCondition | Configure when MMA extension should be removed. Possible values, </br>ChgeckForAMAPresence (Remove MMA extension when AMA extension already present) </br> SkipAMAPresenceCheck (Remove MMA extension irrespective of whether AMA extension is present or not) | No |
+|RemovalCondition | Configure when MMA extension should be removed. Possible values, </br>CheckForAMAPresence (Remove MMA extension when AMA extension already present) </br> SkipAMAPresenceCheck (Remove MMA extension irrespective of whether AMA extension is present or not) | No |
 |DisableRemovalPhase | Switch to 'Disable' removal phase.| Yes (Mutually exclusive with param '-EnableRemovalPhase')|
 
 **Examples:**

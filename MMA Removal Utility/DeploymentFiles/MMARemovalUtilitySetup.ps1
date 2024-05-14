@@ -75,7 +75,7 @@ function Install-AzTSMMARemovalUtilitySolution {
         $SupportMultipleTenant,
         
         [switch]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false
     )
     Begin {
@@ -135,7 +135,7 @@ function Install-AzTSMMARemovalUtilitySolution {
                     if ($ContactDataCaptureFlag -eq 'Y') {
                         $AnonymousUsageTelemetryLogLevel = "Identifiable"
 
-                        Write-Host "`n`rPlease provide details about your org, divison and team." -ForegroundColor $([Constants]::MessageType.warning)
+                        Write-Host "`n`rPlease provide details about your org, division and team." -ForegroundColor $([Constants]::MessageType.warning)
                         $OnboardingOrg = Read-Host -Prompt "Organization Name"
                         $OnboardingDiv = Read-Host -Prompt "Division Name within your Organization"
                         $OnboardingContactEmail = Read-Host -Prompt "Contact DL to use for our communication"
@@ -204,13 +204,13 @@ function Install-AzTSMMARemovalUtilitySolution {
             $TemplateParameters.Add("ClientApplicationId", $IdentityApplicationId)
             if ($SupportMultipleTenant) {
                 $TemplateParameters.Add("IsClientSecretAuthMode", $true)
-                # If multi-tenat mode is enabled then Remediation Connection Secret URI must not be null
+                # If multi-tenant mode is enabled then Remediation Connection Secret URI must not be null
                 if ([string]::IsNullOrWhiteSpace($IdentitySecretUri)) {
                     Write-Host "`n`rValue for parameter '-IdentitySecretUri' can not be null in multi-tenant setup." -ForegroundColor $([Constants]::MessageType.Error)
                     return;
                 }
 
-                # If multi-tenat mode is enabled then ApplicationId of remediation identity must not be null
+                # If multi-tenant mode is enabled then ApplicationId of remediation identity must not be null
                 if ([string]::IsNullOrWhiteSpace($IdentityApplicationId)) {
                     Write-Host "`n`rValue for parameter '-IdentityApplicationId' can not be null in multi-tenant setup." -ForegroundColor $([Constants]::MessageType.Error)
                     return;
@@ -237,7 +237,7 @@ function Install-AzTSMMARemovalUtilitySolution {
             $TemplateParameters.Add("ResourceHash", $ResourceHash)
             $TemplateParameters.Add("MIResourceId", $ManagedIdentityId)
                 
-            #Get the tenant Id from the current subscription contex
+            #Get the tenant Id from the current subscription context
             $context = Get-AzContext
             $TemplateParameters.Add("TenantId", $context.Tenant.Id)
             
@@ -251,7 +251,7 @@ function Install-AzTSMMARemovalUtilitySolution {
             # Stop function apps
             if ($null -ne $FunctionApps -and $FunctionApps.Count -gt 0) {
                 Write-Verbose "$(Get-TimeStamp)Stopping function app(s) for deployment. This is required to unblock any file in use..."
-                $stopppedApps = $FunctionApps | Stop-AzWebApp
+                $stoppedApps = $FunctionApps | Stop-AzWebApp
                 Write-Verbose "$(Get-TimeStamp)Stopped function app(s): $([string]::Join(", ", ($FunctionApps | Select-Object Name -Unique).Name))"
                     
             }
@@ -345,7 +345,7 @@ function Set-AzTSMMARemovalUtilitySolutionRemediationIdentity {
         $TargetManagementGroupNames = @(),
 
         [switch]
-        [Parameter(Mandatory = $false, HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false,
 
         [switch]
@@ -549,7 +549,7 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
         $TargetSubscriptionIds = @(),
 
         [switch]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false,
 
         [string]
@@ -696,7 +696,7 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
                     $duplicateScopeIds += $_.ScopeId
                 }
                 else {
-                    #adding new settings to the app settigns
+                    #adding new settings to the app settings
                     $anyUniqueScopes = $true
                     $settings[$("ScopeResolverTriggerConfigurations__DiscoveryScopes__{0}__ScopeType" -f $scopeIndex)] = $_.ScopeType;
                     $settings[$("ScopeResolverTriggerConfigurations__DiscoveryScopes__{0}__ScopeId" -f $scopeIndex)] = $_.ScopeId;
@@ -710,7 +710,7 @@ function Set-AzTSMMARemovalUtilitySolutionScopes {
                 Write-Host $duplicateScopeIds 
             }
 
-            # Update Scope resolver trigger procesor function app settings
+            # Update Scope resolver trigger processor function app settings
             if ($anyUniqueScopes) {
                 $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
                 Write-Host "Target scope(s) configured successfully." -ForegroundColor $([Constants]::MessageType.Update) 
@@ -745,14 +745,14 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
         
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediately", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediately", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
         $SubscriptionId,
 
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediately", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediately", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         $ResourceGroupName,
 
         [int]
@@ -760,22 +760,22 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
         $StartScopeResolverAfterMinutes,
 
         [switch]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Start MMA extension discovery process immediately.")]
-        $StartScopeResolverImmediatley,
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediately", HelpMessage = "Start MMA extension discovery process immediately.")]
+        $StartScopeResolverImmediately,
 
         [int]
         [Parameter(Mandatory = $true, ParameterSetName = "RunAfterSchedule", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartScopeResolverImmediately", HelpMessage = "Define the interval in minutes after which MMA extension discovery process should start extension inventory collection. This step should be done after scope resolution step is done.")]
         $StartExtensionDiscoveryAfterMinutes,
 
         [switch]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Start extension inventory collection step of discovery phase immediately.")]
-        $StartExtensionDiscoveryImmediatley,
+        [Parameter(Mandatory = $true, ParameterSetName = "StartExtensionDiscoveryImmediately", HelpMessage = "Start extension inventory collection step of discovery phase immediately.")]
+        $StartExtensionDiscoveryImmediately,
 
         [switch]
-        [Parameter(Mandatory = $false, ParameterSetName = "RunAfterSchedule", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "StartScopeResolverImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "StartExtensionDiscoveryImmediatley", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "RunAfterSchedule", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartScopeResolverImmediately", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartExtensionDiscoveryImmediately", HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false
     )
 
@@ -816,7 +816,7 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
 
             $ResourceGroupHash = Get-ResourceGroupIdHash -SubscriptionId $SubscriptionId -ResourceGroupName $ResourceGroupName;
 
-            if ($StartExtensionDiscoveryImmediatley -eq $false)
+            if ($StartExtensionDiscoveryImmediately -eq $false)
             {
                 Write-Host "Configuring scope resolver trigger..." -ForegroundColor $([Constants]::MessageType.Info)  
                 # Step 3:  Get Scope resolver trigger processor function app.
@@ -843,10 +843,10 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
                     $settings[$setting.Name] = $setting.Value
                 }
     
-                $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression -afterHours 0 -afterMinutes $StartScopeResolverAfterMinutes -StartImmediatley $StartScopeResolverImmediatley
+                $settings["ScopeResolverTriggerTimer"] = Get-OneTimeCronExpression -afterHours 0 -afterMinutes $StartScopeResolverAfterMinutes -StartImmediately $StartScopeResolverImmediately
                 $settings["ScopeResolverTriggerConfigurations__ProcessEnabled"] = "true"
 
-                # Update Scope resolver trigger procesor function app settings
+                # Update Scope resolver trigger processor function app settings
                 $app = Set-AzWebApp -Name $ScopeResolverTriggerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
     
                 Write-Host "Successfully scheduled scope resolver trigger." -ForegroundColor $([Constants]::MessageType.Update)    
@@ -879,20 +879,20 @@ function Update-AzTSMMARemovalUtilityDiscoveryTrigger {
             }
             
             $startExtInvProcessingAfter = 0;
-            if ($StartExtensionDiscoveryImmediatley -eq $true)
+            if ($StartExtensionDiscoveryImmediately -eq $true)
             {
                 $startExtInvProcessingAfter = 0;
             }
-            elseif ($StartScopeResolverImmediatley -eq $true) {
+            elseif ($StartScopeResolverImmediately -eq $true) {
                 $startExtInvProcessingAfter = 3 + $StartExtensionDiscoveryAfterMinutes;
             }
             else {
                 $startExtInvProcessingAfter = $StartScopeResolverAfterMinutes + $StartExtensionDiscoveryAfterMinutes;
             }
 
-            $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $startExtInvProcessingAfter -startImmediatley $StartExtensionDiscoveryImmediatley
+            $settings["InventoryCollectionSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $startExtInvProcessingAfter -startImmediately $StartExtensionDiscoveryImmediately
 
-            # Update Work Item Scheduler procesor function app settings
+            # Update Work Item Scheduler processor function app settings
             $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
 
             Write-Host "Successfully scheduled extension inventory scheduler trigger." -ForegroundColor $([Constants]::MessageType.Update)    
@@ -921,13 +921,13 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
         [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediately", HelpMessage = "Subscription id in which MMA Removal Utility Solution is present.")]
         $SubscriptionId,
 
         [string]
         [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         [Parameter(Mandatory = $true, ParameterSetName = "Disabled", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediately", HelpMessage = "Name of ResourceGroup where MMA Removal Utility Solution is present.")]
         $ResourceGroupName,
 
         [int]
@@ -935,16 +935,16 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
         $StartAfterMinutes,
 
         [switch]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Start MMA extension removal process immediately.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediately", HelpMessage = "Start MMA extension removal process immediately.")]
         $StartImmediately,
 
         [switch]
         [Parameter(Mandatory = $true, ParameterSetName = "Enabled", HelpMessage = "Switch to enable removal phase.")]
-        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Switch to enable removal phase.")]
+        [Parameter(Mandatory = $true, ParameterSetName = "StartRemovalImmediately", HelpMessage = "Switch to enable removal phase.")]
         $EnableRemovalPhase,
 
-        [Parameter(Mandatory = $false, ParameterSetName = "Enabled", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "StartRemovalImmediatley", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensios are present or irrespective AMA extension presence.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Enabled", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensions are present or irrespective AMA extension presence.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "StartRemovalImmediately", HelpMessage = "Condition to remove MMA extension when either both MMA and AMA extensions are present or irrespective AMA extension presence.")]
         [ValidateSet("CheckForAMAPresence", "SkipAMAPresenceCheck")]
         $RemovalCondition = 'CheckForAMAPresence',
 
@@ -1022,7 +1022,7 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
                 $message = "MMA 'Removal' phase has been enabled."
                 $settings["SchedulerConfigurations__ExtensionRemovalCondition"] = $RemovalCondition
                 $settings["SchedulerConfigurations__RemovalSchedulerEnabled"] = "true"
-                $settings["ExtensionRemovalSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediatley $StartImmediately
+                $settings["ExtensionRemovalSchedulerProcessorTimer"] = Get-RecurringCronExpression -afterHours 0 -afterMinutes $StartAfterMinutes -startImmediately $StartImmediately
             }
             else {
                 $message = "MMA 'Removal' phase has been disabled."
@@ -1031,7 +1031,7 @@ function Update-AzTSMMARemovalUtilityRemovalTrigger {
 
             Write-Host $message -ForegroundColor $([Constants]::MessageType.Warning) 
 
-            # Update Work Item Scheduler procesor function app settings
+            # Update Work Item Scheduler processor function app settings
             $app = Set-AzWebApp -Name $workItemSchedulerAppName -ResourceGroupName $ResourceGroupName -AppSettings $settings
 
             Write-Host "Successfully Updated extension removal scheduler configurations." -ForegroundColor $([Constants]::MessageType.Update)    
@@ -1078,7 +1078,7 @@ function Set-AzTSMMARemovalUtilityMonitoringDashboard {
         $DashboardName = "MMAAgentRemovalUtilityProgress",
 
         [switch]
-        [Parameter(Mandatory = $false, HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
+        [Parameter(Mandatory = $false, HelpMessage = "Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instruction messages. Using this switch is not recommended while running this command in standalone mode.")]
         $ConsolidatedSetup = $false
     )
 
@@ -1287,8 +1287,8 @@ function Set-AzTSMMARemovalUtilitySolutionMultiTenantRemediationIdentity
         $objectId,
         
         [string[]]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="UserPrinicipalNames of the additional owners for the App to be created.")]
-        [Parameter(Mandatory = $false, ParameterSetName = "PreExistApp", HelpMessage="UserPrinicipalNames of the additional owners for the App to be created.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="UserPrincipalNames of the additional owners for the App to be created.")]
+        [Parameter(Mandatory = $false, ParameterSetName = "PreExistApp", HelpMessage="UserPrincipalNames of the additional owners for the App to be created.")]
         $AdditionalOwnerUPNs = @()
 
     )
@@ -1694,7 +1694,7 @@ function Grant-AzTSMMARemediationIdentityAccessOnKeyVault
     try {
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "Granting access over Key Valut to MI..." -ForegroundColor $([Constants]::MessageType.Info)        
+        Write-Host "Granting access over Key Vault to MI..." -ForegroundColor $([Constants]::MessageType.Info)        
         # Validate input
         # Check UserAssignedObject must be non null
         if([string]::IsNullOrWhiteSpace($UserAssignedIdentityObjectId)) 
@@ -1722,10 +1722,10 @@ function Grant-AzTSMMARemediationIdentityAccessOnKeyVault
             return;
         }
         
-        # Assigne Secret Get permission to MI
+        # Assign Secret Get permission to MI
         Set-AzKeyVaultAccessPolicy -ResourceId $ResourceId -ObjectId $UserAssignedIdentityObjectId -PermissionsToSecrets get
 
-        Write-Host "Successfully granted access over Key Valut to MI." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Successfully granted access over Key Vault to MI." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
         if ($DeployMonitoringAlert -eq $true)
         {
@@ -2040,10 +2040,10 @@ function Get-TimeStamp {
     return "{0:h:m:ss tt} - " -f (Get-Date -UFormat %T)
 }
 
-function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$StartImmediatley) {
+function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$StartImmediately) {
     $dateTime = [DateTime]::UtcNow
 
-    if ($StartImmediatley -eq $true)
+    if ($StartImmediately -eq $true)
     {
         $dateTime = $dateTime.AddMinutes(3);
     }
@@ -2060,10 +2060,10 @@ function Get-OneTimeCronExpression ([int] $afterHours, [int] $afterMinutes, [boo
     return "0 $minutes $hours $dayOfMonth $month $dayOfWeek";
 }
 
-function Get-RecurringCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$startImmediatley, [int]$runAfterEveryMinutes = 15, [int] $frequency = 8) {
+function Get-RecurringCronExpression ([int] $afterHours, [int] $afterMinutes, [bool]$startImmediately, [int]$runAfterEveryMinutes = 15, [int] $frequency = 8) {
     $dateTime = [DateTime]::UtcNow
 
-    if ($StartImmediatley -eq $true)
+    if ($StartImmediately -eq $true)
     {
         $dateTime = $dateTime.AddMinutes(3);
     }
@@ -2214,13 +2214,13 @@ class Logger{
 
     Logger([string] $HostSubscriptionId)
     {
-        $logFolerPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\MMARemovalUtilitySetup\Subscriptions\$($HostSubscriptionId.replace('-','_'))";
+        $logFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\MMARemovalUtilitySetup\Subscriptions\$($HostSubscriptionId.replace('-','_'))";
         $logFileName = "\$('DeploymentLogs_' + $(Get-Date).ToString('yyyyMMddhhmm') + '.txt')";
-        $this.logFilePath = $logFolerPath + $logFileName
+        $this.logFilePath = $logFolderPath + $logFileName
         # Create folder if not exist
-        if (-not (Test-Path -Path $logFolerPath))
+        if (-not (Test-Path -Path $logFolderPath))
         {
-            New-Item -ItemType Directory -Path $logFolerPath | Out-Null
+            New-Item -ItemType Directory -Path $logFolderPath | Out-Null
         }
         # Create log file
         

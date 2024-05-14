@@ -16,6 +16,7 @@
 - [Azure_VirtualMachineScaleSet_DP_Enable_Disk_Encryption](#azure_virtualmachinescaleset_dp_enable_disk_encryption)
 - [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](#Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
 - [Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy](#azure_virtualmachinescaleset_si_enforce_automatic_upgrade_policy)
+- [Azure_VirtualMachineScaleSet_Audit_Enable_Diagnostic_Settings](#azure_virtualmachinescaleset_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -859,4 +860,455 @@ To set upgrade policy for VMSS, please refer: https://learn.microsoft.com/en-us/
   properties.upgradePolicy.mode
   <br />
   <br />
+___
+
+
+## Azure_VirtualMachineScaleSet_Audit_Enable_Diagnostic_Settings
+
+### Display Name
+Enable Security Logging in Azure Virtual Machine Scale Sets
+
+### Rationale
+Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats.
+
+### Control Settings 
+```json 
+"ExcludeBasedOnExtension": {
+  "Linux": {
+    "AllMandatory": false,
+    "Extensions": [
+      {
+        "Type": "Compute.AKS.Linux.Billing",
+        "Publisher": "Microsoft.AKS",
+        "ExclusionMessage": "VMSS is part of AKS cluster."
+      }
+    ]
+  },
+  "Windows": {
+    "AllMandatory": false,
+    "Extensions": [
+      {
+        "Type": "Compute.AKS.Windows.Billing",
+        "Publisher": "Microsoft.AKS",
+        "ExclusionMessage": "VMSS is part of AKS cluster."
+      }
+    ]
+  }
+},
+"RequiredOsType": [ "Windows", "Linux" ],
+"Windows": {
+  "ExtensionType": "IaaSDiagnostics",
+  "Publisher": "Microsoft.Azure.Diagnostics",
+  "ProvisioningState": "Succeeded",
+  "PerformanceCounters": [
+    {
+      "displayName": "CPU utilization",
+      "counterSpecifier": "\\Processor(_Total)\\% Processor Time"
+    },
+    {
+      "displayName": "CPU privileged time",
+      "counterSpecifier": "\\Processor(_Total)\\% Privileged Time"
+    },
+    {
+      "displayName": "CPU user time",
+      "counterSpecifier": "\\Processor(_Total)\\% User Time"
+
+    },
+    {
+      "displayName": "CPU frequency",
+      "counterSpecifier": "\\Processor Information(_Total)\\Processor Frequency"
+    },
+    {
+      "displayName": "Processes",
+      "counterSpecifier": "\\System\\Processes"
+    },
+    {
+      "displayName": "Threads",
+      "counterSpecifier": "\\Process(_Total)\\Thread Count"
+    },
+    {
+      "displayName": "Handles",
+      "counterSpecifier": "\\Process(_Total)\\Handle Count"
+    },
+    {
+
+      "displayName": "Memory usage",
+      "counterSpecifier": "\\Memory\\% Committed Bytes In Use"
+    },
+    {
+      "displayName": "Memory available",
+      "counterSpecifier": "\\Memory\\Available Bytes"
+    },
+    {
+      "displayName": "Memory committed",
+      "counterSpecifier": "\\Memory\\Committed Bytes"
+    },
+    {
+      "displayName": "Memory commit limit",
+      "counterSpecifier": "\\Memory\\Commit Limit"
+    },
+    {
+      "displayName": "Disk active time",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\% Disk Time"
+    },
+    {
+      "displayName": "Disk active read time",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\% Disk Read Time"
+    },
+    {
+      "displayName": "Disk active write time",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\% Disk Write Time"
+    },
+    {
+      "displayName": "Disk operations",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\Disk Transfers/sec"
+    },
+    {
+      "displayName": "Disk read operations",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\Disk Reads/sec"
+    },
+    {
+      "displayName": "Disk write operations",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\Disk Writes/sec"
+    },
+    {
+      "displayName": "Disk speed",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\Disk Bytes/sec"
+    },
+    {
+      "displayName": "Disk read speed",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\Disk Read Bytes/sec"
+    },
+    {
+      "displayName": "Disk write speed",
+      "counterSpecifier": "\\PhysicalDisk(_Total)\\Disk Write Bytes/sec"
+    },
+    {
+      "displayName": "Disk free space (percentage)",
+      "counterSpecifier": "\\LogicalDisk(_Total)\\% Free Space"
+    }
+  ],
+  "WindowsEventLog": [
+    {
+      "LogName": "Application",
+      "LogLevel": "Application!*[System[(Level=1 or Level=2)]]"
+    },
+    {
+      "LogName": "System",
+      "LogLevel": "System!*[System[(Level=1 or Level=2)]]"
+    }
+  ]
+},
+"Linux": {
+  "ExtensionType": "LinuxDiagnostic",
+  "Publisher": "Microsoft.Azure.Diagnostics",
+  "ProvisioningState": "Succeeded",
+  "PerformanceCounters": [
+    {
+      "displayName": "Disk read guest OS",
+      "counterSpecifier": "/builtin/disk/readbytespersecond"
+    },
+    {
+      "displayName": "Disk writes",
+      "counterSpecifier": "/builtin/disk/writespersecond"
+    },
+    {
+      "displayName": "Disk transfer time",
+      "counterSpecifier": "/builtin/disk/averagetransfertime"
+    },
+    {
+      "displayName": "Disk transfers",
+      "counterSpecifier": "/builtin/disk/transferspersecond"
+    },
+    {
+      "displayName": "Disk write guest OS",
+      "counterSpecifier": "/builtin/disk/writebytespersecond"
+    },
+    {
+      "displayName": "Disk read time",
+      "counterSpecifier": "/builtin/disk/averagereadtime"
+    },
+    {
+      "displayName": "Disk write time",
+
+      "counterSpecifier": "/builtin/disk/averagewritetime"
+    },
+    {
+      "displayName": "Disk total bytes",
+      "counterSpecifier": "/builtin/disk/bytespersecond"
+    },
+    {
+      "displayName": "Disk reads",
+      "counterSpecifier": "/builtin/disk/readspersecond"
+    },
+    {
+      "displayName": "Disk queue length",
+      "counterSpecifier": "/builtin/disk/averagediskqueuelength"
+    },
+    {
+      "displayName": "Network in guest OS",
+      "counterSpecifier": "/builtin/network/bytesreceived"
+    },
+    {
+      "displayName": "Network total bytes",
+      "counterSpecifier": "/builtin/network/bytestotal"
+    },
+    {
+      "displayName": "Network out guest OS",
+      "counterSpecifier": "/builtin/network/bytestransmitted"
+    },
+    {
+      "displayName": "Network collisions",
+      "counterSpecifier": "/builtin/network/totalcollisions"
+    },
+    {
+      "displayName": "Packets received errors",
+      "counterSpecifier": "/builtin/network/totalrxerrors"
+    },
+    {
+      "displayName": "Packets sent",
+      "counterSpecifier": "/builtin/network/packetstransmitted"
+    },
+    {
+      "displayName": "Packets received",
+      "counterSpecifier": "/builtin/network/packetsreceived"
+    },
+    {
+      "displayName": "Packets sent errors",
+      "counterSpecifier": "/builtin/network/totaltxerrors"
+    },
+    {
+      "displayName": "Filesystem transfers/sec",
+      "counterSpecifier": "/builtin/filesystem/transferspersecond"
+    },
+    {
+      "displayName": "Filesystem % free space",
+      "counterSpecifier": "/builtin/filesystem/percentfreespace"
+    },
+    {
+      "displayName": "Filesystem % used space",
+      "counterSpecifier": "/builtin/filesystem/percentusedspace"
+    },
+    {
+      "displayName": "Filesystem used space",
+      "counterSpecifier": "/builtin/filesystem/usedspace"
+    },
+    {
+      "displayName": "Filesystem read bytes/sec",
+      "counterSpecifier": "/builtin/filesystem/bytesreadpersecond"
+    },
+    {
+      "displayName": "Filesystem free space",
+      "counterSpecifier": "/builtin/filesystem/freespace"
+    },
+    {
+      "displayName": "Filesystem % free inodes",
+      "counterSpecifier": "/builtin/filesystem/percentfreeinodes"
+    },
+    {
+      "displayName": "Filesystem bytes/sec",
+      "counterSpecifier": "/builtin/filesystem/bytespersecond"
+    },
+    {
+      "displayName": "Filesystem reads/sec",
+      "counterSpecifier": "/builtin/filesystem/readspersecond"
+    },
+    {
+      "displayName": "Filesystem write bytes/sec",
+      "counterSpecifier": "/builtin/filesystem/byteswrittenpersecond"
+    },
+    {
+      "displayName": "Filesystem writes/sec",
+      "counterSpecifier": "/builtin/filesystem/writespersecond"
+    },
+    {
+      "displayName": "Filesystem % used inodes",
+      "counterSpecifier": "/builtin/filesystem/percentusedinodes"
+    },
+    {
+      "displayName": "CPU IO wait time",
+      "counterSpecifier": "/builtin/processor/percentiowaittime"
+    },
+    {
+      "displayName": "CPU user time",
+      "counterSpecifier": "/builtin/processor/percentusertime"
+    },
+    {
+      "displayName": "CPU nice time",
+      "counterSpecifier": "/builtin/processor/percentnicetime"
+    },
+    {
+      "displayName": "CPU percentage guest OS",
+      "counterSpecifier": "/builtin/processor/percentprocessortime"
+    },
+    {
+      "displayName": "CPU interrupt time",
+      "counterSpecifier": "/builtin/processor/percentinterrupttime"
+    },
+    {
+      "displayName": "CPU idle time",
+      "counterSpecifier": "/builtin/processor/percentidletime"
+    },
+    {
+      "displayName": "CPU privileged time",
+      "counterSpecifier": "/builtin/processor/percentprivilegedtime"
+    },
+    {
+      "displayName": "Memory available",
+      "counterSpecifier": "/builtin/memory/availablememory"
+    },
+    {
+      "displayName": "Swap percent used",
+      "counterSpecifier": "/builtin/memory/percentusedswap"
+    },
+    {
+      "displayName": "Memory used",
+      "counterSpecifier": "/builtin/memory/usedmemory"
+    },
+    {
+      "displayName": "Page reads",
+      "counterSpecifier": "/builtin/memory/pagesreadpersec"
+    },
+    {
+      "displayName": "Swap available",
+      "counterSpecifier": "/builtin/memory/availableswap"
+    },
+    {
+      "displayName": "Swap percent available",
+      "counterSpecifier": "/builtin/memory/percentavailableswap"
+    },
+    {
+      "displayName": "Mem. percent available",
+      "counterSpecifier": "/builtin/memory/percentavailablememory"
+    },
+    {
+      "displayName": "Pages",
+      "counterSpecifier": "/builtin/memory/pagespersec"
+    },
+    {
+      "displayName": "Swap used",
+      "counterSpecifier": "/builtin/memory/usedswap"
+    },
+    {
+      "displayName": "Memory percentage",
+      "counterSpecifier": "/builtin/memory/percentusedmemory"
+    },
+    {
+      "displayName": "Page writes",
+      "counterSpecifier": "/builtin/memory/pageswrittenpersec"
+    }
+  ],
+  "sysLogEvents": [
+    {
+      "LogName": "LOG_AUTH",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_AUTHPRIV",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_CRON",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_DAEMON",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_FTP",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_KERN",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL0",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL1",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL2",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL3",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL4",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL5",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL6",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LOCAL7",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_LPR",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_MAIL",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_NEWS",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_SYSLOG",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_USER",
+      "LogLevel": "LOG_DEBUG"
+    },
+    {
+      "LogName": "LOG_UUCP",
+      "LogLevel": "LOG_DEBUG"
+    }
+  ]
+}
+ ``` 
+
+### Control Spec
+
+> **Passed:**
+> Diagnostic extension, default Performance counters should be present and event logs should be enabled.
+>
+> **Failed:**
+> If any of the below condition is not satisfied:
+> - Diagnostic extension should be present
+> - Default Performance counters should be present
+> - Event logs should be enabled.
+
+### Recommendation
+
+- Refer: https://learn.microsoft.com/en-us/cli/azure/vmss/diagnostics?view=azure-cli-latest&WT.mc_id=Portal-Microsoft_Azure_Security and while configuring or updating the diagnostic extention, default Performance counters and event logs should be configured."
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get all the extension related details:
+  /subscriptions/{0}/resourceGroups/{1}/providers/Microsoft.Compute/virtualMachineScaleSets/{2}/extensions?api-version=2022-03-01 <br />
+  **Properties:** properties.type, properties.provisioningState, name, properties.publisher,
+  <br />
+
+- REST API to list all the VMSS configurations under the specified subscription:
+  /subscriptions/{subscriptionId}/providers/Microsoft.Compute/virtualMachineScaleSets?api-version=2019-07-01 <br />
+  **Properties:** properties.storageProfile.osDisk.osType
+  <br />
+  <br />
+
 ___

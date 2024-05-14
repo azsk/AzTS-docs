@@ -66,10 +66,15 @@ function Configure-WebUI
         [Parameter(Mandatory = $true, HelpMessage="ClientId of the web api deployed in azure for Azure Tenant Security Solution.")]
         $WebApiClientId,
 
-	[string]
+	    [string]
         [Parameter(Mandatory = $true, HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
         [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
-        $AzureEnvironmentName
+        $AzureEnvironmentName,
+
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage="Application Insights instrumentation key for Azure Tenant Security Solution.")]
+        $InstrumentationKey
+	
     )
 
     $AzureADAuthUrl = $AzureEnvironmentToADAuthUrlMap.$AzureEnvironmentName
@@ -86,7 +91,24 @@ window.__UI_CONFIGURATION_INITIAL__ = {
     "webAPI": "$ApiUrl",
     "clientId": "$UIClientId",
     "apiClientId": "$WebApiClientId",
-    "azureADAuthURL": "$AzureADAuthUrl"
+    "azureADAuthURL": "$AzureADAuthUrl",
+    "appInsights": {
+        "instrumentationKey": "$InstrumentationKey",
+        "loggingLevelConsole": 2,
+        "loggingLevelTelemetry": 2,
+        "maxBatchInterval": 15000,
+        "enableRequestHeaderTracking": true,
+        "enableResponseHeaderTracking": true,
+        "autoTrackPageVisitTime": true,
+        "disableDataLossAnalysis": false,
+        "enableCorsCorrelation": true,
+        "enableAutoRouteTracking": true,
+        "enableAjaxPerfTracking": true,
+        "enableAjaxErrorStatusText": true,
+        "enableUnhandledPromiseRejectionTracking": true,
+        "disableInstrumentationKeyValidation": true,
+        "ComponentName": "AzTS UI"
+    }
 };
 
 window.__UI_CONFIGURATION_EXTENDED__ = {};
