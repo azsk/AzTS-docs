@@ -37,8 +37,7 @@ $AzureEnvironmentName = ""
 $AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
-    "AzureChinaCloud" = "https://{0}.azurewebsites.cn";
-
+    "AzureChinaCloud" = "https://{0}.chinacloudsites.cn";
 }
 
 # Load helper functions

@@ -413,7 +413,7 @@ function Install-AzSKTenantSecuritySolution
                  elseif($AzureEnvironmentName -eq 'AzureChinaCloud')
                  {
                      $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.cn") 
-                     $TemplateParameters.Add("WebAppEndpointSuffix", ".azurewebsites.cn")
+                     $TemplateParameters.Add("WebAppEndpointSuffix", ".chinacloudsites.cn")
                  }
                  else 
                  {

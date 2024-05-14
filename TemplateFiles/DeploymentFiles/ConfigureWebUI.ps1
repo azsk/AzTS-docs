@@ -4,14 +4,12 @@ $AzureEnvironmentToADAuthUrlMap = @{
     "AzureCloud" = "https://login.microsoftonline.com";
     "AzureGovernmentCloud" = "https://login.microsoftonline.us";
     "AzureChinaCloud" = "https://login.microsoftonline.cn"; 
-
 }
 
 $AzureEnvironmentToKuduConsoleUrlMap = @{
     "AzureCloud" = "https://{0}.scm.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.scm.azurewebsites.us";
     "AzureChinaCloud" = "https://{0}.scm.chinacloudsites.cn";
-
 }
 
 function GetAuthHeader {
