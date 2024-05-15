@@ -100,7 +100,7 @@ Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGall
 
 If you have already downloaded the deployment package zip, directly go to step (3.d).
 
-3.a. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+3.a. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 3.b. Extract zip to local folder location. <br/>
 
@@ -246,7 +246,7 @@ $HostSubscriptionId = <HostSubscriptionId>
 # Add resource group name in which Azure Tenant Security Solution needs to be installed.
 $HostResourceGroupName = <HostResourceGroupName>
 
-# Add Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud
+# Add Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud
 $AzureEnvironmentName = <AzureEnvironmentName>
 
 $ADApplicationDetails = Set-AzSKTenantSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName -AzureEnvironmentName $AzureEnvironmentName

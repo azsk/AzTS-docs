@@ -72,7 +72,7 @@ By default, this feature is not turned on. If you haven't enabled it in your AzT
 ### Option 2: Using Powershell
 #### Step (1 & 2) of 4 (consolidated):
 If you have already downloaded the deployment package zip, directly go to step (4).<br/>
-1. Download deployment package zip from [here](https://github.com/azsk/AzTS-docs/raw/main/TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
+1. Download deployment package zip from [here](../TemplateFiles/DeploymentFiles.zip) to your local machine. </br>
 
 2. Extract zip to local folder location. <br/>
 

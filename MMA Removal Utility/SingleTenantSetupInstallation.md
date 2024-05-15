@@ -161,7 +161,7 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolution `
 |HostRGName| Resource group name in which setup needs to be created. Default value is 'AzTS-MMARemovalUtility-Host-RG'| No|
 |Location| Location in which setup needs to be created. For better performance, we recommend hosting the MI and AzTS MMA Removal Utility setup in the same location. Default value is 'EastUS2'| No|
 |ManagedIdentityId| ResourceId of the remediation MI.| Yes|
-|AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud. Default value is 'AzureCloud'| No|
+|AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud. Default value is 'AzureCloud'| No|
 
 [Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 
@@ -301,7 +301,7 @@ $SetupInstallation = Install-AzTSMMARemovalUtilitySolutionConsolidated `
 |SubscriptionId| Subscription id in which setup is installed.| Yes|
 |HostRGName| Resource group name in which remediation MI needs to be created. Default value is 'AzTS-MMARemovalUtility-Host-RG'| No|
 |Location| Location in which AzTS MMA Removal Utility setup is created. Default value is 'EastUS2'| No|
-|AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud. Default value is 'AzureCloud'| No|
+|AzureEnvironmentName| Azure environment in which MMA Removal Utility Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud. Default value is 'AzureCloud'| No|
 
 [Back to top…](#steps-to-install-single-tenant-azts-mma-removal-utility)
 

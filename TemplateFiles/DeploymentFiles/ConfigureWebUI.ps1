@@ -3,18 +3,21 @@
 $AzureEnvironmentToADAuthUrlMap = @{
     "AzureCloud" = "https://login.microsoftonline.com";
     "AzureGovernmentCloud" = "https://login.microsoftonline.us";
+    "AzureChinaCloud" = "https://login.microsoftonline.cn"; 
 }
 
 $AzureEnvironmentToKuduConsoleUrlMap = @{
     "AzureCloud" = "https://{0}.scm.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.scm.azurewebsites.us";
+    "AzureChinaCloud" = "https://{0}.scm.chinacloudsites.cn";
 }
 
 function GetAuthHeader {
         [psobject] $headers = $null
         try 
         {
-            $resourceAppIdUri = "https://management.azure.com/"
+
+            $resourceAppIdUri = (Get-AzContext).Environment.ResourceManagerUrl
             $rmContext = Get-AzContext
             $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
             $rmContext.Account,
@@ -64,13 +67,14 @@ function Configure-WebUI
         $WebApiClientId,
 
 	    [string]
-        [Parameter(Mandatory = $true, HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
+        [Parameter(Mandatory = $true, HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
         $AzureEnvironmentName,
 
         [string]
         [Parameter(Mandatory = $true, HelpMessage="Application Insights instrumentation key for Azure Tenant Security Solution.")]
         $InstrumentationKey
+	
     )
 
     $AzureADAuthUrl = $AzureEnvironmentToADAuthUrlMap.$AzureEnvironmentName

@@ -288,6 +288,14 @@
     "MetadataAggregatorFunctionTimeout": {
       "type": "string",
       "defaultValue": "00:09:00"
+    },
+    "AADClientAppDetailsInstance": {
+      "type": "string",
+      "defaultValue": "https://login.microsoftonline.com/"
+    },
+    "AzureEnvironmentPortalURI": {
+      "type": "string",
+      "defaultValue": "https://portal.azure.com/"
     }
   },
   "variables": {
@@ -838,7 +846,7 @@
             },
             {
               "name": "AADClientAppDetails__Instance",
-              "value": "https://login.microsoftonline.com/"
+              "value": "[concat(parameters('AADClientAppDetailsInstance'),'/')]"
             },
             {
               "name": "AADClientAppDetails__ClientId",
@@ -850,7 +858,7 @@
             },
             {
               "name": "AADClientAppDetails__Issuer",
-              "value": "[concat('https://login.microsoftonline.com/',parameters('TenantId'),'/v2.0')]"
+              "value": "[concat(parameters('AADClientAppDetailsInstance'),'/',parameters('TenantId'),'/v2.0')]"
             },
             {
               "name": "AADClientAppDetails__ApplicationId",
@@ -927,6 +935,14 @@
             {
               "name": "UIConfigurations__ControlEditorFeatureConfiguration__IsEnabled",
               "value": true
+            },
+            {
+              "name": "UIConfigurations__AzureAPI",
+              "value": "[parameters('AzureEnvironmentPortalURI')]"
+            },
+            {
+              "name": "CorsPolicySettings__OriginUrl",
+              "value": "[concat('https://',toLower(variables('WebUI')), parameters('WebAppEndpointSuffix'))]"
             },
             {
               "name": "WorkItemProcessorSettings__AppName",

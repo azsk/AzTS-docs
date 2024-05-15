@@ -2,10 +2,22 @@
 . "$PSScriptRoot\OnDemandScan.ps1"
 
 # Standard configuration
-
 $AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
     "AzureGovernmentCloud" = "https://{0}.azurewebsites.us";
+    "AzureChinaCloud" = "https://{0}.chinacloudsites.cn";
+}
+
+$AzureEnvironmentToADAuthUrlMap = @{
+    "AzureCloud" = "https://login.microsoftonline.com";
+    "AzureGovernmentCloud" = "https://login.microsoftonline.us";
+    "AzureChinaCloud" = "https://login.microsoftonline.cn";  
+}
+
+$AzureEnvironmentPortalURI = @{
+    "AzureCloud" = "https://portal.azure.com/";
+    "AzureGovernmentCloud" = "https://portal.azure.us/";
+    "AzureChinaCloud" = "https://portal.azure.cn/"; 
 }
 
 function Install-AzSKTenantSecuritySolution
@@ -135,11 +147,11 @@ function Install-AzSKTenantSecuritySolution
         $SendAlertNotificationToEmailIds = @(),
 
         [string]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "AzTSUI", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "CentralVisibility", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "MultiTenantSetup", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
         $AzureEnvironmentName = "AzureCloud",
 
         [switch]
@@ -398,6 +410,11 @@ function Install-AzSKTenantSecuritySolution
                      $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.us")
                      $TemplateParameters.Add("WebAppEndpointSuffix", ".azurewebsites.us")
                  }
+                 elseif($AzureEnvironmentName -eq 'AzureChinaCloud')
+                 {
+                     $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.cn") 
+                     $TemplateParameters.Add("WebAppEndpointSuffix", ".chinacloudsites.cn")
+                 }
                  else 
                  {
                      $TemplateParameters.Add("FrontDoorEndpointSuffix", ".azurefd.net")
@@ -503,6 +520,8 @@ function Install-AzSKTenantSecuritySolution
                 # Creating Azure AD application: Web API
                 $TemplateParameters.Add("WebApiClientId", $WebAPIAzureADAppId)
                 $TemplateParameters.Add("UIClientId", $UIAzureADAppId)
+                $TemplateParameters.Add("AADClientAppDetailsInstance", $AzureEnvironmentToADAuthUrlMap.$AzureEnvironmentName)
+                $TemplateParameters.Add("AzureEnvironmentPortalURI", $AzureEnvironmentPortalURI.$AzureEnvironmentName)
 
 
                 #updating UI app settings for already existing UI, this will require deletion of pre-existing UI and re-deploying it with updated settings.
@@ -1546,8 +1565,8 @@ function Set-AzSKTenantSecurityADApplication
         $UIAzureADAppName,
 
         [string]
-        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud")]
-        [ValidateSet("AzureCloud", "AzureGovernmentCloud")]
+        [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
+        [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
         $AzureEnvironmentName = "AzureCloud",
 	
         [switch]
