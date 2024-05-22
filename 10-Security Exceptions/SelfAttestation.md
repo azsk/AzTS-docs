@@ -171,8 +171,6 @@ Enable-ByDesignExceptionFeature `
 > **Warning** : When attesting controls, the highest level of discretion is required. Justification is required for each attested control in order to document the rationale for bypassing the security control. By attesting to this decision, you are confirming that you are prepared to take accountability for consequences that may occur due to security configurations not being correctly or fully constituted.
 
 > **Note** : Only following controls are allowed for self-attestation exception.<br/>
-> Azure_Storage_AuthN_Dont_Allow_Anonymous<br/>
-> Azure_SQLDatabase_AuthZ_Use_AAD_Admin<br/>
 > Azure_AppService_Config_Disable_Web_Sockets<br/>
 > Azure_AppService_DP_Use_CNAME_With_SSL<br/>
 > Azure_CDN_DP_Enable_Https<br/>
