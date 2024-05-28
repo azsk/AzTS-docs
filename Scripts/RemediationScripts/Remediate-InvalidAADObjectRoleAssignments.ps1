@@ -189,6 +189,7 @@ function Remove-AzTSInvalidAADAccounts
     $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
     $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to
     $userObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+    $currentLoginRoleAssignments = $allRoleAssignments | Where-Object { $_.ObjectId -eq $userObjectId } # It will be used later by the script
 
     # creating a list of object ids which consists of both group and user object ids and finally we will check if there are any role assignments which have the role definition name as one of
     # the required role definition names and the object id is in the newly created list consisting of group and user object id
