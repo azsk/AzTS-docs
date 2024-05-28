@@ -181,10 +181,20 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    # Find all role assignments for the subscription
+    $context = Get-AzContext
 
+    # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
+    Connect-AzureAD -TenantId $currentSub.Tenant.Id
+    $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
+    $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to
+    $userObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+
+    # creating a list of object ids which consists of both group and user object ids and finally we will check if there are any role assignments which have the role definition name as one of
+    # the required role definition names and the object id is in the newly created list consisting of group and user object id
+    $allRepresentativeObjectIds = $userMemberGroups + $userObjectId
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    if(($allRoleAssignments | Where-Object { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and $_.ObjectId -in $allRepresentativeObjectIds } | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
         return;
