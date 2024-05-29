@@ -182,18 +182,23 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     # Find all role assignments for the subscription
+    $tenantDetails = Get-AzureADTenantDetail
     $context = Get-AzContext
 
     # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
-    Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
+    if ($null -eq $tenantDetails -or $tenantDetails.ObjectId -ne $currentSub.Tenant.Id)
+    {
+        Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
+    }
+    
     $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
     $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to
-    $userObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
-    $currentLoginRoleAssignments = $allRoleAssignments | Where-Object { $_.ObjectId -eq $userObjectId } # It will be used later by the script
+    $currentLoginUserObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+    $currentLoginRoleAssignments = $allRoleAssignments | Where-Object { $_.ObjectId -eq $currentLoginUserObjectId } # It will be used later by the script
 
     # creating a list of object ids which consists of both group and user object ids and finally we will check if there are any role assignments which have the role definition name as one of
     # the required role definition names and the object id is in the newly created list consisting of group and user object id
-    $allRepresentativeObjectIds = $userMemberGroups + $userObjectId
+    $allRepresentativeObjectIds = $userMemberGroups + $currentLoginUserObjectId
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
     if(($allRoleAssignments | Where-Object { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and $_.ObjectId -in $allRepresentativeObjectIds } | Measure-Object).Count -le 0)
     {
@@ -206,13 +211,9 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Safe Check: saving the current login user object id to ensure we don't remove this during the actual removal
-    $currentLoginUserObjectIdArray = @()
-    $currentLoginUserObjectId = "";
-    $currentLoginUserObjectIdArray += $currentLoginRoleAssignments | select ObjectId -Unique
-    if(($currentLoginUserObjectIdArray | Measure-Object).Count -gt 0)
-    {
-        $currentLoginUserObjectId = $currentLoginUserObjectIdArray[0].ObjectId;
-    }
+    $currentLoginUserObjectIdArrayIncludeGroups = @()
+    $currentLoginUserObjectIdArrayIncludeGroups += $currentLoginRoleAssignments | select ObjectId -Unique
+    $currentLoginUserObjectIdArrayIncludeGroups += $userMemberGroups | Select-Object -Unique
 
     if([String]::IsNullOrWhiteSpace($FilePath))
     { 
@@ -372,7 +373,7 @@ function Remove-AzTSInvalidAADAccounts
     }   
 
     # Safe Check: Check whether the current user accountId is part of invalid AAD Object guids List 
-    if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -eq $currentLoginUserObjectId} | Measure-Object).Count -gt 0)
+    if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -in $currentLoginUserObjectIdArrayIncludeGroups } | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the invalid AAD Object guids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
         return;
