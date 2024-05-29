@@ -185,9 +185,9 @@ function Remove-AzTSInvalidAADAccounts
     $context = Get-AzContext
 
     # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
-    Connect-AzureAD -TenantId $currentSub.Tenant.Id
+    Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
     $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
-    $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to
+    $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to
     $userObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
     $currentLoginRoleAssignments = $allRoleAssignments | Where-Object { $_.ObjectId -eq $userObjectId } # It will be used later by the script
 
