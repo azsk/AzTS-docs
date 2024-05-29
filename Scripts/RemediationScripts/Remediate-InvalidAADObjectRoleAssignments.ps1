@@ -190,7 +190,7 @@ function Remove-AzTSInvalidAADAccounts
     {
         Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
     }
-    
+
     $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
     $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to
     $currentLoginUserObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
@@ -212,7 +212,7 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: saving the current login user object id to ensure we don't remove this during the actual removal
     $currentLoginUserObjectIdArrayIncludeGroups = @()
-    $currentLoginUserObjectIdArrayIncludeGroups += $currentLoginRoleAssignments | select ObjectId -Unique
+    $currentLoginUserObjectIdArrayIncludeGroups += $currentLoginRoleAssignments | select -ExpandProperty ObjectId -Unique
     $currentLoginUserObjectIdArrayIncludeGroups += $userMemberGroups | Select-Object -Unique
 
     if([String]::IsNullOrWhiteSpace($FilePath))
@@ -220,10 +220,9 @@ function Remove-AzTSInvalidAADAccounts
         Write-Host "Step 2 of 5: Fetching all the role assignments for subscription [$($SubscriptionId)]..."
 
         $classicAssignments = $null
-        $distinctObjectIds = @();
 
-        # adding one valid object guid, so that even if graph call works, it has to get atleast 1. If we don't get any, means Graph API failed.
-        $distinctObjectIds += $currentLoginUserObjectId;
+        # adding at least one valid object guid, so that even if graph call works, it has to get atleast 1. If we don't get any, means Graph API failed.
+        $distinctObjectIds = $currentLoginUserObjectIdArrayIncludeGroups
         if(($ObjectIds | Measure-Object).Count -eq 0)
         {
             # Getting all classic role assignments.
