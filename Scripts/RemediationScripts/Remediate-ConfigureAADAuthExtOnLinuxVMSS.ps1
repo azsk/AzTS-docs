@@ -1,12 +1,12 @@
 <###
 # Overview:
-    This script is used to remediate AAD Authentication Extension on Linux VMSS in a Subscription.
+    This script is used to remediate Entra ID (formerly AAD) Authentication Extension on Linux VMSS in a Subscription.
 
 # Control ID:
-    Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+    Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 # Display Name:
-    AAD extension must be deployed to the Linux VMSS
+    Entra ID (formerly AAD) extension must be deployed to the Linux VMSS
 
 # Prerequisites:
     Contributor or higher priviliged role on the Virtual Machine Scale Set(s) is required for remediation.
@@ -14,9 +14,9 @@
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
-        2. Get the list of Linux VMSS(s) in a Subscription with Uniform orchestration mode that doesn't have VM AAD Extension installed.
+        2. Get the list of Linux VMSS(s) in a Subscription with Uniform orchestration mode that doesn't have VM Entra ID (formerly AAD) Extension installed.
         3. Back up details of Linux VMSS(s) that are to be remediated.
-        4. Install AAD Authentication Extension on Linux VMSS(s) in the Subscription.
+        4. Install Entra ID (formerly AAD) Authentication Extension on Linux VMSS(s) in the Subscription.
 
     To validate:
         1. Validate and install the modules required to run the script and validating the user.
@@ -32,12 +32,12 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to add AAD extension on Virtual Machine Scale Set(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to add Entra ID (formerly AAD) extension on Virtual Machine Scale Set(s) in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remove AAD extension on Virtual Machine Scale Set(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to remove Entra ID (formerly AAD) extension on Virtual Machine Scale Set(s) in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -45,11 +45,11 @@
     
            Add-AADAuthExtensionforVMSS -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. Configure required AAD extension on Virtual Machine Scale Set(s) in the Subscription:
+        2. Configure required Entra ID (formerly AAD) extension on Virtual Machine Scale Set(s) in the Subscription:
        
            Add-AADAuthExtensionforVMSS -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. Configure required AAD extension on Virtual Machine Scale Set(s) in the Subscription, from a previously taken snapshot:
+        3. Configure required Entra ID (formerly AAD) extension on Virtual Machine Scale Set(s) in the Subscription, from a previously taken snapshot:
        
            Add-AADAuthExtensionforVMSS -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\AADAuthExtForLinuxVm\NonCompliantVMs.csv
 
@@ -58,11 +58,11 @@
         Get-Help Add-AADAuthExtensionforVMSS -Detailed
 
     To validate the extension:
-        1.  Validate required AAD extension on Virtual Machine Scale Set(s) in the Subscription, from a previously taken snapshot:
+        1.  Validate required Entra ID (formerly AAD) extension on Virtual Machine Scale Set(s) in the Subscription, from a previously taken snapshot:
             Validate-AADAuthExtensionforVMSS -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\AADAuthExtForLinuxVm\RemediatedVirtualMachines.csv
 
     To roll back:
-        1. Revert back AAD extension on Virtual Machine Scale Set(s) in the Subscription, from a previously taken snapshot:
+        1. Revert back Entra ID (formerly AAD) extension on Virtual Machine Scale Set(s) in the Subscription, from a previously taken snapshot:
            Remove-AADAuthExtensionforVMSS -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\AADAuthExtForLinuxVm\RemediatedVirtualMachines.csv
        
         To know more about the options supported by the roll back command, execute:
@@ -120,11 +120,11 @@ function Setup-Prerequisites {
 function Add-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
-        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
-        AAD extension must be deployed to the Linux VMSS. 
+        Remediates 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
+        Entra ID (formerly AAD) extension must be deployed to the Linux VMSS. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -229,7 +229,7 @@ function Add-AADAuthExtensionforVMSS {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
         
-    Write-Host "***To add AAD Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To add Entra ID (formerly AAD) Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Virtual Machine Scale Set(s)..."
@@ -242,8 +242,8 @@ function Add-AADAuthExtensionforVMSS {
     $NonCompliantVMSSDetails = @()
 
     $reqExtPublisher = "Microsoft.Azure.ActiveDirectory"
-    $reqExtensionType = "AADSSHLoginForLinux"
-    $reqExtensionName = "AADSSHLoginForLinux"
+    $reqExtensionType = "Entra ID (formerly AAD) SSHLoginForLinux"
+    $reqExtensionName = "Entra ID (formerly AAD) SSHLoginForLinux"
 
     # No file path provided as input to the script. Fetch all Virtual Machine Scale Set(s) in the Subscription.
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
@@ -278,13 +278,13 @@ function Add-AADAuthExtensionforVMSS {
                         }
                     }
                     if (!$VMSS.isExtPresent) {
-                        Write-Host "AAD Extension is not present in Virtual Machine Scale Set [$($VMSS.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Entra ID (formerly AAD) Extension is not present in Virtual Machine Scale Set [$($VMSS.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                         $NonCompliantVMSSDetails += $VMSS
                     }
                     else
                     {
-                        Write-Host "AAD Extension is present in Virtual Machine Scale Set [$($VMSS.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
+                        Write-Host "Entra ID (formerly AAD) Extension is present in Virtual Machine Scale Set [$($VMSS.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                     } 
                 }
@@ -348,11 +348,11 @@ function Add-AADAuthExtensionforVMSS {
     $totalVMSS = ($NonCompliantVMSSDetails | Measure-Object).Count
     
     if ($totalVMSS -eq 0) {
-        Write-Host "No Virtual machines Scale Set(s) found without AAD Extension present. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No Virtual machines Scale Set(s) found without Entra ID (formerly AAD) Extension present. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
   
-    Write-Host "Found [$($totalVMSS)] Virtual Machine Scale Set(s) without AAD authentication extension:" -ForegroundColor $([Constants]::MessageType.Update)                             
+    Write-Host "Found [$($totalVMSS)] Virtual Machine Scale Set(s) without Entra ID (formerly AAD) authentication extension:" -ForegroundColor $([Constants]::MessageType.Update)                             
     Write-Host $([Constants]::SingleDashLine)
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
@@ -394,19 +394,19 @@ function Add-AADAuthExtensionforVMSS {
         Write-Host $([Constants]::SingleDashLine)
         
         if (-not $Force) {
-            Write-Host "Found total [$($NonCompliantVMSSDetails.count)] Virtual machines Scale Set(s) where AAD Extension is not present." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "This step will add AAD extension for all non-complaint Virtual Machine Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Found total [$($NonCompliantVMSSDetails.count)] Virtual machines Scale Set(s) where Entra ID (formerly AAD) Extension is not present." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This step will add Entra ID (formerly AAD) extension for all non-complaint Virtual Machine Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if ($userInput -ne "Y") {
-                Write-Host "AAD Extension will not be added  to the Virtual machines Scale Set(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Entra ID (formerly AAD) Extension will not be added  to the Virtual machines Scale Set(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
         else {
-            Write-Host "'Force' flag is provided. AAD extension will be added for Virtual Machine Scale Set(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Entra ID (formerly AAD) extension will be added for Virtual Machine Scale Set(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         # List for storing remediated Virtual Machines Scale set(s)
@@ -415,7 +415,7 @@ function Add-AADAuthExtensionforVMSS {
         # List for storing skipped Virtual Machines Scale Set(s)
         $VMSSSkipped = @()
 
-        Write-Host "Adding AAD Extension on all non compliant Virtual Machines Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Adding Entra ID (formerly AAD) Extension on all non compliant Virtual Machines Scale Set(s)." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Virtual Machines Scale Set(s) which needs to be remediated.
@@ -423,7 +423,7 @@ function Add-AADAuthExtensionforVMSS {
             $VMSS = $_
             $VMSS | Add-Member -NotePropertyName isExtInstalledPostRemediation -NotePropertyValue $false
 
-            Write-Host "Adding AAD Authentication Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Adding Entra ID (formerly AAD) Authentication Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
             try {
                 # Remediation command starts from here
                 $vmssInstance = Get-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -VMScaleSetName $VMSS.ResourceName
@@ -440,7 +440,7 @@ function Add-AADAuthExtensionforVMSS {
                     }
                 }
                 if ($VMSS.isExtInstalledPostRemediation = $true) {
-                    Write-Host "Successfully installed AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully installed Entra ID (formerly AAD) Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                     $VMSSRemediated += $VMSS
                 }
@@ -470,7 +470,7 @@ function Add-AADAuthExtensionforVMSS {
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
         if ($($VMSSRemediated | Measure-Object).Count -gt 0) {
-            Write-Host "AAD Extension have been installed on following Virtual Machine Scale Set(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) Extension have been installed on following Virtual Machine Scale Set(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
            
             $VMSSRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
 
@@ -484,7 +484,7 @@ function Add-AADAuthExtensionforVMSS {
         }
 
         if ($($VMSSSkipped | Measure-Object).Count -gt 0) {
-            Write-Host "Error installing AAD Extension on the following Virtual Machine Scale Set(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error installing Entra ID (formerly AAD) Extension on the following Virtual Machine Scale Set(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $VMSSSkipped | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
             $VMSSSkippedFile = "$($backupFolderPath)\SkippedVMSS.csv"
@@ -501,18 +501,18 @@ function Add-AADAuthExtensionforVMSS {
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun to configure AAD Extension on Virtual Machine Scale Set(s) listed in the file."
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun to configure Entra ID (formerly AAD) Extension on Virtual Machine Scale Set(s) listed in the file."
     }
 }
 
 function Validate-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
-        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
-        AAD extension must be deployed to the Linux VMSS. 
+        Validates remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
+        Entra ID (formerly AAD) extension must be deployed to the Linux VMSS. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -590,7 +590,7 @@ function Validate-AADAuthExtensionforVMSS {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To validate AAD Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To validate Entra ID (formerly AAD) Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine Scale Set(s)..."
@@ -698,7 +698,7 @@ function Validate-AADAuthExtensionforVMSS {
         Write-Host "Validation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($VMSSValidated | Measure-Object).Count -gt 0) {
-            Write-Host "AAD Extension has been successfully validated on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) Extension has been successfully validated on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VMSSValidated | Format-Table -Property $colsPropertyValidation -Wrap
 
             # Write this to a file.
@@ -710,7 +710,7 @@ function Validate-AADAuthExtensionforVMSS {
         }
 
         if ($($VMSSSkipped | Measure-Object).Count -gt 0) {
-            Write-Host "Following Virtual Machine Scale Set(s) AAD extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Following Virtual Machine Scale Set(s) Entra ID (formerly AAD) extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             
             $VMSSSkipped | Format-Table -Property $colsPropertyValidation -Wrap
             
@@ -721,7 +721,7 @@ function Validate-AADAuthExtensionforVMSS {
             Write-Host " [$($ValidationSkippedVirtualMachineFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
             Write-Host $([Constants]::SingleDashLine)
 
-            Write-Host "For above VMSS(s), please manually re-install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
+            Write-Host "For above VMSS(s), please manually re-install the Entra ID (formerly AAD) extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
 
         }
     }
@@ -731,11 +731,11 @@ function Validate-AADAuthExtensionforVMSS {
 function Remove-AADAuthExtensionforVMSS {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
+        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux' Control.
-        AAD extension must be deployed to the Linux VMSS. 
+        Rolls back remediation done for 'Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
+        Entra ID (formerly AAD) extension must be deployed to the Linux VMSS. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -816,7 +816,7 @@ function Remove-AADAuthExtensionforVMSS {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To remove/uninstall AAD Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To remove/uninstall Entra ID (formerly AAD) Authentication extension on Linux VMSS(s) in a Subscription, Contributor or higher privileges on the VMSS(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine Scale Set(s)..."
@@ -866,15 +866,15 @@ function Remove-AADAuthExtensionforVMSS {
     Write-Host $([Constants]::SingleDashLine)
 
     if ( -not $Force) {
-        Write-Host "This will remove the AAD Authentication Extension from the VMSS(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "This will remove the Entra ID (formerly AAD) Authentication Extension from the VMSS(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
         if ($userInput -ne "Y") {
-            Write-Host "AAD Authentication Extension will not be rolled back for any VMSS(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Entra ID (formerly AAD) Authentication Extension will not be rolled back for any VMSS(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             break
         }
     }
     else {
-        Write-Host "'Force' flag is provided. AAD extension in VMSS(s) will be removed in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'Force' flag is provided. Entra ID (formerly AAD) extension in VMSS(s) will be removed in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     # List for storing rolled back Virtual Machine Scale Set resource.
@@ -891,7 +891,7 @@ function Remove-AADAuthExtensionforVMSS {
         $VMSS | Add-Member -NotePropertyName isAADExtRolledback -NotePropertyValue $false
         try {
             
-            Write-Host "Rolling back AAD Authentication Extension on Virtual Machine Scale Set(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Rolling back Entra ID (formerly AAD) Authentication Extension on Virtual Machine Scale Set(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
             if ($_.isExtInstalledPostRemediation) {
                 $vmssInstance = Get-AzVmss -ResourceGroupName $VMSS.ResourceGroupName -VMScaleSetName $VMSS.ResourceName 
                 Remove-AzVmssExtension -VirtualMachineScaleSet $vmssInstance -Name 'AADSSHLoginForLinux'
@@ -908,7 +908,7 @@ function Remove-AADAuthExtensionforVMSS {
                 if (!$VMSS.isAADExtRolledback) {
                     $VMSS.isAADExtRolledback = $true
                     $VMSS.isExtPresent = $false
-                    Write-Host "Successfully uninstalled AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully uninstalled Entra ID (formerly AAD) Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                     $VMSSRolledBack += $VMSS
                 }
@@ -937,7 +937,7 @@ function Remove-AADAuthExtensionforVMSS {
         Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($VMSSRolledBack | Measure-Object).Count -gt 0) {
-            Write-Host "AAD extension is rolled back successfully on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) extension is rolled back successfully on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VMSSRolledBack | Format-Table -Property $colsPropertyRollBack -Wrap
 
             # Write this to a file.
@@ -949,7 +949,7 @@ function Remove-AADAuthExtensionforVMSS {
         }
 
         if ($($VMSSSkipped | Measure-Object).Count -gt 0) {
-            Write-Host "Error installing AAD Extension on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Error installing Entra ID (formerly AAD) Extension on following Virtual Machine Scale Set(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $VMSSSkipped | Format-Table -Property $colsProperty -Wrap
             

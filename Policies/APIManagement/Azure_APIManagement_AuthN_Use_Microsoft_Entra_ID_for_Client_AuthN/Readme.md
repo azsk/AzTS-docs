@@ -1,7 +1,7 @@
-## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN 
+## Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN 
 
 ### DisplayName 
-[Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials](../../../Control%20coverage/Feature/APIManagement.md#azure_apimanagement_authn_use_aad_for_client_authn)
+[Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials](../../../Control%20coverage/Feature/APIManagement.md#azure_apimanagement_authn_use_microsoft_entra_id_for_client_authn)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:

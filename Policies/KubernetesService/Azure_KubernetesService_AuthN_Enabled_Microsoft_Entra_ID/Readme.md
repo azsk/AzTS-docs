@@ -1,7 +1,7 @@
-## Azure_KubernetesService_AuthN_Enabled_AAD
+## Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID
 
 ### DisplayName 
-[AAD should be enabled in Kubernetes Service](../../../Control%20coverage/Feature/KubernetesService.md#Azure_KubernetesService_AuthN_Enabled_AAD)
+[AAD should be enabled in Kubernetes Service](../../../Control%20coverage/Feature/KubernetesService.md#Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID)
 
 ### Required Policies
 Control can be covered with the below mentioned Azure policy:

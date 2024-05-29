@@ -1,12 +1,12 @@
 ﻿<###
 # Overview:
-    This script is used to enable AAD for Kubernetes Services in a Subscription.
+    This script is used to enable Entra ID (formerly AAD) for Kubernetes Services in a Subscription.
 
 # Control ID:
-    Azure_KubernetesService_AuthN_Enabled_AAD
+    Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_Id
 
 # Display Name:
-    AAD should be enabled in Kubernetes Service.
+    Entra ID (formerly AAD) should be enabled in Kubernetes Service.
 
 # Prerequisites:
     1. Contributor or higher privileges on the Kubernetes Services in a Subscription.
@@ -16,28 +16,28 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
-        2. Get the list of Kubernetes Services in a Subscription that do not have AAD enabled.
+        2. Get the list of Kubernetes Services in a Subscription that do not have Entra ID (formerly AAD) enabled.
         3. Back up details of Kubernetes Services that are to be remediated.
-        4. Enable AAD in all Kubernetes Services in the Subscription.
+        4. Enable Entra ID (formerly AAD) in all Kubernetes Services in the Subscription.
 
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to enable AAD in all Kubernetes Services in the Subscription. Refer `Examples`, below.
+        3. Execute the script to enable Entra ID (formerly AAD) in all Kubernetes Services in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
         1. To review the Kubernetes Services in a Subscription that will be remediated:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. To enable AAD in all Kubernetes Services in a Subscription:
+        2. To enable Entra ID (formerly AAD) in all Kubernetes Services in a Subscription:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. To enable AAD in all Kubernetes Services in a Subscription, from a previously taken snapshot:
+        3. To enable Entra ID (formerly AAD) in all Kubernetes Services in a Subscription, from a previously taken snapshot:
            Enable-AADForKubernetes -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202201011212\EnableAADForKubernetesServices\KubernetesClusterWithAADDisabled.csv
 
-        **Note: If you want to add AAD group to AKS cluster, please provide ADD group object id for each of the cluster.
+        **Note: If you want to add Entra ID (formerly AAD) group to AKS cluster, please provide ADD group object id for each of the cluster.
 
         To know more about the options supported by the remediation command, execute:
         Get-Help Enable-AADForKubernetes -Detailed        
@@ -96,11 +96,11 @@ function Enable-AADForKubernetes
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_KubernetesService_AuthN_Enabled_AAD' Control.
+        Remediates 'Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_KubernetesService_AuthN_Enabled_AAD' Control.
-        AAD should be enabled in Kubernetes Service.
+        Remediates 'Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID' Control.
+        Entra ID (formerly AAD) should be enabled in Kubernetes Service.
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -223,7 +223,7 @@ function Enable-AADForKubernetes
          Write-Host $([Constants]::SingleDashLine)
      }
 
-    Write-Host "To enable AAD for Kubernetes Services in a Subscription, Contributor or higher privileges on the Kubernetes Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable Entra ID (formerly AAD) for Kubernetes Services in a Subscription, Contributor or higher privileges on the Kubernetes Services are required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "[Step 2 of 5] Fetch all Kubernetes Services"
@@ -236,7 +236,7 @@ function Enable-AADForKubernetes
     $logRemediatedResources = @()
     $logSkippedResources=@()
 
-    $controlIds = "Azure_KubernetesService_AuthN_Enabled_AAD"
+    $controlIds = "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_Id"
     if($AutoRemediation)
     {
         if(-not (Test-Path -Path $Path))
@@ -335,7 +335,7 @@ function Enable-AADForKubernetes
 
     Write-Host "[Step 3 of 5] Fetch all Kubernetes Service configurations"
     Write-Host $([Constants]::SingleDashLine)
-    # Includes Kubernetes Services where AAD is disabled.
+    # Includes Kubernetes Services where Entra ID (formerly AAD) is disabled.
     $kubernetesServicesWithoutAADEnabled = @()
 
     # Includes Kubernetes Services that were skipped during remediation. There were errors remediating them.
@@ -369,12 +369,12 @@ function Enable-AADForKubernetes
             else 
             {    
                 $kubernetesServicesSkipped += $kubernetesServiceResource
-                Write-Host "Skipping this Kubernetes Service with resource name: [$($_.Name)] and resource group name: [$($_.ResourceGroupName)] as AAD is already enabled..." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Skipping this Kubernetes Service with resource name: [$($_.Name)] and resource group name: [$($_.ResourceGroupName)] as Entra ID (formerly AAD) is already enabled..." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.Name))
-                $logResource.Add("Reason","AAD is already enabled.")    
+                $logResource.Add("Reason","Entra ID (formerly AAD) is already enabled.")    
                 $logSkippedResources += $logResource
             }
         }
@@ -408,7 +408,7 @@ function Enable-AADForKubernetes
 
     if ($totalKubernetesServicesWithoutAADEnabled -eq 0)
     {
-        Write-Host "No Kubernetes Service found with AAD disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Kubernetes Service found with Entra ID (formerly AAD) disabled. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::DoubleDashLine)
         if($AutoRemediation -and $totalSkippedKubernetesServices -gt 0) 
         {
@@ -425,7 +425,7 @@ function Enable-AADForKubernetes
         return
     }
 
-    Write-Host "Found [$($totalKubernetesServicesWithoutAADEnabled)] out of [$($totalKubernetesServices)] Kubernetes Service(s) with AAD disabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalKubernetesServicesWithoutAADEnabled)] out of [$($totalKubernetesServices)] Kubernetes Service(s) with Entra ID (formerly AAD) disabled." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\EnableAADForKubernetesServices"
@@ -446,7 +446,7 @@ function Enable-AADForKubernetes
 
     if (-not $DryRun)
     {
-        Write-Host "[Step 5 of 5] Enable AAD for Kubernetes Services"
+        Write-Host "[Step 5 of 5] Enable Entra ID (formerly AAD) for Kubernetes Services"
         Write-Host $([Constants]::SingleDashLine)
 
         $colsProperty = @{Expression={$_.Id};Label="Resource ID";Width=40;Alignment="left"},
@@ -454,28 +454,28 @@ function Enable-AADForKubernetes
                         @{Expression={$_.ResourceGroupName};Label="Resource Group Name";Width=20;Alignment="left"},
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"},
                         @{Expression={$_.EnableRBAC};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
-                        @{Expression={$_.IsAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
+                        @{Expression={$_.IsAADEnabled};Label="Is Entra ID (formerly AAD) enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
-        Write-Host "Following Kubernetes cluster(s) are having AAD disabled:" #-ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Following Kubernetes cluster(s) are having Entra ID (formerly AAD) disabled:" #-ForegroundColor $([Constants]::MessageType.Warning)
         $kubernetesServicesWithoutAADEnabled | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
 
         Write-Host "Note: " -ForegroundColor $([Constants]::MessageType.Warning) 
-        Write-Host "1. RBAC must be enabled on Kubernetes cluster to enable AAD." -ForegroundColor $([Constants]::MessageType.Warning) 
+        Write-Host "1. RBAC must be enabled on Kubernetes cluster to enable Entra ID (formerly AAD)." -ForegroundColor $([Constants]::MessageType.Warning) 
         Write-Host "2. Once AAD is enabled, you won't be able to disable it again." -ForegroundColor $([Constants]::MessageType.Warning) 
-        Write-Host "`nFor more information on using AAD authentication in AKS, please refer: https://docs.microsoft.com/en-us/azure/aks/azure-ad-rbac" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "`nFor more information on using Entra ID (formerly AAD) authentication in AKS, please refer: https://docs.microsoft.com/en-us/azure/aks/azure-ad-rbac" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
-        Write-Host "Do you want to enable AAD for all Kubernetes Services? " -NoNewline
+        Write-Host "Do you want to enable Entra ID (formerly AAD) for all Kubernetes Services? " -NoNewline
 
         $userInput = Read-Host -Prompt "(Y|N)"
         Write-Host $([Constants]::SingleDashLine)
         if($userInput -ne "Y")
         {
-            Write-Host "AAD will not be enabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) will not be enabled for any Kubernetes Services. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::DoubleDashLine)
             return
         }
-        Write-Host "User has provided consent to enable AAD for all Kubernetes Services" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "User has provided consent to enable Entra ID (formerly AAD) for all Kubernetes Services" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
 
         Write-Host "Do you want to add Azure AD groups as administrators on each cluster? " -NoNewline
@@ -510,9 +510,9 @@ function Enable-AADForKubernetes
             $isRBACEnabled = $_.EnableRBAC
             $aadClientIds = @()
 
-            Write-Host "Enabling AAD for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Enabling Entra ID (formerly AAD) for Kubernetes cluster [$($resourceName)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
-            # Check whether RBAC is enabled on cluster or not. Without RBAC, AAD cannot be enabled.
+            # Check whether RBAC is enabled on cluster or not. Without RBAC, Entra ID (formerly AAD) cannot be enabled.
             if ($isRBACEnabled -eq $true)
             {
                 if ($addAADGroup)
@@ -544,11 +544,11 @@ function Enable-AADForKubernetes
                 }
                 else
                 {
-                    Write-Host "AAD group will not be added to Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Entra ID (formerly AAD) group will not be added to Kubernetes cluster [$($resourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }
 
-                # Setting AAD profile config to Kubernetes cluster.
+                # Setting Entra ID (formerly AAD) profile config to Kubernetes cluster.
                 $res = $setAADProfile.SetAADProfileForCluster($subscriptionId, $resourceName, $resourceGroupName, $location, $aadClientIds)
 
                 if ($res.properties.aadProfile.managed)
@@ -559,7 +559,7 @@ function Enable-AADForKubernetes
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.Name))
                     $logRemediatedResources += $logResource
-                    Write-Host "Successfully enabled AAD for Kubernetes cluster [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully enabled Entra ID (formerly AAD) for Kubernetes cluster [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                 }
                 else
@@ -568,9 +568,9 @@ function Enable-AADForKubernetes
                     $logResource = @{}
                     $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                     $logResource.Add("ResourceName",($_.Name))
-                    $logResource.Add("Reason","Error occurred enabling AAD for Kubernetes cluster [$($resourceName)].")    
+                    $logResource.Add("Reason","Error occurred enabling Entra ID (formerly AAD) for Kubernetes cluster [$($resourceName)].")    
                     $logSkippedResources += $logResource
-                    Write-Host "Error occurred enabling AAD for Kubernetes cluster [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Error)
+                    Write-Host "Error occurred enabling Entra ID (formerly AAD) for Kubernetes cluster [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
                 }
             }
@@ -580,9 +580,9 @@ function Enable-AADForKubernetes
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
                 $logResource.Add("ResourceName",($_.Name))
-                $logResource.Add("Reason","AAD can't be enabled for this resource since RBAC is disabled.")    
+                $logResource.Add("Reason","Entra ID (formerly AAD) can't be enabled for this resource since RBAC is disabled.")    
                 $logSkippedResources += $logResource
-                Write-Host "AAD can't be enabled for this resource since RBAC is disabled." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Entra ID (formerly AAD) can't be enabled for this resource since RBAC is disabled." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 return
             }
@@ -593,7 +593,7 @@ function Enable-AADForKubernetes
                         @{Expression={$_.Name};Label="Resource Name";Width=20;Alignment="left"},
                         @{Expression={$_.Location};Label="Location";Width=20;Alignment="left"},
                         @{Expression={$_.EnableRBAC};Label="Is RBAC enabled on Kubernetes Cluster?";Width=20;Alignment="left"},
-                        @{Expression={$_.isAADEnabled};Label="Is AAD enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
+                        @{Expression={$_.isAADEnabled};Label="Is Entra ID (formerly AAD) enabled on Kubernetes Cluster?";Width=20;Alignment="left"}
 
         if($AutoRemediation)
         {
@@ -602,7 +602,7 @@ function Enable-AADForKubernetes
                 # Write this to a file.
                 $kubernetesClusterRemediatedFile = "$($backupFolderPath)\RemediatedKubernetesClusters.csv"
                 $kubernetesClusterRemediated | Export-CSV -Path $kubernetesClusterRemediatedFile -NoTypeInformation
-                Write-Host "AAD is enabled on the Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Entra ID (formerly AAD) is enabled on the Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "`nThis information has been saved to [$($kubernetesClusterRemediatedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -612,7 +612,7 @@ function Enable-AADForKubernetes
                 # Write this to a file.
                 $kubernetesClusterSkippedFile = "$($backupFolderPath)\SkippedKubernetesClusters.csv"
                 $kubernetesClusterSkipped | Export-CSV -Path $kubernetesClusterSkippedFile -NoTypeInformation
-                Write-Host "Error enabling AAD on some Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error enabling Entra ID (formerly AAD) on some Kubernetes cluster(s)." -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host "`nThis information has been saved to [$($kubernetesClusterSkippedFile)]." -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
             }
@@ -624,7 +624,7 @@ function Enable-AADForKubernetes
             Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
             if ($($kubernetesClusterRemediated | Measure-Object).Count -gt 0)
             {
-                Write-Host "AAD is successfully enabled on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Entra ID (formerly AAD) is successfully enabled on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 $kubernetesClusterRemediated | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -637,7 +637,7 @@ function Enable-AADForKubernetes
 
             if ($($kubernetesClusterSkipped | Measure-Object).Count -gt 0)
             {
-                Write-Host "`nError enabling AAD on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "`nError enabling Entra ID (formerly AAD) on the following Kubernetes cluster(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
                 $kubernetesClusterSkipped | Format-Table -Property $colsProperty -Wrap
                 Write-Host $([Constants]::SingleDashLine)
                 # Write this to a file.
@@ -662,13 +662,13 @@ function Enable-AADForKubernetes
     }
     else
     {
-        Write-Host "[Step 5 of 5] Enable AAD for Kubernetes Services"
+        Write-Host "[Step 5 of 5] Enable Entra ID (formerly AAD) for Kubernetes Services"
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:`n" -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable AAD for all Kubernetes Service resources listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, to enable Entra ID (formerly AAD) for all Kubernetes Service resources listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
 }
@@ -711,7 +711,7 @@ class SetAADProfile
             $headers = $this.GetAuthHeader()
             $method = "Put"
             
-            # If user wants to add AAD Group to Kubernetes cluster, pass group object id as part of request body.
+            # If user wants to add Entra ID (formerly AAD) Group to Kubernetes cluster, pass group object id as part of request body.
             if (![String]::IsNullOrWhiteSpace($aadClientIds))
             {
                 $body =@'
@@ -743,13 +743,13 @@ class SetAADProfile
             }
             
 
-            # API to set AAD Profile config to Kubernetes cluster
+            # API to set Entra ID (formerly AAD) Profile config to Kubernetes cluster
             $response = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -Body $jsonString -UseBasicParsing
             $content = ConvertFrom-Json $response.Content
         }
         catch
         {
-            Write-Host "Error occurred while setting AAD profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error occurred while setting Entra ID (formerly AAD) profile to Kubernetes Cluster. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
         }
         
         return($content)

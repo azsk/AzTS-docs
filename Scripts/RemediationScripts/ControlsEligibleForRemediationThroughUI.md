@@ -13,9 +13,9 @@
 
 6. [Azure_ContainerRegistry_Config_Enable_Security_Scanning](ControlsEligibleForRemediationThroughUI.md#6-Azure_ContainerRegistry_Config_Enable_Security_Scanning)
 
-7. [Azure_KubernetesService_AuthN_Enabled_AAD](ControlsEligibleForRemediationThroughUI.md#7-Azure_KubernetesService_AuthN_Enabled_AAD)
+7. [Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID](ControlsEligibleForRemediationThroughUI.md#7-Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID)
 
-8. [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN)
+8. [Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN)
 
 9. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](ControlsEligibleForRemediationThroughUI.md-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
 
@@ -145,10 +145,10 @@ Reader role at subscription level and Contributor role at resource level
 
 ___
 
-## 7. Azure_KubernetesService_AuthN_Enabled_AAD
+## 7. Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID
 
 ### Display Name
-AAD should be enabled in Kubernetes Service
+Microsoft Entra ID (formerly AAD) should be enabled in Kubernetes Service
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)
@@ -158,10 +158,10 @@ Contributor role at resource level
 
 ___
 
-## 8. Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
+## 8. Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN
 
 ### Display Name
-Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials
+Enterprise applications using APIM must authenticate developers/applications using Microsoft Entra ID (formerly AAD) backed credentials
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)

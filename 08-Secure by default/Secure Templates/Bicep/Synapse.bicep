@@ -21,7 +21,7 @@ resource synapseWorkspace 'Microsoft.Synapse/workspaces@2021-06-01' = {
       accountUrl: 'https://${dataLakeStorageAccountName}.dfs.core.windows.net'
       filesystem: dataLakeStorageFileSystem
     }
-    // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only) - Synapse workspace should use MS Entra Id Authentication.
+    // (Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only) - Synapse workspace should use MS Entra ID Authentication.
     azureADOnlyAuthentication: true
   }
 }

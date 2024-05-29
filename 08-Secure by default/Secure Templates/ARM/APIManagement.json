@@ -96,7 +96,7 @@
       "apiVersion": "2021-08-01",
       "name": "[format('{0}/{1}', parameters('apiManagementServiceName'), 'signup')]",
       "properties": {
-        "enabled": false // Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN - Disable basic authentication.
+        "enabled": false // Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN - Disable basic authentication.
       },
       "dependsOn": [
         "[resourceId('Microsoft.ApiManagement/service', parameters('apiManagementServiceName'))]"

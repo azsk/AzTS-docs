@@ -1,12 +1,12 @@
 <###
 # Overview:
-    This script is used to remediate AAD Auth Extension on Linux VMs in a Subscription.
+    This script is used to remediate Entra ID (formerly AAD) Auth Extension on Linux VMs in a Subscription.
 
 # Control ID:
-    Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
+    Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 # Display Name:
-    AAD extension must be deployed to the Linux VM
+    Entra ID (formerly AAD) extension must be deployed to the Linux VM
 
 # Prerequisites:
     Contributor or higher priviliged role on the Virtual Machine(s) is required for remediation.
@@ -15,9 +15,9 @@
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
-        2. Get the list of Linux VM(s) in a Subscription that doesn't have VM AAD Extension installed.
+        2. Get the list of Linux VM(s) in a Subscription that doesn't have VM Entra ID (formerly AAD) Extension installed.
         3. Back up details of Linux VM(s) that are to be remediated.
-        4. Remediate AAD Auth Extension on Linux VM(s) in the Subscription.
+        4. Remediate Entra ID (formerly AAD) Auth Extension on Linux VM(s) in the Subscription.
 
     To validate:
         1. Validate and install the modules required to run the script and validating the user.
@@ -33,12 +33,12 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to add AAD extension on Virtual Machine(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to add Entra ID (formerly AAD) extension on Virtual Machine(s) in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remove AAD extension on Virtual Machine(s) in the Subscription. Refer `Examples`, below.
+        3. Execute the script to remove Entra ID (formerly AAD) extension on Virtual Machine(s) in the Subscription. Refer `Examples`, below.
 
 # Examples:
     To remediate:
@@ -46,11 +46,11 @@
     
            Add-AADAuthExtensionforVMs -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
-        2. Configure required AAD extension on Virtual Machine(s) in the Subscription:
+        2. Configure required Entra ID (formerly AAD) extension on Virtual Machine(s) in the Subscription:
        
            Add-AADAuthExtensionforVMs -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
-        3. Configure required AAD extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
+        3. Configure required Entra ID (formerly AAD) extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
        
            Add-AADAuthExtensionforVMs -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\AADAuthExtForLinuxVm\NonCompliantVMs.csv
 
@@ -59,11 +59,11 @@
         Get-Help Add-AADAuthExtensionforVMs -Detailed
 
     To validate the extension:
-        1.  Validate required AAD extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
+        1.  Validate required Entra ID (formerly AAD) extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
             Validate-AADAuthExtensionforVMs -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202205200418\AADAuthExtForLinuxVm\RemediatedVirtualMachines.csv
 
     To roll back:
-        1. Revert back AAD extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
+        1. Revert back Entra ID (formerly AAD) extension on Virtual Machine(s) in the Subscription, from a previously taken snapshot:
            Remove-AADAuthExtensionforVMs -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\AADAuthExtForLinuxVm\RemediatedVirtualMachines.csv
        
         To know more about the options supported by the roll back command, execute:
@@ -121,11 +121,11 @@ function Setup-Prerequisites {
 function Add-AADAuthExtensionforVMs {
     <#
         .SYNOPSIS
-        Remediates 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
+        Remediates 'Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
-        AAD extension must be deployed to the Linux VM. 
+        Remediates 'Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
+        Entra ID (formerly AAD) extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -230,7 +230,7 @@ function Add-AADAuthExtensionforVMs {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
         
-    Write-Host "***To add AAD Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To add Entra ID (formerly AAD) Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 4] Preparing to fetch all Virtual Machine(s)..."
@@ -378,10 +378,10 @@ function Add-AADAuthExtensionforVMs {
                                                                           
     Write-Host $([Constants]::SingleDashLine)
     
-    # list for storing virtual machine(s) where required AAD Extension is not added. 
+    # list for storing virtual machine(s) where required Entra ID (formerly AAD) Extension is not added. 
     $NonCompliantVMs = @()
 
-    Write-Host "Separating Virtual machine(s) for which AAD Extension is not added..."
+    Write-Host "Separating Virtual machine(s) for which Entra ID (formerly AAD) Extension is not added..."
 
     $LinuxVMDetails | ForEach-Object {
         $VirtualMachine = $_
@@ -399,7 +399,7 @@ function Add-AADAuthExtensionforVMs {
             }
         }
         if (!$IsExtPresent) {
-            Write-Host "AAD extension is missing on Virtual Machine [$($VirtualMachine.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Entra ID (formerly AAD) extension is missing on Virtual Machine [$($VirtualMachine.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Warning)
             $NonCompliantVMs += $VirtualMachine
         }
     }
@@ -407,11 +407,11 @@ function Add-AADAuthExtensionforVMs {
     $totalNonCompliantVirtualMachines = ($NonCompliantVMs | Measure-Object).Count
 
     if ($totalNonCompliantVirtualMachines -eq 0) {
-        Write-Host "No Virtual machines(s) found without AAD Extension present. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "No Virtual machines(s) found without Entra ID (formerly AAD) Extension present. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         break
     }
 
-    Write-Host "Found [$($totalNonCompliantVirtualMachines)] Virtual machines(s) without AAD Extension:" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalNonCompliantVirtualMachines)] Virtual machines(s) without Entra ID (formerly AAD) Extension:" -ForegroundColor $([Constants]::MessageType.Update)
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
@@ -451,19 +451,19 @@ function Add-AADAuthExtensionforVMs {
         Write-Host $([Constants]::SingleDashLine)
         
         if (-not $Force) {
-            Write-Host "Found total [$($NonCompliantVMs.count)] Virtual machines(s) where AAD Extension is not present." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host "This step will add AAD extension for all non-complaint Virtual machine(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Found total [$($NonCompliantVMs.count)] Virtual machines(s) where Entra ID (formerly AAD) Extension is not present." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This step will add Entra ID (formerly AAD) extension for all non-complaint Virtual machine(s)." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if ($userInput -ne "Y") {
-                Write-Host "AAD Extension will not be added  to the Virtual machines(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "Entra ID (formerly AAD) Extension will not be added  to the Virtual machines(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
                 break
             }
         }
         else {
-            Write-Host "'Force' flag is provided. AAD extension will be added for Virtual machine(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. Entra ID (formerly AAD) extension will be added for Virtual machine(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
         }
 
         # List for storing remediated Virtual Machines(s)
@@ -472,7 +472,7 @@ function Add-AADAuthExtensionforVMs {
         # List for storing skipped Virtual Machines(s)
         $VirtualMachineSkipped = @()
 
-        Write-Host "Adding AAD Extension on all non compliant Virtual Machines(s)." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Adding Entra ID (formerly AAD) Extension on all non compliant Virtual Machines(s)." -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Virtual Machines(s) which needs to be remediated.
@@ -480,7 +480,7 @@ function Add-AADAuthExtensionforVMs {
             $VirtualMachine = $_
             $VirtualMachine | Add-Member -NotePropertyName isExtInstalledPostRemediation -NotePropertyValue $false
 
-            Write-Host "Adding AAD Auth Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Adding Entra ID (formerly AAD) Auth Extension on [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Info)
             try {
                 Set-AzVMExtension -Publisher $reqExtPublisher -ExtensionType $reqExtensionType -VMName $_.ResourceName -ResourceGroupName $_.ResourceGroupName -Name $reqExtensionName -TypeHandlerVersion 1.0 -ErrorAction SilentlyContinue
                     
@@ -493,7 +493,7 @@ function Add-AADAuthExtensionforVMs {
                     }
                 }
                 if ($VirtualMachine.isExtInstalledPostRemediation = $true) {
-                    Write-Host "Successfully installed AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully installed Entra ID (formerly AAD) Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                     $VirtualMachinesRemediated += $VirtualMachine
                 }
@@ -522,7 +522,7 @@ function Add-AADAuthExtensionforVMs {
         Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 
         if ($($VirtualMachinesRemediated | Measure-Object).Count -gt 0) {
-            Write-Host "AAD Extension have been installed on following Virtual Machine(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) Extension have been installed on following Virtual Machine(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
            
             $VirtualMachinesRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
 
@@ -536,7 +536,7 @@ function Add-AADAuthExtensionforVMs {
         }
 
         if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
-            Write-Host "Error installing AAD Extension on the following Virtual Machine(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error installing Entra ID (formerly AAD) Extension on the following Virtual Machine(s) in the subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             $VirtualMachineSkipped | Format-Table -Property $colsProperty -Wrap
             # Write this to a file.
             $VirtualMachineSkippedFile = "$($backupFolderPath)\SkippedVirtualMachines.csv"
@@ -553,18 +553,18 @@ function Add-AADAuthExtensionforVMs {
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun to configure AAD Extension on Virtual Machine(s) listed in the file."
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun to configure Entra ID (formerly AAD) Extension on Virtual Machine(s) listed in the file."
     }
 }
 
 function Validate-AADAuthExtensionforVMs {
     <#
         .SYNOPSIS
-        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
+        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
-        AAD extension must be deployed to the Linux VM. 
+        Validates remediation done for 'Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
+        Entra ID (formerly AAD) extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -642,7 +642,7 @@ function Validate-AADAuthExtensionforVMs {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To validate AAD Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To validate Entra ID (formerly AAD) Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine(s)..."
@@ -704,7 +704,7 @@ function Validate-AADAuthExtensionforVMs {
         $VirtualMachine | Add-Member -NotePropertyName isExtProvStateValidated -NotePropertyValue $false
         try {
             
-            Write-Host "Validating Virtual Machine AAD extension- [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Validating Virtual Machine Entra ID (formerly AAD) extension- [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
             if ($_.isExtInstalledPostRemediation) {
                 $VMExtensions = Get-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName
                     
@@ -719,11 +719,11 @@ function Validate-AADAuthExtensionforVMs {
                     }
                 }
                 if ($VirtualMachine.isExtProvStateValidated) {
-                    Write-Host "Virtual Machine AAD extension provisiong state validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Virtual Machine Entra ID (formerly AAD) extension provisiong state validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
                     $VirtualMachinesValidated += $VirtualMachine
                 }
                 else {
-                    Write-Host "Virtual Machine AAD extension provisiong state is not validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Virtual Machine Entra ID (formerly AAD) extension provisiong state is not validated for - [$($VirtualMachine.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Warning)
                     $VirtualMachinesSkipped += $VirtualMachine
                 }
             }
@@ -744,7 +744,7 @@ function Validate-AADAuthExtensionforVMs {
         Write-Host "Validation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($VirtualMachinesValidated | Measure-Object).Count -gt 0) {
-            Write-Host "AAD Extension provisiong state has been successfully validated on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) Extension provisiong state has been successfully validated on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VirtualMachinesValidated | Format-Table -Property $colsPropertyValidation -Wrap
 
             # Write this to a file.
@@ -756,7 +756,7 @@ function Validate-AADAuthExtensionforVMs {
         }
 
         if ($($VirtualMachinesSkipped | Measure-Object).Count -gt 0) {
-            Write-Host "Following Virtual Machine(s) AAD extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Following Virtual Machine(s) Entra ID (formerly AAD) extension does not have provisioning state as succeeded in the Subscription: " -ForegroundColor $([Constants]::MessageType.Error)
             
             $VirtualMachinesSkipped | Format-Table -Property $colsPropertyValidation -Wrap
             
@@ -767,7 +767,7 @@ function Validate-AADAuthExtensionforVMs {
             Write-Host " [$($ValidationSkippedVirtualMachineFile)]" -ForegroundColor $([Constants]::MessageType.Update)  
             Write-Host $([Constants]::SingleDashLine)
 
-            Write-Host "For above VM(s), please manually re-install the AAD extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
+            Write-Host "For above VM(s), please manually re-install the Entra ID (formerly AAD) extension and check the provisioning state." -ForegroundColor $([Constants]::MessageType.Error)  
 
         }
     }
@@ -777,11 +777,11 @@ function Validate-AADAuthExtensionforVMs {
 function Remove-AADAuthExtensionforVMs {
     <#
         .SYNOPSIS
-        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
+        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux' Control.
-        AAD extension must be deployed to the Linux VM. 
+        Rolls back remediation done for 'Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux' Control.
+        Entra ID (formerly AAD) extension must be deployed to the Linux VM. 
         
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
@@ -862,7 +862,7 @@ function Remove-AADAuthExtensionforVMs {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "***To remove/uninstall AAD Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "***To remove/uninstall Entra ID (formerly AAD) Auth extension on Linux VM(s) in a Subscription, Contributor or higher privileges on the VM(s) are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
    
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Virtual Machine(s)..."
@@ -913,15 +913,15 @@ function Remove-AADAuthExtensionforVMs {
     Write-Host $([Constants]::SingleDashLine)
 
     if ( -not $Force) {
-        Write-Host "This will remove the AAD Auth Extension from the VM(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "This will remove the Entra ID (formerly AAD) Auth Extension from the VM(s). Do you want to continue roll back operation?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
         if ($userInput -ne "Y") {
-            Write-Host "AAD Auth Extension will not be rolled back for any VM(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Entra ID (formerly AAD) Auth Extension will not be rolled back for any VM(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
             break
         }
     }
     else {
-        Write-Host "'Force' flag is provided. AAD extension in VM(s) will be removed in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "'Force' flag is provided. Entra ID (formerly AAD) extension in VM(s) will be removed in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 
     # List for storing rolled back Virtual Machine resource.
@@ -938,7 +938,7 @@ function Remove-AADAuthExtensionforVMs {
         $VirtualMachine | Add-Member -NotePropertyName isAADExtRolledback -NotePropertyValue $false
         try {
             
-            Write-Host "Rolling back AAD Ext on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Rolling back Entra ID (formerly AAD) Ext on Virtual Machine(s) - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Info)
             if ($_.isExtInstalledPostRemediation) {
                 $VirtualMachineResource = Remove-AzVMExtension -ResourceGroupName $_.ResourceGroupName -VMName $_.ResourceName -Name AADSSHLoginForLinux -Force
         
@@ -955,7 +955,7 @@ function Remove-AADAuthExtensionforVMs {
                 if (!$VirtualMachine.isAADExtRolledback) {
                     $VirtualMachine.isAADExtRolledback = $true
                     $VirtualMachine.isExtPresent = $false
-                    Write-Host "Successfully uninstalled AAD Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
+                    Write-Host "Successfully uninstalled Entra ID (formerly AAD) Extensions for [$($_.ResourceName)]." -ForegroundColor $([Constants]::MessageType.Update)
                     Write-Host $([Constants]::SingleDashLine)
                     $VirtualMachinesRolledBack += $VirtualMachine
                 }
@@ -983,7 +983,7 @@ function Remove-AADAuthExtensionforVMs {
         Write-Host "Rollback Summary: " -ForegroundColor $([Constants]::MessageType.Info)
         
         if ($($VirtualMachinesRolledBack | Measure-Object).Count -gt 0) {
-            Write-Host "AAD extension is rolled back successfully on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Entra ID (formerly AAD) extension is rolled back successfully on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Update)
             $VirtualMachinesRolledBack | Format-Table -Property $colsPropertyRollBack -Wrap
 
             # Write this to a file.
@@ -995,7 +995,7 @@ function Remove-AADAuthExtensionforVMs {
         }
 
         if ($($VirtualMachineSkipped | Measure-Object).Count -gt 0) {
-            Write-Host "Error installing AAD Extension on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Error installing Entra ID (formerly AAD) Extension on following Virtual Machine(s) in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
             
             $VirtualMachineSkipped | Format-Table -Property $colsProperty -Wrap
             

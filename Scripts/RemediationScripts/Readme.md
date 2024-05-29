@@ -10,14 +10,14 @@
 Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/subscription for a control. These scripts are limited to the controls that have relatively lower risk to bulk-remediate.
 
 ## **List of controls with Bulk Remediation Script (BRS) support**
-1. [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](Readme.md#1-azure_apimanagement_authn_use_aad_for_client_authn)
+1. [Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN](Readme.md#1-Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN)
 2. [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme](Readme.md#2-Azure_APIManagement_DP_Use_HTTPS_URL_Scheme)
 3. [Azure_AppService_Config_Disable_Remote_Debugging](Readme.md#3-Azure_AppService_Config_Disable_Remote_Debugging)
 4. [Azure_AppService_DP_Dont_Allow_HTTP_Access](Readme.md#4-Azure_AppService_DP_Dont_Allow_HTTP_Access)
 5. [Azure_AppService_DP_Use_Secure_TLS_Version](Readme.md#5-Azure_AppService_DP_Use_Secure_TLS_Version)
 6. [Azure_CloudService_SI_Disable_RemoteDesktop_Access](Readme.md#6-Azure_CloudService_SI_Disable_RemoteDesktop_Access)
 7. [Azure_ContainerRegistry_Config_Enable_Security_Scanning](Readme.md#7-Azure_ContainerRegistry_Config_Enable_Security_Scanning)
-8. [Azure_KubernetesService_AuthN_Enabled_AAD](Readme.md#8-Azure_KubernetesService_AuthN_Enabled_AAD)
+8. [Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID](Readme.md#8-Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID)
 9. [Azure_RedisCache_DP_Use_SSL_Port](Readme.md#9-Azure_RedisCache_DP_Use_SSL_Port)
 10. [Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel](Readme.md#10-Azure_ServiceFabric_DP_Set_Property_ClusterProtectionLevel)
 11. [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](Readme.md#11-Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server)
@@ -54,8 +54,8 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
 43. [Azure_ServiceBus_DP_Use_Secure_TLS_Version](Readme.md#43-Readme.md#43-Azure_ServiceBus_DP_Use_Secure_TLS_Version)
 44. [Azure_RedisCache_DP_Use_Secure_TLS_Version](Readme.md#44-Azure_RedisCache_DP_Use_Secure_TLS_Version)
-45. [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux)
-46. [Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux)
+45. [Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux](Readme.md#45-Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux)
+46. [Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux](Readme.md#46-Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux)
 47. [Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension](Readme.md#47-Azure_VirtualMachine_SI_Deploy_GuestConfig_Extension)
 48. [Azure_Bastion_AuthZ_Disable_Shareable_Link](Readme.md#48-Azure_Bastion_AuthZ_Disable_Shareable_Link)
 49. [Azure_AVD_Audit_Enable_HostPool_BootDiagnostics](Readme.md#49-Azure_AVD_Audit_Enable_HostPool_BootDiagnostics)
@@ -78,10 +78,10 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 ___ 
 
 
-## 1. Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN
+## 1. Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN
 
 ### Display Name
-Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials
+Enterprise applications using APIM must authenticate developers/applications using Microsoft Entra ID (formerly AAD) backed credentials
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices](Remediate-DeleteNonAADIdentityProvidersInAPIManagementServices.ps1)
@@ -217,10 +217,10 @@ Yes
 ___ 
 
 
-## 8. Azure_KubernetesService_AuthN_Enabled_AAD
+## 8. Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID
 
 ### Display Name
-AAD should be enabled in Kubernetes Service
+Microsoft Entra ID (formerly AAD) should be enabled in Kubernetes Service
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAADForKubernetesService](Remediate-EnableAADForKubernetesService.ps1)
@@ -955,10 +955,10 @@ Yes
 
 ___ 
 
-## 45. Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Linux
+## 45. Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 ### Display Name
-AAD extension must be deployed to the Linux VM.
+Entra ID (formerly AAD) extension must be deployed to the Linux VM.
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-ConfigureAADAuthExtOnLinuxVM](Remediate-ConfigureAADAuthExtOnLinuxVM.ps1)
@@ -975,10 +975,10 @@ Yes
 ___ 
 
 
-## 46. Azure_VirtualMachineScaleSet_AuthN_Enable_AAD_Auth_Linux
+## 46. Azure_VirtualMachineScaleSet_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
 
 ### Display Name
-AAD extension must be deployed to the Linux VMSS
+Entra ID (formerly AAD) extension must be deployed to the Linux VMSS
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-ConfigureAADAuthExtOnLinuxVMSS](Remediate-ConfigureAADAuthExtOnLinuxVMSS.ps1)

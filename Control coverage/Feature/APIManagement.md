@@ -11,7 +11,7 @@
 - [Azure_APIManagement_AuthZ_Validate_JWT](#azure_apimanagement_authz_validate_jwt)
 - [Azure_APIManagement_AuthN_Disable_Management_API](#azure_apimanagement_authn_disable_management_api)
 - [Azure_APIManagement_AuthZ_Enable_User_Authorization_For_API](#azure_apimanagement_authz_enable_user_authorization_for_api)
-- [Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN](#azure_apimanagement_authn_use_aad_for_client_authn)
+- [Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN](#azure_apimanagement_authn_use_microsoft_entra_id_for_client_authn)
 - [Azure_APIManagement_AuthN_Secure_API_Using_Client_Certificates](#azure_apimanagement_authn_secure_api_using_client_certificates)
 - [Azure_APIManagement_AuthZ_Enable_Requires_Subscription](#azure_apimanagement_authz_enable_requires_subscription)
 - [Azure_APIManagement_AuthN_Use_Managed_Service_Identity](#azure_apimanagement_authn_use_managed_service_identity)
@@ -363,7 +363,7 @@ Enabling OAuth/OpenID connect user authorization ensure that only valid users ha
 
 ___ 
 
-## Azure_APIManagement_AuthN_Use_AAD_for_Client_AuthN 
+## Azure_APIManagement_AuthN_Use_Microsoft_Entra_ID_for_Client_AuthN 
 
 ### Display Name 
 Enterprise applications using APIM must authenticate developers/applications using Azure Active Directory backed credentials 
@@ -383,10 +383,10 @@ Using the native enterprise directory for authentication ensures that there is a
 ### Control Spec 
 
 > **Passed:** 
-> AAD Identity provider is being used for authentication in developer portal or sign-up/sign-in option has been entirely disabled.
+> Entra ID (formerly AAD) Identity provider is being used for authentication in developer portal or sign-up/sign-in option has been entirely disabled.
 > 
 > **Failed:** 
-> Identity provider other than AAD is being used for authentication in developer portal.
+> Identity provider other than Entra ID (formerly AAD) is being used for authentication in developer portal.
 > 
 > **Verify:** 
 > Sign up option setting could not be verified as the API Management service is connected to a Virtual Network. As a result, control plane traffic on port 3443 is denied.

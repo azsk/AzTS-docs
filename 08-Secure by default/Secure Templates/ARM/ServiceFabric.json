@@ -62,13 +62,13 @@
         "description": "Specify the URL of the certificate in the key vault."
       }
     },
-    "clientApplicationId": { // Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only - Enable AAD authentication on the Service Fabric cluster.
+    "clientApplicationId": { // Azure_ServiceFabric_AuthN_Client_AuthN_Microsoft_Entra_ID_Only - Enable Entra ID (formerly AAD) authentication on the Service Fabric cluster.
       "type": "string",
       "metadata": {
         "description": "Specify the ID of the client application in Azure Active Directory (AAD)."
       }
     },
-    "clusterApplicationId": { // Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only - Enable AAD authentication on the Service Fabric cluster.
+    "clusterApplicationId": { // Azure_ServiceFabric_AuthN_Client_AuthN_Microsoft_Entra_ID_Only - Enable Entra ID (formerly AAD) authentication on the Service Fabric cluster.
       "type": "string",
       "metadata": {
         "description": "Specify the ID of the cluster application in Azure Active Directory (AAD)."
@@ -471,7 +471,7 @@
       "name": "[parameters('serviceFabricClusterName')]",
       "location": "[parameters('serviceFabricClusterLocation')]",
       "properties": {
-        "azureActiveDirectory": { // Azure_ServiceFabric_AuthN_Client_AuthN_AAD_Only - Enable AAD authentication on the Service Fabric cluster.
+        "azureActiveDirectory": { // Azure_ServiceFabric_AuthN_Client_AuthN_Microsoft_Entra_ID_Only - Enable AAD authentication on the Service Fabric cluster.
           "clientApplication": "[parameters('clientApplicationId')]",
           "clusterApplication": "[parameters('clusterApplicationId')]",
           "tenantId": "[tenant().tenantId]"
