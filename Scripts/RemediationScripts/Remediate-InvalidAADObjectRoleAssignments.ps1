@@ -182,11 +182,14 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     # Find all role assignments for the subscription
-    $tenantDetails = Get-AzureADTenantDetail
     $context = Get-AzContext
 
     # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
-    if ($null -eq $tenantDetails -or $tenantDetails.ObjectId -ne $currentSub.Tenant.Id)
+    try
+    {
+        Get-AzureADTenantDetail
+    }
+    catch
     {
         Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
     }
