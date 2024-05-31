@@ -192,7 +192,7 @@ function Remove-AzTSInvalidAADAccounts
         # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
         try
         {
-            Get-AzureADTenantDetail
+            Get-AzureADTenantDetail | Out-Null
         }
         catch
         {
