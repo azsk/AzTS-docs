@@ -213,13 +213,14 @@ function Remove-AzTSInvalidAADAccounts
     Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
 
     # Safe Check: saving the current login user object id to ensure we don't remove this during the actual removal
-    $currentLoginUserObjectIdArray = $userMemberGroups
+    $currentLoginUserObjectIdArray = @()
     $currentLoginUserObjectIdArray += $currentLoginRoleAssignments | select ObjectId -Unique
     if(($currentLoginUserObjectIdArray | Measure-Object).Count -gt 0)
     {
         $currentLoginUserObjectId = $currentLoginUserObjectIdArray[0].ObjectId;
     }
 
+    $currentLoginUserObjectIdArray += $userMemberGroups
     if([String]::IsNullOrWhiteSpace($FilePath))
     { 
         Write-Host "Step 2 of 5: Fetching all the role assignments for subscription [$($SubscriptionId)]..."
