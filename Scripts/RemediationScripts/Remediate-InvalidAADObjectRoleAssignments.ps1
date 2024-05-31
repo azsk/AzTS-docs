@@ -200,14 +200,14 @@ function Remove-AzTSInvalidAADAccounts
         }
         
         $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
-        $userMemberGroups = Get-AzureADUserMembership -ObjectId $context.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
+        $userMemberGroups = Get-AzureADUserMembership -ObjectId $currentSub.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
         if(($allRoleAssignments | Where-Object { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and $_.ObjectId -in $userMemberGroups } | Measure-Object).Count -le 0)
         {
             Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
             return;
         }
 
-        $currentLoginUserObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($context.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+        $currentLoginUserObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
     }
 
     Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
