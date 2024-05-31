@@ -70,7 +70,7 @@ resource sqlServer 'Microsoft.Sql/servers@2021-08-01-preview' = {
   }
 
   // To enable Azure Active Directory (AAD) Only Authentication on the SQL server.
-  // Azure_SQLDatabase_AuthZ_Use_AAD_Only - Enable Azure AD Only Authentication for the SQL Server.
+  // Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only - Enable Entra ID (formerly AAD) as only Authentication for the SQL Server.
 
   resource sqlAzureADOnlyAuthentication 'azureADOnlyAuthentications@2021-11-01' = {
     name: 'Default'

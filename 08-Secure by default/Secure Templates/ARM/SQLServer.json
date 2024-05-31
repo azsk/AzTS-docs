@@ -97,7 +97,7 @@
       ]
     },
     {
-      "type": "Microsoft.Sql/servers/azureADOnlyAuthentications", // Azure_SQLDatabase_AuthZ_Use_AAD_Only - Enable Azure AD Only Authentication for the SQL Server.
+      "type": "Microsoft.Sql/servers/azureADOnlyAuthentications", // Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only - Enable Entra ID (formerly AAD) as only Authentication for the SQL Server.
       "apiVersion": "2021-11-01",
       "name": "[format('{0}/{1}', parameters('sqlServerName'), 'Default')]",
       "properties": {
