@@ -48,7 +48,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 36. [Azure_EventHub_DP_Use_Secure_TLS_Version](Readme.md#36-Azure_EventHub_DP_Use_Secure_TLS_Version)
 37. [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](Readme.md#37-Azure_DBForMySQLFlexibleServer_DP_Enable_SSL)
 38. [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#38-Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version)
-39. [Azure_SQLDatabase_AuthZ_Use_AAD_Only](Readme.md#39-Azure_SQLDatabase_AuthZ_Use_AAD_Only)
+39. [Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only](Readme.md#azure_sqldatabase_authz_use_microsoft_entra_id_only)
 40. [Azure_AutomationAccounts_DP_Encrypt_Variables](Readme.md#40-Azure_AutomationAccounts_DP_Encrypt_Variables)
 41. [Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access](Readme.md#41-Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access)
 42. [Azure_KubernetesService_AuthN_Disable_Local_Accounts](Readme.md#42-Azure_KubernetesService_AuthN_Disable_Local_Accounts)
@@ -831,10 +831,10 @@ Yes
 
 ___
 
-## 39. Azure_SQLDatabase_AuthZ_Use_AAD_Only
+## 39. Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only
 
 ### Display Name
-Use AAD Only Authentication for SQL Server
+Enable Entra ID (formerly AAD) as only Authentication for the SQL Server
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableAADOnlyAuthenticationForSQLServers](./Remediate-EnableAADOnlyAuthenticationForSQLServers.ps1)
@@ -851,7 +851,7 @@ Yes
 ### User Inputs Required?
 Yes 
 
-To set AAD Only Authentication on SQL Server, AAD Admin should be configured. 
+To set Entra ID (formerly AAD) Only Authentication on SQL Server, Entra ID (formerly AAD) Admin should be configured. 
 
 Enable-AADOnlyAuthenticationForSqlServers -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 

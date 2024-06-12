@@ -5,7 +5,7 @@
 <!-- TOC -->
 
 - [Azure_SQLDatabase_AuthZ_Use_AAD_Admin](#azure_sqldatabase_authz_use_aad_admin)
-- [Azure_SQLDatabase_AuthZ_Use_AAD_Only](#azure_sqldatabase_authz_use_aad_only)
+- [Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only](#azure_sqldatabase_authz_use_microsoft_entra_id_only)
 - [Azure_SQLDatabase_DP_Enable_TDE](#azure_sqldatabase_dp_enable_tde)
 - [Azure_SQLDatabase_Audit_Enable_Threat_Detection_Server](#azure_sqldatabase_audit_enable_threat_detection_server)
 - [Azure_SQLDatabase_Audit_Enable_Vuln_Assessment](#azure_sqldatabase_audit_enable_vuln_assessment)
@@ -107,21 +107,21 @@ Using the native enterprise directory for authentication ensures that there is a
 
 ___
 
-## Azure_SQLDatabase_AuthZ_Use_AAD_Only
+## Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only
 
 ### Display Name
-Enable Azure AD Only Authentication for SQL Server
+Enable Entra ID (formerly AAD) as only Authentication for the SQL Server
 
 ### Rationale
-Azure AD authentication is used to centrally manage identities of database users. Enforcing AAD Only Authentication prevents the proliferation of user identities across servers.
+Entra ID (formerly AAD) authentication is used to centrally manage identities of database users. Enforcing Entra ID (formerly AAD) Only Authentication prevents the proliferation of user identities across servers.
 
 ### Control Spec
 
 > **Passed:**
-> Azure Active Directory (AAD) Only Authentication is enabled the SQL server.
+> Entra ID (formerly AAD) Only Authentication is enabled the SQL server.
 >
 > **Failed:**
-> Azure Active Directory (AAD) Only Authentication is disabled on the SQL server.
+> Entra ID (formerly AAD) Only Authentication is disabled on the SQL server.
 ><!--
 > **Verify:**
 > Not Applicable.
@@ -149,12 +149,12 @@ Azure AD authentication is used to centrally manage identities of database users
 
 - **PowerShell**
 
-	To enable Azure AD Only Authentication enable Azure AD Admin for SQL server and turn on the Support for Azure AD Only Authentication.
+	To enable Entra ID (formerly AAD) Only Authentication enable Azure AD Admin for SQL server and turn on the Support for Entra ID (formerly AAD) Only Authentication.
 
 
   * **For standard SQL servers:**
 
-	To enable AAD Admin,
+	To enable Entra ID (formerly AAD) Admin,
 
     ```powershell
 	  Set-AzSqlServerActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -ServerName '{ServerName}' -DisplayName '{AzureAdAdmin EmailId}'
@@ -162,7 +162,7 @@ Azure AD authentication is used to centrally manage identities of database users
 
     Refer: https://docs.microsoft.com/en-us/powershell/module/az.sql/set-azsqlserveractivedirectoryadministrator
 
-	To enable AAD Only Authentication,
+	To enable Entra ID (formerly AAD) Only Authentication,
 
 	```powershell
 	Enable-AzSqlServerActiveDirectoryOnlyAuthentication -ServerName '{ServerName}' -ResourceGroupName '{ResourceGroupName}'
@@ -172,7 +172,7 @@ Azure AD authentication is used to centrally manage identities of database users
 
   * **For Synapse Analytics Workspaces:**
 
-	To enable AAD Admin,
+	To enable Entra ID (formerly AAD) Admin,
 
     ```powershell
     Set-AzSynapseSqlActiveDirectoryAdministrator -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}' -DisplayName '{AzureAdAdmin EmailId}'
@@ -181,7 +181,7 @@ Azure AD authentication is used to centrally manage identities of database users
 	Refer https://docs.microsoft.com/en-us/powershell/module/az.synapse/set-azsynapsesqlactivedirectoryadministrator
 
 
-	To enable AAD Only Authentication,
+	To enable Entra ID (formerly AAD) Only Authentication,
 
 	```powershell
 	Enable-AzSynapseActiveDirectoryOnlyAuthentication  -ResourceGroupName '{ResourceGroupName}' -WorkspaceName '{Workspace Name}'
@@ -191,7 +191,7 @@ Azure AD authentication is used to centrally manage identities of database users
 
 ### ARM API used for evaluation
 
-- REST API to get if Azure Active Directory Only Authentication is enabled on a SQL server:
+- REST API to get if Entra ID (formerly AAD) Only Authentication is enabled on a SQL server:
   /{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/administrators?api-version=2021-11-01
   <br />
   **Properties:** "azureADOnlyAuthentication"
