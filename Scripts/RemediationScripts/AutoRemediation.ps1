@@ -1,5 +1,4 @@
-function PrintGeneralInformation
-{
+function PrintGeneralInformation {
     $scriptInformation = "**General Information**
 [1]. All the failing controls, which have been downloaded using AzTS UI, are present at [$(Get-location)\FailedControls] and same will be referred for remediation.
 [2]. Remediation scripts will be used to fix the failing controls in bulk.
@@ -9,26 +8,22 @@ function PrintGeneralInformation
     Write-Host $([Constants]::SingleDashLine)
 } 
 
-function PrintSubscriptions
-{
+function PrintSubscriptions {
     $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
     Write-Host "Following subscriptions will be remediated:"
     $filesCount = 1;
-    foreach($file in $failedControlsFiles)
-    {
-        $JsonContent =  Get-content -path $file | ConvertFrom-Json
+    foreach ($file in $failedControlsFiles) {
+        $JsonContent = Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
         Write-Host ("$($filesCount). $($SubscriptionId)")
         $filesCount = $filesCount + 1
     }
 }
 
-function StartRemediation($timestamp)
-{
+function StartRemediation($timestamp) {
     $failedControlsFiles = @(Get-ChildItem FailedControls\*.json);
-    foreach($file in $failedControlsFiles)
-    {
-        $JsonContent =  Get-content -path $file | ConvertFrom-Json
+    foreach ($file in $failedControlsFiles) {
+        $JsonContent = Get-content -path $file | ConvertFrom-Json
         $SubscriptionId = $JsonContent.SubscriptionId
         $logFile = "LogFiles\" + $($timestamp) + "\log_" + $($SubscriptionId) + ".json"
         #Write-Host $logFile #delete
@@ -39,22 +34,20 @@ function StartRemediation($timestamp)
         # Display unique controls and no of resources.
         $controlRemediationList = $JsonContent.ControlRemediationList
         $controlsTable = @()
-        foreach($control in $controlRemediationList)
-        {
-            $count=0;
-            foreach($resource in $control.FailedResourceList)
-            {
-                $controlsTable+= [PSCustomObject]@{
-                    'ControlId' = if($count -eq 0) {$control.ControlId} Else {""};
-                    'NumberOfFailingResources' = if($count -eq 0) {$control.FailedResourceList.Length} Else {""};
-                    'FailingResources' = $resource.ResourceName;
+        foreach ($control in $controlRemediationList) {
+            $count = 0;
+            foreach ($resource in $control.FailedResourceList) {
+                $controlsTable += [PSCustomObject]@{
+                    'ControlId'                = if ($count -eq 0) { $control.ControlId } Else { "" };
+                    'NumberOfFailingResources' = if ($count -eq 0) { $control.FailedResourceList.Length } Else { "" };
+                    'FailingResources'         = $resource.ResourceName;
                 }
-                $count+=1
+                $count += 1
             }
         }
-        $colsProperty = @{Expression={$_.ControlId};Label="Control Id";Width=60;Alignment="left"},
-                        @{Expression={$_.NumberOfFailingResources};Label="Number Of Failing Resources";Width=30;Alignment="center"},
-                        @{Expression={$_.FailingResources};Label="Failing Resources";Width=30;Alignment="left"}
+        $colsProperty = @{Expression = { $_.ControlId }; Label = "Control Id"; Width = 60; Alignment = "left" },
+        @{Expression = { $_.NumberOfFailingResources }; Label = "Number Of Failing Resources"; Width = 30; Alignment = "center" },
+        @{Expression = { $_.FailingResources }; Label = "Failing Resources"; Width = 30; Alignment = "left" }
 
         Write-Host "Failing Controls Summary:" -ForegroundColor $([Constants]::MessageType.Update)
         $controlsTable | Format-Table -Property $colsProperty -Wrap
@@ -63,8 +56,7 @@ function StartRemediation($timestamp)
         Write-Host $([Constants]::SingleDashLine)
         $startRemediation = Read-Host -Prompt "Do you want to continue remediation? (Y|N)";
 
-        if($startRemediation -eq 'Y')
-        {
+        if ($startRemediation -eq 'Y') {
             Write-Host "User has provided consent to continue the remediation." -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
 
@@ -76,18 +68,15 @@ Enter the choice (1|2)";
             Write-Host $([Constants]::SingleDashLine)
 
             #Create new log file for the current subscription
-            try
-            {
-                if(Test-Path $logFile)
-                {
+            try {
+                if (Test-Path $logFile) {
                     Remove-Item $logFile
                 }
                 $null = New-Item -ItemType File -Path $logFile -Force -ErrorAction Stop
                 $logFileSchema = @{}
                 $logFileSchema.Add("SubscriptionId", $SubscriptionId)
                 $controlList = @()
-                foreach($control in $controlRemediationList)
-                {
+                foreach ($control in $controlRemediationList) {
                     $jsonObject = @{}
                     $jsonObject.Add("ControlId", $control.ControlId)
                     $jsonObject.Add("NumberOfFailingResources", $control.FailedResourceList.Length)
@@ -101,37 +90,31 @@ Enter the choice (1|2)";
                 $logFileSchema.Add("ControlList", $controlList)
                 $logFileSchema | ConvertTo-json -depth 10  | Out-File $logFile
             }
-            catch
-            {
+            catch {
                 throw $_.Exception.Message
             }
 
             # variable to track unexecuted resources
-            foreach($control in $controlRemediationList)
-            { 
+            foreach ($control in $controlRemediationList) { 
                 $skippedResources = @();
-                if(($remediationLevel -ne '1') -and ($remediationLevel -ne '2'))
-                {
+                if (($remediationLevel -ne '1') -and ($remediationLevel -ne '2')) {
                     break;
                 }
-                if($remediationLevel -eq '2'){
-                    $controlLevelRemediation =  Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y|N)"
+                if ($remediationLevel -eq '2') {
+                    $controlLevelRemediation = Read-Host -Prompt "Do you want to remediate failing resources of control id: [$($control.ControlId)]? (Y|N)"
                     Write-Host $([Constants]::SingleDashLine)
-                    if($controlLevelRemediation -ne 'Y')
-                    {
+                    if ($controlLevelRemediation -ne 'Y') {
                         #enter into log 
-                        foreach($failedResource in $control.FailedResourceList)
-                        {
+                        foreach ($failedResource in $control.FailedResourceList) {
                             $resource = @{}
                             $resource.Add("ResourceGroupName", $failedResource.ResourceGroupName)
                             $resource.Add("ResourceName", $failedResource.ResourceName)
                             $skippedResources += $resource
                         }
-                        $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
-                        foreach($logControl in $log.ControlList)
-                        {
-                            if($logControl.ControlId -eq $control.ControlId){
-                                $logControl.SkippedResources=$skippedResources
+                        $log = Get-content -Raw -path $logFile | ConvertFrom-Json
+                        foreach ($logControl in $log.ControlList) {
+                            if ($logControl.ControlId -eq $control.ControlId) {
+                                $logControl.SkippedResources = $skippedResources
                             }
                         }
                         $log | ConvertTo-json -depth 10  | Out-File $logFile
@@ -144,9 +127,9 @@ Enter the choice (1|2)";
                 
                 [string]$timeStampString = $timestamp
                 . ("./" + "RemediationScripts\" + $control.LoadCommand)
-                $commandString =""
-                if($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous"){
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                $commandString = ""
+                if ($control.ControlId -eq "Azure_Storage_AuthN_Dont_Allow_Anonymous") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -RemediationType " + "DisableAllowBlobPublicAccessOnStorage" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
                 elseif (($control.ControlId -eq "Azure_Storage_DP_Encrypt_In_Transit") -or 
                 ($control.ControlId -eq "Azure_AppService_Config_Disable_Remote_Debugging") -or
@@ -165,7 +148,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_SQLDatabase_DP_Enable_TDE") -or
                 ($control.ControlId -eq "Azure_AutomationAccounts_DP_Encrypt_Variables") -or
-                ($control.ControlId -eq "Azure_EventHub_DP_Use_Secure_TLS_Version")-or
+                ($control.ControlId -eq "Azure_EventHub_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_FrontDoor_CDNProfile_DP_Use_Secure_TLS_Version_Trial") -or
                 ($control.ControlId -eq "Azure_SQLServer_AuthN_Dont_Allow_Public_Network_Access") -or
                 ($control.ControlId -eq "Azure_RedisCache_DP_Use_Secure_TLS_Version") -or
@@ -175,47 +158,51 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only") -or
                 ($control.ControlId -eq "Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy") -or 
                 ($control.ControlId -eq "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only") -or
-                ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics")){
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID" ) -or
+                ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics") -or
+                ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version")) {
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
+                }
+                elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID" ) -or
                 ($control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts")) {
                     Write-Host "[$($control.LoadCommand)] Bulk Remediation Script requires user inputs at some points to execute properly.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $proceedWithRemediation = Read-Host -Prompt "Do you want to proceed with remediation for the control [$($control.ControlId)]? (Y|N)"
                     Write-Host $([Constants]::SingleDashLine)
-                    if($proceedWithRemediation -ne 'Y')
-                    {
+                    if ($proceedWithRemediation -ne 'Y') {
                         Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)]." -ForegroundColor $([Constants]::MessageType.Warning)
                         Write-Host $([Constants]::SingleDashLine)
                         continue;
                     }
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_ContainerRegistry_Config_Enable_Security_Scanning") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
+                }
+                elseif ($control.ControlId -eq "Azure_ContainerRegistry_Config_Enable_Security_Scanning") {
                     Write-Host "Object Id for the Security Scanner Identity is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host "Object Id of the Security Scanner Identity can be found in the status reason column against the failing control result in AzTS UI.`n" -ForegroundColor $([Constants]::MessageType.Warning)
                     $ObjectId = Read-Host "Enter the Object Id of the security scanner identity"
                     Write-Host $([Constants]::SingleDashLine)
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -ObjectId " + "`'" + $ObjectId +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
-                }elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_FTP_Deployment") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -ObjectId " + "`'" + $ObjectId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
+                }
+                elseif ($control.ControlId -eq "Azure_AppService_DP_Use_Secure_FTP_Deployment") {
                     Write-Host "Secured FTP State for the App Service(s) is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
                     $userInputforFTPState = Read-Host "You can choose one of the following mode to remediate non-compliant resources:
                     [1] Remediate failing resorces by configuring FTP State as FtpsOnly on the production slot and all non-production slots for all App Services.
                     [2] Remediate failing resorces by configuring FTP State as Disabled on the production slot and all non-production slots for all App Services.
                     Enter the choice (1|2)";
-                    $FTPState=""
-                    if($userInputforFTPState -eq "1"){
-                        $FTPState="FTPSOnly"
+                    $FTPState = ""
+                    if ($userInputforFTPState -eq "1") {
+                        $FTPState = "FTPSOnly"
                     }
-                    elseif ($userInputforFTPState -eq "2"){
-                        $FTPState="Disabled"
+                    elseif ($userInputforFTPState -eq "2") {
+                        $FTPState = "Disabled"
                     }
                     Write-Host $([Constants]::SingleDashLine)
-                   $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -FTPState " + "`'" + $FTPState +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";              
-                }elseif ($control.ControlId -eq "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval") {
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -FTPState " + "`'" + $FTPState + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";              
+                }
+                elseif ($control.ControlId -eq "Azure_Storage_AuthZ_Set_SAS_Expiry_Interval") {
                     Write-Host "Timespan of SAS Expiry Interval is required to execute the [$($control.LoadCommand)] Bulk Remediation Script." -ForegroundColor $([Constants]::MessageType.Warning)
                     $timespan = UserInputTimeSpan
-                    $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" + " -Timespan " + "`'" + $timespan +  "`'" + " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Timespan " + "`'" + $timespan + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
-                else{
+                else {
                     Write-Host "Skipped remediation of failing resources of control id: [$($control.ControlId)], because remediation support for this control hasn't been added yet." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                     continue;
@@ -232,68 +219,57 @@ Enter the choice (1|2)";
                 Write-Host $([Constants]::SingleDashLine)
             }
             # add skipped resources to the log and print the completion message when remediation operation for particular subscription is finished.
-           if(($remediationLevel -eq 1) -or ($remediationLevel -eq 2))
-           {
+            if (($remediationLevel -eq 1) -or ($remediationLevel -eq 2)) {
                 Write-Host "Completed remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine) 
-           }
-           else
-           {
+            }
+            else {
                 #tracking unexecuted resources
-                foreach($control in $controlRemediationList)
-                {
+                foreach ($control in $controlRemediationList) {
                     $skippedResources = @();
-                    foreach($failedResource in $control.FailedResourceList)
-                    {
+                    foreach ($failedResource in $control.FailedResourceList) {
                         $resource = @{}
-                        $resource.Add("ResourceGroupName",$failedResource.ResourceGroupName)
+                        $resource.Add("ResourceGroupName", $failedResource.ResourceGroupName)
                         $resource.Add("ResourceName", $failedResource.ResourceName)
                         $skippedResources += $resource
                         #Write-Host $skippedResources
                     }
-                    $log =  Get-content -Raw -path $logFile | ConvertFrom-Json
-                    foreach($logControl in $log.ControlList)
-                    {
-                        if($logControl.ControlId -eq $control.ControlId)
-                        {
+                    $log = Get-content -Raw -path $logFile | ConvertFrom-Json
+                    foreach ($logControl in $log.ControlList) {
+                        if ($logControl.ControlId -eq $control.ControlId) {
                             #$logControl.RemediatedResources=$logResources
-                            $logControl.SkippedResources=$skippedResources
+                            $logControl.SkippedResources = $skippedResources
                         }
                     }
                     $log | ConvertTo-json -depth 10  | Out-File $logFile
                 }
                 Write-Host "Skipped remediation of Subscription Id: [$($SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
-           }
+            }
         }
     }
 }
 
-function PrintRemediationSummary($timestamp)
-{
+function PrintRemediationSummary($timestamp) {
     $logFiles = @(Get-ChildItem LogFiles\$($timestamp)\*.json);
-    if($logFiles.Count -eq 0)
-    {
+    if ($logFiles.Count -eq 0) {
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "None of the failing controls have been remediated." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
     }
-    else
-    {
+    else {
         Write-Host $([Constants]::DoubleDashLine)
         Write-Host "Remediation Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         $remediationSummary = @()
-        foreach($logFile in $logFiles)
-        {
+        foreach ($logFile in $logFiles) {
             $log = Get-Content -Path $logFile | ConvertFrom-Json
-            foreach($logControl in $log.ControlList)
-            {
-                $remediationSummary+=[PSCustomObject]@{
-                    "Subscription Id" = $log.SubscriptionId;
-                    "Control Id" = $logControl.ControlId;
-                    "Number Of Failing Resources"= $logControl.NumberOfFailingResources;
+            foreach ($logControl in $log.ControlList) {
+                $remediationSummary += [PSCustomObject]@{
+                    "Subscription Id"                = $log.SubscriptionId;
+                    "Control Id"                     = $logControl.ControlId;
+                    "Number Of Failing Resources"    = $logControl.NumberOfFailingResources;
                     "Number Of Remediated Resources" = $logControl.RemediatedResources.Length;
-                    "Number Of Skipped Resources" = $logControl.SkippedResources.Length;
+                    "Number Of Skipped Resources"    = $logControl.SkippedResources.Length;
                 }
             }
         }
@@ -308,30 +284,25 @@ function PrintRemediationSummary($timestamp)
     }
 }
 
-function SetExecutionPolicy
-{
+function SetExecutionPolicy {
     #Check for execution policy settings
     $executionPolicy = Get-ExecutionPolicy -Scope CurrentUser
-    if(($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Restricted) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Undefined) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::AllSigned))
-    {
+    if (($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Restricted) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::Undefined) -or ($executionPolicy -eq [Microsoft.PowerShell.ExecutionPolicy]::AllSigned)) {
         Write-Host "Currently PowerShell execution policy is set to '$executionPolicy' mode. `n The policy to be set to 'RemoteSigned'. `nSelect Y to change policy for current user (Y|N): " -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
         $executionPolicyAns = Read-Host 
 
-        if($executionPolicyAns.Trim().ToLower() -eq "y" )
-        {
+        if ($executionPolicyAns.Trim().ToLower() -eq "y" ) {
             Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
             Write-Host "Execution Policy is set to Remote Signed." -ForegroundColor $([Constants]::MessageType.Update)
         }
-        else 
-        {
+        else {
             Write-Host "Terminating the current execution of script as Execution Policy is not set to Remote Signed." -ForegroundColor $([Constants]::MessageType.Error)
             return 
         }
     }
 }
 
-function ValidUserInput
-{
+function ValidUserInput {
     param
     (
         [String] 
@@ -344,33 +315,26 @@ function ValidUserInput
         $maximumValue
     )
     $validValue = $false
-    do
-    {
-        try
-        {
+    do {
+        try {
             $userInput = Read-Host -Prompt $prompt
             [int]$value = [int]::Parse($userInput)
-            if($value -le $maximumValue -and $value -ge $minimumValue)
-            {
+            if ($value -le $maximumValue -and $value -ge $minimumValue) {
                 $validValue = $true
             }
-            else
-            {
+            else {
                 Write-Host "The entered value was not in valid range of ($($minimumValue), $($maximumValue)). Kindly re-enter the value." -ForegroundColor $([Constants]::MessageType.Warning)
             }
         }
-        catch
-        {
+        catch {
             Write-Host "The entered value was not valid integer. Kindly re-enter the value." -ForegroundColor $([Constants]::MessageType.Warning)
         }
-    }while($validValue -eq $false)
+    }while ($validValue -eq $false)
     return $value
 }
 
-function UserInputTimeSpan
-{
-    do
-    {
+function UserInputTimeSpan {
+    do {
         #take user input
         $days = 0
         $hours = 0
@@ -378,36 +342,30 @@ function UserInputTimeSpan
         $seconds = 0
         Write-Host "Enter the time span for SAS Expiry Interval " -ForegroundColor $([Constants]::MessageType.Warning)
         $days = ValidUserInput "Days ( 0 - 7 )" 0 7
-        if($days -lt 7)
-        {
+        if ($days -lt 7) {
             $hours = ValidUserInput "Hours ( 0 - 23 )" 0 23
             $minutes = ValidUserInput "Minutes ( 0 - 59 )" 0 59
             $seconds = ValidUserInput "Seconds ( 0 - 59 )" 0 59
         }
-        if(($days -eq 0) -and ($hours -eq 0) -and ($minutes -eq 0) -and ($seconds -eq 0))
-        {
+        if (($days -eq 0) -and ($hours -eq 0) -and ($minutes -eq 0) -and ($seconds -eq 0)) {
             Write-Host "The time span can't be 0 days, 0 hours, 0 minutes, 0 seconds. Kindly re-enter the time span."
         }
-        else
-        {
+        else {
             break;
         }
-    }while($true)
+    }while ($true)
 
     $daysInString = [string]$days
     $hoursInString = [string]$hours
     $minutesInString = [string]$minutes
     $secondsInString = [string]$seconds
-    if($hours -lt 10)
-    {
+    if ($hours -lt 10) {
         $hoursInString = "0" + [string]$hours
     } 
-    if($minutes -lt 10)
-    {
+    if ($minutes -lt 10) {
         $minutesInString = "0" + [string]$minutes
     }
-    if($seconds -lt 10)
-    {
+    if ($seconds -lt 10) {
         $secondsInString = "0" + [string]$seconds
     }
     
@@ -415,8 +373,7 @@ function UserInputTimeSpan
     return $timeSpanInString
 }
 
-function StartExecution
-{
+function StartExecution {
     $timestamp = $(get-date -f MMddyyyyHHmmss)
     $directory = "$(Get-location)/LogFiles/$($timestamp)"
     $null = New-Item -Type Directory -path $directory -Force -ErrorAction Stop
@@ -427,13 +384,12 @@ function StartExecution
     PrintRemediationSummary($timestamp)
 }
 
-class Constants
-{
+class Constants {
     static [Hashtable] $MessageType = @{
-        Error = [System.ConsoleColor]::Red
+        Error   = [System.ConsoleColor]::Red
         Warning = [System.ConsoleColor]::Yellow
-        Info = [System.ConsoleColor]::Cyan
-        Update = [System.ConsoleColor]::Green
+        Info    = [System.ConsoleColor]::Cyan
+        Update  = [System.ConsoleColor]::Green
         Default = [System.ConsoleColor]::White
     }
 
