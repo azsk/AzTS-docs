@@ -307,8 +307,8 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
             $servers = @();
             $servers = Get-AzPostgreSqlFlexibleServer -ErrorAction Stop
             $servers | ForEach-Object { 	
-                $tlsparameterValue = (Get-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
-                $sslparameterValue = (Get-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
+                $tlsparameterValue = (Get-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.Id.Split("/")[4] -ServerName $_.Name -SubscriptionId $SubscriptionId).Value
+                $sslparameterValue = (Get-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.Id.Split("/")[4] -ServerName $_.Name -SubscriptionId $SubscriptionId).Value
                 $DBForPostgreSQLFlexibleServerDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                 @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                 @{N = 'ResourceName'; E = { $_.Name } }, 
@@ -371,7 +371,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     Write-Host "Separating Azure Database for PostgreSQL flexible server(s) for which only secure TLS version is not set or secure transport communication is disabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $DBForPostgreSQLFlexibleServerDetails | ForEach-Object {
-        if (-not (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion) && CheckIfSSLConfigured($_.SecureTransportStatus))) {
+        if (-not ( (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion)) -and (CheckIfSSLConfigured($_.SecureTransportStatus)))) {
             $DBForPostgreSQLFSWithNonSecureTLSVersionEnabled += $_
         }
         else {
@@ -408,9 +408,8 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 100; Alignment = "left" }
+    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 40; Alignment = "left" }
 
     if (-not $AutoRemediation) {
         Write-Host "Azure Database for PostgreSQL flexible server(s) with non-secure TLS version enabled are:"
@@ -478,17 +477,28 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
             $prevTlsVersion = $DBForPostgreSQLFS.TLSVersion
             $sslStatus = $DBForPostgreSQLFS.SecureTransportStatus
             try {
-                $paramValueTLS = (Update-AzPostgreSqlFlexibleServer -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $([Constants]::MinRequiredTLSVersionValue)).Value 
-                $paramValueSSL = (Update-AzPostgreSqlFlexibleServer -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $([Constants]::EnableSSLParameterValue)).Value 
-                
-                if (CheckIfOnlySecureTLSVersionConfigured($paramValueTLS) && SecureTransportStatus(paramValueSSL)) {
+                if ( -not(CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion))) {
+                    $paramValueTLS = (Update-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $([Constants]::MinRequiredTLSVersionValue)).Value 
+                }
+                else {
+                    $paramValueTLS = $DBForPostgreSQLFS.TLSVersion
+                }
+
+                if (-not (CheckIfSSLConfigured($_.SecureTransportStatus))) {
+                    $paramValueSSL = (Update-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $([Constants]::EnableSSLParameterValue)).Value 
+                }
+                else {
+                    $paramValueSSL = $DBForPostgreSQLFS.SecureTransportStatus
+                }
+
+                if ((CheckIfOnlySecureTLSVersionConfigured($paramValueTLS)) -and (CheckIfSSLConfigured($paramValueSSL))) {
                     $DBForPostgreSQLFS | Add-Member -NotePropertyName prevTLSVersion -NotePropertyValue $prevTlsVersion
                     $DBForPostgreSQLFS | Add-Member -NotePropertyName prevSecureTransportStatus -NotePropertyValue $sslStatus
                     $DBForPostgreSQLFS.TLSVersion = $paramValueTLS
                     $DBForPostgreSQLFS.SecureTransportStatus = $paramValueSSL
                     
                     $DBForPostgreSQLFSRemediated += $DBForPostgreSQLFS
-                    $logResource = @{}	
+                    $logResource = @{}
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
                     $logResource.Add("ResourceName", ($_.ResourceName))	
                     $logRemediatedResources += $logResource	
@@ -721,14 +731,12 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
 
     Write-Host "Found [$(($validDBForPostgreSQLFSDetails|Measure-Object).Count)] Azure Database for PostgreSQL flexible server(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
-    @{Expression = { $_.ResourceId }; Label = "ResourceId"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.prevTLSVersion }; Label = "PreviousTLSVersion"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 100; Alignment = "left" },
-    @{Expression = { $_.prevSecureTransportStatus }; Label = "PreviousSecureTransportStatus"; Width = 100; Alignment = "left" }
-    prevSecureTransportStatus
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 20; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 20; Alignment = "left" },
+    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 20; Alignment = "left" },
+    @{Expression = { $_.prevTLSVersion }; Label = "PreviousTLSVersion"; Width = 20; Alignment = "left" },
+    @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 20; Alignment = "left" },
+    @{Expression = { $_.prevSecureTransportStatus }; Label = "PreviousSecureTransportStatus"; Width = 20; Alignment = "left" }
         
     $validDBForPostgreSQLFSDetails | Format-Table -Property $colsProperty -Wrap
     
@@ -774,12 +782,27 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         $TlsVersionBeforeRollback = $DBForPostgreSQLFS.TLSVersion
         $SecureTransportStatusBeforeRollback = $DBForPostgreSQLFS.SecureTransportStatus
         try {   
-            $tlsVersionRolledBack = Update-AzPostgreSqlFlexibleServer -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.prevTLSVersion
-            $SecureTransportStatusRolledback = Update-AzPostgreSqlFlexibleServer -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.prevSecureTransportStatus
+            if ($DBForPostgreSQLFS.TLSVersion -ne $DBForPostgreSQLFS.prevTLSVersion ) {
+                
+                $tlsVersionRolledBack = (Update-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.prevTLSVersion).Value 
+            }
+            else {
+
+                $tlsVersionRolledBack = $DBForPostgreSQLFS.TLSVersion
+            }
+
+            if ($DBForPostgreSQLFS.SecureTransportStatus -ne $DBForPostgreSQLFS.prevSecureTransportStatus) {
+               
+                $secureTransportStatusRolledback = (Update-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.ResourceGroupName  -ServerName $_.ResourceName -Value $_.prevSecureTransportStatus).Value 
+            }
+            else {
+
+                $secureTransportStatusRolledback = $DBForPostgreSQLFS.SecureTransportStatus
+            }
             
             $DBForPostgreSQLFS.TLSVersion = $tlsVersionRolledBack
             $DBForPostgreSQLFS.prevTLSVersion = $TlsVersionBeforeRollback
-            $DBForPostgreSQLFS.SecureTransportStatus = $SecureTransportStatusRolledback
+            $DBForPostgreSQLFS.SecureTransportStatus = $secureTransportStatusRolledback
             $DBForPostgreSQLFS.prevSecureTransportStatus = $SecureTransportStatusBeforeRollback
 
             $DBForPostgreSQLFSRolledBack += $DBForPostgreSQLFS
