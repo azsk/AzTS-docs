@@ -64,8 +64,6 @@
         
         Get-Help Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer -Detailed        
 ###>
-
-
 function Setup-Prerequisites {
     <#
         .SYNOPSIS
@@ -112,7 +110,6 @@ function Setup-Prerequisites {
     }
     Write-Host $([Constants]::SingleDashLine)
 }
-
 
 function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     <#
@@ -252,7 +249,6 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     $controlIds = "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version"
 
     # No file path provided as input to the script. Fetch all Azure Database for PostgreSQL flexible server(s) in the Subscription.
-
     if ($AutoRemediation) {
         if (-not (Test-Path -Path $Path)) {	
             Write-Host "File containing failing controls details [$($Path)] not found. Skipping remediation..." -ForegroundColor $([Constants]::MessageType.Error)	
@@ -271,8 +267,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
             	
             Write-Host "No Azure Database for PostgreSQL flexible server(s) found in input json file for remediation." -ForegroundColor $([Constants]::MessageType.Error)	
             Write-Host $([Constants]::DoubleDashLine)	
-            return	
-        
+            return	    
         }
         $validResources | ForEach-Object { 	
             try {
@@ -315,7 +310,6 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
                 @{N = 'TLSVersion'; E = { $tlsparameterValue } },
                 @{N = 'SecureTransportStatus'; E = { $sslparameterValue } }
             }        
-
         }
         else {
             if (-not (Test-Path -Path $FilePath)) {
@@ -329,13 +323,10 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
             $DBForPostgreSQLFSResources = Import-Csv -LiteralPath $FilePath
 
             $validDBForPostgreSQLFSResources = $DBForPostgreSQLFSResources | Where-Object { ![String]::IsNullOrWhiteSpace($_.ResourceId) }
-
             $validDBForPostgreSQLFSResources | ForEach-Object {
                 $resourceId = $_.ResourceId
-
                 try {                
                     $DBForPostgreSQLFSResource = Get-AzPostgreSqlFlexibleServer -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-            
                     $tlsparameterValue = (Get-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_TLS)  -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
                     $sslparameterValue = (Get-AzPostgreSqlFlexibleServerConfiguration -Name $([Constants]::ParameterName_SSL)  -ResourceGroupName $_.ResourceGroupName -ServerName $_.ResourceName -SubscriptionId $SubscriptionId).Value
                     $DBForPostgreSQLFlexibleServerDetails += $DBForPostgreSQLFSResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
@@ -343,14 +334,12 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
                     @{N = 'ResourceName'; E = { $_.Name } }, 
                     @{N = 'TLSVersion'; E = { $tlsparameterValue } },
                     @{N = 'SecureTransportStatus'; E = { $sslparameterValue } }
-
                 }
                 catch {
                     Write-Host "Error fetching Azure Database for PostgreSQL flexible server(s) resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                 }
             }
-        }
-                                                                
+        }                                                         
     }
     
     $totalDBForPostgreSQLFS = ($DBForPostgreSQLFlexibleServerDetails | Measure-Object).Count
@@ -361,18 +350,17 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         return
     }
   
-    Write-Host "Found [$($totalDBForPostgreSQLFS)] Azure Database for PostgreSQL flexible server(s)." -ForegroundColor $([Constants]::MessageType.Update)
-                                                                          
+    Write-Host "Found [$($totalDBForPostgreSQLFS)] Azure Database for PostgreSQL flexible server(s)." -ForegroundColor $([Constants]::MessageType.Update)                                                                    
     Write-Host $([Constants]::SingleDashLine)
     
-    # list for storing Azure Database for PostgreSQL flexible server(s) for which server parameter require_secure_transport in not ON
-    $DBForPostgreSQLFSWithNonSecureTLSVersionEnabled = @()
+    # list for storing Azure Database for PostgreSQL flexible server(s) for which server parameter require_secure_transport in Off or ssl_min_protocol_version is less than TBv1.2.
+    $DBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled = @()
 
     Write-Host "Separating Azure Database for PostgreSQL flexible server(s) for which only secure TLS version is not set or secure transport communication is disabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $DBForPostgreSQLFlexibleServerDetails | ForEach-Object {
         if (-not ( (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion)) -and (CheckIfSSLConfigured($_.SecureTransportStatus)))) {
-            $DBForPostgreSQLFSWithNonSecureTLSVersionEnabled += $_
+            $DBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled += $_
         }
         else {
             $logResource = @{}
@@ -383,10 +371,10 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         }
     }
    
-    $totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabled = ($DBForPostgreSQLFSWithNonSecureTLSVersionEnabled  | Measure-Object).Count
+    $totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled = ($DBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled  | Measure-Object).Count
 
-    if ($totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabled -eq 0) {
-        Write-Host "No Azure Database for PostgreSQL flexible server(s) found with non-secure TLS version enabled and secure transport communication is disabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+    if ($totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled -eq 0) {
+        Write-Host "No Azure Database for PostgreSQL flexible server(s) found with non-secure TLS version enabled or secure transport communication is disabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::DoubleDashLine)
         
         if ($AutoRemediation) {
@@ -403,7 +391,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         return
     }
 
-    Write-Host "Found [$($totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabled )] Azure Database for PostgreSQL flexible server(s) for which non secure TLS version is enabled ." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled )] Azure Database for PostgreSQL flexible server(s) for which non secure TLS version is enabled ." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
@@ -412,12 +400,11 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 40; Alignment = "left" }
 
     if (-not $AutoRemediation) {
-        Write-Host "Azure Database for PostgreSQL flexible server(s) with non-secure TLS version enabled are:"
-        $DBForPostgreSQLFSWithNonSecureTLSVersionEnabled  | Format-Table -Property $colsProperty -Wrap
+        Write-Host "Azure Database for PostgreSQL flexible server(s) with non-secure TLS version enabled or secure communication disabled are:"
+        $DBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled  | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
     }    
     
-
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\SetSecureTLSVersionForDBForPostgreSQLFlexibleServer"
 
@@ -431,7 +418,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     if ([String]::IsNullOrWhiteSpace($FilePath)) {
         # Backing up Azure Database for PostgreSQL flexible server(s) details.
         $backupFile = "$($backupFolderPath)\DBForPostgreSQLFlexibleServerDetailsBackUp.csv"
-        $DBForPostgreSQLFSWithNonSecureTLSVersionEnabled  | Export-CSV -Path $backupFile -NoTypeInformation
+        $DBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled  | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "Azure Database for PostgreSQL flexible server(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
@@ -445,7 +432,6 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         Write-Host "[Step 4 of 4] Enable secure TLS version on Azure Database for PostgreSQL flexible server(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         
-
         if (-not $Force) {
             Write-Host "Do you want to enable secure TLS version and secure transport communication on Azure Database for PostgreSQL flexible server(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
             
@@ -472,7 +458,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Azure Database for PostgreSQL flexible server(s) which needs to be remediated.
-        $DBForPostgreSQLFSWithNonSecureTLSVersionEnabled  | ForEach-Object {
+        $DBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled  | ForEach-Object {
             $DBForPostgreSQLFS = $_
             $prevTlsVersion = $DBForPostgreSQLFS.TLSVersion
             $sslStatus = $DBForPostgreSQLFS.SecureTransportStatus
@@ -526,8 +512,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         }
 
         Write-Host $([Constants]::DoubleDashLine)
-        
-        
+
         if ($AutoRemediation) {
             if ($($DBForPostgreSQLFSRemediated | Measure-Object).Count -gt 0) {
                 
@@ -690,9 +675,6 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         $context = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
     }
 
-    
-    
-    
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Subscription Name: [$($context.Subscription.Name)]"
     Write-Host "Subscription ID: [$($context.Subscription.SubscriptionId)]"
@@ -701,7 +683,6 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     Write-Host $([Constants]::SingleDashLine)
 
     # Note about the required access required for remediation
-
     Write-Host "To set secure TLS version and secure transport communication for Azure Database for PostgreSQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for PostgreSQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     
     Write-Host $([Constants]::SingleDashLine)
@@ -715,7 +696,7 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     }
 
     Write-Host "Fetching all Azure Database for PostgreSQL flexible server(s) from" -NoNewline
-    Write-Host " [$($FilePath)\...]..." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host " [$($FilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     $DBForPostgreSQLFlexibleServerDetails = Import-Csv -LiteralPath $FilePath
 
@@ -731,12 +712,12 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
 
     Write-Host "Found [$(($validDBForPostgreSQLFSDetails|Measure-Object).Count)] Azure Database for PostgreSQL flexible server(s)." -ForegroundColor $([Constants]::MessageType.Update)
 
-    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 20; Alignment = "left" },
-    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 20; Alignment = "left" },
+    $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 20; Alignment = "left" },
     @{Expression = { $_.prevTLSVersion }; Label = "PreviousTLSVersion"; Width = 20; Alignment = "left" },
-    @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 20; Alignment = "left" },
-    @{Expression = { $_.prevSecureTransportStatus }; Label = "PreviousSecureTransportStatus"; Width = 20; Alignment = "left" }
+    @{Expression = { $_.SecureTransportStatus }; Label = "SecureTransportStatus"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.prevSecureTransportStatus }; Label = "PreviousSecureTransportStatus"; Width = 30; Alignment = "left" }
         
     $validDBForPostgreSQLFSDetails | Format-Table -Property $colsProperty -Wrap
     
@@ -747,13 +728,11 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-  
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 3 of 3] Set TLS version and secure transport communication to previous value on all Azure Database for PostgreSQL flexible server(s) in the Subscription"
     Write-Host $([Constants]::SingleDashLine)
 
-    if ( -not $Force) {
-        
+    if ( -not $Force) {    
         Write-Host "Do you want to change TLS version and secure transport communication for all Azure Database for PostgreSQL flexible server(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
@@ -775,7 +754,6 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
 
     # List for storing skipped rolled back DBForPostgreSQLFS resource.
     $DBForPostgreSQLFSSkipped = @()
-
 
     $validDBForPostgreSQLFSDetails | ForEach-Object {
         $DBForPostgreSQLFS = $_
@@ -804,15 +782,13 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
             $DBForPostgreSQLFS.prevTLSVersion = $TlsVersionBeforeRollback
             $DBForPostgreSQLFS.SecureTransportStatus = $secureTransportStatusRolledback
             $DBForPostgreSQLFS.prevSecureTransportStatus = $SecureTransportStatusBeforeRollback
-
             $DBForPostgreSQLFSRolledBack += $DBForPostgreSQLFS
         }
         catch {
             $DBForPostgreSQLFSSkipped += $DBForPostgreSQLFS
         }
     }
-
-        
+   
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
         
@@ -832,7 +808,6 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         Write-Host "Error while rolling back TLS version or secure transport communication on Azure Database for PostgreSQL flexible server(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
         $DBForPostgreSQLFSSkipped | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
-
             
         # Write this to a file.
         $DBForPostgreSQLFSSkippedFile = "$($backupFolderPath)\RollbackSkippedDBForPostgreSQLFS.csv"
@@ -856,16 +831,15 @@ function  CheckIfOnlySecureTLSVersionConfigured {
             }
         }
     }
-    Catch {
+    catch {
         return $false
     }
     if ($nonCompliantTLSVersions.Count -gt 0) {
         return $false
     }
     else {
-        Return $true
-    }
-    
+        return $true
+    }    
 }
 
 function  CheckIfSSLConfigured {
@@ -877,7 +851,7 @@ function  CheckIfSSLConfigured {
         return $true
     }
     else {
-        Return $false
+        return $false
     }    
 }
 
