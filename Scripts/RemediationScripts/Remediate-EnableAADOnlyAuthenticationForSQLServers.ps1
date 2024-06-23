@@ -3,10 +3,10 @@
     This script is used to Enable Azure AD Only Authentication for the SQL Servers in a Subscription.
 
 # Control ID:
-    Azure_SQLDatabase_AuthZ_Use_AAD_Only
+    #Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only
 
 # Display Name:
-    Use AAD Only Authentication for SQL Server
+    Enable Entra ID (formerly AAD) as only Authentication for the SQL Server
 
 # Prerequisites:
     Contributor and higher privileges on the SQL Servers in a Subscription.
@@ -141,11 +141,11 @@ function Enable-AADOnlyAuthenticationForSqlServers
 {
     <#
         .SYNOPSIS
-        Remediates 'Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
+        Remediates 'Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only' Control.
 
         .DESCRIPTION
-        Remediates 'Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
-        Azure AD Only Authentication must be enabled.
+        Remediates 'Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only' Control.
+        Enable Entra ID (formerly AAD) as only Authentication for the SQL Server.
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription to be remediated.
@@ -552,11 +552,11 @@ function Disable-AADOnlyAuthenticationForSqlServers
 {
     <#
         .SYNOPSIS
-        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
+        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only' Control.
 
         .DESCRIPTION
-        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_AAD_Only' Control.
-        Disables Azure AD Only Authentication on the SQL Servers in the Subscription.
+        Rolls back remediation done for Azure_SQLDatabase_AuthZ_Use_Microsoft_Entra_ID_Only' Control.
+        Enable Entra ID (formerly AAD) as only Authentication for the SQL Server.
 
         .PARAMETER SubscriptionId
         Specifies the ID of the Subscription that was previously remediated.
