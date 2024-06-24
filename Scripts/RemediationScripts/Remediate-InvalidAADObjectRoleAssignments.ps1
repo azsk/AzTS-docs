@@ -182,27 +182,45 @@ function Remove-AzTSInvalidAADAccounts
 
     # Safe Check: Current user need to be either UAA or Owner for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    $userMemberGroups = @()
+    $currentLoginUserObjectId = "";
 
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
     if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
     {
-        Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
-        return;
+        # The user does not have direct access to the subscription, checking if the user has access through groups
+        # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
+        try
+        {
+            Get-AzureADTenantDetail | Out-Null
+        }
+        catch
+        {
+            Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
+        }
+        
+        $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
+        $userMemberGroups = Get-AzureADUserMembership -ObjectId $currentSub.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
+        if(($allRoleAssignments | Where-Object { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and $_.ObjectId -in $userMemberGroups } | Measure-Object).Count -le 0)
+        {
+            Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
+            return;
+        }
+
+        $currentLoginUserObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
     }
-    else
-    {
-        Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
-    }
+
+    Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
 
     # Safe Check: saving the current login user object id to ensure we don't remove this during the actual removal
     $currentLoginUserObjectIdArray = @()
-    $currentLoginUserObjectId = "";
     $currentLoginUserObjectIdArray += $currentLoginRoleAssignments | select ObjectId -Unique
     if(($currentLoginUserObjectIdArray | Measure-Object).Count -gt 0)
     {
         $currentLoginUserObjectId = $currentLoginUserObjectIdArray[0].ObjectId;
     }
 
+    $currentLoginUserObjectIdArray += $userMemberGroups
     if([String]::IsNullOrWhiteSpace($FilePath))
     { 
         Write-Host "Step 2 of 5: Fetching all the role assignments for subscription [$($SubscriptionId)]..."
@@ -361,7 +379,7 @@ function Remove-AzTSInvalidAADAccounts
     }   
 
     # Safe Check: Check whether the current user accountId is part of invalid AAD Object guids List 
-    if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -eq $currentLoginUserObjectId} | Measure-Object).Count -gt 0)
+    if(($invalidAADObjectRoleAssignments | where { $_.ObjectId -in $currentLoginUserObjectIdArray } | Measure-Object).Count -gt 0)
     {
         Write-Host "Warning: Current User account is found as part of the invalid AAD Object guids collection. This is not expected behaviour. This can happen typically during Graph API failures. Aborting the operation. Reach out to aztssup@microsoft.com" -ForegroundColor Yellow
         return;
