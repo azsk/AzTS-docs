@@ -63,7 +63,7 @@
 
 31. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](ControlsEligibleForRemediationThroughUI.md#31-azure_aisearch_authz_enable_role_based_api_access_only)
 
-32.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version_](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
+32.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 
 
 <br />
