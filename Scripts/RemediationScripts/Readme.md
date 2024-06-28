@@ -72,7 +72,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 60. [Azure_Subscription_Config_Enable_MicrosoftDefender_Servers](Readme.md#60-Azure_Subscription_Config_Enable_MicrosoftDefender_Servers)
 61. [Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault](Readme.md#61-Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault)
 62. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](Readme.md#62-azure_aisearch_authz_enable_role_based_api_access_only)
-63.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version_](Readme.md#63-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
+63.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#63-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 
 <br />
 
