@@ -63,6 +63,8 @@
 
 31. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](ControlsEligibleForRemediationThroughUI.md#31-azure_aisearch_authz_enable_role_based_api_access_only)
 
+32. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresql_dp_use_secure_tls_version)
+
 
 <br />
 ___
@@ -474,5 +476,16 @@ Protect Azure AI Search Instances by only allowing RBAC API Access
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+
+## 33. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for PostgreSQL - Single Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForPostgreSQLSingleServerMinReqTLSVersion](Remediate-SetDBForPostgreSQLSingleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Azure database for PostgreSQL single server
 
 ___

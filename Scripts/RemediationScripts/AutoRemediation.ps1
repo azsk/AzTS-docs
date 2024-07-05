@@ -175,7 +175,8 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only") -or
                 ($control.ControlId -eq "Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy") -or 
                 ($control.ControlId -eq "Azure_SynapseWorkspace_AuthN_SQL_Pools_Use_Microsoft_Entra_ID_Only") -or
-                ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics")){
+                ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics") -or
+                ($control.ControlId -eq "Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " +  "`'" + $SubscriptionId +  "`'" +  " -Path " + "`'" + "FailedControls\" +  $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString +  "`'";
                 }elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID" ) -or
                 ($control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts")) {

@@ -1,0 +1,505 @@
+[33mcommit 38992ef5a21252e7a81112c8679be6e79028066b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32musers/rajatgoyal/DBforpostgresqlserver_TLS_BRS[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: e6698eb 6b07f96
+Author: dassayantan1 <141649476+dassayantan1@users.noreply.github.com>
+Date:   Thu Jul 4 15:20:13 2024 +0530
+
+    Merge pull request #453 from azsk/users/sayantan/hotfix
+    
+    Remediation zip addition
+
+[33mcommit 6b07f96c21346f7dd1c2f69ed7e12dd5406d0ad6[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Thu Jul 4 13:58:31 2024 +0530
+
+    Reverted the folder structure
+
+[33mcommit 9ff712645ed008ce84bb81c65644529ece212a61[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Thu Jul 4 13:39:38 2024 +0530
+
+    Modified folder structure for Remediation scripts
+
+[33mcommit 14f128cef6ea8c30a2fe35c682994ef5f46bcd18[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Thu Jul 4 12:29:32 2024 +0530
+
+    Remediation zip addition
+
+[33mcommit e6698ebba83a3e76e3d832d4838134f1fd91b078[m[33m ([m[1;32mmain[m[33m)[m
+Merge: db44cc1 233eed6
+Author: TarunKrShukla <34642729+TarunKrShukla@users.noreply.github.com>
+Date:   Mon Jun 24 08:51:49 2024 +0530
+
+    Merge pull request #448 from azsk/users/sayantan/invalidaadbrs
+    
+    Users/sayantan/invalidaadbrs
+
+[33mcommit 233eed672b025edea6c49de91ac4a22d31284533[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Sun Jun 23 13:51:21 2024 +0530
+
+    Modified the zip file for updated BRS
+
+[33mcommit f70581898e872bf1e1c2a8c470b33dcf0d6fe82a[m
+Merge: 005d83c db44cc1
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Sun Jun 23 13:43:40 2024 +0530
+
+    Pulled main
+
+[33mcommit db44cc1c8a75af20338a2e0d7b9bd4d0315f4516[m
+Merge: 1c80d0d 8b3b50c
+Author: pranchalsomani <92309172+pranchalsomani@users.noreply.github.com>
+Date:   Wed Jun 12 12:18:21 2024 +0530
+
+    Merge pull request #446 from azsk/users/pranchal/AADToEntraId
+    
+    Updated the name of AAD to Entra ID in Azure_SQLDatabase_AuthZ_Use_AAD_Only
+
+[33mcommit 005d83c57420a660ec7fb896da9fd10c3b3d3c76[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Fri May 31 16:32:48 2024 +0530
+
+    Reordered statements
+
+[33mcommit 59c1168260037afa721cfad17027a515e0502b90[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Fri May 31 16:03:14 2024 +0530
+
+    Changed output format
+
+[33mcommit b9addb1e7c44e1f5f2d98eb32e0c1604f1b0b832[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Fri May 31 15:56:34 2024 +0530
+
+    Changed variable names
+
+[33mcommit 4ec57ec87d4b55ca608774fe9d4251c576ca8674[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Fri May 31 15:32:44 2024 +0530
+
+    Refactored commands
+
+[33mcommit fefbe3593809710024a7470e373bc541f62accc8[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Fri May 31 15:27:23 2024 +0530
+
+    Functionality to check for role assignments through groups
+
+[33mcommit 1c80d0d2d74500ed47b862f8450e64fb7cc3518a[m
+Merge: 1654b10 a66e7c6
+Author: Aboli-msft <52916530+Aboli-msft@users.noreply.github.com>
+Date:   Fri May 31 15:10:38 2024 +0530
+
+    Merge pull request #447 from azsk/users/aboli/videoCorrection
+    
+    Link correction
+
+[33mcommit a66e7c6b2b7659f36e22fc9e7916c442056b69d0[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri May 31 15:00:39 2024 +0530
+
+    Link correction
+
+[33mcommit 8b3b50c03b8e4d59719a309218b4b23de0de1931[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Fri May 31 13:02:32 2024 +0530
+
+    Updated the name of AAD to Entra ID
+
+[33mcommit 1654b1072b564981dd25d18f3e768be1cc858961[m
+Merge: 08064fc a02aec1
+Author: rajatgoyalMS <137035584+rajatgoyalMS@users.noreply.github.com>
+Date:   Wed May 29 11:07:56 2024 +0530
+
+    Merge pull request #438 from azsk/users/rajatgoyal/aadcontrolsbrsupdate
+    
+    updated AAD to Entra Id in BRS
+
+[33mcommit 08064fc310db2e7fd2a9148555b0a9f5f0b2a35f[m
+Merge: d87cc89 54a2f58
+Author: asimks <68547115+asimks@users.noreply.github.com>
+Date:   Wed May 22 19:15:07 2024 +0530
+
+    Merge pull request #443 from azsk/users/aboli/selfAttestChanges
+    
+    Updating control list for self-attestable controls
+
+[33mcommit 54a2f58f7c8553bd1ecc95dcd9c1233945a18d65[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Wed May 22 16:28:39 2024 +0530
+
+    Updating control list for self-attestable controls
+
+[33mcommit d87cc89c598f58c044cd26f0daacfa31235a9f19[m
+Merge: d5228aa 7d4983b
+Author: v-rahkuma <134361452+v-rahkuma@users.noreply.github.com>
+Date:   Wed May 15 19:19:52 2024 +0530
+
+    Merge pull request #413 from azsk/users/v-rahkuma/AzureChinaCloud
+    
+    Endpoint Changes for Azure China Environment
+
+[33mcommit 7d4983bb8c82e871bb0bb23697ab720e617f3064[m
+Merge: db534d5 d5228aa
+Author: v-rahkuma <134361452+v-rahkuma@users.noreply.github.com>
+Date:   Tue May 14 16:54:17 2024 +0530
+
+    Reverse merge from main
+
+[33mcommit db534d50fceab562dc704dd748e3ea785856b2b4[m
+Author: Rahul Kumar <v-rahkuma@microsoft.com>
+Date:   Tue May 14 15:24:31 2024 +0530
+
+    Updated endpoint for AzureChinaCloud and updated deployment json
+
+[33mcommit d5228aaa67b3a66821c72fd5e074fae7a81b2152[m
+Merge: 0b2e20c e187a51
+Author: Aakash Pahwa <88755870+aakashpahwa-msft@users.noreply.github.com>
+Date:   Tue May 14 13:44:30 2024 +0530
+
+    Merge pull request #439 from azsk/users/aakashpahwa/ui-analytics
+    
+    Updated external setup scripts for Application Insights changes for UI
+
+[33mcommit a02aec13c592d9a7d31e7fdc001558654c0f964e[m[33m ([m[1;31morigin/users/rajatgoyal/aadcontrolsbrsupdate[m[33m, [m[1;32musers/rajatgoyal/aadcontrolsbrsupdate[m[33m)[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Mon May 13 09:52:04 2024 +0530
+
+    changed the control name.
+
+[33mcommit 0b2e20ca8bf22a1fe919d846fdd4ed1bc9b492d7[m
+Merge: 73d82b5 a070ef0
+Author: Aboli-msft <52916530+Aboli-msft@users.noreply.github.com>
+Date:   Fri May 10 16:25:01 2024 +0530
+
+    Merge pull request #425 from azsk/users/aboli/SecTemplateMar
+    
+    Adding Secure template for VMSS
+
+[33mcommit a070ef0f0985741eb6a0ab19c92d4cc2dd183a32[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri May 10 14:21:18 2024 +0530
+
+    removing ML templates
+
+[33mcommit e187a51de71e0f43fdee4953ebc5ab55b939d86c[m
+Author: Aakash Pahwa <aakashpahwa@microsoft.com>
+Date:   Fri May 10 13:02:19 2024 +0530
+
+    Updated deployment scripts zip
+
+[33mcommit bda42f07a6bd5ae591f9a9ee6d6eeb613b088b88[m
+Author: Aakash Pahwa <aakashpahwa@microsoft.com>
+Date:   Fri May 10 12:46:03 2024 +0530
+
+    Application insights changes for setup script
+
+[33mcommit f7d41719f01ae1f6e8b7f1a820b6d1fdd496e0a8[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Thu May 9 14:25:52 2024 +0530
+
+    made Entra Id to Entra ID
+
+[33mcommit da58bbd8573f0358712d9349288e1ae48a7b8445[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Tue May 7 10:09:38 2024 +0530
+
+    files name changed.
+
+[33mcommit 6039969fbd0adfba06dfe830bc338e550495bc80[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Tue May 7 01:42:18 2024 +0530
+
+    fixed control name in readme
+
+[33mcommit 2912acad951afdaeca4f52a559cf1e5eba7fac44[m
+Merge: 328cd7d 73d82b5
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Mon May 6 14:36:01 2024 +0530
+
+    resolved merge conflict
+
+[33mcommit 328cd7d6f242019d99f392ca05d88c6ae5adb47a[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Mon May 6 14:25:46 2024 +0530
+
+    changed the AAD control details and BRSs
+
+[33mcommit 496b12c77b5b97807245220433b574defe93bfab[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Mon May 6 13:01:54 2024 +0530
+
+    added space
+
+[33mcommit 555c9d0e8a6f8b89773a3589a50ec688c0a9a575[m
+Author: rajatgoyalMS <rajatgoyal@microsoft.com>
+Date:   Fri May 3 12:09:27 2024 +0530
+
+    updated AAD to Entra Id in BRS
+
+[33mcommit 3bcc016cf58032a5af9302f9ac0cf30ed9d2a08e[m
+Author: Rahul Kumar <v-rahkuma@microsoft.com>
+Date:   Wed May 1 17:26:56 2024 +0530
+
+    Removed spaces
+
+[33mcommit 7fbcb4ab87fbd54c9e3621824ddae893a994dfa2[m
+Author: Rahul Kumar <v-rahkuma@microsoft.com>
+Date:   Wed May 1 16:33:02 2024 +0530
+
+    Updated deployment folder
+
+[33mcommit fbb6a7370ef2e1fc825f346714f17f85178698bc[m
+Author: Rahul Kumar <v-rahkuma@microsoft.com>
+Date:   Wed May 1 16:13:30 2024 +0530
+
+    Minor changes added  '/'  in AADClientAppDetails__Instance
+
+[33mcommit ca27637507cc24cc575fa8c0006fb8269ca68ef7[m
+Author: Rahul Kumar <v-rahkuma@microsoft.com>
+Date:   Wed May 1 15:01:37 2024 +0530
+
+    Made chnages in template
+
+[33mcommit 73d82b59acf693f7dd3d60b96f942cbda9ed9b24[m
+Merge: 7455ec9 9845392
+Author: Vaishnavi Rao Pulluri <30566748+vaishnavipulluri@users.noreply.github.com>
+Date:   Tue Apr 30 10:58:09 2024 +0530
+
+    Merge pull request #437 from azsk/users/vapullur/MMARemovalEnhacements
+    
+    MMA Removal Utility Enhancements
+
+[33mcommit 98453926d4c302ecbb02ea369400953852e64180[m
+Author: Vaishnavi Rao Pulluri <vapullur@microsoft.com>
+Date:   Tue Apr 30 10:48:57 2024 +0530
+
+    Adding command to load the script before executing discovery and removal triggers
+
+[33mcommit 64ce7a0dcb29f74612ed80c41182ca006542efe2[m
+Author: Vaishnavi Rao Pulluri <vapullur@microsoft.com>
+Date:   Tue Apr 30 09:56:40 2024 +0530
+
+    Fixing Deployment Files Zip Path
+
+[33mcommit 7455ec923fb30a7f443cab42c03ad92b692d40f1[m
+Merge: c2e23de cbb49f3
+Author: pranchalsomani <92309172+pranchalsomani@users.noreply.github.com>
+Date:   Mon Apr 29 18:21:35 2024 +0530
+
+    Merge pull request #434 from azsk/users/pranchalTB3
+    
+    Added 8 new  and updated 2 subscription controls
+
+[33mcommit cbb49f3d321c2c88feff9dfe5ae2377dae01e009[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Mon Apr 29 16:48:06 2024 +0530
+
+    Minor fix
+
+[33mcommit 0826e1cc5c67ab44fd52547bb7325ad2b41fef34[m
+Author: Vaishnavi Rao Pulluri <vapullur@microsoft.com>
+Date:   Mon Apr 29 14:28:46 2024 +0530
+
+    Folder Path and Deployment Zip Update
+
+[33mcommit 8b629771fe2ce454b2721bef68b605aee9723d89[m
+Author: Vaishnavi Rao Pulluri <vapullur@microsoft.com>
+Date:   Fri Apr 26 21:20:21 2024 +0530
+
+    MMA Removal Utility Enhancements
+
+[33mcommit c2e23def526637cff05c5fb78658343250babd2c[m
+Merge: 26b41a2 872d72e
+Author: TarunKrShukla <34642729+TarunKrShukla@users.noreply.github.com>
+Date:   Fri Apr 26 14:05:14 2024 +0530
+
+    Merge pull request #431 from azsk/users/pranchal/TenantBaselineControls
+    
+    Added 14 missing tenant baseline controls
+
+[33mcommit 9faa57065d6f34e02cc2469bb9e3f14161eac123[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Thu Apr 25 18:22:29 2024 +0530
+
+    Fixed PR comments
+
+[33mcommit 872d72e3b6b7b4c2a18c2bf9b8d2f550e952dfb5[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Thu Apr 25 11:59:24 2024 +0530
+
+    Minor fix
+
+[33mcommit 122a4c394d338969545d1943314c0cc4a2355cd4[m[33m ([m[1;31morigin/users/pranchal/TenantBaselineControls[m[33m)[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Wed Apr 24 12:53:07 2024 +0530
+
+    Fixed review comments
+
+[33mcommit 26b41a22e8a9b111d3974ec5b5557354b7f6f1ac[m
+Merge: c1f8b22 2b166a5
+Author: TarunKrShukla <34642729+TarunKrShukla@users.noreply.github.com>
+Date:   Wed Apr 24 12:05:00 2024 +0530
+
+    Merge pull request #435 from azsk/users/vapullur/videoUrlsFix
+    
+    Correct Video Link Urls
+
+[33mcommit 2b166a5f543689aded5962cd510ec09ec07c63fb[m[33m ([m[1;31morigin/users/vapullur/videoUrlsFix[m[33m)[m
+Author: Vaishnavi Rao Pulluri <30566748+vaishnavipulluri@users.noreply.github.com>
+Date:   Wed Apr 24 11:53:24 2024 +0530
+
+    Correct Video Link Urls
+
+[33mcommit f89eafbeaee91f1088632c3adfa3fdba4918499f[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Fri Apr 19 15:35:15 2024 +0530
+
+    PR comments fix
+
+[33mcommit c6dfdde87250349513d6c363457b42649de47362[m[33m ([m[1;31morigin/users/pranchalTB3[m[33m)[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Thu Apr 18 17:40:29 2024 +0530
+
+    Updated the code for control spec
+
+[33mcommit d5e455bc8ab8597ebc1c9219a659ba989de5f3f2[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Thu Apr 18 16:59:19 2024 +0530
+
+    added code for PR review comments
+
+[33mcommit c04b7c791ecf32f1511337e5a0cc4dff6d0e7d1c[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Wed Apr 17 13:29:42 2024 +0530
+
+    Added 8 control and updated 2 controls
+
+[33mcommit 0f108d0b5c6a8145b372778592df832b2db25267[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Wed Apr 17 11:41:17 2024 +0530
+
+    Minor fix
+
+[33mcommit c1f8b2286ce7649fef26636cda3729271a3741e9[m
+Merge: 1c8593f 26c61de
+Author: dassayantan1 <141649476+dassayantan1@users.noreply.github.com>
+Date:   Tue Apr 16 21:17:27 2024 +0530
+
+    Merge pull request #430 from azsk/users/sayantan/brsfeedbackchanges
+    
+    Feedback changes for the CA Policy for PIM BRS
+
+[33mcommit 26c61deacc38f1e316873799cd191dad6fcb1d98[m[33m ([m[1;31morigin/users/sayantan/brsfeedbackchanges[m[33m)[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Tue Apr 16 19:41:28 2024 +0530
+
+    Added zip file for the updated BRS
+
+[33mcommit 7801d06a3827c25c4801d4adb4559a138cf85178[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Tue Apr 16 18:42:34 2024 +0530
+
+    Included feedback changes; extensive testing changes; enhanced roll back mechanism
+
+[33mcommit a237794a4a0aff01c304800f4525e80130adaf30[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Tue Apr 16 08:13:20 2024 +0530
+
+    Adding all the newly added files to the Readme file
+
+[33mcommit 9b21d9c906a3dd46b993be0d670e10f59f25a3be[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Tue Apr 16 08:12:43 2024 +0530
+
+    Added missing tenant baseline controls
+
+[33mcommit 1c8593f0de920c09a6296bbba310e2849da6844a[m
+Merge: 09f681c 4deff73
+Author: Aboli-msft <52916530+Aboli-msft@users.noreply.github.com>
+Date:   Fri Apr 12 19:05:25 2024 +0530
+
+    Merge pull request #429 from azsk/users/aboli/AISearchBRS
+    
+    Adding BRS for AI Search service RBAC only API access
+
+[33mcommit 4deff73b2776e83b893c13b3a20123537b9f216f[m[33m ([m[1;31morigin/users/aboli/AISearchBRS[m[33m)[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri Apr 12 19:04:19 2024 +0530
+
+    Minor fixes
+
+[33mcommit 2b1e26366081409daa3eb6040cecb91d587980a8[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri Apr 12 18:13:48 2024 +0530
+
+    Minor updates
+
+[33mcommit 6b3d0c733d1688584790b6c90ca10cb1b730349b[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri Apr 12 17:49:16 2024 +0530
+
+    Adding BRS zip
+
+[33mcommit 3ad8e116edd766d8583d472130e9c25db9fcae58[m
+Merge: da8fdb4 09f681c
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri Apr 12 17:40:25 2024 +0530
+
+    merging from main
+
+[33mcommit da8fdb47180c7aa067e9a944c7731c3d9a306db9[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri Apr 12 17:20:18 2024 +0530
+
+    message update
+
+[33mcommit b6cb3924d7d1661758a9aa4376e4d3ca073c5e07[m
+Author: Aboli-msft <v-abbhan@microsoft.com>
+Date:   Fri Apr 12 16:56:27 2024 +0530
+
+    code review fixes
+
+[33mcommit 09f681c8e697554c013de09e4c5f6a7d3dbfe423[m
+Merge: 7112909 8de2855
+Author: pranchalsomani <92309172+pranchalsomani@users.noreply.github.com>
+Date:   Fri Apr 12 15:38:41 2024 +0530
+
+    Merge pull request #426 from azsk/users/pranchal/defender-BRS
+    
+    BRS for 7 defender controls
+
+[33mcommit 8de2855aedceea8e1b6d4bcb1213a2b9afafe951[m[33m ([m[1;31morigin/users/pranchal/defender-BRS[m[33m)[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Fri Apr 12 15:35:19 2024 +0530
+
+    updated the readme.md
+
+[33mcommit e2c2a54bb181410a0e6e590391810c25849d7ce5[m
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Fri Apr 12 15:17:35 2024 +0530
+
+    Updated the remediation package
+
+[33mcommit 569fef0987bc3a6dfde42932fd388df10fb1405c[m
+Merge: 802eb81 7112909
+Author: Pranchal Somani <v-prsomani@microsoft.com>
+Date:   Fri Apr 12 15:15:30 2024 +0530
+
+    reverse-merge with main
+
+[33mcommit 711290970725bbe028dbb027ffa0530e6a4fb324[m
+Merge: 0f17757 734e2a0
+Author: TarunKrShukla <34642729+TarunKrShukla@users.noreply.github.com>
+Date:   Fri Apr 12 15:02:10 2024 +0530
+
+    Merge pull request #427 from azsk/users/sayantan/ptabrsupdate
+    
+    Updated BRS for the Control 'Azure_Subscription_Configure_Conditional_Access_for_PIM'
+
+[33mcommit 734e2a0a71cae8c228ffd4c8af650a8d82ed3b31[m[33m ([m[1;31morigin/users/sayantan/ptabrsupdate[m[33m)[m
+Author: Sayantan Das <sayantandas@microsoft.com>
+Date:   Fri Apr 12 14:52:05 2024 +0530
+
+    Modified zip file according to latest changes
