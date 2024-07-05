@@ -18,7 +18,7 @@ ___
 Enable Security Logging in Azure Data Share
 
 ### Rationale 
-Auditing logs and metrics must be enabled as they provide details for investigation in case of a security breach for threats.
+Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats.
 
 ### Control Settings 
 ```json 
@@ -30,9 +30,6 @@ Auditing logs and metrics must be enabled as they provide details for investigat
         "ShareSubscriptions",
         "SentShareSnapshots",
         "ReceivedShareSnapshots"
-    ],
-    "DiagnosticMetrics": [
-        "AllMetrics"
     ]
 }
  ```  
@@ -61,7 +58,7 @@ Auditing logs and metrics must be enabled as they provide details for investigat
 ### Recommendation 
 
 - **Azure Portal** 
-    - To configure diagnostic settings: Go to the Azure portal --> Data Share --> Monitoring --> select Diagnostic settings --> Add diagnostic settings --> Select the required diagnostic setting from categories and select All metrics -->Select one or more destination targets, such as a Log Analytics workspace, a storage account, or an event hub --> Select Save.
+    - To configure diagnostic settings: Go to the Azure portal --> Data Share --> Monitoring --> select Diagnostic settings --> Add diagnostic settings --> Select the required diagnostic setting from categories --> Select one or more destination targets, such as a Log Analytics workspace, a storage account, or an event hub --> Select Save.
 
       
 
@@ -70,8 +67,7 @@ Auditing logs and metrics must be enabled as they provide details for investigat
 - REST API used to list diagnostic settings and its related properties at Resource level:
 /{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
 **Properties:**
-properties.metrics.category,properties.metrics.enabled,properties.metrics.retentionPolicy.enabled, properties.metrics.retentionPolicy.days
-properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,properties.metrics.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
+properties.logs.category, properties.logs.categorygroup,properties.logs.enabled, properties.logs.retentionPolicy.days, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
  <br />
 
 - REST API used to list diagnostic category group mapping and its related properties at Resource level:
