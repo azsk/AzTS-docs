@@ -90,9 +90,6 @@ function Setup-Prerequisites {
             Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
             Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
             Write-Host "[$($_)] module installed." -ForegroundColor $([Constants]::MessageType.Update)
-            # Write-Host "Importing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
-            # Import-Module -Name $_
-            # Write-Host "[$($_)] module imported." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else {
             if($_ -eq "Az.Accounts" -and $AzAccountsVersion -lt "2.19.0")
@@ -103,9 +100,6 @@ function Setup-Prerequisites {
                 Write-Host "Required version of [$($_)] module is installed." -ForegroundColor $([Constants]::MessageType.Update)
             }
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
-            # Write-Host "Importing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
-            # Import-Module -Name $_
-            # Write-Host "[$($_)] module imported." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
     Write-Host $([Constants]::SingleDashLine)
