@@ -477,7 +477,7 @@ Protect Azure AI Search Instances by only allowing RBAC API Access
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-## 33. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
+## 32. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use approved version of TLS for Azure Database for PostgreSQL - Single Server
