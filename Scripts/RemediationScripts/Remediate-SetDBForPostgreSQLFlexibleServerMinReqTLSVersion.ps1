@@ -29,10 +29,6 @@
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to set supported TLS version for Azure Database for PostgreSQL flexible server(s) in the Subscription. Refer `Examples`, below.
     
-    After script execution: 
-        As ssl_min_protocol_version is Static parameter that needs server restart for updated value to take effect, server restart is recommended to be done seperately after script execution.
-        This script does not restart server to avoid any disruptions to the operations.
-    
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
@@ -234,7 +230,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         Write-Host $([Constants]::SingleDashLine)
     }
     Write-Host "To set secure TLS version for Azure Database for PostgreSQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for PostgreSQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host $([Constants]::DoublDashLine)  
+    Write-Host $([Constants]::SingleDashLine)  
 
     Write-Host "[Step 2 of 4] Fetch all Azure Database for PostgreSQL flexible server(s)..."
     Write-Host $([Constants]::SingleDashLine)
@@ -375,7 +371,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
 
     if ($totalDBForPostgreSQLFSWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled -eq 0) {
         Write-Host "No Azure Database for PostgreSQL flexible server(s) found with non-secure TLS version enabled or secure transport communication is disabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
-        
+        Write-Host $([Constants]::DoubleDashLine)	
         if ($AutoRemediation) {
             $logFile = "LogFiles\" + $($TimeStamp) + "\log_" + $($SubscriptionId) + ".json"
             $log = Get-content -Raw -path $logFile | ConvertFrom-Json
@@ -410,7 +406,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
     
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 3 of 4] Back up Azure Database for PostgreSQL flexible server(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
@@ -426,7 +422,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     }
 
     if (-not $DryRun) {
-        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "[Step 4 of 4] Enable secure TLS version on Azure Database for PostgreSQL flexible server(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         
@@ -576,7 +572,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         }
     }
     else {
-        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "[Step 4 of 4] Enable secure TLS version on Azure Database for PostgreSQL flexible server(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -685,7 +681,7 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
     # Note about the required access required for remediation
     Write-Host "To set secure TLS version and secure transport communication for Azure Database for PostgreSQL flexible server(s) in the Subscription, Contributor or higher privileged role assignment on the Azure Database for PostgreSQL flexible server(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 3] Prepare to fetch all Azure Database for PostgreSQL flexible server(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
@@ -728,7 +724,7 @@ function Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 3 of 3] Set TLS version and secure transport communication to previous value on all Azure Database for PostgreSQL flexible server(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
