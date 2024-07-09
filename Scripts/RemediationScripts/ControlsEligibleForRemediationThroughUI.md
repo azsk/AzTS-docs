@@ -63,7 +63,11 @@
 
 31. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](ControlsEligibleForRemediationThroughUI.md#31-azure_aisearch_authz_enable_role_based_api_access_only)
 
+<<<<<<< HEAD
 32. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresql_dp_use_secure_tls_version)
+=======
+32.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
+>>>>>>> 2dafb6e1caa250454cb33b2c7ea5a23f57fd5223
 
 
 <br />
@@ -477,7 +481,19 @@ Protect Azure AI Search Instances by only allowing RBAC API Access
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
-## 32. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
+## 32. Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for PostgreSQL - Flexible Servers
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Azure database for PostgreSQL flexible server
+
+
+## 33. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use approved version of TLS for Azure Database for PostgreSQL - Single Server

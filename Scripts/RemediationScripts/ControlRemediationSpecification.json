@@ -391,8 +391,19 @@
                 {
                     "RollbackCommand": "Reset-SecureTLSVersionForDBForPostgreSQLSingleServer",
                     "Arguments": ["SubscriptionId"]
+                }    
+        },
+        {
+            "ControlId": "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion.ps1",
+            "LoadCommand": "Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion.ps1",     
+            "InitCommand": "Set-SecureTLSVersionForDBForPostgreSQLFlexibleServer",
+            "RollbackMetadata":
+                {
+                    "RollbackCommand": "Reset-SecureTLSVersionForDBForPostgreSQLFlexibleServer",
+                    "Arguments": ["SubscriptionId"]
                 }
         }
-
     ]
 }
