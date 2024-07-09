@@ -63,11 +63,9 @@
 
 31. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](ControlsEligibleForRemediationThroughUI.md#31-azure_aisearch_authz_enable_role_based_api_access_only)
 
-<<<<<<< HEAD
-32. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresql_dp_use_secure_tls_version)
-=======
 32.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
->>>>>>> 2dafb6e1caa250454cb33b2c7ea5a23f57fd5223
+
+33. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#33-azure_dbforpostgresql_dp_use_secure_tls_version)
 
 
 <br />
@@ -468,6 +466,7 @@ Use Microsoft Entra ID Only Authentication for Synapse workspace.
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
+___
 
 ## 31. Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only
 
@@ -481,6 +480,8 @@ Protect Azure AI Search Instances by only allowing RBAC API Access
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
+___
+
 ## 32. Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 ### Display Name
@@ -492,6 +493,7 @@ Use approved version of TLS for Azure Database for PostgreSQL - Flexible Servers
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Azure database for PostgreSQL flexible server
 
+___
 
 ## 33. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
 
