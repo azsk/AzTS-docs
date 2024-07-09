@@ -161,7 +161,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics") -or
                 ($control.ControlId -eq "Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version")) {
-                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck"+ " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
+                    $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
                 elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID" ) -or
                 ($control.ControlId -eq "Azure_KubernetesService_AuthN_Disable_Local_Accounts")) {
