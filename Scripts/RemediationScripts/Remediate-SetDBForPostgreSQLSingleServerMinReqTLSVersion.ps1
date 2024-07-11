@@ -1,37 +1,39 @@
 <###
 # Overview:
     This script is used to set minimium required TLS version and enable ssl enforcement for Azure Database for PostgreSQL single server in a Subscription.
+
 # Control ID:
     Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
+
 # Display Name:
-    Use approved version of TLS for Azure Database for PostgreSQL - single Server.
+    Use approved version of TLS for Azure Database for PostgreSQL - Single Server.
     
 # Prerequisites:    
-    Contributor or higher priviliged role on the Azure Database for PostgreSQL single server(s) is required for remediation.
+    Contributor or higher privileged role on the Azure Database for PostgreSQL single server(s) is required for remediation.
+
 # Steps performed by the script:
     To remediate:
         1. Validating and installing the modules required to run the script and validating the user.
-        2. Get the list of Azure Database for PostgreSQL single server(s) in a Subscription that have server parameter minimaltlsversion set as versions less than minimum required TLS version or parameter SslEnforcement is set to OFF .
+        2. Get the list of Azure Database for PostgreSQL single server(s) in a Subscription that have parameter minimaltlsversion set as versions less than minimum required TLS version or parameter SslEnforcement is set to OFF.
         3. Back up details of Azure Database for PostgreSQL single server(s) that are to be remediated.
         4. Set supported minimum required TLS version by updating parameter minimaltlsversion as minimum required TLS version and enable SslEnforcement by updating server parameter SslEnforcement to ON for Azure Database for PostgreSQL single server(s).
+
     To roll back:
         1. Validate and install the modules required to run the script and validating the user.
         2. Get the list of Azure Database for PostgreSQL single server(s) in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Set the server parameter minimaltlsversion to original value and set server parameter SslEnforcement to ON as per input file.
+        3. Set the parameter minimaltlsversion and SslEnforcement to original value as per input file.
+
 # Instructions to execute the script:
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to set supported TLS version for Azure Database for PostgreSQL single server(s) in the Subscription. Refer `Examples`, below.
     
-    After script execution: 
-        As minimaltlsversion is Static parameter that needs server restart for updated value to take effect, server restart is recommended to be done seperately after script execution.
-        This script does not restart server to avoid any disruptions to the operations.
-    
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
         3. Execute the script to set supported TLS version for Azure Database for PostgreSQL single server(s) in the Subscription. Refer `Examples`, below.
+
 # Examples:
     To remediate:
         1. To review the Azure Database for PostgreSQL single server(s) in a Subscription that will be remediated:
@@ -46,6 +48,7 @@
         To know more about the options supported by the remediation command, execute:
         
         Get-Help Set-SecureTLSVersionForDBForPostgreSQLSingleServer -Detailed
+
     To roll back:
         1. Set TLS version and enable ssl enforcement for Azure Database for PostgreSQL single server(s) in the Subscription, from a previously taken snapshot:
            Reset-SecureTLSVersionForDBForPostgreSQLSingleServer -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\SetSecureTLSVersionForDBForPostgreSQLSingleServer/DBForPostgreSQLSingleServerDetailsBackUp.csv
@@ -340,7 +343,7 @@ function Set-SecureTLSVersionForDBForPostgreSQLSingleServer {
     Write-Host "Separating Azure Database for PostgreSQL single server(s) for which only secure TLS version is not set or sslEnforcement is disabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $DBForPostgreSQLSingleServerDetails | ForEach-Object {
-        if (-not ( (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion)) -and (CheckIfSSLConfigured($_.SSLEnforcement)))) {
+        if (-not ((CheckIfSSLConfigured($_.SSLEnforcement) -and CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion)))) {
             $DBForPostgreSQLSSWithNonSecureTLSVersionEnabledOrSSLDisabled += $_
         }
         else {
@@ -791,20 +794,18 @@ function  CheckIfOnlySecureTLSVersionConfigured {
         [String] $TLSVersion 
     )
     #Check if TLS Versions less than minimum required TLS versions are supported
-    $supportedTLSVersions = @();
-    $nonCompliantTLSVersions = @();
+    $supportedTLSVersion = @();
+    $nonCompliantTLSVersion = @();
     try {
-        $supportedTLSVersions = $TLSVersion.ToLower() -replace [Constants]::TLSversionPattern, '' -replace '_', '.';
-        $supportedTLSVersions | ForEach-Object {
-            if ([double] $_ -lt [Constants]::MinRequiredTLSVersion) {
-                $nonCompliantTLSVersions += $_
-            }
+        $supportedTLSVersion = $TLSVersion.ToLower() -replace [Constants]::TLSversionPattern, '' -replace '_', '.';
+        if ([double] $supportedTLSVersion -lt [Constants]::MinRequiredTLSVersion) {
+            $nonCompliantTLSVersion += $supportedTLSVersion
         }
     }
     catch {
         return $false
     }
-    if ($nonCompliantTLSVersions.Count -gt 0) {
+    if ($nonCompliantTLSVersion.Count -gt 0) {
         return $false
     }
     else {
