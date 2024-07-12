@@ -3,9 +3,8 @@
     This script is used to set minimium required TLS version and enable secure client protocol for Redis Enterprise in a Subscription.
 
 #NOTE:
-    1. In case of geo replication setting is enabled on the Redis Enterprise the configuration client protocol will not be possible to set and will be excluded from remediation.
-    2. Rollback is not feasible for Redis Enterprise (as TLS verison 1.2 is supported and you cannot set any other version now. Previously created version).
-
+    1. In case of geo replication setting is enabled and is associated with Geo replication group on the Redis Enterprise the configuration client protocol will not be possible to set and will be excluded from remediation.
+    2. Rollback is not feasible for Redis Enterprise TLS version (as TLS verison 1.2 is supported and you cannot set any other version now. Previously created version).
 
 # Control ID:
     Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections
@@ -87,7 +86,7 @@ function Setup-Prerequisites {
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.redisEnterprise")
+    $requiredModules = @("Az.Accounts", "Az.RedisEnterpriseCache")
 
     Write-Host "Required modules: $($requiredModules -join ', ')"
     Write-Host $([Constants]::SingleDashLine)    
@@ -234,7 +233,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
         Write-Host $([Constants]::SingleDashLine)
     }
     Write-Host "To set secure TLS version for Redis Enterprise(s) in the Subscription, Contributor or higher privileged role assignment on the Redis Enterprise(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
-    Write-Host $([Constants]::DoublDashLine)  
+    Write-Host $([Constants]::SingleDashLine)  
 
     Write-Host "[Step 2 of 4] Fetch all Redis Enterprise(s)..."
     Write-Host $([Constants]::SingleDashLine)
@@ -275,9 +274,13 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
                 $redis = $_
                 $databases = @()   
                 $RedisEnterpriseResource = Get-AzRedisEnterpriseCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction Stop
-                $databases = Get-AzRedisEnterpriseCacheDatabase -Name $_.ResourceName -ResourceGroupName  $_.ResourceGroupName
-        
-                $RedisEnterpriseDetails += $RedisEnterpriseResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                $database = Get-AzRedisEnterpriseCacheDatabase -ClusterName $RedisEnterpriseResource.Name -ResourceGroupName  $RedisEnterpriseResource.Id.Split("/")[4] 
+                if (($database | measure-object).Count -gt 0) {
+                    $databases += $database | Select-Object @{N = 'Name'; E = { $database.Name } },
+                    @{N = 'ClientProtocol'; E = { $database.ClientProtocol } },
+                    @{N = 'GeoReplicationGroupNickname'; E = { $database.GeoReplicationGroupNickname } }
+                }
+                $RedisEnterpriseDetails += $RedisEnterpriseResource | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                 @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                 @{N = 'ResourceName'; E = { $_.Name } }, 
                 @{N = 'TLSVersion'; E = { $RedisEnterpriseResource.MinimumTlsVersion } },
@@ -285,7 +288,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
             }
             catch {
                 Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Warning)	
-                Write-Host "Skipping the Resource:  [$($redis.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)	
+                Write-Host "Skipping the Resource: [$($redis.ResourceName)]..." -ForegroundColor $([Constants]::MessageType.Warning)	
                 $logResource = @{}
                 $logResource.Add("ResourceGroupName", ($redis.ResourceGroupName))	
                 $logResource.Add("ResourceName", ($redis.ResourceName))	
@@ -307,9 +310,16 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
             if (($redisEnterprise | Measure-Object).Count -gt 0) {
                 $redisEnterprise | ForEach-Object {
                     $databases = @()   
-                    $databases = Get-AzRedisEnterpriseCacheDatabase -Name $_.Name -ResourceGroupName  $_.Id.Split("/")[4]
-                
-                    $RedisEnterpriseDetails += $RedisEnterpriseResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    $redisEnterpriseResource = $_
+                    $database = Get-AzRedisEnterpriseCacheDatabase -ClusterName $redisEnterpriseResource.Name -ResourceGroupName  $redisEnterpriseResource.Id.Split("/")[4] 
+                        
+                    if (($database | measure-object).Count -gt 0) {
+                        $databases += $database | Select-Object @{N = 'Name'; E = { $database.Name } },
+                        @{N = 'ClientProtocol'; E = { $database.ClientProtocol } },
+                        @{N = 'GeoReplicationGroupNickname'; E = { $database.GeoReplicationGroupNickname } }
+                    }
+ 
+                    $RedisEnterpriseDetails += $redisEnterpriseResource | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                     @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                     @{N = 'ResourceName'; E = { $_.Name } }, 
                     @{N = 'TLSVersion'; E = { $RedisEnterpriseResource.MinimumTlsVersion } },
@@ -335,8 +345,13 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
                 try {
                     $databases = @()   
                     $RedisEnterpriseResource = Get-AzRedisEnterpriseCache -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction Stop
-                    $databases = Get-AzRedisEnterpriseCacheDatabase -Name $_.ResourceName -ResourceGroupName  $_.ResourceGroupName
-                
+                    $database = Get-AzRedisEnterpriseCacheDatabase -ClusterName $RedisEnterpriseResource.Name -ResourceGroupName  $RedisEnterpriseResource.Id.Split("/")[4] 
+                    if (($database | measure-object).Count -gt 0) {
+                        $databases += $database | Select-Object @{N = 'Name'; E = { $database.Name } },
+                        @{N = 'ClientProtocol'; E = { $database.ClientProtocol } },
+                        @{N = 'GeoReplicationGroupNickname'; E = { $database.GeoReplicationGroupNickname } }
+                    }
+
                     $RedisEnterpriseDetails += $RedisEnterpriseResource  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                     @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                     @{N = 'ResourceName'; E = { $_.Name } }, 
@@ -365,19 +380,27 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
     $RedisEnterpriseWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled = @()
 
     Write-Host "Separating Redis Enterprise(s) for which only secure TLS version is not set or secure client protocol is disabled..." -ForegroundColor $([Constants]::MessageType.Info)
-
+    Write-Host $([Constants]::SingleDashLine)
+    
     $RedisEnterpriseDetails | ForEach-Object {
         $redisEnterprise = $_
+        $geoReplication = $false
         $unsecureDatabase = @()
         $redisEnterprise.Databases | ForEach-Object {
             $db = $_
-            if (CheckSecureClientConfiguration($_.ClientProtocol)) {
-                $unsecureDatabase += $db.Name 
+            if ([String]::IsNullOrWhiteSpace($_.GeoReplicationGroupNickname)) {
+                if ( -not (CheckSecureClientConfiguration($_.ClientProtocol))) {
+                    $unsecureDatabase += $db.Name 
+                }
+            }
+            else {
+                $geoReplication = $true
             }
         }
-        if (-not ( (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion)) -or ($unsecureDatabase | Measure-Object).Count -gt 0)) {
-            $RedisEnterpriseWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled += $redisEnterprise | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-            @{N = 'ResourceGroupName'; E = { $_ResourceGroupName } },
+            
+        if (( ( -not (CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion)) -or ($unsecureDatabase | Measure-Object).Count -gt 0)) -and ( -not $geoReplication)) {
+            $RedisEnterpriseWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled += $redisEnterprise | Select-Object @{N = 'ResourceId'; E = { $_.ResourceId } },
+            @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
             @{N = 'ResourceName'; E = { $_.ResourceName } }, 
             @{N = 'TLSVersion'; E = { $_.TLSVersion } },
             @{N = 'SecureClientProtocolDisabledDatabases'; E = { $unsecureDatabase } }
@@ -410,7 +433,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
         return
     }
 
-    Write-Host "Found [$($totalRedisEnterpriseWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled )] Redis Enterprise(s) for which non secure TLS version is enabled." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalRedisEnterpriseWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled )] Redis Enterprise(s) for which non-secure TLS version enabled or secure client protocol is disabled." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)	
 
     $colsProperty = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
@@ -430,7 +453,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
     
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 3 of 4] Back up Redis Enterprise(s) details..."
     Write-Host $([Constants]::SingleDashLine)
 
@@ -446,13 +469,14 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
     }
 
     if (-not $DryRun) {
-        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "[Step 4 of 4] Enable secure TLS version on Redis Enterprise(s) in the Subscription..." 
+        Write-Host "Note: Redis Enterprise(s) for which geo replication is enabled will not be remediated through this script..." -ForegroundColor $([Constants]::MessageType.Warning)
+
         Write-Host $([Constants]::SingleDashLine)
         
         if (-not $Force) {
-            Write-Host "Do you want to enable secure TLS version and secure client protocol on Redis Enterprise(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
-            
+            Write-Host "Do you want to enable secure TLS version and secure client protocol on Redis Enterprise(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)  
             $userInput = Read-Host -Prompt "(Y|N)"
 
             if ($userInput -ne "Y") {
@@ -478,11 +502,10 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
         # Loop through the list of Redis Enterprise(s) which needs to be remediated.
         $RedisEnterpriseWithNonSecureTLSVersionEnabledOrSecureCommunicationDisabled  | ForEach-Object {
             $redisEnterprise = $_
-            $prevTlsVersion = $redisEnterprise.TLSVersion
-            $prevSecureClientProtocolDisabledDatabases = $redisEnterprise.SecureClientProtocolDisabledDatabases
             try {
                 if ( -not(CheckIfOnlySecureTLSVersionConfigured($_.TLSVersion))) {
-                    $paramValueTLS = ( Update-AzRedisEnterpriseCache  -MinimumTlsVersion $([Constants]::MinRequiredTLSVersion)  -ResourceGroupName $_.ResourceGroupName  -Name $_.ResourceName).Value 
+                    $redis = Update-AzRedisEnterpriseCache  -MinimumTlsVersion $([Constants]::MinRequiredTLSVersion)  -ResourceGroupName $_.ResourceGroupName  -Name $_.ResourceName 
+                    $paramValueTLS = $redis.MinimumTlsVersion
                 }
                 else {
                     $paramValueTLS = $redisEnterprise.TLSVersion
@@ -491,10 +514,9 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
                 $secureClientProtocolEnabledDatabasesLocal = @()
                 $secureClientProtocolDisabledDatabasesLocal = @()
                 if (($_.SecureClientProtocolDisabledDatabases | Measure-Object).count -gt 0) {
-                    $_.SecureClientProtocolDisabledDatabases | ForEach-Object
-                    {
-                        $database = $SecureClientProtocolDatabases.EnableSecureClientProtocol($subscriptionId, $redisEnterprise.ResourceName, $redisEnterprise.ResourceGroupName, "Enable")
-                        if (CheckSecureClientConfiguration($database.value.properties.clientProtocol)) {
+                    $_.SecureClientProtocolDisabledDatabases | ForEach-Object {
+                        $database = $SecureClientProtocolDatabases.EnableSecureClientProtocol($subscriptionId, $redisEnterprise.ResourceName, $redisEnterprise.ResourceGroupName, $_, "Enable")
+                        if ((CheckIfOnlySecureTLSVersionConfigured($paramValueTLS)) -and (CheckSecureClientConfiguration($database.properties.clientProtocol))) {
                             $secureClientProtocolEnabledDatabasesLocal += $_
                         }
                         else {
@@ -502,13 +524,11 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
                         }
                     }
                 }
-                
-                if ((CheckIfOnlySecureTLSVersionConfigured($paramValueTLS)) -and (secureClientProtocolDisabledDatabasesLocal | Measure-Object).Count -eq 0) {
-                    $redisEnterprise | Add-Member -NotePropertyName prevTLSVersion -NotePropertyValue $prevTlsVersion
-                    $redisEnterprise | Add-Member -NotePropertyName prevSecureClientProtocolDisabledDatabases -NotePropertyValue $prevSecureClientProtocolDisabledDatabases
-                    $redisEnterprise | Add-Member -NotePropertyName SecureClientProtocolEnabledDatabases -NotePropertyValue $secureClientProtocolEnabledDatabasesLocal -join ","
+                $redisEnterprise | Add-Member -NotePropertyName SecureClientProtocolEnabledDatabases -NotePropertyValue ($secureClientProtocolEnabledDatabasesLocal -join ",")
+                $redisEnterprise.SecureClientProtocolDisabledDatabases = ($secureClientProtocolDisabledDatabasesLocal -join ",")
+                   
+                if ((CheckIfOnlySecureTLSVersionConfigured($paramValueTLS)) -and ($secureClientProtocolDisabledDatabasesLocal | Measure-Object).Count -eq 0) {
                     $redisEnterprise.TLSVersion = $paramValueTLS
-                    $redisEnterprise.SecureClientProtocolDisabledDatabases = $secureClientProtocolDisabledDatabasesLocal -join ","
                     
                     $RedisEnterpriseRemediated += $redisEnterprise
                     $logResource = @{}
@@ -527,6 +547,9 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
                 }                
             }
             catch {
+                $redisEnterprise | Add-Member -NotePropertyName SecureClientProtocolEnabledDatabases -NotePropertyValue ($secureClientProtocolEnabledDatabasesLocal -join ",")
+                $redisEnterprise.SecureClientProtocolDisabledDatabases = ($secureClientProtocolDisabledDatabasesLocal -join ",")
+                    
                 $RedisEnterpriseSkipped += $_
                 $logResource = @{}	
                 $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
@@ -538,13 +561,17 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
             }
         }
 
-        Write-Host $([Constants]::DoubleDashLine)
-        $colsPropertySummary = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+        Write-Host $([Constants]::SingleDashLine)
+        $colsPropertySummaryPassed = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
+        @{Expression = { $_.SecureClientProtocolEnabledDatabases -join "," }; Label = "SecureClientProtocolEnabledDatabases"; Width = 40; Alignment = "left" }
+
+        $colsPropertySummaryFailed = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
         @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
         @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
         @{Expression = { $_.SecureClientProtocolDisabledDatabases -join "," }; Label = "SecureClientProtocolDisabledDatabases"; Width = 40; Alignment = "left" }
-        @{Expression = { $_.SecureClientProtocolEnabledDatabases -join "," }; Label = "SecureClientProtocolEnabledDatabases"; Width = 40; Alignment = "left" }
-
+        
         if ($AutoRemediation) {
             if ($($RedisEnterpriseRemediated | Measure-Object).Count -gt 0) {
                 
@@ -557,7 +584,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
             }
         
             if ($($RedisEnterpriseSkipped | Measure-Object).Count -gt 0) {
-                $RedisEnterpriseSkipped | Format-Table -Property $colsPropertySummary -Wrap            
+                $RedisEnterpriseSkipped | Format-Table -Property $colsPropertySummaryFailed -Wrap            
                 # Write this to a file.
                 $RedisEnterpriseSkippedFile = "$($backupFolderPath)\SkippedRedisEnterprise.csv"
                 $RedisEnterpriseSkipped | Export-CSV -Path $RedisEnterpriseSkippedFile -NoTypeInformation
@@ -568,10 +595,11 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
         else {
 
             Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::SingleDashLine)
             if ($($RedisEnterpriseRemediated | Measure-Object).Count -gt 0) {
                 Write-Host "Successfully set secure TLS version and enabled secure client protocol on the following redisEnterprise(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
-                Write-Host $([Constants]::SingleDashLine)
-                $RedisEnterpriseRemediated | Format-Table -Property $colsPropertySummary -Wrap
+                
+                $RedisEnterpriseRemediated | Format-Table -Property $colsPropertySummaryPassed -Wrap
 
                 # Write this to a file.
                 $RedisEnterpriseRemediatedFile = "$($backupFolderPath)\RemediatedRedisEnterprise.csv"
@@ -586,7 +614,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
 
                 Write-Host "Error while setting up the server parameter ssl_min_protocol_version or require_secure_transport for Redis Enterprise(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
-                $RedisEnterpriseSkipped | Format-Table -Property $colsPropertySummary -Wrap
+                $RedisEnterpriseSkipped | Format-Table -Property $colsPropertySummaryFailed -Wrap
             
                 # Write this to a file.
                 $RedisEnterpriseSkippedFile = "$($backupFolderPath)\SkippedRedisEnterprise.csv"
@@ -610,7 +638,7 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
         }
     }
     else {
-        Write-Host $([Constants]::DoubleDashLine)
+        Write-Host $([Constants]::SingleDashLine)
         Write-Host "[Step 4 of 4] Enable secure TLS version on Redis Enterprise(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -719,7 +747,7 @@ function Reset-SecureTLSEncryptedConnectionsForRedisEnterprise {
     # Note about the required access required for remediation
     Write-Host "To set secure client protocol for Redis Enterprise(s) in the Subscription, Contributor or higher privileged role assignment on the Redis Enterprise(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 3] Prepare to fetch all Redis Enterprise(s)..."
     Write-Host $([Constants]::SingleDashLine)
     
@@ -760,12 +788,12 @@ function Reset-SecureTLSEncryptedConnectionsForRedisEnterprise {
         New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
     }
  
-    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 3 of 3] Set secure client protocol to previous value on all Redis Enterprise(s) in the Subscription..."
     Write-Host $([Constants]::SingleDashLine)
 
     if ( -not $Force) {    
-        Write-Host "Do you want to change  secure client protocol for all Redis Enterprise(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to change secure client protocol for all Redis Enterprise(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if ($userInput -ne "Y") {
@@ -791,36 +819,49 @@ function Reset-SecureTLSEncryptedConnectionsForRedisEnterprise {
 
     $validRedisEnterpriseDetails | ForEach-Object {
         $redisEnterprise = $_
-        $ClientProtocolBeforeRollback = $redisEnterprise.ClientProtocol
         try {   
-            $redisEnterprise.SecureClientProtocolEnabledDatabases | ForEach-Object
-            {
+            $secureClientProtocolEnabledDatabasesLocal = @()
+            $secureClientProtocolDisabledDatabasesLocal = @()
+            $redisEnterprise.SecureClientProtocolEnabledDatabases | ForEach-Object {
             
-                $database = $SecureClientProtocolDatabases.EnableSecureClientProtocol($subscriptionId, $redisEnterprise.ResourceName, $redisEnterprise.ResourceGroupName, "Disable")
-                if (CheckSecureClientConfiguration($database.value.properties.clientProtocol)) {
+                $database = $SecureClientProtocolDatabases.EnableSecureClientProtocol($subscriptionId, $redisEnterprise.ResourceName, $redisEnterprise.ResourceGroupName, $_, "disable")
+                if ((CheckIfOnlySecureTLSVersionConfigured($paramValueTLS)) -and (CheckSecureClientConfiguration($database.properties.clientProtocol))) {
                     $secureClientProtocolEnabledDatabasesLocal += $_
                 }
                 else {
                     $secureClientProtocolDisabledDatabasesLocal += $_
                 }
-            
-                $redisEnterprise.TLSVersion = $tlsVersionRolledBack
-                $redisEnterprise.SecureClientProtocolEnabledDatabases = $clientProtocolRolledback
-                $redisEnterprise.prevClientProtocol = $ClientProtocolBeforeRollback
-                $RedisEnterpriseRolledBack += $redisEnterprise
             }
+             
+            $redisEnterprise.SecureClientProtocolEnabledDatabases = $secureClientProtocolEnabledDatabasesLocal -join ","
+            $redisEnterprise.SecureClientProtocolDisabledDatabases = $secureClientProtocolDisabledDatabasesLocal -join ","
+            $RedisEnterpriseRolledBack += $redisEnterprise
+            
         }
         catch {
+            $redisEnterprise.SecureClientProtocolEnabledDatabases = $secureClientProtocolEnabledDatabasesLocal -join ","
             $RedisEnterpriseSkipped += $redisEnterprise
         }
     }
    
-    Write-Host $([Constants]::DoubleDashLine)
+
+    $colsPropertySummaryFailed = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.SecureClientProtocolEnabledDatabases -join "," }; Label = "SecureClientProtocolEnabledDatabases"; Width = 40; Alignment = "left" }
+
+    $colsPropertySummaryPassed = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
+    @{Expression = { $_.SecureClientProtocolDisabledDatabases -join "," }; Label = "SecureClientProtocolDisabledDatabases"; Width = 40; Alignment = "left" }
+        
+    Write-Host $([Constants]::SingleDashLine)
     Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
         
     if ($($RedisEnterpriseRolledBack | Measure-Object).Count -gt 0) {
         Write-Host "TLS version and secure client protocol has been rolled back on the following Redis Enterprise(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Update)
-        $RedisEnterpriseRolledBack | Format-Table -Property $colsProperty -Wrap
+        $RedisEnterpriseRolledBack | Format-Table -Property $colsPropertySummaryPassed -Wrap
         Write-Host $([Constants]::SingleDashLine)
 
         # Write this to a file.
@@ -832,7 +873,7 @@ function Reset-SecureTLSEncryptedConnectionsForRedisEnterprise {
 
     if ($($RedisEnterpriseSkipped | Measure-Object).Count -gt 0) {
         Write-Host "Error while rolling back TLS version or secure client protocol on Redis Enterprise(s) in the Subscription.:" -ForegroundColor $([Constants]::MessageType.Error)
-        $RedisEnterpriseSkipped | Format-Table -Property $colsProperty -Wrap
+        $RedisEnterpriseSkipped | Format-Table -Property $colsPropertySummaryFailed -Wrap
         Write-Host $([Constants]::SingleDashLine)
             
         # Write this to a file.
@@ -922,7 +963,7 @@ class SecureClientProtocolDatabases {
     [PSObject] GetDatabase([string] $subscriptionId, [string] $resourceName, [string] $resourceGroup, [string] $databaseName) {
         $content = $null
         try {
-            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/resourceGroups/$($resourceGroup)/providers/Microsoft.Cache/redisEnterprise/{$resourceName}/databases/{$databaseName}?api-version=2024-02-01"
+            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/resourceGroups/$($resourceGroup)/providers/Microsoft.Cache/redisEnterprise/$($resourceName)/databases/$($databaseName)?api-version=2024-02-01"
             $headers = $this.GetAuthHeader()
             $method = "GET"
             # API to set local accounts Profile config to Bastion
@@ -942,16 +983,16 @@ class SecureClientProtocolDatabases {
         $result = $null
         
         try {
-            $response = GetDatabase($subscriptionId, $resourceName, $resourceGroup, $databaseName)
-            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/resourceGroups/$($resourceGroup)/providers/Microsoft.Cache/redisEnterprise/{$resourceName}/databases/{$databaseName}?api-version=2024-02-01"
+            $response = $this.GetDatabase($subscriptionId, $resourceName, $resourceGroup, $databaseName)
+            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/resourceGroups/$($resourceGroup)/providers/Microsoft.Cache/redisEnterprise/$($resourceName)/databases/$($databaseName)?api-version=2024-02-01"
             $headers = $this.GetAuthHeader()
             $method = "Put"
             
             if ($operationType -eq "Enable") {
-                $response = $response.Replace('"clientProtocol": "Plaintext"', '"clientProtocol": "Encrypted"')  
+                $response = $response.Replace('"clientProtocol":"Plaintext"', '"clientProtocol":"Encrypted"')  
             }
             else {
-                $response = $response.Replace('"clientProtocol": "Encrypted"', '"clientProtocol": "Plaintext"')
+                $response = $response.Replace('"clientProtocol":"Encrypted"', '"clientProtocol":"Plaintext"')
             
             }  
             $result = Invoke-WebRequest -Method $method -Uri $armUri -Headers $headers -Body $response -UseBasicParsing
