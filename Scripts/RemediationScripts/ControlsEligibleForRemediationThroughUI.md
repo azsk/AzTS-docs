@@ -65,6 +65,8 @@
 
 32.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 
+33. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#33-azure_dbforpostgresql_dp_use_secure_tls_version)
+
 
 <br />
 ___
@@ -464,6 +466,7 @@ Use Microsoft Entra ID Only Authentication for Synapse workspace.
 ### Minimum permissions required to run the script
 Contributor role at resource level
 
+___
 
 ## 31. Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only
 
@@ -479,7 +482,6 @@ Contributor role at resource level
 
 ___
 
-
 ## 32. Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 ### Display Name
@@ -490,5 +492,18 @@ Use approved version of TLS for Azure Database for PostgreSQL - Flexible Servers
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Azure database for PostgreSQL flexible server
+
+___
+
+## 33. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for PostgreSQL - Single Server
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForPostgreSQLSingleServerMinReqTLSVersion](Remediate-SetDBForPostgreSQLSingleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Azure database for PostgreSQL single server
 
 ___

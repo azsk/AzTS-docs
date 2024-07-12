@@ -73,6 +73,8 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 61. [Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault](Readme.md#61-Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault)
 62. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](Readme.md#62-azure_aisearch_authz_enable_role_based_api_access_only)
 63.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#63-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
+64. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](Readme.md#64-azure_dbforpostgresql_dp_use_secure_tls_version)
+
 
 <br />
 
@@ -1283,9 +1285,6 @@ Yes
 
 ### Supports rollback?
 Yes
-___
-
-
 
 ## 63. Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version
 
@@ -1304,6 +1303,22 @@ Yes
 ### Supports rollback?
 Yes
 
+## 64. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure Database for PostgreSQL - Single Servers
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetDBForPostgreSQLSingleServerMinReqTLSVersion](Remediate-SetDBForPostgreSQLSingleServerMinReqTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
 ___
 
 ## Supports managed identity based remediations
