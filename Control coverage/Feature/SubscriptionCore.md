@@ -71,7 +71,7 @@ Deprecated accounts are ones that were once deployed to your subscription for so
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- Microsoft Defender for Cloud Recommendation - [Deprecated accounts should be removed from subscriptions](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/00c6d40b-e990-6acf-d4f3-471e747a27c4)
+- Microsoft Defender for Cloud Recommendation - [Deprecated accounts should be removed from subscriptions](https://portal.azure.com/#blade/Microsoft_Azure_Security/RecommendationsBlade/assessmentKey/1ff0b4c9-ed56-4de6-be9c-d7ab39645926)
 
 - REST API to list role assignment at scope: - /{scope}/providers/Microsoft.Authorization/roleAssignments?api-version=2018-01-01-preview <br />
 **Properties:** [\*].properties.principalId

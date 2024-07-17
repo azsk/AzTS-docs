@@ -252,7 +252,7 @@ function Remove-AzTSInvalidAADAccounts
             $currentRoleAssignmentList | select -Unique -Property 'ObjectId' | ForEach-Object { $distinctObjectIds += $_.ObjectId }
 
             # Getting MDC reported deprecated account object ids.
-            $mdcUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Security/assessments/00c6d40b-e990-6acf-d4f3-471e747a27c4?api-version=2020-01-01"
+            $mdcUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Security/assessments/1ff0b4c9-ed56-4de6-be9c-d7ab39645926?api-version=2020-01-01"
             $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
             $classicAssignments = [ClassicRoleAssignments]::new()
             $headers = $classicAssignments.GetAuthHeader()
