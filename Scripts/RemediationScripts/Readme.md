@@ -74,6 +74,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 62. [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](Readme.md#62-azure_aisearch_authz_enable_role_based_api_access_only)
 63.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#63-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 64. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](Readme.md#64-azure_dbforpostgresql_dp_use_secure_tls_version)
+65. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](Readme.md#65-azure_redisenterprise_dp_use_tls_encrypted_connections)
 
 
 <br />
@@ -1112,6 +1113,7 @@ Yes
 ### Supports rollback?
 Yes
 
+---
 
 ## 53. 	Azure_VirtualMachineScaleSet_SI_Enforce_Automatic_Upgrade_Policy
 
@@ -1130,6 +1132,8 @@ Yes
 ### Supports rollback?
 Partial
 
+---
+
 ## 54. 	Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth
 
 ### Display Name
@@ -1146,6 +1150,8 @@ Yes
 
 ### Supports rollback?
 Yes
+
+---
 
 ## 55. Azure_Subscription_Config_Enable_MicrosoftDefender_Databases
 
@@ -1164,6 +1170,7 @@ No
 ### Supports rollback?
 Yes
 
+---
 
 ## 56. Azure_Subscription_Config_Enable_MicrosoftDefender_ResourceManager
 
@@ -1182,6 +1189,8 @@ No
 ### Supports rollback?
 Yes
 
+---
+
 ## 57. Azure_Subscription_Config_Enable_MicrosoftDefender_AppService
 
 ### Display Name
@@ -1198,6 +1207,8 @@ No
 
 ### Supports rollback?
 Yes
+
+---
 
 ## 58. Azure_Subscription_Config_Enable_MicrosoftDefender_Storage
 
@@ -1216,6 +1227,7 @@ No
 ### Supports rollback?
 Yes
 
+---
 
 ## 59. Azure_Subscription_Config_Enable_MicrosoftDefender_Container
 
@@ -1233,6 +1245,8 @@ No
 
 ### Supports rollback?
 Yes
+
+---
 
 ## 60. Azure_Subscription_Config_Enable_MicrosoftDefender_Servers
 
@@ -1252,6 +1266,8 @@ No
 Yes
 
 
+---
+
 ## 61. Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault
 
 ### Display Name
@@ -1268,6 +1284,8 @@ No
 
 ### Supports rollback?
 Yes
+
+---
 
 ## 62. Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only
 
@@ -1286,13 +1304,16 @@ Yes
 ### Supports rollback?
 Yes
 
+
+---
+
 ## 63. Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version
 
 ### Display Name
 Use approved version of TLS for Azure Database for PostgreSQL - Flexible Servers
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion]Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion.ps1)
+[Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion](Remediate-SetDBForPostgreSQLFlexibleServerMinReqTLSVersion.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
@@ -1302,6 +1323,8 @@ Yes
 
 ### Supports rollback?
 Yes
+
+---
 
 ## 64. Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version
 
@@ -1319,6 +1342,26 @@ Yes
 
 ### Supports rollback?
 Yes
+
+---
+
+## 65. Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections
+
+### Display Name
+Use approved version of TLS and enable secure client protocol for Redis Enterprise
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetRedisEnterpriseTLSEncryptedConnections](Remediate-SetRedisEnterpriseTLSEncryptedConnections.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
 ___
 
 ## Supports managed identity based remediations

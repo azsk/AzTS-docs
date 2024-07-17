@@ -66,6 +66,8 @@
 32.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#32-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 
 33. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#33-azure_dbforpostgresql_dp_use_secure_tls_version)
+	
+34. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](ControlsEligibleForRemediationThroughUI.md#34-azure_redisenterprise_dp_use_tls_encrypted_connections)
 
 
 <br />
@@ -506,4 +508,16 @@ Use approved version of TLS for Azure Database for PostgreSQL - Single Server
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Azure database for PostgreSQL single server
 
+___
+
+## 34. Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections
+
+### Display Name
+Use approved version of TLS and enable secure client protocol for Redis Enterprise
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-SetRedisEnterpriseTLSEncryptedConnections](Remediate-SetRedisEnterpriseTLSEncryptedConnections.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Redis Enterprise
 ___
