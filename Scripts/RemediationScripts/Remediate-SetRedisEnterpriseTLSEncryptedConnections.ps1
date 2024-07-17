@@ -561,7 +561,6 @@ function Set-SecureTLSEncryptedConnectionsForRedisEnterprise {
             }
         }
 
-        Write-Host $([Constants]::SingleDashLine)
         $colsPropertySummaryPassed = @{Expression = { $_.ResourceName }; Label = "ResourceName"; Width = 30; Alignment = "left" },
         @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
         @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
@@ -854,8 +853,7 @@ function Reset-SecureTLSEncryptedConnectionsForRedisEnterprise {
     @{Expression = { $_.ResourceGroupName }; Label = "ResourceGroupName"; Width = 30; Alignment = "left" },
     @{Expression = { $_.TLSVersion }; Label = "TLSVersion"; Width = 30; Alignment = "left" },
     @{Expression = { $_.SecureClientProtocolDisabledDatabases -join "," }; Label = "SecureClientProtocolDisabledDatabases"; Width = 40; Alignment = "left" }
-        
-    Write-Host $([Constants]::SingleDashLine)
+
     Write-Host "Rollback Summary:`n" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
         
