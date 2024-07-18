@@ -11,15 +11,10 @@
 
 # Steps performed by the script:
     1. Install and validate pre-requisites to run the script for subscription.
-
     2. Get the list of disabled Microsoft Defender for Cloud plans from subscription.
-
     3. Take a backup of these non-compliant plans.
-
     4. Register 'Microsoft.Security' provider and enable all disabled Microsoft Defender for Cloud plans for subscription.
-	
-	5. Verify Azure Policy assignments for MDC features that requires DINE policy in place.
-
+    5. Verify Azure Policy assignments for MDC features that requires DINE policy in place.
 
 # Step to execute script:
     Download and load remediation script in PowerShell session and execute below command.
@@ -39,17 +34,16 @@ To know more about parameter execute:
     a. Get-Help Set-ConfigAzureDefender -Detailed
     b. Get-Help Remove-ConfigAzureDefender -Detailed
 
-	
+    
 # Known issues
-
-	1. This script does not support plan extension-level, meaning:
-		a. It is possible that some plan was already enabled but with some specific extension being disabled - no change will be made in this case.
-		b. There is no extension-level log and the revert capability is limited.
-	2. There is no SubPlan feature support for plans that supports it in the API level
-	3. Plans 'Servers', 'Databases' are partially supported - it seems like enabling the plan does not enables all extensions within it.
-	4. Plan 'API' throws exception when trying to enable, because of (2) above.
-	5. Revert does not support Azure Policy definition assigned during the enablement script.
-	6. Enable-MdcPlans: need to better manage errors on speicific plan enablement, so issues like (4) will be easier to be found.
+    1. This script does not support plan extension-level, meaning:
+        a. It is possible that some plan was already enabled but with some specific extension being disabled - no change will be made in this case.
+        b. There is no extension-level log and the revert capability is limited.
+    2. There is no SubPlan feature support for plans that supports it in the API level
+    3. Plans 'Servers', 'Databases' are partially supported - it seems like enabling the plan does not enables all extensions within it.
+    4. Plan 'API' throws exception when trying to enable, because of (2) above.
+    5. Revert does not support Azure Policy definition assigned during the enablement script.
+    6. Enable-MdcPlans: need to better manage errors on speicific plan enablement, so issues like (4) will be easier to be found.
 
 ########################################
 #>
@@ -61,13 +55,13 @@ function Install-Az-Module
         [Parameter(Mandatory = $true, HelpMessage="Module name")]
         $Name
     )
-	
-	if ($null -eq (Get-Module -Name $Name))
-	{
-		Write-Host "Installing module $Name..." -ForegroundColor Yellow
+    
+    if ($null -eq (Get-Module -Name $Name))
+    {
+        Write-Host "Installing module $Name..." -ForegroundColor Yellow
         Install-Module -Name $Name -Scope CurrentUser -Repository 'PSGallery'
-	}
-	else
+    }
+    else
     {
         Write-Host "$Name module is available." -ForegroundColor Green
     }
@@ -75,15 +69,15 @@ function Install-Az-Module
 
 function Register-ResourceProvider
 {
-	param (
+    param (
         [string]
         [Parameter(Mandatory = $true, HelpMessage="Resource Provider name")]
         $Name
     )
-	
-	# Checking IsProviderRegister with relevant provider
+    
+    # Checking IsProviderRegister with relevant provider
     $registeredProvider =  Get-AzResourceProvider -ProviderNamespace $Name | Where-Object { $_.RegistrationState -eq "Registered" }
-	$isProviderRegister = $true
+    $isProviderRegister = $true
 
     if($null -eq $registeredProvider)
     {
@@ -109,8 +103,8 @@ function Register-ResourceProvider
                 # Incrementing threshold time limit by 30 sec in every iteration
                 $thresholdTimeLimit = $thresholdTimeLimit + 30
             }
-			
-			$isProviderRegister = $true
+            
+            $isProviderRegister = $true
         }
         catch 
         {
@@ -118,12 +112,12 @@ function Register-ResourceProvider
         }
         Write-Host "$Name provider successfully registered." -ForegroundColor Green
     }
-	else
-	{
-		Write-Host "Found [$($Name)] provider is already registered."
-	}
-	
-	return $isProviderRegister
+    else
+    {
+        Write-Host "Found [$($Name)] provider is already registered."
+    }
+    
+    return $isProviderRegister
 }
 
 function Pre_requisites
@@ -140,31 +134,31 @@ function Pre_requisites
         Write-Host "Checking for pre-requisites..."
         Write-Host "Required modules are: Az.Resources, Az.Security, Az.Accounts" -ForegroundColor Cyan
         Write-Host "Checking for required modules..."
-	    Install-Az-Module -Name 'Az.Accounts'
-	    Install-Az-Module -Name 'Az.Resources'
-	    Install-Az-Module -Name 'Az.Security'
-		Write-Host "------------------------------------------------------"     
-		return $true
+        Install-Az-Module -Name 'Az.Accounts'
+        Install-Az-Module -Name 'Az.Resources'
+        Install-Az-Module -Name 'Az.Security'
+        Write-Host "------------------------------------------------------"     
+        return $true
     }
-	catch 
-	{
-		Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
-		return $false
-	}
+    catch 
+    {
+        Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
+        return $false
+    }
 }
 
 function Connect-Subscription
 {
-	param (
-		[string]
+    param (
+        [string]
         [Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
         $SubscriptionId,
-		
-		[string]
+        
+        [string]
         [Parameter(Mandatory = $true, HelpMessage="Environment")]
         $Environment
     )
-	
+    
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {
@@ -173,26 +167,25 @@ function Connect-Subscription
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
-	# Setting context for current subscription.
-	$currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
+    # Setting context for current subscription.
+    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop -Force
 
-	Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
+    Write-Host "Metadata Details: `n SubscriptionId: $($SubscriptionId) `n AccountName: $($currentSub.Account.Id) `n AccountType: $($currentSub.Account.Type)"
     Write-Host "------------------------------------------------------"
     Write-Host "Starting with Subscription [$($SubscriptionId)]..."
 
     return $currentSub
 }
 
-
 function Validate-Permissions
 {
-	param (
-		[object]
-		[Parameter(Mandatory = $true, HelpMessage="Subscription object")]
-		$Subscription
-	)
-	
-	# Safe Check: Checking whether the current account is of type User
+    param (
+        [object]
+        [Parameter(Mandatory = $true, HelpMessage="Subscription object")]
+        $Subscription
+    )
+    
+    # Safe Check: Checking whether the current account is of type User
     if($Subscription.Account.Type -ne "User")
     {
         Write-Host "Warning: This script can only be run by user account type." -ForegroundColor Yellow
@@ -211,48 +204,48 @@ function Validate-Permissions
 
 function Get-NonCompliantPlans
 {
-	param (
+    param (
         [string]
         [Parameter(Mandatory = $true, HelpMessage="Expected tier name")]
         $ExpectedTierName
     )
-	
-	$reqMdcPlans = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "SqlServerVirtualMachines", "KeyVaults", "Arm", "CosmosDbs", "Containers", "CloudPosture", "Api"; #TODO: list it from API instead.
-	Write-Host "Checking [$($reqMDCTier)] pricing tier for [$($ExpectedTierName -join ", ")] plans..."
-	$nonCompliantPlans = @()	
+    
+    $reqMdcPlans = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "SqlServerVirtualMachines", "KeyVaults", "Arm", "CosmosDbs", "Containers", "CloudPosture", "Api"; #TODO: list it from API instead.
+    Write-Host "Checking [$($reqMDCTier)] pricing tier for [$($ExpectedTierName -join ", ")] plans..."
+    $nonCompliantPlans = @()    
     $nonCompliantPlans = Get-AzSecurityPricing | Where-Object { $_.PricingTier -ne $ExpectedTierName -and $reqMdcPlans.Contains($_.Name) } | select "Name", "PricingTier", "Id"
-	
-	return $nonCompliantPlans
+    
+    return $nonCompliantPlans
 }
 
 function Create-LogFolder
 {
-	$folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
     if (Test-Path -Path $folderPath)
     {
         $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\ConfigAzureDefender"
         New-Item -ItemType Directory -Path $folderPath | Out-Null
     }
-	
-	return $folderPath
+    
+    return $folderPath
 }
 
 function Log-MdcPlanCompliance
 {
-	param (
+    param (
         [string]
         [Parameter(Mandatory = $true, HelpMessage="Log folder path")]
         $FolderPath,
-		
-		[string]
+        
+        [string]
         [Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
         $SubscriptionId,
-		
-		[object]
+        
+        [object]
         [Parameter(Mandatory = $true, HelpMessage="Non compliant plans")]
-		$NonCompliantPlans
+        $NonCompliantPlans
     )
-	
+    
     # Creating data object for resource types without 'Standard' pricing tier to export into json, it will help while doing rollback operation. 
     $nonCompliantMDCResource =  New-Object psobject -Property @{
             SubscriptionId = $SubscriptionId 
@@ -267,110 +260,110 @@ function Log-MdcPlanCompliance
 
 function Enable-MdcPlans
 {
-	param (
+    param (
         [object]
         [Parameter(Mandatory = $true, HelpMessage="Plans to enable")]
-		$PlansToEnable,
-		
-		[string]
+        $PlansToEnable,
+        
+        [string]
         [Parameter(Mandatory = $true, HelpMessage="Required Pricing tier")]
         $PricingTier
     )
-	
-	try 
-	{
-		Write-Host "Setting [$($PricingTier)] pricing tier..."
-		
-		# TODO: currnet implementation hide failed operations with 'SilentlyContinue'. Better to change it.
-		$PlansToEnable | ForEach-Object {
-			(Set-AzSecurityPricing -Name $_.Name -PricingTier $PricingTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
-		}
-	}
-	catch 
-	{
-		Write-Host "Error occurred while setting $PricingTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
-		return
-	}
-	Write-Host "Successfully set [$($PricingTier)] pricing tier for non-compliant resource types." -ForegroundColor Green
-	
+    
+    try 
+    {
+        Write-Host "Setting [$($PricingTier)] pricing tier..."
+        
+        # TODO: current implementation hide failed operations with 'SilentlyContinue'. Better to change it.
+        $PlansToEnable | ForEach-Object {
+            (Set-AzSecurityPricing -Name $_.Name -PricingTier $PricingTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
+        }
+    }
+    catch 
+    {
+        Write-Host "Error occurred while setting $PricingTier pricing tier. ErrorMessage [$($_)]" -ForegroundColor Red 
+        return
+    }
+    Write-Host "Successfully set [$($PricingTier)] pricing tier for non-compliant resource types." -ForegroundColor Green
+    
 }
 
 function Get-PolicySubscriptionScope
 {
-	param (
-		[string]
-		[Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
-		$SubscriptionId
+    param (
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
+        $SubscriptionId
     )
 
-	return "/subscriptions/$SubscriptionId"
+    return "/subscriptions/$SubscriptionId"
 }
 
 function Get-NonCompliantPolicies
 {
-	param (
-		[string]
-		[Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
-		$SubscriptionId
+    param (
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
+        $SubscriptionId
     )
-	
-	# build expected policies
-	$expectedPoliciesIds = New-Object System.Collections.ArrayList
+    
+    # build expected policies list
+    $expectedPoliciesIds = New-Object System.Collections.ArrayList
 
-	if ('Standard' -eq (Get-AzSecurityPricing -Name 'Containers').PricingTier)
-	{
-		$expectedPoliciesIds.Add('64def556-fbad-4622-930e-72d1d5589bf5') # defender agent for AKS
-		$expectedPoliciesIds.Add('708b60a6-d253-4fe0-9114-4be4c00f012c') # defender agent for Arc
-		$expectedPoliciesIds.Add('a8eff44f-8c92-45c3-a3fb-9880802d67a7') # policy add-on for AKS
-		$expectedPoliciesIds.Add('0adc5395-9169-4b9b-8687-af838d69410a') # policy add-on for Arc
-	}
-	
-	# query all policies
-	$nonCompliantPoliciesIds = New-Object System.Collections.ArrayList
-	$scope = Get-PolicySubscriptionScope -SubscriptionId $SubscriptionId
-	
-	$expectedPoliciesIds | ForEach-Object {
-							$fullId = "/providers/Microsoft.Authorization/policyDefinitions/$_"
-							$foundPolicy = (Get-AzPolicyAssignment -Scope $scope -PolicyDefinitionId $fullId)
-							if ($foundPolicy -eq $null)
-							{
-								Write-Host "assignment not found for $fullId"
-								$nonCompliantPoliciesIds.Add($_)
-							}
-							else
-							{
-								Write-Host "assignment found for $fullId"
-							}
-						}
-	
-	Write-Host "non compliant policies (if any): $nonCompliantPoliciesIds"
-	return $nonCompliantPoliciesIds
+    if ('Standard' -eq (Get-AzSecurityPricing -Name 'Containers').PricingTier)
+    {
+        $expectedPoliciesIds.Add('64def556-fbad-4622-930e-72d1d5589bf5') # defender sensor for AKS
+        $expectedPoliciesIds.Add('708b60a6-d253-4fe0-9114-4be4c00f012c') # defender sensor for Arc
+        $expectedPoliciesIds.Add('a8eff44f-8c92-45c3-a3fb-9880802d67a7') # policy add-on for AKS
+        $expectedPoliciesIds.Add('0adc5395-9169-4b9b-8687-af838d69410a') # policy add-on for Arc
+    }
+    
+    # query all policies
+    $nonCompliantPoliciesIds = New-Object System.Collections.ArrayList
+    $scope = Get-PolicySubscriptionScope -SubscriptionId $SubscriptionId
+    
+    $expectedPoliciesIds | ForEach-Object {
+                            $fullId = "/providers/Microsoft.Authorization/policyDefinitions/$_"
+                            $foundPolicy = (Get-AzPolicyAssignment -Scope $scope -PolicyDefinitionId $fullId)
+                            if ($foundPolicy -eq $null)
+                            {
+                                Write-Host "assignment not found for $fullId"
+                                $nonCompliantPoliciesIds.Add($_)
+                            }
+                            else
+                            {
+                                Write-Host "assignment found for $fullId"
+                            }
+                        }
+    
+    Write-Host "non compliant policies (if any): $nonCompliantPoliciesIds"
+    return $nonCompliantPoliciesIds
 }
 
 function Assign-Policies
 {
-	param (
-		[string]
-		[Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
-		$SubscriptionId,
-		
-		[object]
-		[Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
-		$Policies
+    param (
+        [string]
+        [Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
+        $SubscriptionId,
+        
+        [object]
+        [Parameter(Mandatory = $true, HelpMessage="Subscription Id")]
+        $Policies
     )
-	$scope = Get-PolicySubscriptionScope -SubscriptionId $SubscriptionId
-	
-	$location = (Get-AzLocation)[0].Location
-	
-	$Policies | ForEach-Object {
-					if (($_.Length) -eq 36) # Weird bug of working with arrays in PS, will be solved later
-					{
-						$definition = Get-AzPolicyDefinition -SubscriptionId $SubscriptionId -Name $_
-						$assignment = New-AzPolicyAssignment -Name $_ -Scope $scope -PolicyDefinition $definition -IdentityType 'SystemAssigned' -Location $location
-						$remediation = Start-AzPolicyRemediation -Name "creation-$(New-Guid)" -PolicyAssignmentId ($assignment.Id) -ResourceDiscoveryMode ReEvaluateCompliance
-						Write-Host "Policy assigned and remediation task created for $_"
-					}
-				}
+    $scope = Get-PolicySubscriptionScope -SubscriptionId $SubscriptionId
+    
+    $location = (Get-AzLocation)[0].Location
+    
+    $Policies | ForEach-Object {
+                    if (($_.Length) -eq 36) # Weird bug of working with arrays in PS, will be solved later
+                    {
+                        $definition = Get-AzPolicyDefinition -SubscriptionId $SubscriptionId -Name $_
+                        $assignment = New-AzPolicyAssignment -Name $_ -Scope $scope -PolicyDefinition $definition -IdentityType 'SystemAssigned' -Location $location
+                        $remediation = Start-AzPolicyRemediation -Name "creation-$(New-Guid)" -PolicyAssignmentId ($assignment.Id) -ResourceDiscoveryMode ReEvaluateCompliance
+                        Write-Host "Policy assigned and remediation task created for $_"
+                    }
+                }
 }
 
 function Set-ConfigAzureDefender # didn't changed this one as I'm not sure how it is being called, but better to align with 'Defender for Cloud' naming
@@ -393,8 +386,8 @@ function Set-ConfigAzureDefender # didn't changed this one as I'm not sure how i
 
         [switch]
         $PerformPreReqCheck,
-		
-		[string]
+        
+        [string]
         [Parameter(Mandatory = $false, HelpMessage="Environment")]
         $Environment = 'AzureCloud'
     )
@@ -405,66 +398,66 @@ function Set-ConfigAzureDefender # didn't changed this one as I'm not sure how i
 
     if($PerformPreReqCheck)
     {
-		if ($false -eq (Pre_requisites))
-		{
-			return
-		}
+        if ($false -eq (Pre_requisites))
+        {
+            return
+        }
     }
 
     # Setting context for current subscription.
     $currentSub = Connect-Subscription -Environment $Environment -SubscriptionId $SubscriptionId
 
     Write-Host "Step 1: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
-	
-	if ($false -eq (Validate-Permissions -Subscription $currentSub))
-	{
-		return;
-	}
+    
+    if ($false -eq (Validate-Permissions -Subscription $currentSub))
+    {
+        return;
+    }
 
     # Declaring required resource types and pricing tier
     $mdcResourceProviderName = "Microsoft.Security"
     $isProviderRegister = Register-ResourceProvider -Name $mdcResourceProviderName
-	$isProviderRegister = $isProviderRegister && Register-ResourceProvider -Name 'Microsoft.PolicyInsights'
-	
-	if ($false -eq $isProviderRegister)
-	{
-		return;
-	}
+    $isProviderRegister = $isProviderRegister && Register-ResourceProvider -Name 'Microsoft.PolicyInsights'
+    
+    if ($false -eq $isProviderRegister)
+    {
+        return;
+    }
 
     $reqMDCTier = "Standard";
     $nonCompliantMDCTierResourcetype = Get-NonCompliantPlans -ExpectedTierName $reqMDCTier
 
     # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant resource types are found) then no need to execute below steps.
     $nonCompliantMDCTypeCount = ($nonCompliantMDCTierResourcetype | Measure-Object).Count
-	
-	if($nonCompliantMDCTypeCount -eq 0)
+    
+    if($nonCompliantMDCTypeCount -eq 0)
     {
         Write-Host "[$($mdcResourceProviderName)] provider is already registered and there are no non-compliant resource types. In this case, remediation is not required." -ForegroundColor Green
         Write-Host "======================================================"
         return
     }
-	
-	Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)]"
-	Write-Host "[NonCompliantMDCType]: [$($nonCompliantMDCTierResourcetype.Name -join ", ")]"
-	
-	# Creating the log folder
+    
+    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)]"
+    Write-Host "[NonCompliantMDCType]: [$($nonCompliantMDCTierResourcetype.Name -join ", ")]"
+    
+    # Creating the log folder
     $folderPath = Create-LogFolder
-	
-	# Create log file
-	Log-MdcPlanCompliance -FolderPath $folderPath -SubscriptionId $SubscriptionId -NonCompliantPlans $nonCompliantMDCTierResourcetype
-	
+    
+    # Create log file
+    Log-MdcPlanCompliance -FolderPath $folderPath -SubscriptionId $SubscriptionId -NonCompliantPlans $nonCompliantMDCTierResourcetype
+    
     # Performing remediation
-	Enable-MdcPlans -PlansToEnable $nonCompliantMDCTierResourcetype -PricingTier $reqMDCTier
-	
-	## Handle MDC capabilities enabled by Azure policy
-	
-	# Get non-assigned policies
-	$policies = Get-NonCompliantPolicies -SubscriptionId $SubscriptionId
-	
-	# Assign the policies
-	Assign-Policies -SubscriptionId $SubscriptionId -Policies $policies
-	
-	Write-Host "======================================================"
+    Enable-MdcPlans -PlansToEnable $nonCompliantMDCTierResourcetype -PricingTier $reqMDCTier
+    
+    ## Handle MDC capabilities enabled by Azure policy
+    
+    # Get non-assigned policies
+    $policies = Get-NonCompliantPolicies -SubscriptionId $SubscriptionId
+    
+    # Assign the policies
+    Assign-Policies -SubscriptionId $SubscriptionId -Policies $policies
+    
+    Write-Host "======================================================"
 }
 
 
@@ -482,11 +475,10 @@ function Remove-ConfigAzureDefender
     #>
 
     param (
-	
         [string]
         [Parameter(Mandatory = $false, HelpMessage="Environment")]
         $Environment = 'AzureCloud',
-	
+    
         [string]
         [Parameter(Mandatory = $true, HelpMessage="Enter subscription id to perform rollback operation")]
         $SubscriptionId,
@@ -506,21 +498,21 @@ function Remove-ConfigAzureDefender
 
     if($PerformPreReqCheck)
     {
-		if ($false -eq (Pre_requisites))
-		{
-			return
-		}
+        if ($false -eq (Pre_requisites))
+        {
+            return
+        }
     }
 
     # Connect to AzAccount
     $currentSub = Connect-Subscription -Environment $Environment -SubscriptionId $SubscriptionId
 
     Write-Host "Step 1: Validating whether the current user [$($currentSub.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
-	
-	if ($false -eq (Validate-Permissions -Subscription $currentSub))
-	{
-		return;
-	}
+    
+    if ($false -eq (Validate-Permissions -Subscription $currentSub))
+    {
+        return;
+    }
 
     Write-Host "Step 2 of 3: Fetching remediation log to perform rollback operation to configure Microsoft Defender for Cloud for subscription [$($SubscriptionId)]..."
  
