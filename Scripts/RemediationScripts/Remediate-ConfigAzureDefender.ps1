@@ -360,6 +360,20 @@ function Assign-Policies
                     {
                         $definition = Get-AzPolicyDefinition -SubscriptionId $SubscriptionId -Name $_
                         $assignment = New-AzPolicyAssignment -Name $_ -Scope $scope -PolicyDefinition $definition -IdentityType 'SystemAssigned' -Location $location
+						
+						$roleDefinitionIds = $definition.policyRule.then.details.roleDefinitionIds
+      
+                        if ($roleDefinitionIds.Count -gt 0)
+                        {
+							Write-Host "Setting role assignments for $_ and $roleDefinitionIds"
+							
+                            $roleDefinitionIds | ForEach-Object {
+                                $roleDefId = $_.Split("/") | Select-Object -Last 1
+								$principalId = $assignment.IdentityPrincipalId
+                                New-AzRoleAssignment -Scope $scope -ObjectId $principalId -RoleDefinitionId $roleDefId -principalType 'ServicePrincipal'
+							}
+                        }
+						
                         $remediation = Start-AzPolicyRemediation -Name "creation-$(New-Guid)" -PolicyAssignmentId ($assignment.Id) -ResourceDiscoveryMode ReEvaluateCompliance
                         Write-Host "Policy assigned and remediation task created for $_"
                     }
