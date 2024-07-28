@@ -32,6 +32,7 @@ Below resource types can be checked for validating the security controls:
 |[DBForMySql](Feature/DBForMySql.md)|Microsoft.DBforMySQL/servers|
 |[DBForMySqlFlexibleServer](Feature/DBForMySqlFlexibleServer.md)|Microsoft.DBforMySQL/flexibleServers|
 |[DBForPostgreSQL](Feature/DBForPostgreSQL.md)|Microsoft.DBforPostgreSQL/servers|
+|[DBForPostgreFlexibleSQL](Feature/DBForPostgreSQLFlexibleServer.md)|Microsoft.Cache/redisEnterprise|
 |[EventHub](Feature/EventHub.md)|Microsoft.EventHub/namespaces|
 |[FrontDoor](Feature/FrontDoor.md)|Microsoft.Network/frontDoor|
 |[HDInsight](Feature/HDInsight.md)|Microsoft.HDInsight/clusters|
@@ -45,6 +46,7 @@ Below resource types can be checked for validating the security controls:
 |[MachineLearningWorkspace](Feature/MachineLearningWorkspace.md)|Microsoft.MachineLearningServices/workspaces|
 |[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
+|[RedisCacheEnterprise](Feature/RedisEnterprise.md)|Microsoft.Cache/redisEnterprise|
 |[ServiceBus](Feature/ServiceBus.md)|Microsoft.ServiceBus/namespaces|
 |[ServiceFabric](Feature/ServiceFabric.md)|Microsoft.ServiceFabric/clusters|
 |[SQLManagedInstance](Feature/SQLManagedInstance.md)|Microsoft.Sql/managedInstances|

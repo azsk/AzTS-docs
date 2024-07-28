@@ -19,6 +19,7 @@
 - [Azure_AppService_DP_Use_Secure_FTP_Deployment](#azure_appservice_dp_use_secure_ftp_deployment)
 - [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](#azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
 - [Azure_FunctionApps_Audit_Enable_Diagnostic_Settings](#azure_functionapps_audit_enable_diagnostic_settings)
+- [Azure_AppService_DP_Configure_EndToEnd_TLS](#azure_appservice_dp_configure_endtoend_tls)
 
 <!-- /TOC -->
 <br/>
@@ -755,4 +756,32 @@ properties.categoryGroups, name
 <br />
 ___ 
 
+## Azure_AppService_DP_Configure_EndToEnd_TLS
 
+### Display Name 
+End-to-end TLS encryption must be enabled for App Service
+
+### Rationale 
+End-to-end TLS encryption ensures that data is encrypted from the client to the server and vice versa. This helps in protecting data from eavesdropping attacks.
+
+### Control Spec 
+
+>**Passed :**
+> - End-To-End TLS encryption is enabled for the App Service.
+>
+> **Failed :**
+> - End-To-End TLS encryption is not enabled for the App Service.
+
+
+### Recommendation 
+- **Azure Portal** 
+	To enable end-to-end TLS encryption : Go to Azure Portal --> your App Service --> Settings --> Configuration --> End-to-End TLS encryption --> Click on 'ON'.
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API used to list app service and its related properties at subscription level: 
+/subscriptions/{subscriptionId}/providers/Microsoft.Web/sites?api-version=2022-03-01<br />
+**Properties:** properties.endToEndEncryptionEnabled<br />
+
+
+<br />
