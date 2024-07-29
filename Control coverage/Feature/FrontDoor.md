@@ -6,6 +6,7 @@
 
 - [Azure_FrontDoor_NetSec_Enable_WAF_Configuration](#azure_frontdoor_netsec_enable_waf_configuration)
 - [Azure_FrontDoor_DP_Use_Secure_TLS_Version](#Azure_FrontDoor_DP_Use_Secure_TLS_Version)
+- [Azure_FrontDoor_Audit_Enable_Diagnostic_Settings](#azure_frontdoor_audit_enable_diagnostic_settings)
 
 
 <!-- /TOC -->
@@ -109,4 +110,36 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ___
 
+## Azure_FrontDoor_Audit_Enable_Diagnostic_Settings
 
+### Display Name 
+Enable security logging in Front Door
+
+### Rationale 
+Enabling front door diagnostic settings helps us monitor the application, track requests, debug the Front Door configuration and provide details for investigation in case of a security breach for threats.
+
+### Control Spec 
+
+> **Passed:** 
+>- Diagnostic settings are configured and FrontDoor Access Log and FrontDoor WebApplicationFirewall Log categories are enabled.
+> 
+> **Failed:** 
+>- Diagnostic settings are not configured or FrontDoor Access Log and FrontDoor WebApplicationFirewall Log categories are not enabled.
+
+> 
+### Recommendation 
+
+- **Azure Portal** 
+    
+   To enable 'FrontDoorAccessLog' and 'FrontDoorWebApplicationFirewallLog' diagnostic settings, refer https://learn.microsoft.com/en-us/azure/frontdoor/standard-premium/how-to-logs#configure-logs
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+
+- REST API used to list diagnostic settings and its related properties at Resource level:
+/{ResourceId}/providers/microsoft.insights/diagnosticSettings?api-version=2021-05-01-preview<br />
+**Properties:**
+properties.logs.category, properties.logs.categorygroup,properties.logs.enabled, name, properties.workspaceId,properties.storageAccountId,properties.eventHubName
+ <br />
+ <br />

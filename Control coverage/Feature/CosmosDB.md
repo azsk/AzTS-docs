@@ -10,6 +10,8 @@
 - [Azure_CosmosDB_Deploy_Use_Automatic_Failover](#azure_cosmosdb_deploy_use_automatic_failover)
 - [Azure_CosmosDB_Enable_Adv_Threat_Protection](#azure_cosmosdb_enable_adv_threat_protection)
 - [Azure_CosmosDB_DP_Use_Secure_TLS_Version](#azure_cosmosdb_dp_use_secure_tls_version)
+- [Azure_CosmosDB_DP_Rotate_Read_Master_Key](#azure_cosmosdb_dp_rotate_read_master_key)
+- [Azure_CosmosDB_NetSec_Restrict_Public_Network_Access](#azure_cosmosdb_netsec_restrict_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -54,7 +56,7 @@ Using the firewall feature ensures that access to the data or the service is res
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
 **Properties:** properties.ipRangeFilter
  <br />
 
@@ -155,7 +157,7 @@ Replication ensures continuity and rapid recovery during disasters.
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
 **Properties:** properties.readLocations
 <br />
 
@@ -200,7 +202,7 @@ Automatic failover ensures continuity and auto recovery during disasters.
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
 **Properties:** properties.enableAutomaticFailover
  <br />
 
@@ -258,7 +260,7 @@ Threat Protection for Azure Cosmos DB provides an additional layer of security i
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2019-08-01<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
 **Properties:** properties.EnabledApiTypes
  <br />
 
@@ -316,10 +318,91 @@ TLS provides confidentiality and data integrity between client and server. Using
 
 ### Azure Policies or REST APIs used for evaluation 
 
-- REST API to get Cosmos DB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2022-11-15<br />
+- REST API to get CosmosDB resources in a subscription: /subscriptions/{subscriptionId}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
 **Properties:** properties.minimalTlsVersion
  <br />
 
 <br />
 
 ___ 
+
+## Azure_CosmosDB_DP_Rotate_Read_Master_Key 
+
+### Display Name 
+Azure Cosmos DB account read master keys must be rotated on a periodic basis
+
+### Rationale 
+Rotating read master keys will reduce risk of unauthorized access and limit the window of opportunity for keys that are associated with a compromised or terminated account.
+
+### Control Settings 
+```json 
+{
+    "RecommendedKeyRotationPeriodInDays": "365"
+}
+ ```  
+### Control Spec 
+
+> **Passed:** 
+> Recommended number of days have not been passed since the last key rotation.
+> 
+> **Failed:** 
+> Recommended number of days have been passed since the last key rotation.
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 To Rotate 'Read Master Keys' for Azure CosmosDB, Go to Azure Portal -> Your Cosmos Account -> Settings -> Keys -> Read-only Keys -> Choose the read key you want to rotate and click regenerate.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API to get Cosmos DB resources in a subscription: /subscriptions/{0}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
+**Properties:** properties.keysMetadata.primaryReadonlyMasterKey.generationTime, properties.keysMetadata.secondaryReadonlyMasterKey.generationTime
+
+ <br />
+
+<br />
+
+
+
+## Azure_CosmosDB_NetSec_Restrict_Public_Network_Access 
+
+### Display Name 
+Restrict public network access for Azure Cosmos DB
+
+### Rationale 
+Access to Azure Cosmos DB Resource from public network must be restricted. This will prevent unauthorized access on the resource outside of network boundaries.
+
+### Control Settings 
+```json 
+{
+     "PossibleAddressSpaceSize": "3702258432",
+ 	 "AllowedPercentageCoverage": "2",
+ 	 "ItemsInAdditionalInformation": "10"
+}
+ ```  
+### Control Spec 
+
+> **Passed:** 
+> Public network access is configured as disabled or 'Selected Networks' option is enabled with percentage of allowed public addresses within allowed limit.
+> 
+> **Failed:** 
+> Public Network Access is configured as enabled or 'Selected Networks' options is enabled with percentage of allowed public addresses beyond allowed limit or 'Accept connections from within public Azure datacenters' option is checked .
+
+### Recommendation 
+
+- **Azure Portal** 
+
+	 It is recommended that IP firewall (https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-configure-firewall) or Private endpoints (https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-configure-private-endpoints?tabs=arm-bicep) or Virtual Networks (https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-configure-vnet-service-endpoint) be used instead of complete public accessibility enabled.
+   
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API to get Cosmos DB resources in a subscription: /subscriptions/{0}/providers/Microsoft.DocumentDB/databaseAccounts?api-version=2023-03-15<br />
+**Properties:** properties.publicNetworkAccess, properties.ipRules
+
+ <br />
+
+<br />
