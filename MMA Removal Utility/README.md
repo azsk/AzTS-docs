@@ -419,3 +419,34 @@ InventoryProcessingStatus_CL
 | summarize arg_max(TimeGenerated,*) by tolower(ResourceId)
 | project ResourceId, ProcessingStatus_s, ProcessErrorDetails_s
 ```
+
+
+### **11. If I have less number of VMs how can I speed up the process for MMA removal?**
+Follow below steps to speed up the process for MMA removal :
+
+Step-1.	Run Update-AzTSMMARemovalUtilityDiscoveryTrigger command with – StartScopeResolverImmediatley switch.
+
+   ``` PowerShell
+    Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+        -SubscriptionId <HostingSubId> `
+        -ResourceGroupName <HostingRGName> `
+        -StartScopeResolverImmediatley 
+   ```
+
+Step-2. Once Virtual Machine inventory is available in dashboard, run Update-AzTSMMARemovalUtilityDiscoveryTrigger command with –StartExtensionDiscoveryImmediatley  switch.
+
+   ``` PowerShell
+    Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+        -SubscriptionId <HostingSubId> `
+        -ResourceGroupName <HostingRGName> `
+        -StartExtensionDiscoveryImmediatley 
+   ```
+
+Step-3. One the Extension inventory is available in dashboard, run Update-AzTSMMARemovalUtilityRemovalTrigger command with – StartImmediately switch.
+
+   ``` PowerShell
+    Update-AzTSMMARemovalUtilityDiscoveryTrigger ` 
+        -SubscriptionId <HostingSubId> `
+        -ResourceGroupName <HostingRGName> `
+        -StartImmediately
+   ```
