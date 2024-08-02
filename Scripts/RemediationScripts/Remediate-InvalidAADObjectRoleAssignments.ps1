@@ -79,6 +79,17 @@ function Pre_requisites
         Write-Host "Az.Resources module is available." -ForegroundColor Green
     }
 
+     # Checking if 'ARG' module is available or not.
+    if($availableModules.Name -notcontains 'Az.ResourceGraph')
+    {
+        Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
+        Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
+    }
+    else
+    {
+        Write-Host "Az.ResourceGraph module is available." -ForegroundColor Green
+    }
+
     # Checking if 'AzureAD' module is available or not.
     if($availableModules.Name -notcontains 'AzureAD')
     {
@@ -251,21 +262,15 @@ function Remove-AzTSInvalidAADAccounts
             $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
             $currentRoleAssignmentList | select -Unique -Property 'ObjectId' | ForEach-Object { $distinctObjectIds += $_.ObjectId }
 
-            # Getting MDC reported deprecated account object ids.
-            $mdcUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Security/assessments/00c6d40b-e990-6acf-d4f3-471e747a27c4?api-version=2020-01-01"
+            
             $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
             $classicAssignments = [ClassicRoleAssignments]::new()
             $headers = $classicAssignments.GetAuthHeader()
-            $mdcDeprecated = [MDCDeprecatedAccounts]::new()
-            $response = $mdcDeprecated.GetMDCDeprecatedAccounts([string] $mdcUri, [string] $method, [psobject] $headers)
-        
-            $mdcDeprecatedAccountResponseAsString = $response.properties.additionalData.deprecatedAccountsObjectIdList.Trim("[").Trim("]")
-            $mdcDeprecatedAccountList = @();
-            if (![string]::IsNullOrWhiteSpace($mdcDeprecatedAccountResponseAsString))
-            {
-                $mdcDeprecatedAccountList = $mdcDeprecatedAccountResponseAsString.Split(",").Trim("`"")
-            }
 
+            # Getting MDC reported deprecated account object ids.
+            $mdcDeprecated = [MDCDeprecatedAccounts]::new()
+            $mdcDeprecatedAccountList  = $mdcDeprecated.GetMDCDeprecatedAccounts([string] $SubscriptionId)
+      
             $mdcDeprecatedRoleAssignmentList = @();
             if (($mdcDeprecatedAccountList | Measure-Object).Count -gt 0)
             {
@@ -527,6 +532,42 @@ function Remove-AzTSInvalidAADAccounts
     }    
 }
 
+function Get-ARGData
+{
+    param (
+
+        [string]
+        $kqlQuery,
+
+        [int]
+        $BatchSize = 1000
+    )
+
+    $skipResult = 0
+
+    $kqlResponse = @()
+
+    while ($true) {
+
+      if ($skipResult -gt 0) {
+        $graphResult = Search-AzGraph -Query $kqlQuery -First $batchSize -SkipToken $graphResult.SkipToken
+      }
+      else {
+        $graphResult = Search-AzGraph -Query $kqlQuery -First $batchSize
+      }
+
+      $kqlResponse += $graphResult.data.ToArray()
+
+      if ($graphResult.data.Count -lt $batchSize) {
+        break;
+      }
+      $skipResult += $skipResult + $batchSize
+    }
+
+    return $kqlResponse
+}
+
+
 class ClassicRoleAssignments
 {
     [PSObject] GetAuthHeader()
@@ -602,23 +643,34 @@ class ClassicRoleAssignments
 
 class MDCDeprecatedAccounts
 {
-    [PSObject] GetMDCDeprecatedAccounts([string] $mdcUri, [string] $method, [psobject] $headers)
+    [PSObject] GetMDCDeprecatedAccounts([string] $SubcriptionId)
     {
-        $content = $null
-        try
+        $response = @()
+        $invalidObjectIds = @()
+
+        $response += Get-ARGData -kqlQuery "securityresources | where type == 'microsoft.security/assessments' | where name =~ '1ff0b4c9-ed56-4de6-be9c-d7ab39645926' and subscriptionId =~ '$($SubcriptionId)'"
+
+        if (($response | Measure-Object).Count -gt 0 )
         {
-            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::$method
-            
-            # API to get MDC reported deprecated accounts list
-            $response = Invoke-WebRequest -Method $method -Uri $mdcUri -Headers $headers -UseBasicParsing
-            $content = ConvertFrom-Json $response.Content
+          $mdcAssessmentState = $response[0].properties.status.code
+
+          if ((-not [string]::IsNullOrWhiteSpace($mdcAssessmentState)) -and ($mdcAssessmentState -eq 'Unhealthy') -and (-not [string]::IsNullOrWhiteSpace($response[0].properties.additionalData.subAssessmentsLink)))
+          {
+
+            $nextSubAssessmentLink = $response[0].properties.additionalData.subAssessmentsLink
+
+            $SubAssessmentResponse = Get-ARGData -kqlQuery "securityresources | where type == 'microsoft.security/assessments/subassessments' | where id contains '$($nextSubAssessmentLink)'"
+
+            if (($SubAssessmentResponse | Measure-Object).Count -gt 0 )
+            {
+              $invalidObjectIds += foreach ($obj in $SubAssessmentResponse) { ($obj.properties.resourceDetails.id -split "/")[-1]  }
+            }
+          }
+  
         }
-        catch
-        {
-            Write-Host "Error occurred while fetching deprecated account role assignments. ErrorMessage [$($_)]" -ForegroundColor Red
-        }
-        
-        return($content)
+
+        return($invalidObjectIds)
+         
     }
 }
 
