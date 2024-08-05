@@ -67,7 +67,7 @@ function Setup-Prerequisites {
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Storage", "Az.Resources", "Az.Accounts")
+    $requiredModules = @("Az.Storage", "Az.Resources", "Az.Accounts", "Az.Monitor")
 
     Write-Host "Required modules: $($requiredModules -join ', ')" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host "Checking if the required modules are present..."
