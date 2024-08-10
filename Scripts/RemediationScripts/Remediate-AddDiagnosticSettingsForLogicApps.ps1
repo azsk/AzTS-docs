@@ -106,6 +106,9 @@ function Add-DiagnosticSettingsForLogicApps {
         .PARAMETER FilePath
         Specifies the path to the file to be used as input for the remediation.
 
+        .PARAMETER Force
+        Specifies a forceful remediation without any prompts.
+
         .EXAMPLE
         PS> Add-DiagnosticSettingsForLogicApps -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
@@ -136,7 +139,13 @@ function Add-DiagnosticSettingsForLogicApps {
 
         [String]
         [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies the path to the file to be used as input for the remediation")]
-        $FilePath
+        $FilePath,
+
+        [Switch]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies a forceful remediation without any prompts")]
+        $Force
+
+        
     )
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -221,6 +230,9 @@ function Add-DiagnosticSettingsForLogicApps {
     # Includes Logic Apps where required diagnostic settings are not present.
     $logicAppsWithoutRequiredDiagnosticSetting = @()
 
+    # Includes Logic Apps that were skipped during remediation due to any errors.
+    $skippedLogicApps = @()
+
     # Check if required Diagnostic setting for Logic App is present
 
     $logicAppResources | ForEach-Object {
@@ -235,13 +247,10 @@ function Add-DiagnosticSettingsForLogicApps {
             else {
                 # Diagnostic settings includes WorkflowRuntime logs
                 $isDiagnosticSettingCompliant = $false;
-                if (($settings.Log | Where-Object { $_.Category -eq "WorkflowRuntime" -and $_.Enabled -eq "True" } | Measure-Object).Count -gt 0 ) {
+                if ((($settings.Log | Where-Object { $_.Category -eq "WorkflowRuntime" -and $_.Enabled -eq "True" }) | Measure-Object).Count -gt 0 -or 
+                    (($settings.Log | Where-Object { $_.CategoryGroup -eq "allLogs" -and $_.Enabled -eq "True" }) | Measure-Object).Count -gt 0) {
                     $isDiagnosticSettingCompliant = $true;
                 }
-                if (($settings.Log | Where-Object { $_.CategoryGroup -eq "allLogs" -and $_.Enabled -eq "True" } | Measure-Object).Count -gt 0 ) {
-                    $isDiagnosticSettingCompliant = $true;
-                }
-
                 if ($isDiagnosticSettingCompliant) {
                     $logicAppsWithRequiredDiagnosticSetting += $_
                 }
@@ -251,8 +260,7 @@ function Add-DiagnosticSettingsForLogicApps {
             }
         }
         catch {
-            $logicAppsWithoutRequiredDiagnosticSetting += $_ 
-
+            $skippedLogicApps += $_ 
             Write-Host "Error while fetching diagnostic setting for Resource ID - $($_.ResourceId), Resource Group Name - $($_.ResourceGroupName), Resource Name - $($_.ServerName). Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
         }
     }
@@ -286,70 +294,68 @@ function Add-DiagnosticSettingsForLogicApps {
         # To hold results from the remediation.
         $remediatedLogicApps = @()
 
-        # Includes Logic Apps that were skipped during remediation due to any errors.
-        $skippedLogicApps = @()
-
         # Storage Account details
         [String] $storageAccountResourceGroupName = [String]::Empty
         [String] $storageAccountName = [String]::Empty
         $storageAccount = $null
 
-        
-        Write-Host "Adding diagnostic settng requires one or more of Storage Account, Log Analytics Workspace or Event Hub to be configured for storing diagnostic setting." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "This script supports only Storage Accounts as a destination for storing the diagnostic settings." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "In each resource group having Logic App resources, new Storage Accounts will be created per Resource Group and Location combination to store the diagnostic logs for all Logic Apps in the Resource Group to store diagnostic settings related data." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "There will be billing cost associated with adding diagnostic setting." -ForegroundColor $([Constants]::MessageType.Warning)
-        Write-Host "Do you still want to proceed?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
+        if (-not $Force) {
+            Write-Host "Adding diagnostic settng requires one or more of Storage Account, Log Analytics Workspace or Event Hub to be configured for storing diagnostic setting." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "This script supports only Storage Accounts as a destination for storing the diagnostic settings." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "In each resource group having Logic App resources, new Storage Accounts will be created per Resource Group and Location combination to store the diagnostic logs for all Logic Apps in the Resource Group to store diagnostic settings related data." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "There will be billing cost associated with adding diagnostic setting." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "Do you still want to proceed?" -ForegroundColor $([Constants]::MessageType.Warning) -NoNewline
 
-        $userInput = Read-Host -Prompt "(Y|N)"
+            $userInput = Read-Host -Prompt "(Y|N)"
 
-        if ($userInput -ne "Y") {
-            Write-Host "Exiting as Storage Account is not chosen for storing the diagnostic logs..." -ForegroundColor $([Constants]::MessageType.Update)
-            break
+            if ($userInput -ne "Y") {
+                Write-Host "Exiting as Storage Account is not chosen for storing the diagnostic logs..." -ForegroundColor $([Constants]::MessageType.Update)
+                break
+            }
         }
+        else {
+            Write-Host "'Force' flag is provided. Storage accounts will be created and diagnostic settings will be added for all Logic Apps without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+        }
+
 
         $logicAppsWithoutRequiredDiagnosticSetting  | ForEach-Object {
             Write-Host "Checking Logic App Resource Id $($_.ResourceId)" -ForegroundColor $([Constants]::MessageType.Info)
 
             try {
                 $logicAppInstance = $_
-
                 $resourceGroup = $_.ResourceGroupName
                 $location = $_.Location
                 $storageAccountResourceGroupName = $resourceGroup
-                $storageAccountName = "diagn"
-                # Storage Account name will be a concatenation of "diag" + name of the RG(first 5 characters) + Location(first 15 characters).
-                # Only the first 5 characters of the Resource Group name and first 15 characters of location will be considered, as there is a size limit of 24 characters for the name of a Storage Account.
-                # This will strip out non-alphanumeric characters as Storage Account names can only contain alphanumeric characters.
 
-                $storageAccountLocationSuffix = $location -replace "\W"
+                $aztsScanner = "azts"
 
-                # This check is required, else, String::Substring() will throw an error for strings less than 15 characters.
+                # Concatenate the Resource Group name and Location and azts for unique combination
+                $rgLocationString = $resourceGroup + $location + $aztsScanner                
 
-                if ($storageAccountLocationSuffix.Length -gt 15) {
-                    $storageAccountLocationSuffix = $storageAccountLocationSuffix.Substring(0, 15)
+                # Generate a unique hash using SHA256
+                $hashBytes = [System.Text.Encoding]::UTF8.GetBytes($rgLocationString)
+                $sha256 = [System.Security.Cryptography.SHA256]::Create()
+                $hash = $sha256.ComputeHash($hashBytes)
+
+                # Convert the hash bytes to a hexadecimal string
+                $hashString = -join ($hash[0..15] | ForEach-Object { $_.ToString("x2") }) # Use first 15 characters for uniqueness
+
+                # Create the Storage Account name by combining "diag" with the hash
+                $storageAccountName = "diag" + $hashString.ToLower()
+
+                if ($storageAccountName.Length -gt 24) {
+                    $storageAccountName = $storageAccountName.Substring(0, 24)
                 }
-
-                 $storageAccountRGNameSuffix = $resourceGroup -replace "\W"
-
-                # This check is required, else, String::Substring() will throw an error for strings less than 5 characters.
-
-                if ($resourceGroup.Length -gt 5) {
-                    $storageAccountRGNameSuffix = $storageAccountRGNameSuffix.Substring(0, 5)
-                }
-                $storageAccountName = -join ("diag",$storageAccountRGNameSuffix.ToLower(), $storageAccountLocationSuffix.ToLower() )
-
-
-                $storageAccount= $null
+                Write-Host "Generated Storage Account Name: $storageAccountName" -ForegroundColor $([Constants]::MessageType.Info)
+                $storageAccount = $null
 
                 $storageAccount = Create-StorageAccountIfNotExists $storageAccountResourceGroupName $storageAccountName $location
 
-                if (($storageAccount | Measure-Object).Count -eq 0) 
-                {
+                if (($storageAccount | Measure-Object).Count -eq 0) {
                     Write-Host "Error creating a Storage Account to store the diagnostic logs." -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host "Please ensure that you have sufficient permissions to create a Storage Account in this Resource Group." -ForegroundColor $([Constants]::MessageType.Error)
-                    Write-Host "Exiting..." -ForegroundColor $([Constants]::MessageType.Error)
-                    break
+                    $skippedLogicApps += $logicAppInstance
+                    return
                 }
 
                 #Selecting only 1 account as observed duplicate entries from PS command intermittently
@@ -359,24 +365,13 @@ function Add-DiagnosticSettingsForLogicApps {
 
                 $log = @()
                 $log += New-AzDiagnosticSettingLogSettingsObject -Enabled $true -Category "WorkflowRuntime"
-                $temp= New-AzDiagnosticSetting -Name 'LogicApp-DiagnosticSetting' -ResourceId $_.ResourceId  -StorageAccountId $storageAccount.Id  -Log $log
+                $temp = New-AzDiagnosticSetting -Name 'AzTB-LogicApp-DiagnosticSetting' -ResourceId $_.ResourceId  -StorageAccountId $storageAccount.Id  -Log $log
 
-                    
-                $isDiagnosticSettingAdded = $false
-
-                $settings = Get-AzDiagnosticSetting -ResourceId $_.ResourceId
-                if (($settings.Log | Where-Object { $_.Category -eq "WorkflowRuntime" -and $_.Enabled -eq "True" } | Measure-Object).Count -gt 0 ) {
-                    $isDiagnosticSettingAdded = $true
+                if ((($temp.Log | Where-Object { $_.Category -eq "WorkflowRuntime" -and $_.Enabled -eq "True" }) | Measure-Object).Count -gt 0 ) {
                     Write-Host "Diagnostic setting added successfully for Logic App $($_.ResourceId)" -ForegroundColor $([Constants]::MessageType.Update)
                     $remediatedLogicApps += $logicAppInstance                     
                 }
-                elseif (($settings.Log | Where-Object { $_.CategoryGroup -eq "allLogs" -and $_.Enabled -eq "True" } | Measure-Object).Count -gt 0 ) {
-                    $isDiagnosticSettingAdded = $true
-                    Write-Host "Diagnostic setting added successfully for Logic App $($_.ResourceId)" -ForegroundColor $([Constants]::MessageType.Update)
-                    $remediatedLogicApps += $logicAppInstance 
-                }
                 else {
-                    $isDiagnosticSettingAdded = $false
                     Write-Host "Error while adding diagnostic setting for Logic App $($_.ResourceId)" -ForegroundColor $([Constants]::MessageType.Warning)
                     $skippedLogicApps += $logicAppInstance 
                 }
@@ -478,11 +473,11 @@ function Create-StorageAccountIfNotExists {
         Write-Host "Storage Account does not exist. Creating a new Storage Account..." -ForegroundColor $([Constants]::MessageType.Info)
         $storageAccount = New-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -SkuName Standard_LRS -Location $Location -WarningAction SilentlyContinue
         #Sleep added to wait to complete for Storage Account creation operation
-        Start-Sleep -Seconds 20
+        Start-Sleep -Seconds 5
         Set-AzStorageAccount -ResourceGroupName $ResourceGroupName -Name $StorageAccountName -EnableHttpsTrafficOnly $true -AllowBlobPublicAccess $false -MinimumTlsVersion TLS1_2 -AllowSharedKeyAccess $false   
         Write-Host "Storage Account $($StorageAccountName) successfully created..." -ForegroundColor $([Constants]::MessageType.Update)
     }
-    else{
+    else {
         Write-Host "Storage Account $($StorageAccountName) is already present..." -ForegroundColor $([Constants]::MessageType.Info)
     }
 
