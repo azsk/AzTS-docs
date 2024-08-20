@@ -1049,11 +1049,10 @@ function Set-AzTSMonitoringAlert
                 
         $EmailReceivers = @()
         $SendAlertNotificationToEmailIds | ForEach-Object {
-            $EmailReceivers += New-AzActionGroupReceiver -Name "Notify_$($_)" -EmailReceiver -EmailAddress $_
+            $EmailReceivers += New-AzActionGroupEmailReceiverObject -Name "Notify_$($_)" -EmailAddress $_
         }
-
-        $alertActionGroup = Set-AzActionGroup -Name ‘AzTSAlertActionGroup’ -ResourceGroupName $ScanHostRGName -ShortName ‘AzTSAlert’ -Receiver $EmailReceivers -WarningAction SilentlyContinue
-
+	
+	$alertActionGroup  = New-AzActionGroup -Name ‘AzTSAlertActionGroup’ -ResourceGroup $keyVaultRGName     -ShortName ‘AzTSAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
 
         if($DeploymentResult.Outputs.ContainsKey('logAnalyticsResourceId') -and $DeploymentResult.Outputs.ContainsKey('applicationInsightsId'))
         {
@@ -2098,12 +2097,11 @@ function Grant-AzSKAccessOnKeyVaultToUserAssignedIdentity
                 Write-Host "Creating monitoring alerts..." -ForegroundColor $([Constants]::MessageType.Info) 
                 $EmailReceivers = @()
                 $SendAlertsToEmailIds | ForEach-Object {
-                    $EmailReceivers += New-AzActionGroupReceiver -Name "Notify_$($_)" -EmailReceiver -EmailAddress $_
+                    $EmailReceivers += New-AzActionGroupEmailReceiverObject -Name "Notify_$($_)" -EmailAddress $_
                 }
 
                 $keyVaultRGName =  $ResourceId.Split("/")[4] # ResourceId is in format - /subscriptions/SubIdGuid/resourceGroups/RGName/providers/Microsoft.KeyVault/vaults/KeyVaultName
-                $alertActionGroupForKV = Set-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ShortName ‘AzTSKVAlert’ -Receiver $EmailReceivers -WarningAction SilentlyContinue
-
+		$alertActionGroupForKV = New-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroup $keyVaultRGName -ShortName ‘AzTSKVAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
                 $deploymentName = "AzTSenvironmentmonitoringsetupforkv-$([datetime]::Now.ToString("yyyymmddThhmmss"))"
 
                 $alertQuery = [string]::Format([Constants]::UnintendedSecretAccessAlertQuery, $ResourceId, $ScanIdentitySecretUri, $UserAssignedIdentityObjectId)
