@@ -1052,7 +1052,7 @@ function Set-AzTSMonitoringAlert
             $EmailReceivers += New-AzActionGroupEmailReceiverObject -Name "Notify_$($_)" -EmailAddress $_
         }
 	
-	$alertActionGroup  = New-AzActionGroup -Name ‘AzTSAlertActionGroup’ -ResourceGroup $keyVaultRGName     -ShortName ‘AzTSAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
+	$alertActionGroup  = Update-AzActionGroup -Name ‘AzTSAlertActionGroup’ -ResourceGroupName $keyVaultRGName  -ShortName ‘AzTSAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
 
         if($DeploymentResult.Outputs.ContainsKey('logAnalyticsResourceId') -and $DeploymentResult.Outputs.ContainsKey('applicationInsightsId'))
         {
@@ -2101,7 +2101,7 @@ function Grant-AzSKAccessOnKeyVaultToUserAssignedIdentity
                 }
 
                 $keyVaultRGName =  $ResourceId.Split("/")[4] # ResourceId is in format - /subscriptions/SubIdGuid/resourceGroups/RGName/providers/Microsoft.KeyVault/vaults/KeyVaultName
-		$alertActionGroupForKV = New-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroup $keyVaultRGName -ShortName ‘AzTSKVAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
+		$alertActionGroupForKV = New-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ShortName ‘AzTSKVAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
                 $deploymentName = "AzTSenvironmentmonitoringsetupforkv-$([datetime]::Now.ToString("yyyymmddThhmmss"))"
 
                 $alertQuery = [string]::Format([Constants]::UnintendedSecretAccessAlertQuery, $ResourceId, $ScanIdentitySecretUri, $UserAssignedIdentityObjectId)
