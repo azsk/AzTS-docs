@@ -1739,8 +1739,18 @@ function Grant-AzTSMMARemediationIdentityAccessOnKeyVault
 
                 $keyVaultRGName =  $ResourceId.Split("/")[4] # ResourceId is in format - /subscriptions/SubIdGuid/resourceGroups/RGName/providers/Microsoft.KeyVault/vaults/KeyVaultName
                 
-		$alertActionGroupForKV = Update-AzActionGroup -Name 'MMARemovalUtilityActionGroupForKV' -ResourceGroupName $keyVault.ResourceGroupName -Name 'MMAKVAlert' -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
-                
+		$alertActionGroupForKV = Get-AzActionGroup -Name ‘MMARemovalUtilityActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ErrorAction SilentlyContinue
+	        if ($null -ne $alertActionGroupForKV) 
+                {
+	            Write-Verbose "Updating existing AzTSAlertActionGroupForKV..."
+                    $alertActionGroupForKV = Update-AzActionGroup -Name ‘MMARemovalUtilityActionGroupForKV’ -ResourceGroupName $keyVaultRGName -GroupShortName ‘MMAKVAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
+                } 
+                else 
+                {
+                    Write-Verbose "Creating new AzTSAlertActionGroupForKV..."
+                    $alertActionGroupForKV = New-AzActionGroup -Name ‘MMARemovalUtilityActionGroupForKV’ -ResourceGroupName $keyVaultRGName -GroupShortName ‘MMAKVAlert’ -Location "Global" -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
+                }
+		
 		$deploymentName = "MMARemovalenvironmentmonitoringsetupforkv-$([datetime]::Now.ToString("yyyymmddThhmmss"))"
 
                 $alertQuery = [string]::Format([Constants]::UnintendedSecretAccessAlertQuery, $ResourceId, $IdentitySecretUri, $UserAssignedIdentityObjectId)
