@@ -1367,7 +1367,7 @@ ___
 ## 66. Azure_BackupVault_DP_Enable_Soft_Delete
 
 ### Display Name
-Always-on soft delete must be enabled on Backup Vault
+AlwaysOn soft delete must be enabled on Backup Vault
 
 ### Link to Bulk Remediation Script (BRS)
 [Remediate-EnableSoftDeleteForBackupVault](Remediate-EnableSoftDeleteForBackupVault.ps1)

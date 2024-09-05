@@ -4,7 +4,7 @@ Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
 
 .DESCRIPTION
 Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
-Enables always-on soft delete on Backup Vault(s) in the Subscription. 
+Enables AlwaysOn soft delete on Backup Vault(s) in the Subscription. 
 
 .PARAMETER SubscriptionId
 Specifies the ID of the Subscription to be remediated.
@@ -110,7 +110,7 @@ function Set-SoftDeleteForBackupVault {
 
     .DESCRIPTION
     Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
-    Enables always-on soft delete on Backup Vault(s) in the Subscription. 
+    Enables AlwaysOn soft delete on Backup Vault(s) in the Subscription. 
 
     .PARAMETER SubscriptionId
     Specifies the ID of the Subscription to be remediated.
@@ -225,7 +225,7 @@ function Set-SoftDeleteForBackupVault {
 		Write-Host $([Constants]::SingleDashLine)
 	}
 
-	Write-Host "To enable always-on soft delete for Backup Vault(s) in a Subscription, Contributor or higher privileged role assignment on the Backup Vault(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
+	Write-Host "To enable AlwaysOn soft delete for Backup Vault(s) in a Subscription, Contributor or higher privileged role assignment on the Backup Vault(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
 	Write-Host $([Constants]::SingleDashLine)
 
 	Write-Host "[Step 2 of 4] Fetch all Backup Vault(s)"
@@ -330,13 +330,14 @@ function Set-SoftDeleteForBackupVault {
     
 	# Backup Vault(s) where soft delete is not enabled
 	$backupVaultsWithoutSoftDelete = @()
+	$expectedSoftDeleteState = "AlwaysOn"
 
 	Write-Host "Separating Backup Vault(s) for which soft delete is not enabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
 	$backupVaultDetails | ForEach-Object {
 		$backupVault = $_
 		if ($_.SoftDeleteState) {
-			if ($_.SoftDeleteState.ToString() -ine "ALWAYSON") {
+			if ($_.SoftDeleteState.ToString() -ne $expectedSoftDeleteState) {
 				$backupVaultsWithoutSoftDelete += $backupVault
 			}
 		} else {
@@ -390,20 +391,20 @@ function Set-SoftDeleteForBackupVault {
 
 	if (-not $DryRun) {
 		Write-Host $([Constants]::DoubleDashLine)
-		Write-Host "[Step 4 of 4] Enable always-on soft delete on Backup Vault(s) in the Subscription..." 
+		Write-Host "[Step 4 of 4] Enable AlwaysOn soft delete on Backup Vault(s) in the Subscription..." 
 		Write-Host $([Constants]::SingleDashLine)
         
 		if (-not $Force) {
-			Write-Host "Do you want to enable always-on soft delete on Backup Vault(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
+			Write-Host "Do you want to enable AlwaysOn soft delete on Backup Vault(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
 			$userInput = Read-Host -Prompt "(Y|N)"
 			if ($userInput -ne "Y") {
-				Write-Host "Always-on soft delete will not be enabled on Backup Vault(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
+				Write-Host "AlwaysOn soft delete will not be enabled on Backup Vault(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
 				Write-Host $([Constants]::DoubleDashLine)	
 				return
 			}
 		}
 		else {
-			Write-Host "'Force' flag is provided. Proceeding to enable always-on soft delete on Backup Vault(s) without any prompts..." -ForegroundColor $([Constants]::MessageType.Warning)
+			Write-Host "'Force' flag is provided. Proceeding to enable AlwaysOn soft delete on Backup Vault(s) without any prompts..." -ForegroundColor $([Constants]::MessageType.Warning)
 		}
 
 		# List for storing remediated Backup Vaults(s)
@@ -412,7 +413,7 @@ function Set-SoftDeleteForBackupVault {
 		# List for storing skipped Backup Vaults(s)
 		$backupVaultsSkipped = @()
 
-		# Enable always-on soft delete on each Backup Vault
+		# Enable AlwaysOn soft delete on each Backup Vault
 		# Loop through the list of Backup Vault(s) which needs to be remediated.
 		$backupVaultsWithoutSoftDelete | ForEach-Object {
 			$backupVault = $_
@@ -422,7 +423,7 @@ function Set-SoftDeleteForBackupVault {
                 }
 				$backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -SoftDeleteState "AlwaysOn" -SoftDeleteRetentionDurationInDay $_.SoftDeleteRetentionDurationInDay -ErrorAction Stop   
 
-				if ($backupVaultResource.SoftDeleteState.ToString() -ieq "ALWAYSON") {
+				if ($backupVaultResource.SoftDeleteState.ToString() -eq $expectedSoftDeleteState) {
 					$backupVaultsRemidiated += $backupVault
 					$logResource = @{}	
 					$logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
