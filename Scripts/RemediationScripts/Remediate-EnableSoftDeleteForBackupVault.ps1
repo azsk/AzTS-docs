@@ -362,7 +362,7 @@ function Set-SoftDeleteForBackupVault {
 	@{Expression = { $_.SoftDeleteState }; Label = "Soft Delete State"; Width = 20; Alignment = "left" }
 
 	if (-not $AutoRemediation) {
-		Write-Host "Backup Vault(s) without SoftDelete as Always On:"
+		Write-Host "Backup Vault(s) without SoftDelete as AlwaysOn:"
 		$backupVaultsWithoutSoftDelete | Format-Table -Property $colsProperty -Wrap
 		Write-Host $([Constants]::SingleDashLine)
 	}
@@ -435,7 +435,7 @@ function Set-SoftDeleteForBackupVault {
 					$logResource = @{}	
 					$logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
 					$logResource.Add("ResourceName", ($_.ResourceName))
-					$logResource.Add("Reason", "Error configuring Always On for Backup Vault: [$($backupVault)]")            
+					$logResource.Add("Reason", "Error configuring AlwaysOn for Backup Vault: [$($backupVault)]")            
 					$logSkippedResources += $logResource	
 
 				}
@@ -446,7 +446,7 @@ function Set-SoftDeleteForBackupVault {
 				$logResource = @{}	
 				$logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
 				$logResource.Add("ResourceName", ($_.ResourceName))	
-				$logResource.Add("Reason", "Error configuring Always On for Backup Vault")    	
+				$logResource.Add("Reason", "Error configuring AlwaysOn for Backup Vault")    	
 				$logSkippedResources += $logResource                
 				Write-Host $([Constants]::SingleDashLine)
 			}
@@ -462,7 +462,7 @@ function Set-SoftDeleteForBackupVault {
 				$backupVaultsRemediatedFile = "$($backupFolderPath)\RemediatedBackupVaults.csv"
 				$backupVaultsRemidiated | Export-CSV -Path $backupVaultsRemediatedFile -NoTypeInformation
 
-				Write-Host "The information related to Backup Vault(s) where Always On changed has been saved to [$($backupVaultsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
+				Write-Host "The information related to Backup Vault(s) where AlwaysOn changed has been saved to [$($backupVaultsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
 				Write-Host $([Constants]::SingleDashLine)
 			}
         
@@ -471,14 +471,14 @@ function Set-SoftDeleteForBackupVault {
 				# Write this to a file.
 				$backupVaultsSkippedFile = "$($backupFolderPath)\SkippedBackupVaults.csv"
 				$backupVaultsSkipped | Export-CSV -Path $backupVaultsSkippedFile -NoTypeInformation
-				Write-Host "The information related to Backup Vault(s) where Always On not changed has been saved to [$($backupVaultsSkippedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+				Write-Host "The information related to Backup Vault(s) where AlwaysOn not changed has been saved to [$($backupVaultsSkippedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
 				Write-Host $([Constants]::SingleDashLine)
 			}
 		}
 		else {
 			Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
 			if ($($backupVaultsRemidiated | Measure-Object).Count -gt 0) {
-				Write-Host "Successfully set the Always On for the following Backup Vault(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+				Write-Host "Successfully set the AlwaysOn for the following Backup Vault(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
 				Write-Host $([Constants]::SingleDashLine)
 				$backupVaultsRemidiated | Format-Table -Property $colsProperty -Wrap
 
@@ -492,7 +492,7 @@ function Set-SoftDeleteForBackupVault {
 			}
         
 			if ($($backupVaultsSkipped | Measure-Object).Count -gt 0) {
-				Write-Host "Error while setting up the Always On in Backup Vault(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+				Write-Host "Error while setting up the AlwaysOn in Backup Vault(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
 				Write-Host $([Constants]::SingleDashLine)
 				$backupVaultsSkipped | Format-Table -Property $colsProperty -Wrap
             
@@ -517,12 +517,12 @@ function Set-SoftDeleteForBackupVault {
 		}
 	}
 	else {
-		Write-Host "[Step 4 of 4] Set the Always On for Backup Vault(s) in the Subscription." 
+		Write-Host "[Step 4 of 4] Set the AlwaysOn for Backup Vault(s) in the Subscription." 
 		Write-Host $([Constants]::SingleDashLine)
 		Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
 		Write-Host $([Constants]::SingleDashLine)
 		Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Warning)
-		Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to Set Always On state on Backup Vault(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
+		Write-Host "Run the same command with -FilePath [$($backupFile)] and without -DryRun, to Set AlwaysOn state on Backup Vault(s) listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
 		Write-Host $([Constants]::DoubleDashLine)
 	}
 }
