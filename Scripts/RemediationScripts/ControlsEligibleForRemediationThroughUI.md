@@ -532,5 +532,5 @@ Always-on soft delete must be enabled on Backup Vault
 [Remediate-EnableSoftDeleteForBackupVault](Remediate-EnableSoftDeleteForBackupVault.ps1)
 
 ### Minimum permissions required to run the script
-Owner or higher privileged role on the Subscription
+Contributor or higher privileged role on the Backup Vault
 ___

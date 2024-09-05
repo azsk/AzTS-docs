@@ -335,7 +335,11 @@ function Set-SoftDeleteForBackupVault {
 
 	$backupVaultDetails | ForEach-Object {
 		$backupVault = $_
-		if ($_.SoftDeleteState -and $_.SoftDeleteState.ToString() -ine "ALWAYSON") {
+		if ($_.SoftDeleteState) {
+			if ($_.SoftDeleteState.ToString() -ine "ALWAYSON") {
+				$backupVaultsWithoutSoftDelete += $backupVault
+			}
+		} else {
 			$backupVaultsWithoutSoftDelete += $backupVault
 		}
 	}
@@ -413,6 +417,9 @@ function Set-SoftDeleteForBackupVault {
 		$backupVaultsWithoutSoftDelete | ForEach-Object {
 			$backupVault = $_
 			try {
+				if (-not $_.SoftDeleteState) {
+                    Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -SoftDeleteState "On" -SoftDeleteRetentionDurationInDay $_.SoftDeleteRetentionDurationInDay -ErrorAction Stop                
+                }
 				$backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -SoftDeleteState "AlwaysOn" -SoftDeleteRetentionDurationInDay $_.SoftDeleteRetentionDurationInDay -ErrorAction Stop   
 
 				if ($backupVaultResource.SoftDeleteState.ToString() -ieq "ALWAYSON") {
