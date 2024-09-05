@@ -75,7 +75,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 63.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#63-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 64. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](Readme.md#64-azure_dbforpostgresql_dp_use_secure_tls_version)
 65. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](Readme.md#65-azure_redisenterprise_dp_use_tls_encrypted_connections)
-66. [Azure_BackupVault_DP_Enable_Soft_Delete_Trial](Readme.md#66-azure_backupvault_dp_enable_soft_delete_trial)
+66. [Azure_BackupVault_DP_Enable_Soft_Delete](Readme.md#66-azure_backupvault_dp_enable_soft_delete)
 
 <br />
 
@@ -1364,13 +1364,13 @@ Yes
 
 ___
 
-## 66. Azure_BackupVault_DP_Enable_Soft_Delete_Trial
+## 66. Azure_BackupVault_DP_Enable_Soft_Delete
 
 ### Display Name
 Always-on soft delete must be enabled on Backup Vault
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-BackupVaultSoftdelete](Remediate-BackupVaultSoftdelete.ps1)
+[Remediate-EnableSoftDeleteForBackupVault](Remediate-EnableSoftDeleteForBackupVault.ps1)
 
 ### Minimum permissions required to run the script
 Owner role at subscription level

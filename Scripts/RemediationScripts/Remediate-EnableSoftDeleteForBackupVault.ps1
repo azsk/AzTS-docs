@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete_Trial' Control.
+Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
 
 .DESCRIPTION
-Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete_Trial' Control.
+Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
 Enables always-on soft delete on Backup Vault(s) in the Subscription. 
 
 .PARAMETER SubscriptionId
@@ -106,10 +106,10 @@ function Get-BackupVaultDetails {
 function Set-SoftDeleteForBackupVault {
 	<#
     .SYNOPSIS
-    Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete_Trial' Control.
+    Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
 
     .DESCRIPTION
-    Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete_Trial' Control.
+    Remediates 'Azure_BackupVault_DP_Enable_Soft_Delete' Control.
     Enables always-on soft delete on Backup Vault(s) in the Subscription. 
 
     .PARAMETER SubscriptionId
@@ -239,7 +239,7 @@ function Set-SoftDeleteForBackupVault {
 	$logSkippedResources = @()	
 
 	# Control Id	
-	$controlIds = "Azure_BackupVault_DP_Enable_Soft_Delete_Trial"
+	$controlIds = "Azure_BackupVault_DP_Enable_Soft_Delete"
 
 	if ($AutoRemediation) {
 		if (-not (Test-Path -Path $Path)) {	
@@ -335,7 +335,7 @@ function Set-SoftDeleteForBackupVault {
 
 	$backupVaultDetails | ForEach-Object {
 		$backupVault = $_
-		if ($_.SoftDeleteState.ToString().ToUpper() -ine "ALWAYSON") {
+		if ($_.SoftDeleteState -and $_.SoftDeleteState.ToString() -ine "ALWAYSON") {
 			$backupVaultsWithoutSoftDelete += $backupVault
 		}
 	}
@@ -415,7 +415,7 @@ function Set-SoftDeleteForBackupVault {
 			try {
 				$backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -SoftDeleteState "AlwaysOn" -SoftDeleteRetentionDurationInDay $_.SoftDeleteRetentionDurationInDay -ErrorAction Stop   
 
-				if ($backupVaultResource.SoftDeleteState.ToString().ToUpper() -ieq "ALWAYSON") {
+				if ($backupVaultResource.SoftDeleteState.ToString() -ieq "ALWAYSON") {
 					$backupVaultsRemidiated += $backupVault
 					$logResource = @{}	
 					$logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	

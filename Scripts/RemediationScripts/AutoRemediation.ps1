@@ -161,7 +161,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AVD_Audit_Enable_HostPool_BootDiagnostics") -or
                 ($control.ControlId -eq "Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections") -or
                 ($control.ControlId -eq "Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version") -or
-                ($control.ControlId -eq "Azure_BackupVault_DP_Enable_Soft_Delete_Trial") -or
+                ($control.ControlId -eq "Azure_BackupVault_DP_Enable_Soft_Delete") -or
                 ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
