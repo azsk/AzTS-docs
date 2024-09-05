@@ -69,7 +69,7 @@
 	
 34. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](ControlsEligibleForRemediationThroughUI.md#34-azure_redisenterprise_dp_use_tls_encrypted_connections)
 	
-35. [Azure_BackupVault_DP_Enable_Immutability_Trial](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_immutability_trial)
+35. [Azure_BackupVault_DP_Enable_Immutability](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_immutability)
 
 <br />
 ___
@@ -523,14 +523,14 @@ Use approved version of TLS and enable secure client protocol for Redis Enterpri
 Contributor or higher privileged role on the Redis Enterprise
 ___
 
-## 35. Azure_BackupVault_DP_Enable_Immutability_Trial
+## 35. Azure_BackupVault_DP_Enable_Immutability
 
 ### Display Name
 Immutability must be enabled and locked on Backup Vault
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-BackupVaultImmutability](Remediate-BackupVaultImmutability.ps1)
+[Remediate-EnableImmutabilitySettingForBackupVault](Remediate-EnableImmutabilitySettingForBackupVault.ps1)
 
 ### Minimum permissions required to run the script
-Owner or higher privileged role on the Subscription
+Contributor or higher privileged role on the Backup Vault
 ___

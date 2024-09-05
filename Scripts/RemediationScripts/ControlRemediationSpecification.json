@@ -3,10 +3,10 @@
     "RemediationScriptsBaseUrl": "https://aka.ms/azts/remediation/",
     "RemediationSpecification": [
         {
-            "ControlId": "Azure_BackupVault_DP_Enable_Immutability_Trial",
+            "ControlId": "Azure_BackupVault_DP_Enable_Immutability",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-BackupVaultImmutability.ps1",
-            "LoadCommand": "Remediate-BackupVaultImmutability.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableImmutabilitySettingForBackupVault.ps1",
+            "LoadCommand": "Remediate-EnableImmutabilitySettingForBackupVault.ps1",
             "InitCommand": "Set-ImmutabilityForBackupVault",
             "RollbackMetadata": {
                 "RollbackCommand": "",

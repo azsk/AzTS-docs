@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-Remediates 'Azure_BackupVault_DP_Enable_Immutability_Trial' Control.
+Remediates 'Azure_BackupVault_DP_Enable_Immutability' Control.
 
 .DESCRIPTION
-Remediates 'Azure_BackupVault_DP_Enable_Immutability_Trial' Control.
+Remediates 'Azure_BackupVault_DP_Enable_Immutability' Control.
 Enables and locks immutability on Backup Vault(s) in the Subscription. 
 
 .PARAMETER SubscriptionId
@@ -105,10 +105,10 @@ function Get-BackupVaultDetails {
 function Set-ImmutabilityForBackupVault {
     <#
     .SYNOPSIS
-    Remediates 'Azure_BackupVault_DP_Enable_Immutability_Trial' Control.
+    Remediates 'Azure_BackupVault_DP_Enable_Immutability' Control.
 
     .DESCRIPTION
-    Remediates 'Azure_BackupVault_DP_Enable_Immutability_Trial' Control.
+    Remediates 'Azure_BackupVault_DP_Enable_Immutability' Control.
     Enables and locks immutability on Backup Vault(s) in the Subscription. 
 
     .PARAMETER SubscriptionId
@@ -224,7 +224,7 @@ function Set-ImmutabilityForBackupVault {
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "To enable and lock immutability for Backup Vault(s) in a Subscription, Owner or higher privileged role assignment on the Subscription is required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable and lock immutability for Backup Vault(s) in a Subscription, Contributor or higher privileged role assignment on the Backup Vault is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "[Step 2 of 4] Fetch all Backup Vault(s)"
@@ -238,7 +238,7 @@ function Set-ImmutabilityForBackupVault {
     $logSkippedResources = @()    
 
     # Control Id    
-    $controlIds = "Azure_BackupVault_DP_Enable_Immutability_Trial"
+    $controlIds = "Azure_BackupVault_DP_Enable_Immutability"
 
     if ($AutoRemediation) {
         if (-not (Test-Path -Path $Path)) {    
@@ -334,7 +334,11 @@ function Set-ImmutabilityForBackupVault {
  
     $backupVaultDetails | ForEach-Object {
         $backupVault = $_
-        if ($_.ImmutabilityState.ToString().ToUpper() -ne "LOCKED") {
+        if ($_.ImmutabilityState) {
+            if ($_.ImmutabilityState.ToString() -ine "LOCKED") {
+                $backupVaultsWithoutImmutability += $backupVault
+            }
+        } else {
             $backupVaultsWithoutImmutability += $backupVault
         }
     }
@@ -413,9 +417,12 @@ function Set-ImmutabilityForBackupVault {
         $backupVaultsWithoutImmutability | ForEach-Object {
             $backupVault = $_
             try {
+                if (-not $_.ImmutabilityState) {
+                    Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Disabled -ErrorAction Stop                   
+                }
                 $backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Locked -ErrorAction Stop   
  
-                if ($backupVaultResource.ImmutabilityState.ToString().ToUpper() -eq "LOCKED") {
+                if ($backupVaultResource.ImmutabilityState.ToString() -ieq "LOCKED") {
                     $backupVaultsRemediated += $backupVault
                     $logResource = @{}    
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))    
