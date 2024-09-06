@@ -457,6 +457,19 @@
                     "RollbackCommand": "Reset-SecureTLSVersionForDBForPostgreSQLSingleServer",
                     "Arguments": ["SubscriptionId"]
             }
+        },
+        {
+            "ControlId": "Azure_RecoveryServicesVault_DP_Enable_Immutability",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableImmutabilitySettingForRecoveryServiceVault.ps1",
+            "LoadCommand": "Remediate-EnableImmutabilitySettingForBackupVault.ps1",
+            "InitCommand": "Set-ImmutabilityForRecoveryServiceVault",
+            "RollbackMetadata": {
+                "RollbackCommand": "",
+                "Arguments": [
+                    ""
+                ]
+            }
         }
     ]
 }
