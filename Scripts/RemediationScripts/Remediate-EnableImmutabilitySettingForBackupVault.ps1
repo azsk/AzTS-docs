@@ -387,9 +387,9 @@ function Set-ImmutabilityForBackupVault {
         Write-Host $([Constants]::SingleDashLine)
     }
  
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "[Step 4 of 4] Enable and lock immutability on Backup Vault(s) in the Subscription..." 
     if (-not $DryRun) {
-        Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 4 of 4] Enable and lock immutability on Backup Vault(s) in the Subscription..." 
         Write-Host $([Constants]::SingleDashLine)
          
         if (-not $Force) {
@@ -418,7 +418,7 @@ function Set-ImmutabilityForBackupVault {
             $backupVault = $_
             try {
                 if (-not $_.ImmutabilityState) {
-                    Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Disabled -ErrorAction Stop                   
+                    Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Disabled -ErrorAction Stop
                 }
                 $backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Locked -ErrorAction Stop   
  
@@ -514,7 +514,6 @@ function Set-ImmutabilityForBackupVault {
         }
     }
     else {
-        Write-Host "[Step 4 of 4] Enable and lock immutability for Backup Vault(s) in the Subscription." 
         Write-Host $([Constants]::SingleDashLine)
         Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
