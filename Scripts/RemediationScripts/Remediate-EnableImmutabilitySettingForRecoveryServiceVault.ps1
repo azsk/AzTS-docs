@@ -89,7 +89,7 @@ function Get-RecoveryServiceVaultDetails {
         $RecoveryServiceVaultDetails
     )
     return $RecoveryServiceVaultDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-    @{N = 'ResourceGroupName'; E = {$_.ResourceGroupName}},
+    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
     @{N = 'ImmutabilityState'; E = { $_.Properties.ImmutabilitySettings.ImmutabilityState.ToString() } },
     @{N = 'ResourceName'; E = { $_.Name } }
 }
@@ -230,7 +230,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
     $logSkippedResources = @()    
 
     # Control Id    
-    $controlIds = "Azure_RecoveryServiceVault_DP_Enable_Immutability_Trial"
+    $controlIds = "Azure_RecoveryServicesVault_DP_Enable_Immutability"
 
     if ($AutoRemediation) {
         if (-not (Test-Path -Path $Path)) {    
@@ -280,7 +280,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
             # Get all Recovery Services Vault(s) in a Subscription
             $RecoveryServiceVaultDetailsForSubscription = Get-AzRecoveryServicesVault -ErrorAction Stop
 
-             # Get Recovery Services Vault(s) properties
+            # Get Recovery Services Vault(s) properties
             $RecoveryServiceVaultDetailsForSubscription | ForEach-Object {                
     
                 try {                
@@ -291,7 +291,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
                     Write-Host "Error fetching Recovery Services Vault(s) resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                 }
             
-        }
+            }
         }
         else {
             if (-not (Test-Path -Path $FilePath)) {
@@ -417,25 +417,20 @@ function Set-ImmutabilityForRecoveryServiceVault {
             $RecoveryServiceVault = $_
             try {
 
-            if($_.ResourceName -ieq "RSVTwo")
-            {
 
-                 # Check if ImmutabilityState is Disabled, and if Disabled first enable and then lock the state       
-                if($RecoveryServiceVault.ImmutabilityState -ieq "Disabled" -or $RecoveryServiceVault.ImmutabilityState -ieq "" )
-                {
+                # Check if ImmutabilityState is Disabled, and if Disabled first enable and then lock the state       
+                if ($RecoveryServiceVault.ImmutabilityState -ieq "Disabled" -or $RecoveryServiceVault.ImmutabilityState -ieq "" ) {
                     $RecoveryServiceVaultResource = Update-AzRecoveryServicesVault -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ImmutabilityState Unlocked -ErrorAction Stop 
                    
-                   #Updating the immutablity state of resource
-                    $RecoveryServiceVault.ImmutabilityState= $RecoveryServiceVaultResource.Properties.ImmutabilitySettings.ImmutabilityState;
+                    #Updating the immutablity state of resource
+                    $RecoveryServiceVault.ImmutabilityState = $RecoveryServiceVaultResource.Properties.ImmutabilitySettings.ImmutabilityState;
                 }
                 
                 
-                if($RecoveryServiceVault.ImmutabilityState -ieq "Unlocked" )
-                {
+                if ($RecoveryServiceVault.ImmutabilityState -ieq "Unlocked" ) {
                     $RecoveryServiceVaultResource = Update-AzRecoveryServicesVault -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ImmutabilityState Locked -ErrorAction Stop 
                 }
 
-                }
  
                 if ($RecoveryServiceVaultResource.Properties.ImmutabilitySettings.ImmutabilityState.ToString() -ieq "LOCKED") {
                     $RecoveryServiceVaultsRemediated += $RecoveryServiceVault
