@@ -395,7 +395,7 @@ function Set-SoftDeleteForBackupVault {
 		Write-Host $([Constants]::SingleDashLine)
         
 		if (-not $Force) {
-			Write-Host "Do you want to enable AlwaysOn soft delete on Backup Vault(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
+			Write-Host "Rollback command is not available.`nDo you want to enable AlwaysOn soft delete on Backup Vault(s) in the Subscription? " -ForegroundColor $([Constants]::MessageType.Warning)
 			$userInput = Read-Host -Prompt "(Y|N)"
 			if ($userInput -ne "Y") {
 				Write-Host "AlwaysOn soft delete will not be enabled on Backup Vault(s) in the Subscription. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -462,7 +462,7 @@ function Set-SoftDeleteForBackupVault {
 				$backupVaultsRemediatedFile = "$($backupFolderPath)\RemediatedBackupVaults.csv"
 				$backupVaultsRemidiated | Export-CSV -Path $backupVaultsRemediatedFile -NoTypeInformation
 
-				Write-Host "The information related to Backup Vault(s) where AlwaysOn changed has been saved to [$($backupVaultsRemediatedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Update)
+				Write-Host "The information related to Backup Vault(s) where AlwaysOn changed has been saved to [$($backupVaultsRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update)
 				Write-Host $([Constants]::SingleDashLine)
 			}
         
@@ -471,7 +471,7 @@ function Set-SoftDeleteForBackupVault {
 				# Write this to a file.
 				$backupVaultsSkippedFile = "$($backupFolderPath)\SkippedBackupVaults.csv"
 				$backupVaultsSkipped | Export-CSV -Path $backupVaultsSkippedFile -NoTypeInformation
-				Write-Host "The information related to Backup Vault(s) where AlwaysOn not changed has been saved to [$($backupVaultsSkippedFile)]. Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Warning)
+				Write-Host "The information related to Backup Vault(s) where AlwaysOn not changed has been saved to [$($backupVaultsSkippedFile)]" -ForegroundColor $([Constants]::MessageType.Warning)
 				Write-Host $([Constants]::SingleDashLine)
 			}
 		}
@@ -488,7 +488,7 @@ function Set-SoftDeleteForBackupVault {
 
 				Write-Host "This information has been saved to" -NoNewline
 				Write-Host " [$($backupVaultsRemediatedFile)]" -ForegroundColor $([Constants]::MessageType.Update) 
-				Write-Host "Use this file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+				Write-Host $([Constants]::SingleDashLine)
 			}
         
 			if ($($backupVaultsSkipped | Measure-Object).Count -gt 0) {
@@ -510,7 +510,6 @@ function Set-SoftDeleteForBackupVault {
 				if ($logControl.ControlId -eq $controlIds) {
 					$logControl.RemediatedResources = $logRemediatedResources
 					$logControl.SkippedResources = $logSkippedResources
-					$logControl.RollbackFile = $backupVaultsRemediatedFile
 				}
 			}
 			$log | ConvertTo-json -depth 10  | Out-File $logFile
