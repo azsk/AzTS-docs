@@ -418,11 +418,11 @@ function Set-ImmutabilityForBackupVault {
             $backupVault = $_
             try {
                 if (-not $_.ImmutabilityState) {
-                    Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Disabled -ErrorAction Stop
+                    Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Unlocked -ErrorAction Stop
                 }
                 $backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -ImmutabilityState Locked -ErrorAction Stop   
  
-                if ($backupVaultResource.ImmutabilityState.ToString() -ieq "LOCKED") {
+                if ($backupVaultResource.ImmutabilityState -and $backupVaultResource.ImmutabilityState.ToString() -ieq "LOCKED") {
                     $backupVaultsRemediated += $backupVault
                     $logResource = @{}    
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))    
