@@ -337,7 +337,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
  
     $RecoveryServiceVaultDetails | ForEach-Object {
         $RecoveryServiceVault = $_
-        if ($_.ImmutabilityState -ine "LOCKED") {
+        if ($_.ImmutabilityState -ine "LOCKED" -and -not [string]::IsNullOrEmpty($_.ImmutabilityState)  ) {
             $RecoveryServiceVaultsWithoutImmutability += $RecoveryServiceVault
         }
     }
@@ -416,10 +416,9 @@ function Set-ImmutabilityForRecoveryServiceVault {
         $RecoveryServiceVaultsWithoutImmutability | ForEach-Object {
             $RecoveryServiceVault = $_
             try {
-
-
+                
                 # Check if ImmutabilityState is Disabled, and if Disabled first enable and then lock the state       
-                if ($RecoveryServiceVault.ImmutabilityState -ieq "Disabled" -or $RecoveryServiceVault.ImmutabilityState -ieq "" ) {
+                if ($RecoveryServiceVault.ImmutabilityState -ieq "Disabled" ) {
                     $RecoveryServiceVaultResource = Update-AzRecoveryServicesVault -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ImmutabilityState Unlocked -ErrorAction Stop 
                    
                     #Updating the immutablity state of resource
@@ -447,6 +446,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
                     $logResource.Add("Reason", "Error enabling and locking immutability for Recovery Services Vault: [$($RecoveryServiceVault)]")            
                     $logSkippedResources += $logResource    
                 }
+                
                  
             }
             catch {
