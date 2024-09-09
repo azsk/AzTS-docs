@@ -69,6 +69,7 @@
 	
 34. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](ControlsEligibleForRemediationThroughUI.md#34-azure_redisenterprise_dp_use_tls_encrypted_connections)
 
+35. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#35-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
 
 <br />
 ___
@@ -520,4 +521,16 @@ Use approved version of TLS and enable secure client protocol for Redis Enterpri
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on the Redis Enterprise
+___
+
+## 35. Azure_RecoveryServicesVault_DP_Enable_Soft_Delete
+
+### Display Name
+Always-on soft delete must be enabled on Recovery Services Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1](Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Recovery Services Vault
 ___
