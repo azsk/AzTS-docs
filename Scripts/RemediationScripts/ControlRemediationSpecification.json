@@ -457,6 +457,19 @@
                     "RollbackCommand": "Reset-SecureTLSVersionForDBForPostgreSQLSingleServer",
                     "Arguments": ["SubscriptionId"]
             }
+        },
+        {
+            "ControlId": "Azure_RecoveryServicesVault_DP_Enable_Soft_Delete",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1",
+            "LoadCommand": "Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1",
+            "InitCommand": "Set-SoftDeleteForRecoveryServicesVault",
+            "RollbackMetadata": {
+                "RollbackCommand": "",
+                "Arguments": [
+                    ""
+                ]
+            }
         }
     ]
 }
