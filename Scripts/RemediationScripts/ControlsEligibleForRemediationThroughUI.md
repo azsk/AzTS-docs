@@ -532,5 +532,5 @@ Always-on soft delete must be enabled on Recovery Services Vault
 [Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1](Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or higher privileged role on the Redis Enterprise
+Contributor or higher privileged role on Recovery Services Vault
 ___
