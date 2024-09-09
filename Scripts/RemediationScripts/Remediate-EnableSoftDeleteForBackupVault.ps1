@@ -423,8 +423,9 @@ function Set-SoftDeleteForBackupVault {
                 }
 				$backupVaultResource = Update-AzDataProtectionBackupVault -ResourceGroupName $_.ResourceGroupName -VaultName $_.ResourceName -SoftDeleteState "AlwaysOn" -SoftDeleteRetentionDurationInDay $_.SoftDeleteRetentionDurationInDay -ErrorAction Stop   
 
+				$backupVaultResource = Get-BackupVaultDetails $backupVaultResource
 				if ($backupVaultResource.SoftDeleteState.ToString() -eq $expectedSoftDeleteState) {
-					$backupVaultsRemidiated += $backupVault
+					$backupVaultsRemidiated += $backupVaultResource
 					$logResource = @{}	
 					$logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
 					$logResource.Add("ResourceName", ($_.ResourceName))	
