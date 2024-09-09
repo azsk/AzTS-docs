@@ -16,6 +16,19 @@
             }
         },
         {
+            "ControlId": "Azure_BackupVault_DP_Enable_Immutability",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableImmutabilitySettingForBackupVault.ps1",
+            "LoadCommand": "Remediate-EnableImmutabilitySettingForBackupVault.ps1",
+            "InitCommand": "Set-ImmutabilityForBackupVault",
+            "RollbackMetadata": {
+                "RollbackCommand": "",
+                "Arguments": [
+                    ""
+                ]
+            }
+        },
+        {
             "ControlId": "Azure_Storage_AuthN_Dont_Allow_Anonymous",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AnonymousAccessOnContainers.ps1",

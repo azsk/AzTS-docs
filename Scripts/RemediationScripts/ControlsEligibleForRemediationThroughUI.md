@@ -68,8 +68,9 @@
 33. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#33-azure_dbforpostgresql_dp_use_secure_tls_version)
 	
 34. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](ControlsEligibleForRemediationThroughUI.md#34-azure_redisenterprise_dp_use_tls_encrypted_connections)
-
-35. [Azure_BackupVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_soft_delete)
+	
+35. [Azure_BackupVault_DP_Enable_Immutability](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_immutability)
+36. [Azure_BackupVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_soft_delete)
 
 <br />
 ___
@@ -523,7 +524,19 @@ Use approved version of TLS and enable secure client protocol for Redis Enterpri
 Contributor or higher privileged role on the Redis Enterprise
 ___
 
-## 35. Azure_BackupVault_DP_Enable_Soft_Delete
+## 35. Azure_BackupVault_DP_Enable_Immutability
+
+### Display Name
+Immutability must be enabled and locked on Backup Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableImmutabilitySettingForBackupVault](Remediate-EnableImmutabilitySettingForBackupVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on the Backup Vault
+___
+
+## 36. Azure_BackupVault_DP_Enable_Soft_Delete
 
 ### Display Name
 AlwaysOn soft delete must be enabled on Backup Vault
