@@ -216,7 +216,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
         Write-Host $([Constants]::SingleDashLine)
     }
 
-    Write-Host "To enable and lock immutability for Recovery Services Vault(s) in a Subscription, Owner or higher privileged role assignment on the Subscription is required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable and lock immutability for Recovery Services Vault(s) in a Subscription, Contributor or higher privileged role assignment on the Subscription is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)
 
     Write-Host "[Step 2 of 4] Fetch all Recovery Services Vault(s)"
@@ -239,7 +239,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
             return    
         }
         Write-Host "Fetching all Recovery Services Vault(s) failing for the [$($controlIds)] control from [$($Path)]..." -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host $([Constants]::SingleDashLine)
+        
         $controlForRemediation = Get-content -path $Path | ConvertFrom-Json
         $controls = $controlForRemediation.ControlRemediationList
         $resourceDetails = $controls | Where-Object { $controlIds -eq $_.ControlId };
@@ -274,7 +274,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
     }
     else {
         if ([String]::IsNullOrWhiteSpace($FilePath)) {
-            Write-Host "Fetching all Recovery Services Vault(s) in Subscription: [$($context.Subscription.SubscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host "Fetching all Recovery Services Vault(s) in Subscription: [$($context.Subscription.SubscriptionId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::SingleDashLine)
     
             # Get all Recovery Services Vault(s) in a Subscription
@@ -485,7 +485,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
         else {
             Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
             if ($($RecoveryServiceVaultsRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully enabled and locked immutability for the following Recovery Services Vault(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully enabled and locked immutability for the following Recovery Services Vault(s) in the Subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $RecoveryServiceVaultsRemediated | Format-Table -Property $colsProperty -Wrap
  
@@ -499,7 +499,7 @@ function Set-ImmutabilityForRecoveryServiceVault {
             }
          
             if ($($RecoveryServiceVaultsSkipped | Measure-Object).Count -gt 0) {
-                Write-Host "Error while enabling and locking immutability for Recovery Services Vault(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error while enabling and locking immutability for Recovery Services Vault(s) in the Subscription:" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
                 $RecoveryServiceVaultsSkipped | Format-Table -Property $colsProperty -Wrap
              
