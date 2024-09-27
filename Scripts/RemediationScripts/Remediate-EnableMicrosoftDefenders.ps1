@@ -164,8 +164,8 @@ function Remediate-VirtualMachines {
         $virtualMachinePricing = Set-AzSecurityPricing -Name "VirtualMachines" -PricingTier $reqMDCTier
     }
     catch {
-        Write-Host "Failed to set pricing tier for VirtualMachines"
-        return $_.Exception.Message
+        Write-Host "Failed to set pricing tier for VirtualMachines" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
     }
 
     if ($vulnerabilityAssessmentEnabled -ne $requiredVulnerabilityAssessmentProvider) {
@@ -192,7 +192,7 @@ function Remediate-VirtualMachines {
             }
             catch {
                 Write-Host "Failed to update server vulnerability assessment settings"
-                return $_.Exception.Message
+                Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
             }
         }
         else {
@@ -219,7 +219,7 @@ function Remediate-VirtualMachines {
         }
         catch {
             Write-Host "Failed to update WDATP settings"
-            return $_.Exception.Message
+            Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
         }
     }
 
@@ -228,7 +228,7 @@ function Remediate-VirtualMachines {
 
 
 
-function Get-NonCompliantVirtualMachine {
+function Check-VirtualMachineCompliance {
     param (
         [Parameter(Mandatory=$true)]
         [pscustomobject]$resource,
@@ -274,19 +274,17 @@ function Get-NonCompliantVirtualMachine {
         $isNonCompliant = $true
     }
 
-    # If non-compliant or any errors occurred, return custom object
-    if ($isNonCompliant) {
-        $customObject = [pscustomobject]@{
-            Name               = $resource.Name
-            PricingTier        = $resource.PricingTier
-            Id                 = $resource.Id
-            SubPlan            = $resource.SubPlan
-            endpointProtectionEnabled      = $wdAtpEnabled
-            vulnerabilityAssessmentEnabled = $assessmentProvider
-        }
-        return $customObject
+    $complianceModel = [pscustomobject]@{
+        IsCompliant        = -not $isNonCompliant
+        Name               = $resource.Name
+        PricingTier        = $resource.PricingTier
+        Id                 = $resource.Id
+        SubPlan            = $resource.SubPlan
+        endpointProtectionEnabled       = $wdAtpEnabled
+        vulnerabilityAssessmentEnabled  = $assessmentProvider
     }
-    return $null
+
+    return $complianceModel
 }
 
 
@@ -538,10 +536,10 @@ function Enable-MicrosoftDefender
         elseif ($_.Name -eq "VirtualMachines") {
             $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
             Write-Host "resource pricing tier $($resource.PricingTier)"
-            $nonCompliantVM = Get-NonCompliantVirtualMachine -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+            $vm = Check-VirtualMachineCompliance -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
 
-            if ($nonCompliantVM) {
-                $nonCompliantMDCTierResourcetype += $nonCompliantVM
+            if (!$vm.IsCompliant) {
+                $nonCompliantMDCTierResourcetype += $vm
             }
         }
         elseif( $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) -and  $_.Name -ne "StorageAccounts")
@@ -577,10 +575,10 @@ function Enable-MicrosoftDefender
 
                     if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
                         $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
-                        $nonCompliant = Get-NonCompliantVirtualMachine -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+                        $vm = Check-VirtualMachineCompliance -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
 
-                        if ($nonCompliant) {
-                            $nonCompliantMDCTierResourcetype += $nonCompliant
+                        if (!$vm.IsCompliant) {
+                            $nonCompliantMDCTierResourcetype += $vm
                         }
                     }
 
