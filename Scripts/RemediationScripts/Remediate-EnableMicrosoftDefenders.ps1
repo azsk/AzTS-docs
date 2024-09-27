@@ -157,7 +157,8 @@ function Remediate-VirtualMachines {
         [string]$reqMDCTier,              # Required MDC Tier (e.g., Standard, Free)
         [string]$vulnerabilityAssessmentEnabled, # Current server vulnerability assessment setting (e.g., MdeTvm)
         [string]$requiredVulnerabilityAssessmentProvider, # Current server vulnerability assessment setting (e.g., MdeTvm)
-        [bool]$endpointProtectionEnabled             # Whether WDATP is already enabled
+        [bool]$endpointProtectionEnabled,             # Whether WDATP is already enabled
+        [bool]$Force
     )
     try {
         $virtualMachinePricing = Set-AzSecurityPricing -Name "VirtualMachines" -PricingTier $reqMDCTier
@@ -168,10 +169,15 @@ function Remediate-VirtualMachines {
     }
 
     if ($vulnerabilityAssessmentEnabled -ne $requiredVulnerabilityAssessmentProvider) {
-        # Inform user and get confirmation
-        $confirmation = Read-Host "The current vulnerability setting is $vulnerabilityAssessmentEnabled. Once changed to MdeTvm, you cannot roll back to the previous setting. Do you still want to remediate? (Y/N)"
-        
-        if ($confirmation -eq "Y") {
+        $proceedWithUpdate = $Force
+
+        if (-not $Force) {
+            # Inform user and get confirmation only if Force is not set
+            $confirmation = Read-Host "The current vulnerability setting is $vulnerabilityAssessmentEnabled. Once changed to $requiredVulnerabilityAssessmentProvider, you cannot roll back to the previous setting. Do you still want to remediate? (Y/N)"
+            $proceedWithUpdate = $confirmation -eq "Y"
+        }
+
+        if ($proceedWithUpdate) {
             $assessmentUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Security/serverVulnerabilityAssessmentsSettings/AzureServersSetting?api-version=2022-01-01-preview"
             $assessmentBody = @{
                 kind = "AzureServersSetting"
@@ -664,7 +670,7 @@ function Enable-MicrosoftDefender
                     if ($_.Name -eq "StorageAccounts") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 -Extension '[{"name":"OnUploadMalwareScanning","isEnabled":"false","additionalExtensionProperties": null},{"name":"SensitiveDataDiscovery","isEnabled":"false","additionalExtensionProperties":null}]'
                     } elseif ($_.Name -eq "VirtualMachines") {
-                        $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+                        $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider -Force $Force
                     }
                     else {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
@@ -729,7 +735,7 @@ function Enable-MicrosoftDefender
                     }
 
                     if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
-                        $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled  -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+                        $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled  -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider -Force $Force
                     }
 
                     if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults") {
