@@ -97,6 +97,197 @@ function Setup-Prerequisites
     Write-Host "All required modules are present." -ForegroundColor $([Constants]::MessageType.Update)
 }
 
+function Fetch-API {
+    param (
+        [Parameter(Mandatory=$true)]
+        [string]$Method,
+        
+        [Parameter(Mandatory=$true)]
+        [string]$Uri,
+        
+        [Parameter(Mandatory=$false)]
+        [hashtable]$Body = @{},
+        
+        [Parameter(Mandatory=$false)]
+        [hashtable]$Headers = @{}
+    )
+
+    $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
+    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl
+    $authHeader = "Bearer " + $accessToken.Token
+    $Headers["Authorization"] = $authHeader
+    $Headers["Content-Type"] = "application/json"
+
+    try {
+        switch ($Method.ToUpper()) {
+            "GET" {
+                $response = Invoke-WebRequest -Uri $Uri -Method Get -Headers $Headers -UseBasicParsing -ErrorAction Stop
+            }
+            "POST" {
+                $jsonBody = $Body | ConvertTo-Json
+                $response = Invoke-WebRequest -Uri $Uri -Method Post -Headers $Headers -Body $jsonBody -UseBasicParsing -ErrorAction Stop
+            }
+            "PUT" {
+                $jsonBody = $Body | ConvertTo-Json
+                $response = Invoke-WebRequest -Uri $Uri -Method Put -Headers $Headers -Body $jsonBody -UseBasicParsing -ErrorAction Stop
+            }
+            "DELETE" {
+                $response = Invoke-WebRequest -Uri $Uri -Method Delete -Headers $Headers -UseBasicParsing -ErrorAction Stop
+            }
+            default {
+                throw "Unsupported HTTP method: $Method"
+            }
+        }
+
+        if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 201) {
+            return $response.Content | ConvertFrom-Json
+        }
+        else {
+            throw "API call failed with status code $($response.StatusCode)"
+        }
+    }
+    catch {
+        Write-Error "Error occurred: $_"
+    }
+}
+
+function Remediate-VirtualMachines {
+    param (
+        [string]$subscriptionId,          # Subscription ID
+        [string]$reqMDCTier,              # Required MDC Tier (e.g., Standard, Free)
+        [string]$vulnerabilityAssessmentEnabled, # Current server vulnerability assessment setting (e.g., MdeTvm)
+        [string]$requiredVulnerabilityAssessmentProvider, # Current server vulnerability assessment setting (e.g., MdeTvm)
+        [bool]$endpointProtectionEnabled,             # Whether WDATP is already enabled
+        [bool]$Force
+    )
+    try {
+        $virtualMachinePricing = Set-AzSecurityPricing -Name "VirtualMachines" -PricingTier $reqMDCTier
+    }
+    catch {
+        Write-Host "Failed to set pricing tier for VirtualMachines" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
+    }
+
+    if ($vulnerabilityAssessmentEnabled -ne $requiredVulnerabilityAssessmentProvider) {
+        $proceedWithUpdate = $Force
+
+        if (-not $Force) {
+            # Inform user and get confirmation only if Force is not set
+            $confirmation = Read-Host "The current vulnerability setting is $vulnerabilityAssessmentEnabled. Once changed to $requiredVulnerabilityAssessmentProvider, you cannot roll back to the previous setting. Do you still want to remediate? (Y/N)"
+            $proceedWithUpdate = $confirmation -eq "Y"
+        }
+
+        if ($proceedWithUpdate) {
+            $assessmentUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Security/serverVulnerabilityAssessmentsSettings/AzureServersSetting?api-version=2022-01-01-preview"
+            $assessmentBody = @{
+                kind = "AzureServersSetting"
+                properties = @{
+                    selectedProvider = $requiredVulnerabilityAssessmentProvider
+                }
+            }
+
+            try {
+                $res = Fetch-API -Method "PUT" -Uri $assessmentUri -Body $assessmentBody
+                Write-Host "Server vulnerability assessment settings updated to $($res.properties.selectedProvider)." -ForegroundColor $([Constants]::MessageType.Update)
+            }
+            catch {
+                Write-Host "Failed to update server vulnerability assessment settings"
+                Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
+            }
+        }
+        else {
+            Write-Host "User chose not to remediate the vulnerability setting. Skipping update."
+        }
+    }
+
+    if (-not $endpointProtectionEnabled) {
+        $wdAtpUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Security/settings/WDATP?api-version=2021-06-01"
+        $wdAtpBody = @{
+            id = "/subscriptions/$subscriptionId/providers/Microsoft.Security/settings/WDATP"
+            name = "WDATP"
+            type = "Microsoft.Security/settings"
+            kind = "DataExportSettings"
+            properties = @{
+                enabled = "true"
+            }
+        }
+
+        try {
+            $res = Fetch-API -Method "PUT" -Uri $wdAtpUri -Body $wdAtpBody
+            $wdAtpStatus = if ($res.properties.enabled) { "enabled" } else { "disabled" }
+            Write-Host "Endpoint Protection (WDATP) setting is $wdAtpStatus." -ForegroundColor $([Constants]::MessageType.Update)
+        }
+        catch {
+            Write-Host "Failed to update WDATP settings"
+            Write-Host $_.Exception.Message -ForegroundColor $([Constants]::MessageType.Error)
+        }
+    }
+
+    return $virtualMachinePricing
+}
+
+
+
+function Check-VirtualMachineCompliance {
+    param (
+        [Parameter(Mandatory=$true)]
+        [pscustomobject]$resource,
+        [Parameter(Mandatory=$true)]
+        [string]$subscriptionId,
+        [Parameter(Mandatory=$true)]
+        [string]$reqMDCTier,
+        [Parameter(Mandatory=$true)]
+        [string]$requiredVulnerabilityAssessmentProvider
+    )
+
+    $isNonCompliant = $false
+    $wdAtpEnabled = $null
+    $assessmentProvider = $null
+    $securityEndpointProtectionSettingAPI = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Security/settings/WDATP?api-version=2022-05-01"
+    $securityVulnerabilityAssessmentSettingAPI = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Security/serverVulnerabilityAssessmentsSettings?api-version=2023-05-01"
+
+    if ($resource.PricingTier -ne $reqMDCTier) {
+        $isNonCompliant = $true
+    }
+
+    try {
+        $wdAtpResponse = Fetch-API -Method Get -Uri $securityEndpointProtectionSettingAPI -ErrorAction Stop
+        $wdAtpEnabled = $wdAtpResponse.properties.enabled
+        if ($wdAtpEnabled -eq $false) {
+            $isNonCompliant = $true
+        }
+    }
+    catch {
+        Write-Warning "Failed to fetch WDATP settings: $_"
+        $isNonCompliant = $true
+    }
+
+    try {
+        $assessmentResponse = Fetch-API -Method Get -Uri $securityVulnerabilityAssessmentSettingAPI -ErrorAction Stop
+        $assessmentProvider = $assessmentResponse.value[0].properties.selectedProvider
+        if ($assessmentProvider -ne $requiredVulnerabilityAssessmentProvider) {
+            $isNonCompliant = $true
+        }
+    }
+    catch {
+        Write-Warning "Failed to fetch server vulnerability assessment settings: $_"
+        $isNonCompliant = $true
+    }
+
+    $complianceModel = [pscustomobject]@{
+        IsCompliant        = -not $isNonCompliant
+        Name               = $resource.Name
+        PricingTier        = $resource.PricingTier
+        Id                 = $resource.Id
+        SubPlan            = $resource.SubPlan
+        endpointProtectionEnabled       = $wdAtpEnabled
+        vulnerabilityAssessmentEnabled  = $assessmentProvider
+    }
+
+    return $complianceModel
+}
+
+
 function Enable-MicrosoftDefender
 {
     <#
@@ -270,7 +461,7 @@ function Enable-MicrosoftDefender
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
     $roles = $currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Security Admin" ) -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups")}
 
-    if(($currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Security Admin" ) -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups")} | Measure-Object).Count -le 0)
+    if(($roles | Measure-Object).Count -le 0)
     {
         Write-Host "Warning: This script can only be run by an Owner of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
@@ -279,6 +470,7 @@ function Enable-MicrosoftDefender
     # Declaring required resource types and pricing tier
     $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs";
     $reqMDCTier = "Standard";
+    $requiredVulnerabilityAssessmentProvider = "MdeTvm"
     $reqProviderName = "Microsoft.Security"
     $isProviderRegister = $true
     $previousProviderRegistrationState = $false
@@ -341,6 +533,15 @@ function Enable-MicrosoftDefender
         {
             $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id", "SubPlan"
         }
+        elseif ($_.Name -eq "VirtualMachines") {
+            $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
+            Write-Host "resource pricing tier $($resource.PricingTier)"
+            $vm = Check-VirtualMachineCompliance -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+
+            if (!$vm.IsCompliant) {
+                $nonCompliantMDCTierResourcetype += $vm
+            }
+        }
         elseif( $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) -and  $_.Name -ne "StorageAccounts")
         {
             $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id","SubPlan"
@@ -372,8 +573,13 @@ function Enable-MicrosoftDefender
                         $nonCompliantMDCTierResourcetype += $resource  
                     }
 
-                    if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource 
+                    if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
+                        $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
+                        $vm = Check-VirtualMachineCompliance -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+
+                        if (!$vm.IsCompliant) {
+                            $nonCompliantMDCTierResourcetype += $vm
+                        }
                     }
 
                     if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults" -and  $_.PricingTier -ne $reqMDCTier) {
@@ -461,6 +667,8 @@ function Enable-MicrosoftDefender
 
                     if ($_.Name -eq "StorageAccounts") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 -Extension '[{"name":"OnUploadMalwareScanning","isEnabled":"false","additionalExtensionProperties": null},{"name":"SensitiveDataDiscovery","isEnabled":"false","additionalExtensionProperties":null}]'
+                    } elseif ($_.Name -eq "VirtualMachines") {
+                        $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider -Force $Force
                     }
                     else {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
@@ -468,13 +676,22 @@ function Enable-MicrosoftDefender
                    
                    
                     if (($remediatedResource | Measure-Object).Count -gt 0) {
-                        $remediatedResources += $remediatedResource | Select-Object  @{N = 'Id'; E = { $resource.Id } },
-                        @{N = 'Name'; E = { $resource.Name } },
-                        @{N = 'CurrentPricingTier'; E = { $reqMDCTier } },
-                        @{N = 'PreviousPricingTier'; E = { $resource.PricingTier } },
-                        @{N = 'IsPreviousProvisioningStateRegistered'; E = { $previousProviderRegistrationState } },
-                        @{N = 'SubPlan'; E = { $resource.SubPlan } }
-
+                        $resourceInfo = @{
+                            Id                               = $resource.Id
+                            Name                             = $resource.Name
+                            CurrentPricingTier               = $reqMDCTier
+                            PreviousPricingTier              = $resource.PricingTier
+                            IsPreviousProvisioningStateRegistered = $previousProviderRegistrationState
+                            SubPlan                          = $resource.SubPlan
+                        }
+        
+                        # Check if the current resource is VirtualMachines to add extra properties
+                        if ($_.Name -eq "VirtualMachines") {
+                            $resourceInfo.previousVulnerabilityAssessmentEnabled = $_.vulnerabilityAssessmentEnabled
+                            $resourceInfo.previousEndpointProtectionEnabled = $_.endpointProtectionEnabled
+                        }
+        
+                        $remediatedResources += [PSCustomObject]$resourceInfo
                     }
                 }
                 catch {
@@ -516,7 +733,7 @@ function Enable-MicrosoftDefender
                     }
 
                     if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
+                        $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled  -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider -Force $Force
                     }
 
                     if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults") {
@@ -525,12 +742,22 @@ function Enable-MicrosoftDefender
                     
                     if (($remediatedResource | Measure-Object).Count -gt 0)
                     {
-                        $remediatedResources += $remediatedResource | Select-Object  @{N = 'Id'; E = { $resource.Id }},
-                        @{N='Name';E={$resource.Name}},
-                        @{N='CurrentPricingTier';E={$reqMDCTier}},
-                        @{N='PreviousPricingTier';E={$resource.PricingTier}},
-                        @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}},
-                        @{N = 'SubPlan'; E = { $resource.SubPlan } }
+                        $resourceInfo = @{
+                            Id                               = $resource.Id
+                            Name                             = $resource.Name
+                            CurrentPricingTier               = $reqMDCTier
+                            PreviousPricingTier              = $resource.PricingTier
+                            IsPreviousProvisioningStateRegistered = $previousProviderRegistrationState
+                            SubPlan                          = $resource.SubPlan
+                        }
+        
+                        # Check if the current resource is VirtualMachines to add extra properties
+                        if ($_.Name -eq "VirtualMachines") {
+                            $resourceInfo.previousVulnerabilityAssessmentEnabled = $_.vulnerabilityAssessmentEnabled
+                            $resourceInfo.previousEndpointProtectionEnabled = $_.endpointProtectionEnabled
+                        }
+        
+                        $remediatedResources += [PSCustomObject]$resourceInfo
                     }
                     
                 }
