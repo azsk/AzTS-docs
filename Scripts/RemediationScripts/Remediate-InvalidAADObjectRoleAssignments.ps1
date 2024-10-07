@@ -53,9 +53,9 @@ function Pre_requisites
     This command would check pre requisites modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Resources, AzureAD, Az.Accounts" -ForegroundColor Cyan
+    Write-Host "Required modules are: Az.Resources, AzureAD (or AzureADPreview), Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
-    $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts)
+    $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, AzureADPreview, Az.Accounts, Az.ResourceGraph)
     
     # Checking if 'Az.Accounts' module is available or not.
     if($availableModules.Name -notcontains 'Az.Accounts')
@@ -83,15 +83,15 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'Az.ResourceGraph')
     {
         Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
-        Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
+        Install-Module -Name Az.ResourceGraph -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
         Write-Host "Az.ResourceGraph module is available." -ForegroundColor Green
     }
 
-    # Checking if 'AzureAD' module is available or not.
-    if($availableModules.Name -notcontains 'AzureAD')
+    # Checking if 'AzureAD' or 'AzureADPreview' module is available or not.
+    if(($availableModules.Name -notcontains 'AzureAD') -and ($availableModules.Name -notcontains 'AzureADPreview'))
     {
         Write-Host "Installing module AzureAD..." -ForegroundColor Yellow
         Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
