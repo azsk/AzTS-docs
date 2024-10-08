@@ -44,7 +44,7 @@ function Setup-Prerequisites {
     #>
 
     # List of required modules
-    $requiredModules = @("Az.Accounts", "Az.DataProtection")
+    $requiredModules = @("Az.Accounts", "Az.RecoveryServices")
 
     Write-Host "Required modules: $($requiredModules -join ', ')"
     Write-Host $([Constants]::SingleDashLine)    
@@ -58,27 +58,13 @@ function Setup-Prerequisites {
         if ($availableModules.Name -notcontains $_) {
             Write-Host "$($_) module is not present." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Installing [$($_)] module..." -ForegroundColor $([Constants]::MessageType.Info)
-            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
+            Install-Module -Name $_ -Scope CurrentUser -Repository 'PSGallery' -AllowClobber -ErrorAction Stop
             Write-Host "[$($_)] module installed." -ForegroundColor $([Constants]::MessageType.Update)
         }
         else {
             Write-Host "[$($_)] module is present." -ForegroundColor $([Constants]::MessageType.Update)
         }
     }
-}
-
-function Get-RecoveryServiceVaultDetails {
-    param (
-        [Parameter(Mandatory = $true)]
-        $RecoveryServiceVaultDetails,
-
-        [Parameter(Mandatory = $true)]
-        $RecoveryServiceVaultPropertyDetails
-    )
-    return $RecoveryServiceVaultDetails | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
-    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
-    @{N = 'SoftDeleteState'; E = { $RecoveryServiceVaultPropertyDetails.SoftDeleteFeatureState } },
-    @{N = 'ResourceName'; E = { $_.Name } }
 }
 
 function Set-SoftDeleteForRecoveryServicesVault {
@@ -229,12 +215,11 @@ function Set-SoftDeleteForRecoveryServicesVault {
 
         $validResources | ForEach-Object { 	
             try {
-                
                 $RecoveryServicesVaultResource = Get-AzRecoveryServicesVault -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-                     
-                # Get Vault property Details
-                $vaultProperty = Get-AzRecoveryServicesVaultProperty -VaultId $RecoveryServicesVaultResource.Id
-                $RecoveryServicesVaultDetails += Get-RecoveryServiceVaultDetails -RecoveryServiceVaultDetails $RecoveryServicesVaultResource -RecoveryServiceVaultPropertyDetails $vaultProperty
+                $RecoveryServicesVaultDetails += $RecoveryServicesVaultResource | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                @{N = 'SoftDeleteState'; E = { $_.Properties.SoftDeleteSettings.SoftDeleteState } },
+                @{N = 'ResourceName'; E = { $_.Name } }
             }
             catch {
                 Write-Host "Valid resource ID(s) not found in input JSON file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Warning)
@@ -267,7 +252,11 @@ function Set-SoftDeleteForRecoveryServicesVault {
                       
                     # Get Vault property Details
                     $vaultProperty = Get-AzRecoveryServicesVaultProperty -VaultId $_.Id
-                    $RecoveryServicesVaultDetails += Get-RecoveryServiceVaultDetails -RecoveryServiceVaultDetails $RecoveryServiceVaultDetail -RecoveryServiceVaultPropertyDetails $vaultProperty
+                   
+                    $RecoveryServicesVaultDetails +=  $RecoveryServiceVaultDetail | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                    @{N = 'SoftDeleteState'; E = { $vaultProperty.SoftDeleteFeatureState } },
+                    @{N = 'ResourceName'; E = { $_.Name } }
                 }
                 catch {
                     Write-Host "Error fetching Recovery Services Vault(s) resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -292,10 +281,10 @@ function Set-SoftDeleteForRecoveryServicesVault {
                 try {
                     
                     $RecoveryServicesVaultResource = Get-AzRecoveryServicesVault -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -ErrorAction SilentlyContinue
-                     
-                    # Get Vault property Details
-                    $vaultProperty = Get-AzRecoveryServicesVaultProperty -VaultId $RecoveryServicesVaultResource.ID
-                    $RecoveryServicesVaultDetails += Get-RecoveryServiceVaultDetails -RecoveryServiceVaultDetails $RecoveryServicesVaultResource -RecoveryServiceVaultPropertyDetails $vaultProperty
+                    $RecoveryServicesVaultDetails += $RecoveryServicesVaultResource | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
+                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                    @{N = 'SoftDeleteState'; E = { $_.Properties.SoftDeleteSettings.SoftDeleteState } },
+                    @{N = 'ResourceName'; E = { $_.Name } }
                 }
                 catch {
                     Write-Host "Error fetching Recovery Services Vault(s) resource: Resource ID:  [$($resourceId)]. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
@@ -410,7 +399,10 @@ function Set-SoftDeleteForRecoveryServicesVault {
                 $RecoveryServicesVaultResource = Set-AzRecoveryServicesVaultProperty -VaultId $_.ResourceId -SoftDeleteFeatureState AlwaysON -ErrorAction Stop   
 
                 if ($RecoveryServicesVaultResource.SoftDeleteFeatureState.ToString() -eq $expectedSoftDeleteState) {
-                    $RecoveryServicesVaultsRemidiated += $RecoveryServicesVault
+                    $RecoveryServicesVaultsRemidiated += $RecoveryServicesVault | Select-Object @{N = 'ResourceId'; E = { $_.ResourceId } },
+                    @{N = 'ResourceGroupName'; E = { $_.ResourceGroupName } },
+                    @{N = 'SoftDeleteState'; E = { $RecoveryServicesVaultResource.SoftDeleteFeatureState } },
+                    @{N = 'ResourceName'; E = { $_.ResourceName } }
                     $logResource = @{}	
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
                     $logResource.Add("ResourceName", ($_.ResourceName))	
