@@ -78,6 +78,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 66. [Azure_BackupVault_DP_Enable_Immutability](Readme.md#66-azure_backupvault_dp_enable_immutability)
 67. [Azure_BackupVault_DP_Enable_Soft_Delete](Readme.md#67-azure_backupvault_dp_enable_soft_delete)
 68. [Azure_RecoveryServicesVault_DP_Enable_Immutability](Readme.md#68-azure_RecoveryServicesVault_DP_Enable_Immutability)
+69. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](Readme.md#66-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
 
 <br />
 
@@ -1422,6 +1423,22 @@ Yes
 ### Supports rollback?
 No
 
+
+___
+
+## 69. Azure_RecoveryServicesVault_DP_Enable_Soft_Delete
+
+### Display Name
+Always-on soft delete must be enabled on Recovery Services Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSoftDeleteForRecoveryServicesVault](Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### Supports rollback?
+No
 ___
 
 ## Supports managed identity based remediations
