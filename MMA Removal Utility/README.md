@@ -9,6 +9,6 @@
 ## MMA Removal Utility Deprecation Notice
 
 
-The AzTS MMA Discovery and Removal Utility has been deprecated. We recommend you to try out new options suggested by Product team to remove MMA extension which is available [here](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-mma-removal-tool).
+The AzTS MMA Discovery and Removal Utility has been deprecated. We recommend you to try out new utility suggested by Product team to remove MMA extension which is available [here](https://learn.microsoft.com/en-us/azure/azure-monitor/agents/azure-monitor-agent-mma-removal-tool).
 
 
