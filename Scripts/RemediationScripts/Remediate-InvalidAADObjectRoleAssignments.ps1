@@ -53,9 +53,9 @@ function Pre_requisites
     This command would check pre requisites modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Resources, AzureAD, Az.Accounts" -ForegroundColor Cyan
+    Write-Host "Required modules are: Az.Resources, AzureAD, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
-    $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts)
+    $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts, Az.ResourceGraph)
     
     # Checking if 'Az.Accounts' module is available or not.
     if($availableModules.Name -notcontains 'Az.Accounts')
@@ -83,7 +83,7 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'Az.ResourceGraph')
     {
         Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
-        Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
+        Install-Module -Name Az.ResourceGraph -Scope CurrentUser -Repository 'PSGallery'
     }
     else
     {
