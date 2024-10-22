@@ -75,7 +75,10 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 63.  [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](Readme.md#63-azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
 64. [Azure_DBforPostgreSQL_DP_Use_Secure_TLS_Version](Readme.md#64-azure_dbforpostgresql_dp_use_secure_tls_version)
 65. [Azure_RedisEnterprise_DP_Use_TLS_Encrypted_Connections](Readme.md#65-azure_redisenterprise_dp_use_tls_encrypted_connections)
-
+66. [Azure_BackupVault_DP_Enable_Immutability](Readme.md#66-azure_backupvault_dp_enable_immutability)
+67. [Azure_BackupVault_DP_Enable_Soft_Delete](Readme.md#67-azure_backupvault_dp_enable_soft_delete)
+68. [Azure_RecoveryServicesVault_DP_Enable_Immutability](Readme.md#68-azure_RecoveryServicesVault_DP_Enable_Immutability)
+69. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](Readme.md#66-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
 
 <br />
 
@@ -1362,6 +1365,80 @@ Yes
 ### Supports rollback?
 Yes
 
+
+___
+
+## 66. Azure_BackupVault_DP_Enable_Immutability
+
+### Display Name
+Immutability must be enabled and locked on Backup Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableImmutabilitySettingForBackupVault](Remediate-EnableImmutabilitySettingForBackupVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+___
+
+## 67. Azure_BackupVault_DP_Enable_Soft_Delete
+
+### Display Name
+AlwaysOn soft delete must be enabled on Backup Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSoftDeleteForBackupVault](Remediate-EnableSoftDeleteForBackupVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+---
+
+## 68. Azure_RecoveryServicesVault_DP_Enable_Immutability
+
+### Display Name
+Immutability must be enabled and locked on Recovery Services Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableImmutabilitySettingForRecoveryServiceVault](Remediate-EnableImmutabilitySettingForRecoveryServiceVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+No
+
+
+___
+
+## 69. Azure_RecoveryServicesVault_DP_Enable_Soft_Delete
+
+### Display Name
+Always-on soft delete must be enabled on Recovery Services Vault
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableSoftDeleteForRecoveryServicesVault](Remediate-EnableSoftDeleteForRecoveryServicesVault.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### Supports rollback?
+No
 ___
 
 ## Supports managed identity based remediations
