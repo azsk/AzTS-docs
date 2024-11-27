@@ -1,0 +1,33 @@
+.create table BaselineControls (Timespan: datetime, JobId: string, Id: string, ControlId: string, DisplayName: string, Description: string, FeatureName: string, Enabled: bool, Tags: string, Category: string, ControlRequirements: string, ControlSeverity: string, ControlScanSource: string, Remediation: string, ControlSettings: dynamic, Automated: string)
+ 
+.create table ControlResults (Timespan: datetime, JobId: int, ResourceId: string, ResourceName: string, OrgTenantId: string, ResourceType: string, IsResourceValid: bool, ControlUniqueId: string, ControlName: string, ConsiderForCompliance: bool, VerificationResult: string, ActualVerificationResult: string, StatusReason: string, AdditionalInformation: dynamic, AssignedTo: dynamic, LastResultTransitionOn: datetime, FirstFailedOn: datetime, FirstScannedOn: datetime, ScannedOn: datetime, ScanSource: string, UniqueId: string, DueDate: datetime, ScanRequestedBy: string, CustomField1: string, CustomField2: string, CustomField3: string, CustomField4: string, CustomField5: string, CustomField6: string)
+ 
+.create table MSEntraDeltaProcessorLink (Timespan: datetime, JobId: int, OrgTenantId: string, ApplicationDeltaUri: string, ServicePrincipalDeltaUri: string, IsNextExecutionRequired: bool)
+ 
+.create table MsEntraOnboardedTenants (Timespan: datetime, TenantId: string, TenantName: string, Category: string, TenantStatus: string, OnboardedOn: datetime, OffboardedOn: datetime, AADLicense: string, TenantCreationDate: datetime, TenantExpiryDate: datetime, TenantAdminAlias: string)
+ 
+.create table MSEntraResourceInventory (Timespan: datetime, JobId: int, ResourceId: string, ResourceName: string, ResourceType: string, ResourceOwners: string, IsResourceValid: bool, CustomField1: dynamic, CustomField2: dynamic, CustomField3: dynamic, CustomField4: dynamic, CustomField5: dynamic, CustomField6: dynamic, ConsiderForEvaluation: bool, OrgTenantId: string, Kind: string, MetadataProcessedBy: string, UniqueKey: string)
+ 
+.create table MSEntraTenantProcessingStatus (Timespan: datetime, JobId: int, OrgTenantId: string, ResourceType: string, Status: string, Message: string, AdditionalDetails: string, ProcessorSource: string)
+ 
+.create table MSEntraTenantRBACInventory (Timespan: datetime, JobId: int, OrgTenantId: string, RoleId: string, RoleDefinitionId: string, RoleName: string, DisplayName: string, AccountType: string, EntityId: string, EntityEmails: dynamic, CustomField1: dynamic, CustomField2: dynamic, CustomField3: dynamic, CustomField4: dynamic, CustomField5: dynamic, CustomField6: dynamic)
+ 
+ 
+.alter table BaselineControls policy streamingingestion enable
+ 
+.alter table ControlResults policy streamingingestion enable
+ 
+ 
+.alter table MSEntraDeltaProcessorLink policy streamingingestion enable
+ 
+ 
+.alter table MsEntraOnboardedTenants policy streamingingestion enable
+ 
+ 
+.alter table MSEntraResourceInventory policy streamingingestion enable
+ 
+ 
+.alter table MSEntraTenantProcessingStatus policy streamingingestion enable
+ 
+ 
+.alter table MSEntraTenantRBACInventory policy streamingingestion enable

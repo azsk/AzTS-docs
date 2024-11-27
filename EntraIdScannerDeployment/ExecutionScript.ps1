@@ -6,7 +6,7 @@ $ExecutionContext.SessionState.LanguageMode
 
 #***Step 2 - Install Az Modules and Azure AD
 
-install-module -name az.accounts -allowclobber -scope currentuser -repository psgallery
+<#install-module -name az.accounts -allowclobber -scope currentuser -repository psgallery
 install-module -name az.resources -allowclobber -scope currentuser -repository psgallery
 install-module -name az.storage -allowclobber -scope currentuser -repository psgallery
 install-module -name az.managedserviceidentity -allowclobber -scope currentuser -repository psgallery
@@ -16,7 +16,7 @@ install-module -name az.applicationinsights -allowclobber -scope currentuser -re
 install-module -name az.websites -allowclobber -scope currentuser -repository psgallery
 install-module -name az.network -allowclobber -scope currentuser -repository psgallery
 install-module -name az.frontdoor -allowclobber -scope currentuser -repository psgallery
-install-module -name azuread -allowclobber -scope currentuser -repository psgallery
+install-module -name azuread -allowclobber -scope currentuser -repository psgallery#>
 
 
 $setupName ='\EntraSetup.ps1'
