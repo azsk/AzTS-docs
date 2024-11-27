@@ -6,20 +6,17 @@ $ExecutionContext.SessionState.LanguageMode
 
 #***Step 2 - Install Az Modules and Azure AD
 
-#Install-Module -Name Az.Accounts -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.Resources -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.Storage -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.ManagedServiceIdentity -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.Monitor -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.OperationalInsights -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.ApplicationInsights -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.Websites -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.Network -AllowClobber -Scope CurrentUser -repository PSGallery
-#Install-Module -Name Az.FrontDoor -AllowClobber -Scope CurrentUser -repository PSGallery
-
-#Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
-
-
+install-module -name az.accounts -allowclobber -scope currentuser -repository psgallery
+install-module -name az.resources -allowclobber -scope currentuser -repository psgallery
+install-module -name az.storage -allowclobber -scope currentuser -repository psgallery
+install-module -name az.managedserviceidentity -allowclobber -scope currentuser -repository psgallery
+install-module -name az.monitor -allowclobber -scope currentuser -repository psgallery
+install-module -name az.operationalinsights -allowclobber -scope currentuser -repository psgallery
+install-module -name az.applicationinsights -allowclobber -scope currentuser -repository psgallery
+install-module -name az.websites -allowclobber -scope currentuser -repository psgallery
+install-module -name az.network -allowclobber -scope currentuser -repository psgallery
+install-module -name az.frontdoor -allowclobber -scope currentuser -repository psgallery
+install-module -name azuread -allowclobber -scope currentuser -repository psgallery
 
 
 $setupName ='\EntraSetup.ps1'
