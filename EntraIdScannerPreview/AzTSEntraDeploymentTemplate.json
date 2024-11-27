@@ -1,0 +1,2689 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "EnableWAF": {
+        "type": "bool",
+        "defaultValue": false
+      },
+      "hostingPlanName": {
+        "type": "string",
+        "defaultValue": "MSEntraScanner-AppServicePlan"
+      },
+      "apiHostingPlanName": {
+        "type": "string",
+        "defaultValue": "MSEntraScanner-API-AppServicePlan"
+      },
+      "skuName": {
+        "type": "string",
+        "defaultValue": "['EP1']",
+        "allowedValues": [
+          "F1",
+          "D1",
+          "B1",
+          "B2",
+          "B3",
+          "S1",
+          "S2",
+          "S3",
+          "P1",
+          "P2",
+          "P3",
+          "P3V2",
+          "P2V2",
+          "P4",
+          "EP3",
+          "EP1",
+          "Y1"
+        ],
+        "metadata": {
+          "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+        }
+      },
+      "apiSkuName": {
+        "type": "string",
+        "defaultValue": "S1",
+        "allowedValues": [
+          "F1",
+          "D1",
+          "B1",
+          "B2",
+          "B3",
+          "S1",
+          "S2",
+          "S3",
+          "P1",
+          "P2",
+          "P3",
+          "P4"
+        ],
+        "metadata": {
+          "description": "Describes plan's pricing tier and capacity. Check details at https://azure.microsoft.com/en-us/pricing/details/app-service/"
+        }
+      },
+      "skuCapacity": {
+        "type": "int",
+        "defaultValue": 1,
+        "minValue": 1,
+        "metadata": {
+          "description": "Describes plan's instance count"
+        }
+      },
+      "storageSKU": {
+        "type": "string",
+        "defaultValue": "Standard_LRS",
+        "allowedValues": [
+          "Standard_LRS",
+          "Standard_ZRS",
+          "Standard_GRS",
+          "Standard_RAGRS",
+          "Premium_LRS"
+        ]
+      },
+      "runtime": {
+        "type": "string",
+        "defaultValue": "dotnet",
+        "allowedValues": [
+          "node",
+          "dotnet",
+          "java"
+        ],
+        "metadata": {
+          "description": "The language worker runtime to load in the function app."
+        }
+      },
+      "storageContainerName": {
+        "type": "string",
+        "defaultValue": "msentracontrolresults"
+      },
+      "storageQueueNamePrefix": {
+        "type": "string",
+        "defaultValue": "app-inventoryqueue"
+      },
+      "laWorkspaceName": {
+        "type": "string",
+        "defaultValue": "MSEntraScanner-LA"
+      },
+      "applicationInsightsName": {
+        "type": "string",
+        "defaultValue": "MSEntraScanner-AppInsight"
+      },
+      "internalMIName": {
+        "type": "string",
+        "defaultValue": "MSEntraScanner-InternalMI"
+      },
+      "laSkuName": {
+        "type": "string",
+        "allowedValues": [
+          "pergb2018",
+          "Free",
+          "Standalone",
+          "PerNode",
+          "Standard",
+          "Premium"
+        ],
+        "defaultValue": "pergb2018",
+        "metadata": {
+          "description": "Pricing tier: PerGB2018 or legacy tiers (Free, Standalone, PerNode, Standard or Premium) which are not available to all customers."
+        }
+      },
+      "TenantId": {
+        "type": "string"
+      },
+      "UIClientId": {
+        "type": "string"
+      },
+      "WebApiClientId": {
+        "type": "string"
+      },
+      "ResourceHash": {
+        "type": "string"
+      },
+      "TelemetryIdentifier": {
+        "type": "string"
+      },
+      "OrganizationName": {
+        "type": "string",
+        "defaultValue": "NA"
+      },
+      "DivisionName": {
+        "type": "string",
+        "defaultValue": "NA"
+      },
+      "ContactEmailAddressList": {
+        "type": "string",
+        "defaultValue": "NA"
+      },
+      "HashedTenantId": {
+        "type": "string",
+        "defaultValue": "NA"
+      },
+      "AnonymousUsageTelemetryLogLevel": {
+        "type": "string",
+        "allowedValues": ["None", "Onboarding", "Anonymous", "All"],
+        "defaultValue": "None"
+      },
+      "RootSchedulerPackageURL": {
+        "type": "string"
+      },
+      "InventoryFetcherPackageURL": {
+        "type": "string"
+      },
+      "WorkItemProcessorPackageURL": {
+        "type": "string"
+      },
+      "ScannerPackageURL": {
+        "type": "string"
+      },
+      "WebApiPackageURL": {
+        "type": "string"
+      },
+      "AzureEnvironmentName": {
+        "type" : "string"
+      },
+      "IsAutoUpdaterEnabled": {
+        "type" : "bool",
+        "defaultValue": true
+      },
+      "IsAzTSUIEnabled": {
+        "type" : "bool",
+        "defaultValue": true
+      },
+      "FrontDoorEndpointSuffix":{
+        "type": "string"
+      },
+      "WebAppEndpointSuffix":{
+        "type": "string"
+      },
+      "CentralStorageAccountConnectionString": {
+        "type" : "string"
+      },
+      "IsMultiTenantSetUp": {
+        "type" : "bool",
+        "defaultValue": false
+      },
+      "ScannerIdentityApplicationId":{
+        "type": "string",
+        "metadata": {
+          "description": "Application Id of central scanning identity in multi-tenant setup"
+        }
+      },
+      "AutoUpdaterFunctionTimeout": {
+        "type": "string",
+        "defaultValue": "00:09:00"
+      },
+      "RootSchedulerFunctionTimeout": {
+        "type": "string",
+        "defaultValue": "00:09:00"
+      },
+      "InventoryFetcherFunctionTimeout": {
+        "type": "string",
+        "defaultValue": "00:09:00"
+      },
+      "ScannerFunctionTimeout": {
+        "type": "string",
+        "defaultValue": "00:09:00"
+      },
+      "WorkItemProcessorFunctionTimeout": {
+        "type": "string",
+        "defaultValue": "00:09:00"
+      },
+      "AADClientAppDetailsInstance": {
+        "type": "string",
+        "defaultValue": "https://login.microsoftonline.com/"
+      },
+      "AzureEnvironmentPortalURI": {
+        "type": "string",
+        "defaultValue": "https://portal.azure.com/"
+      },
+      "clusterName": {
+        "type": "string",
+        "defaultValue": "msentrascannercluster",
+        "metadata": {
+          "description": "The name of the Kusto cluster."
+        }
+      },
+      "kustoskuName": {
+        "type": "string",
+        "allowedValues": [
+          "Dev(No SLA)_Standard_D11_v2",
+          "Standard_D1",
+          "Standard_D11_v2",
+          "Standard_D14_v2",
+          "Standard_E64i_v3",
+          "Standard_L8s_v3"
+        ],
+        "defaultValue": "Standard_L8s_v3",
+        "metadata": {
+          "description": "The SKU for the Kusto cluster."
+        }
+      },
+      "kustoskuTier": {
+        "type": "string",
+        "allowedValues": [
+          "Basic",
+          "Standard"
+        ],
+        "defaultValue": "Standard",
+        "metadata": {
+          "description": "The tier of the SKU for the Kusto cluster."
+        }
+      },
+      "kustodatabaseName": {
+        "type": "string",
+        "defaultValue": "EntraIdScannerDatabase",
+        "metadata": {
+          "description": "The name of the database within the Kusto cluster."
+        }
+      },
+      "kustoSkuCapacity": {
+        "type": "int",
+        "defaultValue": 2,
+        "allowedValues": [2, 4, 8, 16, 32], 
+        "metadata": {
+          "description": "The capacity of the Kusto SKU."
+        }
+      }
+    },
+    "variables": {
+      "RootScheduler": "[concat('MSEntraScanner-RootScheduler-', parameters('ResourceHash'))]",
+      "InventoryFetcher": "[concat('MSEntraScanner-InventoryFetcher-', parameters('ResourceHash'))]",
+      "FullFetchInventoryFetcher": "[concat('MSEntraScanner-InventoryFetcher-FullFetch', parameters('ResourceHash'))]",
+      "Scanner": "[concat('MSEntraScanner-MA-', parameters('ResourceHash'))]",
+      "APIFrontDoorName": "[concat('MSEntraScanner-API-FrontDoor-', parameters('ResourceHash'))]",
+      "UIFrontDoorName": "[concat('MSEntraScanner-UI-FrontDoor-', parameters('ResourceHash'))]",
+      "wafPolicyName": "[concat('AzTSEntraWAFPolicy', parameters('ResourceHash'))]",
+      "APIFrontDoorUrl": "[concat('https://',toLower(variables('APIFrontDoorName')), parameters('FrontDoorEndpointSuffix'))]",
+      "UIFrontDoorUrl": "[concat('https://',toLower(variables('UIFrontDoorName')), parameters('FrontDoorEndpointSuffix'))]",
+      "WebUIUrl": "[concat('https://',variables('WebApi'), parameters('WebAppEndpointSuffix'))]",
+      "AutoUpdater": "[concat('MSEntraScanner-AutoUpdater-', parameters('ResourceHash'))]",
+      "WorkItemProcessor": "[concat('MSEntraScanner-WorkItemProcessor-', parameters('ResourceHash'))]",
+      "WebApi": "[concat('MSEntraScanner-WebApi-', parameters('ResourceHash'))]",
+      "WebUI": "[concat('MSEntraScanner-UI-', parameters('ResourceHash'))]",
+      "WebUISlotName": "[concat('Staging-', parameters('ResourceHash'))]",
+      "functionWorkerRuntime": "[parameters('runtime')]",
+      "storageName": "[concat('msentrastorage', parameters('ResourceHash'))]",
+      "workspaceName": "[concat('MSEntraScanner-LAWorkspace-', parameters('ResourceHash'))]",
+      "clusterName": "[concat('msentracluster', parameters('ResourceHash'))]",
+      "applicationInsightsName": "[concat(parameters('applicationInsightsName'), '-', parameters('ResourceHash'))]",
+      "internalMIName": "[concat(parameters('internalMIName'), '-', parameters('ResourceHash'))]",
+      "rgRoleAssignmentGuid": "[guid(resourceGroup().id)]",
+      "contributorRoleId": "[concat(subscription().Id, '/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+      "rgRoleAssignmentName": "[variables('rgRoleAssignmentGuid')]",
+      "AutoUpdaterConnectionAPI" : "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/',resourceGroup().location,'/managedApis/azureappservice')]",
+      "RootSchedulerfileShare": "[toLower(variables('RootScheduler'))]",
+      "WIfileShare": "[toLower(variables('WorkItemProcessor'))]",
+      "AUfileShare": "[toLower(variables('AutoUpdater'))]",
+      "InventoryFetcherfileShare": "[toLower(variables('InventoryFetcher'))]",
+      "FullFetchInventoryFetcherfileShare": "[toLower(variables('FullFetchInventoryFetcher'))]",
+      "WebApifileShare": "[toLower(variables('WebApi'))]",
+      "UIfileShare": "[toLower(variables('WebUI'))]",
+      "storageQueueName" : "[concat(parameters('storageQueueNamePrefix'), toLower(parameters('ResourceHash')))]",
+      "userAssignedIdentities" : {
+          "singleTenantSetUp": {
+              "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]": {}
+          },
+          "multiTenantSetUp": {
+              "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]": {}
+        }
+      },
+      "kustoClusterId": "[resourceId('Microsoft.Kusto/clusters', variables('clusterName'))]",
+      "kustoDatabaseId": "[resourceId('Microsoft.Kusto/clusters/databases', variables('clusterName'), parameters('kustodatabaseName'))]"
+    },
+    "resources": [
+      {
+        "name": "[variables('storageName')]",
+        "type": "Microsoft.Storage/storageAccounts",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2019-06-01",
+        "sku": {
+          "name": "[parameters('storageSKU')]"
+        },
+        "dependsOn": [],
+        "properties": {
+          "supportsHttpsTrafficOnly": true,
+          "allowBlobPublicAccess": false,
+          "minimumTlsVersion": "TLS1_2"
+        },
+        "tags": {
+          "displayName": "msentrascannerapp"
+        },
+        "kind": "StorageV2",
+        "resources": [
+          {
+            "type": "blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat('default/', parameters('StorageContainerName'))]",
+            "dependsOn": [
+              "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+            ],
+            "properties": {
+              "publicAccess": "None"
+            }
+          }
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('RootSchedulerfileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('InventoryFetcherfileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('FullFetchInventoryFetcherfileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('WIfileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('AUfileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('WebApifileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+        "apiVersion": "2019-06-01",
+        "name": "[concat(variables('storageName'), '/default/', variables('UIfileShare'))]",
+        "dependsOn": [
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+        ]
+      },
+      {
+        "type": "Microsoft.OperationalInsights/workspaces",
+        "name": "[variables('workspaceName')]",
+        "apiVersion": "2017-03-15-preview",
+        "location": "[resourceGroup().location]",
+        "properties": {
+          "sku": {
+            "name": "[parameters('laSkuName')]"
+          },
+          "publicNetworkAccessForIngestion": "['Enabled']",
+          "publicNetworkAccessForQuery": "['Enabled']",
+          "retentionInDays": 120,
+          "features": {
+            "searchVersion": 1,
+            "legacy": 0,
+            "enableLogAccessUsingOnlyResourcePermissions": true
+          }
+        }
+      },
+      {
+        "type": "Microsoft.ManagedIdentity/userAssignedIdentities",
+        "name": "[variables('internalMIName')]",
+        "apiVersion": "2018-11-30",
+        "location": "[resourceGroup().location]"
+      },
+      {
+        "apiVersion": "2015-08-01",
+        "name": "[parameters('hostingPlanName')]",
+        "type": "Microsoft.Web/serverfarms",
+        "location": "[resourceGroup().location]",
+        "tags": {
+          "displayName": "HostingPlan"
+        },
+        "sku": {
+          "name": "[parameters('skuName')]",
+          "capacity": "[parameters('skuCapacity')]",
+          "tier": "Dynamic"
+        },
+        "kind": "functionapp",
+        "properties": {
+          "name": "[parameters('hostingPlanName')]",
+          "computeMode": "Dynamic"
+        }
+      },
+      {
+        "condition": "[parameters('IsAzTSUIEnabled')]",
+        "apiVersion": "2015-08-01",
+        "name": "[parameters('apiHostingPlanName')]",
+        "type": "Microsoft.Web/serverfarms",
+        "location": "[resourceGroup().location]",
+        "tags": {
+          "displayName": "ApiHostingPlan"
+        },
+        "sku": {
+          "name": "[parameters('apiSkuName')]",
+          "capacity": "[parameters('skuCapacity')]"
+        },
+        "kind": "app",
+        "properties": {
+          "name": "[parameters('apiHostingPlanName')]"
+        }
+      },
+      {
+        "condition": "[parameters('IsAzTSUIEnabled')]",
+        "name": "[variables('WebApi')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "apiVersion": "2015-08-01",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]": {
+        }
+          }
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('apiHostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', variables('storageName'), 'default', variables('WebApifileShare'))]"
+        ],
+        "tags": {
+          "[concat('hidden-related:', resourceId('Microsoft.Web/serverfarms', parameters('apiHostingPlanName')))]": "Resource",
+          "displayName": "WebApi"
+        },
+        "properties": {
+          "name": "[variables('WebApi')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('apiHostingPlanName'))]",
+          "keyVaultReferenceIdentity": "[if(parameters('IsMultiTenantSetUp'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), 'SystemAssigned')]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "minTlsVersion": 1.2,
+            "ftpsState": "Disabled",
+            "alwaysOn": true,
+            "appSettings": [
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationPassword",
+                "value": "test"
+              },
+              {
+                "name": "MultiTenantConfigurations__AuthenticationMode",
+                "value": "FederatedCredentials"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficAudience",
+                "value": "api://AzureADTokenExchange"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficClientId",
+                "value": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationId",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('ScannerIdentityApplicationId'), json('null'))]"
+              },
+              {
+                "name": "AADClientAppDetails__ResourceId",
+                "value": "test"
+              },
+              {
+                "name": "AADClientAppDetails__Instance",
+                "value": "test"
+              },
+              {
+                "name": "AADClientAppDetails__ClientId",
+                "value": "test"
+              },
+              {
+                "name": "AADClientAppDetails__TenantId",
+                "value": "test"
+              },
+              {
+                "name": "AADClientAppDetails__Issuer",
+                "value": "test"
+              },
+              {
+                "name": "AADClientAppDetails__ApplicationId",
+                "value": "test"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('WebApi'))]"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "ApplicationInsights__InstrumentationKey",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ResourceId",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ConnectionString",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "LAConfigurations__ResourceId",
+                "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+              },
+              {
+                "name": "LAConfigurations__WorkspaceId",
+                "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2017-03-15-preview').customerId]"
+              },
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "CorsPolicySettings__OriginUrl",
+                "value": "test"
+              },
+              {
+                "name": "MultiTenantConfigurations__IsFeatureEnabled",
+                "value": "[if(parameters('IsMultiTenantSetUp'), 'true', 'false')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__HostTenant",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('TenantId'), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__StorageConnectionMode",
+                "value": "StorageKey"
+              },
+              {
+                "name": "AzureStorageSettings__BlobServiceUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.blob]"
+              },
+              {
+                "name": "AzureStorageSettings__QueueUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.queue]"
+              },
+              {
+                "name": "AzureStorageSettings__TableEndPoint",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__Cluster",
+                "value": "[concat(variables('clusterName'), '.', resourceGroup().location)]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
+                "value": "[parameters('kustodatabaseName')]"
+              },
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "RingN"
+              }
+              
+            ]
+            // "cors": {
+            //   "allowedOrigins": [
+            //     "[concat('https://',toLower(variables('WebUI')), parameters('WebAppEndpointSuffix'))]",
+            //     "[if(parameters('EnableWAF'), variables('APIFrontDoorUrl'), json('null'))]",
+            //     "[if(parameters('EnableWAF'), variables('UIFrontDoorUrl'), json('null'))]"
+            //   ]
+            // }
+          }
+        },
+        "resources": [
+          // {
+          //   "condition": "[parameters('IsAzTSUIEnabled')]",
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('WebApi'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "[parameters('WebApiPackageURL')]"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('WebApi'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('WebApi'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },      
+      {
+        "apiVersion": "2018-11-01",
+        "name": "[variables('RootScheduler')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": "[if(parameters('IsMultiTenantSetUp'), variables('userAssignedIdentities')['multiTenantSetUp'], variables('userAssignedIdentities')['singleTenantSetUp'])]"
+        },
+        "tags": {
+          "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+          "displayName": "Website"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', variables('storageName'), 'default', variables('RootSchedulerfileShare'))]"
+        ],
+        "properties": {
+          "name": "[variables('RootScheduler')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+          "keyVaultReferenceIdentity": "[if(parameters('IsMultiTenantSetUp'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), 'SystemAssigned')]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "reservedInstanceCount": 1,
+            "minTlsVersion": 1.2,
+            "netFrameworkVersion": "v6.0",
+            "ftpsState": "Disabled",
+            "appSettings": [
+              {
+                "name": "AzureFunctionsJobHost__functionTimeout",
+                "value": "[parameters('RootSchedulerFunctionTimeout')]"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "AZURE_FUNCTIONS_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationPassword",
+                "value": "test"
+              },
+              {
+                "name": "MultiTenantConfigurations__AuthenticationMode",
+                "value": "FederatedCredentials"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficAudience",
+                "value": "api://AzureADTokenExchange"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficClientId",
+                "value": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationId",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('ScannerIdentityApplicationId'), json('null'))]"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('RootScheduler'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                "value": "~10"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ResourceId",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ConnectionString",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "LAConfigurations__ResourceId",
+                "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+              },
+              {
+                "name": "LAConfigurations__WorkspaceId",
+                "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2017-03-15-preview').customerId]"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "[variables('functionWorkerRuntime')]"
+              },
+              {
+                "name": "AppMetadata__AppName",
+                "value": "[variables('RootScheduler')]"
+              },
+              {
+                "name": "WebJobConfigurations__CloudEnvironmentName",
+                "value": "[parameters('AzureEnvironmentName')]"
+              },
+              {
+                "name": "ScheduleConfiguration__AppFullFetchScheduler__CronExpression",
+                "value": "0 30 9 * Jan Mon"
+              },
+              {
+                "name": "ScheduleConfiguration__AppScheduler__CronExpression",
+                "value": "0 30 5 * * *"
+              },
+              {
+                "name": "ScheduleConfiguration__DeltaAppScheduler__CronExpression",
+                "value": "0 0 */12 * * *"
+              },
+              {
+                "name": "ScheduleConfiguration__RBACScheduler__CronExpression",
+                "value": "0 30 2 * * *"
+              },
+              {
+                "name": "ScheduleConfiguration__TenantScheduler__CronExpression",
+                "value": "0 30 3 * * *"
+              },
+              {
+                "name": "FeatureManagement__OrgPolicy",
+                "value": "[if(parameters('IsAzTSUIEnabled'), 'true', 'false')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__IsFeatureEnabled",
+                "value": "[if(parameters('IsMultiTenantSetUp'), 'true', 'false')]"
+              },
+              {
+                "name": "AADMetadataRequiredParameters__TenantsOnboardedInDays",
+                "value": "-3"
+              },
+              {
+                "name": "MultiTenantConfigurations__HostTenant",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('TenantId'), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__StorageConnectionMode",
+                "value": "StorageKey"
+              },
+              {
+                "name": "AzureStorageSettings__BlobServiceUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.blob]"
+              },
+              {
+                "name": "AzureStorageSettings__QueueUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.queue]"
+              },
+              {
+                "name": "AzureStorageSettings__TableEndPoint",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              }
+            ],
+            "cors": {
+                 "allowedOrigins": [ "https://ms.portal.azure.com" ]
+              },
+            "functionsRuntimeScaleMonitoringEnabled": "['false']"
+          }
+        },
+        "resources": [
+          // {
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('RootScheduler'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "[parameters('RootSchedulerPackageURL')]"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('RootScheduler'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('RootScheduler'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('RootScheduler'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('RootScheduler'), '/Extensions/MSDeploy')]"
+  
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },
+      {
+        "apiVersion": "2018-11-01",
+        "name": "[variables('InventoryFetcher')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": "[if(parameters('IsMultiTenantSetUp'), variables('userAssignedIdentities')['multiTenantSetUp'], variables('userAssignedIdentities')['singleTenantSetUp'])]"
+        },
+        "tags": {
+          "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+          "displayName": "Website"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', variables('storageName'), 'default', variables('InventoryFetcherfileShare'))]"
+        ],
+        "properties": {
+          "name": "[variables('InventoryFetcher')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+          "keyVaultReferenceIdentity": "[if(parameters('IsMultiTenantSetUp'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), 'SystemAssigned')]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "reservedInstanceCount": 1,
+            "minTlsVersion": 1.2,
+            "netFrameworkVersion": "v6.0",
+            "ftpsState": "Disabled",
+            "appSettings": [
+              {
+                "name": "AzureFunctionsJobHost__functionTimeout",
+                "value": "10:00:00"
+              },
+              {
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
+                "value": "1"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationPassword",
+                "value": "test"
+              },
+              {
+                "name": "MultiTenantConfigurations__AuthenticationMode",
+                "value": "FederatedCredentials"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficAudience",
+                "value": "api://AzureADTokenExchange"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficClientId",
+                "value": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationId",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('ScannerIdentityApplicationId'), json('null'))]"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('InventoryFetcher'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                "value": "~10"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ResourceId",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ConnectionString",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "LAConfigurations__ResourceId",
+                "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+              },
+              {
+                "name": "LAConfigurations__WorkspaceId",
+                "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2017-03-15-preview').customerId]"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "[variables('functionWorkerRuntime')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__IsFeatureEnabled",
+                "value": "[if(parameters('IsMultiTenantSetUp'), 'true', 'false')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__HostTenant",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('TenantId'), json('null'))]"
+              },
+              {
+                "name": "app-inventoryqueue",
+                "value": "app-inventoryqueue"
+              },
+              {
+                "name": "deltaapp-inventoryqueue",
+                "value": "deltaapp-inventoryqueue"
+              },
+              {
+                "name": "rbac-inventoryqueue",
+                "value": "rbac-inventoryqueue"
+              },
+              {
+                "name": "tenant-inventoryqueue",
+                "value": "tenant-inventoryqueue"
+              },
+              {
+
+                "name":"AppNameGraphAPICallConfigurations__SpecificCharToExecute",
+                "value":"true"
+              },
+              {
+
+                "name":"AzureFunctionsJobHost__extensions__queues__batchSize",
+                "value":"2"
+              },
+              {
+
+                "name":"AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
+                "value":"2"
+              },
+              {
+
+                "name":"AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
+                "value":"1"
+              },
+              {
+
+                "name":"ControlInventoryProperties__PushToKustoFeatureEnabled",
+                "value":"true"
+              },
+              {
+
+                "name":"WorkItemProcessorSettings__MinThreshold",
+                "value":"50000"
+              },
+              {
+
+                "name":"AzureStorageSettings__StorageConnectionMode",
+                "value":"StorageKey"
+              },
+              {
+                "name": "AzureStorageSettings__BlobServiceUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.blob]"
+              },
+              {
+                "name": "AzureStorageSettings__QueueUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.queue]"
+              },
+              {
+                "name": "AzureStorageSettings__TableEndPoint",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__Cluster",
+                "value": "[concat(variables('clusterName'), '.', resourceGroup().location)]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
+                "value": "[parameters('kustodatabaseName')]"
+              }
+
+            ],
+            "cors": 
+            {
+                 "allowedOrigins": [ "https://ms.portal.azure.com" ]
+            },
+            "functionsRuntimeScaleMonitoringEnabled": "['false']"
+          }
+        },
+        "resources": [
+          // {
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('InventoryFetcher'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "[parameters('InventoryFetcherPackageURL')]"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('InventoryFetcher'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('InventoryFetcher'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('InventoryFetcher'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('InventoryFetcher'), '/Extensions/MSDeploy')]"
+  
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },
+      {
+        "apiVersion": "2018-11-01",
+        "name": "[variables('FullFetchInventoryFetcher')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": "[if(parameters('IsMultiTenantSetUp'), variables('userAssignedIdentities')['multiTenantSetUp'], variables('userAssignedIdentities')['singleTenantSetUp'])]"
+        },
+        "tags": {
+          "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+          "displayName": "Website"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', variables('storageName'), 'default', variables('FullFetchInventoryFetcherfileShare'))]"
+        ],
+        "properties": {
+          "name": "[variables('FullFetchInventoryFetcher')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+          "keyVaultReferenceIdentity": "[if(parameters('IsMultiTenantSetUp'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), 'SystemAssigned')]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "reservedInstanceCount": 1,
+            "minTlsVersion": 1.2,
+            "netFrameworkVersion": "v6.0",
+            "ftpsState": "Disabled",
+            "appSettings": [
+              {
+                "name": "AzureFunctionsJobHost__functionTimeout",
+                "value": "10:00:00"
+              },
+              {
+                "name": "app-fullfetch-inventoryqueue",
+                "value": "app-fullfetch-inventoryqueue"
+              },
+              {
+                "name": "AppNameGraphAPICallConfigurations__SpecificCharToExecute",
+                "value": "false"
+              },
+              {
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_01_TenantInventory.Disabled",
+                "value": "1"
+              },
+              {
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_02_AppInventory.Disabled",
+                "value": "1"
+              },
+              {
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_03_DeltaAppInventory.Disabled",
+                "value": "1"
+              },
+              {
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_04_RBACInventory.Disabled",
+                "value": "1"
+              },
+              {
+                "name": "AADMetadataRequiredParameters__TenantsOnboardedInDays",
+                "value": "3"
+              },
+              {
+                "name": "AppNameGraphAPICallConfigurations__IsEntireTenantPullRequired",
+                "value": "true"
+              },
+              {
+                "name": "AppNameGraphAPICallConfigurations__ProcessType",
+                "value": "FullFetch"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationPassword",
+                "value": "test"
+              },
+              {
+                "name": "MultiTenantConfigurations__AuthenticationMode",
+                "value": "FederatedCredentials"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficAudience",
+                "value": "api://AzureADTokenExchange"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficClientId",
+                "value": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationId",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('ScannerIdentityApplicationId'), json('null'))]"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('FullFetchInventoryFetcher'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                "value": "~10"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ResourceId",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ConnectionString",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "LAConfigurations__ResourceId",
+                "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+              },
+              {
+                "name": "LAConfigurations__WorkspaceId",
+                "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2017-03-15-preview').customerId]"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "[variables('functionWorkerRuntime')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__IsFeatureEnabled",
+                "value": "[if(parameters('IsMultiTenantSetUp'), 'true', 'false')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__HostTenant",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('TenantId'), json('null'))]"
+              },
+              {
+                "name": "app-inventoryqueue",
+                "value": "app-inventoryqueue"
+              },
+              {
+                "name": "deltaapp-inventoryqueue",
+                "value": "deltaapp-inventoryqueue"
+              },
+              {
+                "name": "rbac-inventoryqueue",
+                "value": "rbac-inventoryqueue"
+              },
+              {
+                "name": "tenant-inventoryqueue",
+                "value": "tenant-inventoryqueue"
+              },
+              {
+
+                "name":"AppNameGraphAPICallConfigurations__SpecificCharToExecute",
+                "value":"true"
+              },
+              {
+
+                "name":"AzureFunctionsJobHost__extensions__queues__batchSize",
+                "value":"2"
+              },
+              {
+
+                "name":"AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
+                "value":"2"
+              },
+              {
+
+                "name":"AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
+                "value":"1"
+              },
+              {
+
+                "name":"ControlInventoryProperties__PushToKustoFeatureEnabled",
+                "value":"true"
+              },
+              {
+
+                "name":"WorkItemProcessorSettings__MinThreshold",
+                "value":"50000"
+              },
+              {
+
+                "name":"AzureStorageSettings__StorageConnectionMode",
+                "value":"StorageKey"
+              },
+              {
+                "name": "AzureStorageSettings__BlobServiceUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.blob]"
+              },
+              {
+                "name": "AzureStorageSettings__QueueUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.queue]"
+              },
+              {
+                "name": "AzureStorageSettings__TableEndPoint",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__Cluster",
+                "value": "[concat(variables('clusterName'), '.', resourceGroup().location)]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
+                "value": "[parameters('kustodatabaseName')]"
+              }
+
+            ],
+            "cors": 
+            {
+                 "allowedOrigins": [ "https://ms.portal.azure.com" ]
+            },
+            "functionsRuntimeScaleMonitoringEnabled": "['false']"
+          }
+        },
+        "resources": [
+          // {
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('FullFetchInventoryFetcher'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "[parameters('InventoryFetcherPackageURL')]"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('FullFetchInventoryFetcher'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('FullFetchInventoryFetcher'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('FullFetchInventoryFetcher'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('FullFetchInventoryFetcher'), '/Extensions/MSDeploy')]"
+  
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },
+      {
+        "apiVersion": "2018-11-01",
+        "name": "[variables('Scanner')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": "[if(parameters('IsMultiTenantSetUp'), variables('userAssignedIdentities')['multiTenantSetUp'], variables('userAssignedIdentities')['singleTenantSetUp'])]"
+        },
+        "tags": {
+          "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+          "displayName": "Website"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+        ],
+        "properties": {
+          "name": "[variables('Scanner')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+          "keyVaultReferenceIdentity": "[if(parameters('IsMultiTenantSetUp'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), 'SystemAssigned')]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "reservedInstanceCount": 1,
+            "minTlsVersion": 1.2,
+            "netFrameworkVersion": "v6.0",
+            "ftpsState": "Disabled",
+            "appSettings": [
+              {
+                "name": "AzureFunctionsJobHost__functionTimeout",
+                "value": "[parameters('ScannerFunctionTimeout')]"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "AZURE_FUNCTIONS_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationPassword",
+                "value": "test"
+              },
+              {
+                "name": "MultiTenantConfigurations__AuthenticationMode",
+                "value": "FederatedCredentials"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficAudience",
+                "value": "api://AzureADTokenExchange"
+              },
+              {
+                "name": "MultiTenantConfigurations__ficClientId",
+                "value": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId]"
+              },
+              {
+                "name": "AuthNSettings__ScannerApplicationId",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('ScannerIdentityApplicationId'), json('null'))]"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('Scanner'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                "value": "~10"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ResourceId",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ConnectionString",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), json('null'), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "LAConfigurations__ResourceId",
+                "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+              },
+              {
+                "name": "LAConfigurations__WorkspaceId",
+                "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2017-03-15-preview').customerId]"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "[variables('functionWorkerRuntime')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__IsFeatureEnabled",
+                "value": "[if(parameters('IsMultiTenantSetUp'), 'true', 'false')]"
+              },
+              {
+                "name": "MultiTenantConfigurations__HostTenant",
+                "value": "[if(parameters('IsMultiTenantSetUp'), parameters('TenantId'), json('null'))]"
+              },
+              {
+                "name": "AzureStorageSettings__StorageConnectionMode",
+                "value": "StorageKey"
+              },
+              {
+                "name": "AzureStorageSettings__BlobServiceUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.blob]"
+              },
+              {
+                "name": "AzureStorageSettings__QueueUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.queue]"
+              },
+              {
+                "name": "AzureStorageSettings__TableEndPoint",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__Cluster",
+                "value": "[concat(variables('clusterName'), '.', resourceGroup().location)]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
+                "value": "[parameters('kustodatabaseName')]"
+              },
+              {
+                "name": "ScheduleConfiguration__ControlInventory__CronExpression",
+                "value": "0 30 1 * * *"
+              },
+              {
+                "name": "ScheduleConfiguration__TenantMappingProcessor__CronExpression",
+                "value": "25:00:00:00"
+              },
+              {
+                "name": "FeatureManagement__OnboardedTenantMapping",
+                "value": "true"
+              }
+            ],
+            "cors": 
+            {
+                 "allowedOrigins": [ "https://ms.portal.azure.com" ]
+            },
+            "functionsRuntimeScaleMonitoringEnabled": "['false']"
+          }
+        },
+        "resources": [
+          // {
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('Scanner'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "[parameters('ScannerPackageURL')]"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('Scanner'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('Scanner'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('Scanner'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('Scanner'), '/Extensions/MSDeploy')]"
+  
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },
+      {
+        "apiVersion": "2018-11-01",
+        "name": "[variables('WorkItemProcessor')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": "[if(parameters('IsMultiTenantSetUp'), variables('userAssignedIdentities')['multiTenantSetUp'], variables('userAssignedIdentities')['singleTenantSetUp'])]"
+        },
+        "tags": {
+          "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+          "displayName": "Website"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', variables('storageName'), 'default', variables('WIfileShare'))]"
+        ],
+        "properties": {
+          "name": "[variables('WorkItemProcessor')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+          "keyVaultReferenceIdentity": "[if(parameters('IsMultiTenantSetUp'), resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), 'SystemAssigned')]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "reservedInstanceCount": 1,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "minTlsVersion": 1.2,
+            "netFrameworkVersion": "v6.0",
+            "ftpsState": "Disabled",
+            "appSettings": [
+              {
+                "name": "AzureFunctionsJobHost__functionTimeout",
+                "value": "[parameters('WorkItemProcessorFunctionTimeout')]"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value), parameters('CentralStorageAccountConnectionString'))]"
+              },
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "AZURE_FUNCTIONS_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },        
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('WorkItemProcessor'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "AzureStorageSettings__ResourceId",
+                "value": "[if(empty(parameters('CentralStorageAccountConnectionString')), resourceId('Microsoft.Storage/storageAccounts/', variables('storageName')), json('null'))]"
+              },
+              {
+                "name": "LAConfigurations__ResourceId",
+                "value": "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+              },
+              {
+                "name": "LAConfigurations__WorkspaceId",
+                "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName')), '2017-03-15-preview').customerId]"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "[variables('functionWorkerRuntime')]"
+              },
+              {
+                "name": "AzureStorageSettings__StorageConnectionMode",
+                "value": "StorageKey"
+              },
+              {
+                "name": "AzureStorageSettings__BlobServiceUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.blob]"
+              },
+              {
+                "name": "AzureStorageSettings__QueueUri",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.queue]"
+              },
+              {
+                "name": "AzureStorageSettings__TableEndPoint",
+                "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              },              
+              {
+                "name": "aadworkitemscheduler",
+                "value": "aadworkitemscheduler"
+              },                           
+              {
+                "name": "AzureFunctionsJobHost__extensions__queues__batchSize",
+                "value": "2"
+              },                           
+              {
+                "name": "AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
+                "value": "2"
+              },                           
+              {
+                "name": "ControlEnrichmentConfigurations__MaxDegreeOfParallelism",
+                "value": "10"
+              },                        
+              {
+                "name": "ControlInventoryProperties__PushToKustoFeatureEnabled",
+                "value": "true"
+              },                     
+              {
+                "name": "ControlSLAResetProperties__DriftedFailureStatusSLA",
+                "value": "45"
+              },
+              {
+                "name": "ControlSLAResetProperties__FirstTimeFailureSLA",
+                "value": "45"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__Cluster",
+                "value": "[concat(variables('clusterName'), '.', resourceGroup().location)]"
+              },
+              {
+                "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
+                "value": "[parameters('kustodatabaseName')]"
+              } 
+            ],
+            "cors": 
+            {
+                 "allowedOrigins": [ "https://ms.portal.azure.com" ]
+            },
+            "functionsRuntimeScaleMonitoringEnabled": "['false']"
+          }
+        },
+        "resources": [
+          // {
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "[parameters('WorkItemProcessorPackageURL')]"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/',variables('WorkItemProcessor'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },
+      {
+        "condition": "[parameters('IsAutoUpdaterEnabled')]",
+        "apiVersion": "2018-11-01",
+        "name": "[variables('AutoUpdater')]",
+        "type": "Microsoft.Web/sites",
+        "location": "[resourceGroup().location]",
+        "kind": "functionapp",
+        "identity": {
+          "type": "UserAssigned",
+          "userAssignedIdentities": {
+            "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]": {
+      }
+          }
+        },
+        "tags": {
+          "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "Resource",
+          "displayName": "Website"
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+          "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+          "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]",
+          "[resourceId('Microsoft.Storage/storageAccounts/fileServices/shares', variables('storageName'), 'default', variables('AUfileShare'))]"
+        ],
+        "properties": {
+          "name": "[variables('AutoUpdater')]",
+          "httpsOnly": true,
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]",
+          "siteConfig": {
+            "remoteDebuggingEnabled": false,
+            "webSocketsEnabled": false,
+            "requestTracingEnabled": true,
+            "reservedInstanceCount": 1,
+            "httpLoggingEnabled": true,
+            "detailedErrorLoggingEnabled": true,
+            "minTlsVersion": 1.2,
+            "netFrameworkVersion": "v6.0",
+            "ftpsState": "Disabled",
+            "appSettings": [
+              {
+                "name": "AIConfigurations__TelemetryIdentifier",
+                "value": "RingN"
+              },
+              {
+                "name": "Basic_Authentication_Disabled",
+                "value": "true"
+              },
+              {
+                "name": "AzureFunctionsJobHost__functionTimeout",
+                "value": "[parameters('AutoUpdaterFunctionTimeout')]"
+              },
+              {
+                "name": "AzureWebJobsStorage",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "AuthNSettings__ScannerIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__InternalIdentityConnectionString",
+                "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
+              },
+              {
+                "name": "AuthNSettings__TenantId",
+                "value": "[parameters('TenantId')]"
+              },
+              {
+                "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
+              },
+              {
+                "name": "WEBSITE_CONTENTSHARE",
+                "value": "[toLower(variables('AutoUpdater'))]"
+              },
+              {
+                "name": "FUNCTIONS_EXTENSION_VERSION",
+                "value": "~4"
+              },
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "RingN"
+              },
+              {
+                "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                "value": "~10"
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+              },
+              {
+                "name": "AIConfigurations__ResourceId",
+                "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+              },
+              {
+                "name": "FUNCTIONS_WORKER_RUNTIME",
+                "value": "[variables('functionWorkerRuntime')]"
+              },
+              {
+                "name": "HostEnvironmentDetails__HostSubscriptionId",
+                "value": "[subscription().subscriptionId]"
+              },
+              {
+                "name": "HostEnvironmentDetails__HostResourceGroupName",
+                "value": "[resourceGroup().name]"
+              },
+              {
+                "name": "HostEnvironmentDetails__AppPostfix",
+                "value": "[parameters('ResourceHash')]"
+              },
+              {
+                "name": "AIConfigurations__AnonymousUsageTelemetry__LogLevel",
+                "value": "[parameters('AnonymousUsageTelemetryLogLevel')]"
+              },
+              {
+                "name": "WEBSITE_RUN_FROM_PACKAGE",
+                "value": "https://aka.ms/AzTS/RingN/V4/AutoUpdater"
+              },
+              {
+                "name": "WebJobConfigurations__CloudEnvironmentName",
+                "value": "[parameters('AzureEnvironmentName')]"
+              },
+              {
+                "name": "WEBSITE_DNS_SERVER",
+                "value": "168.63.129.16"
+              },
+              {
+                "name": "OnboardingDetails__Organization",
+                "value": "[parameters('OrganizationName')]"
+              },
+              {
+                "name": "OnboardingDetails__Division",
+                "value": "[parameters('DivisionName')]"
+              },
+              {
+                "name": "OnboardingDetails__ContactEmailAddressList",
+                "value": "[parameters('ContactEmailAddressList')]"
+              },
+              {
+                "name": "OnboardingDetails__TenantId",
+                "value": "[parameters('HashedTenantId')]"
+              },
+              {
+                "name": "AutoUpdateCentralConfiguration__CentralPackageUrl",
+                "value": "StorgeAccountURI/ContainerName/EntraIdScanner.Package.Versions.Internal.Prod.json"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__BasePackageOverrideSettings__BaseUrl",
+                "value": "Storage Account where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__BasePackageOverrideSettings__ContainerName",
+                "value": "msentraprodpackagecontainer"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__BasePackageOverrideSettings__OverrideEnabled",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__BasePackageOverrideSettings__ResourceId",
+                "value": "Resource id where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__BasePackageOverrideSettings__SasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__BasePackageOverrideSettings__UserDelegationSasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__DeploymentSlotId",
+                "value": "production"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__FeatureName",
+                "value": "MSEntraRootScheduler"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__ForceUpdate",
+                "value": "false"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__IsAutoUpdateOn",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__Name",
+                "value": "MSEntraScanner-RootScheduler-"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__0__VersionType",
+                "value": "latest"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__BasePackageOverrideSettings__BaseUrl",
+                "value": "Storage Account where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__BasePackageOverrideSettings__ContainerName",
+                "value": "msentraprodpackagecontainer"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__BasePackageOverrideSettings__OverrideEnabled",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__BasePackageOverrideSettings__ResourceId",
+                "value": "Resource id where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__BasePackageOverrideSettings__SasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__BasePackageOverrideSettings__UserDelegationSasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__DeploymentSlotId",
+                "value": "production"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__FeatureName",
+                "value": "MSEntraInventoryFetchers"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__ForceUpdate",
+                "value": "false"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__IsAutoUpdateOn",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__Name",
+                "value": "MSEntraScanner-InventoryFetcher-"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__1__VersionType",
+                "value": "latest"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__BasePackageOverrideSettings__BaseUrl",
+                "value": "Storage Account where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__BasePackageOverrideSettings__ContainerName",
+                "value": "msentraprodpackagecontainer"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__BasePackageOverrideSettings__OverrideEnabled",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__BasePackageOverrideSettings__ResourceId",
+                "value": "Resource id where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__BasePackageOverrideSettings__SasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__BasePackageOverrideSettings__UserDelegationSasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__DeploymentSlotId",
+                "value": "production"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__FeatureName",
+                "value": "AADScanner"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__ForceUpdate",
+                "value": "false"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__IsAutoUpdateOn",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__Name",
+                "value": "MSEntraScanner-MA-"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__2__VersionType",
+                "value": "latest"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__BasePackageOverrideSettings__BaseUrl",
+                "value": "Storage Account where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__BasePackageOverrideSettings__ContainerName",
+                "value": "msentraprodpackagecontainer"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__BasePackageOverrideSettings__OverrideEnabled",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__BasePackageOverrideSettings__ResourceId",
+                "value": "Resource id where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__BasePackageOverrideSettings__SasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__BasePackageOverrideSettings__UserDelegationSasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__DeploymentSlotId",
+                "value": "production"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__FeatureName",
+                "value": "AADWorkItemProcessor"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__ForceUpdate",
+                "value": "false"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__IsAutoUpdateOn",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__Name",
+                "value": "MSEntraScanner-WorkItemProcessor-"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__3__VersionType",
+                "value": "latest"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__BasePackageOverrideSettings__BaseUrl",
+                "value": "Storage Account where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__BasePackageOverrideSettings__ContainerName",
+                "value": "msentraprodpackagecontainer"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__BasePackageOverrideSettings__OverrideEnabled",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__BasePackageOverrideSettings__ResourceId",
+                "value": "Resource id where the entra package exists"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__BasePackageOverrideSettings__SasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__BasePackageOverrideSettings__UserDelegationSasTokenRequired",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__DeploymentSlotId",
+                "value": "production"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__FeatureName",
+                "value": "AADScannerAPI"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__ForceUpdate",
+                "value": "false"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__IsAutoUpdateOn",
+                "value": "true"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__Name",
+                "value": "MSEntraScanner-WebApi-"
+              },
+              {
+                "name": "HostEnvironmentDetails__AutoUpdateConfig__4__VersionType",
+                "value": "latest"
+              }
+            ],
+            "functionsRuntimeScaleMonitoringEnabled": "['false']"
+          }
+        },
+        "resources": [
+          // {
+          //   "condition": "[parameters('IsAutoUpdaterEnabled')]",
+          //   "apiVersion": "2018-11-01",
+          //   "name": "MSDeploy",
+          //   "type": "Extensions",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]"
+          //   ],
+          //   "properties": {
+          //     "packageUri": "https://aka.ms/AzTS/RingN/V4/AutoUpdater"
+          //   }
+          // },
+          // {
+          //   "condition": "[parameters('IsAutoUpdaterEnabled')]",
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "name": "ftp",
+          //   "location": "[resourceGroup().location]",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('AutoUpdater'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // },
+          // {
+          //   "condition": "[parameters('IsAutoUpdaterEnabled')]",
+          //   "type": "basicPublishingCredentialsPolicies",
+          //   "apiVersion": "2022-03-01",
+          //   "location": "[resourceGroup().location]",
+          //   "name": "scm",
+          //   "kind": "basicPublishingCredentialsPolicies",
+          //   "dependsOn": [
+          //     "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
+          //     "[concat('Microsoft.Web/sites/', variables('AutoUpdater'), '/Extensions/MSDeploy')]"
+          //   ],
+          //   "properties": {
+          //     "allow": "false"
+          //   }
+          // }
+        ]
+      },
+      // {
+      //   "type": "Microsoft.Authorization/roleAssignments",
+      //   "apiVersion": "2017-09-01",
+      //   "name": "[variables('rgRoleAssignmentName')]",
+      //   "properties": {
+      //     "roleDefinitionId": "[variables('contributorRoleId')]",
+      //     "principalId": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').principalId]",
+      //     "scope": "[resourceGroup().id]"
+      //   },
+      //   "dependsOn": [
+      //     "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]",
+      //     "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+      //     "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]",
+      //     "[resourceId('Microsoft.OperationalInsights/workspaces/', variables('workspaceName'))]"
+      //   ]
+      // },
+      {
+        "type": "microsoft.insights/components",
+        "apiVersion": "2020-02-02-preview",
+        "name": "[variables('applicationInsightsName')]",
+        "location": "[resourceGroup().location]",
+        "tags": {
+          "[concat('hidden-link:', resourceId('Microsoft.Web/sites', variables('applicationInsightsName')))]": "Resource"
+        },
+        "properties": {
+          "ApplicationId": "[variables('applicationInsightsName')]",
+          "Request_Source": "WebAppCreate",
+          "WorkspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', variables('workspaceName'))]",
+          "IngestionMode": "LogAnalytics",
+          "publicNetworkAccessForIngestion": "['Enabled']",
+          "publicNetworkAccessForQuery": "['Enabled']", 
+          "dependsOn" :[
+            "[resourceId('microsoft.operationalinsights/workspaces', variables('workspaceName'))]"
+          ]
+        }
+      },
+      {
+        "condition": "[and(parameters('EnableWAF'), parameters('IsAzTSUIEnabled'))]",
+        "type": "Microsoft.Network/frontDoors",
+        "apiVersion": "2020-05-01",
+        "name": "[variables('APIFrontDoorName')]",
+        "location": "Global",
+        "dependsOn": [
+          "[resourceId('Microsoft.Network/FrontDoorWebApplicationFirewallPolicies', variables('wafPolicyName'))]"
+        ],
+        "properties": {
+            "routingRules": [
+                {
+                    "name": "MSEntraScanner-API-RoutingRule",
+                    "properties": {
+                        "frontendEndpoints": [
+                            {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('APIFrontDoorName'), 'MSEntraScanner-API-FrontendEndpoints')]"
+                            }
+                        ],
+                        "acceptedProtocols": [
+                            "Https"
+                        ],
+                        "patternsToMatch": [
+                            "/*"
+                        ],
+                        "routeConfiguration": {
+                            "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",                                
+                            "forwardingProtocol": "HttpsOnly",
+                            "backendPool": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('APIFrontDoorName'), 'MSEntraScanner-API-BackendPool')]"
+                            }                                
+                        },
+                        "enabledState": "Enabled"
+                    }
+                }
+            ],
+            "healthProbeSettings": [
+                {
+                    "name": "APIHealthProbeSettings",
+                    "properties": {
+                        "path": "/",
+                        "protocol": "Https",
+                        "intervalInSeconds": 30,
+                        "enabledState": "Enabled",
+                        "healthProbeMethod": "HEAD"
+                    }
+                }
+            ],
+            "loadBalancingSettings": [
+                {
+                    "name": "APIloadBalancingSettings",
+                    "properties": {
+                        "sampleSize": 4,
+                        "successfulSamplesRequired": 2
+                    }
+                }
+            ],
+            "backendPools": [
+                {
+                    "name": "MSEntraScanner-API-BackendPool",
+                    "properties": {
+                      "backends": [
+                        {
+                            "address": "[concat(variables('WebApi'), parameters('WebAppEndpointSuffix'))]",
+                            "httpPort": 80,
+                            "httpsPort": 443,
+                            "priority": 1,
+                            "weight": 50,
+                            "backendHostHeader": "[concat(variables('WebApi'), parameters('WebAppEndpointSuffix'))]",
+                            "enabledState": "Enabled"
+                        }
+                    ],
+                    "loadBalancingSettings": {
+                        "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('APIFrontDoorName'), 'APIloadBalancingSettings')]"
+                    },
+                    "healthProbeSettings": {
+                        "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('APIFrontDoorName'), 'APIHealthProbeSettings')]"
+                    }
+                  }
+                }
+            ],
+            "frontendEndpoints": [
+                {
+                    "name": "MSEntraScanner-API-FrontendEndpoints",
+                    "properties": {
+                        "hostName": "[concat(variables('APIFrontDoorName'), parameters('FrontDoorEndpointSuffix'))]",
+                        "sessionAffinityEnabledState": "Disabled",
+                        "webApplicationFirewallPolicyLink": {
+                          "id": "[resourceId('Microsoft.Network/FrontDoorWebApplicationFirewallPolicies', variables('wafPolicyName'))]"
+                        }
+                    }
+                }
+            ],
+            "enabledState": "Enabled"
+        }
+      },
+      // {
+      //   "condition": "[and(parameters('EnableWAF'), parameters('IsAzTSUIEnabled'))]",
+      //   "type": "Microsoft.Network/frontDoors",
+      //   "apiVersion": "2020-05-01",
+      //   "name": "[variables('UIFrontDoorName')]",
+      //   "location": "Global",
+      //   "dependsOn": [
+      //     "[resourceId('Microsoft.Network/FrontDoorWebApplicationFirewallPolicies', variables('wafPolicyName'))]"
+      //   ],
+      //   "properties": {
+      //       "routingRules": [
+      //           {
+      //               "name": "MSEntraScanner-UI-RoutingRule",
+      //               "properties": {
+      //                   "frontendEndpoints": [
+      //                       {
+      //                           "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints', variables('UIFrontDoorName'), 'MSEntraScanner-UI-FrontendEndpoints')]"
+      //                       }
+      //                   ],
+      //                   "acceptedProtocols": [
+      //                       "Https"
+      //                   ],
+      //                   "patternsToMatch": [
+      //                       "/*"
+      //                   ],
+      //                   "routeConfiguration": {
+      //                       "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",                                
+      //                       "forwardingProtocol": "HttpsOnly",
+      //                       "backendPool": {
+      //                           "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('UIFrontDoorName'), 'MSEntraScanner-UI-BackendPool')]"
+      //                       }                                
+      //                   },
+      //                   "enabledState": "Enabled"
+      //               }
+      //           }
+      //       ],
+      //       "healthProbeSettings": [
+      //           {
+      //               "name": "UIHealthProbeSettings",
+      //               "properties": {
+      //                   "path": "/",
+      //                   "protocol": "Https",
+      //                   "intervalInSeconds": 30,
+      //                   "enabledState": "Enabled",
+      //                   "healthProbeMethod": "HEAD"
+      //               }
+      //           }
+      //       ],
+      //       "loadBalancingSettings": [
+      //           {
+      //               "name": "UIloadBalancingSettings",
+      //               "properties": {
+      //                   "sampleSize": 4,
+      //                   "successfulSamplesRequired": 2
+      //               }
+      //           }
+      //       ],
+      //       "backendPools": [
+      //           {
+      //               "name": "MSEntraScanner-UI-BackendPool",
+      //               "properties": {
+      //                 "backends": [
+      //                   {
+      //                       "address": "[concat(variables('WebUI'), parameters('WebAppEndpointSuffix'))]",
+      //                       "httpPort": 80,
+      //                       "httpsPort": 443,
+      //                       "priority": 1,
+      //                       "weight": 50,
+      //                       "backendHostHeader": "[concat(variables('WebUI'), parameters('WebAppEndpointSuffix'))]",
+      //                       "enabledState": "Enabled"
+      //                   }
+      //               ],
+      //               "loadBalancingSettings": {
+      //                   "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('UIFrontDoorName'), 'UIloadBalancingSettings')]"
+      //               },
+      //               "healthProbeSettings": {
+      //                   "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('UIFrontDoorName'), 'UIHealthProbeSettings')]"
+      //               }
+      //             }
+      //           }
+      //       ],
+      //       "frontendEndpoints": [
+      //           {
+      //               "name": "MSEntraScanner-UI-FrontendEndpoints",
+      //               "properties": {
+      //                   "hostName": "[concat(variables('UIFrontDoorName'), parameters('FrontDoorEndpointSuffix'))]",
+      //                   "sessionAffinityEnabledState": "Disabled",
+      //                   "webApplicationFirewallPolicyLink": {
+      //                     "id": "[resourceId('Microsoft.Network/FrontDoorWebApplicationFirewallPolicies', variables('wafPolicyName'))]"
+      //                   }
+      //               }
+      //           }
+      //       ],
+      //       "enabledState": "Enabled"
+      //   }
+      // },
+      // {
+      //   "condition": "[and(parameters('EnableWAF'), parameters('IsAzTSUIEnabled'))]",
+      //   "type": "Microsoft.Network/FrontDoorWebApplicationFirewallPolicies",
+      //   "apiVersion": "2020-11-01",
+      //   "name": "[variables('wafPolicyName')]",
+      //   "location": "global",
+      //   "sku": {
+      //     "name": "Classic_AzureFrontDoor"
+      //   },
+      //   "properties": {
+      //     "policySettings": {
+      //       "enabledState": "Enabled",
+      //       "mode": "Prevention"
+      //     },
+      //     "managedRules": {
+      //       "managedRuleSets": [
+      //         {
+      //             "ruleSetType": "DefaultRuleSet",
+      //             "ruleSetVersion": "1.0"
+      //         }
+      //       ]
+      //     }
+      //   }
+      // },
+      {
+        "type": "Microsoft.Kusto/clusters",
+        "apiVersion": "2021-08-27",
+        "name": "[variables('clusterName')]",
+        "location": "[resourceGroup().location]",
+        "sku": {
+          "name": "[parameters('kustoskuName')]",
+          "tier": "[parameters('kustoskuTier')]",
+          "capacity": "[parameters('kustoSkuCapacity')]"
+        },
+        "properties": {
+          "enableDiskEncryption": true
+        }
+      },
+      {
+        "type": "Microsoft.Kusto/clusters/databases",
+        "apiVersion": "2023-08-15",
+        "name": "[concat(variables('clusterName'), '/', parameters('kustodatabaseName'))]",
+        "location": "[resourceGroup().location]",
+        "kind": "ReadWrite",
+        "properties": {
+          "hotCachePeriod": "P30D",                               
+          "softDeletePeriod": "P2D"                           
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Kusto/clusters', variables('clusterName'))]"
+        ]
+      }
+    ],
+    "outputs": {
+      "storageId": {
+        "type": "string",
+        "value": "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+      },
+      "serverfarmId": {
+        "type": "string",
+        "value": "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+      },
+      "storageQueueName": {
+        "type": "string",
+        "value": "[variables('storageQueueName')]"
+      },
+      "uiAppName": {
+        "type": "string",
+        "value": "[variables('WebUI')]"
+      },
+      "webApiName": {
+        "type": "string",
+        "value": "[variables('WebApi')]"
+      },
+      "internalMIObjectId": {
+        "type": "string",
+        "value": "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').principalId]"
+      },
+      "internalMIName": {
+        "type": "string",
+        "value": "[variables('internalMIName')]"
+      },
+      "applicationInsightsId": {
+        "type": "string",
+        "value": "[resourceId('microsoft.insights/components', variables('applicationInsightsName'))]"
+      },
+      "logAnalyticsResourceId": {
+        "type": "string",
+        "value": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('workspaceName'))]"
+      },
+      "applicationInsightsIKey": {
+        "type": "string",
+        "value": "[reference(resourceId('microsoft.insights/components', variables('applicationInsightsName')), '2020-02-02-preview').InstrumentationKey]"
+      },
+      "azTSUIFrontDoorUrl": {
+        "type": "string",
+        "value": "[concat('https://',variables('UIFrontDoorName'), parameters('FrontDoorEndpointSuffix'))]"
+      },
+      "azTSAPIFrontDoorUrl": {
+        "type": "string",
+        "value": "[variables('APIFrontDoorUrl')]"
+      },
+      "uiFrontDoorName": {
+        "type": "string",
+        "value": "[variables('UIFrontDoorName')]"
+      },
+      "apiFrontDoorName": {
+        "type": "string",
+        "value": "[variables('APIFrontDoorName')]"
+      },
+      "kustoClusterResourceId": {
+        "type": "string",
+        "value": "[variables('kustoClusterId')]",
+        "metadata": {
+          "description": "The resource ID of the Kusto cluster."
+        }
+      },
+      "kustoDatabaseResourceId": {
+        "type": "string",
+        "value": "[variables('kustoDatabaseId')]",
+        "metadata": {
+          "description": "The resource ID of the Kusto database within the cluster."
+        }
+      }
+    }
+}
