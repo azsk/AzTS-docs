@@ -85,10 +85,7 @@ Connect-AzureAD -Tenant $TenantId
 
 
 $HostSubscriptionId = $MIHostingSubId 
-$AzureEnvironmentName = "AzureCloud"
 $ScanIdentityHasGraphPermission = $false
-
-
 
 $ADApplicationDetails = Set-EntraSecurityADApplication -SubscriptionId $HostSubscriptionId -ScanHostRGName $HostResourceGroupName
 
