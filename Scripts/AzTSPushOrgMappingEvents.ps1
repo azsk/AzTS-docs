@@ -2,7 +2,8 @@
 function PostLAWSData([string] $workspaceId, [string] $sharedKey, $body, $logType, $laType)
 	{
 
-			
+
+   
 				[string] $method = "POST"
 				[string] $contentType = "application/json"
 				[string] $resource = "/api/logs"
