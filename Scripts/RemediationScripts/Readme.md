@@ -78,7 +78,8 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 66. [Azure_BackupVault_DP_Enable_Immutability](Readme.md#66-azure_backupvault_dp_enable_immutability)
 67. [Azure_BackupVault_DP_Enable_Soft_Delete](Readme.md#67-azure_backupvault_dp_enable_soft_delete)
 68. [Azure_RecoveryServicesVault_DP_Enable_Immutability](Readme.md#68-azure_RecoveryServicesVault_DP_Enable_Immutability)
-69. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](Readme.md#66-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
+69. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](Readme.md#69-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
+70. [Azure_IoTHub_DP_Use_Secure_TLS_Version](Readme.md#70-azure_iothub_dp_use_secure_tls_version)
 
 <br />
 
@@ -1439,6 +1440,24 @@ Contributor role at resource level
 
 ### Supports rollback?
 No
+___
+
+## 70. Azure_IoTHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure IoT Hub.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureIoTHubTLSVersion](Remediate-ConfigureIoTHubTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on IoT Hub
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
 ___
 
 ## Supports managed identity based remediations
