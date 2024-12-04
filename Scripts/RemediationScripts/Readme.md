@@ -79,6 +79,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 67. [Azure_BackupVault_DP_Enable_Soft_Delete](Readme.md#67-azure_backupvault_dp_enable_soft_delete)
 68. [Azure_RecoveryServicesVault_DP_Enable_Immutability](Readme.md#68-azure_RecoveryServicesVault_DP_Enable_Immutability)
 69. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](Readme.md#66-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
+70. [Azure_ServiceBus_AuthN_Disable_Local_Auth](Readme.md#70-azure_servicebus_authn_disable_local_auth)
 
 <br />
 
@@ -1439,6 +1440,24 @@ Contributor role at resource level
 
 ### Supports rollback?
 No
+___
+
+## 70. Azure_ServiceBus_AuthN_Disable_Local_Auth
+
+### Display Name
+Local authentication should be disabled in Service Bus Namespaces
+
+### Link to Bulk Remediation Script (BRS)
+[RRemediate-DisableBasicAuthForServiceBusNamespaces](Remediate-DisableBasicAuthForServiceBusNamespaces.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
 ___
 
 ## Supports managed identity based remediations
