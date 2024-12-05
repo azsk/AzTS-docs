@@ -77,6 +77,8 @@
 
 38. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#35-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
 
+39. [Azure_ServiceBus_AuthN_Disable_Local_Auth](ControlsEligibleForRemediationThroughUI.md#39-azure_servicebus_authn_disable_local_auth)
+
 <br />
 ___
 
@@ -576,3 +578,14 @@ Always-on soft delete must be enabled on Recovery Services Vault
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Recovery Services Vault
 ___
+
+## 39. Azure_ServiceBus_AuthN_Disable_Local_Auth
+
+### Display Name
+Local authentication should be disabled in Service Bus Namespaces
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBasicAuthForServiceBusNamespaces](Remediate-DisableBasicAuthForServiceBusNamespaces.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
