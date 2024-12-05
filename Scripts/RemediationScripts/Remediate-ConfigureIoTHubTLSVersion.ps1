@@ -361,9 +361,6 @@ function Set-MinTLSVersionForIoTHub  {
     # list for storing IoT Hub(s) where required TLS Version is not configured
     $NonCompliantTLSIoTHub = @()
 
-    # Non Compliant IoT Hub(s) with TLS Version as default
-    $TLSwithDefaultValue = @()
-
     Write-Host "Separating IoT Hub(s) for which TLS Version [$($requiredMinTLSVersion)] is not configured..."
 
     $IoTHubDetails | ForEach-Object {
@@ -371,10 +368,6 @@ function Set-MinTLSVersionForIoTHub  {
         if(!$_.MinimumTlsVersion -or $_.MinimumTlsVersion -lt $requiredMinTLSVersion)
         {
             $NonCompliantTLSIoTHub += $IoTHub
-
-            if(!$_.MinimumTlsVersion){
-                $TLSwithDefaultValue += $IoTHub
-            }
         }
         else
         {
@@ -440,7 +433,6 @@ function Set-MinTLSVersionForIoTHub  {
         {
             if (-not $Force)
             {
-                Write-Host "Found total [$($TLSwithDefaultValue.count)] IoT Hub(s) with default TLS version. TLS version for these resources cannot be reverted back to default value after remediation." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "This step will configure TLS version [$($requiredMinTLSVersion)] for all non-compliant [$($NonCompliantTLSIoTHub.count)] IoT Hub(s)." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
             
