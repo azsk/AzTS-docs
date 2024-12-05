@@ -183,7 +183,7 @@ function Disable-LocalAuthForServiceBusNamespaces
         $InputFilePath,
 
         [Switch]        
-        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies script is run as a subroutine of AutoRemediation Script")]
+        [Parameter(ParameterSetName = "WetRun", HelpMessage = "Specifies filepath generated using AutoRemediation Script")]
         $AutoRemediation,
 
         [String]
