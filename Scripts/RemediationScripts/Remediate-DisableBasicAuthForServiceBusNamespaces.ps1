@@ -15,14 +15,14 @@
 # Steps performed by the script:
     To remediate:
         1. Validate and install the modules required to run the script.
-        2. Get the list of Service Bus Namespaces in a Subscription that do not have disable local authentication for the production slot or for any of the non-production slots.
+        2. Get the list of Service Bus Namespaces in a Subscription that do not have local authentication disabled.
         3. Back up details of Service Bus Namespaces that are to be remediated.
         4. Disable local authentication on the all Service Bus Namespaces in the Subscription.
 
     To roll back:
         1. Validate and install the modules required to run the script.
         2. Get the list of Service Bus Namespaces in a Subscription, the changes made to which previously, are to be rolled back.
-        3. Enable local authentication on all App Services in the Subscription
+        3. Enable local authentication on all Service Bus Namespaces in the Subscription
 
 # Instructions to execute the script:
     To remediate:
@@ -51,7 +51,7 @@
 
     To roll back:
         1. To enable local authentication on of all Service Bus Namespaces in a Subscription, from a previously taken snapshot:
-           Enable-AzServiceBusLocalAuth -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\Disable-LocalAuthForServiceBusNamespaces\RemediatedServiceBusNamespaces.csv
+           Disable-LocalAuthForServiceBusNamespaces -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\Disable-LocalAuthForServiceBusNamespaces\RemediatedServiceBusNamespaces.csv
         
         To know more about the options supported by the roll back command, execute:
         Get-Help Enable-LocalAuthForServiceBus -Detailed        
@@ -238,7 +238,7 @@ function Disable-LocalAuthForServiceBusNamespaces
         Write-Host "Account Type: [$($context.Account.Type)]"
         Write-Host $([Constants]::SingleDashLine)
     }
-    Write-Host "To disable local authentication for Service Bus Namespaces in the Subscription, Contributor on Subscription or Resource Group or Data Owner role on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To disable local authentication for Service Bus Namespaces in the Subscription, Contributor on the Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
     Write-Host $([Constants]::SingleDashLine)  
 
     Write-Host "[Step 2 of 3] Prepare to fetch all Service Bus Namespace(s)"
@@ -279,11 +279,11 @@ function Disable-LocalAuthForServiceBusNamespaces
         $validServiceBusNampespaces | ForEach-Object { 	
             try {
                 $currentServiceBusNamespaceDetails = Get-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -NamespaceName $_.ResourceName -ErrorAction SilentlyContinue
-                $currentLocalAuthStatus = ($currentServiceBusNamespaceDetails).DisableLocalAuth
+                $isLocalAuthDisabled = ($currentServiceBusNamespaceDetails).DisableLocalAuth
                 $serviceBusNamespacesDetails += $currentServiceBusNamespaceDetails  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                                                                                                     @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                                                                                                     @{N = 'ResourceName'; E = { $_.Name } }, 
-                                                                                                    @{N = 'DisableLocalAuth'; E = { $currentLocalAuthStatus } }
+                                                                                                    @{N = 'DisableLocalAuth'; E = { $isLocalAuthDisabled } }
             }
             catch {
                 Write-Host "Valid resource id(s) not found in input json file. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)	
@@ -307,11 +307,11 @@ function Disable-LocalAuthForServiceBusNamespaces
             $serviceBusNamespaces = @();
             $serviceBusNamespaces = Get-AzServiceBusNamespace -ErrorAction Stop
             $serviceBusNamespaces | ForEach-Object { 	
-                $currentLocalAuthStatus = $_.DisableLocalAuth 
+                $isLocalAuthDisabled = $_.DisableLocalAuth 
                 $serviceBusNamespacesDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $_.Id } },
                                                                     @{N = 'ResourceGroupName'; E = { $_.Id.Split("/")[4] } },
                                                                     @{N = 'ResourceName'; E = { $_.Name } }, 
-                                                                    @{N = 'DisableLocalAuth'; E = { $currentLocalAuthStatus } }
+                                                                    @{N = 'DisableLocalAuth'; E = { $isLocalAuthDisabled } }
             }        
         }
         else {
@@ -332,11 +332,11 @@ function Disable-LocalAuthForServiceBusNamespaces
 
                 try {                
                     $currentServiceBusNamespaceDetails = Get-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -NamespaceName $_.ResourceName -ErrorAction SilentlyContinue
-                    $currentLocalAuthStatus = ($currentServiceBusNamespaceDetails).DisableLocalAuth
+                    $isLocalAuthDisabled = ($currentServiceBusNamespaceDetails).DisableLocalAuth
                     $serviceBusNamespacesDetails += $_  | Select-Object @{N = 'ResourceId'; E = { $currentServiceBusNamespaceDetails.Id } },
                                                                         @{N = 'ResourceGroupName'; E = { $currentServiceBusNamespaceDetails.Id.Split("/")[4] } },
                                                                         @{N = 'ResourceName'; E = { $currentServiceBusNamespaceDetails.Name } }, 
-                                                                        @{N = 'DisableLocalAuth'; E = { $currentLocalAuthStatus } }
+                                                                        @{N = 'DisableLocalAuth'; E = { $isLocalAuthDisabled } }
 
                 }
                 catch {
@@ -360,13 +360,13 @@ function Disable-LocalAuthForServiceBusNamespaces
     Write-Host $([Constants]::SingleDashLine)
 
     # List for actionable service bus namespace(s)
-    $actionableServiceBusNamespacesDetails = @()
+    $serviceBusWithLocalAuthEnabled = @()
 
     Write-Host "Filtering Service Bus Namespace(s) for which local authentication is enabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $serviceBusNamespacesDetails | ForEach-Object {
-        if ($namespace.DisableLocalAuth) {
-            $actionableServiceBusNamespacesDetails += $_
+        if (-not $_.DisableLocalAuth) {
+            $serviceBusWithLocalAuthEnabled += $_
         }
         else {
             $logResource = @{}
@@ -377,7 +377,7 @@ function Disable-LocalAuthForServiceBusNamespaces
         }
     }
 
-     $actionableServiceBusNamespacesDetailsCount = ($actionableServiceBusNamespacesDetails | Measure-Object).Count
+     $actionableServiceBusNamespacesDetailsCount = ($serviceBusWithLocalAuthEnabled | Measure-Object).Count
 
     if ($actionableServiceBusNamespacesDetailsCount -eq 0) {
         Write-Host "No Service Bus Namespaces(s) found with non-secure local authentication enabled.. Exiting..." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -405,7 +405,7 @@ function Disable-LocalAuthForServiceBusNamespaces
 
     if (-not $AutoRemediation) {
         Write-Host "Azure Service Bus Namespace(s) with non-secure local authentication enabled are:"
-        $actionableServiceBusNamespacesDetails  | Format-Table -Property $colsProperty -Wrap
+        $serviceBusWithLocalAuthEnabled  | Format-Table -Property $colsProperty -Wrap
         Write-Host $([Constants]::SingleDashLine)
     }
 
@@ -422,7 +422,7 @@ function Disable-LocalAuthForServiceBusNamespaces
     if ([String]::IsNullOrWhiteSpace($InputFilePath)) {
         # Backing up actionable Service Bus Namespace(s) details.
         $backupFile = "$($backupFolderPath)\ServiceBusNamespacesDetailsBackUp.csv"
-        $actionableServiceBusNamespacesDetails | Export-CSV -Path $backupFile -NoTypeInformation
+        $serviceBusWithLocalAuthEnabled | Export-CSV -Path $backupFile -NoTypeInformation
         Write-Host "Azure Service Bus Namespace(s) details have been backed up to [$($backupFile)]" -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
     }
@@ -450,7 +450,7 @@ function Disable-LocalAuthForServiceBusNamespaces
                 }
             }
             else {
-                Write-Host "'Force' flag is provided. Disable local authentication will be enabled on Service Bus Namespace(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+                Write-Host "'Force' flag is provided. Local auth will be disbaled on Service Bus Namespace(s) in the Subscription without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -465,11 +465,11 @@ function Disable-LocalAuthForServiceBusNamespaces
         Write-Host $([Constants]::SingleDashLine)
 
         # Loop through the list of Service Bus Namespace(s) which needs to be remediated.
-        $actionableServiceBusNamespacesDetails  | ForEach-Object {
+        $serviceBusWithLocalAuthEnabled  | ForEach-Object {
             try {
-                $updatedLocalAuth = (Set-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -DisableLocalAuth:$true).DisableLocalAuth 
+                $disabledLocalAuth = (Set-AzServiceBusNamespace -ResourceGroupName $_.ResourceGroupName -Name $_.ResourceName -DisableLocalAuth:$true).DisableLocalAuth 
 
-                if ($updatedLocalAuth) {
+                if ($disabledLocalAuth) {
                     $serviceBusNamespacesRemediated += $_
                     $logResource = @{}	
                     $logResource.Add("ResourceGroupName", ($_.ResourceGroupName))	
@@ -522,7 +522,7 @@ function Disable-LocalAuthForServiceBusNamespaces
 
             Write-Host "Remediation Summary: " -ForegroundColor $([Constants]::MessageType.Info)
             if ($($serviceBusNamespacesRemediated | Measure-Object).Count -gt 0) {
-                Write-Host "Successfully set disable lLocal authentication to true for the following Service Bus Namespaces(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully set disable Local authentication to true for the following Service Bus Namespaces(s) in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host $([Constants]::SingleDashLine)
                 $serviceBusNamespacesRemediated | Format-Table -Property $colsProperty -Wrap
 
@@ -669,7 +669,7 @@ function Reset-LocalAuthForServiceBusNamespaces {
 
     # Note about the required access required for remediation
 
-    Write-Host "To disable local authentication for Service Bus Namespace(s) in the Subscription, Contributor on Subscription or Resource Group or Azure Data Owner role on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "To enable local authentication for Service Bus Namespace(s) in the Subscription, Contributor the on Service Bus Namespace(s) is required." -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "[Step 2 of 3] Prepare to fetch all Service Bus Namespace(s)"
@@ -714,12 +714,12 @@ function Reset-LocalAuthForServiceBusNamespaces {
     }
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Set disable local authentication to previous value on all Service Bus Namespace(s) in the Subscription"
+    Write-Host "[Step 3 of 3] Set enabling local authentication to previous value on all Service Bus Namespace(s) in the Subscription"
     Write-Host $([Constants]::SingleDashLine)
 
     if (-not $Force) {
 
-        Write-Host "Do you want to change local authentication for all Service Bus Namespace(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Do you want to enable local authentication for all Service Bus Namespace(s) mentioned in the file?"  -ForegroundColor $([Constants]::MessageType.Warning)
         $userInput = Read-Host -Prompt "(Y|N)"
 
         if ($userInput -ne "Y") {
