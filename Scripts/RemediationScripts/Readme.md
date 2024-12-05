@@ -1448,7 +1448,7 @@ ___
 Local authentication should be disabled in Service Bus Namespaces
 
 ### Link to Bulk Remediation Script (BRS)
-[RRemediate-DisableBasicAuthForServiceBusNamespaces](Remediate-DisableBasicAuthForServiceBusNamespaces.ps1)
+[Remediate-DisableBasicAuthForServiceBusNamespaces](Remediate-DisableBasicAuthForServiceBusNamespaces.ps1)
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
