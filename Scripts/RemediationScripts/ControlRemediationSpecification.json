@@ -515,9 +515,9 @@
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureIoTHubTLSVersion.ps1",
             "LoadCommand": "Remediate-ConfigureIoTHubTLSVersion.ps1",
-            "InitCommand": "Set-IoTHubTLSVersion",
+            "InitCommand": "Set-MinTLSVersionForIoTHub ",
             "RollbackMetadata": {
-                "RollbackCommand": "Reset-IoTHubTLSVersion",
+                "RollbackCommand": "Reset-MinTLSVersionForIoTHub ",
                 "Arguments": ["SubscriptionId"]
             }
         }

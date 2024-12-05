@@ -36,19 +36,19 @@
     To remediate:
         1. Run below command to configure IoT Hub TLS version for all IoT Hubs in the subscription:
            
-            Set-IoTHubTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
+            Set-MinTLSVersionForIoTHub  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
         
         To know more about parameter execute:
-            Get-Help Set-IoTHubTLSVersion -Detailed
+            Get-Help Set-MinTLSVersionForIoTHub  -Detailed
             
         To roll back:
         1. Run below command to roll back Microsoft Defender for subscription with all the resource type. 
            
-            Set-IoTHubTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\IoTHub\RemediatedResourceType.csv
+            Set-MinTLSVersionForIoTHub  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath  C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\IoTHub\RemediatedResourceType.csv
         
         To know more about parameter execute:
    
-            Get-Help Set-IoTHubTLSVersion -Detailed
+            Get-Help Set-MinTLSVersionForIoTHub  -Detailed
 
 ########################################
 #>
@@ -99,7 +99,7 @@ function Fetch-API {
     )
 
     $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
-    $accessTokenSecure = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl -AsSecureString
+    $accessTokenSecure = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl -AsSecureString -WarningAction SilentlyContinue
     $accessToken = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto(
         [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($accessTokenSecure.Token)
     )
@@ -140,7 +140,7 @@ function Fetch-API {
     }
 }
 
-function Set-IoTHubTLSVersion {
+function Set-MinTLSVersionForIoTHub  {
     param (
         [String]
         [Parameter(ParameterSetName = "DryRun", Mandatory = $true, HelpMessage = "Specifies the ID of the Subscription to be remediated")]
@@ -592,7 +592,7 @@ function Set-IoTHubTLSVersion {
     }
 }
 
-function Reset-IoTHubTLSVersion
+function Reset-MinTLSVersionForIoTHub 
 {
     <#
         .SYNOPSIS
@@ -615,13 +615,13 @@ function Reset-IoTHubTLSVersion
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to Reset-IoTHubTLSVersion.
+        None. You cannot pipe objects to Reset-MinTLSVersionForIoTHub .
 
         .OUTPUTS
-        None. Reset-IoTHubTLSVersion does not return anything that can be piped and used as an input to another command.
+        None. Reset-MinTLSVersionForIoTHub  does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-IoTHubTLSVersion -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\MinTLSVersionForIoTHub\RemediatedIoTHub.csv
+        PS> Reset-MinTLSVersionForIoTHub  -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\MinTLSVersionForIoTHub\RemediatedIoTHub.csv
 
         .LINK
         None
