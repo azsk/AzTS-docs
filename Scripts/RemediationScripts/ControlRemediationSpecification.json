@@ -509,6 +509,17 @@
                     ""
                 ]
             }
+        },
+        {
+            "ControlId": "Azure_IoTHub_DP_Use_Secure_TLS_Version",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureIoTHubTLSVersion.ps1",
+            "LoadCommand": "Remediate-ConfigureIoTHubTLSVersion.ps1",
+            "InitCommand": "Set-MinTLSVersionForIoTHub ",
+            "RollbackMetadata": {
+                "RollbackCommand": "Reset-MinTLSVersionForIoTHub ",
+                "Arguments": ["SubscriptionId"]
+            }
         }
     ]
 }
