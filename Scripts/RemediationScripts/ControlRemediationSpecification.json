@@ -520,6 +520,19 @@
                 "RollbackCommand": "Reset-MinTLSVersionForIoTHub ",
                 "Arguments": ["SubscriptionId"]
             }
+        },
+        {
+            "ControlId": "Azure_ServiceBus_AuthN_Disable_Local_Auth",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-DisableBasicAuthForServiceBusNamespaces.ps1",
+            "LoadCommand": "Remediate-DisableBasicAuthForServiceBusNamespaces.ps1",
+            "InitCommand": "Disable-LocalAuthForServiceBusNamespaces",
+            "RollbackMetadata": {
+                "RollbackCommand": "Reset-LocalAuthForServiceBusNamespaces",
+                "Arguments": [
+                    "SubscriptionId"
+                ]
+            }
         }
     ]
 }
