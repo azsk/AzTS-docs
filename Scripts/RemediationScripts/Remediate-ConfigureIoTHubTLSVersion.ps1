@@ -7,7 +7,7 @@
     Azure_IoTHub_DP_Use_Secure_TLS_Version
 
 # Pre-requisites:
-    1. You will need Owner role on subscription.
+    1. You will need Contributor or higher privileged role on IoT Hub.
     2. Must be connected to Azure with an authenticated account.
 
 # Steps performed by the script:
