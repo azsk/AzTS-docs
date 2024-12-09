@@ -79,7 +79,9 @@
 
 39. [Azure_IoTHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#39-Azure_IoTHub_DP_Use_Secure_TLS_Version)
 
-40. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#40-Azure_AppService_DP_Configure_EndToEnd_TLS)
+40. [Azure_ServiceBus_AuthN_Disable_Local_Auth](ControlsEligibleForRemediationThroughUI.md#40-azure_servicebus_authn_disable_local_auth)
+
+41. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#40-Azure_AppService_DP_Configure_EndToEnd_TLS)
 
 <br />
 ___
@@ -593,7 +595,20 @@ Use approved version of TLS for Azure IoT Hub.
 Contributor or higher privileged role on IoT Hub
 ___
 
-## 40. Azure_AppService_DP_Configure_EndToEnd_TLS
+## 40. Azure_ServiceBus_AuthN_Disable_Local_Auth
+
+### Display Name
+Local authentication should be disabled in Service Bus Namespaces
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-DisableBasicAuthForServiceBusNamespaces](Remediate-DisableBasicAuthForServiceBusNamespaces.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+___
+___
+
+## 41. Azure_AppService_DP_Configure_EndToEnd_TLS
 
 ### Display Name
 Always End-to-end TLS encryption must be enabled on App Service.
