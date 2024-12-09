@@ -71,13 +71,15 @@
 	
 35. [Azure_BackupVault_DP_Enable_Immutability](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_immutability)
 	
-36. [Azure_BackupVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#35-azure_backupvault_dp_enable_soft_delete)
+36. [Azure_BackupVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#36-azure_backupvault_dp_enable_soft_delete)
 
 37. [Azure_RecoveryServicesVault_DP_Enable_Immutability](ControlsEligibleForRemediationThroughUI.md#37-Azure_RecoveryServicesVault_DP_Enable_Immutability)
 
-38. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#35-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
+38. [Azure_RecoveryServicesVault_DP_Enable_Soft_Delete](ControlsEligibleForRemediationThroughUI.md#38-azure_RecoveryServicesVault_DP_Enable_Soft_Delete)
 
-39. [Azure_ServiceBus_AuthN_Disable_Local_Auth](ControlsEligibleForRemediationThroughUI.md#39-azure_servicebus_authn_disable_local_auth)
+39. [Azure_IoTHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#39-Azure_IoTHub_DP_Use_Secure_TLS_Version)
+
+40. [Azure_ServiceBus_AuthN_Disable_Local_Auth](ControlsEligibleForRemediationThroughUI.md#40-azure_servicebus_authn_disable_local_auth)
 
 <br />
 ___
@@ -579,7 +581,19 @@ Always-on soft delete must be enabled on Recovery Services Vault
 Contributor or higher privileged role on Recovery Services Vault
 ___
 
-## 39. Azure_ServiceBus_AuthN_Disable_Local_Auth
+## 39. Azure_IoTHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+Use approved version of TLS for Azure IoT Hub.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureIoTHubTLSVersion.ps1](Remediate-ConfigureIoTHubTLSVersion.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on IoT Hub
+___
+
+## 40. Azure_ServiceBus_AuthN_Disable_Local_Auth
 
 ### Display Name
 Local authentication should be disabled in Service Bus Namespaces
@@ -589,3 +603,4 @@ Local authentication should be disabled in Service Bus Namespaces
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+___
