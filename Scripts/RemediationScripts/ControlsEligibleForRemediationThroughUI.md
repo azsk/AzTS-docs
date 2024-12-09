@@ -79,6 +79,8 @@
 
 39. [Azure_IoTHub_DP_Use_Secure_TLS_Version](ControlsEligibleForRemediationThroughUI.md#39-Azure_IoTHub_DP_Use_Secure_TLS_Version)
 
+40. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#40-Azure_AppService_DP_Configure_EndToEnd_TLS)
+
 <br />
 ___
 
@@ -589,4 +591,16 @@ Use approved version of TLS for Azure IoT Hub.
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on IoT Hub
+___
+
+## 40. Azure_AppService_DP_Configure_EndToEnd_TLS
+
+### Display Name
+Always End-to-end TLS encryption must be enabled on App Service.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAppServicEendToEndEncryption.ps1](Remediate-EnableAppServicEendToEndEncryption.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on App Service.
 ___

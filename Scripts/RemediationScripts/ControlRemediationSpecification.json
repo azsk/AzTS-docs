@@ -521,5 +521,17 @@
                 "Arguments": ["SubscriptionId"]
             }
         }
+        ,
+        {
+            "ControlId": "Azure_AppService_DP_Configure_EndToEnd_TLS",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableAppServicEendToEndEncryption.ps1",
+            "LoadCommand": "Remediate-EnableAppServicEendToEndEncryption.ps1",
+            "InitCommand": "Enable-EndToEndTLSForAppServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Reset-EndToEndTLSForAppServices",
+                "Arguments": ["SubscriptionId"]
+            }
+        }
     ]
 }

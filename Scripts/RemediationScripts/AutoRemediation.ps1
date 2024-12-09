@@ -166,6 +166,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_RecoveryServicesVault_DP_Enable_Immutability") -or
                 ($control.ControlId -eq "Azure_RecoveryServicesVault_DP_Enable_Soft_Delete") -or
                 ($control.ControlId -eq "Azure_IoTHub_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_AppService_DP_Configure_EndToEnd_TLS") -or
                 ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
