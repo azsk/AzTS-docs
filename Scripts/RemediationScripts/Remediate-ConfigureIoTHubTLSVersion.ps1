@@ -365,8 +365,10 @@ function Set-MinTLSVersionForIoTHub  {
 
     $IoTHubDetails | ForEach-Object {
         $IoTHub = $_
-        $validLocations = @("eastus", "southcentralus", "westus2")
-        if((!$_.MinimumTlsVersion -or $_.MinimumTlsVersion -lt $requiredMinTLSVersion) -and $validLocations -contains $_.Location)
+        $ApplicableRegions = @("eastus", "southcentralus", "westus2")
+        $IsRegionSupportedforTLSEnforcement = $ApplicableRegions -contains $_.Location
+
+        if((!$_.MinimumTlsVersion -or $_.MinimumTlsVersion -lt $requiredMinTLSVersion) -and $IsRegionSupportedforTLSEnforcement)
         {
             $NonCompliantTLSIoTHub += $IoTHub
         }
@@ -375,7 +377,11 @@ function Set-MinTLSVersionForIoTHub  {
             $logResource = @{}
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.ResourceName))
-            $logResource.Add("Reason","Minimum required TLS Version configured set on IoT Hub.")    
+            if ($IsRegionSupportedforTLSEnforcement) {
+                $logResource.Add("Reason","Skipping as region is not supported for TLS enforcement")
+            } else {
+                $logResource.Add("Reason","Minimum required TLS Version configured set on IoT Hub.")
+            }   
             $logSkippedResources += $logResource
         }
     }
