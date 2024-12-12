@@ -41,14 +41,14 @@
            Enable-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck
 
         3. To enable End-to-end TLS encryption on all App Services in a Subscription, from a previously taken snapshot:
-           Enable-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\Enable-EndToEndTLSForAppServices\AppServicesWithNonCompliant.csv
+           Enable-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\Enable-EndToEndTLSForAppServices\NonCompliantAppServices.csv
 
         To know more about parameter execute:
             Get-Help Enable-EndToEndTLSForAppServices -Detailed
 
     To roll back:
         1. To configure AllAllowed on the production slot and all non-production slots of all App Services in a Subscription, from a previously taken snapshot:
-           Disable-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableEndToEndTLSForAppServices\RemediatedForAppServices.csv
+           Disable-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\DisableEndToEndTLSForAppServices\RemediatedAppService.csv
        
         To know more about the options supported by the roll back command, execute:
         Get-Help Disable-EndToEndTLSForAppServices -Detailed        
@@ -272,9 +272,8 @@ function Enable-EndToEndTLSForAppServices {
             try
             {
                 $appServiceResourceAPI = "https://management.azure.com/subscriptions/$subId/resourceGroups/$($_.ResourceGroupName)/providers/Microsoft.Web/sites/$($_.Name)?api-version=2024-04-01" 
-                $AppServiceDetail = Fetch-API -Method Get -Uri $appServiceResourceAPI -ErrorAction Stop
-
-                $AppServicesDetails += $AppServiceDetail | Select-Object @{N='ResourceId';E={$_.Id}},
+                $AppServiceDetail = Fetch-API -Method Get -Uri $appServiceResourceAPI -ErrorAction Stop                
+                $AppServicesDetails += ($AppServiceDetail | Where-Object { $_.Kind -eq 'app' }) | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                @{N='ResourceGroupName';E={$_.properties.ResourceGroup}},
                                                                @{N='Name';E={$_.Name}},
                                                                @{N='EndToEndEncryptionEnabled';E={$_.Properties.EndToEndEncryptionEnabled}},
@@ -306,10 +305,9 @@ function Enable-EndToEndTLSForAppServices {
                 Write-Host "Fetching all App Services in Subscription: $($context.Subscription.SubscriptionId)" -ForegroundColor $([Constants]::MessageType.Info)
 
                 # Get all App Services in a Subscription
-                $AppServicesDetail = Fetch-API -Method Get -Uri $appServicesAPI -ErrorAction Stop
-
+                $AppServicesDetail = Fetch-API -Method Get -Uri $appServicesAPI -ErrorAction Stop               
                 # Seperating required properties
-                $AppServicesDetails = $AppServicesDetail.value | Select-Object @{N='ResourceId';E={$_.Id}},
+                $AppServicesDetails = ($AppServicesDetail.value | Where-Object { $_.Kind -eq 'app' }) | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                @{N='ResourceGroupName';E={$_.properties.ResourceGroup}},
                                                                @{N='ResourceName';E={$_.Name}},
                                                                @{N='EndToEndEncryptionEnabled';E={$_.Properties.EndToEndEncryptionEnabled}},
@@ -347,9 +345,7 @@ function Enable-EndToEndTLSForAppServices {
                     Write-Host "App Service API URL: [$($_.appServicesResourceAPI)]"
 
                     $AppServicesDetail = Fetch-API -Method Get -Uri $appServicesResourceAPI -ErrorAction Stop
-
-                    
-                    $AppServicesDetails += $AppServicesDetail | Select-Object @{N='ResourceId';E={$_.Id}},
+                    $AppServicesDetails += ($AppServicesDetail.value | Where-Object { $_.Kind -eq 'app' }) | Select-Object @{N='ResourceId';E={$_.Id}},
                                                                      @{N='ResourceGroupName';E={$_.properties.ResourceGroup}},
                                                                      @{N='ResourceName';E={$_.Name}},
                                                                      @{N='EndToEndEncryptionEnabled';E={$_.Properties.EndToEndEncryptionEnabled}},
@@ -441,7 +437,7 @@ function Enable-EndToEndTLSForAppServices {
      if ([String]::IsNullOrWhiteSpace($FilePath))
     {
         # Backing up App Services details
-        $backupFile = "$($backupFolderPath)\NonCompliantEndToEndTLSAppService.csv"
+        $backupFile = "$($backupFolderPath)\NonCompliantAppServices.csv"
 
         $NonCompliantAppServices | Export-CSV -Path $backupFile -NoTypeInformation
 
@@ -536,9 +532,6 @@ function Enable-EndToEndTLSForAppServices {
                     Write-Host "Skipping this App Service resource." -ForegroundColor $([Constants]::MessageType.Warning)
                     Write-Host $([Constants]::SingleDashLine)
                 }
-
-
-                
             }
             catch
             {
@@ -570,7 +563,7 @@ function Enable-EndToEndTLSForAppServices {
             $AppServicesRemediated | Format-Table -Property $colsPropertyRemediated -Wrap
 
             # Write this to a file.
-            $AppServiceRemediatedFile = "$($backupFolderPath)\RemediatedForAppServices.csv"
+            $AppServiceRemediatedFile = "$($backupFolderPath)\RemediatedAppService.csv"
             $AppServicesRemediated | Export-CSV -Path $AppServiceRemediatedFile -NoTypeInformation
 
             Write-Host "This information has been saved to" -NoNewline
@@ -601,7 +594,6 @@ function Enable-EndToEndTLSForAppServices {
             }
             $log | ConvertTo-json -depth 10  | Out-File $logFile
         }
-
     }
      else
     {
@@ -614,8 +606,6 @@ function Enable-EndToEndTLSForAppServices {
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, Enable End-to-end TLS encryption on App Services listed in the file."
     }
-
-
 }
 
 function Reset-EndToEndTLSForAppServices
@@ -647,7 +637,7 @@ function Reset-EndToEndTLSForAppServices
         None. Reset-EndToEndTLSForAppServices does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EndToEndTLSForAppServices\RemediatedForAppServices.csv
+        PS> Reset-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EndToEndTLSForAppServices\RemediatedAppService.csv
 
         .LINK
         None
@@ -711,9 +701,7 @@ function Reset-EndToEndTLSForAppServices
     Write-Host "Account Name: [$($context.Account.Id)]"
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
-
     Write-Host "*** To Disable End-to-end TLS encryption for App Services in a Subscription, Contributor or higher privileges on the App Services are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
-
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all App Services..."
     Write-Host $([Constants]::SingleDashLine)
@@ -743,9 +731,7 @@ function Reset-EndToEndTLSForAppServices
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.EndToEndEncryptionEnabled};Label="EndToEndEncryptionEnabled";Width=50;Alignment="left"}                   
-                    @{Expression={$_.PreviousEndToEndTLSEncryption};Label="PreviousEndToEndTLSEncryption";Width=50;Alignment="left"},
-                    @{Expression={$_.isEndToEndTLSEncryptionSetPostRemediation};Label="isEndToEndTLSEncryptionSetPostRemediation";Width=50;Alignment="left"}
+                    @{Expression={$_.EndToEndEncryptionEnabled};Label="EndToEndEncryptionEnabled";Width=50;Alignment="left"} 
     $validAppServicesDetails | Format-Table -Property $colsProperty -Wrap
 
      # Back up snapshots to `%LocalApplicationData%'.
@@ -801,7 +787,6 @@ function Reset-EndToEndTLSForAppServices
             }
 
             $AppServiceResource = Fetch-API -Method "PUT" -Uri $setAppServicesUri -Body $appServiceBody
-
             if(([string]$AppServiceResource.Properties.EndToEndEncryptionEnabled) -eq ($_.PreviousEndToEndTLSEncryption))
             {
                Write-Host "Succesfully rolled back End-to-end TLS on App Services - [$($_.ResourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
@@ -852,7 +837,6 @@ function Reset-EndToEndTLSForAppServices
         if ($($AppServicesSkipped | Measure-Object).Count -gt 0)
         {
             Write-Host "Error configuring End-to-end TLS on following App Services in the Subscription: " -ForegroundColor $([Constants]::MessageType.Warning)
-            
             $AppServicesSkipped | Format-Table -Property $colsProperty -Wrap
             
             # Write this to a file.
