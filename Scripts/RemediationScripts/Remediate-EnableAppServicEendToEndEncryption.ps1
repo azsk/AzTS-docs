@@ -608,7 +608,7 @@ function Enable-EndToEndTLSForAppServices {
     }
 }
 
-function Reset-EndToEndTLSForAppServices
+function Disable-EndToEndTLSForAppServices
 {
  <#
         .SYNOPSIS
@@ -631,13 +631,13 @@ function Reset-EndToEndTLSForAppServices
         Specifies the path to the file to be used as input for the roll back.
 
         .INPUTS
-        None. You cannot pipe objects to Reset-EndToEndTLSForAppServices.
+        None. You cannot pipe objects to Disable-EndToEndTLSForAppServices.
 
         .OUTPUTS
-        None. Reset-EndToEndTLSForAppServices does not return anything that can be piped and used as an input to another command.
+        None. Disable-EndToEndTLSForAppServices does not return anything that can be piped and used as an input to another command.
 
         .EXAMPLE
-        PS> Reset-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EndToEndTLSForAppServices\RemediatedAppService.csv
+        PS> Disable-EndToEndTLSForAppServices -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\202109131040\EndToEndTLSForAppServices\RemediatedAppService.csv
 
         .LINK
         None
