@@ -365,7 +365,8 @@ function Set-MinTLSVersionForIoTHub  {
 
     $IoTHubDetails | ForEach-Object {
         $IoTHub = $_
-        if(!$_.MinimumTlsVersion -or $_.MinimumTlsVersion -lt $requiredMinTLSVersion)
+        $validLocations = @("eastus", "southcentralus", "westus2")
+        if((!$_.MinimumTlsVersion -or $_.MinimumTlsVersion -lt $requiredMinTLSVersion) -and $validLocations -contains $_.Location)
         {
             $NonCompliantTLSIoTHub += $IoTHub
         }
