@@ -383,7 +383,7 @@ function Enable-EndToEndTLSForAppServices {
     # Non Compliant App Services with End-to-end TLS as default
     $EndToEndTLSwithDefaultValue = @()
 
-    Write-Host "Separating App Services for which End-to-end TLS encryption is not enabled..."
+    Write-Host "Separating App Services for which End-to-end TLS encryption is not enabled..." -ForegroundColor $([Constants]::MessageType.Info)
 
     $AppServicesDetails | ForEach-Object {
         $AppService = $_
@@ -391,8 +391,7 @@ function Enable-EndToEndTLSForAppServices {
         if(-not $_.EndToEndEncryptionEnabled)
         {
 
-            $NonCompliantAppServices += $AppService
-             Write-Host "Separating App Service for which End-to-end TLS encryption [$($AppService)] is not configured..."
+            $NonCompliantAppServices += $AppService         
           
         }
         else
@@ -417,8 +416,7 @@ function Enable-EndToEndTLSForAppServices {
 
     $colsProperty = @{Expression={$_.ResourceName};Label="ResourceName";Width=30;Alignment="left"},
                     @{Expression={$_.ResourceGroupName};Label="ResourceGroupName";Width=30;Alignment="left"},
-                    @{Expression={$_.ResourceId};Label="ResourceId";Width=50;Alignment="left"},
-                    @{Expression={$_.EndToEndEncryptionEnabled};Label="EndToEndEncryptionEnabled";Width=10;Alignment="left"}
+                    @{Expression={$_.EndToEndEncryptionEnabled};Label="EndToEndEncryptionEnabled";Width=50;Alignment="left"}                    
         
     $NonCompliantAppServices | Format-Table -Property $colsProperty -Wrap
 
@@ -604,7 +602,7 @@ function Enable-EndToEndTLSForAppServices {
         Write-Host $([Constants]::DoubleDashLine)
 
         Write-Host "Next steps:" -ForegroundColor $([Constants]::MessageType.Info)
-        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, Enable End-to-end TLS encryption on App Services listed in the file."
+        Write-Host "Run the same command with -FilePath $($backupFile) and without -DryRun, Enable End-to-end TLS encryption on App Services listed in the file." -ForegroundColor $([Constants]::MessageType.Warning)
     }
 }
 
