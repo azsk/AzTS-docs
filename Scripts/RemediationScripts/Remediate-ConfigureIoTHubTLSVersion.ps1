@@ -378,9 +378,9 @@ function Set-MinTLSVersionForIoTHub  {
             $logResource.Add("ResourceGroupName",($_.ResourceGroupName))
             $logResource.Add("ResourceName",($_.ResourceName))
             if ($IsRegionSupportedforTLSEnforcement) {
-                $logResource.Add("Reason","Skipping as region is not supported for TLS enforcement")
-            } else {
                 $logResource.Add("Reason","Minimum required TLS Version configured set on IoT Hub.")
+            } else {
+                $logResource.Add("Reason","Skipping as region is not supported for TLS enforcement")
             }   
             $logSkippedResources += $logResource
         }
