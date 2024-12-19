@@ -81,6 +81,8 @@
 
 40. [Azure_ServiceBus_AuthN_Disable_Local_Auth](ControlsEligibleForRemediationThroughUI.md#40-azure_servicebus_authn_disable_local_auth)
 
+41. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#41-Azure_AppService_DP_Configure_EndToEnd_TLS)
+
 <br />
 ___
 
@@ -603,4 +605,17 @@ Local authentication should be disabled in Service Bus Namespaces
 
 ### Minimum permissions required to run the script
 Contributor role at resource level
+___
+___
+
+## 41. Azure_AppService_DP_Configure_EndToEnd_TLS
+
+### Display Name
+Always End-to-end TLS encryption must be enabled on App Service.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAppServicEendToEndEncryption.ps1](Remediate-EnableAppServicEendToEndEncryption.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on App Service.
 ___
