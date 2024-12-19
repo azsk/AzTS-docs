@@ -81,7 +81,7 @@
 
 40. [Azure_ServiceBus_AuthN_Disable_Local_Auth](ControlsEligibleForRemediationThroughUI.md#40-azure_servicebus_authn_disable_local_auth)
 
-41. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#40-Azure_AppService_DP_Configure_EndToEnd_TLS)
+41. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#41-Azure_AppService_DP_Configure_EndToEnd_TLS)
 
 <br />
 ___
