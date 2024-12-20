@@ -757,17 +757,7 @@ function Install-AzSKTenantSecuritySolution
                         }
                     }
 
-                    $storageAccountKey = Get-AzStorageAccountKey -ResourceGroupName $ScanHostRGName -Name $storageAccountName -ErrorAction Stop
-                    if(-not $storageAccountKey)
-                    {
-                        throw [System.ArgumentException] ("Unable to fetch 'storageAccountKey'. Please check if you have the access to read storage key.");
-                    }
-                    else
-                    {
-                        $storageAccountKey = $storageAccountKey.Value[0]
-                    }
-
-                    $storageContext = New-AzStorageContext -StorageAccountName $storageAccountName  -StorageAccountKey $storageAccountKey -ErrorAction Stop
+                   $storageContext = New-AzStorageContext -StorageAccountName $storageAccountName  -UseConnectedAccount -ErrorAction Stop
                     $storageQueue = Get-AzStorageQueue -Name $storageQueueName -Context $storageContext -ErrorAction SilentlyContinue
                     if(-not $storageQueue)
                     {   
@@ -1755,7 +1745,7 @@ function Set-AzSKTenantSecuritySolutionScannerIdentity
             if($UserAssignedIdentity -eq $null)
             {
                 Write-Host "Creating a new user-assigned identity [$($UserAssignedIdentityName)]." -ForegroundColor $([Constants]::MessageType.Info)                
-                $UserAssignedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $UserAssignedIdentityName
+                $UserAssignedIdentity = New-AzUserAssignedIdentity -ResourceGroupName $ResourceGroupName -Name $UserAssignedIdentityName -Location $Location
                 Start-Sleep -Seconds 60
             }
             else
@@ -2102,7 +2092,7 @@ function Grant-AzSKAccessOnKeyVaultToUserAssignedIdentity
                 }
 
                 $keyVaultRGName =  $ResourceId.Split("/")[4] # ResourceId is in format - /subscriptions/SubIdGuid/resourceGroups/RGName/providers/Microsoft.KeyVault/vaults/KeyVaultName
-                $alertActionGroupForKV = Set-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ShortName ‘AzTSKVAlert’ -Receiver $EmailReceivers -WarningAction SilentlyContinue
+                 $alertActionGroupForKV = Set-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ShortName ‘AzTSKVAlert’ -Receiver $EmailReceivers -WarningAction SilentlyContinue
 
                 $deploymentName = "AzTSenvironmentmonitoringsetupforkv-$([datetime]::Now.ToString("yyyymmddThhmmss"))"
 
