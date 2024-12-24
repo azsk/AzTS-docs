@@ -1,0 +1,35 @@
+{
+  "BasePackageLink": "https://aadscanpkgstoragering0.blob.core.windows.net/msentrapreprodpackagecontainer",
+  "Packages": [
+    {
+      "Name": "MSEntraRootScheduler",
+      "Latest": "1.1.46",
+      "Stable": "1.1.46",
+      "PackageName": "MSEntraRootScheduler.zip"
+    },
+    {
+      "Name": "MSEntraInventoryFetchers",
+      "Latest": "1.1.10",
+      "Stable": "1.1.10",
+      "PackageName": "MSEntraInventoryFetchers.zip"
+    },
+    {
+      "Name": "AADScanner",
+      "Latest": "1.1.10",
+      "Stable": "1.1.10",
+      "PackageName": "AADScanner.zip"
+    },
+    {
+      "Name": "AADWorkItemProcessor",
+      "Latest": "1.1.10",
+      "Stable": "1.1.10",
+      "PackageName": "AADWorkItemProcessor.zip"
+    },
+    {
+      "Name": "AADScannerAPI",
+      "Latest": "1.1.10",
+      "Stable": "1.1.10",
+      "PackageName": "AADScannerAPI.zip"
+    }
+  ]
+}
