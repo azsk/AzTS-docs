@@ -19,6 +19,7 @@ Below resource types can be checked for validating the security controls:
 |[AVDHostPool](Feature/AVDHostPool.md)|Microsoft.DesktopVirtualization/hostpools|
 |[AVDWorkspaces](Feature/AVDWorkspaces.md)|Microsoft.DesktopVirtualization/Workspaces|
 |[Bastion](Feature/Bastion.md)|Microsoft.Network/bastionHosts|
+|[BackupVault] (Feature/BackupVault.md) |Microsoft.DataProtection/backupVaults|
 |[BatchAccounts](Feature/BatchAccounts.md)|Microsoft.Batch/batchAccounts|
 |[CDN](Feature/CDN.md)|Microsoft.Cdn/profiles|
 |[CloudService](Feature/CloudService.md)|Microsoft.ClassicCompute/domainNames|
@@ -45,6 +46,7 @@ Below resource types can be checked for validating the security controls:
 |[NotificationHub](Feature/NotificationHub.md)|Microsoft.NotificationHubs/namespaces/notificationHubs|
 |[MachineLearningWorkspace](Feature/MachineLearningWorkspace.md)|Microsoft.MachineLearningServices/workspaces|
 |[NSG](Feature/NSG.md)|Microsoft.Network/networkSecurityGroups|
+|[RecoveryServicesVault] (Feature/RecoveryServicesvault.md) |Microsoft.Recoveryservices/vaults|
 |[RedisCache](Feature/RedisCache.md)|Microsoft.Cache/Redis|
 |[RedisCacheEnterprise](Feature/RedisEnterprise.md)|Microsoft.Cache/redisEnterprise|
 |[ServiceBus](Feature/ServiceBus.md)|Microsoft.ServiceBus/namespaces|
