@@ -82,6 +82,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 70. [Azure_IoTHub_DP_Use_Secure_TLS_Version](Readme.md#70-azure_iothub_dp_use_secure_tls_version)
 71. [Azure_ServiceBus_AuthN_Disable_Local_Auth](Readme.md#70-azure_servicebus_authn_disable_local_auth)
 72. [Azure_AppService_DP_Configure_EndToEnd_TLS](Readme.md#71-azure_appservice_dp_configure_endtoend_tls)
+73. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](Readme.md#73-azure_backupvault_authz_enable_multiuserauthorization)
 
 <br />
 
@@ -1490,6 +1491,24 @@ Always End-to-end TLS encryption must be enabled on App Service.
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on App Service.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+___
+
+## 73. Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization
+
+### Display Name
+Multi User Authorization must be enabled on backup vault
+
+### Link to Bulk Remediation Script (BRS)
+[Set-BackupVaultResourceGuard](Set-BackupVaultResourceGuard.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
 Yes

@@ -83,6 +83,8 @@
 
 41. [Azure_AppService_DP_Configure_EndToEnd_TLS](ControlsEligibleForRemediationThroughUI.md#41-Azure_AppService_DP_Configure_EndToEnd_TLS)
 
+42. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](ControlsEligibleForRemediationThroughUI.md#42-Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization)
+
 <br />
 ___
 
@@ -618,4 +620,16 @@ Always End-to-end TLS encryption must be enabled on App Service.
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on App Service.
+___
+
+## 42. Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization
+
+### Display Name
+Multi User Authorization must be enabled on backup vault
+
+### Link to Bulk Remediation Script (BRS)
+[Set-BackupVaultResourceGuard.ps1](Set-BackupVaultResourceGuard.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
 ___

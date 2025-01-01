@@ -168,6 +168,7 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_IoTHub_DP_Use_Secure_TLS_Version") -or
                 ($control.ControlId -eq "Azure_ServiceBus_AuthN_Disable_Local_Auth") -or
                 ($control.ControlId -eq "Azure_AppService_DP_Configure_EndToEnd_TLS") -or
+                ($control.ControlId -eq "Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization") -or
                 ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
