@@ -445,8 +445,7 @@
         "name": "[parameters('storageSKU')]"
       },
       "dependsOn": [],
-      "properties": {
-        "allowSharedKeyAccess": false,
+      "properties": {        
         "supportsHttpsTrafficOnly": true,
         "allowBlobPublicAccess": false,
         "minimumTlsVersion": "TLS1_2"
