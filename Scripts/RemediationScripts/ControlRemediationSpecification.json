@@ -550,9 +550,9 @@
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-BackupVault-MUA.ps1",
             "LoadCommand": "Remediate-BackupVault-MUA.ps1",
-            "InitCommand": "Set-BackupVaultResourceGuard",
+            "InitCommand": "Enable-MultiUserAuthorizationOnBackupVaults",
             "RollbackMetadata": {
-                "RollbackCommand": "Reset-BackupVaultResourceGuard",
+                "RollbackCommand": "Disable-MultiUserAuthorizationOnBackupVaults",
                 "Arguments": ["SubscriptionId"]
             }
         }

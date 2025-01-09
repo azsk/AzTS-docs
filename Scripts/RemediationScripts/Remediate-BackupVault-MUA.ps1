@@ -9,12 +9,6 @@ Configures Multi-User Authorization (MUA) by linking Resource Guards to Backup V
 .PARAMETER SubscriptionId
 Specifies the ID of the Subscription to be remediated.
 
-.PARAMETER ExistingResourceGuardId
-Specifies the Resource ID of an existing Resource Guard to be used for configuration.
-
-.PARAMETER CreateNewResourceGuards
-Switch to create new Resource Guards per location when no existing Resource Guard is available.
-
 .PARAMETER Force
 Specifies a forceful remediation without any prompts.
 
@@ -31,22 +25,16 @@ Specifies the path to the file to be used as input for the remediation.
 Switch to enable automated remediation process.
 
 .INPUTS
-None. You cannot pipe objects to Set-BackupVaultResourceGuard.
+None. You cannot pipe objects to Enable-MultiUserAuthorizationOnBackupVaults.
 
 .OUTPUTS
-None. Set-BackupVaultResourceGuard does not return anything that can be piped and used as an input to another command.
+None. Enable-MultiUserAuthorizationOnBackupVaults does not return anything that can be piped and used as an input to another command.
 
 .EXAMPLE
-PS> Set-BackupVaultResourceGuard -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
+PS> Enable-MultiUserAuthorizationOnBackupVaults -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -DryRun
 
 .EXAMPLE
-PS> Set-BackupVaultResourceGuard -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -ExistingResourceGuardId /subscriptions/.../resourceGuards/myResourceGuard
-
-.EXAMPLE
-PS> Set-BackupVaultResourceGuard -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -CreateNewResourceGuards
-
-.EXAMPLE
-PS> Set-BackupVaultResourceGuard -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\BackupVaultDetails.csv 
+PS> Enable-MultiUserAuthorizationOnBackupVaults -SubscriptionId 00000000-xxxx-0000-xxxx-000000000000 -PerformPreReqCheck -FilePath C:\AzTS\Subscriptions\00000000-xxxx-0000-xxxx-000000000000\BackupVaultDetails.csv 
 #>
 
 function Setup-Prerequisites {
@@ -95,8 +83,8 @@ function Setup-Prerequisites {
 	}
 }
 
-# Function to fetch non-compliant backup vaults
-function Get-NonCompliantBackupVaults {
+# Function to fetch Backup Vault(s) without Multi-User Authorization (MUA) configuration backup vaults
+function Get-BackupVaultsWithoutMUA {
     param (
         [string]$SubscriptionId,
         [string]$FilePath = $null,
@@ -137,9 +125,7 @@ function Get-NonCompliantBackupVaults {
                         -VaultName $_.ResourceName `
                         -ErrorAction Stop
 
-                    $isProtected = $vaultDetail.IsVaultProtectedByResourceGuard -eq $true
-
-                    if (-not $isProtected) {
+                    if (-not $vaultDetail.IsVaultProtectedByResourceGuard) {
                         [PSCustomObject]@{
                             ResourceId = $vaultDetail.Id
                             ResourceGroupName = [regex]::Match($vaultDetail.Id, "/resourcegroups/([^/]+)/").Groups[1].Value
@@ -175,9 +161,7 @@ function Get-NonCompliantBackupVaults {
                         -VaultName $_.ResourceName `
                         -ErrorAction Stop
 
-                    $isProtected = $vaultDetail.IsVaultProtectedByResourceGuard -eq $true
-
-                    if (-not $isProtected) {
+                    if (-not $vaultDetail.IsVaultProtectedByResourceGuard) {
                         [PSCustomObject]@{
                             ResourceId = $vaultDetail.Id
                             ResourceGroupName = [regex]::Match($vaultDetail.Id, "/resourcegroups/([^/]+)/").Groups[1].Value
@@ -238,7 +222,11 @@ function Validate-ResourceGuard {
     )
 
     try {
-        $resourceGuard = Get-AzResource -ResourceId $ResourceGuardId
+        $resourceGuard = Get-AzResource -ResourceId $ResourceGuardId -ErrorAction Ignore
+        if ($null -eq $resourceGuard) {
+            throw "Resource Guard not found"
+        }
+
         if ($resourceGuard.ResourceType -ne "Microsoft.DataProtection/resourceGuards") {
             throw "Invalid Resource Guard resource type"
         }
@@ -250,7 +238,7 @@ function Validate-ResourceGuard {
     }
 }
 
-function Set-BackupVaultResourceGuard {
+function Enable-MultiUserAuthorizationOnBackupVaults {
     param (
         [Parameter(Mandatory = $true)]
         [string]$SubscriptionId,
@@ -317,14 +305,12 @@ function Set-BackupVaultResourceGuard {
             Write-Host $([Constants]::SingleDashLine)
         }
 
-        Write-Host "***To Configure Multi-User Authorization (MUA) on Backup Vaults, Contributor or higher privileges on the Backup Vaults are required.***" -ForegroundColor $([Constants]::MessageType.Warning)
-
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 2 of 4] Preparing to fetch Backup Vault(s) without MUA configuration..."
+        Write-Host "[Step 2 of 4] Preparing to fetch Backup Vault(s) without Multi-User Authorization (MUA) configuration..."
         Write-Host $([Constants]::SingleDashLine)
 
         # Backup folder for storing logs and remediation details
-        $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\BackupVaultResourceGuard"
+        $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\MultiUserAuthorizationOnBackupVaults"
         if (-not (Test-Path -Path $backupFolderPath)) {
             New-Item -ItemType Directory -Path $backupFolderPath | Out-Null
         }
@@ -333,30 +319,33 @@ function Set-BackupVaultResourceGuard {
         $logRemediatedResources = @()
         $logSkippedResources = @()
 
-        # Step 2: Fetch non-compliant backup vaults
-        $nonCompliantVaults = Get-NonCompliantBackupVaults `
+        # Step 2: Fetch backup vaults without MUA configuration
+        $nonCompliantVaults = Get-BackupVaultsWithoutMUA `
             -SubscriptionId $SubscriptionId `
             -FilePath $FilePath `
             -AutoRemediation:$AutoRemediation
 
         if (-not $nonCompliantVaults -or $nonCompliantVaults.Vaults.Count -eq 0) {
-            Write-Host "No non-compliant backup vaults found." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "No backup vaults found without Multi-User Authorization (MUA) configuration." -ForegroundColor $([Constants]::MessageType.Warning)
             return
         }
 
-        Write-Host "Found [$($nonCompliantVaults.Vaults.Count)] Backup Vault(s) with non-compliant MUA configuration." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Found [$($nonCompliantVaults.Vaults.Count)] Backup Vault(s) without Multi-User Authorization (MUA) configuration." -ForegroundColor $([Constants]::MessageType.Update)
 
         # Display location summary
-        Write-Host "Non-Compliant Backup Vaults Summary:" -ForegroundColor $([Constants]::MessageType.Info)
-        $nonCompliantVaults.LocationSummary | Format-Table -AutoSize
+        Write-Host "Backup Vault(s) without Multi-User Authorization (MUA) configuration Summary:" -ForegroundColor $([Constants]::MessageType.Info)
+        $nonCompliantVaults.LocationSummary | ForEach-Object { [PSCustomObject]@{
+            Location = $_["Location"]
+            VaultCount = $_["VaultCount"]
+        }} | Format-Table -AutoSize
 
         Write-Host $([Constants]::DoubleDashLine)
-        Write-Host "[Step 3 of 4] Backing up non-compliant Backup Vault(s) details..."
+        Write-Host "[Step 3 of 4] Backing up Backup Vault(s) without Multi-User Authorization (MUA) configuration Backup Vault(s) details..."
         Write-Host $([Constants]::SingleDashLine)
 
         if ([String]::IsNullOrWhiteSpace($FilePath))
         {
-            # Backing up non-compliant Backup Vault(s) details
+            # Backing up Backup Vault(s) without Multi-User Authorization (MUA) configuration Backup Vault(s) details
             $backupFile = "$($backupFolderPath)\NonCompliantBackupVaults.csv"
 
             $nonCompliantVaults.Vaults | Export-CSV -Path $backupFile -NoTypeInformation
@@ -372,7 +361,7 @@ function Set-BackupVaultResourceGuard {
         # Stop if it's a dry run
         if ($DryRun) {
             Write-Host $([Constants]::DoubleDashLine)
-            Write-Host "[Step 4 of 4] Remediating non-compliant Azure Backup Vaults..."
+            Write-Host "[Step 4 of 4] Remediating Backup Vault(s) without Multi-User Authorization (MUA) configuration Azure Backup Vaults..."
             Write-Host $([Constants]::SingleDashLine)
             Write-Host "Skipped as -DryRun switch is provided." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::DoubleDashLine)
@@ -388,7 +377,8 @@ function Set-BackupVaultResourceGuard {
         $createdResourceGuards = @()
         $createdResourceGroups = @()
 
-        # User interaction for remediation method
+        Write-Host "***To Configure Multi-User Authorization (MUA) on Backup Vaults,`n if you choose 1st option Reader role on Resource Guard and Contributor or higher privileges on the Backup Vault(s) are required.`n if you choose option 2 Contributor or higher privileges on the subscription is required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+
         Write-Host "Choose a method to configure Multi User Authorization (MUA) on backup vault:" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "1. Use an existing Resource Guard" -ForegroundColor $([Constants]::MessageType.Info)
         Write-Host "2. Create new Resource Guards per location" -ForegroundColor $([Constants]::MessageType.Info)
@@ -404,10 +394,9 @@ function Set-BackupVaultResourceGuard {
                     Write-Host $([Constants]::DoubleDashLine)
                     Write-Host "Resource Guard Validation Failed" -ForegroundColor $([Constants]::MessageType.Error)
                     Write-Host $([Constants]::SingleDashLine)
-                    Write-Host "The provided Resource Guard ID is invalid or cannot be accessed." -ForegroundColor $([Constants]::MessageType.Warning)
-                    Write-Host "Please ensure:" -ForegroundColor $([Constants]::MessageType.Info)
-                    Write-Host "- The Resource Guard ID is correct" -ForegroundColor $([Constants]::MessageType.Info)
-                    Write-Host "- You have sufficient permissions to access the Resource Guard (Reader or higher)" -ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Host "The provided Resource Guard ID is invalid or cannot be accessed.`n" -ForegroundColor $([Constants]::MessageType.Warning)
+                    Write-Host "Please ensure:`n- The Resource Guard ID is correct`n- You have sufficient permissions to access the Resource Guard (Reader or higher)" -ForegroundColor $([Constants]::MessageType.Info)
+                    
                     Write-Host $([Constants]::DoubleDashLine)
                     return
                 }
@@ -481,8 +470,8 @@ function Set-BackupVaultResourceGuard {
                 # Create the Resource Group name by combining "rg-" with the hash
                 $ResourceGroupName = "rg-" + $hashString.ToLower()
 
-                if ($ResourceGroupName.Length -gt 24) {
-                    $ResourceGroupName = $ResourceGroupName.Substring(0, 24)
+                if ($ResourceGroupName.Length -gt 90) {
+                    $ResourceGroupName = $ResourceGroupName.Substring(0, 90)
                 }
                 Write-Host "Generated Resource Group Name: $ResourceGroupName" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -520,8 +509,8 @@ function Set-BackupVaultResourceGuard {
                         # Create the Resource Guard name by combining "resource-guard-" with the hash
                         $resourceGuardName = "resource-guard-" + $hashString.ToLower()
                 
-                        if ($resourceGuardName.Length -gt 24) {
-                            $resourceGuardName = $resourceGuardName.Substring(0, 24)
+                        if ($resourceGuardName.Length -gt 90) {
+                            $resourceGuardName = $resourceGuardName.Substring(0, 90)
                         }
                         Write-Host "Generated Resource Guard Name: $resourceGuardName" -ForegroundColor $([Constants]::MessageType.Info)
 
@@ -672,7 +661,7 @@ function Set-BackupVaultResourceGuard {
             $log | ConvertTo-Json -Depth 10 | Out-File $logFile
         }
 
-        Write-Host "Use $backupFolderPath file for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Use $backupFolderPath folder path for any roll back that may be required." -ForegroundColor $([Constants]::MessageType.Info)
 
         Write-Host "Remediation complete." -ForegroundColor $([Constants]::MessageType.Info)
     } catch {
@@ -696,12 +685,12 @@ function Confirm-Remediation {
     )
 
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 4 of 4] Remediating non-compliant Azure $ResourceType..." 
+    Write-Host "[Step 4 of 4] Remediating Backup Vault(s) without Multi-User Authorization (MUA) configuration Azure $ResourceType..." 
     Write-Host $([Constants]::SingleDashLine)
     
     if (-not $AutoRemediation) {
         if (-not $Force) {
-            $confirmationMessage = "This step will configure Multi-User Authorization (MUA) for all non-compliant [$($ResourceCount)] $ResourceType."
+            $confirmationMessage = "This step will configure Multi-User Authorization (MUA) for all Backup Vault(s) without Multi-User Authorization (MUA) configuration [$($ResourceCount)] $ResourceType."
             Write-Host $confirmationMessage -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host "Do you want to Continue? " -ForegroundColor $([Constants]::MessageType.Warning)
         
@@ -720,7 +709,7 @@ function Confirm-Remediation {
     return $true
 }
 
-function Reset-BackupVaultResourceGuard {
+function Disable-MultiUserAuthorizationOnBackupVaults {
     param (
         [String]
         [Parameter(Mandatory = $true, HelpMessage="Specifies the ID of the Subscription that was previously remediated.")]
@@ -775,7 +764,7 @@ function Reset-BackupVaultResourceGuard {
     Write-Host "Account Type: [$($context.Account.Type)]"
     Write-Host $([Constants]::SingleDashLine)
 
-    Write-Host "*** To configure Multi User Authorization(MUA) on backup vault in a Subscription, Contributor or higher privileges on the Subscription is required.***" -ForegroundColor $([Constants]::MessageType.Warning)
+    Write-Host "*** To configure Multi User Authorization (MUA) on backup vault in a Subscription, Contributor or higher privileges on the Subscription is required.***" -ForegroundColor $([Constants]::MessageType.Warning)
 
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3] Preparing to fetch all Backup Vault(s)..."
@@ -901,12 +890,12 @@ function Reset-BackupVaultResourceGuard {
     Write-Host "Rollback Summary:" -ForegroundColor $([Constants]::MessageType.Info)
 
     if ($rolledBackVaults.Count -gt 0) {
-        Write-Host "Successfully removed Resource Guard mapping from the following Backup Vaults meaning MUA on these vaults is disabled:" -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Successfully removed Resource Guard mapping from the following Backup Vaults meaning Multi-User Authorization (MUA) on these vaults is disabled:" -ForegroundColor $([Constants]::MessageType.Update)
         $rolledBackVaults | Format-Table ResourceName, ResourceGroupName
     }
 
     if ($skippedVaults.Count -gt 0) {
-        Write-Host "Failed to disable MUA from the following Backup Vaults:" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Failed to disable Multi-User Authorization (MUA) from the following Backup Vaults:" -ForegroundColor $([Constants]::MessageType.Error)
         $skippedVaults | Format-Table ResourceName, ResourceGroupName
     }
 
@@ -937,5 +926,3 @@ class Constants {
     static [String] $DoubleDashLine = "=" * 120
     static [String] $SingleDashLine = "-" * 120
 }
-
-# C:\Users\v-rvadeghar\AppData\Local\AzTS\Remediation\Subscriptions\abb5301a_22a4_41f9_9e5f_99badff261f8\202412301157\BackupVaultResourceGuard\NonCompliantBackupVaults.csv

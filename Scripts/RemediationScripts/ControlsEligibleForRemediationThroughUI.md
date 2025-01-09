@@ -628,7 +628,7 @@ ___
 Multi User Authorization must be enabled on backup vault
 
 ### Link to Bulk Remediation Script (BRS)
-[Set-BackupVaultResourceGuard.ps1](Set-BackupVaultResourceGuard.ps1)
+[Enable-MultiUserAuthorizationOnBackupVaults.ps1](Enable-MultiUserAuthorizationOnBackupVaults.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Subscription.
