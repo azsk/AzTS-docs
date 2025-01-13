@@ -445,7 +445,7 @@
         "name": "[parameters('storageSKU')]"
       },
       "dependsOn": [],
-      "properties": {
+      "properties": {        
         "supportsHttpsTrafficOnly": true,
         "allowBlobPublicAccess": false,
         "minimumTlsVersion": "TLS1_2"
@@ -791,7 +791,7 @@
         "type": "UserAssigned",
         "userAssignedIdentities": {
           "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]": {
-	  }
+	      }
         }
       },
       "dependsOn": [
@@ -1136,6 +1136,7 @@
           }
         },
         {
+          "condition":"[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
@@ -1150,6 +1151,7 @@
           }
         },
         {
+          "condition":"[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "location": "[resourceGroup().location]",
@@ -1189,6 +1191,7 @@
       ],
       "resources":[
         {
+          "condition": "[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
@@ -1202,6 +1205,7 @@
           }
         },
         {
+          "condition": "[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "location": "[resourceGroup().location]",
@@ -1857,6 +1861,7 @@
           }
         },
         {
+          "condition": "[parameters('IsAutoUpdaterEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
@@ -1871,6 +1876,7 @@
           }
         },
         {
+          "condition": "[parameters('IsAutoUpdaterEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "location": "[resourceGroup().location]",
