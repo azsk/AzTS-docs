@@ -533,8 +533,7 @@
                     "SubscriptionId"
                 ]
             }
-        }
-        ,
+        },
         {
             "ControlId": "Azure_AppService_DP_Configure_EndToEnd_TLS",
             "EnableRemediation": "true",
@@ -543,6 +542,17 @@
             "InitCommand": "Enable-EndToEndTLSForAppServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Reset-EndToEndTLSForAppServices",
+                "Arguments": ["SubscriptionId"]
+            }
+        },
+        {
+            "ControlId": "Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-BackupVault-MUA.ps1",
+            "LoadCommand": "Remediate-BackupVault-MUA.ps1",
+            "InitCommand": "Enable-MultiUserAuthorizationOnBackupVaults",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-MultiUserAuthorizationOnBackupVaults",
                 "Arguments": ["SubscriptionId"]
             }
         }
