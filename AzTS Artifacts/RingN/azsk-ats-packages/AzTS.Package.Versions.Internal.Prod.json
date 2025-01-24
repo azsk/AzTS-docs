@@ -15,14 +15,14 @@
     },
     {
       "Name": "WebApi",
-      "Latest": "1.1.334",
-      "Stable": "1.1.334",
+      "Latest": "1.1.335",
+      "Stable": "1.1.335",
       "PackageName": "WebApi.zip"
     },
     {
       "Name": "UI",
-      "Latest": "1.1.68",
-      "Stable": "1.1.68",
+      "Latest": "1.1.72",
+      "Stable": "1.1.72",
       "PackageName": "UI.zip"
     }
   ]
