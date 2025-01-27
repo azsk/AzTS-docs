@@ -445,7 +445,7 @@
         "name": "[parameters('storageSKU')]"
       },
       "dependsOn": [],
-      "properties": {
+      "properties": {        
         "supportsHttpsTrafficOnly": true,
         "allowBlobPublicAccess": false,
         "minimumTlsVersion": "TLS1_2"
@@ -791,7 +791,7 @@
         "type": "UserAssigned",
         "userAssignedIdentities": {
           "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName'))]": {
-	  }
+	      }
         }
       },
       "dependsOn": [
@@ -1136,6 +1136,7 @@
           }
         },
         {
+          "condition":"[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
@@ -1150,6 +1151,7 @@
           }
         },
         {
+          "condition":"[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "location": "[resourceGroup().location]",
@@ -1189,6 +1191,7 @@
       ],
       "resources":[
         {
+          "condition": "[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
@@ -1202,6 +1205,7 @@
           }
         },
         {
+          "condition": "[parameters('IsAzTSUIEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "location": "[resourceGroup().location]",
@@ -1845,26 +1849,40 @@
       },
       "resources": [
         {
+          "condition": "[parameters('IsAutoUpdaterEnabled')]",
+          "apiVersion": "2018-11-01",
+          "name": "ZipDeploy",
+          "type": "Extensions",
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]"
+          ],
+          "properties": {
+            "packageUri": "https://aka.ms/AzTS/V4/AutoUpdater"
+          }
+        },
+        {
+          "condition": "[parameters('IsAutoUpdaterEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
           "location": "[resourceGroup().location]",
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]"
+            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
           ],
           "properties": {
             "allow": "false"
           }
         },
         {
+          "condition": "[parameters('IsAutoUpdaterEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "location": "[resourceGroup().location]",
           "name": "scm",
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]"
+            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
           ],
           "properties": {
             "allow": "false"
@@ -1877,7 +1895,7 @@
           "apiVersion": "2018-02-01",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
-            "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
+            "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
           ],
           "properties":
           {
@@ -1892,7 +1910,7 @@
           "apiVersion": "2018-11-01",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('AutoUpdater'))]",
-            "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
+            "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
           ],
           "properties":
           {
