@@ -251,4 +251,4 @@ class Logger {
     PublishLogFilePath() {
         Write-Host $([Constants]::DoubleDashLine)"`r`nLogs have been exported to: $($this.logFilePath)`n"$([Constants]::DoubleDashLine) -ForegroundColor Cyan
     }
-}
+ }
