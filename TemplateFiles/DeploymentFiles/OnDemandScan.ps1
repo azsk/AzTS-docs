@@ -1,4 +1,4 @@
-﻿########### Load Common Functions And Classes ###############
+########### Load Common Functions And Classes ###############
 
 function Start-AzSKTenantSecuritySolutionOnDemandScan
 {
