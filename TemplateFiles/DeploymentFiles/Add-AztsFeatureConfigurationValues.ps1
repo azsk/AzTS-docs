@@ -1,4 +1,4 @@
-<###
+﻿<###
 # Overview:
     This script is used to add feature configuration value for AzTS in a Subscription. 
 
