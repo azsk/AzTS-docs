@@ -1,4 +1,4 @@
-<###
+﻿<###
 # Overview:
     This script is used to enable/disable features of AzTS in a Subscription. 
 
