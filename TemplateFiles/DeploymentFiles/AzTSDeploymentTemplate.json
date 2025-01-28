@@ -994,7 +994,7 @@
         {
           "condition": "[parameters('IsAzTSUIEnabled')]",
           "apiVersion": "2018-11-01",
-          "name": "MSDeploy",
+          "name": "ZipDeploy",
           "type": "Extensions",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebApi'))]"
@@ -1011,7 +1011,7 @@
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebApi'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/ZipDeploy')]"
           ],
           "properties":
           {
@@ -1027,7 +1027,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebApi'))]",
-            "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1041,7 +1041,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebApi'))]",
-            "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WebApi'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1110,7 +1110,7 @@
         {
           "condition": "[parameters('IsAzTSUIEnabled')]",
           "apiVersion": "2018-11-01",
-          "name": "MSDeploy",
+          "name": "ZipDeploy",
           "type": "Extensions",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebUI'))]"
@@ -1127,7 +1127,7 @@
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebUI'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/ZipDeploy')]"
           ],
           "properties":
           {
@@ -1144,7 +1144,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebUI'))]",
-            "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1159,7 +1159,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WebUI'))]",
-            "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1187,7 +1187,7 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Web/Sites', variables('WebUI'))]",
-        "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/MSDeploy')]"
+        "[concat('Microsoft.Web/sites/', variables('WebUI'), '/Extensions/ZipDeploy')]"
       ],
       "resources":[
         {
@@ -1392,7 +1392,7 @@
       "resources": [
         {
           "apiVersion": "2018-11-01",
-          "name": "MSDeploy",
+          "name": "ZipDeploy",
           "type": "Extensions",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'))]"
@@ -1409,7 +1409,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'))]",
-            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1423,7 +1423,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'))]",
-            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/ZipDeploy')]"
 
           ],
           "properties": {
@@ -1438,7 +1438,7 @@
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/ZipDeploy')]"
           ],
           "properties":
           {
@@ -1454,7 +1454,7 @@
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('MetadataAggregator'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('MetadataAggregator'), '/Extensions/ZipDeploy')]"
           ],
           "properties":
           {
@@ -1622,7 +1622,7 @@
       "resources": [
         {
           "apiVersion": "2018-11-01",
-          "name": "MSDeploy",
+          "name": "ZipDeploy",
           "type": "Extensions",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'))]"
@@ -1639,7 +1639,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'))]",
-            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1653,7 +1653,7 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/',variables('WorkItemProcessor'))]",
-            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/ZipDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1667,7 +1667,7 @@
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/ZipDeploy')]"
           ],
           "properties":
           {
@@ -1683,7 +1683,7 @@
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('WorkItemProcessor'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/MSDeploy')]"
+            "[concat('Microsoft.Web/sites/', variables('WorkItemProcessor'), '/Extensions/ZipDeploy')]"
           ],
           "properties":
           {
@@ -1851,7 +1851,7 @@
         {
           "condition": "[parameters('IsAutoUpdaterEnabled')]",
           "apiVersion": "2018-11-01",
-          "name": "MSDeploy",
+          "name": "ZipDeploy",
           "type": "Extensions",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]"
@@ -1869,7 +1869,6 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1884,7 +1883,6 @@
           "kind": "basicPublishingCredentialsPolicies",
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'), '/Extensions/MSDeploy')]"
           ],
           "properties": {
             "allow": "false"
@@ -1898,7 +1896,6 @@
           "dependsOn": [
             "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'), '/Extensions/MSDeploy')]"
           ],
           "properties":
           {
@@ -1914,7 +1911,6 @@
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('AutoUpdater'))]",
             "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]",
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'), '/Extensions/MSDeploy')]"
           ],
           "properties":
           {
