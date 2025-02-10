@@ -3,32 +3,32 @@
   "Packages": [
     {
       "Name": "MSEntraRootScheduler",
-      "Latest": "1.1.46",
-      "Stable": "1.1.46",
+      "Latest": "1.1.76",
+      "Stable": "1.1.76",
       "PackageName": "MSEntraRootScheduler.zip"
     },
     {
       "Name": "MSEntraInventoryFetchers",
-      "Latest": "1.1.10",
-      "Stable": "1.1.10",
+      "Latest": "1.1.100",
+      "Stable": "1.1.100",
       "PackageName": "MSEntraInventoryFetchers.zip"
     },
     {
       "Name": "AADScanner",
-      "Latest": "1.1.10",
-      "Stable": "1.1.10",
+      "Latest": "1.1.267",
+      "Stable": "1.1.267",
       "PackageName": "AADScanner.zip"
     },
     {
       "Name": "AADWorkItemProcessor",
-      "Latest": "1.1.10",
-      "Stable": "1.1.10",
+      "Latest": "1.1.249",
+      "Stable": "1.1.249",
       "PackageName": "AADWorkItemProcessor.zip"
     },
     {
       "Name": "AADScannerAPI",
-      "Latest": "1.1.10",
-      "Stable": "1.1.10",
+      "Latest": "1.1.287",
+      "Stable": "1.1.287",
       "PackageName": "AADScannerAPI.zip"
     }
   ]
