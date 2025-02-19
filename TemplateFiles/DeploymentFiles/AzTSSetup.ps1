@@ -1,4 +1,4 @@
-﻿# Load all other scripts that are required by this script.
+# Load all other scripts that are required by this script.
 . "$PSScriptRoot\OnDemandScan.ps1"
 
 # Standard configuration
@@ -1036,13 +1036,23 @@ function Set-AzTSMonitoringAlert
     try
     {        
         Write-Verbose "$(Get-TimeStamp)Creating monitoring alerts..."
+
+	# Check if the action group exists
+    	$existingActionGroup = Get-AzActionGroup -ResourceGroupName $ScanHostRGName -Name "AzTSAlertActionGroup" -ErrorAction SilentlyContinue
                 
         $EmailReceivers = @()
         $SendAlertNotificationToEmailIds | ForEach-Object {
-            $EmailReceivers += New-AzActionGroupReceiver -Name "Notify_$($_)" -EmailReceiver -EmailAddress $_
+            $EmailReceivers += New-AzActionGroupEmailReceiverObject -Name "Notify_$($_)" -EmailAddress $_
         }
 
-        $alertActionGroup = Set-AzActionGroup -Name ‘AzTSAlertActionGroup’ -ResourceGroupName $ScanHostRGName -ShortName ‘AzTSAlert’ -Receiver $EmailReceivers -WarningAction SilentlyContinue
+        if ($existingActionGroup) {
+        Write-Verbose "$(Get-TimeStamp) Existing action group found. Updating..."
+        $alertActionGroup = Update-AzActionGroup -ResourceGroupName $ScanHostRGName -Name "AzTSAlertActionGroup" -EmailReceiver $EmailReceivers 
+    	}
+    	else {
+        Write-Verbose "$(Get-TimeStamp) No existing action group found. Creating a new one..."
+        $alertActionGroup = New-AzActionGroup -ResourceGroupName $ScanHostRGName -Name "AzTSAlertActionGroup" -Location "global" -GroupShortName "AzTSAlert" -EmailReceiver $EmailReceivers
+    	}
 
 
         if($DeploymentResult.Outputs.ContainsKey('logAnalyticsResourceId') -and $DeploymentResult.Outputs.ContainsKey('applicationInsightsId'))
@@ -2088,11 +2098,11 @@ function Grant-AzSKAccessOnKeyVaultToUserAssignedIdentity
                 Write-Host "Creating monitoring alerts..." -ForegroundColor $([Constants]::MessageType.Info) 
                 $EmailReceivers = @()
                 $SendAlertsToEmailIds | ForEach-Object {
-                    $EmailReceivers += New-AzActionGroupReceiver -Name "Notify_$($_)" -EmailReceiver -EmailAddress $_
+                    $EmailReceivers += New-AzActionGroupEmailReceiverObject -Name "Notify_$($_)" -EmailAddress $_
                 }
 
                 $keyVaultRGName =  $ResourceId.Split("/")[4] # ResourceId is in format - /subscriptions/SubIdGuid/resourceGroups/RGName/providers/Microsoft.KeyVault/vaults/KeyVaultName
-                 $alertActionGroupForKV = Set-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ShortName ‘AzTSKVAlert’ -Receiver $EmailReceivers -WarningAction SilentlyContinue
+                 $alertActionGroupForKV = New-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -Location "global" -GroupShortName ‘AzTSKVAlert’ -EmailReceiver $EmailReceivers
 
                 $deploymentName = "AzTSenvironmentmonitoringsetupforkv-$([datetime]::Now.ToString("yyyymmddThhmmss"))"
 
