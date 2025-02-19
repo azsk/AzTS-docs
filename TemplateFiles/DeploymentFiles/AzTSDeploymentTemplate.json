@@ -1850,18 +1850,6 @@
       "resources": [
         {
           "condition": "[parameters('IsAutoUpdaterEnabled')]",
-          "apiVersion": "2018-11-01",
-          "name": "ZipDeploy",
-          "type": "Extensions",
-          "dependsOn": [
-            "[concat('Microsoft.Web/sites/', variables('AutoUpdater'))]"
-          ],
-          "properties": {
-            "packageUri": "https://aka.ms/AzTS/V4/AutoUpdater"
-          }
-        },
-        {
-          "condition": "[parameters('IsAutoUpdaterEnabled')]",
           "type": "basicPublishingCredentialsPolicies",
           "apiVersion": "2022-03-01",
           "name": "ftp",
