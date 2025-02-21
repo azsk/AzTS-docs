@@ -2102,7 +2102,17 @@ function Grant-AzSKAccessOnKeyVaultToUserAssignedIdentity
                 }
 
                 $keyVaultRGName =  $ResourceId.Split("/")[4] # ResourceId is in format - /subscriptions/SubIdGuid/resourceGroups/RGName/providers/Microsoft.KeyVault/vaults/KeyVaultName
-                 $alertActionGroupForKV = New-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -Location "global" -GroupShortName ‘AzTSKVAlert’ -EmailReceiver $EmailReceivers
+                 $alertActionGroupForKV = Get-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -ErrorAction SilentlyContinue
+	        if ($null -ne $alertActionGroupForKV) 
+                {
+	            Write-Verbose "Updating existing AzTSAlertActionGroupForKV..."
+                    $alertActionGroupForKV = Update-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -GroupShortName ‘AzTSKVAlert’ -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
+                } 
+                else 
+                {
+                    Write-Verbose "Creating new AzTSAlertActionGroupForKV..."
+                    $alertActionGroupForKV = New-AzActionGroup -Name ‘AzTSAlertActionGroupForKV’ -ResourceGroupName $keyVaultRGName -GroupShortName ‘AzTSKVAlert’ -Location "Global" -EmailReceiver $EmailReceivers -WarningAction SilentlyContinue
+                }
 
                 $deploymentName = "AzTSenvironmentmonitoringsetupforkv-$([datetime]::Now.ToString("yyyymmddThhmmss"))"
 
