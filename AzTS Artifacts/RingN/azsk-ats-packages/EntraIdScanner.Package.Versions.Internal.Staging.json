@@ -27,8 +27,8 @@
     },
     {
       "Name": "AADScannerAPI",
-      "Latest": "1.1.290",
-      "Stable": "1.1.290",
+      "Latest": "1.1.292",
+      "Stable": "1.1.292",
       "PackageName": "AADScannerAPI.zip"
     }
   ]
