@@ -1,0 +1,29 @@
+{
+  "BasePackageLink": "https://azts-ring0.microsoft.com/azsk-ats-packages",
+  "Packages": [
+    {
+      "Name": "MetadataAggregator",
+      "Latest": "1.1.845",
+      "Stable": "1.1.845",
+      "PackageName": "MetadataAggregator.zip"
+    },
+    {
+      "Name": "WorkItemProcessor",
+      "Latest": "1.1.643",
+      "Stable": "1.1.643",
+      "PackageName": "WorkItemProcessor.zip"
+    },
+    {
+      "Name": "WebApi",
+      "Latest": "1.1.392",
+      "Stable": "1.1.392",
+      "PackageName": "WebApi.zip"
+    },
+    {
+      "Name": "UI",
+      "Latest": "1.1.100",
+      "Stable": "1.1.100",
+      "PackageName": "UI.zip"
+    }
+  ]
+}
