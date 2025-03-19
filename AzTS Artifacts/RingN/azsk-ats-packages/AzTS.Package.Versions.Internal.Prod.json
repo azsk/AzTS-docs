@@ -15,8 +15,8 @@
     },
     {
       "Name": "WebApi",
-      "Latest": "1.1.400",
-      "Stable": "1.1.400",
+      "Latest": "1.1.404",
+      "Stable": "1.1.404",
       "PackageName": "WebApi.zip"
     },
     {
