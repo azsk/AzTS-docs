@@ -9,8 +9,8 @@
     },
     {
       "Name": "WorkItemProcessor",
-      "Latest": "1.1.710",
-      "Stable": "1.1.710",
+      "Latest": "1.1.716",
+      "Stable": "1.1.716",
       "PackageName": "WorkItemProcessor.zip"
     },
     {
@@ -21,8 +21,8 @@
     },
     {
       "Name": "UI",
-      "Latest": "1.1.100",
-      "Stable": "1.1.100",
+      "Latest": "1.1.104",
+      "Stable": "1.1.104",
       "PackageName": "UI.zip"
     }
   ]
