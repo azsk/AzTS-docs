@@ -248,6 +248,28 @@ function Set-ConfigAzureDefender
             Write-Host "Setting [$($reqMDCTier)] pricing tier..."
             $nonCompliantMDCTierResourcetype | ForEach-Object {
                 (Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -ErrorAction SilentlyContinue) | Select-Object -Property Id, Name, PricingTier
+                if($_.Name -eq "VirtualMachines")
+                {
+                    Write-Host "Setting Vulnerability assessment for servers....."
+                    try
+                    {
+                        $cloudEnvResourceMgmBaseUrl = (Get-AzContext).Environment.ResourceManagerUrl;
+                        $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvResourceMgmBaseUrl -AsSecureString
+                        $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
+                        $token = $credential.Password
+                        $url = $cloudEnvResourceMgmBaseUrl + "subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/providers/Microsoft.Security/serverVulnerabilityAssessmentsSettings/azureServersSetting?api-version=2023-05-01"
+                        $header = "Bearer " + $token
+                        $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
+                        [PSObject] $response = New-Object PSObject
+                        $body = '{"kind": "azureServersSetting", "properties": {"selectedProvider": "MdeTvm"}}'
+                        $response = Invoke-RestMethod -Uri $url -Method Put -Headers $headers -UseBasicParsing -ContentType "application/json" -Body $body -ErrorAction Stop
+                        Write-Host "Vulnerability assessment for servers set successfully."
+                    }
+                    catch
+                    {
+                        Write-Warning "Setting Vulnerability assessment for servers operation failed."
+                    }
+                }
             }
         }
         catch 
