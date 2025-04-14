@@ -257,7 +257,7 @@ function Set-ConfigAzureDefender
                         $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvResourceMgmBaseUrl -AsSecureString
                         $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
                         $token = $credential.Password
-                        $url = $cloudEnvResourceMgmBaseUrl + "subscriptions/abb5301a-22a4-41f9-9e5f-99badff261f8/providers/Microsoft.Security/serverVulnerabilityAssessmentsSettings/azureServersSetting?api-version=2023-05-01"
+                        $url = $cloudEnvResourceMgmBaseUrl + "subscriptions/"+ $SubscriptionId +"/providers/Microsoft.Security/serverVulnerabilityAssessmentsSettings/azureServersSetting?api-version=2023-05-01"
                         $header = "Bearer " + $token
                         $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
                         [PSObject] $response = New-Object PSObject
