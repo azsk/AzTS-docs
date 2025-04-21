@@ -32,6 +32,7 @@
 - [Azure_Subscription_Identity_Rotate_SPN_Credentials](#azure_subscription_identity_rotate_spn_credentials)
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_AppService](#azure_subscription_config_enable_microsoftdefender_appservice)
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_Storage](#azure_subscription_config_enable_microsoftdefender_storage)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](#azure_subscription_config_enable_microsoftDefender_cspm)
 <!-- /TOC -->
 <br/>
 
@@ -1663,8 +1664,6 @@ Microsoft Defender for App Service leverages the scale of the cloud, and the vis
 <br />
 
 ___ 
-
-
 ## Azure_Subscription_Config_Enable_MicrosoftDefender_Storage
 
 ### Display Name 
@@ -1705,6 +1704,69 @@ Microsoft Defender for storage detects unusual and potentially harmful attempts 
 - **Azure Portal** 
 
     To enable this plan on all Azure Storage accounts in your subscription:From Defender for Cloud's 'Environment settings' page, select the relevant subscription. In the 'Defender plans' page, set 'Storage' to 'On'.
+
+
+### Azure Policies or REST APIs used for evaluation 
+
+
+- Rest API to get providers list with registration status for subscription level : - /subscriptions/{subscriptionId}/providers?api-version=2020-06-01&$select=namespace,registrationstate <br />
+**Properties:** 
+[\*].namespace, [\*].registrationState
+<br />
+
+- Rest API to get Security center pricing tier details for subscription level: - /subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings?api-version=2023-01-01 <br />
+**Properties:** 
+[\*].name, [\*].properties.pricingTier, [\*].properties.subPlan
+<br />
+
+___ 
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM
+
+### Display Name 
+Microsoft Defender CSPM should be enabled on subscriptions
+
+### Rationale 
+Microsoft Defender CSPM provides advanced security posture capabilities including agentless vulnerability scanning, data-aware security posture, the cloud security graph, and advanced threat hunting.
+
+### Control Settings 
+```json 
+{
+    "ReqMDCTier": "Standard",
+    "ReqMDCTierResourceTypes": [
+      {
+        "Type": "CloudPosture",
+        "DisplayName": "Defender CSPM",
+        "ReqMDCExtensions": [
+          "SensitiveDataDiscovery",
+          "ContainerRegistriesVulnerabilityAssessments",
+          "AgentlessDiscoveryForKubernetes",
+          "AgentlessVmScanning",
+          "EntraPermissionsManagement"
+        ]
+      }
+}
+ ```  
+
+### Control Spec 
+
+> **Passed:** 
+> All required resource types are configured with MDC standard tier and MDC Extensions
+> 
+> **Failed:** 
+> Any of the below condition is satisfied:
+>   - Any of the required resource types is not configured with MDC standard tier.
+>   - MDC Tier is not enabled on the Subscription.
+    - MDC Extensions is not enabled on the Subscription.
+>   - Fail if security center provider is not registered.
+>   - The access to the security center settings via REST API is denied (ErrorCode such as DisallowedOperations).
+
+
+### Recommendation 
+
+- **Azure Portal** 
+
+    To enable Microsoft Defender CSPM on your subscription: From Defender for Cloud's 'Environment settings' page, select the relevant subscription --> In the 'Defender plans' page, set 'Defender CSPM' to 'On'"
 
 
 ### Azure Policies or REST APIs used for evaluation 
