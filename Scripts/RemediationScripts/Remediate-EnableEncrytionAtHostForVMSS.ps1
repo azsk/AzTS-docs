@@ -141,7 +141,6 @@ function Enable-EncrytionAtHost {
 
     # Get All Resource Groups
     $resourceGroups = Get-AzResourceGroup | Select ResourceGroupName
-    Write-Host $resourceGroups.Count
     Get-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
     $vmScaleSetBackup = @()
     $vmBackup = @()
@@ -151,9 +150,6 @@ function Enable-EncrytionAtHost {
     Write-Host "Step 2 of 3: Started operation on Virtual machine scale set..."
     foreach ($rg in $resourceGroups) {
         $ResourceGroupName = $rg.ResourceGroupName
-        if ($ResourceGroupName -ne "OmkarTestRG") {
-            continue
-        }
         $virtualMachineScaleSets = Get-AzVmss -ResourceGroupName $ResourceGroupName
         Write-Host "Found [$($virtualMachineScaleSets.Count)] Virtual Machine Scale Sets"
    
