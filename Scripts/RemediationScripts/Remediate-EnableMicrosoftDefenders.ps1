@@ -475,7 +475,7 @@ function Enable-MicrosoftDefender
     }
     
     # Declaring required resource types and pricing tier
-    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs, AI";
+    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs", "AI";
     $reqMDCTier = "Standard";
     $requiredVulnerabilityAssessmentProvider = "MdeTvm"
     $reqProviderName = "Microsoft.Security"
