@@ -83,7 +83,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 71. [Azure_ServiceBus_AuthN_Disable_Local_Auth](Readme.md#70-azure_servicebus_authn_disable_local_auth)
 72. [Azure_AppService_DP_Configure_EndToEnd_TLS](Readme.md#71-azure_appservice_dp_configure_endtoend_tls)
 73. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](Readme.md#73-azure_backupvault_authz_enable_multiuserauthorization)
-
+75. [Azure_AIFoundry_NetSec_Disable_Public_Network_Access](Readme.md#75-azure_aifoundry_netSec_disable_public_network_access)
 <br />
 
 ___ 
@@ -1517,6 +1517,24 @@ Yes
 Yes
 ___
 
+## 75. Azure_AIFoundry_NetSec_Disable_Public_Network_Access
+
+### Display Name
+Public network access on Azure AI Foundry service should be disabled
+
+### Link to Bulk Remediation Script (BRS)
+[Disable-AIFoundryPublicNetworkAccess](Remediate-DisablePublicNetworkAccessForAIFoundry.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
