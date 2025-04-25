@@ -344,6 +344,9 @@ function Enable-MicrosoftDefender
 
     .PARAMETER EnableAllRequiredResourceTypes
     Specifies that all resource type pricing tier is set to standard and for storage subplan is set to DefenderForStorageV2.
+
+    .PARAMETER EnableAI
+    Specifies that AI workload resource type pricing tier is set to standard.
     
     .INPUTS
     None. You cannot pipe objects to  Enable-MicrosoftDefender.
@@ -411,7 +414,11 @@ function Enable-MicrosoftDefender
 
         [Switch]
         [Parameter(ParameterSetName = "EnableAll", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
-        $EnableAllRequiredResourceTypes
+        $EnableAllRequiredResourceTypes,
+
+        [Switch]
+        [Parameter(ParameterSetName = "EnableSelected", HelpMessage = "Specifies for all the resource provider to be enabled")]
+        $EnableAI
     )
    
     Write-Host $([Constants]::DoubleDashLine)
@@ -475,8 +482,8 @@ function Enable-MicrosoftDefender
         return;
     }
     
-    # Declaring required resource types and pricing tier
-    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs", "CloudPosture";
+    # Declaring required resource types and pricing tier    
+    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs","CloudPosture", "AI";
     $reqMDCTier = "Standard";
     $requiredVulnerabilityAssessmentProvider = "MdeTvm"
     $reqProviderName = "Microsoft.Security"
@@ -663,6 +670,9 @@ function Enable-MicrosoftDefender
                            $nonCompliantMDCTierResourcetype += $resource 
                         }             
                       }
+                    if ($EnableAI -eq $true -and $_.Name -eq "AI" -and  $_.PricingTier -ne $reqMDCTier) {
+                        $nonCompliantMDCTierResourcetype += $resource 
+
                     }
         }
     }
@@ -828,6 +838,10 @@ function Enable-MicrosoftDefender
                     {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
                      }
+                    if ($EnableAI -eq $true -and $_.Name -eq "AI") {
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
+                    }
+                    
 
                     if (($remediatedResource | Measure-Object).Count -gt 0)
                     {
