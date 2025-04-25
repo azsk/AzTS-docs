@@ -340,6 +340,9 @@ function Enable-MicrosoftDefender
 
     .PARAMETER EnableAllRequiredResourceTypes
     Specifies that all resource type pricing tier is set to standard and for storage subplan is set to DefenderForStorageV2.
+
+    .PARAMETER EnableAI
+    Specifies that AI workload resource type pricing tier is set to standard.
     
     .INPUTS
     None. You cannot pipe objects to  Enable-MicrosoftDefender.
@@ -403,7 +406,11 @@ function Enable-MicrosoftDefender
 
         [Switch]
         [Parameter(ParameterSetName = "EnableAll", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
-        $EnableAllRequiredResourceTypes
+        $EnableAllRequiredResourceTypes,
+
+        [Switch]
+        [Parameter(ParameterSetName = "EnableSelected", HelpMessage = "Specifies for all the resource provider to be enabled")]
+        $EnableAI
     )
    
     Write-Host $([Constants]::DoubleDashLine)
@@ -468,7 +475,7 @@ function Enable-MicrosoftDefender
     }
     
     # Declaring required resource types and pricing tier
-    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs";
+    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs", "AI";
     $reqMDCTier = "Standard";
     $requiredVulnerabilityAssessmentProvider = "MdeTvm"
     $reqProviderName = "Microsoft.Security"
@@ -583,6 +590,10 @@ function Enable-MicrosoftDefender
                     }
 
                     if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults" -and  $_.PricingTier -ne $reqMDCTier) {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }
+
+                    if ($EnableAI -eq $true -and $_.Name -eq "AI" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
         }
@@ -737,6 +748,10 @@ function Enable-MicrosoftDefender
                     }
 
                     if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults") {
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
+                    }
+
+                    if ($EnableAI -eq $true -and $_.Name -eq "AI") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
                     }
                     
