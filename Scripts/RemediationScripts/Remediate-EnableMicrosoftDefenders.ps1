@@ -11,6 +11,7 @@
     Azure_Subscription_Config_Enable_MicrosoftDefender_Container
     Azure_Subscription_Config_Enable_MicrosoftDefender_Servers
     Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault
+    Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM
 
 # Pre-requisites:
     1. You will need Owner role on subscription.
@@ -280,6 +281,7 @@ function Check-VirtualMachineCompliance {
         PricingTier        = $resource.PricingTier
         Id                 = $resource.Id
         SubPlan            = $resource.SubPlan
+        Extensions         = $resource.Extensions
         endpointProtectionEnabled       = $wdAtpEnabled
         vulnerabilityAssessmentEnabled  = $assessmentProvider
     }
@@ -297,7 +299,8 @@ function Enable-MicrosoftDefender
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault' control.
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault'.
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM' control.
     
     .DESCRIPTION
     This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
@@ -306,7 +309,8 @@ function Enable-MicrosoftDefender
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault'  control.
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault',
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM'  control.
     
     .PARAMETER SubscriptionId
     Enter subscription id on which remediation needs to be performed.
@@ -405,6 +409,10 @@ function Enable-MicrosoftDefender
         $EnableKeyVault,
 
         [Switch]
+        [Parameter(ParameterSetName = "EnableSelected", HelpMessage = "Specifies for all the resource provider to be enabled")]
+        $EnableCSPM,        
+
+        [Switch]
         [Parameter(ParameterSetName = "EnableAll", Mandatory = $true, HelpMessage = "Specifies for all the resource provider to be enabled")]
         $EnableAllRequiredResourceTypes,
 
@@ -474,8 +482,8 @@ function Enable-MicrosoftDefender
         return;
     }
     
-    # Declaring required resource types and pricing tier
-    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs", "AI";
+    # Declaring required resource types and pricing tier    
+    $reqMDCTierResourceTypes = "VirtualMachines", "SqlServers", "AppServices", "StorageAccounts", "Containers", "KeyVaults", "SqlServerVirtualMachines", "Arm", "OpenSourceRelationalDatabases", "CosmosDbs","CloudPosture", "AI";
     $reqMDCTier = "Standard";
     $requiredVulnerabilityAssessmentProvider = "MdeTvm"
     $reqProviderName = "Microsoft.Security"
@@ -538,7 +546,7 @@ function Enable-MicrosoftDefender
          $resourceType | ForEach-Object {
         if ( $_.Name -eq "StorageAccounts" -and $_.SubPlan -ne "DefenderForStorageV2" )
         {
-            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id", "SubPlan"
+            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id", "SubPlan", "Extensions"
         }
         elseif ($_.Name -eq "VirtualMachines") {
             $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
@@ -551,9 +559,45 @@ function Enable-MicrosoftDefender
         }
         elseif( $_.PricingTier -ne $reqMDCTier -and $reqMDCTierResourceTypes.Contains($_.Name) -and  $_.Name -ne "StorageAccounts")
         {
-            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id","SubPlan"
+            $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id","SubPlan", "Extensions"
         }
-        } 
+
+        elseif ($_.Name -eq "CloudPosture") 
+        {
+                    
+             if($_.PricingTier -ne $reqMDCTier)
+             {
+                $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id","SubPlan", "Extensions"
+             }
+             else
+             {                
+                # Define the array of Extension names to compare
+                $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement")
+
+                # Convert the JSON string to a PowerShell object
+                try {
+                    $jsonArray = $_.Extensions | ConvertFrom-Json
+                } catch {
+                    Write-Error "Failed to convert JSON string: $_"
+                    return
+                }
+                
+                # Filter by isEnabled value and select the names of enabled extensions
+                $enabledNames = $jsonArray | Where-Object { $_.isEnabled -eq "True" } | Select-Object -ExpandProperty name
+                
+                # Compare the enabled names with the given array of Extension names and return the result as a boolean value indicating if no enabled Extension names are present in the given array
+                $comparisonResult = -not ($enabledNames | Where-Object { $ExtensionArray -contains $_ })
+                
+                # Convert the JSON string to a PowerShell object
+                #$jsonArray = $_.Extensions | ConvertFrom-Json
+                if(!$comparisonResult)
+                {
+                   $nonCompliantMDCTierResourcetype += $_ | select "Name", "PricingTier", "Id","SubPlan", "Extensions" 
+                }             
+             }
+
+            }
+         } 
 
     }
     else
@@ -593,8 +637,42 @@ function Enable-MicrosoftDefender
                         $nonCompliantMDCTierResourcetype += $resource 
                     }
 
+                    if ($EnableCSPM -eq $true -and $_.Name -eq "CloudPosture") 
+                    {
+                    
+                     if($_.PricingTier -ne $reqMDCTier)
+                     {
+                        $nonCompliantMDCTierResourcetype += $resource
+                     }
+                     else
+                     {                       
+                        # Define the array of Extension names to compare
+                        $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement")
+
+                        # Convert the JSON string to a PowerShell object
+                        try {
+                            $jsonArray = $_.Extensions | ConvertFrom-Json
+                        } catch {
+                            Write-Error "Failed to convert JSON string: $_"
+                            return
+                        }
+                        
+                        # Filter by isEnabled value and select the names of enabled extensions
+                        $enabledExtensionsNames = $jsonArray | Where-Object { $_.isEnabled -eq "True" } | Select-Object -ExpandProperty name
+                        
+                        # Compare the enabled names with the given array of Extension names and return the result as a boolean value indicating if no enabled Extension names are present in the given array
+                        $comparisonResult = -not ($enabledExtensionsNames | Where-Object { $ExtensionArray -contains $_ })
+                        
+                        # Convert the JSON string to a PowerShell object
+                        #$jsonArray = $_.Extensions | ConvertFrom-Json
+                        if(!$comparisonResult)
+                        {
+                           $nonCompliantMDCTierResourcetype += $resource 
+                        }             
+                      }
                     if ($EnableAI -eq $true -and $_.Name -eq "AI" -and  $_.PricingTier -ne $reqMDCTier) {
                         $nonCompliantMDCTierResourcetype += $resource 
+
                     }
         }
     }
@@ -609,13 +687,11 @@ function Enable-MicrosoftDefender
         return
     }
 
-    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types without [$($reqMDCTier)] pricing tier."
+    Write-Host "Found [$($nonCompliantMDCTypeCount)] resource types non-compliant."
 
     $colsProperty =  @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
             @{Expression = { $_.PricingTier }; Label = "PricingTier"; Width = 40; Alignment = "left" },
              @{Expression = { $_.Id }; Label = "Id"; Width = 80; Alignment = "left" }
-       
-       
 
     $nonCompliantMDCTierResourcetype | Format-Table -Property $colsProperty -Wrap
     
@@ -681,6 +757,10 @@ function Enable-MicrosoftDefender
                     } elseif ($_.Name -eq "VirtualMachines") {
                         $remediatedResource = Remediate-VirtualMachines -subscriptionId $SubscriptionId -reqMDCTier $reqMDCTier -vulnerabilityAssessmentEnabled $_.vulnerabilityAssessmentEnabled -endpointProtectionEnabled $_.endpointProtectionEnabled -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider -Force $Force
                     }
+                     elseif ($_.Name -eq "CloudPosture") 
+                    {
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
+                     }
                     else {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
                     }
@@ -694,6 +774,8 @@ function Enable-MicrosoftDefender
                             PreviousPricingTier              = $resource.PricingTier
                             IsPreviousProvisioningStateRegistered = $previousProviderRegistrationState
                             SubPlan                          = $resource.SubPlan
+                            CurrentExtensions=$remediatedResource.Extensions
+                            PreviousExtensions=$resource.Extensions
                         }
         
                         # Check if the current resource is VirtualMachines to add extra properties
@@ -712,7 +794,9 @@ function Enable-MicrosoftDefender
                         @{N='CurrentPricingTier';E={$resource.PricingTier}},
                         @{N='PreviousPricingTier';E={$resource.PricingTier}},
                         @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}},
-                         @{N = 'SubPlan'; E = { $resource.SubPlan } }
+                         @{N = 'SubPlan'; E = { $resource.SubPlan } },
+                        @{N='CurrentExtensions';E={$remediatedResource.Extensions}},
+                        @{N='PreviousExtensions';E={$resource.Extensions}}
                     return
                 }
             }
@@ -736,7 +820,7 @@ function Enable-MicrosoftDefender
                     }
 
                     if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts") {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 '[{"name":"OnUploadMalwareScanning","isEnabled":"false","additionalExtensionProperties": null},{"name":"SensitiveDataDiscovery","isEnabled":"false","additionalExtensionProperties":null}]'
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier  -SubPlan DefenderForStorageV2 -Extension '[{"name":"OnUploadMalwareScanning","isEnabled":"false","additionalExtensionProperties": null},{"name":"SensitiveDataDiscovery","isEnabled":"false","additionalExtensionProperties":null}]'
                     }
 
                     if ($EnableContainer -eq $true -and $_.Name -eq "Containers") {
@@ -750,11 +834,15 @@ function Enable-MicrosoftDefender
                     if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
                     }
-
+                    if ($EnableCSPM -eq $true -and $_.Name -eq "CloudPosture") 
+                    {
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
+                     }
                     if ($EnableAI -eq $true -and $_.Name -eq "AI") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
                     }
                     
+
                     if (($remediatedResource | Measure-Object).Count -gt 0)
                     {
                         $resourceInfo = @{
@@ -764,6 +852,8 @@ function Enable-MicrosoftDefender
                             PreviousPricingTier              = $resource.PricingTier
                             IsPreviousProvisioningStateRegistered = $previousProviderRegistrationState
                             SubPlan                          = $resource.SubPlan
+                            CurrentExtensions=$remediatedResource.Extensions
+                            PreviousExtensions=$resource.Extensions
                         }
         
                         # Check if the current resource is VirtualMachines to add extra properties
@@ -774,7 +864,6 @@ function Enable-MicrosoftDefender
         
                         $remediatedResources += [PSCustomObject]$resourceInfo
                     }
-                    
                 }
                 catch {
                     Write-Host "Error occurred while setting $reqMDCTier pricing tier on resource [$($_.Name)]. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
@@ -783,7 +872,9 @@ function Enable-MicrosoftDefender
                         @{N='CurrentPricingTier';E={$resource.PricingTier}},
                         @{N='PreviousPricingTier';E={$resource.PricingTier}},
                         @{N='IsPreviousProvisioningStateRegistered';E={$previousProviderRegistrationState}},
-                        @{N = 'SubPlan'; E = { $resource.SubPlan } }
+                        @{N = 'SubPlan'; E = { $resource.SubPlan } },
+                        @{N='CurrentExtensions';E={$remediatedResource.Extensions}},
+                        @{N='PreviousExtensions';E={$resource.Extensions}}
                     return
                 }
             }
@@ -806,7 +897,7 @@ function Enable-MicrosoftDefender
 
         if ($($remediatedResources | Measure-Object).Count -gt 0) {
             Write-Host $([Constants]::SingleDashLine)
-            Write-Host "Pricing tier is successfully configured to $reqMDCTier for following resource types in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Pricing tier/Extension is successfully configured for following resource types in the subscription:" -ForegroundColor $([Constants]::MessageType.Update)
             $remediatedResources | Format-Table -Property $colsPropertyRemediated -Wrap
 
             # Write this to a file.
@@ -844,7 +935,8 @@ function Remove-ConfigMicrosoftDefender
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault' control.
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault'
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM' control.
     
     .DESCRIPTION
     This command would help in remediating 'Azure_Subscription_Config_Enable_MicrosoftDefender_Databases',
@@ -853,7 +945,8 @@ function Remove-ConfigMicrosoftDefender
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Storage',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Container',
     'Azure_Subscription_Config_Enable_MicrosoftDefender_Servers',
-    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault' control.
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_KeyVault'
+    'Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM' control.
     
     .PARAMETER SubscriptionId
     Specifies the ID of the Subscription that was previously remediated.
@@ -1034,7 +1127,21 @@ function Remove-ConfigMicrosoftDefender
             $remediatedResourceTypes | ForEach-Object {
                 $resource = $_
                 try {
-                if($resource.Name -eq "StorageAccounts")
+                if($resource.Name -eq "CloudPosture")
+                {
+                    if($resource.PreviousPricingTier -eq "Free")
+                    {
+                        $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier 
+                    }
+                    elseif($resource.PreviousPricingTier -eq "Standard")
+                    {
+                        if($resource.PreviousExtensions -ne "")
+                        {
+                          $rolledBackResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $resource.PreviousPricingTier -Extension $resource.PreviousExtensions
+                        }
+                    }
+                }
+                elseif($resource.Name -eq "StorageAccounts")
                 {
                     if($resource.PreviousPricingTier -eq "Free")
                     {
@@ -1055,7 +1162,9 @@ function Remove-ConfigMicrosoftDefender
                         @{N = 'Name'; E = { $resource.Name } },
                         @{N = 'CurrentPricingTier'; E = { $resource.PreviousPricingTier } },
                         @{N = 'PreviousPricingTier'; E = { $resource.PreviousPricingTier } },
-                         @{N = 'SubPlan'; E = { $resource.SubPlan } }
+                         @{N = 'SubPlan'; E = { $resource.SubPlan } },
+                        @{N = 'CurrentExtensions'; E = { $resource.CurrentExtensions } },
+                        @{N = 'PreviousExtensions'; E = { $resource.PreviousExtensions } }
                     }
                 }
                 catch {
@@ -1064,7 +1173,9 @@ function Remove-ConfigMicrosoftDefender
                     @{N = 'Name'; E = { $resource.Name } },
                     @{N = 'CurrentPricingTier'; E = { $resource.CurrentPricingTier } },
                     @{N = 'PreviousPricingTier'; E = { $resource.PreviousPricingTier } }
-                    @{N = 'SubPlan'; E = { $resource.SubPlan } }
+                    @{N = 'SubPlan'; E = { $resource.SubPlan } },
+                    @{N = 'CurrentExtensions'; E = { $resource.CurrentExtensions } },
+                    @{N = 'PreviousExtensions'; E = { $resource.PreviousExtensions } }
                     return
                 }
             }

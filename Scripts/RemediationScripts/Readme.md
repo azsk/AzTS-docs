@@ -83,6 +83,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 71. [Azure_ServiceBus_AuthN_Disable_Local_Auth](Readme.md#70-azure_servicebus_authn_disable_local_auth)
 72. [Azure_AppService_DP_Configure_EndToEnd_TLS](Readme.md#71-azure_appservice_dp_configure_endtoend_tls)
 73. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](Readme.md#73-azure_backupvault_authz_enable_multiuserauthorization)
+74. [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](Readme.md#74-azure_subscription_config_enable_microsoftDefender_cspm)
 
 <br />
 
@@ -1516,6 +1517,25 @@ Yes
 ### Supports rollback?
 Yes
 ___
+
+## 74. Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM
+
+### Display Name
+Microsoft Defender CSPM must be enabled on subscriptions
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableAzureDefenderCSPM](Remediate-EnableMicrosoftDefenders.ps1)
+
+### Minimum permissions required to run the script
+Owner/Security Admin role at subscription level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+No
+
+### Supports rollback?
+Yes
+
+---
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
