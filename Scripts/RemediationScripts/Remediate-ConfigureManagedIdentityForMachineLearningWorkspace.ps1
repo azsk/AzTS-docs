@@ -224,18 +224,10 @@ function Enable-ManagedIdentityForMachineLearningWorkpace {
         Write-Host "Warning: This script can only be run by an Owner of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
         return;
     }
-    
-    
-
-    
+        
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3]: Checking compute resources in each machine learning workspace..."
     Write-Host $([Constants]::SingleDashLine)
-
-
-
-
-
 
     $nonCompliantComputes = @()
     # Get All Resource Groups
