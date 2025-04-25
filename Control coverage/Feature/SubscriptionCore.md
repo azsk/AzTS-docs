@@ -1724,7 +1724,7 @@ ___
 ## Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM
 
 ### Display Name 
-Microsoft Defender CSPM should be enabled on subscriptions
+Microsoft Defender CSPM must be enabled on subscriptions
 
 ### Rationale 
 Microsoft Defender CSPM provides advanced security posture capabilities including agentless vulnerability scanning, data-aware security posture, the cloud security graph, and advanced threat hunting.

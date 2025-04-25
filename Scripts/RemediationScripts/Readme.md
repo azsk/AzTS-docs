@@ -1521,10 +1521,10 @@ ___
 ## 74. Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM
 
 ### Display Name
-Microsoft Defender CSPM should be enabled on subscriptions
+Microsoft Defender CSPM must be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-EnableAzureDefender](Remediate-EnableMicrosoftDefenders.ps1)
+[Remediate-EnableAzureDefenderCSPM](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
 Owner/Security Admin role at subscription level
