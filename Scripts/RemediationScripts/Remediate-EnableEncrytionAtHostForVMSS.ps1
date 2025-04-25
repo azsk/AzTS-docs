@@ -16,7 +16,6 @@
 
     3. Take a backup of these non-compliant resource types.
 
-    4. Register 'Microsoft.Security' provider and enable Azure Defender plan for all non-compliant resource types for subscription.
 
 # Step to execute script:
     Download and load remediation script in PowerShell session and execute below command.
@@ -24,7 +23,7 @@
 
 # Command to execute:
     Examples:
-        1. Run below command to configure Azure Defender for subscription
+        1. Run below command to Enable Encrytion at Host for vmss
 
         Enable-EncrytionAtHost -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
 
@@ -38,6 +37,7 @@ To know more about parameter execute:
 
 ########################################
 #>
+
 function Pre_requisites {
     <#
     .SYNOPSIS
@@ -75,6 +75,49 @@ function Pre_requisites {
     }
     else {
         Write-Host "Az.Security module is available." -ForegroundColor Green
+    }
+}
+
+function Fetch-API {
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$Method,
+        
+        [Parameter(Mandatory = $true)]
+        [string]$Uri,
+        
+        [Parameter(Mandatory = $false)]
+        [hashtable]$Body = @{},
+        
+        [Parameter(Mandatory = $false)]
+        [hashtable]$Headers = @{}
+    )
+
+    $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
+    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl
+    $authHeader = "Bearer " + $accessToken.Token
+    $Headers["Authorization"] = $authHeader
+    $Headers["Content-Type"] = "application/json"
+
+    try {
+        switch ($Method.ToUpper()) {
+            "GET" {
+                $response = Invoke-WebRequest -Uri $Uri -Method Get -Headers $Headers -UseBasicParsing -ErrorAction Stop
+            }
+            default {
+                throw "Unsupported HTTP method: $Method"
+            }
+        }
+
+        if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 201) {
+            return $response.Content | ConvertFrom-Json
+        }
+        else {
+            throw "API call failed with status code $($response.StatusCode)"
+        }
+    }
+    catch {
+        Write-Error "Error occurred: $_"
     }
 }
 function Enable-EncrytionAtHost {
@@ -148,86 +191,81 @@ function Enable-EncrytionAtHost {
     Write-Host "Authentication successfull!!`n" -ForegroundColor Cyan
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Step 2 of 3: Started operation on Virtual machine scale set..."
+    $reqOrchestrationMode = "Flexible"
     foreach ($rg in $resourceGroups) {
         $ResourceGroupName = $rg.ResourceGroupName
-        $virtualMachineScaleSets = Get-AzVmss -ResourceGroupName $ResourceGroupName
+        $virtualMachineScaleSets = Get-AzVmss -ResourceGroupName $ResourceGroupName | Select-Object Name, Type, OrchestrationMode
         Write-Host "Found [$($virtualMachineScaleSets.Count)] Virtual Machine Scale Sets"
    
-        $colsProperty =  @{Expression = { $_.Name }; Label = "Virtual Machine Scale Set Name"; Width = 60; Alignment = "left" },
-                        @{Expression = { $_.Location }; Label = "Location"; Width = 40; Alignment = "left" },
-                         @{Expression = { $_.ProvisioningState }; Label = "Provisioning State"; Width = 80; Alignment = "left" }
+        $colsProperty = @{Expression = { $_.Name }; Label = "Virtual Machine Scale Set Name"; Width = 60; Alignment = "left" },
+        @{Expression = { $_.Location }; Label = "Location"; Width = 40; Alignment = "left" },
+        @{Expression = { $_.ProvisioningState }; Label = "Provisioning State"; Width = 80; Alignment = "left" }
         $virtualMachineScaleSets | Format-Table -Property $colsProperty -Wrap    
 
         if (($virtualMachineScaleSets | Measure-Object).Count -gt 0) {
             foreach ($ele in $virtualMachineScaleSets) {
-                $VMScaleSetName = $ele.Name
-                $VMSS = Get-AzVmss -ResourceGroupName $ResourceGroupName -Name $VMScaleSetName
-                $isEncrytionSet = $VMSS.VirtualMachineProfile.SecurityProfile.EncryptionAtHost
-                if ($isEncrytionSet) {
-                    Write-Host "Encryption at Host already enabled for [$($VMScaleSetName)] VM Scale Set.`n" -ForegroundColor Cyan
-                }
-                else {
-                    try {
-                        Write-Host "Enabling Encrytion at Host for [$($VMScaleSetName)] VM Scale Set..."
-                        $VMSS = Get-AzVmss -ResourceGroupName $ResourceGroupName -Name $VMScaleSetName
-                        Update-AzVmss -VirtualMachineScaleSet $VMSS -Name $VMScaleSetName -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
-                        $vmScaleSetBackup += [PSCustomObject]@{
-                            ResourceGroupName = $ResourceGroupName
-                            VMSSName          = $VMScaleSetName
-                        }
+                if ($ele.OrchestrationMode -eq $reqOrchestrationMode) {
+                    $VMScaleSetName = $ele.Name
+                    $VMSS = Get-AzVmss -ResourceGroupName $ResourceGroupName -Name $VMScaleSetName
+                    $isEncrytionSet = $VMSS.VirtualMachineProfile.SecurityProfile.EncryptionAtHost
+                    if ($isEncrytionSet) {
+                        Write-Host "Encryption at Host already enabled for [$($VMScaleSetName)] VM Scale Set.`n" -ForegroundColor Cyan
                     }
-                    catch {
-                        Write-Host "Operation Failed : Enable Encryption at Host for [$($VMScaleSetName)].`n"
-                    }
-                    Write-Host "Successfully enabled Encrytion at Host property for [$($VMScaleSetName)] VM Scale Set!!!`n"
-                
-                }            
-            }
-        }
-
-        Write-Host $([Constants]::SingleDashLine)
-        $VirtualMachines = Get-AzVM -ResourceGroupName $ResourceGroupName
-        Write-Host "Found [$($VirtualMachines.Count)] Virtual Machines."
-        $colsProperty =  @{Expression = { $_.Name }; Label = "Virtual Machine Name"; Width = 60; Alignment = "left" },
-                        @{Expression = { $_.Location }; Label = "Location"; Width = 40; Alignment = "left" },
-                         @{Expression = { $_.OsType }; Label = "OS Type"; Width = 20; Alignment = "left" },
-                         @{Expression = { $_.VmSize }; Label = "Vm Size"; Width = 20; Alignment = "left" }
-        $VirtualMachines | Format-Table -Property $colsProperty -Wrap   
-
-        foreach ($VirtualMachine in $VirtualMachines) {
-            $VMName = $VirtualMachine.Name
-            $VM = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
-            if ($VM.SecurityProfile.EncryptionAtHost -ne $true) {
-                try {
-                        Write-Host "This step will stop and restart [$($VMName)] Virtual Machine." -ForegroundColor Yellow
-                        Write-Host "It may take few minutes..." -ForegroundColor Yellow
-                        Write-Host "Do you want to continue? " -ForegroundColor Yellow
-                    
-                        $userInput = Read-Host -Prompt "(Y|N)"
-                    
-                        if($userInput -eq "Y" -or $userInput -eq "y") {
-                            Write-Host "Enabling Encryption at Host for [$($VMName)] Virtual Machine..."
-                            Stop-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force
-                            Update-AzVM -VM $VM -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
-                            $vmBackup += [PSCustomObject]@{
+                    else {
+                        try {
+                            Write-Host "Enabling Encrytion at Host for [$($VMScaleSetName)] VM Scale Set..."
+                            $VMSS = Get-AzVmss -ResourceGroupName $ResourceGroupName -Name $VMScaleSetName
+                            Update-AzVmss -VirtualMachineScaleSet $VMSS -Name $VMScaleSetName -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
+                            $vmScaleSetBackup += [PSCustomObject]@{
                                 ResourceGroupName = $ResourceGroupName
-                                VMName            = $VMName
+                                VMSSName          = $VMScaleSetName
                             }
-                            Write-Host "Successfully set Encrytion at Host for [$($VMName)] Virtual machine.`n" -ForegroundColor Cyan
-                            Write-Host "Restarting [$($VMName)] Virtual machine...."
-                            Start-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
-                            Write-Host "Successfully re-started [$($VMName)] Virtual machine.`n" -ForegroundColor Cyan
                         }
+                        catch {
+                            Write-Host "Operation Failed : Enable Encryption at Host for [$($VMScaleSetName)].`n"
+                        }
+                        Write-Host "Successfully enabled Encrytion at Host property for [$($VMScaleSetName)] VM Scale Set!!!`n"
+                
+                    }
+                    $Uri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.Compute/virtualMachineScaleSets/$VMScaleSetName/virtualMachines?api-version=2024-11-01"
+                    $virtualMachines = Fetch-API -Method "GET" -Uri $Uri
+                    foreach ($virtualMachine in $virtualMachines.Value) {
+                        $VMName = $virtualMachine.Name
+                        $VM = Get-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
+                        if ($VM.SecurityProfile.EncryptionAtHost -ne $true) {
+                            try {
+                                Write-Host "This step will stop and restart [$($VMName)] Virtual Machine." -ForegroundColor Yellow
+                                Write-Host "It may take few minutes..." -ForegroundColor Yellow
+                                Write-Host "Do you want to continue? " -ForegroundColor Yellow
+                                
+                                $userInput = Read-Host -Prompt "(Y|N)"
+                                
+                                if ($userInput -eq "Y" -or $userInput -eq "y") {
+                                    Write-Host "Enabling Encryption at Host for [$($VMName)] Virtual Machine..."
+                                    Stop-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName -Force
+                                    Update-AzVM -VM $VM -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
+                                    $vmBackup += [PSCustomObject]@{
+                                        ResourceGroupName = $ResourceGroupName
+                                        VMName            = $VMName
+                                    }
+                                    Write-Host "Successfully set Encrytion at Host for [$($VMName)] Virtual machine.`n" -ForegroundColor Cyan
+                                    Write-Host "Restarting [$($VMName)] Virtual machine...."
+                                    Start-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
+                                    Write-Host "Successfully re-started [$($VMName)] Virtual machine.`n" -ForegroundColor Cyan
+                                }
+                            }
+                            catch {
+                                Write-Host "Operation Failed" -ForegroundColor Red
+                            }
+                        }
+                        else {
+                            Write-Host "Encrytion at Host already enabled for [$($VMName)] virtual machine.`n" -ForegroundColor Cyan
+                        }
+                    }
                 }
-                catch {
-                    Write-Host "Operation Failed" -ForegroundColor Red
-                }
+                      
             }
-            else {
-                Write-Host "Encrytion at Host already enabled for [$($VMName)] virtual machine.`n" -ForegroundColor Cyan
-            }
-            
-        }
+        } 
         Write-Host $([Constants]::SingleDashLine)
     }
     # Creating the log file
@@ -374,7 +412,7 @@ function Disable-EncrytionAtHost {
             
                 $userInput = Read-Host -Prompt "(Y|N)"
             
-                if($userInput -eq "Y" -or $userInput -eq "y") {
+                if ($userInput -eq "Y" -or $userInput -eq "y") {
                     Write-Host "Disabling Encryption at Host for [$($VMName)] Virtual Machine."
                     $VM = Get-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
 
