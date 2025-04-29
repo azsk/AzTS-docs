@@ -6,6 +6,8 @@
 
 - [Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only](#azure_aisearch_authz_enable_role_based_api_access_only)
 - [Azure_IoTHubs_Audit_Enable_Diagnostic_Settings](#azure_iothubs_audit_enable_diagnostic_settings)
+- [Azure_AISearch_AuthN_Use_Managed_Service_Identity](#azure_aisearch_authn_use_managed_service_identity)
+
 
 <!-- /TOC -->
 <br/>
@@ -117,3 +119,41 @@ properties.categoryGroups, name
 ___ 
 
 
+## Azure_AISearch_AuthN_Use_Managed_Service_Identity
+ 
+
+### Display Name 
+Managed Service Identity (MSI) must be used in Azure AI Search
+
+### Rationale 
+Managed Service Identity (MSI) allows your app to easily access other AAD-protected resources such as Azure Key Vault. The identity is managed by the Azure platform and eliminates the need to provision/manage/rotate any secrets thus reducing the overall risk.
+
+### Control Spec 
+
+> **Passed:** 
+> Managed Service Identity (MSI) is enabled on Azure AI Search (identity.type is set to "SystemAssigned").
+> 
+> **Failed:** 
+> Managed Service Identity (MSI) is not enabled on Azure AI Search (identity.type is null or not set to "SystemAssigned").
+
+ 
+### Recommendation 
+
+- **Azure Portal** 
+    Remediation Steps for failed Configurations: 
+    >   1. In the Azure portal, navigate to your search service. 
+    >   2. In the left-navigation pane, select Settings -> Identity. 
+    >   3. Under the "System assigned" tab, toggle the status to "On" and save the changes.   
+    
+    For more information, please refer: https://learn.microsoft.com/en-us/azure/search/search-howto-managed-identities-data-sources?tabs=portal-sys%2Cportal-user.
+
+### Azure Policies or REST APIs used for evaluation 
+
+- REST API used to list Azure AI search and its related properties at Subscription level:
+`/subscriptions/{0}/providers/Microsoft.Search/searchServices?api-version=2023-11-01`<br />
+**Properties:**
+`identity.type`
+
+<br />
+
+___
