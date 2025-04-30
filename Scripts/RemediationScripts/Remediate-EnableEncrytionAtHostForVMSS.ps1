@@ -219,7 +219,6 @@ function Enable-EncrytionAtHost {
                     else {
                         try {
                             Write-Host "Enabling Encrytion at Host for [$($VMScaleSetName)] VM Scale Set..."
-                            $VMSS = Get-AzVmss -ResourceGroupName $ResourceGroupName -Name $VMScaleSetName
                             Update-AzVmss -VirtualMachineScaleSet $VMSS -Name $VMScaleSetName -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
                             $vmScaleSetBackup += [PSCustomObject]@{
                                 ResourceGroupName = $ResourceGroupName
