@@ -1,7 +1,7 @@
 ﻿<##########################################
 
 # Overview:
-    This script is used to Enable Encryption at Host for Virtual machine scale sets and Virtual machines.
+    This script is used to Enable Encryption at Host for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.
 
 # ControlId:
     Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
@@ -94,8 +94,11 @@ function Fetch-API {
     )
 
     $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
-    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl
-    $authHeader = "Bearer " + $accessToken.Token
+    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl -AsSecureString
+    $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
+    $token = $credential.Password
+
+    $authHeader = "Bearer " + $token
     $Headers["Authorization"] = $authHeader
     $Headers["Content-Type"] = "application/json"
 
@@ -190,12 +193,13 @@ function Enable-EncrytionAtHost {
 
     Write-Host "Authentication successfull!!`n" -ForegroundColor Cyan
     Write-Host $([Constants]::SingleDashLine)
-    Write-Host "Step 2 of 3: Started operation on Virtual machine scale set..."
+    Write-Host "Step 2 of 3: Started operation on Virtual machine scale set and underlying Virtual machines..."
     $reqOrchestrationMode = "Flexible"
+
+    Write-Host "Checking Virtual Machine Scale Sets and underlying virtual machines in each Resource Groups..."
     foreach ($rg in $resourceGroups) {
         $ResourceGroupName = $rg.ResourceGroupName
         $virtualMachineScaleSets = Get-AzVmss -ResourceGroupName $ResourceGroupName | Select-Object Name, Type, OrchestrationMode
-        Write-Host "Found [$($virtualMachineScaleSets.Count)] Virtual Machine Scale Sets"
    
         $colsProperty = @{Expression = { $_.Name }; Label = "Virtual Machine Scale Set Name"; Width = 60; Alignment = "left" },
         @{Expression = { $_.Location }; Label = "Location"; Width = 40; Alignment = "left" },
@@ -203,6 +207,7 @@ function Enable-EncrytionAtHost {
         $virtualMachineScaleSets | Format-Table -Property $colsProperty -Wrap    
 
         if (($virtualMachineScaleSets | Measure-Object).Count -gt 0) {
+            Write-Host "Found [$($virtualMachineScaleSets.Count)] Virtual Machine Scale Sets"
             foreach ($ele in $virtualMachineScaleSets) {
                 if ($ele.OrchestrationMode -eq $reqOrchestrationMode) {
                     $VMScaleSetName = $ele.Name
@@ -253,9 +258,12 @@ function Enable-EncrytionAtHost {
                                     Start-AzVM -ResourceGroupName $ResourceGroupName -Name $VMName
                                     Write-Host "Successfully re-started [$($VMName)] Virtual machine.`n" -ForegroundColor Cyan
                                 }
+                                else {
+                                    Write-Host "User cancelled the operation for [$($VMName)] Virtual machine." -ForegroundColor Yellow
+                                }
                             }
                             catch {
-                                Write-Host "Operation Failed" -ForegroundColor Red
+                                Write-Host "Enabling Encryption at Host for [$($VMName)] Virtual machine operation failed" -ForegroundColor Red
                             }
                         }
                         else {
@@ -265,9 +273,10 @@ function Enable-EncrytionAtHost {
                 }
                       
             }
-        } 
-        Write-Host $([Constants]::SingleDashLine)
+            Write-Host $([Constants]::SingleDashLine)
+        }
     }
+
     # Creating the log file
     $folderPath = [Environment]::GetFolderPath("MyDocuments") 
     if (Test-Path -Path $folderPath) {
@@ -286,18 +295,19 @@ function Enable-EncrytionAtHost {
     Write-Host "Path: $($folderpath)\Vmss.json"     
     Write-Host "`n"
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "Successfully completed remediation of Virtual machine scale set and Virtual machines on subscription [$($SubscriptionId)]" -ForegroundColor Green
+    Write-Host "Successfully completed remediation of Virtual machine scale set and underlying Virtual machines on subscription [$($SubscriptionId)]" -ForegroundColor Green
     Write-Host $([Constants]::DoubleDashLine)
-}   
+
+}
 
 
 
 function Disable-EncrytionAtHost {
     <#
     .SYNOPSIS
-    This command would help in remediating 'Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host' control.
+    This command would help in rollback the changes made by 'Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host' control script.
     .DESCRIPTION
-    This command would help in remediating 'Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host' control.
+    This command would help in rollback the changes made by 'Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host' control script.
     .PARAMETER SubscriptionId
         Enter subscription id on which remediation needs to be performed.
     .PARAMETER PerformPreReqCheck
@@ -426,6 +436,9 @@ function Disable-EncrytionAtHost {
                     Start-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
                     Write-Host "Successfully re-started [$($VMName)] Virtual machine.`n"
                     Write-Host $([Constants]::SingleDashLine)
+                }
+                else {
+                    Write-Host "User cancelled the operation for [$($VMName)] Virtual machine." -ForegroundColor Yellow
                 }
             }
             catch {
