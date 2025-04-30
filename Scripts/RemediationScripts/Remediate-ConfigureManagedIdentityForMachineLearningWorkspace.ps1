@@ -97,8 +97,10 @@ function Fetch-API {
     )
 
     $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
-    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl
-    $authHeader = "Bearer " + $accessToken.Token
+    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl -AsSecureString
+    $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
+    $token = $credential.Password
+    $authHeader = "Bearer " + $token
     $Headers["Authorization"] = $authHeader
     $Headers["Content-Type"] = "application/json"
 
@@ -226,7 +228,7 @@ function Enable-ManagedIdentityForMachineLearningWorkpace {
     }
         
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 2 of 3]: Checking compute resources in each machine learning workspace..."
+    Write-Host "[Step 2 of 3]: Checking compute resources in each resource groups..."
     Write-Host $([Constants]::SingleDashLine)
 
     $nonCompliantComputes = @()
@@ -237,10 +239,19 @@ function Enable-ManagedIdentityForMachineLearningWorkpace {
         $ResourceGroupName = $rg.ResourceGroupName
         $assessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.MachineLearningServices/workspaces?api-version=2021-04-01"
         $workspaceList = Fetch-API -Method "GET" -Uri $assessmentUri
+
         foreach ($workspace in $workspaceList.Value) {
             $WorkspaceName = $workspace.Name
+            Write-Host "`nChecking computes in [$WorkspaceName] workspace..."
+
             $assessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.MachineLearningServices/workspaces/$WorkspaceName/computes?api-version=2021-04-01"
             $computeResources = Fetch-API -Method "GET" -Uri $assessmentUri
+            if($computeResources.Value.Count -ge 1){
+                Write-Host "[$($computeResources.Value.Count)] compute resources found in [$($ResourceGroupName)] resource group." -ForegroundColor $([Constants]::MessageType.Info)
+            }else{
+                Write-Host "No compute resources found in [$($ResourceGroupName)] resource group." -ForegroundColor $([Constants]::MessageType.Info)
+                continue
+            }
             foreach ($compute in $computeResources.Value) {
                 if($compute.identity.type -ne "SystemAssigned"){
                     $ComputeName = $compute.name
@@ -253,15 +264,26 @@ function Enable-ManagedIdentityForMachineLearningWorkpace {
                             computeLocation = $compute.location
                         }
                     }
-                    $resBody = Fetch-API -Method "PATCH" -Uri $assessmentUri -Body $body
-                    $backupCompute = @{
-                        ResourceGroupName = $ResourceGroupName
-                        WorkspaceName = $WorkspaceName
-                        ComputeName   = $ComputeName
-                        Location      = $compute.location
+
+                    try {
+                        Write-Host "`nSetting Managed identity for [$ComputeName] compute..." -ForegroundColor Cyan
+                        $resBody = Fetch-API -Method "PATCH" -Uri $assessmentUri -Body $body
+                        Write-Host "`nSuccessfully set Managed identity for [$ComputeName] compute." -ForegroundColor Green
+                        $backupCompute = @{
+                            ResourceGroupName = $ResourceGroupName
+                            WorkspaceName = $WorkspaceName
+                            ComputeName   = $ComputeName
+                            Location      = $compute.location
+                        }
+                        $nonCompliantComputes += $backupCompute
                     }
-                    $nonCompliantComputes += $backupCompute
+                    catch {
+                        Write-Host "Error occurred while setting managed identity [$($ComputeName)] compute in [$($ResourceGroupName)] resource group. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
                     }
+                    Write-Host $([Constants]::SingleDashLine)
+                }else{
+                    Write-Host "[$($compute.name)] compute already has a managed identity assigned." -ForegroundColor Green
+                }
                 
             }
         }
@@ -271,23 +293,15 @@ function Enable-ManagedIdentityForMachineLearningWorkpace {
 
     # If control is already in Passed state (i.e. 'Microsoft.Security' provider is already registered and no non-compliant resource types are found) then no need to execute below steps.
     if ($nonCompliantComputesCount -eq 0) {
-        Write-Host "All Computes already assigned a Managed Identity or no any compute found"  -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "`n`nAll computes already have a managed identity assigned, or no compute resources were found."  -ForegroundColor Cyan
         Write-Host $([Constants]::DoubleDashLine)
         return
     }
 
-    Write-Host "Found [$($nonCompliantComputesCount)] computes to be remediated"
-
-    $colsProperty = @{Expression = { $_.Name }; Label = "Name"; Width = 40; Alignment = "left" },
-    @{Expression = { $_.Location }; Label = "Location"; Width = 40; Alignment = "left" },
-    @{Expression = { $_.WorkspaceName }; Label = "Workspace Name"; Width = 80; Alignment = "left" }
-       
-       
-
-    $nonCompliantComputes | Format-Table -Property $colsProperty -Wrap
+    Write-Host "`n[$($nonCompliantComputesCount)] computes remediated." -ForegroundColor Green
     
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 3] Backing up resource type details..."
+    Write-Host "`n[Step 3 of 3] Backing up resource type details..."
     Write-Host $([Constants]::SingleDashLine)
    
     # Back up snapshots to `%LocalApplicationData%'.
@@ -424,11 +438,10 @@ function Disable-ManagedIdentityForMachineLearningSpace {
 
     Write-Host $([Constants]::SingleDashLine)
     foreach($compute in $remediatedLog.nonCompliantComputes) {
-    Write-Host $compute.ComputeName -ForegroundColor Red
         $ResourceGroupName = $compute.ResourceGroupName
         $ComputeName = $compute.ComputeName
         $WorkspaceName = $compute.WorkspaceName
-        Write-Host "Rolling back [$($ComputeName)] compute in [$($ResourceGroupName)] resource group..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "Rolling back [$($ComputeName)] compute in [$($ResourceGroupName)] resource group..." -ForegroundColor $([Constants]::MessageType.Info)
         $assessmentUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.MachineLearningServices/workspaces/$WorkspaceName/computes/" + "$ComputeName" + "?api-version=2021-04-01"
         $body = @{
             identity   = @{
