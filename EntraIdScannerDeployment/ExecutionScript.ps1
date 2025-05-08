@@ -1,12 +1,12 @@
-﻿#***Step 1 - Verify the versions - Windows OS and have PowerShell version 5.0 or higher
+#***Step 1 - Verify the versions - Windows OS and have PowerShell version 5.0 or higher
 $PSVersionTable
 
 # To be in Full Language Mode 
 $ExecutionContext.SessionState.LanguageMode
 
 #***Step 2 - Install Az Modules and Azure AD
-
-<#install-module -name az.accounts -allowclobber -scope currentuser -repository psgallery
+<#
+install-module -name az.accounts -allowclobber -scope currentuser -repository psgallery
 install-module -name az.resources -allowclobber -scope currentuser -repository psgallery
 install-module -name az.storage -allowclobber -scope currentuser -repository psgallery
 install-module -name az.managedserviceidentity -allowclobber -scope currentuser -repository psgallery
@@ -16,8 +16,8 @@ install-module -name az.applicationinsights -allowclobber -scope currentuser -re
 install-module -name az.websites -allowclobber -scope currentuser -repository psgallery
 install-module -name az.network -allowclobber -scope currentuser -repository psgallery
 install-module -name az.frontdoor -allowclobber -scope currentuser -repository psgallery
-install-module -name azuread -allowclobber -scope currentuser -repository psgallery#>
-
+install-module -name azuread -allowclobber -scope currentuser -repository psgallery
+#>
 
 $setupName ='\EntraSetup.ps1'
 $path = Read-Host 'Please enter the Complete path where you have kept the setup?'
@@ -40,43 +40,57 @@ $MIHostingSubId = Read-Host 'Please enter the Host Subscription Id?'# Subscripti
 
 Write-Host "You have entered Subscription Id as- $MIHostingSubId" -ForegroundColor $([Constants]::MessageType.Info) 
 
+$AzureEnvironmentName = Read-Host 'Please enter the specific Cloud Type, The Values can be one of "AzureCloud" , "AzureGovernmentCloud", OR "AzureChinaCloud"..'# Subscription Id in which Set up will be hosted.
+Write-Host "You have entered AzureEnvironmentName Id as- $AzureEnvironmentName" -ForegroundColor $([Constants]::MessageType.Info)
+
 
 $Location = Read-Host 'Please enter Your preferred location to keep this set up?'# Subscription Id in which Set up will be hosted.
 Write-Host "You have entered location as- $Location" -ForegroundColor $([Constants]::MessageType.Info) 
 
 $HostResourceGroupName = Read-Host 'Please enter Your preferred Resource Group name to keep this set up?'   # Subscription Id in which Set up will be hosted.
 
-$HostResourceGroup= New-AzResourceGroup -Name RgName -Location $Location
-Write-Host "Resource Group has been successfully created with name as $HostResourceGroupName and in the location - $Location" -ForegroundColor $([Constants]::MessageType.Update) 
+#Write-Host "Kindly Ignore any error messages shown from Disconnect-AzureAD" -ForegroundColor $([Constants]::MessageType.Info) 
+Disconnect-AzureAD
+Disconnect-AzAccount
+$TenantId =  $TenantId # Tenant id.
+Connect-AzAccount -Tenant $TenantId
+Connect-AzureAD -Tenant $TenantId
 
+$existingRG = Get-AzResourceGroup -Name $HostResourceGroupName -ErrorAction SilentlyContinue
+
+if ($null -ne $existingRG) {
+    Write-Host "Resource Group '$HostResourceGroupName' already exists in location '$($existingRG.Location)'."
+} else {
+    $HostResourceGroup = New-AzResourceGroup -Name $HostResourceGroupName -Location $Location
+    Write-Host "Resource Group has been successfully created with name '$HostResourceGroupName' in the location '$Location'." -ForegroundColor $([Constants]::MessageType.Update)
+}
+
+#$HostResourceGroup= New-AzResourceGroup -Name RgName -Location $Location
+#Write-Host "Resource Group has been successfully created with name as $HostResourceGroupName and in the location - $Location" -ForegroundColor $([Constants]::MessageType.Update) 
 
 $MIName = "EntraIdScanner-InternalMI"
 $ApplicationScannerIdentityName = "Entra-ApplicationScannerIdentity"
 $IsSetUpMultiTenant= $true
 
 
-Write-Host "We will be creating a new RG with name as"  $HostResourceGroupName "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
+#Write-Host "We will be creating RG with name as"  $HostResourceGroupName " (if doesn't exist)`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
 
-Write-Host "We will be creating a new RG with name as"  $SecureResourceGroupName "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
+#Write-Host "We will be creating a new RG with name as"  $SecureResourceGroupName "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
 
 
 #***Step 3 - Create Central Scanning Managed Identity 
 
-Disconnect-AzAccount
-Disconnect-AzureAD
-$TenantId =  $TenantId # Tenant id.
-Connect-AzAccount -Tenant $TenantId
-Connect-AzureAD -Tenant $TenantId
+
     
-    Write-Host "We will be creating the Multi -Tenant Set up for Entra Id Scanner.`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
+    Write-Host "We will be creating the Multi-Tenant Set up for Entra Id Scanner.`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
 
 
     $ApplicationScannerIdenity = CreateAzureADApplication -displayName $ApplicationScannerIdentityName
 
     Write-Host "Identities got created successfully.`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
 
-    Write-Host "Object Id is:" + $ApplicationScannerIdenity.ObjectId "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
-    Write-Host "App Id is: +" $ApplicationScannerIdenity.AppId "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline     
+    Write-Host "Object Id is:"  $ApplicationScannerIdenity.ObjectId "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
+    Write-Host "App Id is: " $ApplicationScannerIdenity.AppId "`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline     
            
        
 
@@ -131,14 +145,7 @@ $scope = $resourceGroup.ResourceId
 $roleDefinitionName = "Contributor"
 New-AzRoleAssignment -ObjectId $mi.PrincipalId -RoleDefinitionName $roleDefinitionName -Scope $scope -ErrorAction Stop
 
-Write-Host "Contibutor access has been granted on Resource group.`n" -ForegroundColor $([Constants]::MessageType.Update) 
 
 Grant-AzSKGraphPermissionToUserAssignedIdentity `
                           -UserAssignedIdentityObjectId  $InternalIdentityObjectId  `
                           -MSGraphPermissionsRequired @('User.Read.All')
-
-
-Write-Host "User.Read.All permission has been granted to Internal Identity.`n" -ForegroundColor $([Constants]::MessageType.Update) -NoNewline
-
-
-
