@@ -1,17 +1,17 @@
-﻿$AzureEnvironmentAppServiceURI = @{
+$AzureEnvironmentAppServiceURI = @{
     "AzureCloud" = "https://{0}.azurewebsites.net";
 }
 
 $AzureEnvironmentToADAuthUrlMap = @{
     "AzureCloud" = "https://login.microsoftonline.com";
-    "AzureGovernmentCloud" = "https://login.microsoftonline.us";
-    "AzureChinaCloud" = "https://login.microsoftonline.cn";  
+    #"AzureGovernmentCloud" = "https://login.microsoftonline.us";
+    #"AzureChinaCloud" = "https://login.microsoftonline.cn";  
 }
 
 $AzureEnvironmentPortalURI = @{
     "AzureCloud" = "https://portal.azure.com/";
-    "AzureGovernmentCloud" = "https://portal.azure.us/";
-    "AzureChinaCloud" = "https://portal.azure.cn/"; 
+    #"AzureGovernmentCloud" = "https://portal.azure.us/";
+    #"AzureChinaCloud" = "https://portal.azure.cn/"; 
 }
 
 
@@ -51,10 +51,8 @@ class Constants
 
     static [string] $AADUserNotFound = "UserNotFound";
 
-    static [string] $InstallSolutionInstructionMsg = "This command will perform 5 important operations. It will:`r`n`n" + 
-					"   [1] Create resources needed to support Entra Security scan `r`n" +
-                    "   [2] Deploy packages to azure function app `r`n" +
-					"   [3] Deploy UI and API packages to respective azure web service apps `r`n"
+    static [string] $InstallSolutionInstructionMsg = "This command will perform:`r`n`n" + 
+					"   [*] Create resources needed to support Entra Security scan `r`n" 
 }
 
 
@@ -137,7 +135,41 @@ class CentralPackageInfo
         #$CentralPackageVersionResponse = Invoke-WebRequest -UseBasicParsing -Uri "https://aka.ms/AzTS/CentralPackageURL" -Method Get
         
         $CentralPackageVersionResponse = @"
-        {          "BasePackageLink": "StorageLink",          "Packages": [            {              "Name": "MSEntraRootScheduler",              "Latest": "1.1.51",              "Stable": "1.1.51",              "PackageName": "MSEntraRootScheduler.zip"            },            {              "Name": "MSEntraInventoryFetchers",              "Latest": "1.1.61",              "Stable": "1.1.61",              "PackageName": "MSEntraInventoryFetchers.zip"            },            {              "Name": "AADScanner",              "Latest": "1.1.227",              "Stable": "1.1.227",              "PackageName": "AADScanner.zip"            },            {              "Name": "AADWorkItemProcessor",              "Latest": "1.1.198",              "Stable": "1.1.198",              "PackageName": "AADWorkItemProcessor.zip"            },            {            "Name": "AADScannerAPI",            "Latest": "1.1.247",            "Stable": "1.1.247",            "PackageName": "AADScannerAPI.zip"            }          ]       } 
+        {
+          "BasePackageLink": "StorageLink",
+          "Packages": [
+            {
+              "Name": "MSEntraRootScheduler",
+              "Latest": "1.1.51",
+              "Stable": "1.1.51",
+              "PackageName": "MSEntraRootScheduler.zip"
+            },
+            {
+              "Name": "MSEntraInventoryFetchers",
+              "Latest": "1.1.61",
+              "Stable": "1.1.61",
+              "PackageName": "MSEntraInventoryFetchers.zip"
+            },
+            {
+              "Name": "AADScanner",
+              "Latest": "1.1.227",
+              "Stable": "1.1.227",
+              "PackageName": "AADScanner.zip"
+            },
+            {
+              "Name": "AADWorkItemProcessor",
+              "Latest": "1.1.198",
+              "Stable": "1.1.198",
+              "PackageName": "AADWorkItemProcessor.zip"
+            },
+            {
+            "Name": "AADScannerAPI",
+            "Latest": "1.1.247",
+            "Stable": "1.1.247",
+            "PackageName": "AADScannerAPI.zip"
+            }
+          ]
+       } 
 "@ | ConvertFrom-Json
 
        $this.CentralPackageObject = $CentralPackageVersionResponse
@@ -1537,12 +1569,12 @@ function Install-EntraSecuritySolution
                     if($EnableAzTSUI -and $EnableWAF)
                     {
                         Write-Host "$([Constants]::NextSteps -f $AzTSUIFrontDoorUrl)" -ForegroundColor $([Constants]::MessageType.Info)
-                        Write-Host "IMPORTANT: Entra UI will be available only after completing 'step a' listed under Next steps. Entra UI URL for your tenant: $($AzTSUIFrontDoorUrl)" -ForegroundColor $([Constants]::MessageType.Warning)
+                        #Write-Host "IMPORTANT: Entra UI will be available only after completing 'step a' listed under Next steps. Entra UI URL for your tenant: $($AzTSUIFrontDoorUrl)" -ForegroundColor $([Constants]::MessageType.Warning)
                     }
                     elseif($EnableAzTSUI)
                     {
                         Write-Host "$([Constants]::NextSteps -f $UIUrl)" -ForegroundColor $([Constants]::MessageType.Info)
-                        Write-Host "IMPORTANT: Entra UI will be available only after completing 'step a' listed under Next steps. Entra UI URL for your tenant: $($UIUrl)" -ForegroundColor $([Constants]::MessageType.Warning)
+                        #Write-Host "IMPORTANT: Entra UI will be available only after completing 'step a' listed under Next steps. Entra UI URL for your tenant: $($UIUrl)" -ForegroundColor $([Constants]::MessageType.Warning)
                     }
                     else 
                     {
