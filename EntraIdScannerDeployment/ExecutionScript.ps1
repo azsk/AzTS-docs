@@ -95,7 +95,6 @@ $IsSetUpMultiTenant= $true
 
 
 $HostSubscriptionId = $MIHostingSubId 
-$AzureEnvironmentName = "AzureCloud"
 $ScanIdentityHasGraphPermission = $false
 
 
