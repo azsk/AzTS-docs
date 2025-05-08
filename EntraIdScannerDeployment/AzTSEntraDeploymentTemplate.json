@@ -652,7 +652,6 @@
                 "name": "ASPNETCORE_ENVIRONMENT",
                 "value": "RingN"
               }
-              
             ]
             // "cors": {
             //   "allowedOrigins": [
@@ -787,7 +786,7 @@
                 "name": "AuthNSettings__InternalIdentityConnectionString",
                 "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
               },
-              
+
               {
                 "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
@@ -835,10 +834,6 @@
               {
                 "name": "AppMetadata__AppName",
                 "value": "[variables('RootScheduler')]"
-              },
-              {
-                "name": "WebJobConfigurations__CloudEnvironmentName",
-                "value": "[parameters('AzureEnvironmentName')]"
               },
               {
                 "name": "ScheduleConfiguration__AppFullFetchScheduler__CronExpression",
@@ -891,6 +886,10 @@
               {
                 "name": "AzureStorageSettings__TableEndPoint",
                 "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
+              },
+              {
+                "name": "WebJobConfigurations__CloudEnvironmentName",
+                "value": "[parameters('AzureEnvironmentName')]"
               }
             ],
             "cors": {
@@ -982,10 +981,6 @@
               {
                 "name": "AzureFunctionsJobHost__functionTimeout",
                 "value": "10:00:00"
-              },
-              {
-                "name": "AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
-                "value": "1"
               },
               {
                 "name": "AzureWebJobsStorage",
@@ -1089,38 +1084,38 @@
               },
               {
 
-                "name":"AppNameGraphAPICallConfigurations__SpecificCharToExecute",
-                "value":"true"
+                "name": "AppNameGraphAPICallConfigurations__SpecificCharToExecute",
+                "value": "true"
               },
               {
 
-                "name":"AzureFunctionsJobHost__extensions__queues__batchSize",
-                "value":"2"
+                "name": "AzureFunctionsJobHost__extensions__queues__batchSize",
+                "value": "2"
               },
               {
 
-                "name":"AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
-                "value":"2"
+                "name": "AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
+                "value": "2"
               },
               {
 
-                "name":"AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
-                "value":"1"
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
+                "value": "1"
               },
               {
 
-                "name":"ControlInventoryProperties__PushToKustoFeatureEnabled",
-                "value":"true"
+                "name": "ControlInventoryProperties__PushToKustoFeatureEnabled",
+                "value": "true"
               },
               {
 
-                "name":"WorkItemProcessorSettings__MinThreshold",
-                "value":"50000"
+                "name": "WorkItemProcessorSettings__MinThreshold",
+                "value": "50000"
               },
               {
 
-                "name":"AzureStorageSettings__StorageConnectionMode",
-                "value":"StorageKey"
+                "name": "AzureStorageSettings__StorageConnectionMode",
+                "value": "StorageKey"
               },
               {
                 "name": "AzureStorageSettings__BlobServiceUri",
@@ -1142,7 +1137,6 @@
                 "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
                 "value": "[parameters('kustodatabaseName')]"
               }
-
             ],
             "cors": 
             {
@@ -1373,38 +1367,33 @@
               },
               {
 
-                "name":"AppNameGraphAPICallConfigurations__SpecificCharToExecute",
-                "value":"true"
+                "name": "AzureFunctionsJobHost__extensions__queues__batchSize",
+                "value": "2"
               },
               {
 
-                "name":"AzureFunctionsJobHost__extensions__queues__batchSize",
-                "value":"2"
+                "name": "AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
+                "value": "2"
               },
               {
 
-                "name":"AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
-                "value":"2"
+                "name": "AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
+                "value": "1"
               },
               {
 
-                "name":"AzureWebJobs.MSEntra_InventoryFetcher_05_FullFetchAppInventory.Disabled",
-                "value":"1"
+                "name": "ControlInventoryProperties__PushToKustoFeatureEnabled",
+                "value": "true"
               },
               {
 
-                "name":"ControlInventoryProperties__PushToKustoFeatureEnabled",
-                "value":"true"
+                "name": "WorkItemProcessorSettings__MinThreshold",
+                "value": "50000"
               },
               {
 
-                "name":"WorkItemProcessorSettings__MinThreshold",
-                "value":"50000"
-              },
-              {
-
-                "name":"AzureStorageSettings__StorageConnectionMode",
-                "value":"StorageKey"
+                "name": "AzureStorageSettings__StorageConnectionMode",
+                "value": "StorageKey"
               },
               {
                 "name": "AzureStorageSettings__BlobServiceUri",
@@ -1426,7 +1415,6 @@
                 "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
                 "value": "[parameters('kustodatabaseName')]"
               }
-
             ],
             "cors": 
             {
@@ -1757,7 +1745,7 @@
               {
                 "name": "AuthNSettings__ScannerIdentityConnectionString",
                 "value": "[concat('RunAs=App;AppId=',reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('internalMIName')), '2018-11-30').clientId)]"
-              },        
+              },
               {
                 "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2019-06-01').keys[0].value)]"
@@ -1809,27 +1797,27 @@
               {
                 "name": "AzureStorageSettings__TableEndPoint",
                 "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), '2022-09-01').primaryEndpoints.table]"
-              },              
+              },
               {
                 "name": "aadworkitemscheduler",
                 "value": "aadworkitemscheduler"
-              },                           
+              },
               {
                 "name": "AzureFunctionsJobHost__extensions__queues__batchSize",
                 "value": "2"
-              },                           
+              },
               {
                 "name": "AzureFunctionsJobHost__extensions__queues__newBatchThreshold",
                 "value": "2"
-              },                           
+              },
               {
                 "name": "ControlEnrichmentConfigurations__MaxDegreeOfParallelism",
                 "value": "10"
-              },                        
+              },
               {
                 "name": "ControlInventoryProperties__PushToKustoFeatureEnabled",
                 "value": "true"
-              },                     
+              },
               {
                 "name": "ControlSLAResetProperties__DriftedFailureStatusSLA",
                 "value": "45"
@@ -1845,7 +1833,7 @@
               {
                 "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
                 "value": "[parameters('kustodatabaseName')]"
-              } 
+              }
             ],
             "cors": 
             {
