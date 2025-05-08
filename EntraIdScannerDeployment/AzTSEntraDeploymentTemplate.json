@@ -651,6 +651,10 @@
               {
                 "name": "ASPNETCORE_ENVIRONMENT",
                 "value": "RingN"
+              },
+              {	
+                "name": "WebJobConfigurations__CloudEnvironmentName",	
+                "value": "[parameters('AzureEnvironmentName')]"	
               }
             ]
             // "cors": {
@@ -1136,6 +1140,10 @@
               {
                 "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
                 "value": "[parameters('kustodatabaseName')]"
+              },
+              {	
+                "name": "WebJobConfigurations__CloudEnvironmentName",	
+                "value": "[parameters('AzureEnvironmentName')]"	
               }
             ],
             "cors": 
@@ -1414,6 +1422,10 @@
               {
                 "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
                 "value": "[parameters('kustodatabaseName')]"
+              },
+              {	
+                "name": "WebJobConfigurations__CloudEnvironmentName",	
+                "value": "[parameters('AzureEnvironmentName')]"	
               }
             ],
             "cors": 
@@ -1633,6 +1645,10 @@
               {
                 "name": "FeatureManagement__OnboardedTenantMapping",
                 "value": "true"
+              },
+              {	
+                "name": "WebJobConfigurations__CloudEnvironmentName",	
+                "value": "[parameters('AzureEnvironmentName')]"	
               }
             ],
             "cors": 
@@ -1833,6 +1849,10 @@
               {
                 "name": "DataExplorerConfigurations__KustoConfigurations__0__DatabaseName",
                 "value": "[parameters('kustodatabaseName')]"
+              },
+              {	
+                "name": "WebJobConfigurations__CloudEnvironmentName",	
+                "value": "[parameters('AzureEnvironmentName')]"	
               }
             ],
             "cors": 
