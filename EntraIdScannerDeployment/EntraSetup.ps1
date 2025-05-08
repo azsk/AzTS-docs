@@ -4,14 +4,14 @@ $AzureEnvironmentAppServiceURI = @{
 
 $AzureEnvironmentToADAuthUrlMap = @{
     "AzureCloud" = "https://login.microsoftonline.com";
-    #"AzureGovernmentCloud" = "https://login.microsoftonline.us";
-    #"AzureChinaCloud" = "https://login.microsoftonline.cn";  
+    "AzureGovernmentCloud" = "https://login.microsoftonline.us";
+    "AzureChinaCloud" = "https://login.microsoftonline.cn";  
 }
 
 $AzureEnvironmentPortalURI = @{
     "AzureCloud" = "https://portal.azure.com/";
-    #"AzureGovernmentCloud" = "https://portal.azure.us/";
-    #"AzureChinaCloud" = "https://portal.azure.cn/"; 
+    "AzureGovernmentCloud" = "https://portal.azure.us/";
+    "AzureChinaCloud" = "https://portal.azure.cn/"; 
 }
 
 
