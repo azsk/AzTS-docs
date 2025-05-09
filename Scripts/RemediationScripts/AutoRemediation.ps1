@@ -170,7 +170,8 @@ Enter the choice (1|2)";
                 ($control.ControlId -eq "Azure_AppService_DP_Configure_EndToEnd_TLS") -or
                 ($control.ControlId -eq "Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization") -or
                 ($control.ControlId -eq "Azure_AISearch_AuthN_Use_Managed_Service_Identity") -or
-                ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version")) {
+                ($control.ControlId -eq "Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version") -or
+                ($control.ControlId -eq "Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints")) {
                     $commandString = $control.InitCommand + " -SubscriptionId " + "`'" + $SubscriptionId + "`'" + " -Path " + "`'" + "FailedControls\" + $SubscriptionId + ".json" + "`'" + " -PerformPreReqCheck" + " -AutoRemediation" + " -TimeStamp " + "`'" + $timeStampString + "`'";
                 }
                 elseif (($control.ControlId -eq "Azure_KubernetesService_AuthN_Enabled_Microsoft_Entra_ID" ) -or
