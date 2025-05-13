@@ -25,12 +25,12 @@
     To remediate:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to remediate resource type in the Subscription. Refer `Examples`, below.
+        3. Execute the script to remediate compute resources in the Subscription. Refer `Examples`, below.
 
     To roll back:
         1. Download the script.
         2. Load the script in a PowerShell session. Refer https://aka.ms/AzTS-docs/RemediationscriptExcSteps to know more about loading the script.
-        3. Execute the script to rollback on all resource type in the Subscription. Refer `Examples`, below.
+        3. Execute the script to rollback compute resources in the Subscription. Refer `Examples`, below.
 
 # Command to execute:
     To remediate:
