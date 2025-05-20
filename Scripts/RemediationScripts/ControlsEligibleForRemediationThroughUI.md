@@ -633,3 +633,15 @@ Multi User Authorization must be enabled on backup vault
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Subscription.
 ___
+
+## 43. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
+
+### Display Name
+Encryption at Host must be enabled for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableEncrytionAtHostForVMSS.ps1](Remediate-EnableEncrytionAtHostForVMSS.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+___
