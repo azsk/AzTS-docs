@@ -85,7 +85,7 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 73. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](Readme.md#73-azure_backupvault_authz_enable_multiuserauthorization)
 74. [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](Readme.md#74-azure_subscription_config_enable_microsoftDefender_cspm)
 75. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](Readme.md#75-azure_aisearch_authn_use_managed_service_identity)
-76. [Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints](Placeholder)
+76. [Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints](Readme.md#76-azure_machinelearningworkspace_authn_restrict_key_based_authtype_onlineendpoints)
 
 
 

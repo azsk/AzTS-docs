@@ -209,7 +209,7 @@ function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
         return;
     }
 
-    # Safe Check: Current user needs to be either or Owner for the subscription
+    # Safe Check: Current user needs to be either Contributor or Owner or Security Admin for the subscription
     $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
     $roles = $currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Contributor" -or $_.RoleDefinitionName -eq "Security Admin" ) -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups") }
 
@@ -225,7 +225,6 @@ function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
     $nonCompliantEndpoints = @()
     # Get All Resource Groups
     $resourceGroups = Get-AzResourceGroup | Select ResourceGroupName
-    $resourceGroups = @(@{ ResourceGroupName = "RahulJTestRG" })
 
     foreach ($rg in $resourceGroups) {
         $ResourceGroupName = $rg.ResourceGroupName
