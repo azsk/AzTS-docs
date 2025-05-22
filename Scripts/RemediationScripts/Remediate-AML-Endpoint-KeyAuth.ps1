@@ -131,6 +131,43 @@ function Fetch-API {
     }
 }
 
+function Validate-UserPermissions {
+    <#
+    .SYNOPSIS
+    This command would check if user has required permissions.
+    .DESCRIPTION
+    This command would check if user has required permissions to perform remediation.
+    #>
+    param (
+        [Parameter(Mandatory = $true)] [object] $context,
+        [Parameter(Mandatory = $true)] [string] $SubscriptionId
+    )
+
+    Write-Host "Validating whether the current user [$($context.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
+
+    # Safe Check: Checking whether the current account is of type User
+    if ($context.Account.Type -ine "User") {
+        Write-Host "Error: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Error)
+        return $false
+    }
+    else {
+        Write-Host "User permission validation completed"
+    }
+
+    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
+    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
+    $roles = $currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -ieq "Owner" -or $_.RoleDefinitionName -ieq "Contributor") -and
+        !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups")
+    }
+
+    if (($roles | Measure-Object).Count -le 0) {
+        Write-Host "Error: This script can only be run by Owner or Contributor of the subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Error)
+        return $false
+    }
+
+    return $true
+}
+
 function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
     <#
     .SYNOPSIS
@@ -168,6 +205,7 @@ function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
         try {
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
+            Write-Host "Validation and installation of modules completed"
             Write-Host $([Constants]::SingleDashLine)
         }
         catch {
@@ -203,19 +241,8 @@ function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
 
     Write-Host "Validating whether the current user [$($context.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
-    # Safe Check: Checking whether the current account is of type User
-    if ($context.Account.Type -ne "User") {
-        Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
-        return;
-    }
-
-    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-    $roles = $currentLoginRoleAssignments | Where { ($_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Contributor" ) -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups") }
-
-    if (($roles | Measure-Object).Count -le 0) {
-        Write-Host "Warning: This script can only be run by Owner or Contributor of the subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
-        return;
+    if (-not (Validate-UserPermissions -context $context -SubscriptionId $SubscriptionId)) {
+        return
     }
         
     Write-Host $([Constants]::DoubleDashLine)
@@ -277,7 +304,7 @@ function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
                     Write-Host $([Constants]::SingleDashLine)
                 }
                 else{
-                    Write-Host "[$($endpoint.name)] endpoint already does not use Key Auth." -ForegroundColor Green
+                    Write-Host "[$($endpoint.name)] endpoint already does not use Key-based Auth." -ForegroundColor Green
                 }
             }
         }
@@ -364,6 +391,7 @@ function Disable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
         try {
             Write-Host "Setting up prerequisites..."
             Setup-Prerequisites
+            Write-Host "Validation and installation of modules completed"
             Write-Host $([Constants]::SingleDashLine)
         }
         catch {
@@ -399,18 +427,8 @@ function Disable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
 
     Write-Host "Validating whether the current user [$($context.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
-    # Safe Check: Checking whether the current account is of type User
-    if ($context.Account.Type -ne "User") {
-        Write-Host "Warning: This script can only be run by user account type." -ForegroundColor $([Constants]::MessageType.Warning)
-        return;
-    }
-
-    # Safe Check: Current user needs to be either Contributor or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $context.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq "Contributor" -and !($_.Scope -like "/subscriptions/$($SubscriptionId)/resourceGroups") } | Measure-Object).Count -le 0) {
-        Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor $([Constants]::MessageType.Warning)
-        return;
+    if (-not (Validate-UserPermissions -context $context -SubscriptionId $SubscriptionId)) {
+        return
     }
 
     Write-Host $([Constants]::DoubleDashLine)
@@ -419,13 +437,13 @@ function Disable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
 
     # Array to store resource context
     if (-not (Test-Path -Path $FilePath)) {
-        Write-Host "Warning: Rollback file is not found. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "Error: Rollback file is not found. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor $([Constants]::MessageType.Error)
         break;        
     }
 
     $remediatedLog = Get-Content -Raw -Path $FilePath | ConvertFrom-Json
 
-    Write-Host "Step 3 of 3: Performing rollback operation to Disable Managed Service Identity for subscription [$($SubscriptionId)]..."
+    Write-Host "[Step 3 of 3]: Performing rollback operation to Disable Managed Service Identity for subscription [$($SubscriptionId)]..."
         
 
     Write-Host $([Constants]::SingleDashLine)
