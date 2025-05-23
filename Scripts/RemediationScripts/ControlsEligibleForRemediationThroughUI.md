@@ -87,6 +87,8 @@
 
 43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_AISearch_AuthN_Use_Managed_Service_Identity)
 
+43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host)
+
 <br />
 ___
 
