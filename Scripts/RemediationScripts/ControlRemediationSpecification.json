@@ -557,6 +557,19 @@
             }
         },
         {
+            "ControlId": "Azure_AISearch_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureMSIdentityForAISearch.ps1",
+            "LoadCommand": "Remediate-ConfigureMSIdentityForAISearch.ps1",
+            "InitCommand": "Set-MSIForAISearch",
+            "RollbackMetadata": {
+                "RollbackCommand": "Reset-MSIForAISearch",
+                "Arguments": [
+                    "SubscriptionId"
+                ]
+            }
+        },
+        {
             "ControlId": "Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncrytionAtHostForVMSS.ps1",

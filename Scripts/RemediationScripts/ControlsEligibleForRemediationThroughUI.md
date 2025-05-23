@@ -85,6 +85,8 @@
 
 42. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](ControlsEligibleForRemediationThroughUI.md#42-Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization)
 
+43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_AISearch_AuthN_Use_Managed_Service_Identity)
+
 <br />
 ___
 
@@ -634,7 +636,19 @@ Multi User Authorization must be enabled on backup vault
 Contributor or higher privileged role on Subscription.
 ___
 
-## 43. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
+## 43. Azure_AISearch_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+Managed Service Identity (MSI) must be used in Azure AI Search
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureMSIdentityForAISearch.ps1](Remediate-ConfigureMSIdentityForAISearch.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+___
+
+## 44. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
 
 ### Display Name
 Encryption at Host must be enabled for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.

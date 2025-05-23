@@ -83,6 +83,11 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 71. [Azure_ServiceBus_AuthN_Disable_Local_Auth](Readme.md#70-azure_servicebus_authn_disable_local_auth)
 72. [Azure_AppService_DP_Configure_EndToEnd_TLS](Readme.md#71-azure_appservice_dp_configure_endtoend_tls)
 73. [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](Readme.md#73-azure_backupvault_authz_enable_multiuserauthorization)
+74. [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](Readme.md#74-azure_subscription_config_enable_microsoftDefender_cspm)
+75. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](Readme.md#75-azure_aisearch_authn_use_managed_service_identity)
+
+
+
 
 <br />
 
@@ -1516,25 +1521,41 @@ Yes
 ### Supports rollback?
 Yes
 ___
-
-## 74. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
+## 74. Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM
 
 ### Display Name
-This script is used to Enable Encryption at Host for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.
+Microsoft Defender CSPM must be enabled on subscriptions
 
 ### Link to Bulk Remediation Script (BRS)
-[Enable-EncrytionAtHost](Remediate-EnableEncrytionAtHostForVMSS.ps1)
+[Remediate-EnableAzureDefenderCSPM](Remediate-EnableMicrosoftDefenders.ps1)
 
 ### Minimum permissions required to run the script
-Contributor or higher privileged role on Subscription.
+Owner/Security Admin role at subscription level
 
 ### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
-Yes
+No
 
 ### Supports rollback?
 Yes
-___
 
+---
+## 75. Azure_AISearch_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+ Managed Service Identity (MSI) must be used in Azure AI Search
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureMSIdentityForAISearch](Remediate-ConfigureMSIdentityForAISearch.ps1)
+
+### Minimum permissions required to run the script
+Contributor role at resource level
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+### Supports rollback?
+Yes
+
+---
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
