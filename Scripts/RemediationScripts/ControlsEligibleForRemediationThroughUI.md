@@ -87,6 +87,8 @@
 
 43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_AISearch_AuthN_Use_Managed_Service_Identity)
 
+43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host)
+
 <br />
 ___
 
@@ -648,3 +650,14 @@ Managed Service Identity (MSI) must be used in Azure AI Search
 Contributor or higher privileged role on Subscription.
 ___
 
+## 44. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
+
+### Display Name
+Encryption at Host must be enabled for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableEncrytionAtHostForVMSS.ps1](Remediate-EnableEncrytionAtHostForVMSS.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+___
