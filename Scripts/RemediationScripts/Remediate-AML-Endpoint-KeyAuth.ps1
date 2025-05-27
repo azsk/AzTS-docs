@@ -274,7 +274,7 @@ function Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint {
                 continue
             }
             foreach ($endpoint in $onlineEndpoints.Value) {
-                if($endpoint.properties.authMode -eq "Key"){
+                if($endpoint.properties.authMode -ieq "Key"){
                     $endpointName = $endpoint.name
                     $endpointLocation = $endpoint.location
                     $resolutionUri = "https://management.azure.com/subscriptions/$SubscriptionId/resourceGroups/$ResourceGroupName/providers/Microsoft.MachineLearningServices/workspaces/$WorkspaceName/onlineEndpoints/$endpointName" + "?api-version=2023-04-01"
