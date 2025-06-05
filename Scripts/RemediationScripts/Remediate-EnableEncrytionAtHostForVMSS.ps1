@@ -76,6 +76,15 @@ function Pre_requisites {
     else {
         Write-Host "Az.Security module is available." -ForegroundColor Green
     }
+
+    # Checking if 'Az.Compute' module is available or not.
+    if ($availableModules.Name -notcontains 'Az.Compute') {
+        Write-Host "Installing module Az.Compute..." -ForegroundColor Yellow
+        Install-Module -Name Az.Compute -Scope CurrentUser -Repository 'PSGallery'
+    }
+    else {
+        Write-Host "Az.Compute module is available." -ForegroundColor Green
+    }
 }
 
 function Fetch-API {
