@@ -570,10 +570,10 @@
             }
         },
         {
-            "ControlId": "Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host",
+            "ControlId": "Azure_VirtualMachine_DP_Enable_Encryption_At_Host",
             "EnableRemediation": "true",
-            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncrytionAtHostForVMSS.ps1",
-            "LoadCommand": "Remediate-EnableEncrytionAtHostForVMSS.ps1",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncrytionAtHostForVM.ps1",
+            "LoadCommand": "Remediate-EnableEncrytionAtHostForVM.ps1",
             "InitCommand": "Enable-EncrytionAtHost",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-EncrytionAtHost",

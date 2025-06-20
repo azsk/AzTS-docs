@@ -650,13 +650,13 @@ Managed Service Identity (MSI) must be used in Azure AI Search
 Contributor or higher privileged role on Subscription.
 ___
 
-## 44. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
+## 44. Azure_VirtualMachine_DP_Enable_Encryption_At_Host
 
 ### Display Name
-Encryption at Host must be enabled for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.
+Encryption at Host must be enabled for Virtual machines.
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-EnableEncrytionAtHostForVMSS.ps1](Remediate-EnableEncrytionAtHostForVMSS.ps1)
+[Remediate-EnableEncrytionAtHostForVM.ps1](Remediate-EnableEncrytionAtHostForVM.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Subscription.

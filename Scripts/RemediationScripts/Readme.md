@@ -1557,13 +1557,13 @@ Yes
 
 ___
 
-## 76. Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host
+## 76. Azure_VirtualMachine_DP_Enable_Encryption_At_Host
 
 ### Display Name
-This script is used to Enable Encryption at Host for Virtual machine scale sets and underlying Virtual machines in flexible orchestration mode.
+This script is used to Enable Encryption at Host for Virtual machines.
 
 ### Link to Bulk Remediation Script (BRS)
-[Enable-EncrytionAtHost](Remediate-EnableEncrytionAtHostForVMSS.ps1)
+[Enable-EncrytionAtHost](Remediate-EnableEncrytionAtHostForVM.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Subscription.
