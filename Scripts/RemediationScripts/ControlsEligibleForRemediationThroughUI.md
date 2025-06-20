@@ -87,6 +87,8 @@
 
 43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_AISearch_AuthN_Use_Managed_Service_Identity)
 
+43. [Azure_VirtualMachine_DP_Enable_Encryption_At_Host](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachine_DP_Enable_Encryption_At_Host)
+
 44. [Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints](ControlsEligibleForRemediationThroughUI.md#44-Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints)
 <br />
 ___
@@ -649,7 +651,18 @@ Managed Service Identity (MSI) must be used in Azure AI Search
 Contributor or higher privileged role on Subscription.
 ___
 
-## 44. Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints
+## 44. Azure_VirtualMachine_DP_Enable_Encryption_At_Host
+
+### Display Name
+Encryption at Host must be enabled for Virtual machines.
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-EnableEncryptionAtHostForVM.ps1](Remediate-EnableEncryptionAtHostForVM.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+___
+## 45. Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints
 
 ### Display Name
 Key based authentication must not be used in online endpoint of Azure Machine Learning workspace
