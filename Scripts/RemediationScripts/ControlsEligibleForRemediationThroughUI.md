@@ -87,8 +87,9 @@
 
 43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_AISearch_AuthN_Use_Managed_Service_Identity)
 
-43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachine_DP_Enable_Encryption_At_Host)
+43. [Azure_VirtualMachine_DP_Enable_Encryption_At_Host](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachine_DP_Enable_Encryption_At_Host)
 
+44. [Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints](ControlsEligibleForRemediationThroughUI.md#44-Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints)
 <br />
 ___
 
@@ -660,4 +661,15 @@ Encryption at Host must be enabled for Virtual machines.
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Subscription.
+___
+## 45. Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints
+
+### Display Name
+Key based authentication must not be used in online endpoint of Azure Machine Learning workspace
+
+### Link to BUlk Remediation Script
+[Remediate-AML-Endpoint-KeyAuth.ps1](Remediate-AML-Endpoint-KeyAuth.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription
 ___
