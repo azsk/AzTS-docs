@@ -23,17 +23,17 @@
 
 # Command to execute:
     Examples:
-        1. Run below command to Enable Encrytion at Host for vmss
+        1. Run below command to Enable Encryption at Host for vmss
 
-        Enable-EncrytionAtHost -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
+        Enable-EncryptionAtHost -SubscriptionId '<Sub_Id>' -PerformPreReqCheck: $true
 
     Note: 
         To rollback changes made by remediation script, execute below command
-        Disable-EncrytionAtHost -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
+        Disable-EncryptionAtHost -SubscriptionId '<Sub_Id>' -Path '<Json file path containing Remediated log>' -PerformPreReqCheck: $true
 
 To know more about parameter execute:
-    a. Get-Help Enable-EncrytionAtHost -Detailed
-    b. Get-Help Disable-EncrytionAtHost -Detailed
+    a. Get-Help Enable-EncryptionAtHost -Detailed
+    b. Get-Help Disable-EncryptionAtHost -Detailed
 
 ########################################
 #>
@@ -132,7 +132,7 @@ function Fetch-API {
         Write-Error "Error occurred: $_"
     }
 }
-function Enable-EncrytionAtHost {
+function Enable-EncryptionAtHost {
     <#
     .SYNOPSIS
     This command would help in remediating 'Azure_VirtualMachine_DP_Enable_Encryption_At_Host' control.
@@ -248,7 +248,7 @@ function Enable-EncrytionAtHost {
                             ResourceGroupName = $ResourceGroupName
                             VMName            = $vmName
                         }
-                        Write-Host "Successfully set Encrytion at Host for [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
+                        Write-Host "Successfully set Encryption at Host for [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
                         Write-Host "Restarting [$($vmName)] Virtual machine...."
                         Start-AzVM -ResourceGroupName $ResourceGroupName -Name $vmName
                         Write-Host "Successfully re-started [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
@@ -262,7 +262,7 @@ function Enable-EncrytionAtHost {
                 }
             }
             else {
-                Write-Host "Encrytion at Host already enabled for [$($vmName)] virtual machine.`n" -ForegroundColor Cyan
+                Write-Host "Encryption at Host already enabled for [$($vmName)] virtual machine.`n" -ForegroundColor Cyan
             }
         }
     }
@@ -290,7 +290,7 @@ function Enable-EncrytionAtHost {
 
 
 
-function Disable-EncrytionAtHost {
+function Disable-EncryptionAtHost {
     <#
     .SYNOPSIS
     This command would help in rollback the changes made by 'Azure_VirtualMachine_DP_Enable_Encryption_At_Host' control script.
@@ -392,7 +392,7 @@ function Disable-EncrytionAtHost {
                     
                     Update-AzVM -VM $VM -ResourceGroupName $remediatedVm.ResourceGroupName -EncryptionAtHost $false
 
-                    Write-Host "Successfully disabled Encrytion at Host for [$($VMName)] Virtual machine."
+                    Write-Host "Successfully disabled Encryption at Host for [$($VMName)] Virtual machine."
                     Write-Host "Restarting [$($VMName)] Virtual machine..."
 
                     Start-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
@@ -404,7 +404,7 @@ function Disable-EncrytionAtHost {
                 }
             }
             catch {
-                Write-Host "Error occurred while performing rollback operation to disable Encrytion at Host. ErrorMessage [$($_)]" -ForegroundColor Red  
+                Write-Host "Error occurred while performing rollback operation to disable Encryption at Host. ErrorMessage [$($_)]" -ForegroundColor Red  
             }
         }
         

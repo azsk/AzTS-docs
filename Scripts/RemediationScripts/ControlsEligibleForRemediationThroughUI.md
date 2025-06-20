@@ -87,7 +87,7 @@
 
 43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_AISearch_AuthN_Use_Managed_Service_Identity)
 
-43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachineScaleSet_DP_Enable_Encryption_At_Host)
+43. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](ControlsEligibleForRemediationThroughUI.md#43-Azure_VirtualMachine_DP_Enable_Encryption_At_Host)
 
 <br />
 ___
@@ -656,7 +656,7 @@ ___
 Encryption at Host must be enabled for Virtual machines.
 
 ### Link to Bulk Remediation Script (BRS)
-[Remediate-EnableEncrytionAtHostForVM.ps1](Remediate-EnableEncrytionAtHostForVM.ps1)
+[Remediate-EnableEncryptionAtHostForVM.ps1](Remediate-EnableEncryptionAtHostForVM.ps1)
 
 ### Minimum permissions required to run the script
 Contributor or higher privileged role on Subscription.
