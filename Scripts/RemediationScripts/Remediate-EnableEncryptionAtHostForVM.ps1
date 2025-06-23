@@ -38,7 +38,7 @@ To know more about parameter execute:
 ########################################
 #>
 
-function Pre_requisites {
+function Setup-Prerequisites {
     <#
     .SYNOPSIS
     This command would check pre requisites modules.
@@ -53,7 +53,7 @@ function Pre_requisites {
     # Checking if 'Az.Accounts' module is available or not.
     if ($availableModules.Name -notcontains 'Az.Accounts') {
         Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
-        Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery'
+        Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
     }
     else {
         Write-Host "Az.Accounts module is available." -ForegroundColor Green
@@ -62,7 +62,7 @@ function Pre_requisites {
     # Checking if 'Az.Resources' module is available or not.
     if ($availableModules.Name -notcontains 'Az.Resources') {
         Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
-        Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
+        Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
     }
     else {
         Write-Host "Az.Resources module is available." -ForegroundColor Green
@@ -71,7 +71,7 @@ function Pre_requisites {
     # Checking if 'Az.Security' module is available or not.
     if ($availableModules.Name -notcontains 'Az.Security') {
         Write-Host "Installing module Az.Security..." -ForegroundColor Yellow
-        Install-Module -Name Az.Security -Scope CurrentUser -Repository 'PSGallery'
+        Install-Module -Name Az.Security -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
     }
     else {
         Write-Host "Az.Security module is available." -ForegroundColor Green
@@ -80,58 +80,23 @@ function Pre_requisites {
     # Checking if 'Az.Compute' module is available or not.
     if ($availableModules.Name -notcontains 'Az.Compute') {
         Write-Host "Installing module Az.Compute..." -ForegroundColor Yellow
-        Install-Module -Name Az.Compute -Scope CurrentUser -Repository 'PSGallery'
+        Install-Module -Name Az.Compute -Scope CurrentUser -Repository 'PSGallery' -ErrorAction Stop
     }
     else {
         Write-Host "Az.Compute module is available." -ForegroundColor Green
     }
 }
 
-function Fetch-API {
-    param (
+function Get-UserRoleAssignments {
+    param(
         [Parameter(Mandatory = $true)]
-        [string]$Method,
-        
+        [string]$AccountId,
         [Parameter(Mandatory = $true)]
-        [string]$Uri,
-        
-        [Parameter(Mandatory = $false)]
-        [hashtable]$Body = @{},
-        
-        [Parameter(Mandatory = $false)]
-        [hashtable]$Headers = @{}
+        [string]$SubscriptionId
     )
-
-    $cloudEnvironmentResourceManagerUrl = (Get-AzContext).Environment.ResourceManagerUrl
-    $accessToken = Get-AzAccessToken -ResourceUrl $cloudEnvironmentResourceManagerUrl -AsSecureString
-    $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
-    $token = $credential.Password
-
-    $authHeader = "Bearer " + $token
-    $Headers["Authorization"] = $authHeader
-    $Headers["Content-Type"] = "application/json"
-
-    try {
-        switch ($Method.ToUpper()) {
-            "GET" {
-                $response = Invoke-WebRequest -Uri $Uri -Method Get -Headers $Headers -UseBasicParsing -ErrorAction Stop
-            }
-            default {
-                throw "Unsupported HTTP method: $Method"
-            }
-        }
-
-        if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 201) {
-            return $response.Content | ConvertFrom-Json
-        }
-        else {
-            throw "API call failed with status code $($response.StatusCode)"
-        }
-    }
-    catch {
-        Write-Error "Error occurred: $_"
-    }
+    return Get-AzRoleAssignment -SignInName $AccountId -Scope "/subscriptions/$SubscriptionId"
 }
+
 function Enable-EncryptionAtHost {
     <#
     .SYNOPSIS
@@ -156,12 +121,11 @@ function Enable-EncryptionAtHost {
     if ($PerformPreReqCheck) {
         try {
             Write-Host "Checking for pre-requisites..."
-            Pre_requisites
+            Setup-Prerequisites
             Write-Host $([Constants]::SingleDashLine)
         }
         catch {
-            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
-            break
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red
         }
     }
     # Connect to AzAccount
@@ -187,22 +151,28 @@ function Enable-EncryptionAtHost {
     }
 
     # Safe Check: Current user needs to be either Contributor or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0) {
+    $currentLoginRoleAssignments = Get-UserRoleAssignments -AccountId $currentSub.Account.Id -SubscriptionId $SubscriptionId
+    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -ieq "Owner" -or $_.RoleDefinitionName -ieq 'Contributor' -or $_.RoleDefinitionName -ieq "Security Admin" } | Measure-Object).Count -le 0) {
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         return;
     }
 
     # Get All Resource Groups
     $resourceGroups = Get-AzResourceGroup | Select ResourceGroupName
-    Get-AzProviderFeature -FeatureName "EncryptionAtHost" -ProviderNamespace "Microsoft.Compute"
     $vmBackup = @()
+    $locationSupportedVMSizes = @{}
 
     Write-Host "Authentication successfull!!`n" -ForegroundColor Cyan
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Step 2 of 3: Started operation on Virtual machines..."
     Write-Host "Checking virtual machines in each Resource Groups..."
+
+    $applyToAllVMs = $false
+    $initialPrompt = Read-Host -Prompt "Do you want to enable Encryption at Host for all eligible VMs without further prompts? (Y/N)"
+    if ($initialPrompt -ieq "Y") {
+        $applyToAllVMs = $true
+    }
+
     foreach ($rg in $resourceGroups) {
         $ResourceGroupName = $rg.ResourceGroupName
         $virtualMachines = Get-AzVM -ResourceGroupName $ResourceGroupName
@@ -213,7 +183,7 @@ function Enable-EncryptionAtHost {
             # Checking if the VM is already encrypted via Azure Disk Encryption
             $vmExtensions = Get-AzVMExtension -ResourceGroupName $ResourceGroupName -VMName $vmName -ErrorAction SilentlyContinue            
             $hasDiskEncryptionExtension = $vmExtensions | Where-Object {
-                $_.ExtensionType -eq "AzureDiskEncryptionForLinux" -or $_.ExtensionType -eq "AzureDiskEncryption"
+                $_.ExtensionType -ieq "AzureDiskEncryptionForLinux" -or $_.ExtensionType -ieq "AzureDiskEncryption"
             }
 
             if ($hasDiskEncryptionExtension) {
@@ -224,9 +194,13 @@ function Enable-EncryptionAtHost {
             # Checking if VM size is supported for Encryption at Host
             $currentVmSize = $vm.HardwareProfile.VmSize
             $currentVmLocation = $vm.Location
-            $supportedVMSizes = Get-AzComputeResourceSku -Location $currentVmLocation |
-                                Where-Object { $_.ResourceType -eq 'virtualMachines' -and $_.capabilities.where({ $_.Name -eq 'EncryptionAtHostSupported' }, 'First').Value -eq 'True' } |
-                                Select-Object -ExpandProperty Name
+            if (-not $locationSupportedVMSizes.ContainsKey($currentVmLocation)) {
+                $locationSupportedVMSizes[$currentVmLocation] = Get-AzComputeResourceSku -Location $currentVmLocation |
+                                                                Where-Object { $_.ResourceType -eq 'virtualMachines' -and $_.capabilities.where(
+                                                                { $_.Name -eq 'EncryptionAtHostSupported' }, 'First').Value -eq 'True' } |
+                                                                Select-Object -ExpandProperty Name
+            }
+            $supportedVMSizes = $locationSupportedVMSizes[$currentVmLocation]
             if ($supportedVMSizes -notcontains $currentVmSize) {
                 Write-Host "VM size [$($currentVmSize)] is not supported for Encryption at Host." -ForegroundColor Red
                 continue
@@ -234,28 +208,29 @@ function Enable-EncryptionAtHost {
 
             if ($vm.SecurityProfile.EncryptionAtHost -ne $true) {
                 try {
-                    Write-Host "This step will stop and restart [$($vmName)] Virtual Machine." -ForegroundColor Yellow
-                    Write-Host "It may take few minutes..." -ForegroundColor Yellow
-                    Write-Host "Do you want to continue? " -ForegroundColor Yellow
-                            
-                    $userInput = Read-Host -Prompt "(Y|N)"
-                            
-                    if ($userInput -eq "Y" -or $userInput -eq "y") {
-                        Write-Host "Enabling Encryption at Host for [$($vmName)] Virtual Machine..."
-                        Stop-AzVM -ResourceGroupName $ResourceGroupName -Name $vmName -Force
-                        Update-AzVM -VM $vm -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
-                        $vmBackup += [PSCustomObject]@{
-                            ResourceGroupName = $ResourceGroupName
-                            VMName            = $vmName
+                    if (-not $applyToAllVMs) {
+                        Write-Host "This step will stop and restart [$($vmName)] Virtual Machine." -ForegroundColor Yellow
+                        Write-Host "It may take few minutes..." -ForegroundColor Yellow
+                        Write-Host "Do you want to continue? (Y = Yes, N = No, A = Yes to All Remaining)" -ForegroundColor Yellow
+                        $userInput = Read-Host -Prompt "(Y/N/A)"
+                        if ($userInput -ieq "A") {
+                            $applyToAllVMs = $true
+                        } elseif ($userInput -ine "Y") {
+                            Write-Host "User denied the permission for [$($vmName)] Virtual machine." -ForegroundColor Yellow
+                            continue
                         }
-                        Write-Host "Successfully set Encryption at Host for [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
-                        Write-Host "Restarting [$($vmName)] Virtual machine...."
-                        Start-AzVM -ResourceGroupName $ResourceGroupName -Name $vmName
-                        Write-Host "Successfully re-started [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
                     }
-                    else {
-                        Write-Host "User cancelled the operation for [$($vmName)] Virtual machine." -ForegroundColor Yellow
+                    Write-Host "Enabling Encryption at Host for [$($vmName)] Virtual Machine..."
+                    Stop-AzVM -ResourceGroupName $ResourceGroupName -Name $vmName -Force
+                    Update-AzVM -VM $vm -ResourceGroupName $ResourceGroupName -EncryptionAtHost $true
+                    $vmBackup += [PSCustomObject]@{
+                        ResourceGroupName = $ResourceGroupName
+                        VMName            = $vmName
                     }
+                    Write-Host "Successfully set Encryption at Host for [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
+                    Write-Host "Restarting [$($vmName)] Virtual machine...."
+                    Start-AzVM -ResourceGroupName $ResourceGroupName -Name $vmName
+                    Write-Host "Successfully re-started [$($vmName)] Virtual machine.`n" -ForegroundColor Cyan
                 }
                 catch {
                     Write-Host "Enabling Encryption at Host for [$($vmName)] Virtual machine operation failed" -ForegroundColor Red
@@ -287,8 +262,6 @@ function Enable-EncryptionAtHost {
     Write-Host "Successfully completed remediation of Virtual machines on subscription [$($SubscriptionId)]" -ForegroundColor Green
     Write-Host $([Constants]::DoubleDashLine)
 }
-
-
 
 function Disable-EncryptionAtHost {
     <#
@@ -322,12 +295,11 @@ function Disable-EncryptionAtHost {
     if ($PerformPreReqCheck) {
         try {
             Write-Host "Checking for pre-requisites..."
-            Pre_requisites
+            Setup-Prerequisites
             Write-Host $([Constants]::SingleDashLine)     
         }
         catch {
-            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red    
-            break
+            Write-Host "Error occurred while checking pre-requisites. ErrorMessage [$($_)]" -ForegroundColor Red
         }
     }
 
@@ -354,9 +326,8 @@ function Disable-EncryptionAtHost {
     }
 
     # Safe Check: Current user needs to be either Contributor or Owner for the subscription
-    $currentLoginRoleAssignments = Get-AzRoleAssignment -SignInName $currentSub.Account.Id -Scope "/subscriptions/$($SubscriptionId)";
-
-    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -eq "Owner" -or $_.RoleDefinitionName -eq 'Contributor' -or $_.RoleDefinitionName -eq "Security Admin" } | Measure-Object).Count -le 0) {
+    $currentLoginRoleAssignments = Get-UserRoleAssignments -AccountId $currentSub.Account.Id -SubscriptionId $SubscriptionId
+    if (($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -ieq "Owner" -or $_.RoleDefinitionName -ieq 'Contributor' -or $_.RoleDefinitionName -ieq "Security Admin" } | Measure-Object).Count -le 0) {
         Write-Host "Warning: This script can only be run by an Owner or Contributor of subscription [$($SubscriptionId)] " -ForegroundColor Yellow
         return;
     }
@@ -364,12 +335,19 @@ function Disable-EncryptionAtHost {
     # Array to store resource context
     if (-not (Test-Path -Path $Path)) {
         Write-Host "Warning: Rollback file is not found. Please check if the initial Remediation script has been run from the same machine. Exiting the process" -ForegroundColor Yellow
-        break;        
+        return;        
     }
 
     $remediatedLog = Get-Content -Raw -Path $Path | ConvertFrom-Json
 
     Write-Host "`nPerforming rollback operation to disable encryption at host for subscription [$($SubscriptionId)]...`n"
+
+    # Prompt user if they want to apply to all VMs without further prompts
+    $applyToAllVMs = $false
+    $initialPrompt = Read-Host -Prompt "Do you want to disable Encryption at Host for all eligible VMs without further prompts? (Y/N)"
+    if ($initialPrompt -ieq "Y") {
+        $applyToAllVMs = $true
+    }
 
     # Rollback Virtual machines
     if ($null -ne $remediatedLog.VM -and ($remediatedLog.VM | Measure-Object).Count -gt 0) {
@@ -378,30 +356,31 @@ function Disable-EncryptionAtHost {
             try {
                 $VMName = $remediatedVm.VMName
 
-                Write-Host "This step will stop and restart [$($VMName)] Virtual Machine." -ForegroundColor Yellow
-                Write-Host "It may take few minutes..." -ForegroundColor Yellow
-                Write-Host "Do you want to continue? " -ForegroundColor Yellow
-            
-                $userInput = Read-Host -Prompt "(Y|N)"
-            
-                if ($userInput -eq "Y" -or $userInput -eq "y") {
-                    Write-Host "Disabling Encryption at Host for [$($VMName)] Virtual Machine."
-                    $VM = Get-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
-
-                    Stop-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName -Force
-                    
-                    Update-AzVM -VM $VM -ResourceGroupName $remediatedVm.ResourceGroupName -EncryptionAtHost $false
-
-                    Write-Host "Successfully disabled Encryption at Host for [$($VMName)] Virtual machine."
-                    Write-Host "Restarting [$($VMName)] Virtual machine..."
-
-                    Start-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
-                    Write-Host "Successfully re-started [$($VMName)] Virtual machine.`n"
-                    Write-Host $([Constants]::SingleDashLine)
+                if (-not $applyToAllVMs) {
+                    Write-Host "This step will stop and restart [$($VMName)] Virtual Machine." -ForegroundColor Yellow
+                    Write-Host "It may take few minutes..." -ForegroundColor Yellow
+                    Write-Host "Do you want to continue? (Y = Yes, N = No, A = Yes to All Remaining)" -ForegroundColor Yellow
+                    $userInput = Read-Host -Prompt "(Y/N/A)"
+                    if ($userInput -ieq "A") {
+                        $applyToAllVMs = $true
+                    } elseif ($userInput -ine "Y") {
+                        Write-Host "User denied the permission for [$($VMName)] Virtual machine." -ForegroundColor Yellow
+                        continue
+                    }
                 }
-                else {
-                    Write-Host "User cancelled the operation for [$($VMName)] Virtual machine." -ForegroundColor Yellow
-                }
+                Write-Host "Disabling Encryption at Host for [$($VMName)] Virtual Machine."
+                $VM = Get-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
+
+                Stop-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName -Force
+                
+                Update-AzVM -VM $VM -ResourceGroupName $remediatedVm.ResourceGroupName -EncryptionAtHost $false
+
+                Write-Host "Successfully disabled Encryption at Host for [$($VMName)] Virtual machine."
+                Write-Host "Restarting [$($VMName)] Virtual machine..."
+
+                Start-AzVM -ResourceGroupName $remediatedVm.ResourceGroupName -Name $VMName
+                Write-Host "Successfully re-started [$($VMName)] Virtual machine.`n"
+                Write-Host $([Constants]::SingleDashLine)
             }
             catch {
                 Write-Host "Error occurred while performing rollback operation to disable Encryption at Host. ErrorMessage [$($_)]" -ForegroundColor Red  
@@ -416,7 +395,6 @@ function Disable-EncryptionAtHost {
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "`nRollback operation completed......." -ForegroundColor Green
 }
-
 
 class Constants {
     static [String] $DoubleDashLine = "========================================================================================================================"
