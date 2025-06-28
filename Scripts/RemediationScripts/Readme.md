@@ -1573,6 +1573,25 @@ Yes
 ### Supports rollback?
 Yes
 
+___
+
+## 76. Azure_VirtualMachine_DP_Enable_Encryption_At_Host
+
+### Display Name
+This script is used to Enable Encryption at Host for Virtual machines.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-EncryptionAtHost](Remediate-EnableEncryptionAtHostForVM.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
 ---
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
