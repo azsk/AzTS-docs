@@ -20,6 +20,7 @@
 - [Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth](#azure_appservice_authn_ftp_and_scm_access_disable_basic_auth)
 - [Azure_FunctionApps_Audit_Enable_Diagnostic_Settings](#azure_functionapps_audit_enable_diagnostic_settings)
 - [Azure_AppService_DP_Configure_EndToEnd_TLS](#azure_appservice_dp_configure_endtoend_tls)
+- [Azure_AppService_Audit_Enable_Diagnostic_Settings](#azure_appservice_audit_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -131,17 +132,9 @@ WebSockets protocol (WS) is vulnerable to different types of security attacks. U
 ### Recommendation 
  
 - **PowerShell** 
-To disable Web Sockets on default 'Production' slot, run command:
- ```powershell 
- Set-AzWebApp -Name <WebAppName> -ResourceGroupName <RGName> -WebSocketsEnabled $false
- ```
-Run 'Get-Help Set-AzWebApp -full' for more help. 
+To disable Web Sockets on default 'Production' slot, run command:Set-AzWebApp -Name <WebAppName> -ResourceGroupName <RGName> -WebSocketsEnabled $falseRun 'Get-Help Set-AzWebApp -full' for more help. 
 
-To disable Web Sockets on any non-production slot, run command:
-```powershell 
-Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -WebSocketsEnabled $false
-```
-<br/>
+To disable Web Sockets on any non-production slot, run command:Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -WebSocketsEnabled $false<br/>
  Refer: https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/HTML5_Security_Cheat_Sheet.md#websockets 
 
 ### Azure Policies or REST APIs used for evaluation 
@@ -172,14 +165,11 @@ ___
 ### Rationale 
 By default, websites are unloaded if they have been idle for some period of time. However, this may not be ideal for 'high availability' requirements. Configuring 'Always On' can help prevent app services from getting timed out. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ApplicableAppServiceKinds": [
         "app"
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -221,15 +211,12 @@ App Service must be deployed on a minimum of two instances to ensure availabilit
 ### Rationale 
 App Service deployed on multiple instances ensures that the App Service remains available even if an instance is down. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ApplicableAppServiceKinds": [
         "app"
     ],
     "MinimumRequiredInstances": 2
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -343,17 +330,10 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 - **PowerShell** 
 
  To enable only https traffic on default 'Production' slot, run command
- 
-```powershell
-Set-AzWebApp -Name <WebAppName> -ResourceGroupName <RGName> -HttpsOnly $true 
-```
-Run Get-Help Set-AzWebApp -full for more help.
+ Set-AzWebApp -Name <WebAppName> -ResourceGroupName <RGName> -HttpsOnly $true Run Get-Help Set-AzWebApp -full for more help.
 
 To enable only https traffic on any non-production slot, run command 
-	 
-```powershell
-Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -HttpsOnly $true
-```  
+	 Set-AzWebAppSlot -ResourceGroupName <RGName> -Name <WebAppName> -Slot <SlotName> -HttpsOnly $true 
 
 ### Azure Policies or REST APIs used for evaluation 
 
@@ -461,12 +441,9 @@ Use Approved TLS Version in App Service
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "MinReqTLSVersion": "1.2"
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -690,9 +667,7 @@ Enable Security Logging in Function Apps
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ApplicableAppServiceKinds": [
   		"functionapp"
 	],
@@ -701,8 +676,7 @@ Logs should be retained for a long enough period so that activity trail can be r
 	"DiagnosticLogs": [
   		"FunctionAppLogs"
 	]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -785,3 +759,88 @@ End-to-end TLS encryption ensures that data is encrypted from the client to the 
 
 
 <br />
+
+## Azure_AppService_Audit_Enable_Diagnostic_Settings
+
+### Display Name 
+App Service must have diagnostic settings enabled for security monitoring
+
+### Rationale
+Enabling diagnostic settings for App Service provides visibility into application behavior, security events, and performance metrics. This is essential for detecting security threats, troubleshooting issues, and meeting compliance requirements for audit trails and monitoring.
+
+### Control Settings 
+```json
+{
+  "RequiredLogCategories": ["AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceAuditLogs"],
+  "RequiredMetrics": ["AllMetrics"],
+  "MinimumRetentionDays": 90,
+  "RequireLogAnalyticsWorkspace": true
+}
+```
+
+### Control Spec
+- **Passed:** Diagnostic settings are enabled with required log categories and destinations
+- **Failed:** Missing diagnostic settings or insufficient log category configuration
+
+**Recommendation**  
+To enable diagnostic settings for App Service:
+
+### Configure via Azure Portal:
+1. Navigate to App Service ? Monitoring ? Diagnostic settings
+2. Click "Add diagnostic setting"
+3. Enable required log categories:
+   - AppServiceHTTPLogs
+   - AppServiceConsoleLogs
+   - AppServiceAppLogs
+   - AppServiceAuditLogs
+4. Configure destination (Log Analytics workspace recommended)
+
+### PowerShell Configuration:
+```powershell
+$resourceId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.Web/sites/$appName"
+$workspaceId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.OperationalInsights/workspaces/$workspaceName"
+
+$logs = @(
+    New-AzDiagnosticSettingLogSettingsObject -Category "AppServiceHTTPLogs" -Enabled $true -RetentionPolicyDay 90,
+    New-AzDiagnosticSettingLogSettingsObject -Category "AppServiceConsoleLogs" -Enabled $true -RetentionPolicyDay 90,
+    New-AzDiagnosticSettingLogSettingsObject -Category "AppServiceAppLogs" -Enabled $true -RetentionPolicyDay 90
+)
+
+$metrics = @(
+    New-AzDiagnosticSettingMetricSettingsObject -Category "AllMetrics" -Enabled $true -RetentionPolicyDay 90
+)
+
+New-AzDiagnosticSetting -ResourceId $resourceId -WorkspaceId $workspaceId -Log $logs -Metric $metrics -Name "appservice-diagnostics"
+```
+
+### Security Benefits:
+- Real-time monitoring of security events and threats
+- Comprehensive audit trails for compliance
+- Early detection of application vulnerabilities
+- Performance and availability monitoring
+
+### Compliance Support:
+- SOC 2 audit trail requirements
+- PCI DSS logging standards
+- GDPR data access monitoring
+- Industry-specific compliance frameworks
+
+### Cost Optimization:
+- Configure appropriate retention periods
+- Use log sampling for high-volume applications
+- Implement lifecycle policies for log management
+- Monitor Log Analytics workspace costs
+
+### Additional Resources:
+- [App Service Diagnostic Settings](https://docs.microsoft.com/azure/app-service/troubleshoot-diagnostic-logs)
+- [Azure Monitor for App Service](https://docs.microsoft.com/azure/azure-monitor/app/app-insights-overview)
+
+### Azure Policies or REST APIs used for evaluation 
+- **Get diagnostic settings:** `/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{siteName}/providers/Microsoft.Insights/diagnosticSettings`
+- **Evaluated Properties:** Enabled log categories and retention configuration
+
+### Control Evaluation Details:
+- **Method Name:** CheckAppServiceDiagnosticSettings
+- **Control Severity:** Medium
+- **Evaluation Frequency:** Daily
+- **Baseline Control:** Yes

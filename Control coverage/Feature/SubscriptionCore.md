@@ -33,6 +33,10 @@
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_AppService](#azure_subscription_config_enable_microsoftdefender_appservice)
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_Storage](#azure_subscription_config_enable_microsoftdefender_storage)
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](#azure_subscription_config_enable_microsoftDefender_cspm)
+- [Azure_Subscription_AuthZ_Dont_Grant_NonAD_Identities_Privileged_Roles_RG](#Azure_Subscription_AuthZ_Dont_Grant_NonAD_Identities_Privileged_Roles_RG)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_API](#Azure_Subscription_Config_Enable_MicrosoftDefender_API)
+- [Azure_Subscription_AuthZ_Expired_SPN_Certificates](#Azure_Subscription_AuthZ_Expired_SPN_Certificates)
+- [Azure_Subscription_AuthZ_Dont_Grant_NonAllowed_Broad_Groups](#Azure_Subscription_AuthZ_Dont_Grant_NonAllowed_Broad_Groups)
 <!-- /TOC -->
 <br/>
 
@@ -1783,3 +1787,262 @@ Microsoft Defender CSPM provides advanced security posture capabilities includin
 <br />
 
 ___ 
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_API
+
+### Display Name
+Subscription must enable Microsoft Defender for APIs
+
+### Rationale  
+Microsoft Defender for APIs provides comprehensive security monitoring, threat detection, and vulnerability assessment for API endpoints, ensuring protection against API-specific attacks and compliance with security standards.
+
+### Control Settings 
+```json
+{
+  "RequireDefenderForAPIs": true,
+  "EnableThreatDetection": true,
+  "RequireVulnerabilityAssessment": true,
+  "MonitorAPITraffic": true
+}
+```
+
+### Control Spec  
+- **Passed:** Microsoft Defender for APIs is enabled and configured
+- **Failed:** Defender for APIs is not enabled
+
+### Recommendation
+```powershell
+# Enable Microsoft Defender for APIs
+Set-AzSecurityPricing -Name "Api" -PricingTier "Standard"
+```
+
+### Control Evaluation Details:
+- **Method Name:** CheckMicrosoftDefenderAPI
+- **Control Severity:** Medium
+- **Evaluation Frequency:** Daily
+
+<br />
+
+___
+
+## Azure_Subscription_AuthZ_Expired_SPN_Certificates
+
+### Display Name
+Subscription must not have service principals with expired certificates
+
+### Rationale
+Expired certificates for service principals can cause service disruptions and security vulnerabilities. Regular monitoring and renewal of certificates ensures continuous service availability and maintains security posture.
+
+### Control Settings 
+```json
+{
+  "MaxCertificateAge": 365,
+  "WarningThreshold": 30,
+  "RequireAutomaticRenewal": true,
+  "AllowSelfSignedCerts": false
+}
+```
+
+### Control Spec
+- **Passed:** No service principals with expired certificates
+- **Failed:** Service principals with expired or expiring certificates found
+
+### Recommendation
+```powershell
+# Find and remediate expired SPN certificates
+$expiredSPNs = Get-AzADServicePrincipal | Where-Object {
+    $_.PasswordCredentials.Count -eq 0 -and 
+    $_.KeyCredentials.EndDateTime -lt (Get-Date)
+}
+
+foreach ($spn in $expiredSPNs) {
+    Write-Warning "Expired certificate found for SPN: $($spn.DisplayName)"
+    # Generate new certificate and update SPN
+}
+```
+
+### Control Evaluation Details:
+- **Method Name:** CheckExpiredSPNCertificates
+- **Control Severity:** High
+- **Evaluation Frequency:** Daily
+
+<br />
+
+___
+
+## Azure_Subscription_AuthZ_Dont_Grant_NonAllowed_Broad_Groups
+
+### Display Name
+Subscription must not grant permissions to overly broad or non-allowed groups
+
+### Rationale
+Granting permissions to overly broad groups (like "All Users" or large organizational groups) violates the principle of least privilege and creates unnecessary security risks. Access should be granted to specific, purpose-built groups with appropriate membership.
+
+### Control Settings
+```json
+{
+  "RestrictBroadGroups": true,
+  "ProhibitedGroups": ["All Users", "Everyone", "Domain Users"],
+  "MaxGroupSize": 100,
+  "RequireApprovedGroups": true,
+  "AllowedGroupPatterns": ["AZ-*", "Azure-*"]
+}
+```
+
+### Control Spec
+- **Passed:** No overly broad or prohibited groups have subscription access
+- **Failed:** Broad or non-allowed groups have subscription permissions
+
+### Recommendation  
+
+### Audit and Remove Broad Groups:
+```powershell
+# Identify broad groups with subscription access
+$broadGroups = @("All Users", "Everyone", "Domain Users", "Authenticated Users")
+$subscriptionScope = "/subscriptions/$((Get-AzContext).Subscription.Id)"
+
+$groupAssignments = Get-AzRoleAssignment -Scope $subscriptionScope | Where-Object {
+    $_.ObjectType -eq "Group" -and
+    ($_.DisplayName -in $broadGroups -or $_.DisplayName -like "*All*" -or $_.DisplayName -like "*Everyone*")
+}
+
+# Remove broad group assignments
+foreach ($assignment in $groupAssignments) {
+    Remove-AzRoleAssignment -ObjectId $assignment.ObjectId -RoleDefinitionName $assignment.RoleDefinitionName -Scope $assignment.Scope
+}
+```
+
+### Create Purpose-Built Groups:
+```powershell
+# Create specific Azure groups with proper naming
+$azureGroups = @{
+    "AZ-Subscription-Readers" = @{ Role = "Reader"; Members = @("user1@contoso.com") }
+    "AZ-ResourceGroup-Contributors" = @{ Role = "Contributor"; Members = @("dev-team@contoso.com") }
+}
+
+foreach ($groupConfig in $azureGroups.GetEnumerator()) {
+    $group = New-AzADGroup -DisplayName $groupConfig.Key -MailEnabled $false -SecurityEnabled $true
+    # Add members and assign role (detailed implementation available in full script)
+    New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName $groupConfig.Value.Role -Scope $subscriptionScope
+}
+```
+
+### Monitor and Validate:
+```kusto
+// Monitor large groups
+SecurityResources | where type == "microsoft.graph/groups" and toint(properties.memberCount) > 100
+```
+
+### Best Practices:
+- Use naming convention: AZ-* or Azure-*
+- Limit group size to <100 members
+- Regular quarterly reviews
+- Assign clear group owners
+
+### Remediation Steps:
+1. Audit existing group assignments
+2. Create specific replacement groups
+3. Migrate users to new groups
+4. Remove broad group access
+
+### Azure Policies or REST APIs used for evaluation  
+- **List role assignments:** `/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments`
+- **Get group details:** Microsoft Graph API for group membership analysis
+
+### Control Evaluation Details:
+- **Method Name:** CheckBroadGroupAccess
+- **Control Severity:** Medium
+- **Evaluation Frequency:** Weekly
+- **Baseline Control:** Yes
+
+<br />
+
+___
+
+## Azure_Subscription_AuthZ_Dont_Grant_NonAD_Identities_Privileged_Roles_RG
+
+### Display Name
+Subscription must not grant privileged roles to non-Azure AD identities at resource group level
+
+### Rationale
+Granting privileged roles to non-Azure AD identities (external users, guest accounts) at resource group level increases security risks and reduces visibility into access patterns. Azure AD identities provide better governance, audit trails, and access management capabilities.
+
+### Control Settings
+```json
+{
+  "RestrictNonADIdentities": true,
+  "PrivilegedRoles": ["Owner", "Contributor", "User Access Administrator"],
+  "AllowedExceptions": [],
+  "RequireJustification": true
+}
+```
+
+### Control Spec
+- **Passed:** No privileged roles assigned to non-Azure AD identities at RG level
+- **Failed:** Non-Azure AD identities have privileged roles assigned
+
+### Recommendation  
+
+### Audit and Remove Non-AD Assignments:
+```powershell
+# Find and remove non-Azure AD identities with privileged roles
+$privilegedRoles = @("Owner", "Contributor", "User Access Administrator")
+$nonADAssignments = @()
+
+foreach ($rg in Get-AzResourceGroup) {
+    $assignments = Get-AzRoleAssignment -Scope $rg.ResourceId | Where-Object {
+        $_.RoleDefinitionName -in $privilegedRoles -and
+        ($_.SignInName -like "*#EXT#*" -or $_.ObjectType -eq "Unknown" -or $_.SignInName -like "*live.com*")
+    }
+    
+    foreach ($assignment in $assignments) {
+        # Remove non-AD privileged assignment
+        Remove-AzRoleAssignment -ObjectId $assignment.ObjectId -RoleDefinitionName $assignment.RoleDefinitionName -Scope $assignment.Scope
+        Write-Warning "Removed $($assignment.DisplayName) from $($assignment.RoleDefinitionName) in $($rg.ResourceGroupName)"
+    }
+}
+```
+
+### Replace with Azure AD Identities:
+```powershell
+# Replace with Azure AD users/groups
+$azureADReplacements = @{
+    "external.user@company.com" = "internal.user@contoso.com"
+    "guest.account@external.com" = "AzureAD-Group-Name"
+}
+
+foreach ($replacement in $azureADReplacements.GetEnumerator()) {
+    $target = Get-AzADUser -UserPrincipalName $replacement.Value -ErrorAction SilentlyContinue
+    if (-not $target) { $target = Get-AzADGroup -DisplayName $replacement.Value }
+    
+    if ($target) {
+        New-AzRoleAssignment -ObjectId $target.Id -RoleDefinitionName "Contributor" -ResourceGroupName $resourceGroupName
+    }
+}
+```
+
+### Monitor with KQL:
+```kusto
+// Find non-Azure AD identities with privileged roles
+authorizationresources
+| where type == "microsoft.authorization/roleassignments"
+| where properties.roleDefinitionId has_any ("8e3af657-a8ff-443c-a75c-2fe8c4bcb635", "b24988ac-6180-42a0-ab88-20f7382dd24c")
+| where properties.scope startswith "/subscriptions/{subscription-id}/resourceGroups/"
+| where properties.principalType == "User"
+```
+
+### Best Practices:
+- Regular audits of role assignments
+- Use Azure AD groups instead of individual assignments
+- Implement Just-in-Time access with PIM
+- Document and regularly review any exceptions
+
+### Azure Policies or REST APIs used for evaluation  
+- **List role assignments:** `/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments`
+- **Evaluated Properties:** Principal type, role definition, and scope analysis
+
+### Control Evaluation Details:
+- **Method Name:** CheckNonADPrivilegedRoles
+- **Control Severity:** High
+- **Evaluation Frequency:** Daily
+- **Baseline Control:** Yes

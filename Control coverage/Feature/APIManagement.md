@@ -1,4 +1,4 @@
-# APIManagement
+﻿# APIManagement
 
 **Resource Type:** Microsoft.ApiManagement/service 
 
@@ -17,6 +17,13 @@
 - [Azure_APIManagement_AuthN_Use_Managed_Service_Identity](#azure_apimanagement_authn_use_managed_service_identity)
 - [Azure_APIManagement_Audit_Enable_Alerts](#azure_apimanagement_audit_enable_alerts)
 - [Azure_APIManagement_Audit_Enable_Diagnostics_Log](#azure_apimanagement_audit_enable_diagnostics_log)
+- [Azure_APIManagement_Audit_Onboard_APIs_To_Defender_For_APIs](#azure_apimanagement_audit_onboard_apis_to_defender_for_apis)
+- [Azure_APIManagement_AuthN_Use_AAD_Only](#azure_apimanagement_authn_use_aad_only)
+- [Azure_APIManagement_DP_Enable_Validation_Policy](#azure_apimanagement_dp_enable_validation_policy)
+- [Azure_APIManagement_DP_Use_HTTPS_URL_Scheme_ServiceUrl_contains_HTTPS](#azure_apimanagement_dp_use_https_url_scheme_serviceurl_contains_https)
+- [Azure_APIManagement_NetSec_Enable_Content_Security_Policy](#azure_apimanagement_netsec_enable_content_security_policy)
+- [Azure_APIManagement_NetSec_Limit_OpenAI_Token_Usage](#azure_apimanagement_netsec_limit_openai_token_usage)
+- [Azure_APIManagement_NetSec_Use_Virtual_Network](#azure_apimanagement_netsec_use_virtual_network)
 
 <!-- /TOC -->
 <br/>
@@ -46,14 +53,12 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 ### Recommendation
 
 - **PowerShell**
-
-        ```powershell
-        $APIContextObject = New-AzApiManagementContext -ResourceGroupName "<resource-group-name>" -ServiceName "<api-management-service-name>"
-        Set-AzApiManagementApi -Context {APIContextObject} -Protocols 'Https' -Name {APIName} -ApiId {APIId} -ServiceUrl {ServiceURL}
-        Get-AzApiManagementApi -Context {APIContextObject} # To get the details of existing APIs
-        # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
-        ```
-
+    ```powershell
+    $APIContextObject = New-AzApiManagementContext -ResourceGroupName "<resource-group-name>" -ServiceName "<api-management-service-name>"
+    Set-AzApiManagementApi -Context {APIContextObject} -Protocols 'Https' -Name {APIName} -ApiId {APIId} -ServiceUrl {ServiceURL}
+    Get-AzApiManagementApi -Context {APIContextObject} # To get the details of existing APIs
+    # Refer https://docs.microsoft.com/en-us/powershell/module/az.apimanagement/set-azapimanagementapi
+    ```
 ### Azure Policies or REST APIs used for evaluation
 
 - REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01<br />
@@ -74,9 +79,7 @@ Latest TLS version should be used in your APIM
 ### Rationale 
 TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocols (1.1 and 1.0) and SSL 3.0 exposes the API to meet-in-the-middle attack, chosen-plaintext or known-plaintext attacks. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
 	"UnsecureProtocolsAndCiphersConfiguration": [
 		{
 			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10",
@@ -115,7 +118,6 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 		}
 	]
 }
- ``` 
 
 ### Control Spec
 
@@ -161,12 +163,9 @@ Delete the two sample products 'Starter' and 'Unlimited' to avoid accidental exp
 ### Rationale 
 By default, each API Management instance comes with two sample products: Starter and Unlimited. Unless the access control of these sample products is being strictly regulated, associating APIs to these products stands the chance of exposing APIs to unauthenticated users. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "SampleProductId": [ "starter", "unlimited" ]
 }
- ``` 
 
 ### Control Spec 
 
@@ -306,12 +305,10 @@ The credentials used to access API Management REST API provide admin-level acces
     To disable API Management REST API, go to APIM service --> Deployment and infrastructure --> Management API --> Under 'Direct management API' tab --> Enable Management REST API --> No. <br> For better security it is recommended to make calls through the ARM based REST API mentioned here: https://docs.microsoft.com/en-us/rest/api/apimanagement.
 
 - **PowerShell**
-
-    ```
+```
     $ApiManagementContext = New-AzApiManagementContext -ResourceGroupName "<resource-group-name>" -ServiceName "<api-management-service-name>"
     Set-AzApiManagementTenantAccess -Context $ApiManagementContext -Enabled $false
-    ```
-
+```
 ### Azure Policies or REST APIs used for evaluation
 
 - REST API to list APIMs services and its related property at Subscription level: /subscriptions/{subscriptionId}/providers/Microsoft.ApiManagement/service?api-version=2019-12-01 <br />
@@ -371,14 +368,11 @@ Enterprise applications using APIM must authenticate developers/applications usi
 ### Rationale 
 Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "AllowedIdentityProvider": [
 		"Aad"
     ]
 }
- ``` 
 
 ### Control Spec 
 
@@ -463,12 +457,9 @@ ___
 ### Rationale 
 When publishing APIs through Azure API Management (APIM), the easiest and most common way to secure access to the APIs is by using Subscription Keys. To obtain a Subscription Key for accessing APIs, a Subscription is required. This ensures that client applications that need to consume the published APIs must subscribe before making calls to those APIs. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "State": "published"
 }
- ``` 
 
 ### Control Spec 
 
@@ -503,15 +494,12 @@ Use Managed Service Identity (MSI) for accessing other AAD-protected resources f
 ### Rationale 
 Managed Service Identity (MSI) allows your API Management instance to easily access other AAD-protected resources, such as Azure Key Vault. The identity is managed by the Azure platform and eliminates the need to provision/manage/rotate any secrets thus reducing the overall risk. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "RequiredIdentityType": [
         "SystemAssigned",
         "UserAssigned"
     ]
 }
- ``` 
 
 ### Control Spec 
 
@@ -610,9 +598,7 @@ Diagnostics logs must be enabled for API Management service
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "GatewayLogs",
@@ -620,7 +606,6 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
- ``` 
 
 ### Control Spec 
 
@@ -683,5 +668,230 @@ properties.eventHubName<br />
  <br />
 
 <br />
+___
+
+## Azure_APIManagement_Audit_Onboard_APIs_To_Defender_For_APIs
+
+### Display Name
+API Management services must be onboarded to Microsoft Defender for APIs
+
+### Rationale
+Microsoft Defender for APIs provides comprehensive security monitoring, threat detection, and vulnerability assessment for API endpoints. Onboarding API Management services to Defender for APIs enables real-time threat detection, API security posture assessment, and automated response to security incidents.
+
+### Control Spec
+
+> **Passed:**
+> API Management service is onboarded to Microsoft Defender for APIs with appropriate plan and monitoring configuration.
+>
+> **Failed:**
+> API Management service is not onboarded to Defender for APIs or monitoring is not properly configured.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Navigate to Microsoft Defender for Cloud → Environment settings → Select your subscription → Find "Defender for APIs" in the list of plans → Toggle "Defender for APIs" to "On" → Select "Standard" plan for full features → Configure settings for your requirements → Click "Save" to apply changes.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get API Management service: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}<br />
+**Properties:** properties.defenderForAPIs.enabled<br />
+
+<br />
+
+___
+
+## Azure_APIManagement_AuthN_Use_AAD_Only
+
+### Display Name
+API Management must use Azure Active Directory Only authentication
+
+### Rationale
+Using Azure Active Directory Only authentication ensures that only properly authenticated users can access the API Management service, eliminating the risk of unauthorized access through other authentication mechanisms.
+
+### Control Spec
+
+> **Passed:**
+> API Management service is configured to use Azure Active Directory Only authentication.
+>
+> **Failed:**
+> API Management service allows other authentication methods besides Azure Active Directory.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to API Management service → Security → Identity providers → Configure Azure Active Directory as the only allowed identity provider → Disable other authentication methods.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list Identity Provider configured in the specified service instance: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/identityProviders?api-version=2019-12-01<br />
+**Properties:** properties.type<br />
+
+<br />
+
+___
+
+## Azure_APIManagement_DP_Enable_Validation_Policy
+
+### Display Name
+API Management must enable input validation policies
+
+### Rationale
+Input validation policies help protect APIs from malicious requests and ensure data integrity by validating request content against defined schemas.
+
+### Control Spec
+
+> **Passed:**
+> Input validation policies are configured for APIs in the API Management service.
+>
+> **Failed:**
+> Input validation policies are not configured or are insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to API Management service → APIs → Select API → Design → Add policy → Configure validation policies for request content, headers, and query parameters.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get policy configuration at the API level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies?api-version=2019-01-01<br />
+**Properties:** properties.value<br />
+
+<br />
+
+___
+
+## Azure_APIManagement_DP_Use_HTTPS_URL_Scheme_ServiceUrl_contains_HTTPS
+
+### Display Name
+API Management service URL must use HTTPS scheme
+
+### Rationale
+Using HTTPS scheme for service URLs ensures that all communication with backend services is encrypted in transit, protecting against man-in-the-middle attacks.
+
+### Control Spec
+
+> **Passed:**
+> All API service URLs use HTTPS scheme.
+>
+> **Failed:**
+> One or more API service URLs use HTTP instead of HTTPS.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to API Management service → APIs → Select API → Settings → Update Service URL to use HTTPS scheme.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get the details of the API specified by its identifier: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}?api-version=2019-01-01<br />
+**Properties:** properties.serviceUrl<br />
+
+<br />
+
+___
+
+## Azure_APIManagement_NetSec_Enable_Content_Security_Policy
+
+### Display Name
+API Management must enable Content Security Policy
+
+### Rationale
+Content Security Policy (CSP) helps prevent cross-site scripting (XSS) attacks and other code injection attacks by controlling which resources can be loaded.
+
+### Control Spec
+
+> **Passed:**
+> Content Security Policy is properly configured.
+>
+> **Failed:**
+> Content Security Policy is not configured or is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to API Management service → Developer portal → Configure Content Security Policy headers through custom policies or portal settings.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get policy configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/policies?api-version=2019-01-01<br />
+**Properties:** properties.value<br />
+
+<br />
+
+___
+
+## Azure_APIManagement_NetSec_Limit_OpenAI_Token_Usage
+
+### Display Name
+API Management must implement rate limiting for OpenAI token usage
+
+### Rationale
+Rate limiting for OpenAI token usage helps prevent abuse, controls costs, and ensures fair usage across different consumers of the API.
+
+### Control Spec
+
+> **Passed:**
+> Rate limiting policies are configured for OpenAI token usage.
+>
+> **Failed:**
+> Rate limiting policies are not configured or are insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to API Management service → APIs → Select OpenAI API → Policies → Add rate limiting policies to control token usage per consumer.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get policy configuration at the API level: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies?api-version=2019-01-01<br />
+**Properties:** properties.value<br />
+
+<br />
+
+___
+
+## Azure_APIManagement_NetSec_Use_Virtual_Network
+
+### Display Name
+API Management must be deployed in a virtual network
+
+
+### Rationale
+Deploying API Management in a virtual network provides network isolation and allows for more granular control over network traffic and security.
+
+### Control Spec
+
+> **Passed:**
+> API Management service is deployed in a virtual network.
+>
+> **Failed:**
+> API Management service is not deployed in a virtual network.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to API Management service → Network → Virtual network → Configure virtual network integration for enhanced security and network isolation.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get API Management service configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}?api-version=2019-12-01<br />
+**Properties:** properties.virtualNetworkConfiguration<br />
+
+<br />
+
 ___
 

@@ -7,6 +7,7 @@
 - [Azure_EventHub_AuthZ_Dont_Use_Policies_At_Event_Hub_Namespace](#azure_eventhub_authz_dont_use_policies_at_event_hub_namespace)
 - [Azure_EventHub_AuthZ_Use_Min_Permissions_Access_Policies](#azure_eventhub_authz_use_min_permissions_access_policies)
 - [Azure_EventHub_DP_Use_Secure_TLS_Version](#Azure_EventHub_DP_Use_Secure_TLS_Version)
+- [Azure_EventHub_Enable_Diagnostic_Settings](#azure_eventhub_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -21,16 +22,11 @@ Event Hub clients (event senders or receivers) must not use 'namespace' level ac
 ### Rationale 
 A 'namespace' level access policy provides access to all Event Hubs in a namespace. However, using an access policy at an entity (Event Hub) level provides access only to the specific entity. Thus, using the latter is in line with the principle of least privilege. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "SharedAccessPoliciesToExclude": [
         "RootManageSharedAccessKey"
     ]
-}
- ``` 
-
-### Control Spec 
+}### Control Spec 
 
 > **Passed:** 
 > No namespace level access policies (except RootManageSharedAccessKey) have been configured for the Event Hub.
@@ -134,10 +130,9 @@ Use approved version of TLS for Event Hub Namespace.
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
-### Control Settings 
-
-
-### Control Spec 
+### Control Settings {
+    "MinReqTLSVersion": "1.2"
+}### Control Spec 
 
 > **Passed:** 
 > TLS version of Event Hub Namespace is already defined as per the Security Recommendation.
@@ -171,6 +166,50 @@ TLS provides privacy and data integrity between client and server. Using approve
 - REST API to list all Authorization Rules for an Event Hubs Namespace: /subscriptions/{0}/providers/Microsoft.EventHub/namespaces?api-version=2022-01-01-preview<br />
 **Properties:** properties.minimumTlsVersion
  <br />
+
+<br />
+
+___ 
+
+## Azure_EventHub_Enable_Diagnostic_Settings
+
+### Display Name
+Diagnostics logs must be enabled for Event Hub
+
+### Rationale
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+### Control Settings {
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "ArchiveLogs",
+        "OperationalLogs",
+        "AutoScaleLogs",
+        "KafkaCoordinatorLogs",
+        "KafkaUserErrorLogs",
+        "EventHubVNetConnectionEvent",
+        "CustomerManagedKeyUserLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}### Control Spec
+
+> **Passed:**
+> Required diagnostic logs are enabled with appropriate retention configuration.
+>
+> **Failed:**
+> Diagnostic logs are not enabled or retention period is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Event Hub ? Monitoring ? Diagnostic settings ? Add diagnostic setting ? Select required log categories ? Configure destination (Log Analytics, Storage Account, or Event Hub) ? Set retention period to 365 days or more.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list diagnostic setting details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventHub/namespaces/{namespaceName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy<br />
 
 <br />
 

@@ -24,6 +24,9 @@
 - [Azure_VirtualMachine_DP_Use_Secure_TLS_Version_Trial](#azure_virtualmachine_dp_use_secure_tls_version_trial)
 - [Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_Id_Auth_Linux](#azure_virtualmachine_authN_enable_microsoft_entra_id_auth_linux)
 - [Azure_VirtualMachine_Audit_Enable_Diagnostic_Settings](#azure_virtualmachine_audit_enable_diagnostic_settings)
+- [Azure_VirtualMachine_AuthN_Enable_AAD_Auth_Windows](#azure_virtualmachine_authn_enable_aad_auth_windows)
+- [Azure_VirtualMachine_DP_Use_Secure_TLS_Version](#azure_virtualmachine_dp_use_secure_tls_version)
+- [Azure_VirtualMachine_SI_Enable_Monitoring_Agent_MDC](#azure_virtualmachine_si_enable_monitoring_agent_mdc)
 
 <!-- /TOC -->
 <br/>
@@ -39,9 +42,7 @@ Ensure all devices have anti-malware protection installed and enabled
 Enabling antimalware protection minimizes the risks from existing and new attacks from various types of malware. Microsoft Antimalware provide real-time protection, scheduled scanning, malware remediation, signature updates, engine updates, samples reporting, exclusion event collection etc. 
 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
@@ -51,8 +52,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
     ],
     "ReqExtensionPublisher": "Microsoft.Azure.Security",
     "ReqExtensionType": "IaaSAntimalware"
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -118,9 +118,7 @@ Internet-facing virtual machines must be protected with Network Security Groups
 ### Rationale 
 Restricting inbound and outbound traffic via NSGs limits the network exposure of a VM by reducing the attack surface. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
@@ -128,8 +126,7 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -188,9 +185,7 @@ Public IPs on a Virtual Machine should be carefully reviewed
 ### Rationale 
 Public IPs provide direct access over the internet exposing the VM to attacks over the public network. Hence each public IP on a VM must be reviewed carefully. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
@@ -198,8 +193,7 @@ Public IPs provide direct access over the internet exposing the VM to attacks ov
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -257,9 +251,7 @@ Disk encryption should be applied on virtual machines
 ### Rationale 
 Using this feature ensures that sensitive data is stored encrypted at rest. This minimizes the risk of data loss from physical theft and also helps meet regulatory compliance requirements. In the case of VMs, both OS and data disks may contain sensitive information that needs to be protected at rest. Hence disk encryption must be enabled for both. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
@@ -267,8 +259,7 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -324,9 +315,7 @@ Virtual Machine must be in a healthy state in Microsoft Defender for Cloud
 ### Rationale 
 Microsoft Defender for Cloud raises alerts (which are typically indicative of resources that are not compliant with some baseline security protection). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "MDCApprovedBaselineStatuses": {
         "Linux": [
             "Healthy"
@@ -335,8 +324,7 @@ Microsoft Defender for Cloud raises alerts (which are typically indicative of re
             "Healthy"
         ]
     }
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -401,9 +389,7 @@ Patch virtual machine to protect against vulnerabilities
 ### Rationale 
 Un-patched VMs are easy targets for compromise from various malware/trojan attacks that exploit known vulnerabilities in operating systems and related software. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -411,8 +397,7 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -527,9 +512,7 @@ Diagnostics must be enabled on the Virtual Machine
 ### Rationale 
 Diagnostics logs are needed for creating activity trail while investigating an incident or a compromise. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "RequiredDiagnosticsExtensions": {
         "Linux": [
             {
@@ -545,7 +528,6 @@ Diagnostics logs are needed for creating activity trail while investigating an i
         ]
     }
 }
- ``` 
 
 ### Control Spec 
 
@@ -605,9 +587,7 @@ Install DSRE Qualys Cloud Agent on assets
 ### Rationale 
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising a VM/container with such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
@@ -628,8 +608,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
         "ExtensionPublisher": "Qualys",
         "ExtensionType": "QualysAgent"
     }
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -687,9 +666,7 @@ Guest Configuration extension must be deployed to the VM using Azure Policy assi
 ### Rationale 
 Installing Guest configuration extension on VM allows you to run In-Guest Policy on the VM, making it possible to monitor system and security policies for compliance checks in the VM. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -712,8 +689,7 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
         "ExtensionType": "ConfigurationForWindows",
         "RequiredVersion": "1.11.0"
     }
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -770,9 +746,7 @@ Ensure MMA or AMA is running on your VM
 ### Rationale 
 One or more extensions may be required for maintaining data plane security hygiene and visibility for all Azure VMs in use at an Org. It is important to ensure all required extensions are installed and in healthy provisioning state. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExtensionsForWindows": [
         {
             "ExtensionType": "MicrosoftMonitoringAgent",
@@ -800,8 +774,7 @@ One or more extensions may be required for maintaining data plane security hygie
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -853,9 +826,7 @@ Management ports must not be open on machines
 ### Rationale 
 Open remote management ports expose a VM/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -870,8 +841,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
     ],
     "RestrictedPortsForLinux": "445,3389,22",
     "RestrictedPortsForWindows": "445,3389,5985,5986"
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -886,8 +856,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 > 
 > **Error:** 
 > RestrictedPorts list is not properly configured in control settings.
-> 
-### Recommendation 
+> ### Recommendation 
 
 - **Azure Portal** 
 
@@ -935,9 +904,7 @@ ___
 ### Rationale 
 Security Center uses the Microsoft Monitoring Dependency Agent to collect network traffic data from your Azure virtual machines to enable advanced network protection features such as traffic visualization on the network map, network hardening recommendations and specific network threats. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -953,8 +920,7 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
         "ExtensionPublisher": "Microsoft.Azure.Monitoring.DependencyAgent",
         "ExtensionType": "DependencyAgentWindows"
     }
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1006,9 +972,7 @@ Apply Adaptive Network Hardening to Internet facing virtual machines
 ### Rationale 
 Adaptive Network Hardening uses a machine learning algorithm that factors in actual traffic, known trusted configuration, threat intelligence, and other indicators of compromise, and then provides recommendations to further restrict NSGs rules for an improved security posture. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -1021,8 +985,7 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
             "TagValue": "kubernetes"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1072,9 +1035,7 @@ Vulnerabilities in security configuration on your machines must be remediated.
 ### Rationale 
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -1082,8 +1043,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1133,9 +1093,7 @@ Vulnerabilities in container security configurations must be remediated
 ### Rationale 
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising a VM/container with such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. Unpatched VMs are easy targets for compromise from various malware/trojan attacks that exploit known vulnerabilities in operating systems and related software. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -1143,8 +1101,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1194,9 +1151,7 @@ Just-In-Time network access control must be applied on virtual machines
 ### Rationale 
 For new deployments, require Just-In-Time network access control on virtual machines. (Effect type "Deny") *For existing VMs, force the deployment of require Just-In-Time network access on virtual machines. (Effect type "DeployIfNotExists") 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -1209,8 +1164,7 @@ For new deployments, require Just-In-Time network access control on virtual mach
             "TagValue": "kubernetes"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1263,9 +1217,7 @@ Vulnerabilities must be remediated by a Vulnerability Assessment solution
 ### Rationale 
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Desciption": "VM is part of ADB cluster.",
@@ -1278,8 +1230,7 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
             "TagValue": "kubernetes"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1329,9 +1280,7 @@ Only allowed ports must be opened on Virtual Machines
 ### Rationale 
 Open remote management ports expose a VM/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "AllowedPortsForLinux": "443,80",
     "AllowedPortsForWindows": "443,80",
     "ExclusionTags": [
@@ -1341,8 +1290,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1404,14 +1352,11 @@ ___
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
-### Control Settings 
-```json 
-{
+### Control Settings {
      "ApplicableOsTypes": [
           "Windows"
       ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1474,9 +1419,7 @@ Entra ID (formerly AAD) extension must be deployed to the Linux VM
 ### Rationale 
 Installing Entra ID (formerly AAD) extension on VM allows you to login into VM using Azure AD, making it possible to login user without password and improves authentication security.
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExclusionTags": [
         {
             "Description": "VM is part of ADB cluster.",
@@ -1489,8 +1432,7 @@ Installing Entra ID (formerly AAD) extension on VM allows you to login into VM u
             "ExtensionPublisher" : "Microsoft.Azure.ActiveDirectory",
             "ProvisioningState" : "Succeeded"
      }
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -1545,9 +1487,7 @@ Enable Security Logging in Azure Virtual Machines
 Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats 
 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "ExcludeBasedOnExtension": {
         "Windows": {
             "AllMandatory": false,
@@ -1577,8 +1517,7 @@ Auditing logs must be enabled as they provide details for investigation in case 
             }
         ]
     }
-}
- ```  
+} 
 
 ### Control Spec 
 

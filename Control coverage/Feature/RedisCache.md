@@ -5,6 +5,7 @@
 <!-- TOC depthfrom:2 depthto:2 -->
 
 - [Azure_RedisCache_BCDR_Use_RDB_Backup](#azure_rediscache_bcdr_use_rdb_backup)
+- [Azure_RedisCache_BCDR_Configure_Allowed_Redundancy](#azure_rediscache_bcdr_configure_allowed_redundancy)
 - [Azure_RedisCache_DP_Use_SSL_Port](#azure_rediscache_dp_use_ssl_port)
 - [Azure_RedisCache_DP_Use_Secure_TLS_Version](#azure_rediscache_dp_use_secure_tls_version)
 - [Azure_RedisCache_Audit_Enable_Diagnostic_Settings](#azure_rediscache_audit_enable_diagnostic_settings)
@@ -22,14 +23,11 @@ Redis Data Persistence should be enabled to back up Redis Cache data
 ### Rationale 
 Enabling backup on Redis Cache ensures that there is always a previous snapshot of data that can be leveraged towards recovery scenarios. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "RDBBackApplicableSku": [
         "premium"
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -64,6 +62,54 @@ Enabling backup on Redis Cache ensures that there is always a previous snapshot 
 
 - REST API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01 <br />
 **Properties:** properties.redisConfiguration, properties.Sku
+
+<br />
+
+___ 
+
+## Azure_RedisCache_BCDR_Configure_Allowed_Redundancy
+
+### Display Name
+Redis Cache must configure appropriate redundancy for business continuity
+
+### Rationale
+Proper redundancy configuration ensures Redis Cache availability during outages and meets business continuity requirements. Configuring zone or geo redundancy helps protect against data center failures and ensures high availability for critical applications.
+
+### Control Settings{
+    "AllowedRedundancyTypes": ["Zone", "Geo"],
+    "RequireReplication": true,
+    "MinimumReplicas": 1,
+    "ApplicableSkus": ["Premium"]
+}
+### Control Spec
+
+> **Passed:**
+> Redis Cache is configured with appropriate redundancy (Zone or Geo redundancy) and meets replication requirements.
+>
+> **Failed:**
+> Redis Cache does not have appropriate redundancy configured or replication requirements are not met.
+>
+> **NotApplicable:**
+> Redis Cache SKU does not support redundancy features.
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Azure Portal ? Redis Cache ? Settings ? Geo-replication or Zone redundancy ? Configure appropriate redundancy type based on business requirements ? Enable replication with minimum required replicas.
+
+- **PowerShell**
+```powershell
+# Create Redis Cache with zone redundancy
+New-AzRedisCache -ResourceGroupName $rgName -Name $cacheName -Location $location -Sku "Premium" -Size "P1" -RedundancyType "Zone"
+
+# Configure geo-replication for existing cache
+New-AzRedisCacheLink -PrimaryServerName $primaryCacheName -SecondaryServerName $secondaryCacheName -ResourceGroupName $rgName
+```
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get all Redis caches in the specified subscription: /subscriptions/{subscriptionId}/providers/Microsoft.Cache/Redis?api-version=2018-03-01<br />
+**Properties:** properties.redisConfiguration, properties.sku, properties.zones, properties.replicasPerMaster<br />
 
 <br />
 
@@ -132,12 +178,9 @@ Use approved version of TLS for Azure RedisCache
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "MinReqTLSVersion": "1.2"
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -197,12 +240,9 @@ Use approved version of TLS for Azure RedisCache.
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
-### Control Settings 
-```json 
-{
+### Control Settings {
         "MinReqTLSVersion": "1.2"
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -241,16 +281,13 @@ Enable Security Logging in Azure Redis Cache
 ### Rationale 
 Auditing logs and metrics must be enabled as they provide details for investigation in case of a security breach for threats
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticMinRetentionPeriod": "90",
     "DiagnosticLogs": [
     	"ConnectedClientList"
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
