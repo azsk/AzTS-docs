@@ -570,6 +570,17 @@
             }
         },
         {
+            "ControlId": "Azure_VirtualMachine_DP_Enable_Encryption_At_Host",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-EnableEncryptionAtHostForVM.ps1",
+            "LoadCommand": "Remediate-EnableEncryptionAtHostForVM.ps1",
+            "InitCommand": "Enable-EncryptionAtHost",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-EncryptionAtHost",
+                "Arguments": ["SubscriptionId", "Path"]
+            }
+        },
+        {
             "ControlId": "Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AML-Endpoint-KeyAuth.ps1",
