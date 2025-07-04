@@ -1,4 +1,4 @@
-# BackupVault
+﻿# BackupVault
 
 **Resource Type:** Microsoft.DataProtection/backupVaults
 
@@ -7,6 +7,7 @@
 - [Azure_BackupVault_Audit_Enable_Monitoring](#azure_backupvault_audit_enable_monitoring)
 - [Azure_BackupVault_AuthZ_Enable_MultiUserAuthorization](#azure_backupvault_authz_enable_multiuserauthorization)
 - [Azure_BackupVault_DP_Enable_Soft_Delete](#azure_backupvault_dp_enable_soft_delete)
+- [Azure_BackupVault_DP_Enable_Immutability](#azure_backupvault_dp_enable_immutability)
 
 <!-- /TOC -->
 <br/>
@@ -115,5 +116,79 @@ Soft delete protects backup data from accidental or malicious deletion by retain
 **Properties:** properties.securitySettings.softDeleteSettings<br />
 
 <br />
+
+___
+
+___
+
+## Azure_BackupVault_DP_Enable_Immutability
+
+### Display Name
+Enable immutability for Azure Backup Vault
+
+### Rationale
+Immutability ensures that backup data stored in Azure Backup Vaults cannot be deleted or modified for a specified retention period. This protects critical backup data from accidental deletion, ransomware attacks, or malicious insider actions. Enabling immutability helps organizations meet compliance requirements for data protection, such as those outlined in ISO 27001, NIST SP 800-53, and other regulatory frameworks.
+
+### Control Spec
+
+> **Passed:**
+> - The Azure Backup Vault has immutability enabled for all backup items, ensuring that backup data cannot be deleted or modified before the retention period expires.
+>
+> **Failed:**
+> - The Azure Backup Vault does not have immutability enabled, or backup items can be deleted or altered before their retention period ends.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to the **Azure Portal**.
+    2. Go to **Backup center** > **Backup Vaults**.
+    3. Select the relevant **Backup Vault**.
+    4. Under **Settings**, select **Immutability**.
+    5. Enable **Immutability** for the required backup items or vault.
+    6. Save your changes.
+
+- **PowerShell**
+    ```powershell
+    # Install the Az.DataProtection module if not already installed
+    Install-Module -Name Az.DataProtection
+
+    # Enable immutability on a backup vault
+    $resourceGroupName = "<ResourceGroupName>"
+    $vaultName = "<BackupVaultName>"
+
+    # Example: Set Immutability State
+    Update-AzDataProtectionBackupVault -ResourceGroupName $resourceGroupName `
+        -VaultName $vaultName `
+        -ImmutabilityState "Locked"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Enable immutability on a backup vault
+    az dataprotection backup-vault update \
+        --resource-group <ResourceGroupName> \
+        --vault-name <BackupVaultName> \
+        --immutability-state Locked
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy:** Deploy the built-in policy definition:  
+      `Azure Backup vaults should have immutability enabled`
+    - **ARM Template:**  
+      Set the `immutabilityState` property to `Locked` in the backup vault resource definition.
+    - **Bulk Remediation:**  
+      Use Azure Policy remediation tasks to apply immutability settings to all non-compliant backup vaults at scale.
+    - **AzTS Remediation:**  
+      If using AzTS (Azure Tenant Security), run the provided remediation script to enable immutability across all detected non-compliant backup vaults.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:**  
+  `PATCH https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataProtection/backupVaults/{vaultName}?api-version=2023-01-01`
+  <br />
+  **Properties:**  
+  - `properties.immutabilityState`
+
+<br/>
 
 ___

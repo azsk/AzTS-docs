@@ -24,6 +24,7 @@
 - [Azure_APIManagement_NetSec_Enable_Content_Security_Policy](#azure_apimanagement_netsec_enable_content_security_policy)
 - [Azure_APIManagement_NetSec_Limit_OpenAI_Token_Usage](#azure_apimanagement_netsec_limit_openai_token_usage)
 - [Azure_APIManagement_NetSec_Use_Virtual_Network](#azure_apimanagement_netsec_use_virtual_network)
+- [Azure_APIManagement_AuthZ_Enable_User_Authorization_For_APIs](#azure_apimanagement_authz_enable_user_authorization_for_apis)
 
 <!-- /TOC -->
 <br/>
@@ -895,3 +896,110 @@ Deploying API Management in a virtual network provides network isolation and all
 
 ___
 
+
+## Azure_APIManagement_AuthZ_Enable_User_Authorization_For_APIs
+
+### Display Name
+Enable user authorization for APIs in API Management
+
+### Rationale
+Enabling user authorization for APIs in Azure API Management ensures that only authenticated and authorized users can access sensitive API endpoints. This control helps prevent unauthorized access, data leakage, and potential abuse of APIs by enforcing access policies. Implementing user authorization is critical for compliance with security standards such as ISO 27001, SOC 2, and PCI DSS, and supports the principle of least privilege.
+
+### Control Spec
+
+> **Passed:**
+> - All APIs within the API Management service are configured with user authorization policies (such as OAuth 2.0, OpenID Connect, or other supported mechanisms).
+> - Access to APIs requires valid authentication tokens and is restricted based on user roles or claims.
+>
+> **Failed:**
+> - One or more APIs are accessible without user authorization.
+> - APIs allow anonymous access or lack authentication/authorization policies.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your API Management instance in the Azure Portal.
+    2. Select **APIs** from the left menu.
+    3. Choose the API you want to secure.
+    4. Go to the **Settings** or **Design** tab.
+    5. Under **Security**, configure the desired authorization method (e.g., OAuth 2.0, OpenID Connect).
+    6. Save your changes and test the API to ensure authorization is enforced.
+
+- **PowerShell**
+    ```powershell
+    # Example: Set OAuth 2.0 authorization for an API operation
+    $resourceGroupName = "<ResourceGroupName>"
+    $serviceName = "<APIMServiceName>"
+    $apiId = "<ApiId>"
+    $operationId = "<OperationId>"
+    $policyXml = @"
+    <policies>
+      <inbound>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid.">
+          <openid-config url="https://login.microsoftonline.com/<tenant-id>/.well-known/openid-configuration" />
+          <required-claims>
+            <claim name="aud">
+              <value><audience-value></value>
+            </claim>
+          </required-claims>
+        </validate-jwt>
+      </inbound>
+      <backend>
+        <forward-request />
+      </backend>
+      <outbound />
+    </policies>
+    "@
+
+    Set-AzApiManagementPolicy `
+      -ResourceGroupName $resourceGroupName `
+      -ServiceName $serviceName `
+      -ApiId $apiId `
+      -Policy $policyXml
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Example: Apply a policy file to an API
+    az apim api policy update \
+      --resource-group <ResourceGroupName> \
+      --service-name <APIMServiceName> \
+      --api-id <ApiId> \
+      --xml-policy "@policy.xml"
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to audit and enforce API authorization requirements. Example policy definition:
+      ```json
+      {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.ApiManagement/service/apis"
+            },
+            {
+              "not": {
+                "field": "Microsoft.ApiManagement/service/apis/policies",
+                "contains": "validate-jwt"
+              }
+            }
+          ]
+        },
+        "then": {
+          "effect": "audit"
+        }
+      }
+      ```
+    - For bulk remediation, use scripts to iterate through all APIs and apply the required authorization policy.
+    - Consider integrating with Azure Blueprints or AzTS for tenant-wide enforcement if available.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `PUT https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ApiManagement/service/{serviceName}/apis/{apiId}/policies/policy?api-version=2021-08-01`
+  <br />
+  **Properties:** Checks for the presence of `validate-jwt` or equivalent authorization policies in the API policy definition.
+
+<br/>
+
+___

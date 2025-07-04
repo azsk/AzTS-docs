@@ -1,4 +1,4 @@
-# CognitiveServices
+﻿# CognitiveServices
 
 **Resource Type:** Microsoft.CognitiveServices/accounts
 
@@ -11,9 +11,6 @@
 - [Azure_CognitiveServices_DP_Enable_Encryption_With_Customer_Managed_Keys](#azure_cognitiveservices_dp_enable_encryption_with_customer_managed_keys)
 - [Azure_CognitiveServices_NetSec_Dont_Allow_Public_Network_Access](#azure_cognitiveservices_netsec_dont_allow_public_network_access)
 - [Azure_CognitiveServices_NetSec_Use_Private_Endpoint](#azure_cognitiveservices_netsec_use_private_endpoint)
-- [Azure_ComputerVision_AuthN_Use_Managed_Service_Identity](#azure_computervision_authn_use_managed_service_identity)
-- [Azure_SpeechService_AuthN_Use_Managed_Service_Identity](#azure_speechservice_authn_use_managed_service_identity)
-- [Azure_AISearch_NetSec_Restrict_Public_Network_Access](#azure_aisearch_netsec_restrict_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -61,6 +58,10 @@ Logs should be retained for a long enough period so that activity trail can be r
 
 ___
 
+
+
+___
+
 ## Azure_CognitiveServices_AuthN_Disable_Local_Auth
 
 ### Display Name
@@ -90,6 +91,10 @@ Disabling local authentication ensures that only Azure Active Directory-based au
 **Properties:** properties.disableLocalAuth<br />
 
 <br />
+
+___
+
+
 
 ___
 
@@ -125,6 +130,10 @@ Managed Service Identity eliminates the need to store credentials in code and pr
 
 ___
 
+
+
+___
+
 ## Azure_CognitiveServices_DP_Data_Loss_Prevention
 
 ### Display Name
@@ -154,6 +163,10 @@ Data loss prevention helps protect sensitive information from unauthorized acces
 **Properties:** properties.networkAcls, properties.encryption<br />
 
 <br />
+
+___
+
+
 
 ___
 
@@ -189,6 +202,10 @@ Customer-managed keys provide enhanced security and compliance capabilities by a
 
 ___
 
+
+
+___
+
 ## Azure_CognitiveServices_NetSec_Dont_Allow_Public_Network_Access
 
 ### Display Name
@@ -218,6 +235,10 @@ Restricting public network access reduces the attack surface and ensures that ac
 **Properties:** properties.publicNetworkAccess<br />
 
 <br />
+
+___
+
+
 
 ___
 
@@ -253,117 +274,4 @@ Private endpoints provide secure, private connectivity to Cognitive Services ove
 
 ___
 
-## Azure_ComputerVision_AuthN_Use_Managed_Service_Identity
 
-### Display Name
-Computer Vision must use Managed Service Identity
-
-### Rationale
-Managed Service Identity eliminates the need to store credentials in code and provides secure access to other Azure services without managing secrets.
-
-### Control Spec
-
-> **Passed:**
-> Managed Service Identity is enabled and configured.
->
-> **Failed:**
-> Managed Service Identity is not enabled.
->
-
-### Recommendation
-
-- **Azure Portal**
-
-    Go to Computer Vision resource ? Identity ? Enable system-assigned or user-assigned managed identity ? Assign appropriate roles for accessing other Azure resources.
-
-### Azure Policies or REST APIs used for evaluation
-
-- REST API to get identity configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}<br />
-**Properties:** identity.type, identity.principalId<br />
-
-<br />
-
-___
-
-## Azure_SpeechService_AuthN_Use_Managed_Service_Identity
-
-### Display Name
-Speech Service must use Managed Service Identity
-
-### Rationale
-Managed Service Identity provides secure authentication without storing credentials and enables automatic credential rotation for Speech Services. This eliminates the need to manage API keys and reduces the risk of credential exposure, providing a more secure and manageable authentication mechanism.
-
-### Control Settings {
-    "RequireMSI": true,
-    "DisableLocalAuth": true,
-    "AllowedIdentityTypes": ["SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned"]
-}
-### Control Spec
-
-> **Passed:**
-> Managed Service Identity is enabled and local authentication is disabled for Speech Service.
->
-> **Failed:**
-> Managed Service Identity is not configured or local authentication is still enabled.
->
-
-### Recommendation
-
-- **Azure Portal**
-
-    Go to Speech Service resource ? Identity ? Enable system-assigned or user-assigned managed identity ? Navigate to Keys and Endpoint ? Disable local authentication ? Assign appropriate roles for accessing other Azure resources.
-
-- **PowerShell**
-```powershell
-# Enable MSI and disable local auth for Speech Service
-    Set-AzCognitiveServicesAccount -ResourceGroupName $rgName -Name $speechServiceName -IdentityType "SystemAssigned" -DisableLocalAuth $true
-    
-    # Verify the configuration
-    Get-AzCognitiveServicesAccount -ResourceGroupName $rgName -Name $speechServiceName
-```
-### Azure Policies or REST APIs used for evaluation
-
-- REST API to get Speech Service account properties: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{speechServiceName}<br />
-**Properties:** identity.type, identity.principalId, properties.disableLocalAuth<br />
-
-<br />
-
-___
-
-## Azure_AISearch_NetSec_Restrict_Public_Network_Access
-
-### Display Name
-Azure AI Search services must restrict public network access
-
-### Rationale
-Restricting public network access to Azure AI Search services helps protect against unauthorized access and data breaches. By limiting access to trusted networks only, organizations can significantly reduce their attack surface and ensure that search indexes and data are only accessible from authorized locations.
-
-### Control Settings {
-    "AllowedPublicNetworkAccess": "Disabled",
-    "RequirePrivateEndpoints": true,
-    "AllowedIPRanges": [],
-    "AllowAzureServicesAccess": false
-}
-### Control Spec
-
-> **Passed:**
-> Public network access is disabled or restricted to specific IP ranges with private endpoints configured.
->
-> **Failed:**
-> Public network access is enabled without restrictions or proper security configuration is missing.
->
-
-### Recommendation
-
-- **Azure Portal**
-
-    Navigate to Azure Portal ? AI Search service ? Settings ? Networking ? Under "Public network access", select "Disabled" ? Configure private endpoints for secure access ? Save changes.
-
-### Azure Policies or REST APIs used for evaluation
-
-- REST API to get AI Search service details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Search/searchServices/{searchServiceName}<br />
-**Properties:** properties.publicNetworkAccess, properties.networkRuleSet, properties.privateEndpointConnections<br />
-
-<br />
-
-___

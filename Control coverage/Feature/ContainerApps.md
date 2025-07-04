@@ -1,4 +1,4 @@
-# ContainerApps
+﻿# ContainerApps
 
 **Resource Type:** Microsoft.App/containerApps
 
@@ -6,6 +6,8 @@
 
 - [Azure_ContainerApps_DP_Dont_Allow_HTTP_Access](#azure_containerapps_dp_dont_allow_http_access)
 - [Azure_ContainerApps_DP_Enable_mTLS_Encryption](#azure_containerapps_dp_enable_mtls_encryption)
+- [Azure_ContainerApps_DP_Avoid_Plaintext_Secrets](#azure_containerapps_dp_avoid_plaintext_secrets)
+
 
 <!-- /TOC -->
 <br/>
@@ -113,5 +115,84 @@ Mutual TLS provides enhanced security by ensuring both client and server authent
 **Properties:** properties.configuration.ingress.clientCertificateMode<br />
 
 <br />
+
+___
+
+## Azure_ContainerApps_DP_Avoid_Plaintext_Secrets
+
+### Display Name
+Avoid storing secrets in plaintext in Azure Container Apps
+
+### Rationale
+Storing secrets such as passwords, connection strings, or API keys in plaintext within Azure Container Apps environment variables or configuration files exposes sensitive information to potential attackers. Utilizing secure secret storage mechanisms, such as Azure Key Vault, ensures that secrets are encrypted at rest and only accessible by authorized services. This control helps organizations meet compliance requirements (such as ISO 27001, SOC 2, and PCI DSS) and reduces the risk of credential leakage.
+
+### Control Spec
+
+> **Passed:**  
+> No secrets (such as passwords, connection strings, or API keys) are stored in plaintext within environment variables or configuration files of Azure Container Apps. All sensitive information is referenced securely, for example, via Azure Key Vault integration or other supported secret management solutions.
+>
+> **Failed:**  
+> One or more secrets are detected in plaintext within environment variables or configuration files of Azure Container Apps. Sensitive information is not protected by secure secret management mechanisms.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your Azure Container App in the Azure Portal.
+    2. Under **Settings**, select **Secrets**.
+    3. Remove any plaintext secrets from environment variables or configuration files.
+    4. Add secrets to Azure Key Vault or the Container App's Secrets section.
+    5. Reference secrets in your application code or configuration using secure references (e.g., environment variable referencing a Key Vault secret).
+
+- **PowerShell**
+    ```powershell
+    # Example: Remove a plaintext secret from a Container App and reference Azure Key Vault
+    $resourceGroup = "<resource-group-name>"
+    $containerAppName = "<container-app-name>"
+    $secretName = "<secret-name>"
+    $keyVaultSecretUri = "<key-vault-secret-uri>"
+
+    # Remove existing secret (if applicable)
+    az containerapp secret remove `
+        --name $containerAppName `
+        --resource-group $resourceGroup `
+        --secret-name $secretName
+
+    # Add secret from Azure Key Vault
+    az containerapp secret set `
+        --name $containerAppName `
+        --resource-group $resourceGroup `
+        --secrets name=$secretName,value=$keyVaultSecretUri
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Remove a plaintext secret
+    az containerapp secret remove \
+      --name <container-app-name> \
+      --resource-group <resource-group-name> \
+      --secret-name <secret-name>
+
+    # Add a secret from Azure Key Vault
+    az containerapp secret set \
+      --name <container-app-name> \
+      --resource-group <resource-group-name> \
+      --secrets name=<secret-name>,value=<key-vault-secret-uri>
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to deny or audit the use of plaintext secrets in Container Apps configurations.
+    - Implement CI/CD pipeline checks to scan for plaintext secrets before deployment.
+    - Use Azure Key Vault references in Container Apps for all sensitive configuration values.
+    - For bulk remediation, develop scripts to scan all Container Apps for plaintext secrets and migrate them to Azure Key Vault.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/containerApps/{containerAppName}?api-version=2022-03-01`
+  <br />
+  **Properties:**  
+  - `properties.template.containers.env` (checks for plaintext values)
+  - `properties.configuration.secrets` (checks for secure references)
+
+<br/>
 
 ___

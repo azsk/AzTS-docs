@@ -1,4 +1,4 @@
-# AppService
+﻿# AppService
 
 **Resource Type:** Microsoft.Web/sites 
 
@@ -21,6 +21,7 @@
 - [Azure_FunctionApps_Audit_Enable_Diagnostic_Settings](#azure_functionapps_audit_enable_diagnostic_settings)
 - [Azure_AppService_DP_Configure_EndToEnd_TLS](#azure_appservice_dp_configure_endtoend_tls)
 - [Azure_AppService_Audit_Enable_Diagnostic_Settings](#azure_appservice_audit_enable_diagnostic_settings)
+- [Azure_AppService_DP_Dont_Have_Plaintext_Secrets](#azure_appservice_dp_dont_have_plaintext_secrets)
 
 <!-- /TOC -->
 <br/>
@@ -768,16 +769,12 @@ App Service must have diagnostic settings enabled for security monitoring
 ### Rationale
 Enabling diagnostic settings for App Service provides visibility into application behavior, security events, and performance metrics. This is essential for detecting security threats, troubleshooting issues, and meeting compliance requirements for audit trails and monitoring.
 
-### Control Settings 
-```json
-{
+### Control Settings {
   "RequiredLogCategories": ["AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceAuditLogs"],
   "RequiredMetrics": ["AllMetrics"],
   "MinimumRetentionDays": 90,
   "RequireLogAnalyticsWorkspace": true
 }
-```
-
 ### Control Spec
 - **Passed:** Diagnostic settings are enabled with required log categories and destinations
 - **Failed:** Missing diagnostic settings or insufficient log category configuration
@@ -795,9 +792,7 @@ To enable diagnostic settings for App Service:
    - AppServiceAuditLogs
 4. Configure destination (Log Analytics workspace recommended)
 
-### PowerShell Configuration:
-```powershell
-$resourceId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.Web/sites/$appName"
+### PowerShell Configuration:$resourceId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.Web/sites/$appName"
 $workspaceId = "/subscriptions/$subscriptionId/resourceGroups/$rgName/providers/Microsoft.OperationalInsights/workspaces/$workspaceName"
 
 $logs = @(
@@ -811,8 +806,6 @@ $metrics = @(
 )
 
 New-AzDiagnosticSetting -ResourceId $resourceId -WorkspaceId $workspaceId -Log $logs -Metric $metrics -Name "appservice-diagnostics"
-```
-
 ### Security Benefits:
 - Real-time monitoring of security events and threats
 - Comprehensive audit trails for compliance
@@ -844,3 +837,98 @@ New-AzDiagnosticSetting -ResourceId $resourceId -WorkspaceId $workspaceId -Log $
 - **Control Severity:** Medium
 - **Evaluation Frequency:** Daily
 - **Baseline Control:** Yes
+
+___
+
+## Azure_AppService_DP_Dont_Have_Plaintext_Secrets
+
+### Display Name
+App Service: Do not store plaintext secrets in configuration settings
+
+### Rationale
+Storing secrets such as passwords, connection strings, API keys, or certificates in plaintext within App Service configuration settings exposes them to potential compromise. Attackers who gain access to the configuration can easily retrieve these secrets, leading to unauthorized access, data breaches, or privilege escalation. Using secure secret management solutions such as Azure Key Vault ensures that secrets are encrypted at rest and access is tightly controlled and audited, supporting compliance with security frameworks such as ISO 27001, SOC 2, and PCI DSS.
+
+### Control Spec
+
+> **Passed:**
+> - No plaintext secrets (such as passwords, API keys, or connection strings) are present in the App Service configuration settings (`appSettings` or `connectionStrings`).
+> - All sensitive values are referenced via secure mechanisms (e.g., Azure Key Vault references).
+>
+> **Failed:**
+> - Plaintext secrets are found in the App Service configuration settings (`appSettings` or `connectionStrings`).
+> - Sensitive values are directly embedded in configuration and not protected by secure references.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your App Service in the Azure Portal.
+    2. Go to **Configuration** under **Settings**.
+    3. Review all entries in **Application settings** and **Connection strings**.
+    4. Identify and remove any plaintext secrets (passwords, API keys, etc.).
+    5. Replace them with [Key Vault references](https://learn.microsoft.com/azure/app-service/app-service-key-vault-references).
+    6. Save the configuration.
+
+- **PowerShell**
+    ```powershell
+    # List current app settings
+    Get-AzWebApp -ResourceGroupName <ResourceGroup> -Name <AppServiceName> | Get-AzWebAppConfig
+
+    # Update an app setting to use a Key Vault reference
+    $app = Get-AzWebApp -ResourceGroupName <ResourceGroup> -Name <AppServiceName>
+    $app.SiteConfig.AppSettings.Add(@{ Name = "MySecret"; Value = "@Microsoft.KeyVault(SecretUri=https://<KeyVaultName>.vault.azure.net/secrets/<SecretName>/<SecretVersion>)" })
+    Set-AzWebApp -ResourceGroupName <ResourceGroup> -Name <AppServiceName> -AppSettings $app.SiteConfig.AppSettings
+    ```
+
+- **Azure CLI**
+    ```bash
+    # List current app settings
+    az webapp config appsettings list --name <AppServiceName> --resource-group <ResourceGroup>
+
+    # Set an app setting to use a Key Vault reference
+    az webapp config appsettings set --name <AppServiceName> --resource-group <ResourceGroup> \
+      --settings MySecret='@Microsoft.KeyVault(SecretUri=https://<KeyVaultName>.vault.azure.net/secrets/<SecretName>/<SecretVersion>)'
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to audit and enforce the use of Key Vault references for App Service configuration settings.
+    - Example Azure Policy definition:
+        ```json
+        {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Web/sites"
+              },
+              {
+                "anyOf": [
+                  {
+                    "field": "Microsoft.Web/sites/siteConfig.appSettings[*].value",
+                    "contains": "<pattern-for-plaintext-secret>"
+                  },
+                  {
+                    "field": "Microsoft.Web/sites/siteConfig.connectionStrings[*].connectionString",
+                    "contains": "<pattern-for-plaintext-secret>"
+                  }
+                ]
+              }
+            ]
+          },
+          "then": {
+            "effect": "audit"
+          }
+        }
+        ```
+    - For large environments, use Azure Resource Graph or AzTS scripts to detect and remediate plaintext secrets in bulk.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Web/sites/{name}/config/appsettings?api-version=2022-03-01`
+  <br />
+  **Properties:** `properties` (for `appSettings`), `connectionStrings`
+- Azure Policy: Audit App Service configuration for plaintext secrets using custom policy definitions.
+- Azure Resource Graph: Query App Service configurations at scale for compliance reporting.
+
+<br/>
+
+___

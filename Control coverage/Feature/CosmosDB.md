@@ -1,4 +1,4 @@
-# CosmosDB
+﻿# CosmosDB
 
 **Resource Type:** Microsoft.DocumentDB/databaseAccounts 
 
@@ -15,6 +15,8 @@
 - [Azure_CosmosDB_Audit_Enable_Diagnostic_Settings](#azure_cosmosdb_audit_enable_diagnostic_settings)
 - [Azure_CosmosDB_AuthZ_Disable_KeyBased_Metadata_Write_Access](#azure_cosmosdb_authz_disable_keybased_metadata_write_access)
 - [Azure_CosmosDB_SI_Rotate_Access_Keys](#azure_cosmosdb_si_rotate_access_keys)
+- [Azure_Cosmos_DB_Audit_Enable_Diagnostic_Settings](#azure_cosmos_db_audit_enable_diagnostic_settings)
+
 
 <!-- /TOC -->
 <br/>
@@ -508,5 +510,93 @@ Regular rotation of access keys reduces the risk of unauthorized access and limi
 **Properties:** properties.keysMetadata.primaryMasterKey.generationTime, properties.keysMetadata.secondaryMasterKey.generationTime<br />
 
 <br />
+
+___
+
+
+## Azure_Cosmos_DB_Audit_Enable_Diagnostic_Settings
+
+### Display Name
+Azure Cosmos DB accounts should have diagnostic settings enabled
+
+### Rationale
+Enabling diagnostic settings on Azure Cosmos DB accounts ensures that resource logs and metrics are collected and exported to a Log Analytics workspace, Event Hub, or Azure Storage account. This is critical for monitoring, auditing, and investigating activities for security, compliance, and operational insights. Without diagnostic settings, you may lack visibility into access patterns, configuration changes, and potential security incidents, which can impact your ability to meet regulatory requirements and respond to threats.
+
+### Control Spec
+
+> **Passed:**
+> - Diagnostic settings are enabled on the Azure Cosmos DB account.
+> - At least one category of logs (such as "DataPlaneRequests", "MongoRequests", "CassandraRequests", etc.) is being sent to a Log Analytics workspace, Event Hub, or Storage account.
+>
+> **Failed:**
+> - No diagnostic settings are configured for the Azure Cosmos DB account.
+> - No logs or metrics are being exported to any destination.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Go to the [Azure portal](https://portal.azure.com/).
+    2. Navigate to **Azure Cosmos DB** and select your database account.
+    3. In the left pane, select **Diagnostic settings** under the **Monitoring** section.
+    4. Click **+ Add diagnostic setting**.
+    5. Enter a name for the setting.
+    6. Select the log and metric categories you want to collect (e.g., DataPlaneRequests, MongoRequests).
+    7. Choose at least one destination: Log Analytics workspace, Event Hub, or Storage account.
+    8. Click **Save**.
+
+- **PowerShell**
+    ```powershell
+    # Install the Az module if not already installed
+    Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+
+    # Set variables
+    $resourceGroupName = "<ResourceGroupName>"
+    $accountName = "<CosmosDBAccountName>"
+    $workspaceId = "<LogAnalyticsWorkspaceResourceId>"
+    $diagnosticName = "CosmosDBDiagnostics"
+
+    # Enable diagnostic settings
+    Set-AzDiagnosticSetting -ResourceId "/subscriptions/<subscriptionId>/resourceGroups/$resourceGroupName/providers/Microsoft.DocumentDB/databaseAccounts/$accountName" `
+        -WorkspaceId $workspaceId `
+        -Name $diagnosticName `
+        -Enabled $true `
+        -Category "DataPlaneRequests","MongoRequests","CassandraRequests"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Set variables
+    RESOURCE_GROUP="<ResourceGroupName>"
+    ACCOUNT_NAME="<CosmosDBAccountName>"
+    WORKSPACE_ID="<LogAnalyticsWorkspaceResourceId>"
+    DIAGNOSTIC_NAME="CosmosDBDiagnostics"
+
+    # Enable diagnostic settings
+    az monitor diagnostic-settings create \
+      --name $DIAGNOSTIC_NAME \
+      --resource "/subscriptions/<subscriptionId>/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.DocumentDB/databaseAccounts/$ACCOUNT_NAME" \
+      --workspace $WORKSPACE_ID \
+      --logs '[{"category": "DataPlaneRequests", "enabled": true}, {"category": "MongoRequests", "enabled": true}]'
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy Definition:**  
+      Assign the built-in Azure Policy:  
+      **Policy Name:** *Azure Cosmos DB accounts should have diagnostic settings enabled*  
+      **Definition ID:** `/providers/Microsoft.Authorization/policyDefinitions/7c2b1c8a-5c7d-4e3e-bd9d-4b6d5c7b7b3c`  
+      This policy can be assigned at the subscription or management group level for automated enforcement and remediation.
+    - **Bulk Remediation:**  
+      Use Azure Policy's "Remediate" function to automatically deploy diagnostic settings to all non-compliant Cosmos DB accounts in your scope.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:**  
+  `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview`  
+  **Properties checked:**  
+  - `logs[*].enabled`
+  - `workspaceId`, `eventHubAuthorizationRuleId`, or `storageAccountId` (at least one must be set)
+  - `category` (should include at least one relevant log category)
+
+<br/>
 
 ___

@@ -1,4 +1,4 @@
-# CloudService
+﻿# CloudService
 
 **Resource Type:** Microsoft.Compute/cloudServices
 
@@ -9,6 +9,7 @@
 - [Azure_CloudService_SI_Auto_OSUpdate](#azure_cloudservice_si_auto_osupdate)
 - [Azure_CloudService_SI_Enable_AntiMalware](#azure_cloudservice_si_enable_antimalware)
 - [Azure_CloudService_SI_Disable_RemoteDesktop_Access](#azure_cloudservice_si_disable_remotedesktop_access)
+- [Azure_CloudService_DP_Avoid_Plaintext_Secrets](#azure_cloudservice_dp_avoid_plaintext_secrets)
 
 <!-- /TOC -->
 <br/>
@@ -228,3 +229,74 @@ Remote desktop access requires inbound ports to be opened. These ports become ea
 
 ___ 
 
+
+
+___
+
+## Azure_CloudService_DP_Avoid_Plaintext_Secrets
+
+### Display Name
+Avoid storing secrets in plaintext in Azure Cloud Service configuration
+
+### Rationale
+Storing secrets such as passwords, connection strings, or API keys in plaintext within Azure Cloud Service configuration files poses a significant security risk. Plaintext secrets are vulnerable to accidental exposure, unauthorized access, and compromise, potentially leading to data breaches or unauthorized actions within your environment. Azure recommends using secure mechanisms such as Azure Key Vault to manage and reference secrets, ensuring they are encrypted at rest and in transit, and access is tightly controlled and auditable. This control helps organizations meet compliance requirements for secret management and reduces the risk of credential leakage.
+
+### Control Spec
+
+> **Passed:**
+> - No secrets (passwords, connection strings, API keys, tokens, etc.) are stored in plaintext within the Cloud Service configuration files (ServiceConfiguration.cscfg, ServiceDefinition.csdef).
+> - All sensitive information is referenced via secure mechanisms such as Azure Key Vault references or environment variables with secure access.
+>
+> **Failed:**
+> - Any secret is found in plaintext within the Cloud Service configuration files.
+> - Sensitive information is hardcoded or stored without encryption or secure referencing.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your Cloud Service (Classic) resource.
+    2. Review the configuration settings under the "Configuration" blade.
+    3. Identify any settings containing secrets in plaintext.
+    4. Remove plaintext secrets and replace them with references to Azure Key Vault or use secure environment variables.
+    5. Update and redeploy your Cloud Service with the revised configuration.
+
+- **PowerShell**
+    ```powershell
+    # Example: Remove or replace plaintext secrets in configuration
+    # Export current configuration
+    Get-AzureService | Export-AzureServiceProject
+
+    # Edit ServiceConfiguration.cscfg to remove plaintext secrets
+    # Replace with Key Vault reference or secure environment variable
+
+    # Redeploy the updated configuration
+    Publish-AzureServiceProject -ServiceName <ServiceName> -Location <Location>
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Download current configuration
+    az cloud-service role list --service-name <ServiceName> --query "[].{name:name, config:configuration}"
+
+    # Edit configuration file to remove plaintext secrets
+
+    # Update cloud service with new configuration
+    az cloud-service update --name <ServiceName> --resource-group <ResourceGroup> --set configuration=@ServiceConfiguration.cscfg
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to deny deployments containing plaintext secrets in configuration files.
+    - Implement CI/CD pipeline checks to scan for plaintext secrets before deployment (e.g., using tools like Microsoft Security DevOps or open-source secret scanners).
+    - Use ARM templates with Key Vault references for all sensitive parameters.
+    - For bulk remediation, script scanning of all Cloud Service configurations in your subscription for plaintext secrets and replace them with Key Vault references.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ClassicCompute/domainNames/{cloudServiceName}?api-version=2016-04-01`
+  <br />
+  **Properties:** `properties.configuration`, `properties.serviceDefinition`
+- Azure Policy: [Azure Policy definition for denying plaintext secrets in configuration files](https://docs.microsoft.com/azure/governance/policy/samples/deny-plaintext-secrets)
+
+<br/>
+
+___
