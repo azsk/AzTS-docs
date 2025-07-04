@@ -6,7 +6,8 @@
 
 - [Azure_SQLManagedInstance_Audit_Enable_Vuln_Assessment](#azure_sqlmanagedinstance_audit_enable_vuln_assessment)
 - [Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version](azure_sqlmanagedinstance_dp_use_secure_tls_version)
-
+- [Azure_SQLManagedInstance_SI_Remediate_Security_Vulnerabilities](#Azure_SQLManagedInstance_SI_Remediate_Security_Vulnerabilities)
+- [Azure_SQLManagedInstance_Enable_Audit_Logs](#Azure_SQLManagedInstance_Enable_Audit_Logs)
 <!-- /TOC -->
 <br/>
 
@@ -64,7 +65,6 @@ Known database vulnerabilities in a system can be easy targets for attackers. A 
 
 <br />
 
-<!-- 
 ## Azure_SQLManagedInstance_SI_Remediate_Security_Vulnerabilities 
 
 ### Display Name 
@@ -130,13 +130,10 @@ Use approved version of TLS for Azure SQL Managed Instance
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "MinReqTLSVersion": "1.2",
     "MinTLSVersionNotSet": "None"
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -185,7 +182,7 @@ TLS provides privacy and data integrity between client and server. Using approve
 <br />
 
 ___ 
- --> 
+
 ___ 
 
 ## Azure_SQLManagedInstance_DP_Use_Secure_TLS_Version 
@@ -228,3 +225,45 @@ TLS provides privacy and data integrity between client and server. Using approve
 <br />
 
 ___
+
+## Azure_SQLManagedInstance_Enable_Audit_Logs
+
+### Display Name
+SQL Managed Instance must enable audit logs for security monitoring
+
+### Rationale
+Enabling audit logs for SQL Managed Instance provides comprehensive monitoring of database activities, security events, and compliance requirements. This is essential for detecting unauthorized access, data breaches, and meeting regulatory audit requirements.
+
+### Control Settings {
+    "RequireAuditLogs": true,
+    "AuditDestinations": ["LogAnalytics", "StorageAccount"],
+    "AuditEvents": ["Database_Object_Access_Group", "Database_Principal_Change_Group", "Schema_Object_Change_Group"],
+    "MinimumRetentionDays": 90
+}
+### Control Spec
+
+> **Passed:**
+> Audit logs are enabled with appropriate destinations and retention settings.
+>
+> **Failed:**
+> Audit logs are not enabled or improperly configured.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to SQL Managed Instance ? Security ? Auditing ? Enable auditing ? Configure storage account or Log Analytics workspace ? Set retention period to minimum 90 days ? Save configuration.
+
+- **PowerShell**
+```powershell
+# Enable server-level auditing
+Set-AzSqlInstanceAudit -ResourceGroupName $rgName -InstanceName $instanceName -BlobStorageTargetState Enabled -StorageAccountResourceId $storageAccountResourceId -RetentionInDays 90
+
+# Configure diagnostic settings for Log Analytics
+New-AzDiagnosticSetting -ResourceId $instanceResourceId -WorkspaceId $logAnalyticsWorkspaceId -Name "sql-mi-audit" -Enabled $true -Category "SQLSecurityAuditEvents"
+```
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get audit settings: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/managedInstances/{instanceName}/auditingSettings/default?api-version=2021-11-01-preview<br />
+**Properties:** properties.state, properties.auditActionsAndGroups, properties.retentionDays<br />

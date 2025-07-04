@@ -5,6 +5,7 @@
 <!-- TOC -->
 
 - [Azure_DBForPostgreSQLFlexibleServer_DP_Use_Secure_TLS_Version](#azure_dbforpostgresqlflexibleserver_dp_use_secure_tls_version)
+- [Azure_DBForPostgreSQLFlexibleServer_Enable_Diagnostic_Settings](#azure_dbforpostgresqlflexibleserver_enable_diagnostic_settings)
 
 <!-- /TOC -->
 <br/>
@@ -45,6 +46,49 @@ TLS for Azure Database for PostgreSQL is not configured or SSL is disabled.
  
 **Properties:** properties.name, properties.value
  <br />
+
+<br />
+
+___ 
+
+## Azure_DBForPostgreSQLFlexibleServer_Enable_Diagnostic_Settings
+
+### Display Name
+Database for PostgreSQL Flexible Server must have diagnostic settings enabled
+
+### Rationale
+Enabling diagnostic settings for PostgreSQL Flexible Server provides visibility into database operations, performance metrics, and security events. This is essential for monitoring database health, detecting security threats, and meeting compliance requirements.
+
+### Control Settings 
+```json
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "PostgreSQLLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+```
+
+### Control Spec
+
+> **Passed:**
+> Required diagnostic logs are enabled with appropriate retention configuration.
+>
+> **Failed:**
+> Diagnostic logs are not enabled or retention period is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Database for PostgreSQL Flexible Server ? Monitoring ? Diagnostic settings ? Add diagnostic setting ? Select required log categories ? Configure destination (Log Analytics, Storage Account, or Event Hub) ? Set retention period to 365 days or more.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list diagnostic setting details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforPostgreSQL/flexibleServers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy<br />
 
 <br />
 
