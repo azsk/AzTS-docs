@@ -1,9 +1,11 @@
-# Iot Hubs
+﻿# Iot Hubs
 **Resource Type:** Microsoft.Devices/IotHubs
 
 <!-- TOC -->
 
 - [Azure_IoTHubs_Audit_Enable_Diagnostic_Settings](#azure_iothubs_audit_enable_diagnostic_settings)
+- [Azure_IoTHub_DP_Use_Secure_TLS_Version](#azure_iothub_dp_use_secure_tls_version)
+
 
 <!-- /TOC -->
 <br/>
@@ -73,3 +75,71 @@ properties.categoryGroups, name
 ___ 
 
 
+## Azure_IoTHub_DP_Use_Secure_TLS_Version
+
+### Display Name
+IoT Hub should use a secure TLS version
+
+### Rationale
+Transport Layer Security (TLS) is a cryptographic protocol that ensures secure communication over a network. Using outdated or insecure versions of TLS can expose IoT Hubs to vulnerabilities such as man-in-the-middle attacks, data interception, and unauthorized access. Enforcing the use of a secure TLS version (such as TLS 1.2 or above) helps to maintain the confidentiality and integrity of data transmitted between IoT devices and the Azure IoT Hub, and supports compliance with industry security standards.
+
+### Control Spec
+
+> **Passed:**  
+> The IoT Hub is configured to require a secure TLS version (TLS 1.2 or higher) for all device and service connections.
+>
+> **Failed:**  
+> The IoT Hub allows connections using insecure or deprecated TLS versions (such as TLS 1.0 or 1.1).
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your IoT Hub in the Azure Portal.
+    2. Under **Settings**, select **TLS/SSL settings** or **Properties** (depending on the portal version).
+    3. Ensure that the **Minimum TLS Version** is set to **1.2** or higher.
+    4. Save your changes.
+
+- **PowerShell**
+    ```powershell
+    # Set the minimum TLS version to 1.2 for an IoT Hub
+    Set-AzIotHub -ResourceGroupName "<ResourceGroupName>" -Name "<IoTHubName>" -MinimumTlsVersion "1.2"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Set the minimum TLS version to 1.2 for an IoT Hub
+    az iot hub update --name <IoTHubName> --resource-group <ResourceGroupName> --set properties.minimumTlsVersion="1.2"
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to enforce TLS version requirements across all IoT Hubs:
+        ```json
+        {
+          "if": {
+            "allOf": [
+              {
+                "field": "type",
+                "equals": "Microsoft.Devices/IotHubs"
+              },
+              {
+                "field": "Microsoft.Devices/IotHubs/properties.minimumTlsVersion",
+                "notEquals": "1.2"
+              }
+            ]
+          },
+          "then": {
+            "effect": "deny"
+          }
+        }
+        ```
+    - For bulk remediation, use AzTS or custom scripts to iterate through all IoT Hubs and set the minimum TLS version to 1.2.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:**  
+  `PATCH https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Devices/IotHubs/{resourceName}?api-version=2021-07-02`  
+  **Properties:** `properties.minimumTlsVersion`
+
+<br/>
+
+___

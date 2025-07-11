@@ -11,6 +11,7 @@
 - [Azure_AVD_NetSec_Restrict_Public_InboundPort](#azure_avd_netsec_restrict_public_inboundport)
 - [Azure_AVD_Audit_Enable_HostPool_Diagnostic_Settings](#azure_avd_audit_enable_hostpool_diagnostic_settings)
 - [Azure_AVD_NetSec_Restrict_Public_IPs](#azure_avd_netsec_restrict_public_ips)
+- [Azure_AVD_NetSec_Dont_Allow_Public_Network_Access](#azure_avd_netsec_dont_allow_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -65,15 +66,12 @@ Azure AVD Host pool VMs should be of security type Trusted launch with Secure bo
 ### Rationale 
 Trusted launch protects against advanced and persistent attack techniques. It is composed of Secure boot, VTPM, Integrity monitoring technologies that can be enabled to Securely deploy virtual machines with verified boot loaders, OS kernels, and drivers and it helps to protect keys, certificates, and secrets in the virtual machine.
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "AllowedSecurityType": 
     [
         "TrustedLaunch"
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -168,9 +166,7 @@ Diagnostic logs must be enabled for AVD Host pool VMs.
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticMinRetentionPeriod": "365",
     "DiagnosticLogs": [
@@ -178,8 +174,7 @@ Logs should be retained for a long enough period so that activity trail can be r
         "Error",
         "Management"
     ]
-}
- ```  
+} 
 
 ### Control Spec 
 
@@ -268,3 +263,35 @@ subscription level:
 
 
 ___ 
+
+## Azure_AVD_NetSec_Dont_Allow_Public_Network_Access
+
+### Display Name
+Azure Virtual Desktop must not allow public network access
+
+### Rationale
+Restricting public network access to Azure Virtual Desktop resources reduces the attack surface and ensures that access is only allowed from authorized networks through private connectivity.
+
+### Control Spec
+
+> **Passed:**
+> Public network access is disabled for AVD resources.
+>
+> **Failed:**
+> Public network access is enabled for AVD resources.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Azure Virtual Desktop ? Networking ? Public network access ? Select "Disabled" ? Configure private endpoints and virtual network integration for secure access.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to check AVD configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DesktopVirtualization/hostpools/{hostPoolName}<br />
+**Properties:** properties.publicNetworkAccess<br />
+
+<br />
+
+___

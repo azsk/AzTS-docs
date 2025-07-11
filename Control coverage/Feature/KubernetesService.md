@@ -12,6 +12,9 @@
 - [Azure_KubernetesService_Audit_Enable_Diagnostics_Log](#azure_kubernetesservice_audit_enable_diagnostics_log)
 - [Azure_KubernetesService_DP_Disable_HTTP_Application_Routing](#azure_kubernetesservice_dp_disable_http_application_routing)
 - [Azure_KubernetesService_AuthN_Disable_Local_Accounts](#azure_kubernetesservice_authn_disable_local_accounts)
+- [Azure_KubernetesService_Audit_Enable_Diagnostic_Settings](#azure_kubernetesservice_audit_enable_diagnostic_settings)
+- [Azure_KubernetesService_NetSec_Use_Authorized_IP_Address_Ranges](#azure_kubernetesservice_netsec_use_authorized_ip_address_ranges)
+
 <!-- /TOC -->
 <br/>
 
@@ -114,13 +117,9 @@ ___
 ### Rationale 
 Running on older versions could mean you are not using latest security classes. Usage of such old classes and types can make your application vulnerable. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "kubernetesVersion": "1.14.8,1.15.10,1.16.7"
 }
- ```
-
 ### Control Spec 
 
 > **Passed:** 
@@ -209,12 +208,9 @@ Do not leave management ports open on Kubernetes nodes
 ### Rationale 
 Open remote management ports expose a VM/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "RestrictedPorts": "445,3389,5985,22"
 }
- ``` 
 
 ### Control Spec 
 
@@ -268,9 +264,7 @@ Diagnostics logs must be enabled for Kubernetes service
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "kube-apiserver",
@@ -280,7 +274,6 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
- ``` 
 
 ### Control Spec 
 
@@ -417,6 +410,83 @@ Disable local accounts with AAD authentication enabled on the kubernete cluster 
 **Properties:**
 properties.disableLocalAccounts<br />
  <br />
+
+<br />
+
+___
+
+## Azure_KubernetesService_Audit_Enable_Diagnostic_Settings
+
+### Display Name
+Diagnostic settings must be enabled for Kubernetes Service
+
+### Rationale
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+### Control Settings {
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "kube-apiserver",
+        "kube-audit",
+        "kube-audit-admin",
+        "kube-controller-manager",
+        "kube-scheduler",
+        "cluster-autoscaler",
+        "guard"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+### Control Spec
+
+> **Passed:**
+> Required diagnostic logs are enabled with appropriate retention configuration.
+>
+> **Failed:**
+> Diagnostic logs are not enabled or retention period is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Kubernetes Service ? Monitoring ? Diagnostic settings ? Add diagnostic setting ? Select required log categories ? Configure destination (Log Analytics, Storage Account, or Event Hub) ? Set retention period to 365 days or more.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list diagnostic setting details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{clusterName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy<br />
+
+<br />
+
+___
+
+## Azure_KubernetesService_NetSec_Use_Authorized_IP_Address_Ranges
+
+### Display Name
+Kubernetes Service must use authorized IP address ranges
+
+### Rationale
+Restricting access to the Kubernetes API server to specific IP address ranges reduces the attack surface and ensures that only authorized networks can access the cluster management interface.
+
+### Control Spec
+
+> **Passed:**
+> Authorized IP address ranges are configured for API server access.
+>
+> **Failed:**
+> Authorized IP address ranges are not configured or allow too broad access.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Kubernetes Service ? Networking ? API server authorized IP ranges ? Configure specific IP ranges that should have access to the API server ? Save.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get AKS cluster configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerService/managedClusters/{clusterName}<br />
+**Properties:** properties.apiServerAccessProfile.authorizedIPRanges<br />
 
 <br />
 

@@ -9,6 +9,8 @@
 - [Azure_KeyVault_Audit_Enable_Diagnostics_Log](#azure_keyvault_audit_enable_diagnostics_log)
 - [Azure_KeyVault_NetSec_Disable_Public_Network_Access](#azure_keyvault_netsec_disable_public_network_access)
 - [Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection](#Azure_KeyVault_BCDR_Enable_SoftDelete_and_PurgeProtection)
+- [Azure_KeyVault_Audit_Enable_Diagnostic_Settings](#azure_keyvault_audit_enable_diagnostic_settings)
+- [Azure_KeyVault_AuthZ_Remove_Orphan_Applications](#azure_keyvault_authz_remove_orphan_applications)
 
 <!-- /TOC -->
 <br/>
@@ -120,16 +122,13 @@ Diagnostics logs must be enabled with a retention period of at least 365 days
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
-### Control Settings 
-```json 
-{
+### Control Settings {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "AuditEvent"
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
- ``` 
 
 ### Control Spec 
 
@@ -270,6 +269,96 @@ Malicious deletion of a key vault can lead to permanent data loss. A malicious i
 properties.enablePurgeProtection<br />
 properties.enableSoftDelete<br />
  <br />
+
+<br />
+
+___
+
+## Azure_KeyVault_Audit_Enable_Diagnostic_Settings
+
+### Display Name
+Diagnostics logs must be enabled for Key Vault
+
+### Rationale
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+### Control Settings {
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "AuditEvent",
+        "AzurePolicyEvaluationDetails"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+### Control Spec
+
+> **Passed:**
+> Required diagnostic logs are enabled with appropriate retention configuration.
+>
+> **Failed:**
+> Diagnostic logs are not enabled or retention period is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Key Vault ? Monitoring ? Diagnostic settings ? Add diagnostic setting ? Select required log categories ? Configure destination (Log Analytics, Storage Account, or Event Hub) ? Set retention period to 365 days or more.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list diagnostic setting details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy<br />
+
+<br />
+
+___
+
+## Azure_KeyVault_AuthZ_Remove_Orphan_Applications
+
+### Display Name
+Key Vault must remove orphan applications from access policies
+
+### Rationale
+Orphan applications in Key Vault access policies represent security risks as they may grant access to deleted or compromised service principals. Regular cleanup of orphan applications helps maintain the principle of least privilege.
+
+### Control Spec
+
+> **Passed:**
+> All applications in access policies are valid and active.
+>
+> **Failed:**
+> One or more orphan applications are found in access policies.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Key Vault ? Access policies ? Review each application entry ? Remove any orphan or deleted applications ? Verify that remaining applications still require access.
+
+- **PowerShell**
+```powershell
+# Get orphan applications in Key Vault access policies
+$vault = Get-AzKeyVault -VaultName "YourVaultName"
+$accessPolicies = $vault.AccessPolicies
+
+foreach ($policy in $accessPolicies) {
+    try {
+        Get-AzADServicePrincipal -ObjectId $policy.ObjectId
+    } catch {
+        Write-Warning "Orphan application found: $($policy.ObjectId)"
+        # Remove orphan application
+        Remove-AzKeyVaultAccessPolicy -VaultName "YourVaultName" -ObjectId $policy.ObjectId
+        }
+    }
+```
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get Key Vault access policies: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.KeyVault/vaults/{vaultName}<br />
+**Properties:** properties.accessPolicies<br />
+
+- REST API to validate service principals: /subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments<br />
 
 <br />
 
