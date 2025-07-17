@@ -38,12 +38,15 @@ Diagnostics (IaaSDiagnostics extension on Windows; LinuxDiagnostic extension on 
 ### Rationale
 Diagnostics logs are needed for creating activity trail while investigating an incident or a compromise.
 
-### Control Settings{
+### Control Settings
+```json
+{
     "LinuxExtensionType": "LinuxDiagnostic",
     "LinuxExtensionPublisher": "Microsoft.OSTCExtensions",
     "WindowsExtensionType": "IaaSDiagnostics",
     "WindowsExtensionPublisher": "Microsoft.Azure.Diagnostics"
 }
+```
 ### Control Spec
 
 > **Passed:**
@@ -153,12 +156,15 @@ Log analytics agent should be installed on Virtual Machine Scale Set.
 ### Rationale
 Installing the Log Analytics extension for Windows and Linux allows Azure Monitor to collect data from your Azure VM Scale Sets which can be used for detailed analysis and correlation of events.
 
-### Control Settings{
+### Control Settings
+```json
+{
     "LinuxExtensionType": "OmsAgentForLinux",
     "LinuxExtensionPublisher": "Microsoft.EnterpriseCloud.Monitoring",
     "WindowsExtensionType": "MicrosoftMonitoringAgent",
     "WindowsExtensionPublisher": "Microsoft.EnterpriseCloud.Monitoring"
 }
+```
 ### Control Spec
 
 > **Passed:**
@@ -179,7 +185,8 @@ Installing the Log Analytics extension for Windows and Linux allows Azure Monito
 <!-- Run following commands: 1- `$allVersions= (Get-AzVMExtensionImage -Location 'eastus' -PublisherName 'Microsoft.EnterpriseCloud.Monitoring' -Type 'MicrosoftMonitoringAgent or OmsAgentForLinux').Version 2- `$versionString = `$allVersions[(`$allVersions.count)-1].Split('.')[0] + '.' + `$allVersions[(`$allVersions.count)-1].Split('.')[1] 3- `$VMSS = Get-AzVmss -ResourceGroupName <VMSS RG Name> -VMScaleSetName <VMSS Name> 4- Add-AzVmssExtension -VirtualMachineScaleSet `$VMSS -Name 'MicrosoftMonitoringAgent' -Publisher 'Microsoft.EnterpriseCloud.Monitoring' -Type 'MicrosoftMonitoringAgent or OmsAgentForLinux' -TypeHandlerVersion `$versionString -Setting '{'workspaceId': '<your workspace ID here>'}' -ProtectedSetting '{'workspaceKey': '<your workspace key here>'}' 5- Update-AzVmss -ResourceGroupName <VMSS RG Name> -Name <VMSS Name> -VirtualMachineScaleSet `$VMSS ", -->
 
 
-- **Powershell**```powershell
+- **Powershell**
+```powershell
     `$allVersions= (Get-AzVMExtensionImage -Location 'eastus' -PublisherName 'Microsoft.EnterpriseCloud.Monitoring' -Type 'MicrosoftMonitoringAgent or OmsAgentForLinux').Version
     `$versionString = `$allVersions[(`$allVersions.count)-1].Split('.')[0] + '.' + `$allVersions[(`$allVersions.count)-1].Split('.')[1]
     $VMSS = Get-AzVmss -ResourceGroupName '{ResourceGroupName}' -VMScaleSetName '{ResourceName}'
@@ -215,10 +222,13 @@ Management ports must not be open on Virtual Machine Scale Sets.
 ### Rationale
 Open remote management ports expose a VMSS instance/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RestrictedPortsForWindows": "445,3389,5985",
     "RestrictedPortsForLinux": "445,3389,22"
 }
+```
 
 ### Control Spec
 
@@ -348,7 +358,9 @@ Antimalware must be enabled with real time protection on Virtual Machine Scale S
 ### Rationale
 Enabling antimalware protection minimizes the risks from existing and new attacks from various types of malware. Microsoft Antimalware provide real-time protection, scheduled scanning, malware remediation, signature updates, engine updates, samples reporting, exclusion event collection etc.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "ExtensionType": "IaaSAntimalware",
     "Publisher": "Microsoft.Azure.Security",
     "ExclusionTags": [
@@ -364,6 +376,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
         }
     ]
 }
+```
 
 ### Control Spec
 
@@ -665,12 +678,15 @@ Disk encryption should be applied on virtual machine scale sets.
 ### Rationale
 Using this feature ensures that sensitive data is stored encrypted at rest. This minimizes the risk of data loss from physical theft and also helps meet regulatory compliance requirements. In the case of VM Scale Set, both OS and data disks may contain sensitive information that needs to be protected at rest. Hence disk encryption must be enabled for both.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "AzureDiskEncryptionExtension": {
         "ExtensionDefaultName": "AzureDiskEncryption",
         "LinuxExtensionDefaultName": "AzureDiskEncryptionForLinux"
     }
 }
+```
 
 ### Control Spec
 
@@ -738,13 +754,16 @@ Entra ID (formerly AAD) extension must be deployed to the Linux VMSS
 ### Rationale
 Installing Entra ID (formerly AAD) extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "Linux": {
           "ExtensionType": "AADSSHLoginForLinux",
           "ExtensionPublisher": "Microsoft.Azure.ActiveDirectory",
           "ProvisioningState": "Succeeded"
         }
 }
+```
 ### Note:
 This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration mode and following Linux distributions are currently supported for deployments in a supported region.
 
@@ -805,7 +824,9 @@ Enforce Automatic Upgrade policy in VMSS
 ### Rationale
 All the security configurations applied on VM Scale Set will be effective only if all the individual VM instances in Scale Set are up-to-date with the latest overall Scale Set model. Automatic upgrade policy mode ensures individual VM instances are up-to-date with the latest overall Scale Set model.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "AllowedUpgradePolicyModes": [
       "Automatic"
     ],
@@ -813,6 +834,7 @@ All the security configurations applied on VM Scale Set will be effective only i
       "Uniform"
     ]
 }
+```
 ### Note:
 This control only covers Virtual Machine Scale Sets with 'Uniform' Orchestration mode.
 
@@ -851,7 +873,9 @@ Enable Security Logging in Azure Virtual Machine Scale Sets
 ### Rationale
 Auditing logs must be enabled as they provide details for investigation in case of a security breach for threats.
 
-### Control Settings "ExcludeBasedOnExtension": { 
+### Control Settings
+```json
+"ExcludeBasedOnExtension": { 
   "Windows": {
     "AllMandatory": false,
     "Extensions": [
@@ -967,7 +991,7 @@ Auditing logs must be enabled as they provide details for investigation in case 
     }
   ]
 } 
-
+```
 
 ### Control Spec
 

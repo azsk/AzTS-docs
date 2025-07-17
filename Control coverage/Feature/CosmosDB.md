@@ -77,10 +77,13 @@ Configure only the required IP addresses on Cosmos DB firewall
 ### Rationale 
 Using the firewall feature ensures that access to the data or the service is restricted to a specific set/group of clients. For effective usage, allow only the required IPs. Allowing larger ranges like 0.0.0.0/0, 0.0.0.0/1, 128.0.0.0/1, etc. will defeat the purpose. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "IpLimitPerDb": 2048,
     "IpLimitPerRange": 256
 } 
+```
  
 ### Control Spec 
 
@@ -220,11 +223,14 @@ Enable Threat detection for CosmosDB database
 ### Rationale 
 Threat Protection for Azure Cosmos DB provides an additional layer of security intelligence that detects unusual and potentially harmful attempts to access or exploit Azure Cosmos DB accounts. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "ApplicableApiTypes": [
         "Sql"
     ]
 } 
+```
 
 ### Control Spec 
 
@@ -279,9 +285,12 @@ Use approved version of TLS for the Cosmos DB
 ### Rationale 
 TLS provides confidentiality and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "MinReqTLSVersion": "1.2"
 } 
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -330,9 +339,12 @@ Azure Cosmos DB account read master keys must be rotated on a periodic basis
 ### Rationale 
 Rotating read master keys will reduce risk of unauthorized access and limit the window of opportunity for keys that are associated with a compromised or terminated account.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RecommendedKeyRotationPeriodInDays": "365"
 } 
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -367,11 +379,14 @@ Restrict public network access for Azure Cosmos DB
 ### Rationale 
 Access to Azure Cosmos DB Resource from public network must be restricted. This will prevent unauthorized access on the resource outside of network boundaries.
 
-### Control Settings {
+### Control Settings 
+```json
+{
      "PossibleAddressSpaceSize": "3702258432",
  	 "AllowedPercentageCoverage": "2",
  	 "ItemsInAdditionalInformation": "10"
 } 
+```
 ### Control Spec 
 
 > **Passed:** 

@@ -66,12 +66,15 @@ Azure AVD Host pool VMs should be of security type Trusted launch with Secure bo
 ### Rationale 
 Trusted launch protects against advanced and persistent attack techniques. It is composed of Secure boot, VTPM, Integrity monitoring technologies that can be enabled to Securely deploy virtual machines with verified boot loaders, OS kernels, and drivers and it helps to protect keys, certificates, and secrets in the virtual machine.
 
-### Control Settings {
+### Control Settings
+```json
+{
     "AllowedSecurityType": 
     [
         "TrustedLaunch"
     ]
 } 
+```
 
 ### Control Spec 
 
@@ -166,7 +169,9 @@ Diagnostic logs must be enabled for AVD Host pool VMs.
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticMinRetentionPeriod": "365",
     "DiagnosticLogs": [
@@ -174,7 +179,8 @@ Logs should be retained for a long enough period so that activity trail can be r
         "Error",
         "Management"
     ]
-} 
+}
+```
 
 ### Control Spec 
 

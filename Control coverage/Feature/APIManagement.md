@@ -80,7 +80,9 @@ Latest TLS version should be used in your APIM
 ### Rationale 
 TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocols (1.1 and 1.0) and SSL 3.0 exposes the API to meet-in-the-middle attack, chosen-plaintext or known-plaintext attacks. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
 	"UnsecureProtocolsAndCiphersConfiguration": [
 		{
 			"Key": "Microsoft.WindowsAzure.ApiManagement.Gateway.Security.Protocols.Tls10",
@@ -119,6 +121,7 @@ TLS 1.2 is the latest and most secure protocol. Using 3DES Ciphers, TLS protocol
 		}
 	]
 }
+```
 
 ### Control Spec
 
@@ -164,9 +167,12 @@ Delete the two sample products 'Starter' and 'Unlimited' to avoid accidental exp
 ### Rationale 
 By default, each API Management instance comes with two sample products: Starter and Unlimited. Unless the access control of these sample products is being strictly regulated, associating APIs to these products stands the chance of exposing APIs to unauthenticated users. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "SampleProductId": [ "starter", "unlimited" ]
 }
+```
 
 ### Control Spec 
 
@@ -369,11 +375,14 @@ Enterprise applications using APIM must authenticate developers/applications usi
 ### Rationale 
 Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions. 
 
-### Control Settings {
+### Control Settings 
+````json
+{
     "AllowedIdentityProvider": [
 		"Aad"
     ]
 }
+````
 
 ### Control Spec 
 
@@ -458,9 +467,12 @@ ___
 ### Rationale 
 When publishing APIs through Azure API Management (APIM), the easiest and most common way to secure access to the APIs is by using Subscription Keys. To obtain a Subscription Key for accessing APIs, a Subscription is required. This ensures that client applications that need to consume the published APIs must subscribe before making calls to those APIs. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "State": "published"
 }
+```
 
 ### Control Spec 
 
@@ -495,12 +507,15 @@ Use Managed Service Identity (MSI) for accessing other AAD-protected resources f
 ### Rationale 
 Managed Service Identity (MSI) allows your API Management instance to easily access other AAD-protected resources, such as Azure Key Vault. The identity is managed by the Azure platform and eliminates the need to provision/manage/rotate any secrets thus reducing the overall risk. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RequiredIdentityType": [
         "SystemAssigned",
         "UserAssigned"
     ]
 }
+```
 
 ### Control Spec 
 
@@ -599,7 +614,9 @@ Diagnostics logs must be enabled for API Management service
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "GatewayLogs",
@@ -607,6 +624,7 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
+```
 
 ### Control Spec 
 

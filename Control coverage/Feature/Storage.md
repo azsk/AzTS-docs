@@ -211,9 +211,11 @@ Use approved version of TLS for Azure Storage
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
 ### Control Settings
+```json
 {
     "MinReqTLSVersion": "1.2"
 }
+```
 ### Control Spec
 
 > **Passed:**
@@ -268,9 +270,11 @@ Shared Access Signature (SAS) expiry interval must be less than recommended uppe
 Shared Access Signature (SAS) is used to provide secure delegate access to resources in storage account. Setting SAS expiry interval to less than recommended upper limit mitigates the risk of providing access to resources in storage account for a large amount of time.
 
 ### Control Settings
+```json
 {
     "SASExpirationPeriod": "7.00:00:00"
 }
+```
 ### Control Spec
 
 > **Passed:**
@@ -325,9 +329,11 @@ Azure Storage account access keys must be rotated on periodic basis.
 Rotating access keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used.
 
 ### Control Settings
+```json
 {
     "RecommendedKeyRotationPeriodInDays": "90"
 }
+```
 ### Control Spec
 
 > **Passed:**

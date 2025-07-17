@@ -117,9 +117,12 @@ ___
 ### Rationale 
 Running on older versions could mean you are not using latest security classes. Usage of such old classes and types can make your application vulnerable. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "kubernetesVersion": "1.14.8,1.15.10,1.16.7"
 }
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -208,9 +211,12 @@ Do not leave management ports open on Kubernetes nodes
 ### Rationale 
 Open remote management ports expose a VM/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RestrictedPorts": "445,3389,5985,22"
 }
+```
 
 ### Control Spec 
 
@@ -264,7 +270,9 @@ Diagnostics logs must be enabled for Kubernetes service
 ### Rationale 
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "kube-apiserver",
@@ -274,6 +282,7 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
+```
 
 ### Control Spec 
 

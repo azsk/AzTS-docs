@@ -23,11 +23,16 @@ Event Hub clients (event senders or receivers) must not use 'namespace' level ac
 ### Rationale 
 A 'namespace' level access policy provides access to all Event Hubs in a namespace. However, using an access policy at an entity (Event Hub) level provides access only to the specific entity. Thus, using the latter is in line with the principle of least privilege. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "SharedAccessPoliciesToExclude": [
         "RootManageSharedAccessKey"
     ]
-}### Control Spec 
+}
+```
+
+### Control Spec 
 
 > **Passed:** 
 > No namespace level access policies (except RootManageSharedAccessKey) have been configured for the Event Hub.
@@ -131,9 +136,14 @@ Use approved version of TLS for Event Hub Namespace.
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "MinReqTLSVersion": "1.2"
-}### Control Spec 
+}
+```
+
+### Control Spec 
 
 > **Passed:** 
 > TLS version of Event Hub Namespace is already defined as per the Security Recommendation.

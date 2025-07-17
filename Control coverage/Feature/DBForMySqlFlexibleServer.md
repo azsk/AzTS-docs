@@ -22,9 +22,12 @@ SSL connection must be enabled for Azure Database for MySQL - Flexible Servers
 ### Rationale 
 Enforcing secure transport between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RequireSecureTransport": "ON"
 } 
+```
 
 ### Control Spec 
 
@@ -69,10 +72,13 @@ Use approved version of TLS for Azure Database for MySQL - Flexible Servers
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "MinReqTLSVersion": "1.2",
     "CurrentTLSversionPatternInAPIResponse": "TLSV"
 }
+```
 ### Control Spec 
 
 > **Passed:** 

@@ -33,7 +33,9 @@ Diagnostics logs must be enabled for Azure Machine Learning workspace
 ### Rationale
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "AmlComputeClusterEvent",
@@ -65,6 +67,8 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod":"365"
 }
+```
+
 ### Control Spec
 
 > **Passed:**
@@ -125,12 +129,15 @@ Disable SSH Authentication for the Machine Learning Workspace Compute
 ### Rationale
 Using the native enterprise directory for authentication ensures that there is a built-in high level of assurance in the user identity established for subsequent access control. All Enterprise subscriptions are automatically associated with their enterprise directory (xxx.onmicrosoft.com) and users in the native directory are trusted for authentication to enterprise subscriptions.
 
-### Control Settings {
+### Control Settings 
+```json
+{
   "CoveredComputeTypes": [
     "ComputeInstance",
     "AmlCompute"
   ]
 }
+```
 ### Control Spec
 
 > **Passed:**
@@ -172,12 +179,15 @@ Azure Machine Learning workspace compute services must be connected to a virtual
 ### Rationale
 Azure Virtual Networks provide enhanced security and isolation for your Azure Machine Learning Compute Clusters and Instances, as well as subnets, access control policies, and other features to further restrict access. When a compute is configured with a virtual network, it is not publicly addressable and can only be accessed from virtual machines and applications within the virtual network.
 
-### Control Settings {
+### Control Settings 
+```json
+{
   "AllowedComputeType": [
     "ComputeInstance",
     "AmlCompute"
   ]
 }
+```
 ### Control Spec
 
 > **Passed:**

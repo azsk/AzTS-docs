@@ -23,11 +23,14 @@ Redis Data Persistence should be enabled to back up Redis Cache data
 ### Rationale 
 Enabling backup on Redis Cache ensures that there is always a previous snapshot of data that can be leveraged towards recovery scenarios. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RDBBackApplicableSku": [
         "premium"
     ]
 } 
+```
 
 ### Control Spec 
 
@@ -169,7 +172,7 @@ Use of HTTPS ensures server/service authentication and protects data in transit 
 <br />
 
 ___ 
-<!--
+
 ## Azure_RedisCache_DP_Use_Secure_TLS_Version 
 
 ### Display Name 
@@ -178,9 +181,12 @@ Use approved version of TLS for Azure RedisCache
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "MinReqTLSVersion": "1.2"
 } 
+```
 
 ### Control Spec 
 
@@ -230,7 +236,6 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ___ 
 
--->
 
 ## Azure_RedisCache_DP_Use_Secure_TLS_Version 
 
@@ -281,13 +286,16 @@ Enable Security Logging in Azure Redis Cache
 ### Rationale 
 Auditing logs and metrics must be enabled as they provide details for investigation in case of a security breach for threats
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticMinRetentionPeriod": "90",
     "DiagnosticLogs": [
     	"ConnectedClientList"
     ]
 } 
+```
 
 ### Control Spec 
 
