@@ -11,7 +11,7 @@
 - [Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports](#azure_servicefabric_audit_publicly_exposed_load_balancer_ports)
 - [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](#azure_servicefabric_dp_dont_expose_reverse_proxy_port)
 - [Azure_ServiceFabric_SI_Set_Auto_Update_Cluster](#azure_servicefabric_si_set_auto_update_cluster)
-- [Azure_ServiceFabric_D_P_Dont_Have_Plaintext_Secrets](#azure_servicefabric_d_p_dont_have_plaintext_secrets)
+- [Azure_ServiceFabric_DP_Dont_Have_Plaintext_Secrets](#azure_servicefabric_dp_dont_have_plaintext_secrets)
 
 <!-- /TOC -->
 <br/>
