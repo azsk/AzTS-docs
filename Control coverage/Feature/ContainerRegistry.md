@@ -7,6 +7,7 @@
 - [Azure_ContainerRegistry_AuthZ_Disable_Admin_Account](#azure_containerregistry_authz_disable_admin_account)
 - [Azure_ContainerRegistry_DP_Enable_Content_Trust](#azure_containerregistry_dp_enable_content_trust)
 - [Azure_ContainerRegistry_Config_Enable_Security_Scanning](#azure_containerregistry_config_enable_security_scanning)
+- [Azure_ContainerRegistry_NetSec_Dont_Allow_Public_Network_Access](#azure_containerregistry_netsec_dont_allow_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -184,4 +185,42 @@ Images in a container registry need to be regularly scanned for vulnerabilities.
 <br />
 
 ___ 
+
+
+## Azure_ContainerRegistry_NetSec_Dont_Allow_Public_Network_Access
+
+### Display Name
+Container Registry must not allow public network access
+
+### Rationale
+Restricting public network access to Container Registry reduces the attack surface and ensures that access is only allowed from authorized networks through private endpoints or specific IP ranges.
+
+### Control Spec
+
+> **Passed:**
+> Public network access is disabled for Container Registry.
+>
+> **Failed:**
+> Public network access is enabled for Container Registry.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Container Registry ? Networking ? Public network access ? Select "Disabled" ? Configure private endpoints for secure access.
+
+- **PowerShell**
+
+    ```powershell
+    Update-AzContainerRegistry -ResourceGroupName "<RGName>" -Name "<RegistryName>" -PublicNetworkAccess Disabled
+    ```
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get Container Registry configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ContainerRegistry/registries/{registryName}<br />
+**Properties:** properties.publicNetworkAccess<br />
+
+<br />
+___
 
