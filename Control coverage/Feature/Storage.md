@@ -374,7 +374,9 @@ Diagnostics logs must be enabled for Storage Account
 ### Rationale
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "StorageRead",
@@ -383,6 +385,7 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
+```
 ### Control Spec
 
 > **Passed:**
@@ -447,10 +450,13 @@ Storage Account must be configured with required redundancy level
 ### Rationale
 Configuring appropriate redundancy ensures data availability and protection against outages and disasters according to business requirements.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RequiredRedundancyLevels": ["GRS", "RAGRS", "GZRS", "RAGZRS"],
     "MinimumRedundancyLevel": "GRS"
 }
+```
 ### Control Spec
 
 > **Passed:**

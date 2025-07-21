@@ -123,7 +123,9 @@ Database for MySQL Flexible Server must have diagnostic settings enabled
 ### Rationale
 Enabling diagnostic settings for MySQL Flexible Server provides visibility into database operations, performance metrics, and security events. This is essential for monitoring database health, detecting security threats, and meeting compliance requirements.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "MySqlSlowLogs",
@@ -131,6 +133,7 @@ Enabling diagnostic settings for MySQL Flexible Server provides visibility into 
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
+```
 ### Control Spec
 
 > **Passed:**

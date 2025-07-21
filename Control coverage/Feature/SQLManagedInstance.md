@@ -237,12 +237,15 @@ SQL Managed Instance must enable audit logs for security monitoring
 ### Rationale
 Enabling audit logs for SQL Managed Instance provides comprehensive monitoring of database activities, security events, and compliance requirements. This is essential for detecting unauthorized access, data breaches, and meeting regulatory audit requirements.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RequireAuditLogs": true,
     "AuditDestinations": ["LogAnalytics", "StorageAccount"],
     "AuditEvents": ["Database_Object_Access_Group", "Database_Principal_Change_Group", "Schema_Object_Change_Group"],
     "MinimumRetentionDays": 90
 }
+```
 ### Control Spec
 
 > **Passed:**

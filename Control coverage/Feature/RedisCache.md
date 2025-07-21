@@ -245,10 +245,12 @@ Use approved version of TLS for Azure RedisCache.
 ### Rationale 
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
-### Control Settings {
+### Control Settings 
+```json
+{
         "MinReqTLSVersion": "1.2"
 } 
-
+```
 ### Control Spec 
 
 > **Passed:** 

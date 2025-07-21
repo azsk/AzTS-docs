@@ -262,10 +262,13 @@ Machine Learning Workspace must use private endpoints
 ### Rationale
 Private endpoints provide secure, private connectivity to Machine Learning Workspaces over the Azure backbone network, eliminating exposure to the public internet. This ensures that ML workspace access is restricted to authorized networks and reduces the attack surface significantly.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RequirePrivateEndpoints": true,
     "DisablePublicAccess": true
 }
+```
 
 ### Control Spec
 
@@ -301,11 +304,14 @@ Azure Machine Learning compute instances must be recreated to get the latest sof
 ### Rationale
 Ensure Azure Machine Learning compute instances run on the latest available operating system. Security is improved and vulnerabilities reduced by running with the latest security patches. For more information, visit https://learn.microsoft.com/en-us/azure/machine-learning/concept-vulnerability-management?view=azureml-api-2#compute-instance.
 
-### Control Settings { 
+### Control Settings 
+```json
+{ 
   "CoveredComputeTypes": [
     "ComputeInstance"
   ]
 }
+```
 ### Control Spec
 
 > **Passed:**

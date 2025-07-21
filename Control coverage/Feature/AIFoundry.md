@@ -26,10 +26,14 @@ Managed Service Identity (MSI) must be used in Compute Instances of Azure AI Fou
 ### Rationale
 Enabling managed identity for Azure AI Foundry compute instances ensures secure and seamless access to Azure resources without the need to manage credentials. Managed identities eliminate the risk of credential leakage and simplify the management of secrets, enhancing the overall security posture of the workspace.
 
-### Control Settings {
+### Control Settings 
+```json
+{
   "ExcludedMachineLearningKinds": ["Default", "FeatureStore"],
   "AllowedManagedIdentityTypes": ["SystemAssigned", "SystemAssigned,UserAssigned", "UserAssigned"]
 }
+```
+
 ### Control Spec
 
 > **Passed:**

@@ -23,11 +23,14 @@ Speech Service must use Managed Service Identity
 ### Rationale
 Managed Service Identity provides secure authentication without storing credentials and enables automatic credential rotation for Speech Services. This eliminates the need to manage API keys and reduces the risk of credential exposure, providing a more secure and manageable authentication mechanism.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "RequireMSI": true,
     "DisableLocalAuth": true,
     "AllowedIdentityTypes": ["SystemAssigned", "UserAssigned", "SystemAssigned,UserAssigned"]
 }
+```
 ### Control Spec
 
 > **Passed:**

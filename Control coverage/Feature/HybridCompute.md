@@ -87,11 +87,14 @@ Hybrid Compute machines must use secure TLS version
 ### Rationale
 Using secure TLS versions (1.2 or higher) ensures encrypted communication between hybrid machines and Azure services, protecting against protocol vulnerabilities and ensuring data integrity.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "MinimumTLSVersion": "1.2",
     "AllowedTLSVersions": ["1.2", "1.3"],
     "DisableWeakCiphers": true
 }
+```
 ### Control Spec
 
 > **Passed:**

@@ -142,12 +142,15 @@ Azure AI Search services must restrict public network access
 ### Rationale
 Restricting public network access to Azure AI Search services helps protect against unauthorized access and data breaches. By limiting access to trusted networks only, organizations can significantly reduce their attack surface and ensure that search indexes and data are only accessible from authorized locations.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "AllowedPublicNetworkAccess": "Disabled",
     "RequirePrivateEndpoints": true,
     "AllowedIPRanges": [],
     "AllowAzureServicesAccess": false
 }
+```
 
 ### Control Spec
 

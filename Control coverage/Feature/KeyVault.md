@@ -285,7 +285,9 @@ Diagnostics logs must be enabled for Key Vault
 ### Rationale
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
 
-### Control Settings {
+### Control Settings 
+```json
+{
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
         "AuditEvent",
@@ -293,6 +295,7 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
+```
 ### Control Spec
 
 > **Passed:**

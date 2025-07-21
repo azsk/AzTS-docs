@@ -1031,13 +1031,15 @@ Azure AD extension must be deployed to Windows VMSS
 ### Rationale
 Installing Azure AD extension on VMSS allows you to login into VMSS instances using Azure AD, making it possible to login user without password and improves authentication security.
 
-### Control Settings {
+### Control Settings 
+```json{
     "Windows": {
         "ExtensionType": "AADLoginForWindows",
         "ExtensionPublisher": "Microsoft.Azure.ActiveDirectory",
         "ProvisioningState": "Succeeded"
     }
 }
+```
 ### Control Spec
 
 > **Passed:**

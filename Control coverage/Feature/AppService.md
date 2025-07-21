@@ -794,12 +794,16 @@ App Service must have diagnostic settings enabled for security monitoring
 ### Rationale
 Enabling diagnostic settings for App Service provides visibility into application behavior, security events, and performance metrics. This is essential for detecting security threats, troubleshooting issues, and meeting compliance requirements for audit trails and monitoring.
 
-### Control Settings {
+### Control Settings 
+```json
+{
   "RequiredLogCategories": ["AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceAuditLogs"],
   "RequiredMetrics": ["AllMetrics"],
   "MinimumRetentionDays": 90,
   "RequireLogAnalyticsWorkspace": true
 }
+```
+
 ### Control Spec
 - **Passed:** Diagnostic settings are enabled with required log categories and destinations
 - **Failed:** Missing diagnostic settings or insufficient log category configuration
