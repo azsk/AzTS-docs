@@ -4,6 +4,7 @@
 <!-- TOC depthto:2 depthfrom:2 -->
 
 - [Azure_HybridCompute_DP_Use_Secure_TLS_Version_Trial](#azure_hybridcompute_dp_use_secure_tls_version_trial)
+- [Azure_HybridCompute_DP_Use_Secure_TLS_Version](#azure_hybridcompute_dp_use_secure_tls_version)
 
 <!-- /TOC -->
 <br/>
@@ -19,14 +20,13 @@ ___
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions
 
 ### Control Settings 
-```json 
+```json
 {
  "ApplicableOsTypes": [
           "Windows"
   ]
-}
- ```  
-
+} 
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -75,6 +75,48 @@ subscription level:
 
 - Azure Policy used for evaluation: [/providers/Microsoft.Authorization/policyDefinitions/828ba269-bf7f-4082-83dd-633417bc391d](https://portal.azure.com/#view/Microsoft_Azure_Policy/PolicyDetailBlade/definitionId/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2F828ba269-bf7f-4082-83dd-633417bc391d)
 <br />
+<br />
+
+___
+
+## Azure_HybridCompute_DP_Use_Secure_TLS_Version
+
+### Display Name
+Hybrid Compute machines must use secure TLS version
+
+### Rationale
+Using secure TLS versions (1.2 or higher) ensures encrypted communication between hybrid machines and Azure services, protecting against protocol vulnerabilities and ensuring data integrity.
+
+### Control Settings 
+```json
+{
+    "MinimumTLSVersion": "1.2",
+    "AllowedTLSVersions": ["1.2", "1.3"],
+    "DisableWeakCiphers": true
+}
+```
+### Control Spec
+
+> **Passed:**
+> TLS 1.2 or higher is configured on the hybrid machine.
+>
+> **Failed:**
+> Using TLS versions below 1.2.
+>
+
+### Recommendation
+
+- **PowerShell**
+```powershell
+# Configure TLS 1.2 on hybrid machine
+Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Client" -Name "Enabled" -Value 1
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2\Server" -Name "Enabled" -Value 1
+```
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list hybrid machines: /subscriptions/{subscriptionId}/providers/Microsoft.HybridCompute/machines?api-version=2022-08-11-preview<br />
+**Properties:** properties.osType, properties.agentConfiguration<br />
+
 <br />
 
 ___
