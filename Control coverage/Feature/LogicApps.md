@@ -1,4 +1,4 @@
-# LogicApps
+﻿# LogicApps
 
 **Resource Type:** Microsoft.Logic/workflows
 
@@ -9,6 +9,7 @@
 - [Azure_LogicApps_AuthN_Connectors_Use_AAD](#Azure_LogicApps_AuthN_Connectors_Use_AAD)
 - [Azure_LogicApps_DP_Connectors_Encrypt_Data_In_Transit](#Azure_LogicApps_DP_Connectors_Encrypt_Data_In_Transit)
 - [Azure_LogicApps_Audit_Enable_Diagnostic_Settings](#azure_logicapps_audit_enable_diagnostic_settings)
+- [Azure_LogicApps_DP_Avoid_Plaintext_Secrets](#azure_logicapps_dp_avoid_plaintext_secrets)
 
 <!-- /TOC -->
 <br/>
@@ -340,3 +341,66 @@ properties.categoryGroups, name
 ___ 
 
 
+## Azure_LogicApps_DP_Avoid_Plaintext_Secrets
+
+### Display Name
+Avoid storing secrets in plaintext in Logic Apps parameters or definitions
+
+### Rationale
+Storing secrets such as passwords, API keys, or connection strings in plaintext within Logic Apps parameters or workflow definitions exposes sensitive information to unauthorized access. This increases the risk of data breaches, credential leakage, and non-compliance with security standards such as ISO 27001, SOC 2, and PCI DSS. Using secure methods for secret management, such as Azure Key Vault, ensures that secrets are encrypted at rest and only accessible by authorized identities and services.
+
+### Control Spec
+
+> **Passed:**
+> - No plaintext secrets (e.g., passwords, API keys, connection strings) are found in Logic Apps workflow definitions, parameters, or configuration files.
+> - All sensitive values are referenced securely from Azure Key Vault or other secure secret stores.
+>
+> **Failed:**
+> - Plaintext secrets are detected in Logic Apps workflow definitions, parameters, or configuration files.
+> - Sensitive values are hardcoded or exposed in clear text within the Logic App resource.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your Logic App in the Azure Portal.
+    2. Open the workflow definition (Code View or Designer).
+    3. Review all parameters and configuration values for any hardcoded secrets.
+    4. Replace any plaintext secrets with references to Azure Key Vault secrets:
+        - Use the "Get secret" action from the Azure Key Vault connector.
+        - Store sensitive values in Azure Key Vault and reference them in your Logic App.
+    5. Save and redeploy the Logic App.
+
+- **PowerShell**
+    ```powershell
+    # Example: Update Logic App definition to reference Key Vault secret
+    $resourceGroup = "<ResourceGroupName>"
+    $logicAppName = "<LogicAppName>"
+    $definition = Get-Content -Raw -Path "<PathToUpdatedDefinition.json>"
+    Set-AzLogicApp -ResourceGroupName $resourceGroup -Name $logicAppName -Definition $definition
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Example: Update Logic App definition to reference Key Vault secret
+    az logic workflow update \
+      --resource-group <ResourceGroupName> \
+      --name <LogicAppName> \
+      --definition @<PathToUpdatedDefinition.json>
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to audit and deny Logic Apps with hardcoded secrets:
+        - Deploy the built-in policy: **"Logic Apps should not contain hardcoded secrets"** (if available in your Azure Policy definitions).
+    - Implement CI/CD validation to scan Logic App definitions for plaintext secrets before deployment.
+    - Use Azure Blueprints or ARM templates to enforce referencing secrets from Azure Key Vault.
+    - For bulk remediation, script scanning of all Logic App definitions in your tenant for hardcoded secrets and automate updates to use Key Vault references.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}?api-version=2019-05-01`
+<br />
+**Properties:** `definition.parameters`, `definition.actions`, `definition.triggers` (scanned for plaintext values matching secret patterns)
+
+<br />
+
+___

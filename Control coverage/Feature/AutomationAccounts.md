@@ -1,10 +1,11 @@
-# AutomationAccounts
+﻿# AutomationAccounts
 
 **Resource Type:** Microsoft.Automation/automationAccounts
 
 <!-- TOC depthfrom:2 depthto:2 -->
 
 - [Azure_AutomationAccounts_DP_Encrypt_Variables](#azure_automationaccounts_dp_encrypt_variables)
+- [Azure_AutomationAccounts_DP_Avoid_Plaintext_Secrets](#azure_automationaccounts_dp_avoid_plaintext_secrets)
 
 <!-- /TOC -->
 <br/>
@@ -92,3 +93,78 @@ Encryption helps prevent sensitive data breaches during transfer and storage.
 
 ___
 
+
+
+___
+
+## Azure_AutomationAccounts_DP_Avoid_Plaintext_Secrets
+
+### Display Name
+Avoid storing plaintext secrets in Azure Automation Accounts
+
+### Rationale
+Storing secrets such as passwords, connection strings, or API keys in plaintext within Azure Automation Accounts poses a significant security risk. Plaintext secrets can be inadvertently exposed through logs, scripts, or configuration files, leading to unauthorized access and potential data breaches. Using secure alternatives like Azure Key Vault ensures secrets are encrypted at rest and access is tightly controlled, supporting compliance with security frameworks such as ISO 27001, SOC 2, and NIST.
+
+### Control Spec
+
+> **Passed:**
+> No plaintext secrets (e.g., passwords, connection strings, API keys) are stored in Automation Account variables, runbooks, or configuration files. All sensitive data is referenced securely, such as through Azure Key Vault integration.
+>
+> **Failed:**
+> Any plaintext secret is detected in Automation Account variables, runbooks, or configuration files, or secrets are not referenced securely.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your Automation Account in the Azure Portal.
+    2. Review all variables and runbooks for hardcoded secrets.
+    3. Remove any plaintext secrets and replace them with secure references (e.g., retrieve secrets at runtime from Azure Key Vault).
+    4. Integrate your Automation Account with Azure Key Vault:
+        - Go to "Identity" under your Automation Account and enable a managed identity.
+        - Assign the managed identity appropriate permissions (e.g., "Get" on secrets) in your Key Vault.
+        - Update runbooks to use the managed identity to retrieve secrets from Key Vault.
+
+- **PowerShell**
+    ```powershell
+    # Example: Remove a plaintext variable
+    Remove-AzAutomationVariable -ResourceGroupName "<resource-group>" `
+        -AutomationAccountName "<automation-account>" `
+        -Name "<variable-name>"
+
+    # Example: Retrieve a secret from Key Vault in a runbook
+    $Secret = Get-AzKeyVaultSecret -VaultName "<keyvault-name>" -Name "<secret-name>"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Remove a plaintext variable
+    az automation variable delete \
+      --resource-group <resource-group> \
+      --automation-account-name <automation-account> \
+      --name <variable-name>
+
+    # Assign Key Vault access policy to Automation Account's managed identity
+    az keyvault set-policy \
+      --name <keyvault-name> \
+      --object-id <automation-account-managed-identity-object-id> \
+      --secret-permissions get list
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy:** Deploy a policy to audit or deny Automation Account variables containing sensitive keywords (e.g., "password", "secret", "key").
+    - **Scripted Remediation:** Use scripts to scan Automation Account variables and runbooks for potential plaintext secrets and alert or remove them.
+    - **Bulk Configuration:** Use Azure Policy or custom scripts to enforce Key Vault integration across all Automation Accounts in your tenant.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/variables?api-version=2022-08-08`
+  <br />
+  **Properties:** `value.properties.value` (for plaintext secret detection)
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/runbooks?api-version=2022-08-08`
+  <br />
+  **Properties:** `properties.description`, `properties.logVerbose`, `properties.logProgress`, and runbook content (for secret scanning)
+
+<br/>
+
+___

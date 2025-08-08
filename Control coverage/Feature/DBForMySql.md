@@ -10,6 +10,7 @@
 - [Azure_DBforMySQL_Audit_Enable_ATP](#azure_dbformysql_audit_enable_atp)
 - [Azure_DBforMySQL_DP_Use_Secure_TLS_Version](#azure_dbformysql_dp_use_secure_tls_version)
 - [Azure_DBforMySQL_Audit_Enable_Diagnostics_Log](#azure_dbformysql_audit_enable_diagnostics_log)
+- [Azure_DBforMySQL_NetSec_Dont_Allow_Public_Network_Access](#azure_dbformysql_netsec_dont_allow_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -25,11 +26,11 @@ Use the 'Allow access to Azure services' flag for DBForMySQL only if required
 The 'Allow access to Azure services' setting configures a very broad range of IP addresses from Azure as permitted to access the MySQL Server. Please make sure your scenario really requires this setting before enabling it. Turning it ON exposes your MySQL Server to risk of attacks from resources (IPs) owned by others in the Azure region. 
 
 ### Control Settings 
-```json 
+```json
 {
     "FirewallRuleName_AllowAzureIps": "AllowAllWindowsAzureIps"
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -80,14 +81,13 @@ Do not use Any-to-Any IP range for Azure Database for MySQL
 Using the firewall feature ensures that access to the data or the service is restricted to a specific set/group of clients. NOTE: While this control does provide an extra layer of access control protection, it may not always be feasible to implement in all scenarios. 
 
 ### Control Settings 
-```json 
+```json
 {
     "FirewallRuleName_AllowAzureIps": "AllowAllWindowsAzureIps",
     "IPRangeEndIP": "255.255.255.255",
     "IPRangeStartIP": "0.0.0.0"
 }
- ```
-
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -183,14 +183,13 @@ Enable Threat detection for MySQL database
 Advanced Threat Protection for Azure Database for MySQL provides a layer of security, which enables customers to detect and respond to potential threats as they occur by providing security alerts on anomalous activities. 
 
 ### Control Settings 
-```json 
+```json
 {
     "UnsupportedTier": [
         "Basic"
     ]
 }
- ```
-
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -239,11 +238,11 @@ Use approved version of TLS for Azure Database for MySQL
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
 ### Control Settings 
-```json 
+```json
 {
     "MinReqTLSVersion": "1.2"
 }
- ``` 
+```
 
 ### Control Spec 
 
@@ -296,7 +295,7 @@ Diagnostics logs must be enabled for Azure Database for MySQL
 Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well. 
 
 ### Control Settings 
-```json 
+```json
 {
     "DiagnosticForeverRetentionValue": "0",
     "DiagnosticLogs": [
@@ -304,8 +303,7 @@ Logs should be retained for a long enough period so that activity trail can be r
     ],
     "DiagnosticMinRetentionPeriod": "365"
 }
- ```
-
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -343,6 +341,38 @@ Logs should be retained for a long enough period so that activity trail can be r
  
 **Properties:** name, properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy.enabled, properties.logs.retentionPolicy.days, properties.workspaceId, properties.storageAccountId, properties.eventHubName
  <br />
+
+<br />
+
+___ 
+
+## Azure_DBforMySQL_NetSec_Dont_Allow_Public_Network_Access
+
+### Display Name
+Database for MySQL must not allow public network access
+
+### Rationale
+Restricting public network access to MySQL server reduces the attack surface and ensures that access is only allowed from authorized networks through private connectivity.
+
+### Control Spec
+
+> **Passed:**
+> Public network access is disabled.
+>
+> **Failed:**
+> Public network access is enabled.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Database for MySQL ? Networking ? Public network access ? Select "Disabled" ? Configure private endpoints or virtual network integration for secure access.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to check network access configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/servers/{serverName}<br />
+**Properties:** properties.publicNetworkAccess<br />
 
 <br />
 

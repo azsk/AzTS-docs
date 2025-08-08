@@ -10,6 +10,10 @@
 - [Azure_Storage_DP_Use_Secure_TLS_Version](#azure_storage_dp_use_secure_tls_version)
 - [Azure_Storage_AuthZ_Set_SAS_Expiry_Interval](#azure_storage_authz_set_sas_expiry_interval)
 - [Azure_Storage_DP_Rotate_Access_Keys](#Azure_Storage_DP_Rotate_Access_Keys)
+- [Azure_Storage_Audit_Enable_Diagnostic_Settings](#azure_storage_audit_enable_diagnostic_settings)
+- [Azure_Storage_AuthN_Disable_Key_Access](#azure_storage_authn_disable_key_access)
+- [Azure_Storage_BCDR_Configure_Required_Redundancy](#azure_storage_bcdr_configure_required_redundancy)
+- [Azure_Storage_DP_Enable_Infrastructure_Encryption](#azure_storage_dp_enable_infrastructure_encryption)
 
 <!-- /TOC -->
 <br/>
@@ -207,13 +211,11 @@ Use approved version of TLS for Azure Storage
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
 ### Control Settings
-
 ```json
 {
     "MinReqTLSVersion": "1.2"
 }
 ```
-
 ### Control Spec
 
 > **Passed:**
@@ -268,13 +270,11 @@ Shared Access Signature (SAS) expiry interval must be less than recommended uppe
 Shared Access Signature (SAS) is used to provide secure delegate access to resources in storage account. Setting SAS expiry interval to less than recommended upper limit mitigates the risk of providing access to resources in storage account for a large amount of time.
 
 ### Control Settings
-
 ```json
 {
     "SASExpirationPeriod": "7.00:00:00"
 }
 ```
-
 ### Control Spec
 
 > **Passed:**
@@ -329,13 +329,11 @@ Azure Storage account access keys must be rotated on periodic basis.
 Rotating access keys will reduce the window of opportunity for an access key that is associated with a compromised or terminated account to be used.
 
 ### Control Settings
-
 ```json
 {
     "RecommendedKeyRotationPeriodInDays": "90"
 }
 ```
-
 ### Control Spec
 
 > **Passed:**
@@ -356,16 +354,161 @@ Rotating access keys will reduce the window of opportunity for an access key tha
 
 	```powershell
    New-AzStorageAccountKey -ResourceGroupName '<ResourceGroupName>' -Name '<Name>' -KeyName '<KeyName>'
-   ```
-
 
 ### Azure Policies or REST APIs used for evaluation
 
 - REST API to list all the storage accounts available under the subscription:
-  /subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
-  <br />
-  **Properties:** [*].properties.keyCreationTime
-  <br />
-  <br />
+/subscriptions/{subscriptionId}/providers/Microsoft.Storage/storageAccounts?api-version=2022-09-01
+<br />
+**Properties:** [*].properties.keyCreationTime
+<br />
+<br />
+
+___
+
+## Azure_Storage_Audit_Enable_Diagnostic_Settings
+
+### Display Name
+Diagnostics logs must be enabled for Storage Account
+
+### Rationale
+Logs should be retained for a long enough period so that activity trail can be recreated when investigations are required in the event of an incident or a compromise. A period of 1 year is typical for several compliance requirements as well.
+
+### Control Settings 
+```json
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "StorageRead",
+        "StorageWrite",
+        "StorageDelete"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+```
+### Control Spec
+
+> **Passed:**
+> Required diagnostic logs are enabled with appropriate retention configuration.
+>
+> **Failed:**
+> Diagnostic logs are not enabled or retention period is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Storage Account ? Monitoring ? Diagnostic settings ? Add diagnostic setting ? Select required log categories ? Configure destination (Log Analytics, Storage Account, or Event Hub) ? Set retention period to 365 days or more.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list diagnostic setting details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy<br />
+
+<br />
+
+___
+
+## Azure_Storage_AuthN_Disable_Key_Access
+
+### Display Name
+Storage Account must disable key-based authentication
+
+### Rationale
+Disabling key-based authentication forces the use of Azure Active Directory authentication, providing better security, audit trails, and centralized identity management.
+
+### Control Spec
+
+> **Passed:**
+> Key-based authentication is disabled.
+>
+> **Failed:**
+> Key-based authentication is enabled.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Storage Account ? Configuration ? Allow storage account key access ? Disabled ? Save.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get Storage Account configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}<br />
+**Properties:** properties.allowSharedKeyAccess<br />
+
+<br />
+
+___
+
+## Azure_Storage_BCDR_Configure_Required_Redundancy
+
+### Display Name
+Storage Account must be configured with required redundancy level
+
+### Rationale
+Configuring appropriate redundancy ensures data availability and protection against outages and disasters according to business requirements.
+
+### Control Settings 
+```json
+{
+    "RequiredRedundancyLevels": ["GRS", "RAGRS", "GZRS", "RAGZRS"],
+    "MinimumRedundancyLevel": "GRS"
+}
+```
+### Control Spec
+
+> **Passed:**
+> Storage Account is configured with required redundancy level.
+>
+> **Failed:**
+> Storage Account redundancy level does not meet requirements.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Storage Account ? Data management ? Redundancy ? Select appropriate redundancy level (GRS, RA-GRS, GZRS, or RA-GZRS) ? Save.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get Storage Account configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}<br />
+**Properties:** sku.name<br />
+
+<br />
+
+___
+
+## Azure_Storage_DP_Enable_Infrastructure_Encryption
+
+### Display Name
+Storage Account must enable infrastructure encryption
+
+### Rationale
+Infrastructure encryption provides an additional layer of encryption at the infrastructure level, enhancing data protection for highly sensitive data.
+
+### Control Spec
+
+> **Passed:**
+> Infrastructure encryption is enabled.
+>
+> **Failed:**
+> Infrastructure encryption is not enabled.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Infrastructure encryption can only be enabled during storage account creation. Create a new storage account with infrastructure encryption enabled during the creation process.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to get Storage Account encryption configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Storage/storageAccounts/{accountName}<br />
+**Properties:** properties.encryption.requireInfrastructureEncryption<br />
+
+<br />
 
 ___

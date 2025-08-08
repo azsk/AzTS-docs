@@ -1,4 +1,4 @@
-# ServiceFabric
+﻿# ServiceFabric
 
 **Resource Type:** Microsoft.ServiceFabric/clusters
 
@@ -11,6 +11,7 @@
 - [Azure_ServiceFabric_Audit_Publicly_Exposed_Load_Balancer_Ports](#azure_servicefabric_audit_publicly_exposed_load_balancer_ports)
 - [Azure_ServiceFabric_DP_Dont_Expose_Reverse_Proxy_Port](#azure_servicefabric_dp_dont_expose_reverse_proxy_port)
 - [Azure_ServiceFabric_SI_Set_Auto_Update_Cluster](#azure_servicefabric_si_set_auto_update_cluster)
+- [Azure_ServiceFabric_DP_Dont_Have_Plaintext_Secrets](#azure_servicefabric_dp_dont_have_plaintext_secrets)
 
 <!-- /TOC -->
 <br/>
@@ -401,3 +402,69 @@ Clusters with unsupported fabric version can become targets for compromise from 
 
 ___ 
 
+
+## Azure_ServiceFabric_DP_Dont_Have_Plaintext_Secrets
+
+### Display Name
+Service Fabric cluster configuration should not contain plaintext secrets
+
+### Rationale
+Storing secrets such as passwords, connection strings, or keys in plaintext within Service Fabric cluster configurations exposes sensitive data to potential compromise. Attackers or unauthorized users with access to configuration files or parameters could retrieve these secrets, leading to data breaches or unauthorized access to resources. Using secure mechanisms like Azure Key Vault or encrypted parameters helps ensure that secrets are protected at rest and in transit, supporting compliance with industry standards and regulatory frameworks (such as ISO 27001, SOC 2, and PCI DSS).
+
+### Control Spec
+
+> **Passed:**
+> - No plaintext secrets (such as passwords, connection strings, or keys) are present in Service Fabric cluster configuration settings.
+> - All sensitive values are referenced securely, e.g., via Azure Key Vault references or encrypted parameters.
+>
+> **Failed:**
+> - Any plaintext secret is found in the Service Fabric cluster configuration, including in application parameters, diagnostics settings, or custom configuration sections.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to your Service Fabric cluster in the Azure Portal.
+    2. Under **Settings**, select **Configuration**.
+    3. Review all configuration sections (including diagnostics, application parameters, and custom settings) for any plaintext secrets.
+    4. Replace any plaintext secrets with references to Azure Key Vault secrets or use encrypted parameters.
+    5. Save and apply the updated configuration.
+
+- **PowerShell**
+    ```powershell
+    # Example: Update a Service Fabric cluster configuration to use a Key Vault reference
+    $clusterName = "<your-cluster-name>"
+    $resourceGroup = "<your-resource-group>"
+    $configFile = "<path-to-updated-config.json>"
+
+    # Update the cluster configuration with secure references
+    Set-AzServiceFabricCluster -ResourceGroupName $resourceGroup -Name $clusterName -ClusterConfigPath $configFile
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Example: Update Service Fabric cluster configuration using Azure CLI
+    az sf cluster upgrade-type set \
+      --resource-group <your-resource-group> \
+      --cluster-name <your-cluster-name> \
+      --upgrade-mode Automatic
+
+    # Use az keyvault secret set to store secrets securely and reference them in your configuration
+    az keyvault secret set --vault-name <your-keyvault-name> --name <secret-name> --value <secret-value>
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to audit and deny deployments that include plaintext secrets in Service Fabric cluster configurations.
+    - Implement CI/CD pipeline checks to scan configuration files for plaintext secrets before deployment.
+    - Use Azure Key Vault integration with Service Fabric to securely reference secrets in configuration files.
+    - For bulk remediation, script scanning of all Service Fabric cluster configurations in your subscription for plaintext secrets and automate replacement with Key Vault references.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceFabric/clusters/{clusterName}?api-version=2021-06-01`
+  <br />
+  **Properties:** `properties.fabricSettings`, `properties.diagnostics`, `properties.applicationParameters`
+- Azure Policy: Custom policy definitions can be used to audit for plaintext secrets in configuration fields.
+
+<br/>
+
+___

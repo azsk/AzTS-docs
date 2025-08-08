@@ -6,6 +6,8 @@
 
 - [Azure_DBForMySQLFlexibleServer_DP_Enable_SSL](#azure_dbformysqlflexibleserver_dp_enable_ssl)
 - [Azure_DBForMySQLFlexibleServer_DP_Use_Secure_TLS_Version](#azure_dbformysqlflexibleServer_dp_use_secure_tls_version)
+- [Azure_DBForMySQLFlexibleServer_Enable_Diagnostic_Settings](#azure_dbformysqlflexibleserver_enable_diagnostic_settings)
+- [Azure_DBForMySQLFlexibleServer_NetSec_Dont_Allow_Public_Network_Access](#azure_dbformysqlflexibleserver_netsec_dont_allow_public_network_access)
 
 <!-- /TOC -->
 <br/>
@@ -21,11 +23,11 @@ SSL connection must be enabled for Azure Database for MySQL - Flexible Servers
 Enforcing secure transport between your database server and your client applications helps protect against 'man in the middle' attacks by encrypting the data stream between the server and your application. 
 
 ### Control Settings 
-```json 
+```json
 {
     "RequireSecureTransport": "ON"
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -71,13 +73,12 @@ Use approved version of TLS for Azure Database for MySQL - Flexible Servers
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions. 
 
 ### Control Settings 
-```json 
+```json
 {
     "MinReqTLSVersion": "1.2",
     "CurrentTLSversionPatternInAPIResponse": "TLSV"
 }
- ```
-
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -113,4 +114,79 @@ TLS provides privacy and data integrity between client and server. Using approve
 <br />
 
 ___ 
+
+## Azure_DBForMySQLFlexibleServer_Enable_Diagnostic_Settings
+
+### Display Name
+Database for MySQL Flexible Server must have diagnostic settings enabled
+
+### Rationale
+Enabling diagnostic settings for MySQL Flexible Server provides visibility into database operations, performance metrics, and security events. This is essential for monitoring database health, detecting security threats, and meeting compliance requirements.
+
+### Control Settings 
+```json
+{
+    "DiagnosticForeverRetentionValue": "0",
+    "DiagnosticLogs": [
+        "MySqlSlowLogs",
+        "MySqlAuditLogs"
+    ],
+    "DiagnosticMinRetentionPeriod": "365"
+}
+```
+### Control Spec
+
+> **Passed:**
+> Required diagnostic logs are enabled with appropriate retention configuration.
+>
+> **Failed:**
+> Diagnostic logs are not enabled or retention period is insufficient.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Database for MySQL Flexible Server ? Monitoring ? Diagnostic settings ? Add diagnostic setting ? Select required log categories ? Configure destination (Log Analytics, Storage Account, or Event Hub) ? Set retention period to 365 days or more.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to list diagnostic setting details: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}/providers/microsoft.insights/diagnosticSettings?api-version=2017-05-01-preview<br />
+**Properties:** properties.logs.category, properties.logs.enabled, properties.logs.retentionPolicy<br />
+
+<br />
+
+___
+
+## Azure_DBForMySQLFlexibleServer_NetSec_Dont_Allow_Public_Network_Access
+
+### Display Name
+Database for MySQL Flexible Server must not allow public network access
+
+### Rationale
+Restricting public network access to MySQL Flexible Server reduces the attack surface and ensures that access is only allowed from authorized networks through private connectivity.
+
+### Control Spec
+
+> **Passed:**
+> Public network access is disabled.
+>
+> **Failed:**
+> Public network access is enabled.
+>
+
+### Recommendation
+
+- **Azure Portal**
+
+    Go to Database for MySQL Flexible Server ? Networking ? Public network access ? Select "Disabled" ? Configure private endpoints or virtual network integration for secure access.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API to check network access configuration: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}<br />
+**Properties:** properties.publicNetworkAccess<br />
+
+<br />
+
+___
 

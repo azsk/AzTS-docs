@@ -1,4 +1,4 @@
-# SubscriptionCore
+﻿# SubscriptionCore
 
 <!-- TOC depthfrom:2 depthto:2 -->
 
@@ -18,7 +18,7 @@
 - [Azure_Subscription_Config_MDC_Enable_AutoProvisioning](#Azure_Subscription_Config_MDC_Enable_AutoProvisioning)
 - [Azure_Subscription_Config_MDC_Setup_SecurityContacts](#Azure_Subscription_Config_MDC_Setup_SecurityContacts)
 - [Azure_Subscription_SI_No_Billing_Activity](#Azure_Subscription_SI_No_Billing_Activity)
-- [Azure_Subscription_Configure_Conditional_Access_for_PIM](#Azure_Subscription_Configure_Conditional_Access_for_PIM)
+- [Azure_Subscription_AuthZ_Configure_Conditional_Access_for_PIM](#azure_subscription_authz_configure_conditional_access_for_pim)
 - [Azure_Subscription_AuthZ_Limit_Admin_Owner_Count](#Azure_Subscription_AuthZ_Limit_Admin_Owner_Count)
 - [Azure_Subscription_SI_Dont_Use_B2C_Tenant](#azure_subscription_si_dont_use_b2c_tenant)
 - [Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password](#Azure_Subscription_AuthZ_Dont_Use_SPNs_With_Password)
@@ -33,6 +33,17 @@
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_AppService](#azure_subscription_config_enable_microsoftdefender_appservice)
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_Storage](#azure_subscription_config_enable_microsoftdefender_storage)
 - [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](#azure_subscription_config_enable_microsoftDefender_cspm)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_API](#Azure_Subscription_Config_Enable_MicrosoftDefender_API)
+- [Azure_Subscription_AuthZ_Expired_SPN_Certificates](#Azure_Subscription_AuthZ_Expired_SPN_Certificates)
+- [Azure_Subscription_AuthZ_Dont_Grant_NonAllowed_Broad_Groups](#Azure_Subscription_AuthZ_Dont_Grant_NonAllowed_Broad_Groups)
+- [Azure_Subscription_AuthZ_Dont_Grant_NonAD_Identities_Privileged_Roles_RG](#Azure_Subscription_AuthZ_Dont_Grant_NonAD_Identities_Privileged_Roles_RG)
+- [Azure_Subscription_AuthZ_Configure_ConditionalAccess_For_PIM](#Azure_Subscription_AuthZ_Configure_ConditionalAccess_For_PIM)
+- [Azure_Subscription_AuthZ_SPN_Owners_Governance](#azure_subscription_authz_spn_owners_governance)
+- [Azure_Subscription_AuthZ_Use_Only_Alt_Credentials](#Azure_Subscription_AuthZ_Use_Only_Alt_Credentials)
+- [Azure_Subscription_Config_Enable_MicrosoftDefender_AIServices](#Azure_Subscription_Config_Enable_MicrosoftDefender_AIServices)
+- [Azure_Subscription_DP_Avoid_Plaintext_Secrets_Deployments](#azure_subscription_dp_avoid_plaintext_secrets_deployments)
+- [Azure_Subscription_DP_Avoid_Plaintext_Secrets_Tags](#azure_subscription_dp_avoid_plaintext_secrets_tags)
+
 <!-- /TOC -->
 <br/>
 
@@ -982,7 +993,7 @@ Cleaning up unused subscriptions is suggested as a good hygiene practice.
 
 ___ 
 
-## Azure_Subscription_Configure_Conditional_Access_for_PIM 
+## Azure_Subscription_AuthZ_Configure_Conditional_Access_for_PIM 
 
 ### Display Name 
 Enable policy to require PIM elevation from SAW for admin roles in Azure subscriptions 
@@ -1783,3 +1794,757 @@ Microsoft Defender CSPM provides advanced security posture capabilities includin
 <br />
 
 ___ 
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_API
+
+### Display Name
+Subscription must enable Microsoft Defender for APIs
+
+### Rationale  
+Microsoft Defender for APIs provides comprehensive security monitoring, threat detection, and vulnerability assessment for API endpoints, ensuring protection against API-specific attacks and compliance with security standards.
+
+### Control Settings 
+```json
+{
+  "RequireDefenderForAPIs": true,
+  "EnableThreatDetection": true,
+  "RequireVulnerabilityAssessment": true,
+  "MonitorAPITraffic": true
+}
+```
+
+### Control Spec  
+- **Passed:** Microsoft Defender for APIs is enabled and configured
+- **Failed:** Defender for APIs is not enabled
+
+### Recommendation
+```powershell
+# Enable Microsoft Defender for APIs
+Set-AzSecurityPricing -Name "Api" -PricingTier "Standard"
+```
+
+### Control Evaluation Details:
+- **Method Name:** CheckMicrosoftDefenderAPI
+- **Control Severity:** Medium
+- **Evaluation Frequency:** Daily
+
+<br />
+
+___
+
+## Azure_Subscription_AuthZ_Expired_SPN_Certificates
+
+### Display Name
+Subscription must not have service principals with expired certificates
+
+### Rationale
+Expired certificates for service principals can cause service disruptions and security vulnerabilities. Regular monitoring and renewal of certificates ensures continuous service availability and maintains security posture.
+
+### Control Settings 
+```json
+{
+  "MaxCertificateAge": 365,
+  "WarningThreshold": 30,
+  "RequireAutomaticRenewal": true,
+  "AllowSelfSignedCerts": false
+}
+```
+
+### Control Spec
+- **Passed:** No service principals with expired certificates
+- **Failed:** Service principals with expired or expiring certificates found
+
+### Recommendation
+```powershell
+# Find and remediate expired SPN certificates
+$expiredSPNs = Get-AzADServicePrincipal | Where-Object {
+    $_.PasswordCredentials.Count -eq 0 -and 
+    $_.KeyCredentials.EndDateTime -lt (Get-Date)
+}
+
+foreach ($spn in $expiredSPNs) {
+    Write-Warning "Expired certificate found for SPN: $($spn.DisplayName)"
+    # Generate new certificate and update SPN
+}
+```
+
+### Control Evaluation Details:
+- **Method Name:** CheckExpiredSPNCertificates
+- **Control Severity:** High
+- **Evaluation Frequency:** Daily
+
+<br />
+
+___
+
+## Azure_Subscription_AuthZ_Dont_Grant_NonAllowed_Broad_Groups
+
+### Display Name
+Subscription must not grant permissions to overly broad or non-allowed groups
+
+### Rationale
+Granting permissions to overly broad groups (like "All Users" or large organizational groups) violates the principle of least privilege and creates unnecessary security risks. Access should be granted to specific, purpose-built groups with appropriate membership.
+
+### Control Settings
+```json
+{
+  "RestrictBroadGroups": true,
+  "ProhibitedGroups": ["All Users", "Everyone", "Domain Users"],
+  "MaxGroupSize": 100,
+  "RequireApprovedGroups": true,
+  "AllowedGroupPatterns": ["AZ-*", "Azure-*"]
+}
+```
+
+### Control Spec
+- **Passed:** No overly broad or prohibited groups have subscription access
+- **Failed:** Broad or non-allowed groups have subscription permissions
+
+### Recommendation  
+
+### Audit and Remove Broad Groups:
+```powershell
+# Identify broad groups with subscription access
+$broadGroups = @("All Users", "Everyone", "Domain Users", "Authenticated Users")
+$subscriptionScope = "/subscriptions/$((Get-AzContext).Subscription.Id)"
+
+$groupAssignments = Get-AzRoleAssignment -Scope $subscriptionScope | Where-Object {
+    $_.ObjectType -eq "Group" -and
+    ($_.DisplayName -in $broadGroups -or $_.DisplayName -like "*All*" -or $_.DisplayName -like "*Everyone*")
+}
+
+# Remove broad group assignments
+foreach ($assignment in $groupAssignments) {
+    Remove-AzRoleAssignment -ObjectId $assignment.ObjectId -RoleDefinitionName $assignment.RoleDefinitionName -Scope $assignment.Scope
+}
+```
+
+### Create Purpose-Built Groups:
+```powershell
+# Create specific Azure groups with proper naming
+$azureGroups = @{
+    "AZ-Subscription-Readers" = @{ Role = "Reader"; Members = @("user1@contoso.com") }
+    "AZ-ResourceGroup-Contributors" = @{ Role = "Contributor"; Members = @("dev-team@contoso.com") }
+}
+
+foreach ($groupConfig in $azureGroups.GetEnumerator()) {
+    $group = New-AzADGroup -DisplayName $groupConfig.Key -MailEnabled $false -SecurityEnabled $true
+    # Add members and assign role (detailed implementation available in full script)
+    New-AzRoleAssignment -ObjectId $group.Id -RoleDefinitionName $groupConfig.Value.Role -Scope $subscriptionScope
+}
+```
+
+### Monitor and Validate:
+```kusto
+// Monitor large groups
+SecurityResources | where type == "microsoft.graph/groups" and toint(properties.memberCount) > 100
+```
+
+### Best Practices:
+- Use naming convention: AZ-* or Azure-*
+- Limit group size to <100 members
+- Regular quarterly reviews
+- Assign clear group owners
+
+### Remediation Steps:
+1. Audit existing group assignments
+2. Create specific replacement groups
+3. Migrate users to new groups
+4. Remove broad group access
+
+### Azure Policies or REST APIs used for evaluation  
+- **List role assignments:** `/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments`
+- **Get group details:** Microsoft Graph API for group membership analysis
+
+### Control Evaluation Details:
+- **Method Name:** CheckBroadGroupAccess
+- **Control Severity:** Medium
+- **Evaluation Frequency:** Weekly
+- **Baseline Control:** Yes
+
+<br />
+
+___
+
+## Azure_Subscription_AuthZ_Dont_Grant_NonAD_Identities_Privileged_Roles_RG
+
+### Display Name
+Subscription must not grant privileged roles to non-Azure AD identities at resource group level
+
+### Rationale
+Granting privileged roles to non-Azure AD identities (external users, guest accounts) at resource group level increases security risks and reduces visibility into access patterns. Azure AD identities provide better governance, audit trails, and access management capabilities.
+
+### Control Settings
+```json
+{
+  "RestrictNonADIdentities": true,
+  "PrivilegedRoles": ["Owner", "Contributor", "User Access Administrator"],
+  "AllowedExceptions": [],
+  "RequireJustification": true
+}
+```
+
+### Control Spec
+- **Passed:** No privileged roles assigned to non-Azure AD identities at RG level
+- **Failed:** Non-Azure AD identities have privileged roles assigned
+
+### Recommendation  
+
+### Audit and Remove Non-AD Assignments:
+```powershell
+# Find and remove non-Azure AD identities with privileged roles
+$privilegedRoles = @("Owner", "Contributor", "User Access Administrator")
+$nonADAssignments = @()
+
+foreach ($rg in Get-AzResourceGroup) {
+    $assignments = Get-AzRoleAssignment -Scope $rg.ResourceId | Where-Object {
+        $_.RoleDefinitionName -in $privilegedRoles -and
+        ($_.SignInName -like "*#EXT#*" -or $_.ObjectType -eq "Unknown" -or $_.SignInName -like "*live.com*")
+    }
+    
+    foreach ($assignment in $assignments) {
+        # Remove non-AD privileged assignment
+        Remove-AzRoleAssignment -ObjectId $assignment.ObjectId -RoleDefinitionName $assignment.RoleDefinitionName -Scope $assignment.Scope
+        Write-Warning "Removed $($assignment.DisplayName) from $($assignment.RoleDefinitionName) in $($rg.ResourceGroupName)"
+    }
+}
+```
+
+### Replace with Azure AD Identities:
+```powershell
+# Replace with Azure AD users/groups
+$azureADReplacements = @{
+    "external.user@company.com" = "internal.user@contoso.com"
+    "guest.account@external.com" = "AzureAD-Group-Name"
+}
+
+foreach ($replacement in $azureADReplacements.GetEnumerator()) {
+    $target = Get-AzADUser -UserPrincipalName $replacement.Value -ErrorAction SilentlyContinue
+    if (-not $target) { $target = Get-AzADGroup -DisplayName $replacement.Value }
+    
+    if ($target) {
+        New-AzRoleAssignment -ObjectId $target.Id -RoleDefinitionName "Contributor" -ResourceGroupName $resourceGroupName
+    }
+}
+```
+
+### Monitor with KQL:
+```kusto
+// Find non-Azure AD identities with privileged roles
+authorizationresources
+| where type == "microsoft.authorization/roleassignments"
+| where properties.roleDefinitionId has_any ("8e3af657-a8ff-443c-a75c-2fe8c4bcb635", "b24988ac-6180-42a0-ab88-20f7382dd24c")
+| where properties.scope startswith "/subscriptions/{subscription-id}/resourceGroups/"
+| where properties.principalType == "User"
+```
+
+### Best Practices:
+- Regular audits of role assignments
+- Use Azure AD groups instead of individual assignments
+- Implement Just-in-Time access with PIM
+- Document and regularly review any exceptions
+
+### Azure Policies or REST APIs used for evaluation  
+- **List role assignments:** `/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments`
+- **Evaluated Properties:** Principal type, role definition, and scope analysis
+
+### Control Evaluation Details:
+- **Method Name:** CheckNonADPrivilegedRoles
+- **Control Severity:** High
+- **Evaluation Frequency:** Daily
+- **Baseline Control:** Yes
+
+___
+
+## Azure_Subscription_AuthZ_Configure_ConditionalAccess_For_PIM
+
+### Display Name
+Configure Conditional Access for Privileged Identity Management (PIM)
+
+### Rationale
+Conditional Access policies provide an additional layer of security by enforcing access controls on privileged operations. Requiring Conditional Access for Privileged Identity Management (PIM) ensures that only authorized users under specific conditions (such as compliant devices, MFA, or trusted locations) can activate privileged roles. This reduces the risk of unauthorized privilege escalation and supports compliance with standards such as ISO 27001, NIST SP 800-53, and CIS Controls.
+
+### Control Spec
+
+> **Passed:**
+> - Conditional Access policies are configured and enforced for all PIM role activations in the Azure AD tenant.
+> - Policies require controls such as Multi-Factor Authentication (MFA), compliant device, or trusted network location for PIM role activation.
+>
+> **Failed:**
+> - No Conditional Access policy is assigned to PIM role activation.
+> - Conditional Access policies are assigned but do not enforce strong authentication or device compliance for PIM role activation.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Sign in to the [Azure Portal](https://portal.azure.com).
+    2. Navigate to **Azure Active Directory** > **Security** > **Conditional Access**.
+    3. Select **New policy**.
+    4. Set **Assignments**:
+        - **Users or workload identities**: Select the users or groups eligible for PIM.
+        - **Cloud apps or actions**: Select **Azure AD Privileged Identity Management**.
+    5. Under **Grant**, require controls such as **Require multi-factor authentication** and/or **Require device to be marked as compliant**.
+    6. Enable the policy and click **Create**.
+
+- **PowerShell**
+    ```powershell
+    # Install the AzureAD module if not already installed
+    Install-Module -Name AzureAD
+
+    # Connect to Azure AD
+    Connect-AzureAD
+
+    # Example: Create a Conditional Access policy for PIM activation (requires MS Graph API)
+    # Note: Detailed policy creation requires Microsoft Graph PowerShell module and advanced scripting.
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Azure CLI does not currently support direct Conditional Access policy management.
+    # Use Microsoft Graph API or PowerShell for automation.
+    ```
+
+- **Automation/Remediation**
+    - Use [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesspolicy?view=graph-rest-1.0) to automate Conditional Access policy creation.
+    - Azure Policy and ARM templates do not currently support Conditional Access policy deployment.
+    - For bulk or tenant-wide remediation, use AzTS (Azure Tenant Security) scripts if available, or automate via Microsoft Graph SDK.
+
+    **Sample Microsoft Graph API request:**
+    ```http
+    POST https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies
+    Content-Type: application/json
+
+    {
+      "displayName": "Require MFA for PIM Activation",
+      "state": "enabled",
+      "conditions": {
+        "users": {
+          "includeGroups": ["<PIM-eligible-group-object-id>"]
+        },
+        "applications": {
+          "includeApplications": ["0000000c-0000-0000-c000-000000000000"] // Azure AD PIM app ID
+        }
+      },
+      "grantControls": {
+        "operator": "AND",
+        "builtInControls": ["mfa"]
+      }
+    }
+    ```
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: [Microsoft Graph API - Conditional Access Policy](https://graph.microsoft.com/v1.0/identity/conditionalAccess/policies)<br />
+**Properties:** `displayName`, `state`, `conditions.users`, `conditions.applications`, `grantControls`
+
+<br/>
+
+___
+
+___
+
+## Azure_Subscription_AuthZ_SPN_Owners_Governance
+
+### Display Name
+Restrict Subscription Owner Role Assignments to Service Principals and Non-Human Identities
+
+### Rationale
+Limiting the assignment of the Owner role at the subscription level to only authorized service principals and non-human identities is a critical security control. This reduces the risk of privilege escalation, accidental or malicious changes, and helps enforce least privilege access. By ensuring that only approved identities have Owner rights, organizations can maintain better governance, comply with regulatory requirements (such as ISO 27001, NIST, and CIS), and reduce the attack surface for their Azure environment.
+
+### Control Spec
+
+> **Passed:**
+> - No human user accounts (e.g., UPNs, guest users) are assigned the Owner role at the subscription scope.
+> - Only authorized service principals, managed identities, or break-glass accounts are assigned the Owner role.
+>
+> **Failed:**
+> - One or more human user accounts are assigned the Owner role at the subscription scope.
+> - Unapproved or excessive Owner assignments exist, including to guest users or external identities.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Subscriptions** in the Azure Portal.
+    2. Select the target subscription.
+    3. Go to **Access control (IAM)** > **Role assignments**.
+    4. Filter by **Owner** role.
+    5. Review the list of assigned identities.
+    6. Remove the Owner role from any human user accounts or unapproved identities:
+        - Click the ellipsis (...) next to the assignment.
+        - Select **Remove**.
+
+- **PowerShell**
+    ```powershell
+    # List all Owner assignments at the subscription scope
+    Get-AzRoleAssignment -Scope "/subscriptions/<subscriptionId>" | Where-Object { $_.RoleDefinitionName -eq "Owner" }
+
+    # Remove Owner role from a specific user
+    Remove-AzRoleAssignment -ObjectId <userObjectId> -RoleDefinitionName "Owner" -Scope "/subscriptions/<subscriptionId>"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # List all Owner assignments at the subscription scope
+    az role assignment list --scope "/subscriptions/<subscriptionId>" --role "Owner"
+
+    # Remove Owner role from a specific user
+    az role assignment delete --assignee <userObjectId> --role "Owner" --scope "/subscriptions/<subscriptionId>"
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy**: There is no built-in Azure Policy to restrict Owner assignments to only service principals, but you can use Azure Policy to audit role assignments and alert on non-compliant assignments.
+    - **Custom Script**: Implement automation using Azure Functions, Logic Apps, or scheduled PowerShell/Azure CLI scripts to regularly audit and remediate Owner assignments.
+    - **AzTS (Azure Tenant Security)**: If using AzTS, leverage its built-in controls to detect and remediate unauthorized Owner assignments across subscriptions.
+    - **Bulk Remediation**: Use PowerShell or Azure CLI scripts in a loop to process multiple subscriptions for tenant-wide compliance.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments?api-version=2022-04-01-preview`  
+**Properties:**  
+- `roleDefinitionId` (should match Owner role definition)
+- `principalType` (should be ServicePrincipal, ManagedIdentity, or explicitly approved identities)
+- `principalId` (cross-reference with directory to determine user vs. service principal)
+
+<br/>
+
+___
+
+___
+
+## Azure_Subscription_AuthZ_Use_Only_Alt_Credentials
+
+### Display Name
+Use Only Alternative Credentials for Authorization
+
+### Rationale
+Limiting authorization to only alternative credentials (such as managed identities or service principals) reduces the risk of credential compromise and enforces stronger access control. This control helps ensure that user accounts and shared credentials are not used for automated processes, thereby improving the security posture of your Azure subscription. Adhering to this practice supports compliance with standards such as ISO 27001, NIST SP 800-53, and Azure CIS benchmarks, which require strong identity and access management.
+
+### Control Spec
+
+> **Passed:**
+> - All automated processes and applications use only alternative credentials (e.g., managed identities, service principals) for authorization within the subscription.
+> - No user accounts or shared credentials are used for automation or programmatic access.
+>
+> **Failed:**
+> - Any automated process or application uses user accounts or shared credentials for authorization.
+> - Alternative credentials are not enforced for automation or programmatic access.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Azure Active Directory** > **App registrations**.
+    2. Register applications and assign appropriate roles using managed identities or service principals.
+    3. Review **Access control (IAM)** on your subscription to ensure only alternative credentials are granted access for automation.
+    4. Remove any user accounts or shared credentials from role assignments used by automated processes.
+
+- **PowerShell**
+    ```powershell
+    # List role assignments for the subscription
+    Get-AzRoleAssignment -Scope "/subscriptions/<subscriptionId>"
+
+    # Remove user account assignments for automation
+    Remove-AzRoleAssignment -ObjectId <UserObjectId> -RoleDefinitionName "<RoleName>" -Scope "/subscriptions/<subscriptionId>"
+
+    # Assign a managed identity or service principal
+    New-AzRoleAssignment -ObjectId <ServicePrincipalObjectId> -RoleDefinitionName "<RoleName>" -Scope "/subscriptions/<subscriptionId>"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # List role assignments
+    az role assignment list --scope /subscriptions/<subscriptionId>
+
+    # Remove user assignment
+    az role assignment delete --assignee <userPrincipalName or objectId> --role "<RoleName>" --scope /subscriptions/<subscriptionId>
+
+    # Assign role to service principal or managed identity
+    az role assignment create --assignee <servicePrincipalId> --role "<RoleName>" --scope /subscriptions/<subscriptionId>
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to enforce the use of managed identities for Azure resources:
+      ```json
+      {
+        "if": {
+          "allOf": [
+            {
+              "field": "type",
+              "equals": "Microsoft.Compute/virtualMachines"
+            },
+            {
+              "not": {
+                "field": "identity.type",
+                "equals": "SystemAssigned"
+              }
+            }
+          ]
+        },
+        "then": {
+          "effect": "deny"
+        }
+      }
+      ```
+    - Use AzTS (Azure Tenant Security) scripts to audit and remediate role assignments at scale.
+    - Implement ARM templates to deploy resources with managed identities by default.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Authorization/roleAssignments?api-version=2022-04-01`  
+**Properties:**  
+- `principalType` (should be `ServicePrincipal` or `ManagedIdentity` for automation)
+- `principalId`
+- `roleDefinitionId`
+- `scope`
+
+<br/>
+
+___
+
+___
+
+## Azure_Subscription_Config_Enable_MicrosoftDefender_AIServices
+
+### Display Name
+Enable Microsoft Defender for AI Services on subscriptions
+
+### Rationale
+Enabling Microsoft Defender for AI Services provides advanced threat protection for Azure AI resources such as Azure Machine Learning, Cognitive Services, and related workloads. This control ensures that AI workloads are continuously monitored for security threats, anomalous activities, and potential misuse, helping organizations meet compliance requirements and reduce the risk of data breaches or abuse of AI resources.
+
+### Control Spec
+
+> **Passed:**
+> - Microsoft Defender for AI Services is enabled at the subscription level for all supported AI resources.
+>
+> **Failed:**
+> - Microsoft Defender for AI Services is not enabled at the subscription level, or is only partially enabled for supported AI resources.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to the Azure Portal.
+    2. Go to **Microsoft Defender for Cloud**.
+    3. Select **Environment settings** and choose your subscription.
+    4. Under **Defender plans**, ensure **AI Services** is set to **On**.
+    5. Click **Save** to apply changes.
+
+- **PowerShell**
+    ```powershell
+    # Install the Az.Security module if needed
+    Install-Module -Name Az.Security
+
+    # Enable Microsoft Defender for AI Services at the subscription level
+    $subscriptionId = "<your-subscription-id>"
+    Set-AzSecurityPricing -Name "AIServices" -PricingTier "Standard" -SubscriptionId $subscriptionId
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Enable Microsoft Defender for AI Services using Azure CLI
+    az security pricing create --name "AIServices" --tier "Standard" --subscription <your-subscription-id>
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to enforce Microsoft Defender for AI Services across all subscriptions:
+        ```json
+        {
+          "if": {
+            "field": "Microsoft.Security/pricings.name",
+            "equals": "AIServices"
+          },
+          "then": {
+            "effect": "deployIfNotExists",
+            "details": {
+              "type": "Microsoft.Security/pricings",
+              "name": "AIServices",
+              "properties": {
+                "pricingTier": "Standard"
+              }
+            }
+          }
+        }
+        ```
+    - For bulk or tenant-wide enablement, use Azure Policy Assignments or Azure Blueprints to ensure Defender for AI Services is enabled on all current and future subscriptions.
+    - For organizations using AzTS (Azure Tenant Security), refer to AzTS bulk remediation scripts to enable Defender for AI Services across multiple subscriptions.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `PUT https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.Security/pricings/AIServices?api-version=2020-01-01`<br />
+**Properties:** `properties.pricingTier` (should be set to `Standard`)
+
+<br/>
+
+___
+
+___
+
+## Azure_Subscription_DP_Avoid_Plaintext_Secrets_Deployments
+
+### Display Name
+Avoid deployment of secrets in plaintext within Azure subscription resources
+
+### Rationale
+Storing secrets such as passwords, connection strings, or API keys in plaintext within resource configurations or deployment templates exposes them to unauthorized access, increasing the risk of data breaches and non-compliance with security standards such as ISO 27001, NIST, and PCI DSS. Azure recommends using secure mechanisms like Azure Key Vault to manage and reference secrets, thereby ensuring confidentiality and integrity of sensitive information.
+
+### Control Spec
+
+> **Passed:**
+> No secrets (e.g., passwords, connection strings, API keys) are found in plaintext within resource properties, deployment templates, or parameter files. All secrets are referenced securely, such as via Azure Key Vault references.
+>
+> **Failed:**
+> Secrets are detected in plaintext within resource configurations, deployment templates, or parameters. Examples include hardcoded passwords, connection strings, or API keys directly in ARM/Bicep templates or resource properties.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Review all deployment templates and resource configurations for hardcoded secrets.
+    2. Replace any plaintext secrets with Azure Key Vault references.
+    3. For parameters that require secrets, use the "Reference" function to securely fetch values from Key Vault.
+
+- **PowerShell**
+    ```powershell
+    # Example: Reference a secret from Azure Key Vault in an ARM template deployment
+    $keyVaultId = "/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.KeyVault/vaults/<vault-name>"
+    $secretName = "<secret-name>"
+
+    $templateParameter = @{
+        "adminPassword" = @{
+            "reference" = @{
+                "keyVault" = @{
+                    "id" = $keyVaultId
+                }
+                "secretName" = $secretName
+            }
+        }
+    }
+
+    New-AzResourceGroupDeployment -ResourceGroupName <rg> -TemplateFile <template.json> -TemplateParameterObject $templateParameter
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Example: Deploy ARM template using Key Vault secret reference
+    az deployment group create \
+      --resource-group <rg> \
+      --template-file <template.json> \
+      --parameters adminPassword="{'reference':{'keyVault':{'id':'/subscriptions/<sub-id>/resourceGroups/<rg>/providers/Microsoft.KeyVault/vaults/<vault-name>'},'secretName':'<secret-name>'}}"
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy:** Assign the built-in policy definition `Do not allow hardcoded secrets in resource properties` to audit and deny deployments containing plaintext secrets.
+    - **ARM Template Example:** Use `reference` objects for secret parameters instead of string literals.
+    - **Bulk Remediation:** Use Azure Policy remediation tasks to identify and remediate resources with hardcoded secrets.
+    - **AzTS Remediation:** If using Azure Tenant Security (AzTS), run the bulk remediation script to scan for and replace plaintext secrets with Key Vault references.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.PolicyInsights/policyStates/latest/queryResults?api-version=2019-10-01`
+  <br />
+  **Properties:** Resource properties and deployment template parameters are scanned for patterns matching secrets (e.g., "password", "connectionString", "apiKey") and checked for plaintext values.
+
+<br/>
+
+___
+
+___
+
+## Azure_Subscription_DP_Avoid_Plaintext_Secrets_Tags
+
+### Display Name
+Avoid storing plaintext secrets in resource tags
+
+### Rationale
+Storing sensitive information such as passwords, secrets, or connection strings in resource tags exposes them to unauthorized access and increases the risk of data leakage. Tags are not designed for storing confidential data and are accessible to users with read permissions on the resource. This control enforces best practices for data protection and helps organizations comply with security standards such as ISO 27001, NIST, and CIS by ensuring that secrets are not inadvertently exposed through metadata.
+
+### Control Spec
+
+> **Passed:**
+> No resource tags at the subscription level or within resources contain values that match common patterns for secrets, passwords, or connection strings (e.g., values containing "password", "secret", "key", "connectionstring", etc.).
+>
+> **Failed:**
+> One or more resource tags contain values that appear to be plaintext secrets, such as passwords, API keys, or connection strings.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to the Azure Portal.
+    2. Go to **Subscriptions** and select the relevant subscription.
+    3. Review the tags applied at the subscription and resource levels.
+    4. Remove or update any tags containing sensitive information (e.g., secrets, passwords, keys, or connection strings).
+    5. Save the changes.
+
+- **PowerShell**
+    ```powershell
+    # List all tags at the subscription level
+    Get-AzTag -ResourceId "/subscriptions/<subscriptionId>"
+
+    # List tags for all resources in a subscription
+    Get-AzResource | ForEach-Object {
+        Write-Output "$($_.Name): $($_.Tags)"
+    }
+
+    # Remove a tag containing sensitive information from a resource
+    Remove-AzTag -ResourceId "/subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/<resourceProvider>/<resourceType>/<resourceName>" -TagName "<SensitiveTagName>"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # List all tags at the subscription level
+    az tag list --resource-id /subscriptions/<subscriptionId>
+
+    # List tags for all resources in a subscription
+    az resource list --query "[].{name:name, tags:tags}"
+
+    # Remove a tag containing sensitive information from a resource
+    az tag remove --resource-id /subscriptions/<subscriptionId>/resourceGroups/<resourceGroupName>/providers/<resourceProvider>/<resourceType>/<resourceName> --tag <SensitiveTagName>
+    ```
+
+- **Automation/Remediation**
+    - Implement Azure Policy to deny or audit the creation of tags containing sensitive keywords:
+        ```json
+        {
+          "properties": {
+            "displayName": "Audit resource tags that may contain secrets",
+            "policyType": "Custom",
+            "mode": "All",
+            "description": "Audit resource tags that contain values matching common secret patterns.",
+            "parameters": {},
+            "policyRule": {
+              "if": {
+                "anyOf": [
+                  {
+                    "field": "tags",
+                    "contains": "password"
+                  },
+                  {
+                    "field": "tags",
+                    "contains": "secret"
+                  },
+                  {
+                    "field": "tags",
+                    "contains": "key"
+                  },
+                  {
+                    "field": "tags",
+                    "contains": "connectionstring"
+                  }
+                ]
+              },
+              "then": {
+                "effect": "audit"
+              }
+            }
+          }
+        }
+        ```
+    - Use Azure Policy assignments at the subscription or management group level to enforce this control.
+    - For bulk remediation, use scripts to scan all tags and remove or redact those containing sensitive patterns.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resources?api-version=2021-04-01`
+  <br />
+  **Properties:** `tags` (key-value pairs for each resource)
+
+<br/>
+
+___

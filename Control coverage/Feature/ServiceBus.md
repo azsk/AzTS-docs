@@ -2,16 +2,17 @@
 
 **Resource Type:** Microsoft.ServiceBus/namespaces
 
-<!-- TOC -->
+<!-- TOC depthfrom:2 depthto:2 -->
 
 - [Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace](#azure_servicebus_authz_dont_use_policies_at_sb_namespace)
 - [Azure_ServiceBus_DP_Use_Secure_TLS_Version](#azure_servicebus_dp_use_secure_tls_version)
 - [Azure_ServiceBus_Audit_Enable_Diagnostic_Settings](#azure_servicebus_audit_enable_diagnostic_settings)
+- [Azure_ServiceBus_AuthN_Disable_Local_Auth](#azure_servicebus_authn_disable_local_auth)
 
 <!-- /TOC -->
 <br/>
 
-___ 
+___
 
 ## Azure_ServiceBus_AuthZ_Dont_Use_Policies_At_SB_Namespace 
 
@@ -126,7 +127,60 @@ TLS provides privacy and data integrity between client and server. Using approve
 
 ___
 
+## Azure_ServiceBus_AuthN_Disable_Local_Auth
 
+### Display Name
+Service Bus must disable local authentication
+
+### Rationale
+TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
+
+### Control Settings
+
+```json
+{
+    "MinReqTLSVersion": "1.2"
+}
+```
+### Control Spec
+
+> **Passed:**
+> (*If Minimum TLS version is set to 1.2 or higher)
+> TLS settings are properly configured.
+> **Failed:**
+>> (*If Minimum TLS version is set to 1.0 or 1.1)
+> Current minimum TLS version is {currentMinTLSVersionString} which is less than required version 1.2
+> 
+> **Error:** 
+> Required minimum TLS version is not set properly in control settings.
+
+### Recommendation
+
+- **Azure Portal**
+
+  Refer https://learn.microsoft.com/en-us/azure/service-bus-messaging/transport-layer-security-configure-minimum-version#specify-the-minimum-tls-version-in-the-azure-portal
+
+- **PowerShell**
+
+### Azure Policies or REST APIs used for evaluation
+
+**Enforcement Policy**
+	[Azure_ServiceBus_DP_Use_Secure_TLS_Version Policy Definition](../../Policies/ServiceBus/Azure_ServiceBus_DP_Use_Secure_TLS_Version)
+	
+
+### ARM API used for evaluation
+
+- REST API to list all service bus namespaces available under the subscription along with properties: https://management.azure.com/subscriptions/{subscriptionId}/providers/Microsoft.ServiceBus/namespaces?api-version=2022-01-01-preview
+
+  Refer [Azure Namespaces List API](https://learn.microsoft.com/en-us/rest/api/servicebus/preview/namespaces/list?tabs=HTTP)
+  <br />
+  **Properties:** [*].properties.minimumTlsVersion
+  <br />
+  <br />
+
+<br />
+
+___
 
 ## Azure_ServiceBus_Audit_Enable_Diagnostic_Settings
  
@@ -192,5 +246,4 @@ properties.logs.category, properties.logs.categorygroup,properties.logs.enabled,
 properties.categoryGroups, name
 <br />
 ___ 
-
 

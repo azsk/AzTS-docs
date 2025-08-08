@@ -1,7 +1,4 @@
-# VirtualMachine
-
-**Resource Type:** Microsoft.Compute/virtualMachines
-<!-- TOC depthto:2 depthfrom:2 -->
+﻿<!-- TOC depthfrom:2 depthto:2 -->
 
 - [Azure_VirtualMachine_SI_Enable_Antimalware](#azure_virtualmachine_si_enable_antimalware)
 - [Azure_VirtualMachine_Config_Enable_NSG](#azure_virtualmachine_config_enable_nsg)
@@ -40,7 +37,7 @@ Enabling antimalware protection minimizes the risks from existing and new attack
 
 
 ### Control Settings 
-```json 
+```jsonP
 {
     "ExclusionTags": [
         {
@@ -51,9 +48,8 @@ Enabling antimalware protection minimizes the risks from existing and new attack
     ],
     "ReqExtensionPublisher": "Microsoft.Azure.Security",
     "ReqExtensionType": "IaaSAntimalware"
-}
- ```  
-
+} 
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -119,7 +115,7 @@ Internet-facing virtual machines must be protected with Network Security Groups
 Restricting inbound and outbound traffic via NSGs limits the network exposure of a VM by reducing the attack surface. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -128,8 +124,8 @@ Restricting inbound and outbound traffic via NSGs limits the network exposure of
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -189,7 +185,7 @@ Public IPs on a Virtual Machine should be carefully reviewed
 Public IPs provide direct access over the internet exposing the VM to attacks over the public network. Hence each public IP on a VM must be reviewed carefully. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -198,8 +194,8 @@ Public IPs provide direct access over the internet exposing the VM to attacks ov
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -258,7 +254,7 @@ Disk encryption should be applied on virtual machines
 Using this feature ensures that sensitive data is stored encrypted at rest. This minimizes the risk of data loss from physical theft and also helps meet regulatory compliance requirements. In the case of VMs, both OS and data disks may contain sensitive information that needs to be protected at rest. Hence disk encryption must be enabled for both. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -267,8 +263,8 @@ Using this feature ensures that sensitive data is stored encrypted at rest. This
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -325,7 +321,7 @@ Virtual Machine must be in a healthy state in Microsoft Defender for Cloud
 Microsoft Defender for Cloud raises alerts (which are typically indicative of resources that are not compliant with some baseline security protection). It is important that these alerts/actions are resolved promptly in order to eliminate the exposure to attacks. 
 
 ### Control Settings 
-```json 
+```json
 {
     "MDCApprovedBaselineStatuses": {
         "Linux": [
@@ -335,8 +331,8 @@ Microsoft Defender for Cloud raises alerts (which are typically indicative of re
             "Healthy"
         ]
     }
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -392,7 +388,6 @@ Microsoft Defender for Cloud raises alerts (which are typically indicative of re
 
 ___ 
 
-<!--
 ## Azure_VirtualMachine_SI_Missing_OS_Patches 
 
 ### Display Name 
@@ -402,7 +397,7 @@ Patch virtual machine to protect against vulnerabilities
 Un-patched VMs are easy targets for compromise from various malware/trojan attacks that exploit known vulnerabilities in operating systems and related software. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -411,8 +406,8 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -459,7 +454,6 @@ Un-patched VMs are easy targets for compromise from various malware/trojan attac
 <br />
 
 ___ 
--->
 ## Azure_VirtualMachine_SI_MDC_Recommendations 
 
 ### Display Name 
@@ -528,7 +522,7 @@ Diagnostics must be enabled on the Virtual Machine
 Diagnostics logs are needed for creating activity trail while investigating an incident or a compromise. 
 
 ### Control Settings 
-```json 
+```json
 {
     "RequiredDiagnosticsExtensions": {
         "Linux": [
@@ -545,7 +539,7 @@ Diagnostics logs are needed for creating activity trail while investigating an i
         ]
     }
 }
- ``` 
+```
 
 ### Control Spec 
 
@@ -606,7 +600,7 @@ Install DSRE Qualys Cloud Agent on assets
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising a VM/container with such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -628,8 +622,8 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
         "ExtensionPublisher": "Qualys",
         "ExtensionType": "QualysAgent"
     }
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -688,7 +682,7 @@ Guest Configuration extension must be deployed to the VM using Azure Policy assi
 Installing Guest configuration extension on VM allows you to run In-Guest Policy on the VM, making it possible to monitor system and security policies for compliance checks in the VM. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -712,8 +706,8 @@ Installing Guest configuration extension on VM allows you to run In-Guest Policy
         "ExtensionType": "ConfigurationForWindows",
         "RequiredVersion": "1.11.0"
     }
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -771,7 +765,7 @@ Ensure MMA or AMA is running on your VM
 One or more extensions may be required for maintaining data plane security hygiene and visibility for all Azure VMs in use at an Org. It is important to ensure all required extensions are installed and in healthy provisioning state. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExtensionsForWindows": [
         {
@@ -800,8 +794,8 @@ One or more extensions may be required for maintaining data plane security hygie
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -854,7 +848,7 @@ Management ports must not be open on machines
 Open remote management ports expose a VM/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -870,8 +864,8 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
     ],
     "RestrictedPortsForLinux": "445,3389,22",
     "RestrictedPortsForWindows": "445,3389,5985,5986"
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -886,8 +880,7 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
 > 
 > **Error:** 
 > RestrictedPorts list is not properly configured in control settings.
-> 
-### Recommendation 
+> ### Recommendation 
 
 - **Azure Portal** 
 
@@ -936,7 +929,7 @@ ___
 Security Center uses the Microsoft Monitoring Dependency Agent to collect network traffic data from your Azure virtual machines to enable advanced network protection features such as traffic visualization on the network map, network hardening recommendations and specific network threats. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -953,8 +946,8 @@ Security Center uses the Microsoft Monitoring Dependency Agent to collect networ
         "ExtensionPublisher": "Microsoft.Azure.Monitoring.DependencyAgent",
         "ExtensionType": "DependencyAgentWindows"
     }
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1007,7 +1000,7 @@ Apply Adaptive Network Hardening to Internet facing virtual machines
 Adaptive Network Hardening uses a machine learning algorithm that factors in actual traffic, known trusted configuration, threat intelligence, and other indicators of compromise, and then provides recommendations to further restrict NSGs rules for an improved security posture. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -1021,9 +1014,8 @@ Adaptive Network Hardening uses a machine learning algorithm that factors in act
             "TagValue": "kubernetes"
         }
     ]
-}
- ```  
-
+} 
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -1073,7 +1065,7 @@ Vulnerabilities in security configuration on your machines must be remediated.
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -1082,8 +1074,8 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1134,7 +1126,7 @@ Vulnerabilities in container security configurations must be remediated
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising a VM/container with such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. Unpatched VMs are easy targets for compromise from various malware/trojan attacks that exploit known vulnerabilities in operating systems and related software. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -1143,8 +1135,8 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1195,7 +1187,7 @@ Just-In-Time network access control must be applied on virtual machines
 For new deployments, require Just-In-Time network access control on virtual machines. (Effect type "Deny") *For existing VMs, force the deployment of require Just-In-Time network access on virtual machines. (Effect type "DeployIfNotExists") 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -1209,8 +1201,8 @@ For new deployments, require Just-In-Time network access control on virtual mach
             "TagValue": "kubernetes"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1264,7 +1256,7 @@ Vulnerabilities must be remediated by a Vulnerability Assessment solution
 Known OS/framework vulnerabilities in a system can be easy targets for attackers. An attacker can start by compromising such a vulnerability and can eventually compromise the security of the entire network. A vulnerability assessment solution can help to detect/warn about vulnerabilities in the system and facilitate addressing them in a timely manner. 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -1278,9 +1270,8 @@ Known OS/framework vulnerabilities in a system can be easy targets for attackers
             "TagValue": "kubernetes"
         }
     ]
-}
- ```  
-
+} 
+```
 ### Control Spec 
 
 > **Passed:** 
@@ -1330,7 +1321,7 @@ Only allowed ports must be opened on Virtual Machines
 Open remote management ports expose a VM/compute node to a high level of risk from internet-based attacks that attempt to brute force credentials to gain admin access to the machine. 
 
 ### Control Settings 
-```json 
+```json
 {
     "AllowedPortsForLinux": "443,80",
     "AllowedPortsForWindows": "443,80",
@@ -1341,8 +1332,8 @@ Open remote management ports expose a VM/compute node to a high level of risk fr
             "TagValue": "Databricks"
         }
     ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1405,21 +1396,21 @@ ___
 TLS provides privacy and data integrity between client and server. Using approved TLS version significantly reduces risks from security design issues and security bugs that may be present in older versions.
 
 ### Control Settings 
-```json 
+```json
 {
      "ApplicableOsTypes": [
           "Windows"
       ]
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
 > **Passed:** 
-> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Compliant”.
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to "Compliant".
 >
 > **Failed:** 
-> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to “Non-Compliant”.
+> Azure Policy "Configure secure communication protocols (TLS 1.1 or TLS 1.2)" is set compliant state to "Non-Compliant"".
 > 
 > **Verify:** 
 > Policy state not available for evaluation.
@@ -1475,7 +1466,7 @@ Entra ID (formerly AAD) extension must be deployed to the Linux VM
 Installing Entra ID (formerly AAD) extension on VM allows you to login into VM using Azure AD, making it possible to login user without password and improves authentication security.
 
 ### Control Settings 
-```json 
+```json
 {
     "ExclusionTags": [
         {
@@ -1489,8 +1480,8 @@ Installing Entra ID (formerly AAD) extension on VM allows you to login into VM u
             "ExtensionPublisher" : "Microsoft.Azure.ActiveDirectory",
             "ProvisioningState" : "Succeeded"
      }
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1546,7 +1537,7 @@ Auditing logs must be enabled as they provide details for investigation in case 
 
 
 ### Control Settings 
-```json 
+```json
 {
     "ExcludeBasedOnExtension": {
         "Windows": {
@@ -1577,8 +1568,8 @@ Auditing logs must be enabled as they provide details for investigation in case 
             }
         ]
     }
-}
- ```  
+} 
+```
 
 ### Control Spec 
 
@@ -1612,3 +1603,620 @@ Auditing logs must be enabled as they provide details for investigation in case 
 
 ___ 
 
+## Azure_VirtualMachineScaleSet_Audit_Enable_Data_Collection_Rule
+
+### Display Name
+Audit enabling of Data Collection Rule on Virtual Machine Scale Sets
+
+### Rationale
+Enabling Data Collection Rules (DCR) on Azure Virtual Machine Scale Sets ensures that diagnostic data, such as performance metrics and security logs, is collected and sent to a central location for monitoring and analysis. This is critical for maintaining visibility into the health, performance, and security posture of your scale sets. Enabling DCR supports compliance with regulatory requirements and organizational security standards by ensuring that audit and diagnostic logs are retained and available for investigation.
+
+### Control Spec
+
+> **Passed:**
+> - The Virtual Machine Scale Set has an associated Data Collection Rule (DCR) configured and enabled.
+>
+> **Failed:**
+> - The Virtual Machine Scale Set does not have any Data Collection Rule (DCR) configured or enabled.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Virtual Machine Scale Sets** in the Azure Portal.
+    2. Select the target scale set.
+    3. Under **Monitoring**, select **Diagnostic settings**.
+    4. Click **+ Add diagnostic setting**.
+    5. Choose or create a Data Collection Rule (DCR) and associate it with the scale set.
+    6. Save the configuration.
+
+- **PowerShell**
+    ```powershell
+    # Example: Associate a DCR with a VMSS using PowerShell
+    $resourceGroup = "<ResourceGroupName>"
+    $vmssName = "<VMSSName>"
+    $dcrId = "<DCRResourceId>"
+
+    Set-AzVmssExtension -ResourceGroupName $resourceGroup `
+        -VMScaleSetName $vmssName `
+        -Name "AzureMonitorWindowsAgent" `
+        -Publisher "Microsoft.Azure.Monitor" `
+        -Type "AzureMonitorWindowsAgent" `
+        -TypeHandlerVersion "1.10" `
+        -Settings @{ "dataCollectionRuleId" = $dcrId }
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Example: Associate a DCR with a VMSS using Azure CLI
+    az vmss extension set \
+      --resource-group <ResourceGroupName> \
+      --vmss-name <VMSSName> \
+      --name AzureMonitorWindowsAgent \
+      --publisher Microsoft.Azure.Monitor \
+      --version 1.10 \
+      --settings '{"dataCollectionRuleId":"<DCRResourceId>"}'
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy Definition:**  
+      Deploy the built-in Azure Policy `Configure Azure Monitor agent to be enabled on virtual machine scale sets` to automatically audit and enforce DCR association.
+    - **ARM Template:**  
+      Use an ARM template to deploy the Azure Monitor agent extension with the required DCR on all VMSS instances.
+    - **Bulk Remediation:**  
+      Use Azure Policy Remediation Tasks to apply the policy to existing resources at scale.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:**  
+  `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions?api-version=2022-03-01`
+  <br />
+  **Properties:**  
+  - `settings.dataCollectionRuleId` (must be present and reference a valid DCR)
+  - Extension type: `AzureMonitorWindowsAgent` or `AzureMonitorLinuxAgent`
+
+<br/>
+
+___
+
+
+## Azure_VirtualMachineScaleSet_AuthN_Enable_AADAuth_Windows
+
+### Display Name
+Azure Virtual Machine Scale Sets running Windows should have Azure Active Directory authentication enabled
+
+### Rationale
+Enabling Azure Active Directory (AAD) authentication for Windows Virtual Machine Scale Sets (VMSS) enhances security by allowing centralized identity management and conditional access policies. This reduces the risk of credential compromise, supports multi-factor authentication, and simplifies user lifecycle management, thereby aligning with compliance requirements such as ISO 27001, NIST SP 800-53, and PCI DSS.
+
+### Control Spec
+
+> **Passed:**
+> - Azure Active Directory login is enabled for all Windows VMSS instances.
+>
+> **Failed:**
+> - Azure Active Directory login is not enabled for one or more Windows VMSS instances.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Virtual Machine Scale Sets** in the Azure Portal.
+    2. Select the target VMSS.
+    3. Under **Settings**, select **Configuration**.
+    4. In the **Azure Active Directory** section, set **Login with Azure Active Directory** to **On**.
+    5. Save the configuration.
+
+- **PowerShell**
+    ```powershell
+    # Enable AAD login extension for a Windows VMSS
+    $resourceGroup = "<ResourceGroupName>"
+    $vmssName = "<VMSSName>"
+    Set-AzVmssExtension -ResourceGroupName $resourceGroup `
+        -VMScaleSetName $vmssName `
+        -Name "AADLoginForWindows" `
+        -Publisher "Microsoft.Azure.ActiveDirectory" `
+        -Type "AADLoginForWindows" `
+        -TypeHandlerVersion "1.0"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Enable AAD login extension for a Windows VMSS
+    az vmss extension set \
+      --resource-group <ResourceGroupName> \
+      --vmss-name <VMSSName> \
+      --name AADLoginForWindows \
+      --publisher Microsoft.Azure.ActiveDirectory \
+      --version 1.0
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy definition:  
+      Assign the built-in policy **[Audit Windows virtual machine scale sets without Azure Active Directory authentication enabled](https://portal.azure.com/#blade/Microsoft_Azure_Policy/PolicyDefinitionBlade/definitionId/5e5e0c8e-8c0d-4b5a-8d8a-9b3c7b7c8e6e)** to audit and enforce this control.
+    - For bulk remediation, use an Azure Policy assignment with a deployIfNotExists effect to automatically enable AAD authentication on non-compliant VMSS resources.
+    - ARM Template snippet:
+      ```json
+      {
+        "type": "Microsoft.Compute/virtualMachineScaleSets/extensions",
+        "name": "[concat(parameters('vmssName'), '/AADLoginForWindows')]",
+        "apiVersion": "2021-07-01",
+        "properties": {
+          "publisher": "Microsoft.Azure.ActiveDirectory",
+          "type": "AADLoginForWindows",
+          "typeHandlerVersion": "1.0",
+          "autoUpgradeMinorVersion": true,
+          "settings": {}
+        }
+      }
+      ```
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}/extensions?api-version=2021-07-01`  
+**Properties:**  
+- Checks for the presence of the `AADLoginForWindows` extension with `publisher` set to `Microsoft.Azure.ActiveDirectory` and `type` set to `AADLoginForWindows`.
+
+<br/>
+
+___
+
+
+## Azure_VirtualMachineScaleSet_DP_Avoid_Plaintext_Secrets
+
+### Display Name
+Avoid storing secrets in plaintext in Virtual Machine Scale Set data properties
+
+### Rationale
+Storing sensitive information such as passwords, connection strings, or API keys in plaintext within Virtual Machine Scale Set (VMSS) data properties exposes your environment to significant security risks. Attackers who gain access to these properties could compromise your applications and data. Using secure mechanisms such as Azure Key Vault or managed identities reduces the risk of accidental exposure and helps meet compliance requirements for data protection and confidentiality.
+
+### Control Spec
+
+> **Passed:**
+> No plaintext secrets (e.g., passwords, connection strings, API keys) are found in VMSS custom data, tags, or other properties. All sensitive data is referenced securely (e.g., via Key Vault references or managed identities).
+>
+> **Failed:**
+> Plaintext secrets are detected in VMSS custom data, tags, or other properties. Sensitive information is directly embedded in the resource configuration.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Virtual Machine Scale Sets** in the Azure Portal.
+    2. Select the VMSS instance.
+    3. Review the **Custom data** and **Tags** sections for any embedded secrets.
+    4. Remove any plaintext secrets and replace them with secure references (e.g., Key Vault URIs or managed identities).
+    5. Save your changes.
+
+- **PowerShell**
+    ```powershell
+    # Get VMSS custom data and tags
+    $vmss = Get-AzVmss -ResourceGroupName "<ResourceGroup>" -VMScaleSetName "<VMSSName>"
+    $customData = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($vmss.VirtualMachineProfile.OsProfile.CustomData))
+    $tags = $vmss.Tags
+
+    # Review and update as needed
+    # To update custom data (ensure secrets are removed)
+    $vmss.VirtualMachineProfile.OsProfile.CustomData = [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes("<secure custom data>"))
+    Update-AzVmss -ResourceGroupName "<ResourceGroup>" -Name "<VMSSName>" -VirtualMachineScaleSet $vmss
+    ```
+
+- **Azure CLI**
+    ```bash
+    # View custom data (decode from base64)
+    az vmss show --resource-group <ResourceGroup> --name <VMSSName> --query "virtualMachineProfile.osProfile.customData" -o tsv | base64 --decode
+
+    # Update custom data (ensure secrets are removed)
+    az vmss update --resource-group <ResourceGroup> --name <VMSSName> --set virtualMachineProfile.osProfile.customData="<base64-encoded-secure-data>"
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to audit and deny VMSS resources with plaintext secrets in custom data or tags.
+    - Implement CI/CD pipeline checks to scan for secrets before deployment.
+    - Use Azure Key Vault references in VMSS configurations for sensitive data.
+    - For bulk remediation, script enumeration of all VMSS instances and automate the removal or replacement of detected secrets.
+
+    **Example Azure Policy Definition:**
+    ```json
+    {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Compute/virtualMachineScaleSets"
+          },
+          {
+            "anyOf": [
+              {
+                "field": "Microsoft.Compute/virtualMachineScaleSets/virtualMachineProfile.osProfile.customData",
+                "contains": "password"
+              },
+              {
+                "field": "tags",
+                "contains": "key"
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+    ```
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachineScaleSets/{vmScaleSetName}?api-version=2022-08-01`<br />
+**Properties:** `virtualMachineProfile.osProfile.customData`, `tags`
+
+<br/>
+
+___
+
+
+## Azure_VirtualMachine_Audit_Enable_DataCollectionRule
+
+### Display Name
+Audit - Enable Data Collection Rule for Virtual Machines
+
+### Rationale
+Enabling a Data Collection Rule (DCR) on Azure Virtual Machines ensures that security-relevant telemetry, such as performance metrics, event logs, and security logs, is collected and sent to a central Log Analytics workspace. This supports monitoring, threat detection, and compliance with regulatory requirements such as ISO 27001, NIST, and PCI DSS. Without a DCR, critical security and operational data may not be available for analysis, increasing the risk of undetected threats and non-compliance.
+
+### Control Spec
+
+> **Passed:**
+> - The Azure Virtual Machine has an associated Data Collection Rule (DCR) that is configured and enabled for the resource.
+>
+> **Failed:**
+> - The Azure Virtual Machine does not have any Data Collection Rule (DCR) associated, or the DCR is not enabled.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Azure Monitor** in the Azure Portal.
+    2. Select **Data Collection Rules** under the "Settings" section.
+    3. Click **+ Create** to define a new Data Collection Rule, specifying the required data sources (e.g., Windows Event Logs, performance counters).
+    4. Under **Resources**, add the target Virtual Machine(s).
+    5. Review and create the rule.
+    6. Ensure the rule is enabled and associated with the intended Virtual Machine(s).
+
+- **PowerShell**
+    ```powershell
+    # Install the Az.Monitor module if not already present
+    Install-Module -Name Az.Monitor
+
+    # Create a new Data Collection Rule
+    $dcr = New-AzDataCollectionRule `
+        -ResourceGroupName "<ResourceGroup>" `
+        -RuleName "<DCR-Name>" `
+        -Location "<Region>" `
+        -DataSources @(@{Kind="WindowsEventLog"; Streams=@("Microsoft-Windows-Security-Auditing")}) `
+        -Destinations @(@{Kind="LogAnalytics"; WorkspaceResourceId="/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.OperationalInsights/workspaces/<workspace>"})
+
+    # Associate the DCR with a Virtual Machine
+    New-AzDataCollectionRuleAssociation `
+        -ResourceId "/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.Compute/virtualMachines/<vmName>" `
+        -RuleId $dcr.Id `
+        -AssociationName "<AssociationName>"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Create a Data Collection Rule (DCR)
+    az monitor data-collection rule create \
+      --resource-group <ResourceGroup> \
+      --name <DCR-Name> \
+      --location <Region> \
+      --data-flows '[{"streams":["Microsoft-Windows-Security-Auditing"],"destinations":["<workspace>"]}]' \
+      --data-sources '[{"kind":"WindowsEventLog","streams":["Microsoft-Windows-Security-Auditing"]}]' \
+      --destinations '[{"kind":"LogAnalytics","workspaceResourceId":"/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.OperationalInsights/workspaces/<workspace>"}]'
+
+    # Associate the DCR with a VM
+    az monitor data-collection rule association create \
+      --resource "/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.Compute/virtualMachines/<vmName>" \
+      --rule "/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.Insights/dataCollectionRules/<DCR-Name>" \
+      --name <AssociationName>
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy Definition:** Deploy the built-in policy **[Deploy Data Collection Rule to enable VM insights monitoring](https://portal.azure.com/#blade/Microsoft_Azure_Policy/EditAssignmentBlade/id/%2Fproviders%2FMicrosoft.Authorization%2FpolicyDefinitions%2Ff2e7b6b1-8e8d-4c3e-b6e6-1c2f4b4d5a3d)** to automatically audit and deploy DCRs to all virtual machines.
+    - **ARM Template:** Use the [Data Collection Rule ARM template](https://learn.microsoft.com/azure/azure-monitor/essentials/data-collection-rule-templates) to automate deployment at scale.
+    - **Bulk Remediation:** Use Azure Policyâ€™s "Remediate" feature to assign the policy to a management group or subscription for tenant-wide enforcement.
+    - **AzTS Bulk Remediation:** If using Azure Tenant Security (AzTS), leverage the bulk remediation script provided in the AzTS toolkit to associate DCRs with all VMs in the tenant.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:**  
+  `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/providers/Microsoft.Insights/dataCollectionRuleAssociations?api-version=2021-09-01-preview`  
+  **Properties:**  
+  - `dataCollectionRuleId`  
+  - `associationState` (should be `Enabled`)
+
+<br/>
+
+___
+
+
+## Azure_VirtualMachine_AuthN_Enable_Microsoft_Entra_ID_Auth_Linux
+
+### Display Name
+Enable Microsoft Entra ID Authentication for Linux Virtual Machines
+
+### Rationale
+Enabling Microsoft Entra ID (formerly Azure Active Directory) authentication for Linux virtual machines enhances security by allowing centralized identity management and eliminating the need for local credentials. This control ensures that only users with appropriate Microsoft Entra ID permissions can access Linux VMs, supporting compliance with standards such as ISO 27001, NIST SP 800-53, and CIS Controls. It also enables conditional access policies, multi-factor authentication, and improved auditability.
+
+### Control Spec
+
+> **Passed:**
+> - The Linux virtual machine is configured to allow login using Microsoft Entra ID authentication.
+> - The VM has the required extensions installed and the system-assigned managed identity enabled.
+>
+> **Failed:**
+> - The Linux virtual machine does not have Microsoft Entra ID authentication enabled.
+> - The required extensions or managed identity are missing or misconfigured.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Virtual Machines** in the Azure Portal.
+    2. Select the target Linux VM.
+    3. Under **Settings**, select **Configuration**.
+    4. In the **Identity** section, enable the **System-assigned managed identity**.
+    5. Go to **Login with Microsoft Entra ID** and enable the option.
+    6. Save the configuration.
+    7. Ensure the **AADLoginForLinux** extension is installed.
+
+- **PowerShell**
+    ```powershell
+    # Enable system-assigned managed identity
+    az vm identity assign --name <vm-name> --resource-group <resource-group>
+
+    # Install the AADLoginForLinux extension
+    az vm extension set \
+      --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH \
+      --name AADLoginForLinux \
+      --resource-group <resource-group> \
+      --vm-name <vm-name>
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Enable system-assigned managed identity
+    az vm identity assign --name <vm-name> --resource-group <resource-group>
+
+    # Install the AADLoginForLinux extension
+    az vm extension set \
+      --publisher Microsoft.Azure.ActiveDirectory.LinuxSSH \
+      --name AADLoginForLinux \
+      --resource-group <resource-group> \
+      --vm-name <vm-name>
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy definition: `Audit Linux virtual machines without Microsoft Entra ID login enabled`
+    - Assign the policy at the subscription or management group level for bulk enforcement.
+    - Use Azure Blueprints or ARM templates to automate VM deployment with Entra ID authentication enabled.
+    - For tenant-wide remediation, leverage Azure Policy remediation tasks to deploy the extension and enable managed identity on all non-compliant VMs.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2023-03-01`
+  <br />
+  **Properties:** 
+    - `identity.type` (should be `SystemAssigned` or `UserAssigned`)
+    - `resources[*].type` (should include `Microsoft.Azure.ActiveDirectory.LinuxSSH/AADLoginForLinux`)
+    - `osProfile.linuxConfiguration.ssh` (should be configured for Entra ID login)
+
+<br/>
+
+___
+
+## Azure_VirtualMachine_DP_Avoid_Plaintext_Secrets
+
+### Display Name
+Avoid storing secrets in plaintext on Azure Virtual Machines
+
+### Rationale
+Storing secrets such as passwords, connection strings, or API keys in plaintext on virtual machines exposes them to unauthorized access and increases the risk of data breaches. Adhering to this control helps organizations meet compliance requirements (such as ISO 27001, PCI DSS, and NIST SP 800-53) and strengthens the overall security posture by ensuring sensitive information is protected using secure mechanisms like Azure Key Vault or managed identities.
+
+### Control Spec
+
+> **Passed:**
+> - No plaintext secrets (e.g., passwords, API keys, connection strings) are found in configuration files, environment variables, or scripts on the virtual machine.
+> - Secrets are retrieved securely at runtime using Azure Key Vault, managed identities, or other secure secret management solutions.
+>
+> **Failed:**
+> - Plaintext secrets are detected in files, environment variables, or scripts on the virtual machine.
+> - No secure secret management solution is used for sensitive data.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Review your VM configuration files, environment variables, and scripts for any hardcoded secrets.
+    2. Remove any plaintext secrets and replace them with secure references (e.g., environment variables that use Azure Key Vault).
+    3. Configure your applications to retrieve secrets at runtime from Azure Key Vault or use managed identities for authentication.
+
+- **PowerShell**
+    ```powershell
+    # Example: Assign a managed identity to the VM
+    $vm = Get-AzVM -ResourceGroupName "<ResourceGroupName>" -Name "<VMName>"
+    $vm.Identity.Type = "SystemAssigned"
+    Update-AzVM -ResourceGroupName "<ResourceGroupName>" -VM $vm
+
+    # Example: Grant the VM access to Key Vault
+    Set-AzKeyVaultAccessPolicy -VaultName "<KeyVaultName>" -ObjectId $vm.Identity.PrincipalId -PermissionsToSecrets get
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Assign a system-assigned managed identity to the VM
+    az vm identity assign --resource-group <ResourceGroupName> --name <VMName>
+
+    # Grant the VM access to Key Vault secrets
+    az keyvault set-policy --name <KeyVaultName> --object-id <PrincipalId> --secret-permissions get
+    ```
+
+- **Automation/Remediation**
+    - Use Azure Policy to audit and deny deployments that include plaintext secrets in VM extensions or custom scripts.
+    - Implement Azure Blueprints to enforce secure secret management practices across your environment.
+    - Use Azure Security Center recommendations to identify VMs with insecure secret storage.
+    - For bulk remediation, use scripts to scan VMs for plaintext secrets and automate the migration of secrets to Azure Key Vault.
+
+### Azure Policies or REST APIs used for evaluation
+
+- REST API: `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2022-08-01`<br />
+**Properties:** `osProfile`, `customData`, VM extensions, environment variables, and configuration files scanned for plaintext secrets
+
+<br/>
+
+___
+
+
+## Azure_VirtualMachine_DP_Enable_Encryption_At_Host
+
+### Display Name
+Enable Encryption at Host for Azure Virtual Machines
+
+### Rationale
+Enabling Encryption at Host ensures that all data stored on the VM host is encrypted at rest using platform-managed keys. This provides an additional layer of security beyond disk encryption, protecting against unauthorized access to data at the infrastructure level. This control helps organizations meet compliance requirements for data protection and confidentiality, such as those found in ISO 27001, PCI DSS, and other regulatory frameworks.
+
+### Control Spec
+
+> **Passed:**
+> - The Azure Virtual Machine has the "Encryption at host" feature enabled.
+>
+> **Failed:**
+> - The Azure Virtual Machine does not have "Encryption at host" enabled.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Virtual Machines** in the Azure Portal.
+    2. Select the VM you want to configure.
+    3. Under **Settings**, select **Disks**.
+    4. Click on **Encryption**.
+    5. Set **Encryption at host** to **Enabled**.
+    6. Save the changes and restart the VM if required.
+
+- **PowerShell**
+    ```powershell
+    # Enable Encryption at Host for an existing VM
+    $vm = Get-AzVM -ResourceGroupName "<ResourceGroupName>" -Name "<VMName>"
+    $vm.SecurityProfile = @{ EncryptionAtHost = $true }
+    Update-AzVM -ResourceGroupName "<ResourceGroupName>" -VM $vm
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Enable Encryption at Host for an existing VM
+    az vm update \
+      --resource-group <ResourceGroupName> \
+      --name <VMName> \
+      --set securityProfile.encryptionAtHost=true
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy Definition:**  
+      You can assign the built-in Azure Policy:  
+      `Audit VMs without encryption at host enabled`  
+      or create a custom policy to enforce encryption at host.
+    - **ARM Template Example:**
+      ```json
+      {
+        "type": "Microsoft.Compute/virtualMachines",
+        "apiVersion": "2021-07-01",
+        "name": "[parameters('vmName')]",
+        "properties": {
+          "securityProfile": {
+            "encryptionAtHost": true
+          }
+        }
+      }
+      ```
+    - **Bulk Remediation:**  
+      Use Azure Policy's "DeployIfNotExists" effect to automatically enable encryption at host on non-compliant VMs.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:**  
+  `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}?api-version=2021-07-01`  
+  **Properties:**  
+  `securityProfile.encryptionAtHost`
+
+<br/>
+
+___
+
+
+## Azure_VirtualMachine_SI_Enable_Sense_Agent
+
+### Display Name
+Microsoft Defender for Endpoint (Sense Agent) should be enabled on Virtual Machines
+
+### Rationale
+Enabling the Microsoft Defender for Endpoint (Sense Agent) on Azure Virtual Machines provides advanced threat protection, endpoint detection and response, and vulnerability management. This control helps organizations detect, investigate, and respond to advanced threats on their virtual machines, supporting compliance with security frameworks such as CIS, NIST, and ISO 27001. Ensuring the Sense Agent is enabled reduces the attack surface and improves the security posture of your cloud workloads.
+
+### Control Spec
+
+> **Passed:**
+> - The Microsoft Defender for Endpoint (Sense Agent) is installed and running on the Azure Virtual Machine.
+>
+> **Failed:**
+> - The Sense Agent is not installed, not running, or not reporting on the Azure Virtual Machine.
+
+### Recommendation
+
+- **Azure Portal**
+    1. Navigate to **Microsoft Defender for Cloud** in the Azure Portal.
+    2. Select **Environment settings** and choose the relevant subscription.
+    3. Under **Defender plans**, ensure **Microsoft Defender for Servers** is enabled.
+    4. This will automatically deploy the Microsoft Defender for Endpoint (Sense Agent) via the Log Analytics agent or Azure Monitor agent, depending on your configuration.
+    5. For individual VMs, you can check the **Extensions + applications** blade to verify the presence of the 'MDE.Windows' extension.
+
+- **PowerShell**
+    ```powershell
+    # Install the Microsoft Defender for Endpoint agent on a Windows VM
+    Set-AzVMExtension -ResourceGroupName "<ResourceGroupName>" `
+      -VMName "<VMName>" `
+      -Name "MDE.Windows" `
+      -Publisher "Microsoft.Azure.AzureDefender" `
+      -ExtensionType "MDE.Windows" `
+      -TypeHandlerVersion "1.0"
+    ```
+
+- **Azure CLI**
+    ```bash
+    # Install the Microsoft Defender for Endpoint agent on a Windows VM
+    az vm extension set \
+      --resource-group <ResourceGroupName> \
+      --vm-name <VMName> \
+      --name MDE.Windows \
+      --publisher Microsoft.Azure.AzureDefender \
+      --version 1.0
+    ```
+
+- **Automation/Remediation**
+    - **Azure Policy**: Assign the built-in policy definition `Deploy Microsoft Defender for Endpoint sensor on Windows virtual machines` to automatically deploy the Sense Agent on all new and existing VMs.
+    - **Bulk Remediation**: Use Azure Policy's 'Remediate' feature to deploy the extension to all non-compliant VMs at scale.
+    - **ARM Template**: Add the following extension resource to your VM ARM template:
+        ```json
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('vmName'), '/MDE.Windows')]",
+          "apiVersion": "2021-07-01",
+          "location": "[parameters('location')]",
+          "properties": {
+            "publisher": "Microsoft.Azure.AzureDefender",
+            "type": "MDE.Windows",
+            "typeHandlerVersion": "1.0",
+            "autoUpgradeMinorVersion": true
+          }
+        }
+        ```
+    - **AzTS Remediation**: If using Azure Tenant Security (AzTS), leverage the provided bulk remediation scripts to deploy the Sense Agent across all VMs in the tenant.
+
+### Azure Policies or REST APIs used for evaluation
+
+- **REST API:** `GET https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/extensions?api-version=2021-07-01`  
+  **Properties:** Checks for the presence and provisioning state of the `MDE.Windows` extension.
+
+<br/>
+
+___
