@@ -3,14 +3,14 @@
   "Packages": [
     {
       "Name": "MetadataAggregator",
-      "Latest": "1.1.1402",
-      "Stable": "1.1.1402",
+      "Latest": "1.1.1405",
+      "Stable": "1.1.1405",
       "PackageName": "MetadataAggregator.zip"
     },
     {
       "Name": "WorkItemProcessor",
-      "Latest": "1.1.1180",
-      "Stable": "1.1.1180",
+      "Latest": "1.1.1183",
+      "Stable": "1.1.1183",
       "PackageName": "WorkItemProcessor.zip"
     },
     {
