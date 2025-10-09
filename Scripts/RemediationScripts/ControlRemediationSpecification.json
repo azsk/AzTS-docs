@@ -568,6 +568,19 @@
                     "SubscriptionId"
                 ]
             }
+        },
+        {
+            "ControlId": "Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-AML-Endpoint-KeyAuth.ps1",
+            "LoadCommand": "Remediate-ConfigureMSIdentityForAISearch.ps1",
+            "InitCommand": "Enable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-AADTokenBasedAuthForMLWorkspaceOnlineEndpoint",
+                "Arguments": [
+                    "SubscriptionId"
+                ]
+            }
         }
     ]
 }
