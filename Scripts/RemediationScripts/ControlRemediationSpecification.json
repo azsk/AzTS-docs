@@ -407,19 +407,19 @@
                 ]
             }
         },
-      {
-        "ControlId": "Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only",
-        "EnableRemediation": "true",
-        "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch.ps1",
-        "LoadCommand": "Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch.ps1",
-        "InitCommand": "Configure-RBACAPIAccessOnly",
-        "RollbackMetadata": {
-          "RollbackCommand": "Reset-APIAccess",
-          "Arguments": [
-            "SubscriptionId"
-          ]
-        }
-      },
+        {
+            "ControlId": "Azure_AISearch_AuthZ_Enable_Role_Based_API_Access_Only",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch.ps1",
+            "LoadCommand": "Remediate-ConfigureRoleBasedAPIAcessOnlyForAISearch.ps1",
+            "InitCommand": "Configure-RBACAPIAccessOnly",
+            "RollbackMetadata": {
+                "RollbackCommand": "Reset-APIAccess",
+                "Arguments": [
+                    "SubscriptionId"
+                ]
+            }
+        },
         {
             "ControlId": "Azure_AppService_AuthN_FTP_and_SCM_Access_Disable_Basic_Auth",
             "EnableRemediation": "true",
