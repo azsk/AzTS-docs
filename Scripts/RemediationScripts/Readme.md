@@ -86,7 +86,27 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 74. [Azure_Subscription_Config_Enable_MicrosoftDefender_CSPM](Readme.md#74-azure_subscription_config_enable_microsoftDefender_cspm)
 75. [Azure_AISearch_AuthN_Use_Managed_Service_Identity](Readme.md#75-azure_aisearch_authn_use_managed_service_identity)
 76. [Azure_MachineLearningWorkspace_AuthN_Restrict_Key_Based_AuthType_OnlineEndPoints](Readme.md#76-azure_machinelearningworkspace_authn_restrict_key_based_authtype_onlineendpoints)
-
+77. [Azure_AIServices_AuthN_Use_Managed_Service_Identity](Readme.md#77-azure_aiservices_authn_use_managed_service_identity)
+78. [Azure_AIServicesMultiServiceAccount_AuthN_Use_Managed_Service_Identity](Readme.md#78-azure_aiservicesmultiserviceaccount_authn_use_managed_service_identity)
+79. [Azure_ComputerVision_AuthN_Use_Managed_Service_Identity](Readme.md#79-azure_computervision_authn_use_managed_service_identity)
+80. [Azure_ContentSafety_AuthN_Use_Managed_Service_Identity](Readme.md#80-azure_contentsafety_authn_use_managed_service_identity)
+81. [Azure_DocumentIntelligence_AuthN_Use_Managed_Service_Identity](Readme.md#81-azure_documentintelligence_authn_use_managed_service_identity)
+82. [Azure_FaceAPI_AuthN_Use_Managed_Service_Identity](Readme.md#82-azure_faceapi_authn_use_managed_service_identity)
+83. [Azure_HealthInsights_AuthN_Use_Managed_Service_Identity](Readme.md#83-azure_healthinsights_authn_use_managed_service_identity)
+84. [Azure_ImmersiveReader_AuthN_Use_Managed_Service_Identity](Readme.md#84-azure_immersivereader_authn_use_managed_service_identity)
+85. [Azure_LanguageService_AuthN_Use_Managed_Service_Identity](Readme.md#85-azure_languageservice_authn_use_managed_service_identity)
+86. [Azure_OpenAI_AuthN_Use_Managed_Service_Identity](Readme.md#86-azure_openai_authn_use_managed_service_identity)
+87. [Azure_SpeechService_AuthN_Use_Managed_Service_Identity](Readme.md#87-azure_speechservice_authn_use_managed_service_identity)
+88. [Azure_Translator_AuthN_Use_Managed_Service_Identity](Readme.md#88-azure_translator_authn_use_managed_service_identity)
+89. [Azure_AIServices_DP_Data_Loss_Prevention](Readme.md#89-azure_aiservices_dp_data_loss_prevention)
+90. [Azure_ComputerVision_DP_Data_Loss_Prevention](Readme.md#90-azure_computervision_dp_data_loss_prevention)
+91. [Azure_ContentSafety_DP_Data_Loss_Prevention](Readme.md#91-azure_contentsafety_dp_data_loss_prevention)
+92. [Azure_DocumentIntelligence_DP_Data_Loss_Prevention](Readme.md#92-azure_documentintelligence_dp_data_loss_prevention)
+93. [Azure_FaceAPI_DP_Data_Loss_Prevention](Readme.md#93-azure_faceapi_dp_data_loss_prevention)
+94. [Azure_LanguageService_DP_Data_Loss_Prevention](Readme.md#94-azure_languageservice_dp_data_loss_prevention)
+95. [Azure_MultiServiceAccount_DP_Data_Loss_Prevention](Readme.md#95-azure_multiserviceaccount_dp_data_loss_prevention)
+96. [Azure_OpenAI_DP_Data_Loss_Prevention](Readme.md#96-azure_openai_dp_data_loss_prevention)
+97. [Azure_SpeechService_DP_Data_Loss_Prevention](Readme.md#97-azure_speechservice_dp_data_loss_prevention)
 
 
 <br />
@@ -1575,7 +1595,406 @@ Yes
 
 ___
 
-## 76. Azure_VirtualMachine_DP_Enable_Encryption_At_Host
+## 77. Azure_AIServices_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure AI Services.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 78. Azure_AIServicesMultiServiceAccount_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure AI Services Multi Service Account.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 79. Azure_ComputerVision_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used toconfigure Managed Service Identity (MSI) for Azure Computer Vision.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 80. Azure_ContentSafety_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Content Safety.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 81. Azure_DocumentIntelligence_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Document Intelligence.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 82. Azure_FaceAPI_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Face API.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 83. Azure_HealthInsights_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Health Insights.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 84. Azure_ImmersiveReader_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Immersive Reader.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 85. Azure_LanguageService_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Language Service.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 86. Azure_OpenAI_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure OpenAI.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 87. Azure_SpeechService_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Speech Service.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+
+## 88. Azure_Translator_AuthN_Use_Managed_Service_Identity
+
+### Display Name
+This script is used to configure Managed Service Identity (MSI) for Azure Translator.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ManagedIdentityForCognitiveServices](Remediate-ConfigureManagedIdentityForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+
+## 89. Azure_AIServices_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in AI Services
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 90. Azure_ComputerVision_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Computer Vision
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 91. Azure_ContentSafety_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Content Safety
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 92. Azure_DocumentIntelligence_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Document Intelligence
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 93. Azure_FaceAPI_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Face API
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 94. Azure_LanguageService_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Language Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 95. Azure_MultiServiceAccount_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Multi-Service Account
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 96. Azure_OpenAI_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Azure OpenAI
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 97. Azure_SpeechService_DP_Data_Loss_Prevention
+
+### Display Name
+Data Loss Prevention must be enabled in Speech Service
+
+### Link to Bulk Remediation Script (BRS)
+[Remediate-ConfigureDataLossPreventionForCognitiveServices](Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+___
+
+## 98. Azure_VirtualMachine_DP_Enable_Encryption_At_Host
 
 ### Display Name
 This script is used to Enable Encryption at Host for Virtual machines.
@@ -1592,7 +2011,8 @@ Yes
 ### Supports rollback?
 Yes
 
----
+___
+
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.
 
