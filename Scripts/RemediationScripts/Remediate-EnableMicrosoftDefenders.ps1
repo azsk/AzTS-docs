@@ -1,4 +1,4 @@
-<##########################################
+﻿<##########################################
 
 # Overview:
     This script is used to configure Microsoft Defender on subscription.
@@ -572,7 +572,7 @@ function Enable-MicrosoftDefender
              else
              {                
                 # Define the array of Extension names to compare
-                $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement")
+                $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement", "ApiPosture")
 
                 # Convert the JSON string to a PowerShell object
                 try {
@@ -647,7 +647,7 @@ function Enable-MicrosoftDefender
                      else
                      {                       
                         # Define the array of Extension names to compare
-                        $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement")
+                        $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement", "ApiPosture")
 
                         # Convert the JSON string to a PowerShell object
                         try {
@@ -674,6 +674,7 @@ function Enable-MicrosoftDefender
                         $nonCompliantMDCTierResourcetype += $resource 
 
                     }
+            }
         }
     }
    
@@ -759,7 +760,7 @@ function Enable-MicrosoftDefender
                     }
                      elseif ($_.Name -eq "CloudPosture") 
                     {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ApiPosture","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
                      }
                     else {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
@@ -836,7 +837,7 @@ function Enable-MicrosoftDefender
                     }
                     if ($EnableCSPM -eq $true -and $_.Name -eq "CloudPosture") 
                     {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ApiPosture","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
                      }
                     if ($EnableAI -eq $true -and $_.Name -eq "AI") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
