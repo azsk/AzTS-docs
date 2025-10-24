@@ -592,6 +592,237 @@
                     "SubscriptionId"
                 ]
             }
+        },
+        {
+            "ControlId": "Azure_AIServices_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_AIServicesMultiServiceAccount_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_ComputerVision_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_ContentSafety_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_DocumentIntelligence_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_FaceAPI_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_HealthInsights_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_ImmersiveReader_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_LanguageService_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_SpeechService_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_Translator_AuthN_Use_Managed_Service_Identity",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-ManagedIdentityForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-ManagedIdentityForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_AIServices_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_ComputerVision_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_ContentSafety_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_DocumentIntelligence_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_FaceAPI_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_LanguageService_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_MultiServiceAccount_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_SpeechService_DP_Data_Loss_Prevention",
+            "EnableRemediation": "true",
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
+            "RollbackMetadata": {
+                "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
+                "Arguments": ["SubscriptionId", "FilePath"]
+            }
         }
     ]
 }
