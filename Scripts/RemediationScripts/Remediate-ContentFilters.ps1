@@ -79,8 +79,8 @@ $script:filterConfigMapping = @{
     "Azure_OpenAI_SI_Annotate_Ungrounded_Output" = @{ FilterCategory = "Ungrounded Material"; FilterSource = "Completion"; Action = "Annotate only"; ReqThresholdLevels = @("NotApplicable") }
     
     # Azure OpenAI - Profanity Blocklist Filters
-    "Azure_OpenAI_SI_Apply_Profanity_Blocklist_Output_Content_Filter" = @{ FilterCategory = "Profanity"; FilterSource = "Completion"; Action = "Enabled"; ReqThresholdLevels = @("NotApplicable") }
-    "Azure_OpenAI_SI_Apply_Profanity_Blocklist_Input_Content_Filter" = @{ FilterCategory = "Profanity"; FilterSource = "Prompt"; Action = "Enabled"; ReqThresholdLevels = @("NotApplicable") }
+    "Azure_OpenAI_SI_Apply_Profanity_Blocklist_Output_Content_Filter" = @{ FilterCategory = "Profanity"; FilterSource = "Completion"; Action = "Annotate only"; ReqThresholdLevels = @("NotApplicable") }
+    "Azure_OpenAI_SI_Apply_Profanity_Blocklist_Input_Content_Filter" = @{ FilterCategory = "Profanity"; FilterSource = "Prompt"; Action = "Annotate only"; ReqThresholdLevels = @("NotApplicable") }
 }
 
 function Fetch-API 
@@ -113,7 +113,7 @@ function Fetch-API
                 $response = Invoke-WebRequest -Uri $Uri -Method Get -Headers $Headers -UseBasicParsing -ErrorAction Stop
             }
             "PUT" {
-                $jsonBody = $Body | ConvertTo-Json
+                $jsonBody = $Body | ConvertTo-Json -Depth 10
                 $response = Invoke-WebRequest -Uri $Uri -Method PUT -Headers $Headers -Body $jsonBody -UseBasicParsing -ErrorAction Stop
             }
             default {
@@ -226,6 +226,278 @@ function Remediate-ContentFilters
         Write-Host "      Error occurred during remediation: $_" -ForegroundColor $([Constants]::MessageType.Error)
         return $false
     }
+}
+
+function Backup-RAIPolicyConfigurations
+{
+    <#
+    .SYNOPSIS
+    Backs up original RAI policy configurations to a CSV file before remediation.
+    
+    .DESCRIPTION
+    This function exports all content filter configurations for non-compliant resources to a CSV file.
+    The backup file can be used to revert changes if needed.
+    
+    .PARAMETER SubscriptionId
+    The subscription ID
+    
+    .PARAMETER NonCompliantResources
+    Array of non-compliant resources to backup
+    
+    .OUTPUTS
+    Returns the backup file path if successful, $null if failed
+    #>
+    param (
+        [Parameter(Mandatory = $true)]
+        [string]$SubscriptionId,
+        
+        [Parameter(Mandatory = $true)]
+        [array]$NonCompliantResources
+    )
+    
+    try {
+        $timestamp = Get-Date -Format "yyyyMMddhhmm"
+        $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($SubscriptionId.replace('-','_'))\$($timestamp)\ContentFilters"
+        
+        if (-not (Test-Path -Path $backupFolderPath)) {
+            New-Item -ItemType Directory -Path $backupFolderPath -Force | Out-Null
+        }
+        
+        $backupFileName = "RAIPolicyBackup.csv"
+        $backupFilePath = Join-Path -Path $backupFolderPath -ChildPath $backupFileName
+        
+        Write-Host "Creating backup file: [$($backupFilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+        
+        $backupData = @()
+        
+        foreach ($nonCompliantResource in $NonCompliantResources) {
+            $raiPolicy = $nonCompliantResource.RaiPolicyObject
+            
+            if ($null -eq $raiPolicy -or $null -eq $raiPolicy.properties -or $null -eq $raiPolicy.properties.contentFilters) {
+                Write-Host "Warning: Invalid RAI policy object for deployment [$($nonCompliantResource.DeploymentName)]" -ForegroundColor $([Constants]::MessageType.Warning)
+                continue
+            }
+            
+            $contentFilters = $raiPolicy.properties.contentFilters
+            
+            foreach ($filter in $contentFilters) {
+                $backupData += [PSCustomObject]@{
+                    SubscriptionId = $SubscriptionId
+                    ResourceGroupName = $nonCompliantResource.ResourceGroupName
+                    AccountName = $nonCompliantResource.AccountName
+                    DeploymentName = $nonCompliantResource.DeploymentName
+                    ModelName = $nonCompliantResource.ModelName
+                    RaiPolicyName = $nonCompliantResource.RaiPolicyName
+                    FilterName = $filter.name
+                    FilterSource = $filter.source
+                    Enabled = $filter.enabled
+                    Blocking = $filter.blocking
+                    SeverityLevel = $filter.severityThreshold
+                    AllowedContentTypes = if ($null -ne $filter.allowedContentTypes) { ($filter.allowedContentTypes -join ';') } else { '' }
+                    BackupTimestamp = $timestamp
+                }
+            }
+        }
+        
+        if ($backupData.Count -eq 0) {
+            Write-Host "Error: No data to backup. Cannot proceed with remediation." -ForegroundColor $([Constants]::MessageType.Error)
+            return $null
+        }
+        
+        $backupData | Export-Csv -Path $backupFilePath -NoTypeInformation -Encoding UTF8
+        
+        if (Test-Path -Path $backupFilePath) {
+            Write-Host "Successfully backed up original RAI policy configurations to: [$($backupFilePath)]" -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Total filters backed up: [$($backupData.Count)]" -ForegroundColor $([Constants]::MessageType.Info)
+            return $backupFilePath
+        }
+        else {
+            Write-Host "Error: Backup file was not created successfully." -ForegroundColor $([Constants]::MessageType.Error)
+            return $null
+        }
+    }
+    catch {
+        Write-Host "Error occurred while backing up RAI policy data: $_" -ForegroundColor $([Constants]::MessageType.Error)
+        return $null
+    }
+}
+
+function Rollback-ContentFilters
+{
+    <#
+    .SYNOPSIS
+    Rolls back RAI policy configurations to their original state using a backup CSV file.
+    
+    .DESCRIPTION
+    This function reads a backup CSV file created by Backup-RAIPolicyConfigurations and restores
+    the original content filter configurations for all RAI policies listed in the backup.
+    
+    .PARAMETER BackupFilePath
+    The full path to the backup CSV file containing original RAI policy configurations
+    
+    .EXAMPLE
+    Rollback-ContentFilters -BackupFilePath "C:\Backups\RAIPolicyBackup.csv"
+    #>
+    param (
+        [Parameter(Mandatory = $true, HelpMessage = "Enter the full path to the backup CSV file")]
+        [string]$BackupFilePath
+    )
+    
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "Starting RAI Policy Rollback Process" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+    
+    # Validate backup file exists
+    if (-not (Test-Path -Path $BackupFilePath)) {
+        Write-Host "Error: Backup file not found at path: [$($BackupFilePath)]" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::DoubleDashLine)
+        return
+    }
+    
+    Write-Host "Reading backup file: [$($BackupFilePath)]..." -ForegroundColor $([Constants]::MessageType.Info)
+    
+    try {
+        $backupData = Import-Csv -Path $BackupFilePath -ErrorAction Stop
+        
+        if ($null -eq $backupData -or $backupData.Count -eq 0) {
+            Write-Host "Error: Backup file is empty or invalid." -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host $([Constants]::DoubleDashLine)
+            return
+        }
+        
+        Write-Host "Successfully loaded [$($backupData.Count)] filter configurations from backup." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    catch {
+        Write-Host "Error: Failed to read backup file. Error: $($_)" -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::DoubleDashLine)
+        return
+    }
+    
+    # Extract unique subscription ID from backup data
+    $subscriptionId = ($backupData | Select-Object -First 1).SubscriptionId
+    
+    if ([string]::IsNullOrWhiteSpace($subscriptionId)) {
+        Write-Host "Error: Could not determine Subscription ID from backup file." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host $([Constants]::DoubleDashLine)
+        return
+    }
+    
+    Write-Host "Subscription ID: [$($subscriptionId)]" -ForegroundColor $([Constants]::MessageType.Info)
+    
+    # Connect to Azure account
+    $context = Get-AzContext
+    
+    if ([String]::IsNullOrWhiteSpace($context)) {
+        Write-Host "Connecting to Azure account..." -ForegroundColor $([Constants]::MessageType.Info)
+        Connect-AzAccount -Subscription $subscriptionId -ErrorAction Stop | Out-Null
+        Write-Host "Connected to Azure account." -ForegroundColor $([Constants]::MessageType.Update)
+    }
+    
+    # Set context to the subscription
+    $context = Set-AzContext -SubscriptionId $subscriptionId -ErrorAction Stop
+    Write-Host "Context set to subscription: [$($context.Subscription.Name)]" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host $([Constants]::SingleDashLine)
+    
+    # Group backup data by RAI policy (SubscriptionId + ResourceGroupName + AccountName + RaiPolicyName)
+    $groupedByRaiPolicy = $backupData | Group-Object -Property @{Expression={
+        "$($_.SubscriptionId)|$($_.ResourceGroupName)|$($_.AccountName)|$($_.RaiPolicyName)"
+    }}
+    
+    $totalPolicies = $groupedByRaiPolicy.Count
+    Write-Host "Found [$($totalPolicies)] unique RAI policies to rollback." -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+    
+    $successfulRollbacks = 0
+    $failedRollbacks = 0
+    $policyCount = 0
+    
+    foreach ($policyGroup in $groupedByRaiPolicy) {
+        $policyCount++
+        
+        # Parse the group key
+        $keyParts = $policyGroup.Name -split '\|'
+        $subId = $keyParts[0]
+        $resourceGroupName = $keyParts[1]
+        $accountName = $keyParts[2]
+        $raiPolicyName = $keyParts[3]
+        
+        Write-Host "[$($policyCount)/$($totalPolicies)] Rolling back RAI policy: [$($raiPolicyName)]" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "  Account: [$($accountName)] | Resource Group: [$($resourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Info)
+        
+        try {
+            # Fetch current RAI policy
+            $raiPolicyUri = "https://management.azure.com/subscriptions/$subId/resourceGroups/$resourceGroupName/providers/Microsoft.CognitiveServices/accounts/$accountName/raiPolicies/$raiPolicyName`?api-version=2024-10-01"
+            
+            Write-Host "  Fetching current RAI policy..." -ForegroundColor $([Constants]::MessageType.Info)
+            $currentRaiPolicy = Fetch-API -Method "GET" -Uri $raiPolicyUri
+            
+            if ($null -eq $currentRaiPolicy) {
+                Write-Host "  Error: Failed to fetch current RAI policy." -ForegroundColor $([Constants]::MessageType.Error)
+                $failedRollbacks++
+                continue
+            }
+            
+            # Reconstruct content filters from backup data
+            $restoredContentFilters = @()
+            
+            foreach ($backupFilter in $policyGroup.Group) {
+                $filterObj = @{
+                    name = $backupFilter.FilterName
+                    source = $backupFilter.FilterSource
+                    enabled = [System.Convert]::ToBoolean($backupFilter.Enabled)
+                    blocking = [System.Convert]::ToBoolean($backupFilter.Blocking)
+                }
+                
+                # Add severity level if it exists and is not empty
+                if (-not [string]::IsNullOrWhiteSpace($backupFilter.SeverityLevel)) {
+                    $filterObj.severityThreshold = $backupFilter.SeverityLevel
+                }
+                
+                # Add allowed content types if they exist
+                if (-not [string]::IsNullOrWhiteSpace($backupFilter.AllowedContentTypes)) {
+                    $filterObj.allowedContentTypes = $backupFilter.AllowedContentTypes -split ';'
+                }
+                
+                $restoredContentFilters += $filterObj
+            }
+            
+            Write-Host "  Restored [$($restoredContentFilters.Count)] filters from backup." -ForegroundColor $([Constants]::MessageType.Info)
+            
+            # Update RAI policy with restored filters
+            $currentRaiPolicy.properties.contentFilters = $restoredContentFilters
+            
+            $updateBody = @{
+                properties = $currentRaiPolicy.properties
+            }
+            
+            Write-Host "  Updating RAI policy with restored configurations..." -ForegroundColor $([Constants]::MessageType.Info)
+            $updateResponse = Fetch-API -Method "PUT" -Uri $raiPolicyUri -Body $updateBody
+            
+            if ($null -ne $updateResponse) {
+                Write-Host "  Successfully rolled back RAI policy: [$($raiPolicyName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                $successfulRollbacks++
+            }
+            else {
+                Write-Host "  Error: Failed to update RAI policy." -ForegroundColor $([Constants]::MessageType.Error)
+                $failedRollbacks++
+            }
+        }
+        catch {
+            Write-Host "  Error occurred during rollback: $_" -ForegroundColor $([Constants]::MessageType.Error)
+            $failedRollbacks++
+        }
+        
+        Write-Host ""
+    }
+    
+    # Rollback Summary
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "Rollback Summary" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host $([Constants]::SingleDashLine)
+    Write-Host "Total RAI Policies: [$($totalPolicies)]" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "Successfully Rolled Back: [$($successfulRollbacks)]" -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Failed Rollbacks: [$($failedRollbacks)]" -ForegroundColor $(if($failedRollbacks -gt 0) {[Constants]::MessageType.Error} else {[Constants]::MessageType.Update})
+    Write-Host $([Constants]::DoubleDashLine)
 }
 
 
@@ -427,10 +699,10 @@ function Enable-ContentFilters
 
     Write-Host "Validating whether the current user [$($context.Account.Id)] has the required permissions to run the script for subscription [$($SubscriptionId)]..."
 
-#    if (-not (Validate-UserPermissions -context $context -SubscriptionId $SubscriptionId)) 
-#    {
-#        return
-#    }
+    if (-not (Validate-UserPermissions -context $context -SubscriptionId $SubscriptionId)) 
+    {
+        return
+    }
         
     Write-Host $([Constants]::DoubleDashLine)
     Write-Host "[Step 2 of 3]: Checking Cognitive Services Accounts in Subscription..."
@@ -672,7 +944,7 @@ function Enable-ContentFilters
                         # Check threshold level compliance (only if ReqThresholdLevels is not "NotApplicable")
                         $requiredThresholdLevels = $filterToCheck.ReqThresholdLevels
                         if ($null -ne $requiredThresholdLevels -and $requiredThresholdLevels.Count -gt 0 -and $requiredThresholdLevels[0] -ine "NotApplicable") {
-                            $filterThresholdLevel = $filter.severityLevel
+                            $filterThresholdLevel = $filter.severityThreshold
                             
                             # Check if the filter's threshold level is in the required list
                             $thresholdLevelMatches = $false
@@ -744,9 +1016,25 @@ function Enable-ContentFilters
         return
     }
     
+    # Export original RAI policy data to CSV for backup before remediation
+    Write-Host $([Constants]::DoubleDashLine)
+    Write-Host "[Step 3 of 5]: Backing up original RAI policy configurations..."
+    Write-Host $([Constants]::SingleDashLine)
+    
+    $backupFilePath = Backup-RAIPolicyConfigurations -SubscriptionId $SubscriptionId -NonCompliantResources $nonCompliantResources
+    
+    if ($null -eq $backupFilePath) {
+        Write-Host "`nBackup failed. Cannot proceed with remediation without a valid backup." -ForegroundColor $([Constants]::MessageType.Error)
+        Write-Host "Please ensure you have write permissions in the current directory and try again." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::DoubleDashLine)
+        return
+    }
+    
+    Write-Host $([Constants]::SingleDashLine)
+    
     # Remediate non-compliant resources
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 3 of 4]: Remediating Non-Compliant Resources..."
+    Write-Host "[Step 4 of 5]: Remediating Non-Compliant Resources..."
     Write-Host $([Constants]::SingleDashLine)
     
     $remediatedResources = @()
@@ -815,7 +1103,7 @@ function Enable-ContentFilters
                     
                     # Remediate threshold level if needed
                     if ($isThresholdLevelReason -and $null -ne $requiredThresholdLevels -and $requiredThresholdLevels.Count -gt 0 -and $requiredThresholdLevels[0] -ine "NotApplicable") {
-                        $currentSeverityLevel = $matchingFilter.severityLevel
+                        $currentSeverityLevel = $matchingFilter.severityThreshold
                         
                         $needsUpdate = $true
                         foreach ($reqLevel in $requiredThresholdLevels) {
@@ -827,7 +1115,7 @@ function Enable-ContentFilters
                         
                         if ($needsUpdate) {
                             $newSeverityLevel = $requiredThresholdLevels[0]
-                            $matchingFilter.severityLevel = $newSeverityLevel
+                            $matchingFilter.severityThreshold = $newSeverityLevel
                             Write-Host "    Updated [$($filterCategory)] ($($filterSource)): severityLevel=$($newSeverityLevel)" -ForegroundColor $([Constants]::MessageType.Update)
                             $modified = $true
                         }
@@ -849,7 +1137,7 @@ function Enable-ContentFilters
                     }
                     
                     if ($null -ne $requiredThresholdLevels -and $requiredThresholdLevels.Count -gt 0 -and $requiredThresholdLevels[0] -ine "NotApplicable") {
-                        $newFilter.severityLevel = $requiredThresholdLevels[0]
+                        $newFilter.severityThreshold = $requiredThresholdLevels[0]
                     }
                     
                     $contentFilters += $newFilter
@@ -891,7 +1179,7 @@ function Enable-ContentFilters
     
     # Final Summary
     Write-Host $([Constants]::DoubleDashLine)
-    Write-Host "[Step 4 of 4]: Remediation Summary" -ForegroundColor $([Constants]::MessageType.Info)
+    Write-Host "[Step 5 of 5]: Remediation Summary" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
     
     $totalRemediated = ($remediatedResources | Measure-Object).Count
@@ -906,6 +1194,11 @@ function Enable-ContentFilters
         foreach ($failed in $failedRemediations) {
             Write-Host "  - Deployment: [$($failed.DeploymentName)] | Account: [$($failed.AccountName)] | RG: [$($failed.ResourceGroupName)]" -ForegroundColor $([Constants]::MessageType.Error)
         }
+    }
+    
+    if ($totalRemediated -gt 0) {
+        Write-Host "`nBackup file location: [$($backupFilePath)]" -ForegroundColor $([Constants]::MessageType.Info)
+        Write-Host "Use this file to revert changes if needed." -ForegroundColor $([Constants]::MessageType.Info)
     }
     
     Write-Host $([Constants]::DoubleDashLine)
