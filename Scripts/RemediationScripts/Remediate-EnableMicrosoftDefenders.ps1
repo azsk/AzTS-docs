@@ -1,4 +1,4 @@
-<##########################################
+﻿<##########################################
 
 # Overview:
     This script is used to configure Microsoft Defender on subscription.
@@ -572,7 +572,7 @@ function Enable-MicrosoftDefender
              else
              {                
                 # Define the array of Extension names to compare
-                $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement")
+                $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement", "ApiPosture")
 
                 # Convert the JSON string to a PowerShell object
                 try {
@@ -604,78 +604,80 @@ function Enable-MicrosoftDefender
     {
         $resourceType | ForEach-Object {
                 $resource = $_
-                    if ( $EnableDatabases -eq $true -and  $_.PricingTier -ne $reqMDCTier -and ($_.Name -eq "CosmosDbs" -or $_.Name -eq "OpenSourceRelationalDatabases" -or $_.Name -eq "SqlServers" -or $_.Name -eq "SqlServerVirtualMachines")) {
-                        $nonCompliantMDCTierResourcetype += $resource 
+                if ( $EnableDatabases -eq $true -and  $_.PricingTier -ne $reqMDCTier -and ($_.Name -eq "CosmosDbs" -or $_.Name -eq "OpenSourceRelationalDatabases" -or $_.Name -eq "SqlServers" -or $_.Name -eq "SqlServerVirtualMachines")) {
+                    $nonCompliantMDCTierResourcetype += $resource 
+                }
+
+                if ($EnableResourceManager -eq $true -and $_.Name -eq "Arm" -and  $_.PricingTier -ne $reqMDCTier) {
+                    $nonCompliantMDCTierResourcetype += $resource  
+                }
+
+                if ($EnableAppService -eq $true -and $_.Name -eq "AppServices" -and  $_.PricingTier -ne $reqMDCTier) {
+                    $nonCompliantMDCTierResourcetype += $resource 
+                }
+
+                if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts" -and  $_.PricingTier -ne $reqMDCTier) {
+                    $nonCompliantMDCTierResourcetype += $resource 
+                }
+
+                if ($EnableContainer -eq $true -and $_.Name -eq "Containers" -and  $_.PricingTier -ne $reqMDCTier) {
+                    $nonCompliantMDCTierResourcetype += $resource  
+                }
+
+                if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
+                    $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
+                    $vm = Check-VirtualMachineCompliance -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
+
+                    if (!$vm.IsCompliant) {
+                        $nonCompliantMDCTierResourcetype += $vm
                     }
+                }
 
-                    if ($EnableResourceManager -eq $true -and $_.Name -eq "Arm" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource  
-                    }
+                if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults" -and  $_.PricingTier -ne $reqMDCTier) {
+                    $nonCompliantMDCTierResourcetype += $resource 
+                }
 
-                    if ($EnableAppService -eq $true -and $_.Name -eq "AppServices" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource 
-                    }
-
-                    if ($EnableStorage -eq $true -and $_.Name -eq "StorageAccounts" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource 
-                    }
-
-                    if ($EnableContainer -eq $true -and $_.Name -eq "Containers" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource  
-                    }
-
-                    if ($EnableServers -eq $true -and $_.Name -eq "VirtualMachines") {
-                        $resource = $_ | Select-Object Name, PricingTier, Id, SubPlan, Extensions
-                        $vm = Check-VirtualMachineCompliance -resource $resource -subscriptionId $subscriptionId -reqMDCTier $reqMDCTier -requiredVulnerabilityAssessmentProvider $requiredVulnerabilityAssessmentProvider
-
-                        if (!$vm.IsCompliant) {
-                            $nonCompliantMDCTierResourcetype += $vm
-                        }
-                    }
-
-                    if ($EnableKeyVault -eq $true -and $_.Name -eq "KeyVaults" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource 
-                    }
-
-                    if ($EnableCSPM -eq $true -and $_.Name -eq "CloudPosture") 
+                if ($EnableCSPM -eq $true -and $_.Name -eq "CloudPosture") 
+                {
+                
+                    if($_.PricingTier -ne $reqMDCTier)
                     {
-                    
-                     if($_.PricingTier -ne $reqMDCTier)
-                     {
-                        $nonCompliantMDCTierResourcetype += $resource
-                     }
-                     else
-                     {                       
-                        # Define the array of Extension names to compare
-                        $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement")
-
-                        # Convert the JSON string to a PowerShell object
-                        try {
-                            $jsonArray = $_.Extensions | ConvertFrom-Json
-                        } catch {
-                            Write-Error "Failed to convert JSON string: $_"
-                            return
-                        }
-                        
-                        # Filter by isEnabled value and select the names of enabled extensions
-                        $enabledExtensionsNames = $jsonArray | Where-Object { $_.isEnabled -eq "True" } | Select-Object -ExpandProperty name
-                        
-                        # Compare the enabled names with the given array of Extension names and return the result as a boolean value indicating if no enabled Extension names are present in the given array
-                        $comparisonResult = -not ($enabledExtensionsNames | Where-Object { $ExtensionArray -contains $_ })
-                        
-                        # Convert the JSON string to a PowerShell object
-                        #$jsonArray = $_.Extensions | ConvertFrom-Json
-                        if(!$comparisonResult)
-                        {
-                           $nonCompliantMDCTierResourcetype += $resource 
-                        }             
-                      }
-                    if ($EnableAI -eq $true -and $_.Name -eq "AI" -and  $_.PricingTier -ne $reqMDCTier) {
-                        $nonCompliantMDCTierResourcetype += $resource 
-
+                    $nonCompliantMDCTierResourcetype += $resource
                     }
+                    else
+                    {                       
+                    # Define the array of Extension names to compare
+                    $ExtensionArray = @("SensitiveDataDiscovery", "ContainerRegistriesVulnerabilityAssessments", "AgentlessDiscoveryForKubernetes", "AgentlessVmScanning", "EntraPermissionsManagement", "ApiPosture")
+
+                    # Convert the JSON string to a PowerShell object
+                    try {
+                        $jsonArray = $_.Extensions | ConvertFrom-Json
+                    } catch {
+                        Write-Error "Failed to convert JSON string: $_"
+                        return
+                    }
+                    
+                    # Filter by isEnabled value and select the names of enabled extensions
+                    $enabledExtensionsNames = $jsonArray | Where-Object { $_.isEnabled -eq "True" } | Select-Object -ExpandProperty name
+                    
+                    # Compare the enabled names with the given array of Extension names and return the result as a boolean value indicating if no enabled Extension names are present in the given array
+                    $comparisonResult = -not ($enabledExtensionsNames | Where-Object { $ExtensionArray -contains $_ })
+                    
+                    # Convert the JSON string to a PowerShell object
+                    #$jsonArray = $_.Extensions | ConvertFrom-Json
+                    if(!$comparisonResult)
+                    {
+                        $nonCompliantMDCTierResourcetype += $resource 
+                    }             
+                    }
+                }
+                
+                if ($EnableAI -eq $true -and $_.Name -eq "AI" -and  $_.PricingTier -ne $reqMDCTier) {
+                    $nonCompliantMDCTierResourcetype += $resource 
+                }
         }
     }
+    
    
     $nonCompliantMDCTypeCount = ($nonCompliantMDCTierResourcetype | Measure-Object).Count
 
@@ -759,7 +761,7 @@ function Enable-MicrosoftDefender
                     }
                      elseif ($_.Name -eq "CloudPosture") 
                     {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ApiPosture","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
                      }
                     else {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier
@@ -802,7 +804,7 @@ function Enable-MicrosoftDefender
             }
         }
         else {
-          
+            Write-Host "Setting [$($reqMDCTier)] pricing tier..."
             $nonCompliantMDCTierResourcetype | ForEach-Object {
                 $resource = $_
                 try {
@@ -836,7 +838,7 @@ function Enable-MicrosoftDefender
                     }
                     if ($EnableCSPM -eq $true -and $_.Name -eq "CloudPosture") 
                     {
-                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
+                        $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier -Extension '[{"name":"SensitiveDataDiscovery","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ContainerRegistriesVulnerabilityAssessments","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessDiscoveryForKubernetes","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"AgentlessVmScanning","isEnabled":"True","additionalExtensionProperties":{"ExclusionTags":"[]"},"operationStatus":null},{"name":"EntraPermissionsManagement","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null},{"name":"ApiPosture","isEnabled":"True","additionalExtensionProperties":null,"operationStatus":null}]'
                      }
                     if ($EnableAI -eq $true -and $_.Name -eq "AI") {
                         $remediatedResource = Set-AzSecurityPricing -Name $_.Name -PricingTier $reqMDCTier 
