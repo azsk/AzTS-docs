@@ -852,6 +852,12 @@ function Enable-ContentFilters
                 
                 Write-Host "      Found matching RAI policy: [$($matchingRaiPolicy.name)]" -ForegroundColor $([Constants]::MessageType.Update)
 
+                # Check if RAI policy is system managed
+                if ($matchingRaiPolicy.properties.type -ieq "SystemManaged") {
+                    Write-Host "      RAI policy [$($raiPolicyName)] is System Managed. Please create a User Managed policy to remediate using this script." -ForegroundColor $([Constants]::MessageType.Error)
+                    continue
+                }
+
                 # Check content filter configuration
                 $contentFilters = $matchingRaiPolicy.properties.contentFilters
                 
