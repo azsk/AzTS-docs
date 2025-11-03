@@ -3,6 +3,7 @@
 # Overview:
     This script is used to configure Managed Service Identity for Azure Cognitive Services accounts in a subscription.
     It enables System-Assigned Managed Identity for authentication across multiple Cognitive Services types.
+    Note: Only ONE Control ID can be remediated at a time per script execution.
 
 # Supported Control IDs:
     - Azure_AIServices_AuthN_Use_Managed_Service_Identity
@@ -495,7 +496,7 @@ function Enable-ManagedIdentityForCognitiveServices
         return
     }
     
-    Write-Host "Found [$($totalCognitiveServicesResources)] Cognitive Services resource(s)." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalCognitiveServicesResources)] Cognitive Services resource(s) of kind [$($selectedKind)]." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
     Write-Host "Targeting Cognitive Services kind: $selectedKind" -ForegroundColor $([Constants]::MessageType.Info)
     Write-Host $([Constants]::SingleDashLine)
@@ -522,17 +523,17 @@ function Enable-ManagedIdentityForCognitiveServices
                 Kind                      = $_.Kind
                 Location                  = $location
                 IdentityType              = $identityState.IdentityType
-                HasSystemAssignedIdentity = $identityState.HasSystemAssignedIdentity
+                HasManagedIdentity        = $identityState.HasManagedIdentity
             }
 
-            if ($stateObj.HasSystemAssignedIdentity -eq $false) {
+            if ($stateObj.HasManagedIdentity -eq $false) {
                 $cognitiveServicesResourcesWithoutMSI += $stateObj
             } else {
                 $cognitiveServicesResourcesSkipped += $stateObj
             }
         }
         catch {
-            Write-Host "Error fetching Cognitive Services resource configuration. Resource Name: [$($resourceName)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error fetching Cognitive Services resource configuration. Resource Name: [$($resourceName)], Kind: [$($resource.Kind)]. Error: [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
             $cognitiveServicesResourcesSkipped += [PSCustomObject]@{
                 ResourceId = $resourceId
                 ResourceGroupName = $resourceGroupName
@@ -540,7 +541,7 @@ function Enable-ManagedIdentityForCognitiveServices
                 Kind = $_.Kind
                 Location = $location
                 IdentityType = $null
-                HasSystemAssignedIdentity = $null
+                HasManagedIdentity = $null
                 Error = $_.Exception.Message
             }
         }
@@ -550,12 +551,12 @@ function Enable-ManagedIdentityForCognitiveServices
 
     if ($totalCognitiveServicesResourcesWithoutMSI -eq 0) 
     {
-        Write-Host "No Cognitive Services resource found without Managed Identity. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host "No Cognitive Services resource of kind [$($selectedKind)] found without Managed Identity. Exiting..." -ForegroundColor $([Constants]::MessageType.Update)
         Write-Host $([Constants]::SingleDashLine)
         return
     }
 
-    Write-Host "Found [$($totalCognitiveServicesResourcesWithoutMSI)] Cognitive Services resource(s) without Managed Identity." -ForegroundColor $([Constants]::MessageType.Update)
+    Write-Host "Found [$($totalCognitiveServicesResourcesWithoutMSI)] Cognitive Services resource(s) of kind [$($selectedKind)] without Managed Identity." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
 
     $colsProperty = @{Expression={$_.ResourceName};Label="Resource Name";Width=30;Alignment="left"},
@@ -564,7 +565,7 @@ function Enable-ManagedIdentityForCognitiveServices
                     @{Expression={$_.IdentityType};Label="Identity Type";Width=15;Alignment="left"},
                     @{Expression={$_.ResourceId};Label="Resource ID";Width=120;Alignment="left"}
 
-    Write-Host "Cognitive Services resource(s) without System-Assigned Managed Identity:"
+    Write-Host "Cognitive Services resource(s) without Managed Identity:"
     $cognitiveServicesResourcesWithoutMSI | Format-Table -Property $colsProperty -Wrap
     Write-Host $([Constants]::SingleDashLine)
 
@@ -613,7 +614,7 @@ function Enable-ManagedIdentityForCognitiveServices
         # Includes Cognitive Services accounts that were skipped during remediation. There were errors remediating them.
         $cognitiveServicesResourcesSkippedDuringRemediation = @()
 
-        Write-Host "System-Assigned Managed Identity will be enabled for all $($selectedKind) resource(s)." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host "System-Assigned Managed Identity will be enabled for all [$($totalCognitiveServicesResourcesWithoutMSI)] $($selectedKind) resource(s) where Managed Identity is not configured." -ForegroundColor $([Constants]::MessageType.Warning)
         Write-Host $([Constants]::SingleDashLine)
 
         if (-not $Force)
@@ -633,7 +634,7 @@ function Enable-ManagedIdentityForCognitiveServices
         }
         else
         {
-            Write-Host "'Force' flag is provided. System-Assigned Managed Identity will be enabled for all $($selectedKind) resource(s) without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
+            Write-Host "'Force' flag is provided. System-Assigned Managed Identity will be enabled for all [$($totalCognitiveServicesResourcesWithoutMSI)] $($selectedKind) resource(s) where Managed Identity is not configured, without any further prompts." -ForegroundColor $([Constants]::MessageType.Warning)
             Write-Host $([Constants]::SingleDashLine)
         }
 
@@ -664,14 +665,14 @@ function Enable-ManagedIdentityForCognitiveServices
                 }
                 $cognitiveServicesResourcesRemediated += $remediatedResource
 
-                Write-Host "Successfully enabled System-Assigned Managed Identity for $($selectedKind) resource: Resource Name: [$($resourceName)]" -ForegroundColor $([Constants]::MessageType.Update)
+                Write-Host "Successfully enabled System-Assigned Managed Identity for [$($selectedKind)] resource: Resource Name: [$($resourceName)], Kind: [$($preState.Kind)]" -ForegroundColor $([Constants]::MessageType.Update)
                 Write-Host "Principal ID: [$($updateResult.PrincipalId)]" -ForegroundColor $([Constants]::MessageType.Info)
                 Write-Host $([Constants]::SingleDashLine)
             }
             catch {
                 $cognitiveServicesResourcesSkippedDuringRemediation += $preState
 
-                Write-Host "Error enabling System-Assigned Managed Identity for $($selectedKind) resource: Resource Name: [$($resourceName)]. Error: [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host "Error enabling System-Assigned Managed Identity for [$($selectedKind)] resource: Resource Name: [$($resourceName)], Kind: [$($preState.Kind)]. Error: [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
                 Write-Host $([Constants]::SingleDashLine)
             }
         }
@@ -969,6 +970,17 @@ function Disable-ManagedIdentityForCognitiveServices
 
     Write-Host "Found [$($totalCognitiveServicesResources)] $($selectedKind) resource(s)." -ForegroundColor $([Constants]::MessageType.Update)
     Write-Host $([Constants]::SingleDashLine)
+
+    $colsProperty = @{Expression={$_.ResourceName};Label="Resource Name";Width=30;Alignment="left"},
+                    @{Expression={$_.ResourceGroupName};Label="Resource Group";Width=25;Alignment="left"},
+                    @{Expression={$_.Kind};Label="Kind";Width=20;Alignment="left"},
+                    @{Expression={$_.Location};Label="Location";Width=15;Alignment="left"},
+                    @{Expression={$_.IdentityType};Label="Current Identity";Width=20;Alignment="left"},
+                    @{Expression={$_.ResourceId};Label="Resource ID";Width=120;Alignment="left"}
+
+    Write-Host "$($selectedKind) resource(s) for which Managed Identity configuration will be restored:"
+    $validCognitiveServicesResourceDetails | Format-Table -Property $colsProperty -Wrap
+    Write-Host $([Constants]::SingleDashLine)
     
     # Back up snapshots to `%LocalApplicationData%'.
     $backupFolderPath = "$([Environment]::GetFolderPath('LocalApplicationData'))\AzTS\Remediation\Subscriptions\$($context.Subscription.SubscriptionId.replace('-','_'))\$($(Get-Date).ToString('yyyyMMddhhmm'))\DisableManagedIdentityFor$($selectedKind)"
@@ -1032,7 +1044,7 @@ function Disable-ManagedIdentityForCognitiveServices
                 IdentityTypePostRollback      = $updateResult.IdentityType
                 OriginalIdentityType          = $originalIdentityType
             }
-            Write-Host "Successfully restored Managed Identity configuration for $($selectedKind) resource." -ForegroundColor $([Constants]::MessageType.Update)
+            Write-Host "Successfully restored Managed Identity configuration for [$($selectedKind)] resource: Resource Name: [$($resourceName)], Kind: [$($cognitiveServicesResource.Kind)]" -ForegroundColor $([Constants]::MessageType.Update)
             Write-Host $([Constants]::SingleDashLine)
         }
         catch {
@@ -1045,7 +1057,7 @@ function Disable-ManagedIdentityForCognitiveServices
                 OriginalIdentityType          = $originalIdentityType
                 Error                         = $_.Exception.Message
             }
-            Write-Host "Error restoring Managed Identity configuration for $($selectedKind) resource: [$($resourceName)]. Error: [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
+            Write-Host "Error restoring Managed Identity configuration for [$($selectedKind)] resource: Resource Name: [$($resourceName)], Kind: [$($cognitiveServicesResource.Kind)]. Error: [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
             Write-Host $([Constants]::SingleDashLine)
         }
     }
@@ -1103,7 +1115,7 @@ function Get-CognitiveServicesManagedIdentityState {
         .SYNOPSIS
         Returns the Managed Identity state for a given Azure Cognitive Services account.
         .OUTPUTS
-        [PSCustomObject] Object with IdentityType, HasSystemAssignedIdentity, and PrincipalId properties.
+        [PSCustomObject] Object with IdentityType, HasManagedIdentity, and PrincipalId properties.
     #>
     param(
         [Parameter(Mandatory=$true)]
@@ -1121,7 +1133,7 @@ function Get-CognitiveServicesManagedIdentityState {
         
         $identityType = $null
         $principalId = $null
-        $hasSystemAssignedIdentity = $false
+        $hasManagedIdentity = $false
 
         if ($response.identity) {
             $identityType = $response.identity.type
@@ -1131,13 +1143,13 @@ function Get-CognitiveServicesManagedIdentityState {
             # All three should return TRUE as they indicate Managed Identity is configured
             if (![String]::IsNullOrWhiteSpace($identityType)) {
                 $trimmedType = $identityType.Trim()
-                $hasSystemAssignedIdentity = ($trimmedType -match '\b(SystemAssigned|UserAssigned)\b')
+                $hasManagedIdentity = ($trimmedType -match '\b(SystemAssigned|UserAssigned)\b')
             }
         }
 
         return [PSCustomObject]@{
             IdentityType              = $identityType
-            HasSystemAssignedIdentity = $hasSystemAssignedIdentity
+            HasManagedIdentity        = $hasManagedIdentity
             PrincipalId               = $principalId
         }
     }
