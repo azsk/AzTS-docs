@@ -107,7 +107,35 @@ Bulk remediation scripts (BRS) can be used to remediate non-compliant resources/
 95. [Azure_MultiServiceAccount_DP_Data_Loss_Prevention](Readme.md#95-azure_multiserviceaccount_dp_data_loss_prevention)
 96. [Azure_OpenAI_DP_Data_Loss_Prevention](Readme.md#96-azure_openai_dp_data_loss_prevention)
 97. [Azure_SpeechService_DP_Data_Loss_Prevention](Readme.md#97-azure_speechservice_dp_data_loss_prevention)
-
+98. [Azure_VirtualMachine_DP_Enable_Encryption_At_Host](Readme.md#98-azure_virtualmachine_dp_enable_encryption_at_host)
+99. [Azure_AIFoundry_SI_Apply_Sexual_Output_Content_Filter](Readme.md#99-azure_aifoundry_si_apply_sexual_output_content_filter)
+100. [Azure_AIFoundry_SI_Annotate_Known_Text_Content](Readme.md#100-azure_aifoundry_si_annotate_known_text_content)
+101. [Azure_AIFoundry_SI_Annotate_Known_Code_Content](Readme.md#101-azure_aifoundry_si_annotate_known_code_content)
+102. [Azure_AIFoundry_SI_Apply_Violence_Output_Content_Filter](Readme.md#102-azure_aifoundry_si_apply_violence_output_content_filter)
+103. [Azure_AIFoundry_SI_Apply_Hate_Output_Content_Filter](Readme.md#103-azure_aifoundry_si_apply_hate_output_content_filter)
+104. [Azure_AIFoundry_SI_Apply_Selfharm_Output_Content_Filter](Readme.md#104-azure_aifoundry_si_apply_selfharm_output_content_filter)
+105. [Azure_AIFoundry_SI_Annotate_And_Block_Jailbreak_Input_Content_Filter](Readme.md#105-azure_aifoundry_si_annotate_and_block_jailbreak_input_content_filter)
+106. [Azure_AIFoundry_SI_Annotate_And_Block_Indirect_Attack_Input_Content_Filter](Readme.md#106-azure_aifoundry_si_annotate_and_block_indirect_attack_input_content_filter)
+107. [Azure_AIFoundry_SI_Apply_Violence_Input_Content_Filter](Readme.md#107-azure_aifoundry_si_apply_violence_input_content_filter)
+108. [Azure_AIFoundry_SI_Apply_Hate_Input_Content_Filter](Readme.md#108-azure_aifoundry_si_apply_hate_input_content_filter)
+109. [Azure_AIFoundry_SI_Apply_Selfharm_Input_Content_Filter](Readme.md#109-azure_aifoundry_si_apply_selfharm_input_content_filter)
+110. [Azure_AIFoundry_SI_Apply_Sexual_Input_Content_Filter](Readme.md#110-azure_aifoundry_si_apply_sexual_input_content_filter)
+111. [Azure_AIFoundry_SI_Annotate_Ungrounded_Output](Readme.md#111-azure_aifoundry_si_annotate_ungrounded_output)
+112. [Azure_OpenAI_SI_Apply_Violence_Input_Content_Filter](Readme.md#112-azure_openai_si_apply_violence_input_content_filter)
+113. [Azure_OpenAI_SI_Apply_Hate_Input_Content_Filter](Readme.md#113-azure_openai_si_apply_hate_input_content_filter)
+114. [Azure_OpenAI_SI_Apply_Sexual_Input_Content_Filter](Readme.md#114-azure_openai_si_apply_sexual_input_content_filter)
+115. [Azure_OpenAI_SI_Apply_Selfharm_Input_Content_Filter](Readme.md#115-azure_openai_si_apply_selfharm_input_content_filter)
+116. [Azure_OpenAI_SI_Apply_Violence_Output_Content_Filter](Readme.md#116-azure_openai_si_apply_violence_output_content_filter)
+117. [Azure_OpenAI_SI_Apply_Hate_Output_Content_Filter](Readme.md#117-azure_openai_si_apply_hate_output_content_filter)
+118. [Azure_OpenAI_SI_Apply_Sexual_Output_Content_Filter](Readme.md#118-azure_openai_si_apply_sexual_output_content_filter)
+119. [Azure_OpenAI_SI_Apply_Selfharm_Output_Content_Filter](Readme.md#119-azure_openai_si_apply_selfharm_output_content_filter)
+120. [Azure_OpenAI_SI_Annotate_And_Block_Jailbreak_Input_Content_Filter](Readme.md#120-azure_openai_si_annotate_and_block_jailbreak_input_content_filter)
+121. [Azure_OpenAI_SI_Annotate_And_Block_Indirect_Attack_Input_Content_Filter](Readme.md#121-azure_openai_si_annotate_and_block_indirect_attack_input_content_filter)
+122. [Azure_OpenAI_SI_Annotate_Known_Text_Content](Readme.md#122-azure_openai_si_annotate_known_text_content)
+123. [Azure_OpenAI_SI_Annotate_Known_Code_Content](Readme.md#123-azure_openai_si_annotate_known_code_content)
+124. [Azure_OpenAI_SI_Annotate_Ungrounded_Output](Readme.md#124-azure_openai_si_annotate_ungrounded_output)
+125. [Azure_OpenAI_SI_Apply_Profanity_Blocklist_Output_Content_Filter](Readme.md#125-azure_openai_si_apply_profanity_blocklist_output_content_filter)
+126. [Azure_OpenAI_SI_Apply_Profanity_Blocklist_Input_Content_Filter](Readme.md#126-azure_openai_si_apply_profanity_blocklist_input_content_filter)
 
 <br />
 
@@ -2012,6 +2040,511 @@ Yes
 Yes
 
 ___
+
+## 99. Azure_AIFoundry_SI_Apply_Sexual_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 100. Azure_AIFoundry_SI_Annotate_Known_Text_Content
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 101. Azure_AIFoundry_SI_Annotate_Known_Code_Content
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 102. Azure_AIFoundry_SI_Apply_Violence_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 103. Azure_AIFoundry_SI_Apply_Hate_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 104. Azure_AIFoundry_SI_Apply_Selfharm_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 105. Azure_AIFoundry_SI_Annotate_And_Block_Jailbreak_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 106. Azure_AIFoundry_SI_Annotate_And_Block_Indirect_Attack_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 107. Azure_AIFoundry_SI_Apply_Violence_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 108. Azure_AIFoundry_SI_Apply_Hate_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 109. Azure_AIFoundry_SI_Apply_Selfharm_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 110. Azure_AIFoundry_SI_Apply_Sexual_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 111. Azure_AIFoundry_SI_Annotate_Ungrounded_Output
+
+### Display Name
+This script is used to Enable Content Filters for Azure AI Foundry Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 112. Azure_OpenAI_SI_Apply_Violence_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 113. Azure_OpenAI_SI_Apply_Hate_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 114. Azure_OpenAI_SI_Apply_Sexual_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 115. Azure_OpenAI_SI_Apply_Selfharm_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 116. Azure_OpenAI_SI_Apply_Violence_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 117. Azure_OpenAI_SI_Apply_Hate_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 118. Azure_OpenAI_SI_Apply_Sexual_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 119. Azure_OpenAI_SI_Apply_Selfharm_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 120. Azure_OpenAI_SI_Annotate_And_Block_Jailbreak_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 121. Azure_OpenAI_SI_Annotate_And_Block_Indirect_Attack_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 122. Azure_OpenAI_SI_Annotate_Known_Text_Content
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 123. Azure_OpenAI_SI_Annotate_Known_Code_Content
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 124. Azure_OpenAI_SI_Annotate_Ungrounded_Output
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 125. Azure_OpenAI_SI_Apply_Profanity_Blocklist_Output_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
+## 126. Azure_OpenAI_SI_Apply_Profanity_Blocklist_Input_Content_Filter
+
+### Display Name
+This script is used to Enable Content Filters for Azure OpenAI Resources.
+
+### Link to Bulk Remediation Script (BRS)
+[Enable-ContentFilters](Remediate-ContentFilters.ps1)
+
+### Minimum permissions required to run the script
+Contributor or higher privileged role on Subscription.
+
+### [Supports managed identity](Readme.md#supports-managed-identity-based-remediations) based remediation
+Yes
+
+### Supports rollback?
+Yes
+
+---
 
 ## Supports managed identity based remediations
 Both System assigned and User assigned managed identities are supported.

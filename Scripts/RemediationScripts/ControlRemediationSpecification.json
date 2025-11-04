@@ -729,7 +729,7 @@
             "ControlId": "Azure_AIServices_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -740,7 +740,7 @@
             "ControlId": "Azure_ComputerVision_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -751,7 +751,7 @@
             "ControlId": "Azure_ContentSafety_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -762,7 +762,7 @@
             "ControlId": "Azure_DocumentIntelligence_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -773,7 +773,7 @@
             "ControlId": "Azure_FaceAPI_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -784,7 +784,7 @@
             "ControlId": "Azure_LanguageService_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -795,7 +795,7 @@
             "ControlId": "Azure_MultiServiceAccount_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -806,7 +806,7 @@
             "ControlId": "Azure_OpenAI_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
@@ -817,11 +817,375 @@
             "ControlId": "Azure_SpeechService_DP_Data_Loss_Prevention",
             "EnableRemediation": "true",
             "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
-            "LoadCommand": "Remediate-ConfigureManagedIdentityForCognitiveServices.ps1",
+            "LoadCommand": "Remediate-ConfigureDataLossPreventionForCognitiveServices.ps1",
             "InitCommand": "Enable-DataLossPreventionForCognitiveServices",
             "RollbackMetadata": {
                 "RollbackCommand": "Disable-DataLossPreventionForCognitiveServices",
                 "Arguments": ["SubscriptionId", "FilePath"]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Sexual_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Annotate_Known_Text_Content",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Annotate_Known_Code_Content",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Violence_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Hate_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Selfharm_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Annotate_And_Block_Jailbreak_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Annotate_And_Block_Indirect_Attack_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Violence_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Hate_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Selfharm_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Apply_Sexual_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_AIFoundry_SI_Annotate_Ungrounded_Output",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Violence_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Hate_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Sexual_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Selfharm_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Violence_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Hate_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Sexual_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Selfharm_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Annotate_And_Block_Jailbreak_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Annotate_And_Block_Indirect_Attack_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Annotate_Known_Text_Content",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Annotate_Known_Code_Content",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Annotate_Ungrounded_Output",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Profanity_Blocklist_Output_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
+            }
+        },
+        {
+            "ControlId": "Azure_OpenAI_SI_Apply_Profanity_Blocklist_Input_Content_Filter",
+            "EnableRemediation": true,
+            "RemediationScriptUrl": "https://raw.githubusercontent.com/azsk/AzTS-docs/main/Scripts/RemediationScripts/Remediate-ContentFilters.ps1",
+            "LoadCommand": "Remediate-ContentFilters.ps1",
+            "InitCommand": "Enable-ContentFilters",
+            "RollbackMetadata": {
+                "RollbackCommand": "Enable-ContentFilters",
+                "Arguments": [
+                        "BackupFilePath"
+                ]
             }
         }
     ]
