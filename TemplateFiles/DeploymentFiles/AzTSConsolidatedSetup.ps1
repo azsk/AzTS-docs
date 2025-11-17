@@ -475,8 +475,8 @@ function Setup-Prerequisites {
         "Az.Websites" = "2.8.1";
         "Az.Network"  = "2.5.0";
         "Az.FrontDoor" = "1.8.0";
-	"Az.CosmosDB" = "1.8.2";
-        "AzureAD" = "2.0.2.130";
+	    "Az.CosmosDB" = "1.8.2";
+        "Microsoft.Graph" = "2.30.0";
     }
 
     $requiredModuleNames = @()

@@ -1,4 +1,4 @@
-# Load all other scripts that are required by this script.
+﻿# Load all other scripts that are required by this script.
 . "$PSScriptRoot\OnDemandScan.ps1"
 
 # Standard configuration
@@ -617,9 +617,9 @@ function Install-AzSKTenantSecuritySolution
                         $replyUris.Add(($AzureEnvironmentAppServiceURI.$AzureEnvironmentName -f $UIAzureADAppName));
                         $replyUris.Add($([string]::Join("/", $([string]::Format($AzureEnvironmentAppServiceURI.$AzureEnvironmentName, $UIAzureADAppName)), "auth.html")));
 
-                        $webUIApp = Get-AzureADApplication -Filter "AppId eq '$UIAzureADAppId'"
+                        $webUIApp = Get-MgApplication -Filter "appId eq '$UIAzureADAppId'"
 
-                        Set-AzureADApplication -ObjectId $webUIApp.ObjectId -ReplyUrls $replyUris
+                        Update-MgApplication -ApplicationId $webUIApp.Id -Web @{ RedirectUris = $replyUris }
                     }
 
                     if($EnableAzTSUI -and $deploymentResult.Outputs.ContainsKey('uiAppName') -and $deploymentResult.Outputs.ContainsKey('webApiName'))
@@ -1344,26 +1344,26 @@ Function CreateAzureADApplication
 
     Write-Host "Checking if Azure AD application [$($displayName)] already exist..." -ForegroundColor $([Constants]::MessageType.Info)
 
-    if (!(Get-AzureADApplication -SearchString $displayName)) {
+    if (!(Get-MgApplication -Filter "displayName eq '$displayName'")) {
 
         Write-Host "Creating new AD application [$($displayName)]..." -ForegroundColor $([Constants]::MessageType.Info)
         # create new application
-        $app = New-AzureADApplication -DisplayName $displayName
+        $app = New-MgApplication -DisplayName $displayName
 
         # create a service principal for your application
-        $spForApp = New-AzureADServicePrincipal -AppId $app.AppId 
+        $spForApp = New-MgServicePrincipal -AppId $app.AppId
 
     }
     else
     {
         Write-Host "AD application [$($displayName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)
-        $app = Get-AzureADApplication -SearchString $displayName
+        $app = Get-MgApplication -Filter "displayName eq '$displayName'"
     }
 
     # Adding additional owners (if any)
     if (($AdditionalOwnerUPNs| Measure-Object).Count -gt 0)
     {
-        Add-OwnersToAADApplication -AppObjectId $app.ObjectId -UserPrincipalNames $AdditionalOwnerUPNs
+        Add-OwnersToAADApplication -AppObjectId $app.Id -UserPrincipalNames $AdditionalOwnerUPNs
     }
 
     #endregion
@@ -1378,28 +1378,31 @@ function GetADPermissionToBeGranted
         $appPermissionsRequired
     )
 
-    $targetSp = Get-AzureADServicePrincipal -Filter "AppId eq '$($targetServicePrincipalAppId)'"
+    $targetSp = Get-MgServicePrincipal -Filter "appId eq '$($targetServicePrincipalAppId)'"
 
     $RoleAssignments = @()
     Foreach ($AppPermission in $appPermissionsRequired) {
-        $RoleAssignment = $targetSp.Oauth2Permissions | Where-Object { $_.Value -eq $AppPermission}
+        $RoleAssignment = $targetSp.Oauth2PermissionScopes | Where-Object { $_.Value -eq $AppPermission}
         $RoleAssignments += $RoleAssignment
     }
 
-    $ResourceAccessObjects = New-Object 'System.Collections.Generic.List[Microsoft.Open.AzureAD.Model.ResourceAccess]'
+    $ResourceAccessObjects = @()
     foreach ($RoleAssignment in $RoleAssignments) {
-        $resourceAccess = New-Object -TypeName "Microsoft.Open.AzureAD.Model.ResourceAccess"
-        $resourceAccess.Id = $RoleAssignment.Id
-        $resourceAccess.Type = 'Scope'
-        $ResourceAccessObjects.Add($resourceAccess)
+        $resourceAccess = @{
+            Id = $RoleAssignment.Id
+            Type = 'Scope'
+        }
+        $ResourceAccessObjects += $resourceAccess
     }
-    $requiredResourceAccess = New-Object -TypeName "Microsoft.Open.AzureAD.Model.RequiredResourceAccess"
-    $requiredResourceAccess.ResourceAppId = $targetSp.AppId
-    $requiredResourceAccess.ResourceAccess = $ResourceAccessObjects
+    
+    $requiredResourceAccess = @{
+        ResourceAppId = $targetSp.AppId
+        ResourceAccess = $ResourceAccessObjects
+    }
 
     return $requiredResourceAccess
-    
 }
+
 
 function get-hash([string]$textToHash) {
     $hasher = new-object System.Security.Cryptography.MD5CryptoServiceProvider
@@ -1447,8 +1450,7 @@ function Grant-AzSKGraphPermissionToUserAssignedIdentity
     try {
 
         Write-Host "WARNING: To grant Graph API permission, the signed-in user must be a member of one of the following administrator roles: Global Administrator or Privileged Role Administrator." -ForegroundColor $([Constants]::MessageType.Warning)
-        
-        
+                
         # Validate input
         if([string]::IsNullOrWhiteSpace($UserAssignedIdentityObjectId)) 
         {
@@ -1484,28 +1486,27 @@ function GrantMSGraphPermissionsToAADIdentity
        [string[]]
        $ADGraphPermissionsRequired
     )
-
-    $msi = Get-AzureADServicePrincipal -ObjectId $AADIdentityObjectId
+    $msi = Get-AzADServicePrincipal -Id $AADIdentityObjectId
     $groupPermissions = @()
     
     if(($MSGraphPermissionsRequired | Measure-Object).Count -gt 0)
     {
         # MS Graph ID
         $targetServicePrincipalAppId='00000003-0000-0000-c000-000000000000'
-        $graph = Get-AzureADServicePrincipal -Filter "AppId eq '$($targetServicePrincipalAppId)'"
-        $groupPermissions += @($graph.AppRoles | Where { $MSGraphPermissionsRequired -contains $_.Value -and $_.AllowedMemberTypes -contains "Application"} `
+        $graph = Get-AzADServicePrincipal -AppId $targetServicePrincipalAppId
+        $groupPermissions += @($graph.AppRole | Where { $MSGraphPermissionsRequired -contains $_.Value -and $_.AllowedMemberType -contains "Application"} `
                                                 | Select *, @{ Label = "PermissionScope"; Expression = {"MS Graph"}}, `
-                                                            @{ Label = "GraphServicePrincipalObjectId"; Expression = {$graph.ObjectId}})
+                                                            @{ Label = "GraphServicePrincipalObjectId"; Expression = {$graph.Id}})
     }
 
     if(($ADGraphPermissionsRequired | Measure-Object).Count -gt 0)
     {
         # Azure AD Graph ID
         $targetServicePrincipalAppId='00000002-0000-0000-c000-000000000000'
-        $graph = Get-AzureADServicePrincipal -Filter "AppId eq '$($targetServicePrincipalAppId)'"
-        $groupPermissions += @($graph.AppRoles | Where { $ADGraphPermissionsRequired -contains $_.Value -and $_.AllowedMemberTypes -contains "Application"}  `
+        $graph = Get-AzADServicePrincipal -AppId $targetServicePrincipalAppId
+        $groupPermissions += @($graph.AppRole | Where { $ADGraphPermissionsRequired -contains $_.Value -and $_.AllowedMemberType -contains "Application"}  `
                                                 | Select *, @{ Label = "PermissionScope"; Expression = {"Azure AD Graph"}}, `
-                                                            @{ Label = "GraphServicePrincipalObjectId"; Expression = {$graph.ObjectId}})
+                                                            @{ Label = "GraphServicePrincipalObjectId"; Expression = {$graph.Id}})
     }
     
     # Grant permission to managed identity.
@@ -1517,11 +1518,12 @@ function GrantMSGraphPermissionsToAADIdentity
 
             try 
             {
-                $RoleAssignment = New-AzureADServiceAppRoleAssignment `
-                                                            -Id $_.Id `
-                                                            -ObjectId $msi.ObjectId `
-                                                            -PrincipalId $msi.ObjectId `
-                                                            -ResourceId $_.GraphServicePrincipalObjectId
+                $RoleAssignment = New-MgServicePrincipalAppRoleAssignment `
+                                                            -ServicePrincipalId $msi.Id `
+                                                            -PrincipalId $msi.Id `
+                                                            -ResourceId $_.GraphServicePrincipalObjectId `
+                                                            -AppRoleId $_.Id
+
                 Write-Host "Successfully granted [$($_.Value)] permission to Azure AD enterprise application." -ForegroundColor $([Constants]::MessageType.Update)
             }
             catch
@@ -1568,103 +1570,124 @@ function Set-AzSKTenantSecurityADApplication
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Azure environment in which Azure Tenant Security Solution needs to be installed. The acceptable values for this parameter are: AzureCloud, AzureGovernmentCloud, AzureChinaCloud")]
         [ValidateSet("AzureCloud", "AzureGovernmentCloud","AzureChinaCloud")]
         $AzureEnvironmentName = "AzureCloud",
-	
+
         [switch]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
         [Parameter(Mandatory = $false, ParameterSetName = "Custom", HelpMessage="Switch to mark if command is invoked through consolidated installation command. This will result in masking of few instrcution messages. Using this switch is not recommended while running this command in standalone mode.")]
-	$ConsolidatedSetup = $false,
+		$ConsolidatedSetup = $false,
 
         [string[]]
         [Parameter(Mandatory = $false, ParameterSetName = "Default", HelpMessage="UserPrinicipalNames of the additional owners for the App to be created.")]
         [Parameter(Mandatory = $false, ParameterSetName = "Custom", HelpMessage="UserPrinicipalNames of the additional owners for the App to be created.")]
         $AdditionalOwnerUPNs = @()
 
-        )
+    )
+
+    try
+    {
+        $output = "" | Select WebAPIAzureADAppId,UIAzureADAppId 
+
+        if (-not $ConsolidatedSetup)
+        {
+            Write-Host $([Constants]::DoubleDashLine)
+            Write-Host "$([Constants]::AzureADAppSetupInstructionMsg)" -ForegroundColor $([Constants]::MessageType.Info)
+        }
+        Write-Host "NOTE: If you do not have the permission to perform aforementioned operations, please contact your administrator to complete the setup." -ForegroundColor $([Constants]::MessageType.Warning)
+        Write-Host $([Constants]::SingleDashLine)
+
+        $ResourceId='/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId,$ScanHostRGName;
+        $ResourceIdHash = get-hash($ResourceId)
+        $ResourceHash = $ResourceIdHash.Substring(0,5).ToString().ToLower() #considering only first 5 characters
+
+        Write-Host "Starting Azure AD application setup..." -ForegroundColor $([Constants]::MessageType.Info)
+
+        # Creating Azure AD application: Web API
+        if([string]::IsNullOrWhiteSpace($WebAPIAzureADAppName))
+        {
+            $WebAPIAzureADAppName = "AzSK-AzTS-WebApi-$ResourceHash";
+        }
+
+        $webApi = CreateAzureADApplication -displayName $WebAPIAzureADAppName -AdditionalOwnerUPNs $AdditionalOwnerUPNs
+
+        # Creating Azure AD application: UI
+        if([string]::IsNullOrWhiteSpace($UIAzureADAppName))
+        {
+            $UIAzureADAppName="AzSK-AzTS-UI-$ResourceHash"
+        }
+
+        $webUIApp = CreateAzureADApplication -displayName $UIAzureADAppName -AdditionalOwnerUPNs $AdditionalOwnerUPNs
+
+        Write-Host "Updating Azure AD application registration..." -ForegroundColor $([Constants]::MessageType.Info)
+
+        $identifierUri = 'api://{0}' -f $webUIApp.AppId
+
+        $replyUris = @()
+        $replyUris += ($AzureEnvironmentAppServiceURI.$AzureEnvironmentName -f $UIAzureADAppName)
+        $replyUris += ("{0}/auth.html" -f ($AzureEnvironmentAppServiceURI.$AzureEnvironmentName -f $UIAzureADAppName))
+        $replyUris = [string[]]$replyUris
+
+        Update-MgApplication `
+            -ApplicationId $webUIApp.Id `
+            -IdentifierUris @($identifierUri) `
+            -Web @{
+                RedirectUris = $replyUris
+                ImplicitGrantSettings = @{
+                    EnableIdTokenIssuance    = $true
+                    EnableAccessTokenIssuance = $true
+                }
+            }
+
+        $identifierUri = 'api://{0}' -f $webApi.AppId
+
+        Update-MgApplication `
+            -ApplicationId $webApi.Id `
+            -IdentifierUris @($identifierUri) `
+            -Web @{
+                ImplicitGrantSettings = @{
+                    EnableIdTokenIssuance    = $true
+                    EnableAccessTokenIssuance = $true
+                }
+            }
+
+        Write-Host "Updated Azure AD applications redirection URL and OAuth 2.0 implicit grant flow." -ForegroundColor $([Constants]::MessageType.Info)
 
         try
         {
-            $output = "" | Select WebAPIAzureADAppId,UIAzureADAppId 
+            Write-Host "Granting 'User.Read' permission to UI AD application..." -ForegroundColor $([Constants]::MessageType.Info)
 
-            if (-not $ConsolidatedSetup)
-            {
-                Write-Host $([Constants]::DoubleDashLine)
-                Write-Host "$([Constants]::AzureADAppSetupInstructionMsg)" -ForegroundColor $([Constants]::MessageType.Info)
-            }
-            Write-Host "NOTE: If you do not have the permission to perform aforementioned operations, please contact your administrator to complete the setup." -ForegroundColor $([Constants]::MessageType.Warning)
-            Write-Host $([Constants]::SingleDashLine)
-
-            $ResourceId='/subscriptions/{0}/resourceGroups/{1}' -f $SubscriptionId,$ScanHostRGName;
-            $ResourceIdHash = get-hash($ResourceId)
-            $ResourceHash = $ResourceIdHash.Substring(0,5).ToString().ToLower() #considering only first 5 characters
-
-            Write-Host "Starting Azure AD application setup..." -ForegroundColor $([Constants]::MessageType.Info)
-
-            # Creating Azure AD application: Web API
-            if([string]::IsNullOrWhiteSpace($WebAPIAzureADAppName))
-            {
-                $WebAPIAzureADAppName = "AzSK-AzTS-WebApi-$ResourceHash";
-            }
-
-            $webApi = CreateAzureADApplication -displayName $WebAPIAzureADAppName -AdditionalOwnerUPNs $AdditionalOwnerUPNs
-
-            # Creating Azure AD application: UI
-            if([string]::IsNullOrWhiteSpace($UIAzureADAppName))
-            {
-                $UIAzureADAppName="AzSK-AzTS-UI-$ResourceHash"
-            }
-
-            $webUIApp = CreateAzureADApplication -displayName $UIAzureADAppName -AdditionalOwnerUPNs $AdditionalOwnerUPNs
-
-            Write-Host "Updating Azure AD application registration..." -ForegroundColor $([Constants]::MessageType.Info)
-
-            $identifierUri = 'api://{0}' -f $webUIApp.AppId
-            $replyUris = New-Object Collections.Generic.List[string]
-            $replyUris.Add(($AzureEnvironmentAppServiceURI.$AzureEnvironmentName -f $UIAzureADAppName));
-            $replyUris.Add($([string]::Join("/", $([string]::Format($AzureEnvironmentAppServiceURI.$AzureEnvironmentName, $UIAzureADAppName)), "auth.html")));
-            Set-AzureADApplication -ObjectId $webUIApp.ObjectId -ReplyUrls $replyUris -IdentifierUris $identifierUri -Oauth2AllowImplicitFlow $true
-            
-            $identifierUri = 'api://{0}' -f $webApi.AppId
-            Set-AzureADApplication -ObjectId $webApi.ObjectId -IdentifierUris $identifierUri -Oauth2AllowImplicitFlow $true
-
-            Write-Host "Updated Azure AD applications redirection URL and OAuth 2.0 implicit grant flow." -ForegroundColor $([Constants]::MessageType.Info)
-
-            try
-            {
-                Write-Host "Granting 'User.Read' permission to UI AD application..." -ForegroundColor $([Constants]::MessageType.Info)
-
-                # MS Graph ID
-                $targetServicePrincipalAppId='00000003-0000-0000-c000-000000000000';        
-                # Grant MS Graph permission
-                # Get Azure AD App for UI. Grant graph permission.
-                $appPermissionsRequired = @('User.Read')
-                $permission = GetADPermissionToBeGranted -targetServicePrincipalAppId $targetServicePrincipalAppId -appPermissionsRequired $appPermissionsRequired
-                Set-AzureADApplication -ObjectId $webUIApp.ObjectId -RequiredResourceAccess $permission
-                Write-Host "Granted UI AD application 'User.Read' permission." -ForegroundColor $([Constants]::MessageType.Info)
-            }
-            catch
-            {
-                Write-Host "Failed to grant 'User.Read' permission. ExceptionMessage $($_)" -ForegroundColor Red
-            }
-            $output.WebAPIAzureADAppId = $webApi.AppId
-            $output.UIAzureADAppId = $webUIApp.AppId
-
-            Write-Host "Completed Azure AD application setup." -ForegroundColor $([Constants]::MessageType.Update)
-            Write-Host $([Constants]::SingleDashLine)    
-            if (-not $ConsolidatedSetup)
-            {
-                $NextStepMessage =  $([Constants]::AzureADAppSetupNextSteps) -f $webApi.AppId, $webUIApp.AppId
-                Write-Host "$($NextStepMessage)" -ForegroundColor $([Constants]::MessageType.Info)
-                Write-Host $([Constants]::DoubleDashLine)
-            }
-
-            return $output;
-            
+            # MS Graph ID
+            $targetServicePrincipalAppId='00000003-0000-0000-c000-000000000000';        
+            # Grant MS Graph permission
+            # Get Azure AD App for UI. Grant graph permission.
+            $appPermissionsRequired = @('User.Read')
+            $permission = GetADPermissionToBeGranted -targetServicePrincipalAppId $targetServicePrincipalAppId -appPermissionsRequired $appPermissionsRequired
+            Update-MgApplication -ApplicationId $webUIApp.Id -RequiredResourceAccess $permission
+            Write-Host "Granted UI AD application 'User.Read' permission." -ForegroundColor $([Constants]::MessageType.Info)
         }
         catch
         {
-            Write-Host "Error occurred while setting up Azure AD application. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
-            return;
+            Write-Host "Failed to grant 'User.Read' permission. ExceptionMessage $($_)" -ForegroundColor Red
         }
+        $output.WebAPIAzureADAppId = $webApi.AppId
+        $output.UIAzureADAppId = $webUIApp.AppId
+
+        Write-Host "Completed Azure AD application setup." -ForegroundColor $([Constants]::MessageType.Update)
+        Write-Host $([Constants]::SingleDashLine)    
+        if (-not $ConsolidatedSetup)
+        {
+            $NextStepMessage =  $([Constants]::AzureADAppSetupNextSteps) -f $webApi.AppId, $webUIApp.AppId
+            Write-Host "$($NextStepMessage)" -ForegroundColor $([Constants]::MessageType.Info)
+            Write-Host $([Constants]::DoubleDashLine)
+        }
+
+        return $output;
+            
+    }
+    catch
+    {
+        Write-Host "Error occurred while setting up Azure AD application. ErrorMessage [$($_)]" -ForegroundColor $([Constants]::MessageType.Error)
+        return;
+    }
 }
 
 
@@ -1731,7 +1754,7 @@ function Set-AzSKTenantSecuritySolutionScannerIdentity
             # Step 2: Create resource group where user-assigned MI resource will be created. 
             try
             {
-               Write-Verbose "$(Get-TimeStamp)Checking resource group for deployment..." #-ForegroundColor $([Constants]::MessageType.Info)
+                Write-Verbose "$(Get-TimeStamp)Checking resource group for deployment..." #-ForegroundColor $([Constants]::MessageType.Info)
                 $rg = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
                 if(-not $rg)
                 {
@@ -1746,6 +1769,7 @@ function Set-AzSKTenantSecuritySolutionScannerIdentity
             catch
             {  
                 Write-Host "`n`rFailed to create resource group for deployment." -ForegroundColor $([Constants]::MessageType.Error)
+                Write-Host $_ -ForegroundColor Gray
                 return;
             }
 
@@ -1761,7 +1785,7 @@ function Set-AzSKTenantSecuritySolutionScannerIdentity
             else
             {
                 Write-Host "User-assigned identity [$($UserAssignedIdentityName)] already exists." -ForegroundColor $([Constants]::MessageType.Info)                            
-            }
+                    }
             
             # Grant User Identity Reader permission on target subscription(s).
             Write-Host "Granting user-assigned identity 'Reader' permission on target scope(s)..." -ForegroundColor $([Constants]::MessageType.Info)         
@@ -1786,7 +1810,6 @@ function Set-AzSKTenantSecuritySolutionScannerIdentity
                         else
                         {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                               
                         }
                     }
                 }
@@ -1811,7 +1834,6 @@ function Set-AzSKTenantSecuritySolutionScannerIdentity
                         else
                         {
                             Write-Host "Error occurred while granting permission. ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-                               
                         }
                     }
                 }
@@ -1929,15 +1951,15 @@ function Set-AzSKTenantSecuritySolutionSecretStorage
             # Step 2: Create resource group where KV resource will be created. 
             try
             {
-                Write-Verbose "Checking resource group for deployment..." #-ForegroundColor $([Constants]::MessageType.Info)
+                Write-Verbose "$(Get-TimeStamp)Checking resource group for deployment..." #-ForegroundColor $([Constants]::MessageType.Info)
                 $rg = Get-AzResourceGroup -Name $ResourceGroupName -ErrorAction SilentlyContinue
                 if(-not $rg)
                 {
-                    Write-Verbose "Creating resource group for deployment..." #-ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Verbose "$(Get-TimeStamp)Creating resource group for deployment..." #-ForegroundColor $([Constants]::MessageType.Info)
                     $rg = New-AzResourceGroup -Name $ResourceGroupName -Location $Location -ErrorAction Stop
                 }
                 else{
-                    Write-Verbose "Resource group already exists." #-ForegroundColor $([Constants]::MessageType.Info)
+                    Write-Verbose "$(Get-TimeStamp)Resource group already exists." #-ForegroundColor $([Constants]::MessageType.Info)
                 }
                 
             }
@@ -1950,7 +1972,7 @@ function Set-AzSKTenantSecuritySolutionSecretStorage
             # Step 3: Deploy KV
             # Check if Key Vault already exist.
             $keyVault = Get-AzKeyVault -ResourceGroupName $ResourceGroupName -VaultName $KeyVaultName -ErrorAction SilentlyContinue
-            
+
             if ($keyVault -ne $null)
             {
                 Write-Host "Key Vault already exist. All existing 'Access Policies' will be removed." -ForegroundColor $([Constants]::MessageType.Warning)
@@ -2183,12 +2205,12 @@ function Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity
         if ([string]::IsNullOrWhiteSpace($objectId))
         {
             Write-Host "Checking if Azure AD application [$($displayName)] already exist..." -ForegroundColor $([Constants]::MessageType.Info)
-            $aadApp = Get-AzureADApplication -SearchString $displayName
+            $aadApp = Get-MgApplication -Filter "displayName eq '$displayName'"
             if (!$aadApp) {
 
                 Write-Host "Creating new AD application [$($displayName)]..." -ForegroundColor $([Constants]::MessageType.Info)
                 # create new application
-                $aadApp = New-AzureADApplication -DisplayName $displayName -AvailableToOtherTenants $true
+                $aadApp = New-MgApplication -DisplayName $displayName -SignInAudience "AzureADMultipleOrgs"
                 Write-Host "Created [$($displayName)] app successfully." -ForegroundColor $([Constants]::MessageType.Update)
             }
             elseif(($aadApp | Measure-Object).Count -gt 1)
@@ -2204,8 +2226,7 @@ function Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity
         }
         else
         {
-            $aadApp = Get-AzureADApplication -ObjectId $objectId
-
+            $aadApp = Get-MgApplication -ApplicationId $objectId
             if(!$aadApp)
             {
                 Write-Host "AD application with object Id [$($objectId)] not found in AAD." -ForegroundColor $([Constants]::MessageType.Error)
@@ -2217,17 +2238,16 @@ function Create-AzSKTenantSecuritySolutionMultiTenantScannerIdentity
         # Create new password credential for App
         $startDateTime = Get-Date
         $endDateTime = $startDateTime.AddMonths(6)
-        $pwdCredentials = New-AzureADApplicationPasswordCredential -ObjectId $aadApp.ObjectId -StartDate $startDateTime -EndDate $endDateTime
-         
+        $pwdCredentials = Add-MgApplicationPassword -ApplicationId $aadApp.Id -StartDateTime $startDateTime -EndDateTime $endDateTime
         # Adding additional owners (if any)
         if (($AdditionalOwnerUPNs| Measure-Object).Count -gt 0)
         {
-            Add-OwnersToAADApplication -AppObjectId $aadApp.ObjectId -UserPrincipalNames $AdditionalOwnerUPNs
+            Add-OwnersToAADApplication -AppObjectId $aadApp.Id -UserPrincipalNames $AdditionalOwnerUPNs
         }
 
         # Prepare output object 
         $appDetails.ApplicationId = $aadApp.AppId
-        $appDetails.ObjectId = $aadApp.ObjectId
+        $appDetails.Id = $aadApp.Id
         $appDetails.Secret = $pwdCredentials.Value
 
         return $appDetails
@@ -2257,12 +2277,12 @@ function Create-AzSKTenantSecuritySolutionMultiTenantIdentitySPN
     {
 
         Write-Host "Checking if Azure AD service principal for App [$($AppId)] already exist..." -ForegroundColor $([Constants]::MessageType.Info)
-        $spn = Get-AzureADServicePrincipal -Filter "AppId eq '$($AppId)'"
+        $spn = Get-MgServicePrincipal -Filter "appId eq '$($AppId)'"
         if (!$spn) {
 
             Write-Host "Creating new Azure AD service principal for App [$($AppId)]..." -ForegroundColor $([Constants]::MessageType.Info)
             # create new spn
-            $spn = New-AzureADServicePrincipal -AppId $AppId -AppRoleAssignmentRequired $false 
+            $spn = New-MgServicePrincipal -AppId $AppId -AppRoleAssignmentRequired $false
             Write-Host "Successfully created service principal." -ForegroundColor $([Constants]::MessageType.Info)
         }
         else
@@ -2367,7 +2387,7 @@ function Grant-AzSKAzureRoleToMultiTenantIdentitySPN
                 if($_.Exception.Body.Code -eq "RoleAssignmentExists")
                 {
                     Write-Host "$($_.Exception.Message)" -ForegroundColor $([Constants]::MessageType.Warning)
-                    
+                            
                 }
                 else
                 {
@@ -2392,7 +2412,7 @@ function Grant-AzSKAzureRoleToMultiTenantIdentitySPN
                 if($_.Exception.Body.Code -eq "RoleAssignmentExists")
                 {
                     Write-Host "$($_.Exception.Message)" -ForegroundColor $([Constants]::MessageType.Warning)
-                    
+                            
                 }
                 else
                 {
@@ -2428,23 +2448,22 @@ function Add-AADApplicationOwners()
 
     $allOwnerAdded = $true
     if (($OwnerObjectIds| Measure-Object).Count -gt 0)
-    {
+        {
         $OwnerObjectIds | ForEach-Object{
             $objectId = $_
             try
             {
-                Add-AzureADApplicationOwner -ObjectId $AppObjectId -RefObjectId $objectId
+                Add-MgApplicationOwnerByRef -ApplicationId $AppObjectId -BodyParameter @{ "@odata.id" = "https://graph.microsoft.com/v1.0/directoryObjects/$objectId" }
             }
             catch
             {
                 $allOwnerAdded = $allOwnerAdded -and $false
                 Write-Host "Error occurred while adding owner [ObjectId: $($objectId)] to application . ErrorMessage [$($_.Exception.Message)]" -ForegroundColor $([Constants]::MessageType.Error)
-            }
         }
+    }
     }
 
     return $allOwnerAdded;
-
 }
 
 function Get-AADUserDetails()
@@ -2461,11 +2480,11 @@ function Get-AADUserDetails()
         $UserPrincipalNames | ForEach-Object{
             $aadUser = "" | Select-Object "UPN", "ObjectId"
             $aadUser.UPN = $_;
-            $aadUser.ObjectId  = [Constants]::AADUserNotFound
+            $aadUser.Id  = [Constants]::AADUserNotFound
             try
             {
-                $user = Get-AzureADUser -ObjectId $_
-                $aadUser.ObjectId = $user.ObjectId
+                $user = Get-MgUser -UserId $_
+                $aadUser.Id = $user.Id
             }
             catch
             {
@@ -2497,11 +2516,11 @@ function Add-OwnersToAADApplication()
     if (($UserPrincipalNames|Measure-Object).Count -gt 0)
     {
         $aadUsers = Get-AADUserDetails -UserPrincipalNames $UserPrincipalNames
-        $validAADUsers = $aadUsers | where-Object { $_.ObjectId -ne $([Constants]::UserNotFound)}
+        $validAADUsers = $aadUsers | where-Object { $_.Id -ne $([Constants]::UserNotFound)}
 
         if (($validAADUsers | Measure-Object).Count -gt 0)
         {
-            $userObjectIds = $validAADUsers.ObjectId
+            $userObjectIds = $validAADUsers.Id
             $allOwnersAdded = Add-AADApplicationOwners -AppObjectId $AppObjectId -OwnerObjectIds $userObjectIds
 
             if ($allOwnersAdded)
@@ -2570,8 +2589,8 @@ function Enable-ByDesignExceptionFeature
 
     Process
     {
-        try
-        {
+            try
+            {
             Write-Host $([Constants]::DoubleDashLine)
             Write-Host "Enabling By Design exception feature in Azure Tenant Security scanner...`n" -ForegroundColor $([Constants]::MessageType.Info)
             Write-Host $([Constants]::EnableByDesignExpInstructionMsg ) -ForegroundColor $([Constants]::MessageType.Info)
@@ -2600,7 +2619,7 @@ function Enable-ByDesignExceptionFeature
                 {
                     Write-Host "`n`rAzTS host resource group does not exists." -ForegroundColor $([Constants]::MessageType.Error)
                     return;
-                }
+            }
                 else
                 {
                     # Step 2a: Validate AzTS host RG have AzTS components.
@@ -2619,7 +2638,7 @@ function Enable-ByDesignExceptionFeature
                 
             }
             catch
-            {  
+            {
                 Write-Host "`n`rFailed to validate AzTS host resource group." -ForegroundColor $([Constants]::MessageType.Error)
                 return;
             }
@@ -2637,12 +2656,12 @@ function Enable-ByDesignExceptionFeature
                     Write-Verbose "Cosmos DB account is not present..."
                     Write-Verbose "Creating Cosmos DB account..."
                     $cosmosacc = New-AzCosmosDBAccount -ResourceGroupName $HostResourceGroupName -Name $cosmosaccname -ApiKind Table -EnableAutomaticFailover -Location $CosmosDBLocationArray -ErrorAction SilentlyContinue
-                }
+        }
 
                 if(-not $cosmosacc)
                 {
                     throw [System.Exception]
-                }
+    }
                 Write-Verbose "Created Cosmos DB account successfully..."
 
                 # Step 3b: Creating cosmos DB table for exception management if not already present.
@@ -2829,7 +2848,7 @@ function Enable-ByDesignExceptionFeature
                 # Step 7a: Get AzTS UI AAD App.
                 Write-Verbose "Getting AzTS UI AAD App..."
                 $aztsUIAADAppName = "AzSK-AzTS-UI-" + $ResourceHash
-                $aztsUIAADApp = Get-AzureADApplication -SearchString $aztsUIAADAppName -ErrorAction SilentlyContinue
+                $aztsUIAADApp = Get-MgApplication -Filter "displayName eq '$aztsUIAADAppName'" -ErrorAction SilentlyContinue
                 if(-not $aztsUIAADApp)
                 {
                     Write-Host "`n`rFailed to get AzTS UI AAD App." -ForegroundColor $([Constants]::MessageType.Error)
@@ -2840,7 +2859,7 @@ function Enable-ByDesignExceptionFeature
                 Write-Verbose "Creating password credential for AzTS UI AAD App..."
                 $startDateTime = Get-Date
                 $endDateTime = $startDateTime.AddMonths(6)
-                $pwdCredentials = New-AzureADApplicationPasswordCredential -ObjectId $aztsUIAADApp.ObjectId -StartDate $startDateTime -EndDate $endDateTime -ErrorAction SilentlyContinue
+                $pwdCredentials = Add-MgApplicationPassword -ApplicationId $aztsUIAADApp.Id -StartDateTime $startDateTime -EndDateTime $endDateTime -ErrorAction SilentlyContinue
                 if(-not $pwdCredentials)
                 {
                     Write-Host "`n`rFailed to create password credential for AzTS UI AAD App." -ForegroundColor $([Constants]::MessageType.Error)
@@ -2875,8 +2894,8 @@ function Enable-ByDesignExceptionFeature
                 $AzTSUIAppPwdCrdentialSecure = ConvertTo-SecureString $AzTSUIAppPwdCrdential -AsPlainText -Force
                 $AzTSUIAppPwdCrdentialSecret = Set-AzKeyVaultSecret -VaultName $KeyVaultName -Name "APIClientSecret" -SecretValue $AzTSUIAppPwdCrdentialSecure
                 Write-Verbose "Successfully stored AzTS UI AAD App password credential in Key vault."
-                
-            }
+
+}
             catch
             {  
                 # Step 5d: Failed to store cosmos DB connection string.
