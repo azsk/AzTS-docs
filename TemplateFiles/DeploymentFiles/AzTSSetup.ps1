@@ -1350,6 +1350,21 @@ Function CreateAzureADApplication
         # create new application
         $app = New-MgApplication -DisplayName $displayName
 
+        $scopeId = (New-Guid).Guid
+
+        Update-MgApplication -ApplicationId $app.Id -Api @{
+            Oauth2PermissionScopes = @(
+                @{
+                    Id = $scopeId
+                    AdminConsentDescription = "Allow the application to access $displayName on behalf of the signed-in user."
+                    AdminConsentDisplayName = "Access $displayName"
+                    IsEnabled = $true
+                    Type = "User"
+                    Value = "user_impersonation"
+                }
+            )
+        }
+
         # create a service principal for your application
         $spForApp = New-MgServicePrincipal -AppId $app.AppId
 
