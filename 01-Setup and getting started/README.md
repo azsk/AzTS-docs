@@ -107,10 +107,10 @@ Install-Module -Name Az.Websites -AllowClobber -Scope CurrentUser -repository PS
 Install-Module -Name Az.Network -AllowClobber -Scope CurrentUser -repository PSGallery
 Install-Module -Name Az.FrontDoor -AllowClobber -Scope CurrentUser -repository PSGallery
 
-# Install AzureAd 
+# Install Microsoft.Graph 
 # Required version:
-#   AzureAD >= 2.0.2.130
-Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
+#   Microsoft.Graph >= 2.30.0
+Install-Module -Name Microsoft.Graph -AllowClobber -Scope CurrentUser -Repository PSGallery
 ```
 
 [Back to top…](README.md#setting-up-azure-tenant-security-azts-solution---step-by-step)
@@ -169,14 +169,14 @@ Before creating central scanning user-assigned managed identity, please log in t
 # Clear existing login, if any
 
 Disconnect-AzAccount
-Disconnect-AzureAD
+Disconnect-MgGraph
 
 # Connect to AzureAD and AzAccount
 # Note: Tenant Id *must* be specified when connecting to Azure AD and AzAccount
 
 $TenantId = "<TenantId>"
 Connect-AzAccount -Tenant $TenantId
-Connect-AzureAD -TenantId $TenantId
+Connect-MgGraph -Scopes "AppRoleAssignment.ReadWrite.All","Directory.ReadWrite.All"
 ```
 
   **4.a. Create central scanner MI and grant 'Reader' permission on target subscriptions:** You can create a user-assigned managed identity (scanner MI)  for centrally scanning subscriptions in your tenant using the following `Set-AzSKTenantSecuritySolutionScannerIdentity` PowerShell command or Portal steps [here](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/how-to-manage-ua-identity-portal). The PowerShell command creates a user-assigned managed identity (scanner MI) and assigns 'Reader' access to this MI on target subscriptions. You need to be 'Owner' on target subscription to perform role assignment.

@@ -45,10 +45,10 @@
     Install-Module -Name Az.FrontDoor -AllowClobber -Scope CurrentUser -repository PSGallery
     Install-Module -Name Az.CosmosDB -AllowClobber -Scope CurrentUser -repository PSGallery
 
-    # Install AzureAd 
+    # Install Microsoft.Graph 
     # Required version:
-    #   AzureAD >= 2.0.2.130
-    Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser -repository PSGallery
+    #   Microsoft.Graph >= 2.30.0
+    Install-Module -Name Microsoft.Graph -AllowClobber -Scope CurrentUser -Repository PSGallery
 
 # **** 3 of 6. Download and extract deployment template
 
@@ -87,13 +87,12 @@ $TenantId = "<TenantId>"
 # Clear existing login, if any
 # If you are not already connected to Azure, Disconnect command will return an error. In this case, please ignore the error and continue to next step. 
 Disconnect-AzAccount
-Disconnect-AzureAD
+Disconnect-MgGraph
 
 # Connect to AzureAD and AzAccount
 
 Connect-AzAccount -Tenant $TenantId
-Connect-AzureAD -TenantId $TenantId
-
+Connect-MgGraph -Scopes "AppRoleAssignment.ReadWrite.All","Directory.ReadWrite.All"
 
 <# ********************************************************************
 
