@@ -9,14 +9,14 @@
     },
     {
       "Name": "WorkItemProcessor",
-      "Latest": "1.1.239",
-      "Stable": "1.1.239",
+      "Latest": "1.1.241",
+      "Stable": "1.1.241",
       "PackageName": "WorkItemProcessor.zip"
     },
     {
       "Name": "WebApi",
-      "Latest": "1.1.24",
-      "Stable": "1.1.24",
+      "Latest": "1.1.27",
+      "Stable": "1.1.27",
       "PackageName": "WebApi.zip"
     },
     {
