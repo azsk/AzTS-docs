@@ -53,9 +53,9 @@ function Pre_requisites
     This command would check pre requisites modules to perform remediation.
 	#>
 
-    Write-Host "Required modules are: Az.Resources, AzureAD, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
+    Write-Host "Required modules are: Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
-    $availableModules = $(Get-Module -ListAvailable Az.Resources, AzureAD, Az.Accounts, Az.ResourceGraph)
+    $availableModules = $(Get-Module -ListAvailable Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph)
     
     # Checking if 'Az.Accounts' module is available or not.
     if($availableModules.Name -notcontains 'Az.Accounts')
@@ -90,15 +90,16 @@ function Pre_requisites
         Write-Host "Az.ResourceGraph module is available." -ForegroundColor Green
     }
 
-    # Checking if 'AzureAD' module is available or not.
-    if($availableModules.Name -notcontains 'AzureAD')
+    # Checking if 'Microsoft.Graph' module is available or not.
+    if($availableModules.Name -notcontains 'Microsoft.Graph')
     {
-        Write-Host "Installing module AzureAD..." -ForegroundColor Yellow
-        Install-Module -Name AzureAD -Scope CurrentUser -Repository 'PSGallery'
+        Write-Host "Installing module Microsoft.Graph..." -ForegroundColor Yellow
+        Install-Module -Name Microsoft.Graph -Scope CurrentUser -Repository 'PSGallery'
+        Write-Host "Microsoft.Graph Module installed" -ForegroundColor Green
     }
     else
     {
-        Write-Host "AzureAD module is available." -ForegroundColor Green
+        Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
     }
 }
 
@@ -172,7 +173,7 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
+    $currentSub = Set-AzContext -Tenant $isContextSet.Tenant -subscription $SubscriptionId -ErrorAction Stop
 
     
     Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking deprecated account with 'AccountAdministrator' role due to insufficient privilege. `n    (To remove deprecated account role assignment with 'AccountAdministrator' role, please reach out to Azure Support) `n 3. Exclude checking role assignments at MG scope. `n 4. Checking only for user type assignments." -ForegroundColor Yellow
@@ -197,28 +198,28 @@ function Remove-AzTSInvalidAADAccounts
     $currentLoginUserObjectId = "";
 
     $requiredRoleDefinitionName = @("Owner", "User Access Administrator")
-    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0 )
+    if(($currentLoginRoleAssignments | Where { $_.RoleDefinitionName -in $requiredRoleDefinitionName} | Measure-Object).Count -le 0)
     {
         # The user does not have direct access to the subscription, checking if the user has access through groups
         # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
         try
         {
-            Get-AzureADTenantDetail | Out-Null
+            Get-MgOrganization | Out-Null
         }
         catch
         {
-            Connect-AzureAD -TenantId $currentSub.Tenant.Id | Out-Null
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id | Out-Null
         }
         
         $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
-        $userMemberGroups = Get-AzureADUserMembership -ObjectId $currentSub.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
+        $userMemberGroups = Get-MgUserMemberOf -UserId $currentSub.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
         if(($allRoleAssignments | Where-Object { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and $_.ObjectId -in $userMemberGroups } | Measure-Object).Count -le 0)
         {
             Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
             return;
         }
 
-        $currentLoginUserObjectId = Get-AzureADUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+        $currentLoginUserObjectId = Get-MgUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
     }
 
     Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
@@ -301,12 +302,12 @@ function Remove-AzTSInvalidAADAccounts
         try
         {
             # Check if Connect-AzureAD session is already active 
-            Get-AzureADUser -ObjectId $currentLoginUserObjectId | Out-Null
+            Get-MgUser -UserId $currentLoginUserObjectId | Out-Null
         }
         catch
         {
             Write-Host "Connecting to Azure AD..."
-            Connect-AzureAD -TenantId $currentSub.Tenant.Id -ErrorAction Stop
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop
         }   
 
         # Batching object ids in count of 900.
@@ -325,7 +326,7 @@ function Remove-AzTSInvalidAADAccounts
             $subRange = $distinctObjectIds[$i..$endRange]
 
             # Getting active identities from Azure Active Directory.
-            $subActiveIdentities = Get-AzureADObjectByObjectId -ObjectIds $subRange
+            $subActiveIdentities = Get-MgDirectoryObjectById -Ids $subRange
             # Safe Check 
             if(($subActiveIdentities | Measure-Object).Count -le 0)
             {
@@ -345,7 +346,7 @@ function Remove-AzTSInvalidAADAccounts
         if(($classicRoleAssignments | Measure-Object).count -gt 0)
         {
             $classicRoleAssignments | ForEach-Object { 
-                $userDetails = Get-AzureADUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
+                $userDetails = Get-MgUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
                 if (($userDetails | Measure-Object).Count -eq 0 ) 
                 {
                     $invalidClassicRoles += $_ 
@@ -368,12 +369,12 @@ function Remove-AzTSInvalidAADAccounts
         try
         {
             # Check if Connect-AzureAD session is already active 
-            Get-AzureADUser -ObjectId $currentLoginUserObjectId | Out-Null
+            Get-MgUser -UserId $currentLoginUserObjectId | Out-Null
         }
         catch
         {
             Write-Host "Connecting to Azure AD..."
-            Connect-AzureAD -ErrorAction Stop
+            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop
         }  
 
         $allRoleAssignments = Import-Csv -LiteralPath $FilePath
