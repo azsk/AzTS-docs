@@ -165,15 +165,15 @@ function Remove-AzTSInvalidAADAccounts
 
     # Connect to AzAccount
     $isContextSet = Get-AzContext
-    if ([string]::IsNullOrEmpty($isContextSet))
+    if ($true)
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount -ErrorAction Stop
+        Connect-AzAccount -Tenant $isContextSet.Tenant.Id -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -Tenant $isContextSet.Tenant -subscription $SubscriptionId -ErrorAction Stop
+    $currentSub = Set-AzContext -Tenant $isContextSet.Tenant.Id -subscription $SubscriptionId -ErrorAction Stop
 
     
     Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking deprecated account with 'AccountAdministrator' role due to insufficient privilege. `n    (To remove deprecated account role assignment with 'AccountAdministrator' role, please reach out to Azure Support) `n 3. Exclude checking role assignments at MG scope. `n 4. Checking only for user type assignments." -ForegroundColor Yellow
@@ -576,18 +576,10 @@ class ClassicRoleAssignments
         [psobject] $headers = $null
         try 
         {
-            $resourceAppIdUri = "https://management.core.windows.net/"
-            $rmContext = Get-AzContext
-            $authResult = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(
-            $rmContext.Account,
-            $rmContext.Environment,
-            $rmContext.Tenant,
-            [System.Security.SecureString] $null,
-            "Never",
-            $null,
-            $resourceAppIdUri); 
+            $resourceAppIdUri = "https://management.azure.com"
+            $accessToken = (Get-AzAccessToken -ResourceUrl $resourceAppIdUri).Token
 
-            $header = "Bearer " + $authResult.AccessToken
+            $header = "Bearer " + $accessToken
             $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
         }
         catch 
