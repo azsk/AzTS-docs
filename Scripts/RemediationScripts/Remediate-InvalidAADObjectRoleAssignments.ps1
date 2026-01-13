@@ -165,7 +165,7 @@ function Remove-AzTSInvalidAADAccounts
 
     # Connect to AzAccount
     $isContextSet = Get-AzContext
-    if ($true)
+    if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
         Connect-AzAccount -Tenant $isContextSet.Tenant.Id -ErrorAction Stop
@@ -301,13 +301,12 @@ function Remove-AzTSInvalidAADAccounts
         # Connect to Azure Active Directory.
         try
         {
-            # Check if Connect-AzureAD session is already active 
-            Get-MgUser -UserId $currentLoginUserObjectId | Out-Null
+            # Connect with Microsoft Graph
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop
         }
         catch
         {
-            Write-Host "Connecting to Azure AD..."
-            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop
+            Write-Host "Failed to connect with Microsoft Graph..."
         }   
 
         # Batching object ids in count of 900.
@@ -368,13 +367,13 @@ function Remove-AzTSInvalidAADAccounts
         # Connect to Azure Active Directory.
         try
         {
-            # Check if Connect-AzureAD session is already active 
-            Get-MgUser -UserId $currentLoginUserObjectId | Out-Null
+            # Connect with Microsoft Graph
+            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop
         }
         catch
         {
-            Write-Host "Connecting to Azure AD..."
-            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop
+            Write-Host "Failed to connect with Microsoft Graph..."
+            
         }  
 
         $allRoleAssignments = Import-Csv -LiteralPath $FilePath
