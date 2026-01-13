@@ -577,9 +577,11 @@ class ClassicRoleAssignments
         try 
         {
             $resourceAppIdUri = "https://management.azure.com"
-            $accessToken = (Get-AzAccessToken -ResourceUrl $resourceAppIdUri).Token
+            $accessToken = (Get-AzAccessToken -ResourceUrl $resourceAppIdUri -AsSecureString)
+            $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
+            $token = $credential.Password
 
-            $header = "Bearer " + $accessToken
+            $header = "Bearer " + $token
             $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
         }
         catch 
