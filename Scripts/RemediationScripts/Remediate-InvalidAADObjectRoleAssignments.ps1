@@ -164,6 +164,7 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Connect to AzAccount
+    Connect-AzAccount -ErrorAction Stop
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
@@ -173,7 +174,7 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -Tenant $isContextSet.Tenant.Id -subscription $SubscriptionId -ErrorAction Stop
+    $currentSub = Set-AzContext -Tenant $isContextSet.Tenant.Id -ErrorAction Stop
 
     
     Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking deprecated account with 'AccountAdministrator' role due to insufficient privilege. `n    (To remove deprecated account role assignment with 'AccountAdministrator' role, please reach out to Azure Support) `n 3. Exclude checking role assignments at MG scope. `n 4. Checking only for user type assignments." -ForegroundColor Yellow
@@ -204,15 +205,15 @@ function Remove-AzTSInvalidAADAccounts
         # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
         try
         {
-            Get-MgOrganization | Out-Null
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id | Out-Null
         }
         catch
         {
-            Connect-MgGraph -TenantId $currentSub.Tenant.Id | Out-Null
+            Write-Host "Failed to connect with Microsoft.Graph"
         }
         
         $allRoleAssignments = Get-AzRoleAssignment -Scope "/subscriptions/$($SubscriptionId)" # Fetch all the role assignmenets for the given scope
-        $userMemberGroups = Get-MgUserMemberOf -UserId $currentSub.Account.Id -All $true | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
+        $userMemberGroups = Get-MgUserMemberOf -UserId $currentSub.Account.Id -All | Select-Object -ExpandProperty ObjectId # Fetch all the groups the user has access to and get all the object ids
         if(($allRoleAssignments | Where-Object { $_.RoleDefinitionName -in $requiredRoleDefinitionName -and $_.ObjectId -in $userMemberGroups } | Measure-Object).Count -le 0)
         {
             Write-Host "Warning: This script can only be run by an [$($requiredRoleDefinitionName -join ", ")]." -ForegroundColor Yellow
@@ -334,7 +335,7 @@ function Remove-AzTSInvalidAADAccounts
                 return;
             }
 
-            $activeIdentities += $subActiveIdentities.ObjectId
+            $activeIdentities += $subActiveIdentities | Select-Object -ExpandProperty Id
         }
 
         $invalidAADObjectIds = $distinctObjectIds | Where-Object { $_ -notin $activeIdentities}
