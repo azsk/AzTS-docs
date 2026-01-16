@@ -51,17 +51,18 @@ function Pre_requisites
     This command would check pre requisites modules.
     .DESCRIPTION
     This command would check pre requisites modules to perform remediation.
-	#>
-
+    #>
+    $folderPath = $env:PSModulePath -split ';' | Where-Object {$_ -like "*SAWPSModulePath"}[0]
     Write-Host "Required modules are: Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
     Write-Host "Checking for required modules..."
-    $availableModules = $(Get-Module -ListAvailable Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph)
+    Import-Module PowerShellGet
+    $availableModules = $(Get-Module -ListAvailable "Az.Resources", "Microsoft.Graph", "Az.Accounts", "Az.ResourceGraph")
     
     # Checking if 'Az.Accounts' module is available or not.
     if($availableModules.Name -notcontains 'Az.Accounts')
     {
         Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
-        Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery'
+        Save-Module -Name Az.Accounts -RequiredVersion 5.3.2 -Path $folderPath
     }
     else
     {
@@ -72,7 +73,7 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'Az.Resources')
     {
         Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
-        Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
+        Save-Module -Name Az.Resources -RequiredVersion 9.0.0 -Path $folderPath
     }
     else
     {
@@ -83,7 +84,7 @@ function Pre_requisites
     if($availableModules.Name -notcontains 'Az.ResourceGraph')
     {
         Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
-        Install-Module -Name Az.ResourceGraph -Scope CurrentUser -Repository 'PSGallery'
+        Save-Module -Name Az.ResourceGraph -RequiredVersion 1.2.1 -Path $folderPath
     }
     else
     {
@@ -93,14 +94,22 @@ function Pre_requisites
     # Checking if 'Microsoft.Graph' module is available or not.
     if($availableModules.Name -notcontains 'Microsoft.Graph')
     {
-        Write-Host "Installing module Microsoft.Graph..." -ForegroundColor Yellow
-        Install-Module -Name Microsoft.Graph -Scope CurrentUser -Repository 'PSGallery'
-        Write-Host "Microsoft.Graph Module installed" -ForegroundColor Green
+        Write-Host "Installing module Microsoft.Graph...`nThis module may take more time to install. Please wait patiently." -ForegroundColor Yellow
+        Save-Module -Name Microsoft.Graph -RequiredVersion 2.32.0 -Path $folderPath
     }
     else
     {
         Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
     }
+    Write-Host "Importing required modules...`nIf you started new PowerShell session, It may take more time to import all modules." -ForegroundColor Cyan
+    Import-Module Az.Resources
+    Write-Host "Az.Resources module imported successfully." -ForegroundColor Green
+    Import-Module Az.Accounts
+    Write-Host "Az.Accounts module imported successfully." -ForegroundColor Green
+    Import-Module Az.ResourceGraph
+    Write-Host "Az.ResourceGraph module imported successfully." -ForegroundColor Green
+    Import-Module Microsoft.Graph
+    Write-Host "Microsoft.Graph module imported successfully." -ForegroundColor Green
 }
 
 function Remove-AzTSInvalidAADAccounts
@@ -164,12 +173,11 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Connect to AzAccount
-    Connect-AzAccount -ErrorAction Stop
     $isContextSet = Get-AzContext
     if ([string]::IsNullOrEmpty($isContextSet))
     {       
         Write-Host "Connecting to AzAccount..."
-        Connect-AzAccount -Tenant $isContextSet.Tenant.Id -ErrorAction Stop
+        Connect-AzAccount -Subscription $SubscriptionId -ErrorAction Stop
         Write-Host "Connected to AzAccount" -ForegroundColor Green
     }
 
@@ -246,8 +254,7 @@ function Remove-AzTSInvalidAADAccounts
         if(($ObjectIds | Measure-Object).Count -eq 0)
         {
             # Getting all classic role assignments.
-            $classicAssignments = [ClassicRoleAssignments]::new()
-            $res = $classicAssignments.GetClassicRoleAssignments($subscriptionId)
+            $res = GetClassicRoleAssignments -SubscriptionId $subscriptionId
             $classicDistinctRoleAssignmentList = $res.value | Where-Object { ![string]::IsNullOrWhiteSpace($_.properties.emailAddress) }
             
             # Renaming property name
@@ -264,14 +271,8 @@ function Remove-AzTSInvalidAADAccounts
             $currentRoleAssignmentList = $currentRoleAssignmentList | Where-Object {![string]::IsNullOrWhiteSpace($_.ObjectId)};
             $currentRoleAssignmentList | select -Unique -Property 'ObjectId' | ForEach-Object { $distinctObjectIds += $_.ObjectId }
 
-            
-            $method = [Microsoft.PowerShell.Commands.WebRequestMethod]::Get
-            $classicAssignments = [ClassicRoleAssignments]::new()
-            $headers = $classicAssignments.GetAuthHeader()
-
             # Getting MDC reported deprecated account object ids.
-            $mdcDeprecated = [MDCDeprecatedAccounts]::new()
-            $mdcDeprecatedAccountList  = $mdcDeprecated.GetMDCDeprecatedAccounts([string] $SubscriptionId)
+            $mdcDeprecatedAccountList  = GetMDCDeprecatedAccounts -SubcriptionId $SubscriptionId
       
             $mdcDeprecatedRoleAssignmentList = @();
             if (($mdcDeprecatedAccountList | Measure-Object).Count -gt 0)
@@ -499,8 +500,7 @@ function Remove-AzTSInvalidAADAccounts
                             $isServiceAdminAccount = $true;
                         }
 
-                        $classicAssignments = [ClassicRoleAssignments]::new()
-                        $res = $classicAssignments.DeleteClassicRoleAssignment($_.RoleAssignmentId, $isServiceAdminAccount)
+                        $res = DeleteClassicRoleAssignment -roleAssignmentId $_.RoleAssignmentId -isServiceAdminAccount $isServiceAdminAccount
 
                         if(($null -ne $res) -and ($res.StatusCode -eq 202 -or $res.StatusCode -eq 200))
                         {
@@ -510,7 +510,6 @@ function Remove-AzTSInvalidAADAccounts
                 }
                 catch
                 {
-                    $isRemoved = $false
                     Write-Host "Not able to remove invalid classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red  
                 }
             }
@@ -557,7 +556,7 @@ function Get-ARGData
         $graphResult = Search-AzGraph -Query $kqlQuery -First $batchSize
       }
 
-      $kqlResponse += $graphResult.data.ToArray()
+      $kqlResponse += $graphResult.data | Select-Object *
 
       if ($graphResult.data.Count -lt $batchSize) {
         break;
@@ -569,104 +568,105 @@ function Get-ARGData
 }
 
 
-class ClassicRoleAssignments
+function GetAuthHeader
 {
-    [PSObject] GetAuthHeader()
+    $headers = $null
+    try 
     {
-        [psobject] $headers = $null
-        try 
-        {
-            $resourceAppIdUri = "https://management.azure.com"
-            $accessToken = (Get-AzAccessToken -ResourceUrl $resourceAppIdUri -AsSecureString)
-            $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
-            $token = $credential.Password
-
-            $header = "Bearer " + $token
-            $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
-        }
-        catch 
-        {
-            Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
-        }
-        return($headers)
+        $resourceAppIdUri = "https://management.azure.com"
+        $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token
+        $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
+        $token = $credential.Password
+        $header = "Bearer " + $token
+        $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
     }
-
-    [PSObject] GetClassicRoleAssignments([string] $subscriptionId)
+    catch 
     {
-        $content = $null
-        try
+        Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
+    }
+    return $headers 
+}
+function GetClassicRoleAssignments
+{
+    param (
+        [string]
+        $SubscriptionId
+    )
+    $content = $null
+    try
+    {
+        $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token
+        $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
+        #$headers = GetAuthHeader
+        # API to get classic role assignments
+        $response = Invoke-RestMethod -Method Get -Uri $armUri -SkipHeaderValidation -Authentication Bearer -Token (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token -UseBasicParsing
+        $content = $response.value
+    }
+    catch
+    {
+        Write-Host "Error occurred while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+    }
+    
+    return $content 
+}
+function DeleteClassicRoleAssignment
+{
+    param (
+        [string]
+        $roleAssignmentId,
+
+        [bool]
+        $isServiceAdminAccount
+    )
+    $content = $null
+    try
+    {
+        $armUri = "https://management.azure.com" + $roleAssignmentId + "?api-version=2015-06-01"
+        if ($isServiceAdminAccount)
         {
-            $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-            $headers = $this.GetAuthHeader()
-            # API to get classic role assignments
-            $response = Invoke-WebRequest -Method Get -Uri $armUri -Headers $headers -UseBasicParsing
-            $content = ConvertFrom-Json $response.Content
+            $armUri += "&adminType=serviceAdmin"
         }
-        catch
-        {
-            Write-Host "Error occurred while fetching classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
-        }
+        #$headers = GetAuthHeader
         
-        return($content)
+        # API to get classic role assignments
+        $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token
+        $response = Invoke-RestMethod -Method Delete -Uri $armUri -SkipHeaderValidation -Authentication Bearer -Token $accessToken -UseBasicParsing
+        $content = $response.value
     }
-
-    [PSObject] DeleteClassicRoleAssignment([string] $roleAssignmentId, [bool] $isServiceAdminAccount)
+    catch
     {
-        $content = $null
-        try
-        {
-            $armUri = "https://management.azure.com" + $roleAssignmentId + "?api-version=2015-06-01"
-            if ($isServiceAdminAccount)
-            {
-                $armUri += "&adminType=serviceAdmin"
-            }
-            $headers = $this.GetAuthHeader()
-            
-            # API to get classic role assignments
-            $response = Invoke-WebRequest -Method Delete -Uri $armUri -Headers $headers -UseBasicParsing
-            $content = $response
-        }
-        catch
-        {
-            Write-Host "Error occurred while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
-            throw;
-        }
-        
-        return($content)
+        Write-Host "Error occurred while deleting classic role assignment. ErrorMessage [$($_)]" -ForegroundColor Red
+        throw;
     }
+    
+    return $content 
 }
 
-class MDCDeprecatedAccounts
+function GetMDCDeprecatedAccounts
 {
-    [PSObject] GetMDCDeprecatedAccounts([string] $SubcriptionId)
+    param (
+        [string]
+        $SubcriptionId
+    )
+    $response = @()
+    $invalidObjectIds = @()
+    $response += Get-ARGData -kqlQuery "securityresources | where type == 'microsoft.security/assessments' | where name =~ '1ff0b4c9-ed56-4de6-be9c-d7ab39645926' and subscriptionId =~ '$($SubcriptionId)'"
+    if (($response | Measure-Object).Count -gt 0 )
     {
-        $response = @()
-        $invalidObjectIds = @()
-
-        $response += Get-ARGData -kqlQuery "securityresources | where type == 'microsoft.security/assessments' | where name =~ '1ff0b4c9-ed56-4de6-be9c-d7ab39645926' and subscriptionId =~ '$($SubcriptionId)'"
-
-        if (($response | Measure-Object).Count -gt 0 )
+      $mdcAssessmentState = $response[0].properties.status.code
+      if ((-not [string]::IsNullOrWhiteSpace($mdcAssessmentState)) -and ($mdcAssessmentState -eq 'Unhealthy') -and (-not [string]::IsNullOrWhiteSpace($response[0].properties.additionalData.subAssessmentsLink)))
+      {
+        $nextSubAssessmentLink = $response[0].properties.additionalData.subAssessmentsLink
+        $SubAssessmentResponse = Get-ARGData -kqlQuery "securityresources | where type == 'microsoft.security/assessments/subassessments' | where id contains '$($nextSubAssessmentLink)'"
+        if (($SubAssessmentResponse | Measure-Object).Count -gt 0 )
         {
-          $mdcAssessmentState = $response[0].properties.status.code
-
-          if ((-not [string]::IsNullOrWhiteSpace($mdcAssessmentState)) -and ($mdcAssessmentState -eq 'Unhealthy') -and (-not [string]::IsNullOrWhiteSpace($response[0].properties.additionalData.subAssessmentsLink)))
-          {
-
-            $nextSubAssessmentLink = $response[0].properties.additionalData.subAssessmentsLink
-
-            $SubAssessmentResponse = Get-ARGData -kqlQuery "securityresources | where type == 'microsoft.security/assessments/subassessments' | where id contains '$($nextSubAssessmentLink)'"
-
-            if (($SubAssessmentResponse | Measure-Object).Count -gt 0 )
-            {
-              $invalidObjectIds += foreach ($obj in $SubAssessmentResponse) { ($obj.properties.resourceDetails.id -split "/")[-1]  }
-            }
-          }
-  
+          $invalidObjectIds += foreach ($obj in $SubAssessmentResponse) { ($obj.properties.resourceDetails.id -split "/")[-1]  }
         }
+      }
 
-        return($invalidObjectIds)
-         
     }
+    return $invalidObjectIds 
+     
 }
 
 # ***************************************************** #
