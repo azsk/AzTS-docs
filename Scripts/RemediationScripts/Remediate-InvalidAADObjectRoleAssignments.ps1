@@ -52,64 +52,118 @@ function Pre_requisites
     .DESCRIPTION
     This command would check pre requisites modules to perform remediation.
     #>
-    $folderPath = $env:PSModulePath -split ';' | Where-Object {$_ -like "*SAWPSModulePath"}[0]
-    Write-Host "Required modules are: Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
-    Write-Host "Checking for required modules..."
-    Import-Module PowerShellGet
-    $availableModules = $(Get-Module -ListAvailable "Az.Resources", "Microsoft.Graph", "Az.Accounts", "Az.ResourceGraph")
-    
-    # Checking if 'Az.Accounts' module is available or not.
-    if($availableModules.Name -notcontains 'Az.Accounts')
+    $folderPaths = $env:PSModulePath -split ';' | Where-Object {$_ -like "*SAWPSModulePath"}
+    if($folderPaths.Count -gt 0)
     {
-        Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
-        Save-Module -Name Az.Accounts -RequiredVersion 5.3.2 -Path $folderPath
-    }
-    else
-    {
-        Write-Host "Az.Accounts module is available." -ForegroundColor Green
-    }
+        $folderPath = $folderPaths[0]
+        Write-Host "Required modules are: Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
+        Write-Host "Checking for required modules..."
+        Import-Module PowerShellGet
+        $availableModules = $(Get-Module -ListAvailable "Az.Resources", "Microsoft.Graph", "Az.Accounts", "Az.ResourceGraph")
+        
+        # Checking if 'Az.Accounts' module is available or not.
+        if($availableModules.Name -notcontains 'Az.Accounts')
+        {
+            Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
+            Save-Module -Name Az.Accounts -RequiredVersion 5.3.2 -Path $folderPath
+        }
+        else
+        {
+            Write-Host "Az.Accounts module is available." -ForegroundColor Green
+        }
 
-    # Checking if 'Az.Resources' module is available or not.
-    if($availableModules.Name -notcontains 'Az.Resources')
-    {
-        Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
-        Save-Module -Name Az.Resources -RequiredVersion 9.0.0 -Path $folderPath
-    }
-    else
-    {
-        Write-Host "Az.Resources module is available." -ForegroundColor Green
-    }
+        # Checking if 'Az.Resources' module is available or not.
+        if($availableModules.Name -notcontains 'Az.Resources')
+        {
+            Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
+            Save-Module -Name Az.Resources -RequiredVersion 9.0.0 -Path $folderPath
+        }
+        else
+        {
+            Write-Host "Az.Resources module is available." -ForegroundColor Green
+        }
 
-     # Checking if 'ARG' module is available or not.
-    if($availableModules.Name -notcontains 'Az.ResourceGraph')
-    {
-        Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
-        Save-Module -Name Az.ResourceGraph -RequiredVersion 1.2.1 -Path $folderPath
-    }
-    else
-    {
-        Write-Host "Az.ResourceGraph module is available." -ForegroundColor Green
-    }
+         # Checking if 'ARG' module is available or not.
+        if($availableModules.Name -notcontains 'Az.ResourceGraph')
+        {
+            Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
+            Save-Module -Name Az.ResourceGraph -RequiredVersion 1.2.1 -Path $folderPath
+        }
+        else
+        {
+            Write-Host "Az.ResourceGraph module is available." -ForegroundColor Green
+        }
 
-    # Checking if 'Microsoft.Graph' module is available or not.
-    if($availableModules.Name -notcontains 'Microsoft.Graph')
-    {
-        Write-Host "Installing module Microsoft.Graph...`nThis module may take more time to install. Please wait patiently." -ForegroundColor Yellow
-        Save-Module -Name Microsoft.Graph -RequiredVersion 2.32.0 -Path $folderPath
+        # Checking if 'Microsoft.Graph' module is available or not.
+        if($availableModules.Name -notcontains 'Microsoft.Graph')
+        {
+            Write-Host "Installing module Microsoft.Graph...`nThis module may take more time to install. Please wait patiently." -ForegroundColor Yellow
+            Save-Module -Name Microsoft.Graph -RequiredVersion 2.32.0 -Path $folderPath
+        }
+        else
+        {
+            Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
+        }
+        Write-Host "Importing required modules...`nIf you started new PowerShell session, It may take more time to import all modules." -ForegroundColor Cyan
+        Import-Module Az.Resources
+        Write-Host "Az.Resources module imported successfully." -ForegroundColor Green
+        Import-Module Az.Accounts
+        Write-Host "Az.Accounts module imported successfully." -ForegroundColor Green
+        Import-Module Az.ResourceGraph
+        Write-Host "Az.ResourceGraph module imported successfully." -ForegroundColor Green
+        Import-Module Microsoft.Graph
+        Write-Host "Microsoft.Graph module imported successfully." -ForegroundColor Green
     }
     else
     {
-        Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
+        Write-Host "Required modules are: Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
+        Write-Host "Checking for required modules..."
+        $availableModules = $(Get-Module -ListAvailable Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph)
+        
+        # Checking if 'Az.Accounts' module is available or not.
+        if($availableModules.Name -notcontains 'Az.Accounts')
+        {
+            Write-Host "Installing module Az.Accounts..." -ForegroundColor Yellow
+            Install-Module -Name Az.Accounts -Scope CurrentUser -Repository 'PSGallery'
+        }
+        else
+        {
+            Write-Host "Az.Accounts module is available." -ForegroundColor Green
+        }
+
+        # Checking if 'Az.Resources' module is available or not.
+        if($availableModules.Name -notcontains 'Az.Resources')
+        {
+            Write-Host "Installing module Az.Resources..." -ForegroundColor Yellow
+            Install-Module -Name Az.Resources -Scope CurrentUser -Repository 'PSGallery'
+        }
+        else
+        {
+            Write-Host "Az.Resources module is available." -ForegroundColor Green
+        }
+
+         # Checking if 'ARG' module is available or not.
+        if($availableModules.Name -notcontains 'Az.ResourceGraph')
+        {
+            Write-Host "Installing module Az.ResourceGraph..." -ForegroundColor Yellow
+            Install-Module -Name Az.ResourceGraph -Scope CurrentUser -Repository 'PSGallery'
+        }
+        else
+        {
+            Write-Host "Az.ResourceGraph module is available." -ForegroundColor Green
+        }
+
+        # Checking if 'Microsoft.Graph' module is available or not.
+        if($availableModules.Name -notcontains 'Microsoft.Graph')
+        {
+            Write-Host "Installing module Microsoft.Graph..." -ForegroundColor Yellow
+            Install-Module -Name Microsoft.Graph -Scope CurrentUser -Repository 'PSGallery'
+        }
+        else
+        {
+            Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
+        }
     }
-    Write-Host "Importing required modules...`nIf you started new PowerShell session, It may take more time to import all modules." -ForegroundColor Cyan
-    Import-Module Az.Resources
-    Write-Host "Az.Resources module imported successfully." -ForegroundColor Green
-    Import-Module Az.Accounts
-    Write-Host "Az.Accounts module imported successfully." -ForegroundColor Green
-    Import-Module Az.ResourceGraph
-    Write-Host "Az.ResourceGraph module imported successfully." -ForegroundColor Green
-    Import-Module Microsoft.Graph
-    Write-Host "Microsoft.Graph module imported successfully." -ForegroundColor Green
 }
 
 function Remove-AzTSInvalidAADAccounts
