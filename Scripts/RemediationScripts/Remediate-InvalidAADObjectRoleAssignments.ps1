@@ -55,7 +55,8 @@ function Pre_requisites
     $folderPaths = $env:PSModulePath -split ';' | Where-Object {$_ -like "*SAWPSModulePath"}
     if($folderPaths.Count -gt 0)
     {
-        $folderPath = $folderPaths[0]
+        $folderPaths[0]
+        Write-Host "Detected SAW environment. Installing required modules in SAW module path, if not present." -ForegroundColor Cyan
         Write-Host "Required modules are: Az.Resources, Microsoft.Graph, Az.Accounts, Az.ResourceGraph" -ForegroundColor Cyan
         Write-Host "Checking for required modules..."
         Import-Module PowerShellGet
@@ -476,8 +477,9 @@ function Remove-AzTSInvalidAADAccounts
     {
         Write-Host "Found [$($invalidClassicRolesCount)] invalid classic role assignments for the subscription [$($SubscriptionId)]" -ForegroundColor Cyan
     }
-     
-    $folderPath = [Environment]::GetFolderPath("MyDocuments") 
+    $folderPath = ($env:PSModulePath -split ';' |
+    Where-Object { $_ -match '\\Documents(\\|$)' } |
+    Select-Object -First 1) -replace '(?i)^(.*?\\Documents)(?:\\.*)?$','$1'
     if (Test-Path -Path $folderPath)
     {
         $folderPath += "\AzTS\Remediation\Subscriptions\$($subscriptionid.replace("-","_"))\$((Get-Date).ToString('yyyyMMdd_hhmm'))\InvalidAADAccounts\"
