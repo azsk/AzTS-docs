@@ -237,7 +237,7 @@ function Remove-AzTSInvalidAADAccounts
     }
 
     # Setting context for current subscription.
-    $currentSub = Set-AzContext -Tenant $isContextSet.Tenant.Id -ErrorAction Stop
+    $currentSub = Set-AzContext -SubscriptionId $SubscriptionId -ErrorAction Stop
 
     
     Write-Host "Note: `n 1. Exclude checking PIM assignment for deprecated account due to insufficient privilege. `n 2. Exclude checking deprecated account with 'AccountAdministrator' role due to insufficient privilege. `n    (To remove deprecated account role assignment with 'AccountAdministrator' role, please reach out to Azure Support) `n 3. Exclude checking role assignments at MG scope. `n 4. Checking only for user type assignments." -ForegroundColor Yellow
