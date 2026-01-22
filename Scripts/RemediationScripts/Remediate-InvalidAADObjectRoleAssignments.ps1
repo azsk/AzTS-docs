@@ -622,26 +622,6 @@ function Get-ARGData
 
     return $kqlResponse
 }
-
-
-function GetAuthHeader
-{
-    $headers = $null
-    try 
-    {
-        $resourceAppIdUri = "https://management.azure.com"
-        $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token
-        $credential = New-Object System.Net.NetworkCredential("", $accessToken.Token)
-        $token = $credential.Password
-        $header = "Bearer " + $token
-        $headers = @{"Authorization"=$header;"Content-Type"="application/json";}
-    }
-    catch 
-    {
-        Write-Host "Error occurred while fetching auth header. ErrorMessage [$($_)]" -ForegroundColor Red   
-    }
-    return $headers 
-}
 function GetClassicRoleAssignments
 {
     param (
@@ -653,7 +633,6 @@ function GetClassicRoleAssignments
     {
         $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token
         $armUri = "https://management.azure.com/subscriptions/$($subscriptionId)/providers/Microsoft.Authorization/classicadministrators?api-version=2015-06-01"
-        #$headers = GetAuthHeader
         # API to get classic role assignments
         $response = Invoke-RestMethod -Method Get -Uri $armUri -SkipHeaderValidation -Authentication Bearer -Token (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token -UseBasicParsing
         $content = $response.value
@@ -682,7 +661,6 @@ function DeleteClassicRoleAssignment
         {
             $armUri += "&adminType=serviceAdmin"
         }
-        #$headers = GetAuthHeader
         
         # API to get classic role assignments
         $accessToken = (Get-AzAccessToken -ResourceUrl "https://management.azure.com" -AsSecureString).Token
