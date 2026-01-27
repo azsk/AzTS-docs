@@ -169,7 +169,6 @@ function Pre_requisites
         Import-Module -Name Az.Resources
         Import-Module -Name Az.Accounts
         Import-Module -Name Az.ResourceGraph
-        Import-Module -Name Microsoft.Graph
     }
 }
 
@@ -274,7 +273,7 @@ function Remove-AzTSInvalidAADAccounts
         # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
         try
         {
-            Connect-MgGraph -TenantId $currentSub.Tenant.Id | Out-Null
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id -Scopes User.Read.All | Out-Null
         }
         catch
         {
@@ -289,7 +288,7 @@ function Remove-AzTSInvalidAADAccounts
             return;
         }
 
-        $currentLoginUserObjectId = Get-MgUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+        $currentLoginUserObjectId = Get-MgUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" -Scopes User.Read.All | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
     }
 
     Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
@@ -365,7 +364,7 @@ function Remove-AzTSInvalidAADAccounts
         try
         {
             # Connect with Microsoft Graph
-            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop -Scopes User.Read.All
         }
         catch
         {
@@ -388,7 +387,7 @@ function Remove-AzTSInvalidAADAccounts
             $subRange = $distinctObjectIds[$i..$endRange]
 
             # Getting active identities from Azure Active Directory.
-            $subActiveIdentities = Get-MgDirectoryObjectById -Ids $subRange
+            $subActiveIdentities = Get-MgDirectoryObjectById -Ids $subRange -Scopes User.Read.All
             # Safe Check 
             if(($subActiveIdentities | Measure-Object).Count -le 0)
             {
@@ -408,7 +407,7 @@ function Remove-AzTSInvalidAADAccounts
         if(($classicRoleAssignments | Measure-Object).count -gt 0)
         {
             $classicRoleAssignments | ForEach-Object { 
-                $userDetails = Get-MgUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
+                $userDetails = Get-MgUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'" -Scopes User.Read.All
                 if (($userDetails | Measure-Object).Count -eq 0 ) 
                 {
                     $invalidClassicRoles += $_ 
@@ -431,7 +430,7 @@ function Remove-AzTSInvalidAADAccounts
         try
         {
             # Connect with Microsoft Graph
-            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop
+            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop -Scopes User.Read.All
         }
         catch
         {
