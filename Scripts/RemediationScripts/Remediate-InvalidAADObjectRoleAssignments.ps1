@@ -408,7 +408,7 @@ function Remove-AzTSInvalidAADAccounts
         if(($classicRoleAssignments | Measure-Object).count -gt 0)
         {
             $classicRoleAssignments | ForEach-Object { 
-                $userDetails = Get-MgUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'" -Scopes User.Read.All
+                $userDetails = Get-MgUser -Filter "userPrincipalName eq '$($_.SignInName)' or Mail eq '$($_.SignInName)'"
                 if (($userDetails | Measure-Object).Count -eq 0 ) 
                 {
                     $invalidClassicRoles += $_ 
