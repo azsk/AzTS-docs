@@ -169,6 +169,7 @@ function Pre_requisites
         Import-Module -Name Az.Resources
         Import-Module -Name Az.Accounts
         Import-Module -Name Az.ResourceGraph
+        Import-Module -Name Microsoft.Graph
     }
 }
 
