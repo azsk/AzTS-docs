@@ -274,7 +274,7 @@ function Remove-AzTSInvalidAADAccounts
         # Need to connect to Azure AD before running any other command for fetching Entra Id related information (e.g. - group membership)
         try
         {
-            Connect-MgGraph -TenantId $currentSub.Tenant.Id -Scopes User.Read.All | Out-Null
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id | Out-Null
         }
         catch
         {
@@ -289,7 +289,7 @@ function Remove-AzTSInvalidAADAccounts
             return;
         }
 
-        $currentLoginUserObjectId = Get-MgUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" -Scopes User.Read.All | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
+        $currentLoginUserObjectId = Get-MgUser -Filter "userPrincipalName eq '$($currentSub.Account.Id)'" | Select-Object ObjectId -ExpandProperty ObjectId # Fetch the user object id
     }
 
     Write-Host "Current user [$($currentSub.Account.Id)] has the required permission for subscription [$($SubscriptionId)]." -ForegroundColor Green
@@ -365,7 +365,7 @@ function Remove-AzTSInvalidAADAccounts
         try
         {
             # Connect with Microsoft Graph
-            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop -Scopes User.Read.All
+            Connect-MgGraph -TenantId $currentSub.Tenant.Id -ErrorAction Stop
         }
         catch
         {
@@ -388,7 +388,7 @@ function Remove-AzTSInvalidAADAccounts
             $subRange = $distinctObjectIds[$i..$endRange]
 
             # Getting active identities from Azure Active Directory.
-            $subActiveIdentities = Get-MgDirectoryObjectById -Ids $subRange -Scopes User.Read.All
+            $subActiveIdentities = Get-MgDirectoryObjectById -Ids $subRange
             # Safe Check 
             if(($subActiveIdentities | Measure-Object).Count -le 0)
             {
@@ -431,7 +431,7 @@ function Remove-AzTSInvalidAADAccounts
         try
         {
             # Connect with Microsoft Graph
-            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop -Scopes User.Read.All
+            Connect-MgGraph -Scopes "User.Read.All", "Group.ReadWrite.All" -ErrorAction Stop
         }
         catch
         {
