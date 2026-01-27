@@ -164,6 +164,12 @@ function Pre_requisites
         {
             Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
         }
+
+        Write-Host "Importing required modules..." -ForegroundColor Cyan
+        Import-Module -Name Az.Resources
+        Import-Module -Name Az.Accounts
+        Import-Module -Name Az.ResourceGraph
+        Import-Module -Name Microsoft.Graph
     }
 }
 
