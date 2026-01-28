@@ -218,7 +218,7 @@ function Remove-AzTSInvalidAADAccounts
     Write-Host "======================================================"
     Write-Host "Starting with removal of invalid AAD object guids from subscriptions..."
     Write-Host "------------------------------------------------------"
-    # Make sure all pre-requisites are met before starting remediation like importing mudules required.
+    # Make sure all pre-requisites are met before starting remediation like importing required modules.
     $PerformPreReqCheck = $true
     if($PerformPreReqCheck)
     {
