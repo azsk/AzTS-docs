@@ -164,7 +164,8 @@ function Pre_requisites
         {
             Write-Host "Microsoft.Graph module is available." -ForegroundColor Green
         }
-
+        # Setting maximum function count to avoid 'Maximum function count exceeded' error while importing Microsoft.Graph module.
+        $MaximumFunctionCount = 32768
         Write-Host "Importing required modules..." -ForegroundColor Cyan
         Import-Module -Name Az.Resources
         Import-Module -Name Az.Accounts
@@ -217,7 +218,8 @@ function Remove-AzTSInvalidAADAccounts
     Write-Host "======================================================"
     Write-Host "Starting with removal of invalid AAD object guids from subscriptions..."
     Write-Host "------------------------------------------------------"
-
+    # Make sure all pre-requisites are met before starting remediation like importing required modules.
+    $PerformPreReqCheck = $true
     if($PerformPreReqCheck)
     {
         try 
