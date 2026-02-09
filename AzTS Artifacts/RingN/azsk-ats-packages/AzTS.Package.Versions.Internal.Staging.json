@@ -3,20 +3,20 @@
   "Packages": [
     {
       "Name": "MetadataAggregator",
-      "Latest": "1.1.1564",
-      "Stable": "1.1.1564",
+      "Latest": "1.1.1566",
+      "Stable": "1.1.1566",
       "PackageName": "MetadataAggregator.zip"
     },
     {
       "Name": "WorkItemProcessor",
-      "Latest": "1.1.1402",
-      "Stable": "1.1.1402",
+      "Latest": "1.1.1411",
+      "Stable": "1.1.1411",
       "PackageName": "WorkItemProcessor.zip"
     },
     {
       "Name": "WebApi",
-      "Latest": "1.1.786",
-      "Stable": "1.1.786",
+      "Latest": "1.1.787",
+      "Stable": "1.1.787",
       "PackageName": "WebApi.zip"
     },
     {
